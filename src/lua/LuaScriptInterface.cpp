@@ -8,6 +8,8 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
+#include <iostream>
+#include <sstream>
 
 #include "Format.h"
 #include "LuaScriptHelper.h"
@@ -4015,21 +4017,82 @@ int LuaScriptInterface::event_getmodifiers(lua_State * l)
 
 class RequestHandle
 {
+public:
+	enum RequestType
+	{
+		normal,
+		getAuthToken,
+	};
+
+private:
 	http::Request *request;
-	bool dead;
+	bool dead = false;
+	RequestType type;
+
+	RequestHandle() = default;
+
+	void FinishGetAuthToken(ByteString &data, int &status_out, std::vector<ByteString> &headers)
+	{
+		headers.clear();
+		std::istringstream ss(data);
+		Json::Value root;
+		try
+		{
+			ss >> root;
+			auto status = root["Status"].asString();
+			if (status == "OK")
+			{
+				status_out = 200;
+				data = root["Token"].asString();
+			}
+			else
+			{
+				status_out = 403;
+				data = status;
+			}
+		}
+		catch (std::exception &e)
+		{
+			std::cerr << "bad auth response: " << e.what() << std::endl;
+			status_out = 600;
+			data.clear();
+		}
+	}
 
 public:
-	RequestHandle(ByteString &uri, bool isPost, std::map<ByteString, ByteString> &post_data, std::vector<ByteString> &headers)
+	static int Make(lua_State *l, const ByteString &uri, bool isPost, RequestType type, const std::map<ByteString, ByteString> &post_data, const std::vector<ByteString> &headers)
 	{
-		dead = false;
-		request = new http::Request(uri);
+		auto authUser = Client::Ref().GetAuthUser();
+		if (type == getAuthToken && !authUser.UserID)
+		{
+			lua_pushnil(l);
+			lua_pushliteral(l, "not authenticated");
+			return 2;
+		}
+		auto *rh = (RequestHandle *)lua_newuserdata(l, sizeof(RequestHandle));
+		if (!rh)
+		{
+			return 0;
+		}
+		new(rh) RequestHandle();
+		rh->type = type;
+		rh->request = new http::Request(uri);
 		for (auto &header : headers)
 		{
-			request->AddHeader(header);
+			rh->request->AddHeader(header);
 		}
 		if (isPost)
-			request->AddPostData(post_data);
-		request->Start();
+		{
+			rh->request->AddPostData(post_data);
+		}
+		if (type == getAuthToken)
+		{
+			rh->request->AuthHeaders(ByteString::Build(authUser.UserID), authUser.SessionID);
+		}
+		rh->request->Start();
+		luaL_newmetatable(l, "HTTPRequest");
+		lua_setmetatable(l, -2);
+		return 1;
 	}
 
 	~RequestHandle()
@@ -4075,6 +4138,10 @@ public:
 			if (request->CheckDone())
 			{
 				data = request->Finish(&status_out, &headers);
+				if (type == getAuthToken && status_out == 200)
+				{
+					FinishGetAuthToken(data, status_out, headers);
+				}
 				dead = true;
 			}
 		}
@@ -4196,17 +4263,13 @@ static int http_request(lua_State *l, bool isPost)
 			}
 		}
 	}
-	auto *rh = (RequestHandle *)lua_newuserdata(l, sizeof(RequestHandle));
-	if (!rh)
-	{
-		return 0;
-	}
-	new(rh) RequestHandle(uri, isPost, post_data, headers);
-	luaL_newmetatable(l, "HTTPRequest");
-	lua_setmetatable(l, -2);
-	return 1;
+	return RequestHandle::Make(l, uri, isPost, RequestHandle::normal, post_data, headers);
 }
 
+static int http_get_auth_token(lua_State *l)
+{
+	return RequestHandle::Make(l, SCHEME SERVER "/ExternalAuth.api?Action=Get&Audience=" + format::URLEncode(tpt_lua_checkByteString(l, 1)), false, RequestHandle::getAuthToken, {}, {});
+}
 
 int LuaScriptInterface::http_get(lua_State * l)
 {
@@ -4238,6 +4301,7 @@ void LuaScriptInterface::initHttpAPI()
 	struct luaL_Reg httpMethods[] = {
 		{ "get", http_get },
 		{ "post", http_post },
+		{ "getAuthToken", http_get_auth_token },
 		{ NULL, NULL }
 	};
 	luaL_register(l, NULL, httpMethods);
