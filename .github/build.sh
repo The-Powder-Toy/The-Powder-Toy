@@ -138,24 +138,32 @@ if [[ -d build ]]; then
 	rm -r build
 fi
 
+c_args=
+c_link_args=
+if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC != windows-msvc ]]; then
+	c_args+=\'-ffunction-sections\',
+	c_args+=\'-fdata-sections\',
+	if [[ $BSH_HOST_PLATFORM == darwin ]]; then
+		c_link_args+=\'-Wl,-dead_strip\',
+	else
+		c_link_args+=\'-Wl,--gc-sections\',
+	fi
+fi
+if [[ $BSH_HOST_PLATFORM == darwin ]]; then
+	if [[ $BSH_HOST_ARCH == aarch64 ]]; then
+		c_args+=\'-mmacosx-version-min=11.0\',
+		c_link_args+=\'-mmacosx-version-min=11.0\',
+	else
+		c_args+=\'-mmacosx-version-min=10.9\',
+		c_link_args+=\'-mmacosx-version-min=10.9\',
+	fi
+fi
+
 meson_configure=meson
 if [[ $BSH_DEBUG_RELEASE == release ]]; then
 	meson_configure+=$'\t'-Dbuildtype=debugoptimized
 fi
 meson_configure+=$'\t'-Db_strip=false
-meson_configure+=$'\t'-Db_pie=false
-if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC != windows-msvc ]]; then
-	meson_configure+=$'\t'-Dc_args=[\'-ffunction-sections\',\'-fdata-sections\']
-	meson_configure+=$'\t'-Dcpp_args=[\'-ffunction-sections\',\'-fdata-sections\']
-	if [[ $BSH_HOST_PLATFORM == darwin ]]; then
-		meson_configure+=$'\t'-Dc_link_args=[\'-Wl,-dead_strip\']
-		meson_configure+=$'\t'-Dcpp_link_args=[\'-Wl,-dead_strip\']
-	else
-		meson_configure+=$'\t'-Dc_link_args=[\'-Wl,--gc-sections\']
-		meson_configure+=$'\t'-Dcpp_link_args=[\'-Wl,--gc-sections\']
-	fi
-fi
-meson_configure+=$'\t'-Dworkaround_gcc_no_pie=true
 meson_configure+=$'\t'-Db_staticpic=false
 meson_configure+=$'\t'-Dinstall_check=true
 meson_configure+=$'\t'-Dmod_id=$MOD_ID
@@ -166,8 +174,22 @@ fi
 if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 	meson_configure+=$'\t'-Dstatic=prebuilt
 	if [[ $BSH_HOST_PLATFORM == windows ]]; then
-		meson_configure+=$'\t'-Db_vscrt=static_from_buildtype
+		if [[ $BSH_HOST_LIBC == msvc ]]; then
+			meson_configure+=$'\t'-Db_vscrt=static_from_buildtype
+		else
+			c_link_args+=\'-static\',
+			c_link_args+=\'-static-libgcc\',
+			c_link_args+=\'-static-libstdc++\',
+		fi
+	elif [[ $BSH_HOST_PLATFORM == linux ]]; then
+		c_link_args+=\'-static-libgcc\',
+		c_link_args+=\'-static-libstdc++\',
 	fi
+fi
+if [[ $BSH_HOST_PLATFORM == linux ]] && [[ $BSH_HOST_ARCH != aarch64 ]]; then
+	# certain file managers can't run PIEs https://bugzilla.gnome.org/show_bug.cgi?id=737849
+	meson_configure+=$'\t'-Db_pie=false
+	c_link_args+=\'-no-pie\',
 fi
 stable_or_beta=no
 if [[ $RELEASE_TYPE == beta ]]; then
@@ -274,6 +296,10 @@ ANDROID_INI
 	meson_configure+=$'\t'--cross-file=.github/android-ghactions.ini
 	meson_configure+=$'\t'-Dhttp=false
 fi
+meson_configure+=$'\t'-Dc_args=[$c_args]
+meson_configure+=$'\t'-Dcpp_args=[$c_args]
+meson_configure+=$'\t'-Dc_link_args=[$c_link_args]
+meson_configure+=$'\t'-Dcpp_link_args=[$c_link_args]
 $meson_configure build
 cd build
 if [[ $BSH_BUILD_PLATFORM == windows ]]; then

@@ -208,9 +208,6 @@ else
 			'-DUNICODE',
 			'-D_UNICODE',
 		]
-		if is_static and host_platform != 'android'
-			project_link_args += [ '-static', '-static-libgcc', '-static-libstdc++' ]
-		endif
 	endif
 	if not is_debug
 		args_ccomp += [
@@ -220,30 +217,14 @@ else
 			'-fomit-frame-pointer',
 		]
 	endif
-	if host_platform == 'darwin'
-		if host_arch == 'aarch64'
-			macosx_version_min = [ '-mmacosx-version-min=11.0' ]
-		else
-			macosx_version_min = [ '-mmacosx-version-min=10.9' ]
-		endif
-		args_ccomp += macosx_version_min
-		project_link_args += macosx_version_min
-	endif
 	if host_platform == 'android'
 		if not is_64bit
 			args_ccomp += [ '-U_FILE_OFFSET_BITS' ]
 		endif
+		# android doesn't ship libc++_shared.so, so we might as well link it statically;
+		# the alternative would be to grab libc++_shared.so from the NDK and ship it with
+		# the app alongside libpowder.so, and possibly add it to SDL's list of libraries to load
 		project_link_args += [ '-static-libstdc++' ]
-	else
-		if not get_option('b_pie') and get_option('workaround_gcc_no_pie') # nice one, meson
-			if host_arch != 'aarch64' # no position independent executable for aarch64
-				if c_compiler.get_id() in [ 'clang' ]
-					project_link_args += [ '-Wl,-no_pie' ]
-				else
-					project_link_args += [ '-no-pie' ]
-				endif
-			endif
-		endif
 	endif
 	project_c_args += args_ccomp + [
 		'-Wno-implicit-fallthrough',
@@ -284,10 +265,6 @@ if host_platform == 'windows'
 				configure_file(input: dll_input, output: dll_output, copy: true)
 			endif
 		endforeach
-	endif
-elif host_platform == 'linux'
-	if is_static
-		project_link_args += [ '-static-libgcc', '-static-libstdc++' ]
 	endif
 endif
 
