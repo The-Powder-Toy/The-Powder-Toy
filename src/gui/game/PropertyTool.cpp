@@ -25,6 +25,10 @@
 
 void ParseFloatProperty(String value, float &out)
 {
+	if (!value.size())
+	{
+		throw std::out_of_range("empty string");
+	}
 	if (value.EndsWith("C"))
 	{
 		float v = value.SubstrFromEnd(1).ToNumber<float>();

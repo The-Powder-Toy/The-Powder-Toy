@@ -476,7 +476,7 @@ void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
 		ambientAirTemp->SetText(sb.Build());
 	}
 	// Out of range temperatures are invalid, preview should go away
-	else if (airTemp < MIN_TEMP || airTemp > MAX_TEMP)
+	else if (isValid && (airTemp < MIN_TEMP || airTemp > MAX_TEMP))
 		isValid = false;
 
 	// If valid, set temp
