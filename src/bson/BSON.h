@@ -30,14 +30,7 @@
 #include <climits>
 #include "common/tpt-inline.h"
 
-#if defined(AND) || defined(LIN) || defined(USE_STDINT)
-#include <sys/types.h>
 #include <cstdint>
-#else
-typedef long long int int64_t;
-typedef unsigned long long int uint64_t;
-#endif
-
 
 #define BSON_OK 0
 #define BSON_ERROR -1
