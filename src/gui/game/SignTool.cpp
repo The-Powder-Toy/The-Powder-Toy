@@ -178,20 +178,12 @@ void SignWindow::DoDraw()
 			y = currentSign.y;
 			dx = 1 - currentSign.ju;
 			dy = (currentSign.y > 18) ? -1 : 1;
-#ifdef OGLR
-			glBegin(GL_LINES);
-			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-			glVertex2i(x, y);
-			glVertex2i(x+(dx*4), y+(dy*4));
-			glEnd();
-#else
 			for (int j=0; j<4; j++)
 			{
 				g->blendpixel(x, y, 192, 192, 192, 255);
 				x+=dx;
 				y+=dy;
 			}
-#endif
 		}
 	}
 	if(!signMoving)

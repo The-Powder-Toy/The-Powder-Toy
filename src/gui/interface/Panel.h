@@ -5,11 +5,6 @@
 #include "gui/interface/Point.h"
 #include "gui/interface/Component.h"
 
-#ifdef OGLI
-#include "graphics/OpenGLHeaders.h"
-#endif
-
-
 class Graphics;
 namespace ui
 {
@@ -27,11 +22,7 @@ class Component;
 	public:
 		friend class Component;
 
-#ifdef OGLI
-		GLuint myVid, myVidTex;
-#else
 		pixel * myVid;
-#endif
 		ui::Point InnerSize;
 		ui::Point ViewportPosition;
 

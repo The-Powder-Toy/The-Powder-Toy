@@ -160,12 +160,6 @@ void CalculateMousePosition(int *x, int *y)
 		*y = (globalMy - windowY) / scale;
 }
 
-#ifdef OGLI
-void blit()
-{
-	SDL_GL_SwapWindow(sdl_window);
-}
-#else
 void blit(pixel * vid)
 {
 	SDL_UpdateTexture(sdl_texture, NULL, vid, WINDOWW * sizeof (Uint32));
@@ -175,7 +169,6 @@ void blit(pixel * vid)
 	SDL_RenderCopy(sdl_renderer, sdl_texture, NULL, NULL);
 	SDL_RenderPresent(sdl_renderer);
 }
-#endif
 
 bool RecreateWindow();
 void SDLOpen()
@@ -622,11 +615,7 @@ void EngineProcess()
 							 engine->GetForceIntegerScaling());
 			}
 
-#ifdef OGLI
-			blit();
-#else
 			blit(engine->g->vid);
-#endif
 		}
 
 		int frameTime = SDL_GetTicks() - frameStart;
@@ -693,11 +682,7 @@ void BlueScreen(String detailMessage)
 		while (SDL_PollEvent(&event))
 			if(event.type == SDL_QUIT)
 				exit(-1);
-#ifdef OGLI
-		blit();
-#else
 		blit(engine->g->vid);
-#endif
 	}
 }
 
@@ -878,19 +863,6 @@ int main(int argc, char * argv[])
 		}
 	}
 
-#ifdef OGLI
-	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
-	//glScaled(2.0f, 2.0f, 1.0f);
-#endif
-#if defined(OGLI) && !defined(MACOSX)
-	int status = glewInit();
-	if(status != GLEW_OK)
-	{
-		fprintf(stderr, "Initializing Glew: %d\n", status);
-		exit(-1);
-	}
-#endif
-
 	StopTextInput();
 
 	ui::Engine::Ref().g = new Graphics();
@@ -971,11 +943,7 @@ int main(int argc, char * argv[])
 			engine->g->drawrect((engine->GetWidth()/2)-100, (engine->GetHeight()/2)-25, 200, 50, 255, 255, 255, 180);
 			engine->g->drawtext((engine->GetWidth()/2)-(Graphics::textwidth("Loading save...")/2), (engine->GetHeight()/2)-5, "Loading save...", style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255);
 
-#ifdef OGLI
-			blit();
-#else
 			blit(engine->g->vid);
-#endif
 			ByteString ptsaveArg = arguments["ptsave"];
 			try
 			{

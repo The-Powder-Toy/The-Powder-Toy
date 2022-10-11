@@ -107,12 +107,6 @@ void CalculateMousePosition(int *x, int *y)
 		*y = (globalMy - windowY) / scale;
 }
 
-#ifdef OGLI
-void blit()
-{
-	SDL_GL_SwapBuffers();
-}
-#else
 void blit(pixel * vid)
 {
 	SDL_UpdateTexture(sdl_texture, NULL, vid, WINDOWW * sizeof (Uint32));
@@ -122,7 +116,6 @@ void blit(pixel * vid)
 	SDL_RenderCopy(sdl_renderer, sdl_texture, NULL, NULL);
 	SDL_RenderPresent(sdl_renderer);
 }
-#endif
 
 void RecreateWindow();
 int SDLOpen()
@@ -421,11 +414,7 @@ void EngineProcess()
 						 engine->GetForceIntegerScaling());
 		}
 
-#ifdef OGLI
-		blit();
-#else
 		blit(engine->g->vid);
-#endif
 
 		int frameTime = SDL_GetTicks() - frameStart;
 		frameTimeAvg = frameTimeAvg * 0.8 + frameTime * 0.2;

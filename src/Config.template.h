@@ -16,9 +16,6 @@
 #mesondefine LIN
 #mesondefine AND
 #mesondefine NO_INSTALL_CHECK
-#mesondefine OGLI
-#mesondefine OGLR
-#mesondefine PIX32OGL
 #mesondefine SNAPSHOT
 #mesondefine WIN
 #mesondefine MACOSX

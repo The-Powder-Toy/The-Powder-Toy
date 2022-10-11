@@ -3,9 +3,6 @@
 #include "Config.h"
 
 #include "common/String.h"
-#if defined(OGLI)
-#include "OpenGLHeaders.h"
-#endif
 #include "common/tpt-inline.h"
 #include "Pixel.h"
 #include "Icons.h"
@@ -26,20 +23,6 @@ public:
 	void Crop(int width, int height, int x, int y);
 	TPT_INLINE void BlendPixel(int x, int y, int r, int g, int b, int a)
 	{
-	#ifdef PIX32OGL
-		pixel t;
-		if (x<0 || y<0 || x>=Width || y>=Height)
-			return;
-		if (a!=255)
-		{
-			t = Buffer[y*(Width)+x];
-			r = (a*r + (255-a)*PIXR(t)) >> 8;
-			g = (a*g + (255-a)*PIXG(t)) >> 8;
-			b = (a*b + (255-a)*PIXB(t)) >> 8;
-			a = a > PIXA(t) ? a : PIXA(t);
-		}
-		Buffer[y*(Width)+x] = PIXRGBA(r,g,b,a);
-	#else
 		pixel t;
 		if (x<0 || y<0 || x>=Width || y>=Height)
 			return;
@@ -51,18 +34,13 @@ public:
 			b = (a*b + (255-a)*PIXB(t)) >> 8;
 		}
 		Buffer[y*(Width)+x] = PIXRGB(r,g,b);
-	#endif
 	}
 
 	TPT_INLINE void SetPixel(int x, int y, int r, int g, int b, int a)
 	{
 		if (x<0 || y<0 || x>=Width || y>=Height)
 				return;
-	#ifdef PIX32OGL
-		Buffer[y*(Width)+x] = PIXRGBA(r,g,b,a);
-	#else
 		Buffer[y*(Width)+x] = PIXRGB((r*a)>>8, (g*a)>>8, (b*a)>>8);
-	#endif
 	}
 
 	TPT_INLINE void AddPixel(int x, int y, int r, int g, int b, int a)
@@ -95,14 +73,6 @@ class Graphics
 public:
 	pixel *vid;
 	int sdl_scale;
-#ifdef OGLI
-	//OpenGL specific instance variables
-	GLuint vidBuf, textTexture;
-	void Reset();
-	void LoadDefaults();
-	void InitialiseTextures();
-	void DestroyTextures();
- #endif
 
 	//Common graphics methods in Graphics.cpp
 	static char * GenerateGradient(pixel * colours, float * points, int pointcount, int size);
