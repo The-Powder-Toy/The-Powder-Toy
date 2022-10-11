@@ -70,6 +70,11 @@ public:
 
 class Graphics
 {
+	int clipx1 = 0;
+	int clipy1 = 0;
+	int clipx2 = WINDOWW;
+	int clipy2 = WINDOWH;
+
 public:
 	pixel *vid;
 	int sdl_scale;
@@ -122,13 +127,14 @@ public:
 	void clearrect(int x, int y, int width, int height);
 	void gradientrect(int x, int y, int width, int height, int r, int g, int b, int a, int r2, int g2, int b2, int a2);
 
-	void draw_image(pixel *img, int x, int y, int w, int h, int a);
-	void draw_image(const VideoBuffer & vidBuf, int x, int y, int a);
-	void draw_image(VideoBuffer * vidBuf, int x, int y, int a);
+	void draw_image(const pixel *img, int x, int y, int w, int h, int a);
+	void draw_image(const VideoBuffer * vidBuf, int x, int y, int a);
 	void draw_rgba_image(const unsigned char *data, int x, int y, float alpha);
 
 	Graphics();
 	~Graphics();
+
+	void SetClipRect(int &x, int &y, int &w, int &h);
 };
 
 #endif

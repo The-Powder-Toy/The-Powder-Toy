@@ -18,6 +18,10 @@ public:
 	void SetSelectionState(int state);
 	int GetSelectionState();
 	Tool *tool;
+	int clipRectX = 0;
+	int clipRectY = 0;
+	int clipRectW = 0;
+	int clipRectH = 0;
 };
 
 #endif /* TOOLBUTTON_H_ */

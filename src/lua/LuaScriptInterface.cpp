@@ -3579,6 +3579,7 @@ void LuaScriptInterface::initGraphicsAPI()
 		{"fillCircle", graphics_fillCircle},
 		{"getColors", graphics_getColors},
 		{"getHexColor", graphics_getHexColor},
+		{"setClipRect", graphics_setClipRect},
 		{NULL, NULL}
 	};
 	luaL_register(l, "graphics", graphicsAPIMethods);
@@ -3773,6 +3774,20 @@ int LuaScriptInterface::graphics_getHexColor(lua_State * l)
 
 	lua_pushinteger(l, color);
 	return 1;
+}
+
+int LuaScriptInterface::graphics_setClipRect(lua_State * l)
+{
+	int x = luaL_optinteger(l, 1, 0);
+	int y = luaL_optinteger(l, 2, 0);
+	int w = luaL_optinteger(l, 3, WINDOWW);
+	int h = luaL_optinteger(l, 4, WINDOWH);
+	luacon_g->SetClipRect(x, y, w, h);
+	lua_pushinteger(l, x);
+	lua_pushinteger(l, y);
+	lua_pushinteger(l, w);
+	lua_pushinteger(l, h);
+	return 4;
 }
 
 void LuaScriptInterface::initFileSystemAPI()

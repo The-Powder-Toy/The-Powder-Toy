@@ -22,7 +22,6 @@ class Component;
 	public:
 		friend class Component;
 
-		pixel * myVid;
 		ui::Point InnerSize;
 		ui::Point ViewportPosition;
 

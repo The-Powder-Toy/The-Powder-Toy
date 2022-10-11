@@ -13,7 +13,6 @@ Panel::Panel(Point position, Point size):
 	ViewportPosition(0, 0),
 	mouseInside(false)
 {
-	myVid = new pixel[WINDOWW*WINDOWH];
 }
 
 Panel::~Panel()
@@ -22,7 +21,6 @@ Panel::~Panel()
 	{
 		delete children[i];
 	}
-	delete[] myVid;
 }
 
 void Panel::AddChild(Component* c)
@@ -66,12 +64,14 @@ void Panel::RemoveChild(unsigned idx, bool freeMem)
 
 void Panel::Draw(const Point& screenPos)
 {
-
 	// draw ourself first
 	XDraw(screenPos);
-	pixel * lastVid = ui::Engine::Ref().g->vid;
-	ui::Engine::Ref().g->vid = myVid;
-	std::fill(myVid, myVid+(WINDOWW*WINDOWH), 0);
+
+	int x = screenPos.X;
+	int y = screenPos.Y;
+	int w = Size.X;
+	int h = Size.Y;
+	ui::Engine::Ref().g->SetClipRect(x, y, w, h); // old cliprect is now in x, y, w, h
 
 	// attempt to draw all children
 	for (size_t i = 0; i < children.size(); ++i)
@@ -85,19 +85,13 @@ void Panel::Draw(const Point& screenPos)
 				children[i]->Position.X + ViewportPosition.X < ui::Engine::Ref().GetWidth() &&
 				children[i]->Position.Y + ViewportPosition.Y < ui::Engine::Ref().GetHeight() )
 			{
-				Point scrpos = /*screenPos + */children[i]->Position + ViewportPosition;
+				Point scrpos = screenPos + children[i]->Position + ViewportPosition;
 				children[i]->Draw(scrpos);
 			}
 		}
 	}
 
-	ui::Engine::Ref().g->vid = lastVid;
-
-	//dst=(pixel *)sdl_scrn->pixels+y*sdl_scrn->pitch/PIXELSIZE+x;
-	for (int row = 0; row < Size.Y; row++)
-	{
-		std::copy(myVid+(row*WINDOWW), myVid+(row*WINDOWW)+Size.X, lastVid+((screenPos.Y+row)*WINDOWW)+screenPos.X);
-	}
+	ui::Engine::Ref().g->SetClipRect(x, y, w, h); // apply old cliprect
 }
 
 void Panel::Tick(float dt)

@@ -167,6 +167,7 @@ class LuaScriptInterface: public CommandInterface
 	static int graphics_fillCircle(lua_State * l);
 	static int graphics_getColors(lua_State * l);
 	static int graphics_getHexColor(lua_State * l);
+	static int graphics_setClipRect(lua_State * l);
 
 	void initFileSystemAPI();
 	static int fileSystem_list(lua_State * l);
