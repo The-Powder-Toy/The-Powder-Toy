@@ -68,7 +68,7 @@ tpt_libs_debug = is_debug ? 'debug' : 'release'
 tpt_libs_variant = '@0@-@1@-@2@-@3@'.format(host_arch, host_platform, host_libc, tpt_libs_static)
 tpt_libs_vtag = get_option('tpt_libs_vtag')
 if tpt_libs_vtag == ''
-	tpt_libs_vtag = 'v20220922162009'
+	tpt_libs_vtag = 'v20221020221431'
 endif
 if tpt_libs_static != 'none'
 	if tpt_libs_variant not in [
@@ -89,6 +89,24 @@ if tpt_libs_static != 'none'
 		error('no prebuilt @0@ libraries are currently provided'.format(tpt_libs_variant))
 	endif
 	tpt_libs = subproject('tpt-libs-prebuilt-@0@-@1@-@2@'.format(tpt_libs_variant, tpt_libs_debug, tpt_libs_vtag))
+else
+	if get_option('workaround_elusive_bzip2')
+		bzip2_lib_name = get_option('workaround_elusive_bzip2_lib_name')
+		bzip2_include_name = get_option('workaround_elusive_bzip2_include_name')
+		bzip2_lib_dir = get_option('workaround_elusive_bzip2_lib_dir')
+		bzip2_include_dir = include_directories(get_option('workaround_elusive_bzip2_include_dir'))
+		bzip2_static = get_option('workaround_elusive_bzip2_static')
+		meson.override_dependency('bzip2', declare_dependency(
+			dependencies: c_compiler.find_library(
+				bzip2_lib_name,
+				has_headers: bzip2_include_name,
+				dirs: bzip2_lib_dir,
+				header_include_directories: bzip2_include_dir,
+				static: bzip2_static,
+			),
+			include_directories: bzip2_include_dir,
+		))
+	endif
 endif
 
 conf_data = configuration_data()
@@ -120,8 +138,10 @@ if lua_variant == 'none'
 elif lua_variant == 'lua5.1' or lua_variant == 'lua5.2'
 	lua_dep = dependency(lua_variant + '-c++', static: is_static, required: false)
 	if not lua_dep.found()
+		if not get_option('workaround_noncpp_lua')
+			error('your system @0@ is not compatible with C++, configure with -Dworkaround_noncpp_lua=true to disable this error'.format(lua_variant))
+		endif
 		lua_dep = dependency(lua_variant, static: is_static)
-		warning('your system @0@ might not be compatible with C++'.format(lua_variant))
 	endif
 elif lua_variant == 'luajit'
 	lua_dep = dependency('luajit', static: is_static)
@@ -152,6 +172,8 @@ fftw_dep = enable_gravfft ? dependency('fftw3f', static: is_static) : []
 threads_dep = dependency('threads')
 zlib_dep = dependency('zlib', static: is_static)
 sdl2_dep = dependency('sdl2', static: is_static)
+bzip2_dep = dependency('bzip2', static: is_static)
+json_dep = dependency('jsoncpp', static: is_static)
 
 project_link_args = []
 project_c_args = []
@@ -268,13 +290,6 @@ if host_platform == 'windows'
 	endif
 endif
 
-if host_platform == 'darwin' and lua_variant == 'luajit' and host_arch != 'aarch64'
-	project_link_args += [
-		'-pagezero_size', '10000',
-		'-image_base', '100000000',
-	]
-endif
-
 project_inc = include_directories([ 'src', 'data', 'resources' ])
 
 if host_platform == 'windows'
@@ -338,6 +353,8 @@ if get_option('build_powder')
 		lua_dep,
 		curl_dep,
 		fftw_dep,
+		bzip2_dep,
+		json_dep,
 	]
 	if host_platform == 'android'
 		powder_sha = shared_library(
@@ -368,6 +385,8 @@ if get_option('build_render')
 	render_deps = [
 		threads_dep,
 		zlib_dep,
+		bzip2_dep,
+		json_dep,
 	]
 	executable(
 		'render',
@@ -385,6 +404,7 @@ if get_option('build_font')
 		threads_dep,
 		zlib_dep,
 		sdl2_dep,
+		bzip2_dep,
 	]
 	executable(
 		'font',

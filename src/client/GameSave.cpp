@@ -7,7 +7,7 @@
 #include <set>
 #include <cmath>
 
-#include "bzip2/bzlib.h"
+#include <bzlib.h>
 #include "Config.h"
 #include "Format.h"
 #include "hmap.h"

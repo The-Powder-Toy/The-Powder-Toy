@@ -5,7 +5,7 @@
 #include "Particle.h"
 #include "Sign.h"
 #include "Stickman.h"
-#include "json/json.h"
+#include <json/json.h>
 
 class Snapshot
 {

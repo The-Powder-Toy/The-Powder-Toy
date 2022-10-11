@@ -106,10 +106,46 @@ option(
 	description: 'Update server, only used by snapshots and mods, see \'snapshot_id\' and \'mod_id\''
 )
 option(
-	'workaround_gcc_no_pie',
+	'workaround_noncpp_lua',
 	type: 'boolean',
-	value: true,
-	description: 'Pass -no-pie to gcc manually to work around meson\'s -Db_pie=false doing nothing'
+	value: false,
+	description: 'Allow linking against a non-C++ system Lua'
+)
+option(
+	'workaround_elusive_bzip2',
+	type: 'boolean',
+	value: false,
+	description: 'acquire bzip2 dependency with find_library'
+)
+option(
+	'workaround_elusive_bzip2_lib_name',
+	type: 'string',
+	value: 'bz2',
+	description: 'bzip2 library name, see \'workaround_elusive_bzip2\''
+)
+option(
+	'workaround_elusive_bzip2_lib_dir',
+	type: 'string',
+	value: '/usr/lib/x86_64-linux-gnu',
+	description: 'bzip2 library directory, see \'workaround_elusive_bzip2\''
+)
+option(
+	'workaround_elusive_bzip2_include_name',
+	type: 'string',
+	value: 'bzlib.h',
+	description: 'bzip2 header name, see \'workaround_elusive_bzip2\''
+)
+option(
+	'workaround_elusive_bzip2_include_dir',
+	type: 'string',
+	value: '/usr/include',
+	description: 'bzip2 header directory, see \'workaround_elusive_bzip2\''
+)
+option(
+	'workaround_elusive_bzip2_static',
+	type: 'boolean',
+	value: false,
+	description: 'bzip2 static setting, see \'workaround_elusive_bzip2\''
 )
 option(
 	'tpt_libs_vtag',

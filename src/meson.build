@@ -32,7 +32,6 @@ subdir('common')
 subdir('debug')
 subdir('graphics')
 subdir('gui')
-subdir('json')
 if lua_variant != 'none'
 	subdir('lua')
 endif

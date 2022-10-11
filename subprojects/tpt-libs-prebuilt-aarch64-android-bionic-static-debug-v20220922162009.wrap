@@ -1,6 +1,0 @@
-[wrap-file]
-directory = tpt-libs-prebuilt-aarch64-android-bionic-static-debug-v20220922162009
-
-source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20220922162009/tpt-libs-prebuilt-aarch64-android-bionic-static-debug-v20220922162009.zip
-source_filename = tpt-libs-prebuilt-aarch64-android-bionic-static-debug-v20220922162009.zip
-source_hash = c588dbe9bda6e2fdfe18af0bea923bc219b0c34eae7666b530738d61e795e2cd
