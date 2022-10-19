@@ -22,6 +22,7 @@ extern Renderer * luacon_ren;
 
 extern bool *luacon_currentCommand;
 extern String *luacon_lastError;
+extern bool luacon_hasLastError;
 
 class LuaSmartRef;
 extern int *lua_el_mode;
