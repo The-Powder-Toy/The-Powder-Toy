@@ -218,7 +218,7 @@ if [[ $RELEASE_TYPE != dev ]]; then
 	meson_configure+=$'\t'-Dignore_updates=false
 fi
 if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
-	if [[ $BSH_HOST_PLATFORM == linux ]]; then
+	if [[ $BSH_BUILD_PLATFORM == linux ]]; then
 		meson_configure+=$'\t'--cross-file=.github/mingw-ghactions.ini
 	fi
 else
