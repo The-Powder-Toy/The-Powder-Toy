@@ -25,8 +25,8 @@ jobs:
       mod_id: ${{ steps.prepare.outputs.mod_id }}
       do_publish: ${{ steps.prepare.outputs.do_publish }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
       - id: prepare
@@ -36,7 +36,7 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
       - if: steps.prepare.outputs.do_release == 'yes'
         id: create_release
-        uses: actions/create-release@v1
+        uses: LBPHacker/create-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -51,8 +51,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.prepare.outputs.build_matrix) }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
       - run: python -m pip install meson ninja
@@ -80,7 +80,7 @@ jobs:
           ASSET_PATH: ${{ matrix.asset_path }}
           DEBUG_ASSET_PATH: ${{ matrix.debug_asset_path }}
           SEPARATE_DEBUG: ${{ matrix.separate_debug }}
-      - uses: actions/upload-release-asset@v1 # TODO-NTL: ship licenses
+      - uses: LBPHacker/upload-release-asset@v2 # TODO-NTL: ship licenses
         if: needs.prepare.outputs.do_release == 'yes' && matrix.publish == 'yes'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -89,7 +89,7 @@ jobs:
           asset_path: build/${{ matrix.asset_path }}
           asset_name: ${{ matrix.asset_name }}
           asset_content_type: application/zip
-      - uses: actions/upload-release-asset@v1
+      - uses: LBPHacker/upload-release-asset@v2
         if: needs.prepare.outputs.do_release == 'yes' && matrix.publish == 'yes' && matrix.separate_debug == 'yes'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -98,12 +98,12 @@ jobs:
           asset_path: build/${{ matrix.debug_asset_path }}
           asset_name: ${{ matrix.debug_asset_name }}
           asset_content_type: application/zip
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: matrix.artifact == 'yes'
         with:
           path: build/${{ matrix.asset_path }}
           name: ${{ matrix.asset_name }}
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: matrix.artifact == 'yes' && matrix.separate_debug == 'yes'
         with:
           path: build/${{ matrix.debug_asset_path }}
@@ -116,8 +116,8 @@ jobs:
       matrix: ${{ fromJSON(needs.prepare.outputs.publish_matrix) }}
     if: needs.prepare.outputs.do_publish == 'yes'
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v1
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.asset_name }}
       - run: mv ${{ matrix.asset_name }}/${{ matrix.asset_path }} ${{ matrix.starcatcher_name }}
@@ -133,7 +133,7 @@ jobs:
     needs: [build, publish, prepare]
     if: needs.prepare.outputs.do_publish == 'yes'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: ./.github/starcatcher-release.sh
         env:
           RELEASE_NAME: ${{ needs.prepare.outputs.release_name }}

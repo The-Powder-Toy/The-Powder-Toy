@@ -7,6 +7,10 @@ import sys
 ref = os.getenv('GITHUB_REF')
 publish_hostport = os.getenv('PUBLISH_HOSTPORT')
 
+def set_output(key, value):
+	with open(os.getenv('GITHUB_OUTPUT'), 'a') as f:
+		f.write(f"{key}={value}\n")
+
 match_stable     = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)', ref)
 match_beta       = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)b', ref)
 match_snapshot   = re.fullmatch(r'refs/tags/snapshot-([0-9]+)', ref)
@@ -32,11 +36,11 @@ else:
 	release_name = 'dev'
 do_publish = publish_hostport and do_release
 
-print('::set-output name=release_type::' + release_type)
-print('::set-output name=release_name::' + release_name)
+set_output('release_type', release_type)
+set_output('release_name', release_name)
 
 with open('.github/mod_id.txt') as f:
-	print('::set-output name=mod_id::' + f.read())
+	set_output('mod_id', f.read())
 
 build_matrix = []
 publish_matrix = []
@@ -103,7 +107,7 @@ for bsh_host_arch, bsh_host_platform, bsh_host_libc, bsh_static_dynamic, bsh_bui
 				'starcatcher_name': starcatcher_name,
 			})
 
-print('::set-output name=build_matrix::' + json.dumps({ 'include': build_matrix }))
-print('::set-output name=publish_matrix::' + json.dumps({ 'include': publish_matrix }))
-print('::set-output name=do_release::' + (do_release and 'yes' or 'no'))
-print('::set-output name=do_publish::' + (do_publish and 'yes' or 'no'))
+set_output('build_matrix', json.dumps({ 'include': build_matrix }))
+set_output('publish_matrix', json.dumps({ 'include': publish_matrix }))
+set_output('do_release', do_release and 'yes' or 'no')
+set_output('do_publish', do_publish and 'yes' or 'no')
