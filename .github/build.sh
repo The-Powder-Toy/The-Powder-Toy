@@ -171,7 +171,7 @@ meson_configure+=$'\t'-Db_strip=false
 meson_configure+=$'\t'-Db_staticpic=false
 meson_configure+=$'\t'-Dinstall_check=true
 meson_configure+=$'\t'-Dmod_id=$MOD_ID
-if [[ $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC == x86_64-linux-gnu-static ]]; then
+if [[ $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC == x86_64-linux-gnu ]]; then
 	meson_configure+=$'\t'-Dbuild_render=true
 	meson_configure+=$'\t'-Dbuild_font=true
 fi
@@ -235,8 +235,10 @@ if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
 	if [[ $BSH_BUILD_PLATFORM == linux ]]; then
 		meson_configure+=$'\t'--cross-file=.github/mingw-ghactions.ini
 	fi
-else
+fi
+if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC != windows-mingw ]] && [[ $BSH_STATIC_DYNAMIC == static ]]; then
 	# LTO simply doesn't work with MinGW. I have no idea why and I also don't care.
+	# It also has a tendency to not play well with dynamic libraries.
 	meson_configure+=$'\t'-Db_lto=true
 fi
 if [[ $BSH_HOST_PLATFORM-$BSH_HOST_ARCH == darwin-aarch64 ]]; then

@@ -405,6 +405,7 @@ if get_option('build_font')
 		zlib_dep,
 		sdl2_dep,
 		bzip2_dep,
+		json_dep,
 	]
 	executable(
 		'font',
