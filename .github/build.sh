@@ -51,6 +51,14 @@ if [[ -z ${DEBUG_ASSET_PATH-} ]]; then
 	>&2 echo "DEBUG_ASSET_PATH not set"
 	exit 1
 fi
+if [[ -z ${PACKAGE_APPIMAGE-} ]]; then
+	>&2 echo "PACKAGE_APPIMAGE not set"
+	exit 1
+fi
+if [[ -z ${APPIMAGE_ASSET_PATH-} ]]; then
+	>&2 echo "APPIMAGE_ASSET_PATH not set"
+	exit 1
+fi
 
 case $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC in
 x86_64-linux-gnu-static) ;;
@@ -213,6 +221,14 @@ fi
 if [[ $RELEASE_TYPE == stable ]]; then
 	stable_or_beta=yes
 fi
+save_version=$(grep -w src/Config.template.h -e "#define SAVE_VERSION" | cut -d ' ' -f 3)
+minor_version=$(grep -w src/Config.template.h -e "#define MINOR_VERSION" | cut -d ' ' -f 3)
+build_num=$(grep -w src/Config.template.h -e "#define BUILD_NUM" | cut -d ' ' -f 3)
+if [[ $stable_or_beta == yes ]] && [[ $MOD_ID != 0 ]]; then
+	save_version=$(echo $RELEASE_NAME | cut -d '.' -f 1)
+	minor_version=$(echo $RELEASE_NAME | cut -d '.' -f 2)
+	build_num=$(echo $RELEASE_NAME | cut -d '.' -f 3)
+fi
 if [[ $RELEASE_TYPE == snapshot ]]; then
 	meson_configure+=$'\t'-Dsnapshot=true
 	meson_configure+=$'\t'-Dsnapshot_id=$(echo $RELEASE_NAME | cut -d '-' -f 2) # $RELEASE_NAME is snapshot-X
@@ -342,4 +358,34 @@ if [[ $BSH_HOST_PLATFORM == android ]]; then
 	meson configure -Dandroid_keystore=$(realpath keystore.jks)
 	ANDROID_KEYSTORE_PASS=bagelsbagels ninja android/powder.apk
 	mv android/powder.apk powder.apk
+fi
+if [[ $PACKAGE_APPIMAGE == yes ]]; then
+	cp resources/appdata.xml appdata.xml
+	sed -i "s|SUBST_DATE|$(date --iso-8601)|g" appdata.xml
+	sed -i "s|SUBST_SAVE_VERSION|$save_version|g" appdata.xml
+	sed -i "s|SUBST_MINOR_VERSION|$minor_version|g" appdata.xml
+	sed -i "s|SUBST_BUILD_NUM|$build_num|g" appdata.xml
+	case $BSH_HOST_ARCH in
+	aarch64) appimage_arch=aarch64;;
+	arm)     appimage_arch=armhf  ;;
+	x86)     appimage_arch=i686   ;;
+	x86_64)  appimage_arch=x86_64 ;;
+	esac
+	curl -fsSLo appimagetool "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$appimage_arch.AppImage"
+	curl -fsSLo AppRun "https://github.com/AppImage/AppImageKit/releases/download/continuous/AppRun-$appimage_arch"
+	chmod +x appimagetool
+	chmod +x AppRun
+	mkdir -p ThePowderToy.AppDir/usr/bin
+	mkdir -p ThePowderToy.AppDir/usr/share/metainfo
+	mkdir -p ThePowderToy.AppDir/usr/share/applications
+	mkdir -p ThePowderToy.AppDir/usr/share/icons
+	cp powder ThePowderToy.AppDir/usr/bin/powder
+	mv AppRun ThePowderToy.AppDir/AppRun
+	cp ../resources/icon/powder-128.png ThePowderToy.AppDir/powder.png
+	cp resources/powder.desktop ThePowderToy.AppDir/uk.co.powdertoy.tpt.desktop
+	cp appdata.xml ThePowderToy.AppDir/usr/share/metainfo/uk.co.powdertoy.tpt.appdata.xml
+	cp ThePowderToy.AppDir/powder.png ThePowderToy.AppDir/usr/share/icons/powder.png
+	cp ThePowderToy.AppDir/uk.co.powdertoy.tpt.desktop ThePowderToy.AppDir/usr/share/applications/uk.co.powdertoy.tpt.desktop
+	./appimagetool ThePowderToy.AppDir
+	[[ -f $APPIMAGE_ASSET_PATH ]]
 fi

@@ -18,3 +18,9 @@ data_files += to_array.process(configure_file(
 	output: 'powder.desktop',
 	configuration: conf_data,
 ), extra_args: 'powder_desktop')
+
+configure_file(
+	input: 'appdata.template.xml',
+	output: 'appdata.xml',
+	configuration: conf_data,
+)
