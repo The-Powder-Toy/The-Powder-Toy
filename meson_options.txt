@@ -213,3 +213,9 @@ option(
 	value: false,
 	description: 'Used by ghactions workflows, not useful otherwise'
 )
+option(
+	'render_icons_with_inkscape',
+	type: 'feature',
+	value: 'disabled',
+	description: 'Render icons with Inkscape (inkscape binary needs to be in PATH)'
+)

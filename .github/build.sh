@@ -354,10 +354,10 @@ if [[ $PACKAGE_MODE == appimage ]]; then
 	mkdir -p $appdir/usr/share/icons
 	cp $APP_EXE $appdir/usr/bin/$APP_EXE
 	mv AppRun $appdir/AppRun
-	cp ../resources/icon/icon-128.png $appdir/$APP_VENDOR-$APP_EXE.png
+	cp ../resources/icon_exe.svg $appdir/$APP_VENDOR-$APP_EXE.svg
 	cp resources/powder.desktop $appdir/$APP_ID.desktop
 	cp appdata.xml $appdir/usr/share/metainfo/$APP_ID.appdata.xml
-	cp $appdir/$APP_VENDOR-$APP_EXE.png $appdir/usr/share/icons/$APP_VENDOR-$APP_EXE.png
+	cp $appdir/$APP_VENDOR-$APP_EXE.svg $appdir/usr/share/icons/$APP_VENDOR-$APP_EXE.svg
 	cp $appdir/$APP_ID.desktop $appdir/usr/share/applications/$APP_ID.desktop
 	./appimagetool $appdir $ASSET_PATH
 fi

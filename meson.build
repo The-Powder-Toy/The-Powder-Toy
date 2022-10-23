@@ -24,6 +24,9 @@ to_array = generator(
 	arguments: [ '@OUTPUT0@', '@OUTPUT1@', '@INPUT@', '@EXTRA_ARGS@' ]
 )
 
+render_icons_with_inkscape = get_option('render_icons_with_inkscape')
+inkscape = find_program('inkscape', required: render_icons_with_inkscape)
+
 c_compiler = meson.get_compiler('c')
 
 is_x86 = host_machine.cpu_family() in [ 'x86', 'x86_64' ]

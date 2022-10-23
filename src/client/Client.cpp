@@ -17,9 +17,8 @@
 #endif
 
 #ifdef LIN
-# include "cps16.png.h"
-# include "cps32.png.h"
-# include "exe48.png.h"
+# include "icon_cps.png.h"
+# include "icon_exe.png.h"
 # include "save.xml.h"
 # include "powder.desktop.h"
 #endif
@@ -1665,23 +1664,16 @@ bool Client::DoInstallation()
 	}
 	if (ok)
 	{
-		ByteString file = APPVENDOR "-cps32.png";
-		ok = ok && Platform::WriteFile(std::vector<char>(cps32_png, cps32_png + cps32_png_size), file);
-		ok = ok && !system(ByteString::Build("xdg-icon-resource install --noupdate --context mimetypes --size 32 ", file, " application-vnd.powdertoy.save").c_str());
+		ByteString file = APPVENDOR "-cps.png";
+		ok = ok && Platform::WriteFile(std::vector<char>(icon_cps_png, icon_cps_png + icon_cps_png_size), file);
+		ok = ok && !system(ByteString::Build("xdg-icon-resource install --noupdate --context mimetypes --size 64 ", file, " application-vnd.powdertoy.save").c_str());
 		Platform::RemoveFile(file);
 	}
 	if (ok)
 	{
-		ByteString file = APPVENDOR "-cps16.png";
-		ok = ok && Platform::WriteFile(std::vector<char>(cps16_png, cps16_png + cps16_png_size), file);
-		ok = ok && !system(ByteString::Build("xdg-icon-resource install --noupdate --context mimetypes --size 16 ", file, " application-vnd.powdertoy.save").c_str());
-		Platform::RemoveFile(file);
-	}
-	if (ok)
-	{
-		ByteString file = APPVENDOR "-exe48.png";
-		ok = ok && Platform::WriteFile(std::vector<char>(exe48_png, exe48_png + exe48_png_size), file);
-		ok = ok && !system(ByteString::Build("xdg-icon-resource install --noupdate --size 48 ", file, " " APPVENDOR "-" APPEXE).c_str());
+		ByteString file = APPVENDOR "-exe.png";
+		ok = ok && Platform::WriteFile(std::vector<char>(icon_exe_png, icon_exe_png + icon_exe_png_size), file);
+		ok = ok && !system(ByteString::Build("xdg-icon-resource install --noupdate --size 64 ", file, " " APPVENDOR "-" APPEXE).c_str());
 		Platform::RemoveFile(file);
 	}
 	if (ok)

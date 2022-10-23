@@ -15,7 +15,7 @@
 
 #include <iostream>
 #if defined(LIN)
-# include "icon-128.png.h"
+# include "icon_exe.png.h"
 #endif
 #include <stdexcept>
 
@@ -151,15 +151,15 @@ int SDLOpen()
 
 	// Use GetModuleHandle to get the Exe HMODULE/HINSTANCE
 	HMODULE hModExe = GetModuleHandle(NULL);
-	HICON hIconSmall = (HICON)LoadImage(hModExe, MAKEINTRESOURCE(101), IMAGE_ICON, 16, 16, LR_SHARED);
-	HICON hIconBig = (HICON)LoadImage(hModExe, MAKEINTRESOURCE(101), IMAGE_ICON, 32, 32, LR_SHARED);
+	HICON hIconSmall = (HICON)LoadImage(hModExe, MAKEINTRESOURCE(IDI_ICON), IMAGE_ICON, 16, 16, LR_SHARED);
+	HICON hIconBig = (HICON)LoadImage(hModExe, MAKEINTRESOURCE(IDI_ICON), IMAGE_ICON, 32, 32, LR_SHARED);
 	SendMessage(WindowHandle, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall);
 	SendMessage(WindowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIconBig);
 #endif
 #ifdef LIN
 	std::vector<pixel> imageData;
 	int imgw, imgh;
-	if (PngDataToPixels(imageData, imgw, imgh, reinterpret_cast<const char *>(icon_png), icon_png_size, false))
+	if (PngDataToPixels(imageData, imgw, imgh, reinterpret_cast<const char *>(icon_exe_png), icon_exe_png_size, false))
 	{
 		SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(&imageData[0], imgw, imgh, 32, imgw * sizeof(pixel), 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 		SDL_SetWindowIcon(sdl_window, icon);
