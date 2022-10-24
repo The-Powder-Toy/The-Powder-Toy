@@ -5,8 +5,8 @@
 #include <iostream>
 
 const int curl_multi_wait_timeout_ms = 100;
-const long curl_max_host_connections = 1;
-const long curl_max_concurrent_streams = 1;
+const long curl_max_host_connections = 2;
+const long curl_max_concurrent_streams = 50;
 
 namespace http
 {
