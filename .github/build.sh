@@ -39,24 +39,28 @@ if [[ -z ${MOD_ID-} ]]; then
 	>&2 echo "MOD_ID not set"
 	exit 1
 fi
-if [[ -z ${ASSET_PATH-} ]]; then
-	>&2 echo "ASSET_PATH not set"
-	exit 1
-fi
 if [[ -z ${SEPARATE_DEBUG-} ]]; then
 	>&2 echo "SEPARATE_DEBUG not set"
+	exit 1
+fi
+if [[ -z ${BUILD_PACKAGE-} ]]; then
+	>&2 echo "BUILD_PACKAGE not set"
+	exit 1
+fi
+if [[ -z ${ASSET_PATH-} ]]; then
+	>&2 echo "ASSET_PATH not set"
 	exit 1
 fi
 if [[ -z ${DEBUG_ASSET_PATH-} ]]; then
 	>&2 echo "DEBUG_ASSET_PATH not set"
 	exit 1
 fi
-if [[ -z ${PACKAGE_APPIMAGE-} ]]; then
-	>&2 echo "PACKAGE_APPIMAGE not set"
+if [[ -z ${PACKAGE_ASSET_PATH-} ]]; then
+	>&2 echo "PACKAGE_ASSET_PATH not set"
 	exit 1
 fi
-if [[ -z ${APPIMAGE_ASSET_PATH-} ]]; then
-	>&2 echo "APPIMAGE_ASSET_PATH not set"
+if [[ -z ${PACKAGE_DEBUG_ASSET_PATH-} ]]; then
+	>&2 echo "PACKAGE_DEBUG_ASSET_PATH not set"
 	exit 1
 fi
 
@@ -340,8 +344,18 @@ if [[ $BSH_BUILD_PLATFORM == windows ]]; then
 else
 	ninja -v
 fi
+
 strip=strip
 objcopy=objcopy
+function separate_debug() {
+	local binary=$1
+	local debug=$2
+	$objcopy --only-keep-debug $binary $debug
+	$strip --strip-debug --strip-unneeded $binary
+	$objcopy --add-gnu-debuglink $debug $binary
+	chmod -x $debug
+}
+
 strip_target=$ASSET_PATH
 if [[ $BSH_HOST_PLATFORM == android ]]; then
 	strip=$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-$strip
@@ -349,9 +363,7 @@ if [[ $BSH_HOST_PLATFORM == android ]]; then
 	strip_target=libpowder.so
 fi
 if [[ $SEPARATE_DEBUG == yes ]] && [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC != windows-msvc ]]; then
-	$objcopy --only-keep-debug $strip_target $DEBUG_ASSET_PATH
-	$strip --strip-debug --strip-unneeded $strip_target
-	$objcopy --add-gnu-debuglink $DEBUG_ASSET_PATH $strip_target
+	separate_debug $strip_target $DEBUG_ASSET_PATH
 fi
 if [[ $BSH_HOST_PLATFORM == android ]]; then
 	$JAVA_HOME_8_X64/bin/keytool -genkeypair -keystore keystore.jks -alias androidkey -validity 10000 -keyalg RSA -keysize 2048 -keypass bagelsbagels -storepass bagelsbagels -dname "CN=nobody"
@@ -359,7 +371,13 @@ if [[ $BSH_HOST_PLATFORM == android ]]; then
 	ANDROID_KEYSTORE_PASS=bagelsbagels ninja android/powder.apk
 	mv android/powder.apk powder.apk
 fi
-if [[ $PACKAGE_APPIMAGE == yes ]]; then
+if [[ $BUILD_PACKAGE == yes ]]; then
+	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
+	meson configure -Dinstall_check=false -Dignore_updates=true -Dbuild_render=false -Dbuild_font=false
+	ninja -v
+	if [[ $SEPARATE_DEBUG == yes ]]; then
+		separate_debug $ASSET_PATH $PACKAGE_DEBUG_ASSET_PATH
+	fi
 	cp resources/appdata.xml appdata.xml
 	sed -i "s|SUBST_DATE|$(date --iso-8601)|g" appdata.xml
 	sed -i "s|SUBST_SAVE_VERSION|$save_version|g" appdata.xml
@@ -387,5 +405,5 @@ if [[ $PACKAGE_APPIMAGE == yes ]]; then
 	cp ThePowderToy.AppDir/powder.png ThePowderToy.AppDir/usr/share/icons/powder.png
 	cp ThePowderToy.AppDir/uk.co.powdertoy.tpt.desktop ThePowderToy.AppDir/usr/share/applications/uk.co.powdertoy.tpt.desktop
 	./appimagetool ThePowderToy.AppDir
-	[[ -f $APPIMAGE_ASSET_PATH ]]
+	[[ -f $PACKAGE_ASSET_PATH ]]
 fi

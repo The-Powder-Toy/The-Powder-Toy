@@ -77,11 +77,12 @@ jobs:
           RELEASE_NAME: ${{ needs.prepare.outputs.release_name }}
           RELEASE_TYPE: ${{ needs.prepare.outputs.release_type }}
           MOD_ID: ${{ needs.prepare.outputs.mod_id }}
+          SEPARATE_DEBUG: ${{ matrix.separate_debug }}
+          BUILD_PACKAGE: ${{ matrix.build_package }}
           ASSET_PATH: ${{ matrix.asset_path }}
           DEBUG_ASSET_PATH: ${{ matrix.debug_asset_path }}
-          SEPARATE_DEBUG: ${{ matrix.separate_debug }}
-          PACKAGE_APPIMAGE: ${{ matrix.package_appimage }}
-          APPIMAGE_ASSET_PATH: ${{ matrix.appimage_asset_path }}
+          PACKAGE_ASSET_PATH: ${{ matrix.package_asset_path }}
+          PACKAGE_DEBUG_ASSET_PATH: ${{ matrix.package_debug_asset_path }}
       - uses: LBPHacker/upload-release-asset@v2 # TODO-NTL: ship licenses
         if: needs.prepare.outputs.do_release == 'yes' && matrix.publish == 'yes'
         env:
@@ -111,10 +112,15 @@ jobs:
           path: build/${{ matrix.debug_asset_path }}
           name: ${{ matrix.debug_asset_name }}
       - uses: actions/upload-artifact@v3
-        if: matrix.artifact == 'yes' && matrix.package_appimage == 'yes'
+        if: matrix.artifact == 'yes' && matrix.build_package == 'yes'
         with:
-          path: build/${{ matrix.appimage_asset_path }}
-          name: ${{ matrix.appimage_asset_name }}
+          path: build/${{ matrix.package_asset_path }}
+          name: ${{ matrix.package_asset_name }}
+      - uses: actions/upload-artifact@v3
+        if: matrix.artifact == 'yes' && matrix.build_package == 'yes' && matrix.separate_debug == 'yes'
+        with:
+          path: build/${{ matrix.package_debug_asset_path }}
+          name: ${{ matrix.package_debug_asset_name }}
   publish:
     runs-on: ubuntu-latest
     needs: [build, prepare]
