@@ -148,13 +148,13 @@ OptionsView::OptionsView():
 
 	class GravityWindow : public ui::Window
 	{
-		void OnTryExit(ExitMethod method)
+		void OnTryExit(ExitMethod method) override
 		{
 			CloseActiveWindow();
 			SelfDestruct();
 		}
 
-		void OnDraw()
+		void OnDraw() override
 		{
 			Graphics * g = GetGraphics();
 

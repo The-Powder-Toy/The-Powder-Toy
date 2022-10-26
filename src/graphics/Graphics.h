@@ -91,12 +91,9 @@ public:
 
 	//Font/text metrics
 	static int CharWidth(String::value_type c);
-	static int textnwidth(String s, int n);
-	static void textnpos(String s, int n, int w, int *cx, int *cy);
-	static int textwidthx(String s, int w);
-	static int textwrapheight(String s, int width);
-	static int textwidth(String s);
-	static void textsize(String s, int & width, int & height);
+	static int textwidthx(const String &s, int w);
+	static int textwidth(const String &s);
+	static void textsize(const String &s, int & width, int & height);
 
 	VideoBuffer DumpFrame();
 
@@ -108,8 +105,8 @@ public:
 	void Clear();
 	void Finalise();
 	//
-	int drawtext_outline(int x, int y, String s, int r, int g, int b, int a);
-	int drawtext(int x, int y, String s, int r, int g, int b, int a);
+	int drawtext_outline(int x, int y, const String &s, int r, int g, int b, int a);
+	int drawtext(int x, int y, const String &s, int r, int g, int b, int a);
 	int drawchar(int x, int y, String::value_type c, int r, int g, int b, int a);
 	int addchar(int x, int y, String::value_type c, int r, int g, int b, int a);
 

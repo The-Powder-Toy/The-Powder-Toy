@@ -443,23 +443,26 @@ pixel *Graphics::rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f
 	return q;
 }
 
-int Graphics::textwidth(String str)
+int Graphics::textwidth(const String &str)
 {
 	int x = 0;
-	String::value_type const *s = str.c_str();
-	for (; *s; s++)
+	for (size_t i = 0; i < str.length(); i++)
 	{
-		if(*s=='\b')
+		if (str[i] == '\b')
 		{
-			if(!s[1]) break;
-			s++;
-			continue;
-		} else if(*s == '\x0F') {
-			if(!s[1] || !s[2] || !s[3]) break;
-			s+=3;
+			if (str.length() <= i+1)
+				break;
+			i++;
 			continue;
 		}
-		x += FontReader(*s).GetWidth();
+		else if (str[i] == '\x0F')
+		{
+			if (str.length() <= i+3)
+				break;
+			i += 3;
+			continue;
+		}
+		x += FontReader(str[i]).GetWidth();
 	}
 	return x-1;
 }
@@ -469,83 +472,24 @@ int Graphics::CharWidth(String::value_type c)
 	return FontReader(c).GetWidth();
 }
 
-int Graphics::textnwidth(String str, int n)
+int Graphics::textwidthx(const String &str, int w)
 {
-	int x = 0;
-	String::value_type const *s = str.c_str();
-	for (; *s; s++)
+	int x = 0,n = 0,cw = 0;
+	for (size_t i = 0; i < str.length(); i++)
 	{
-		if (!n)
-			break;
-		if(*s=='\b')
+		if (str[i] == '\b')
 		{
-			if(!s[1]) break;
-			s++;
-			continue;
-		} else if(*s == '\x0F') {
-			if(!s[1] || !s[2] || !s[3]) break;
-			s+=3;
-			continue;
-		}
-		x += FontReader(*s).GetWidth();
-		n--;
-	}
-	return x-1;
-}
-
-void Graphics::textnpos(String str, int n, int w, int *cx, int *cy)
-{
-	int x = 0;
-	int y = 0;
-	int wordlen, charspace;
-	String::value_type const *s = str.c_str();
-	while (*s&&n)
-	{
-		wordlen = 0;
-		while(*s && String(" .,!?\n").Contains(*s))
-			s++;
-		charspace = textwidthx(s, w-x);
-		if (charspace<wordlen && wordlen && w-x<w/3)
-		{
-			x = 0;
-			y += FONT_H;
-		}
-		for (; *s && --wordlen>=-1; s++)
-		{
-			if (!n) {
+			if (str.length() <= i+1)
 				break;
-			}
-			x += FontReader(*s).GetWidth();
-			if (x>=w)
-			{
-				x = 0;
-				y += FONT_H;
-			}
-			n--;
-		}
-	}
-	*cx = x-1;
-	*cy = y;
-}
-
-int Graphics::textwidthx(String str, int w)
-{
-	int x=0,n=0,cw;
-	String::value_type const *s = str.c_str();
-	for (; *s; s++)
-	{
-		if(*s == '\b')
-		{
-			if(!s[1]) break;
-			s++;
+			i++;
 			continue;
-		} else if (*s == '\x0F')
-		{
-			if(!s[1] || !s[2] || !s[3]) break;
-			s+=3;
+		} else if (str[i] == '\x0F') {
+			if (str.length() <= i+3)
+				break;
+			i += 3;
 			continue;
 		}
-		cw = FontReader(*s).GetWidth();
+		cw += FontReader(str[i]).GetWidth();
 		if (x+(cw/2) >= w)
 			break;
 		x += cw;
@@ -554,56 +498,7 @@ int Graphics::textwidthx(String str, int w)
 	return n;
 }
 
-int Graphics::textwrapheight(String str, int width)
-{
-	int x=0, height=FONT_H, cw;
-	int wordlen;
-	int charspace;
-	String::value_type const *s = str.c_str();
-	while (*s)
-	{
-		wordlen = 0;
-		while(*s && String(" .,!?\n").Contains(*s))
-			s++;
-		charspace = textwidthx(s, width-x);
-		if (charspace<wordlen && wordlen && width-x<width/3)
-		{
-			x = 0;
-			height += FONT_H;
-		}
-		for (; *s && --wordlen>=-1; s++)
-		{
-			if (*s == '\n')
-			{
-				x = 0;
-				height += FONT_H;
-			}
-			else if (*s == '\b')
-			{
-				if(!s[1]) break;
-				s++;
-			}
-			else if (*s == '\x0F')
-			{
-				if(!s[1] || !s[2] || !s[3]) break;
-				s+=3;
-			}
-			else
-			{
-				cw = FontReader(*s).GetWidth();
-				if (x+cw>=width)
-				{
-					x = 0;
-					height += FONT_H;
-				}
-				x += cw;
-			}
-		}
-	}
-	return height;
-}
-
-void Graphics::textsize(String str, int & width, int & height)
+void Graphics::textsize(const String &str, int & width, int & height)
 {
 	if(!str.size())
 	{
@@ -613,27 +508,28 @@ void Graphics::textsize(String str, int & width, int & height)
 	}
 
 	int cHeight = FONT_H-2, cWidth = 0, lWidth = 0;
-	String::value_type const *s = str.c_str();
-	for (; *s; s++)
+	for (size_t i = 0; i < str.length(); i++)
 	{
-		if (*s == '\n')
+		if (str[i] == '\n')
 		{
 			cWidth = 0;
 			cHeight += FONT_H;
 		}
-		else if (*s == '\x0F')
+		else if (str[i] == '\x0F')
 		{
-			if(!s[1] || !s[2] || !s[3]) break;
-			s+=3;
+			if (str.length() <= i+3)
+				break;
+			i += 3;
 		}
-		else if (*s == '\b')
+		else if (str[i] == '\b')
 		{
-			if(!s[1]) break;
-			s++;
+			if (str.length() <= i+1)
+				break;
+			i++;
 		}
 		else
 		{
-			cWidth += FontReader(*s).GetWidth();
+			cWidth += FontReader(str[i]).GetWidth();
 			if(cWidth>lWidth)
 				lWidth = cWidth;
 		}

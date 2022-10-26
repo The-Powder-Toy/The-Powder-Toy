@@ -1,7 +1,7 @@
 #include <cmath>
 #include "FontReader.h"
 
-int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, String s, int r, int g, int b, int a)
+int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, const String &s, int r, int g, int b, int a)
 {
 	drawtext(x-1, y-1, s, 0, 0, 0, 120);
 	drawtext(x+1, y+1, s, 0, 0, 0, 120);
@@ -12,7 +12,7 @@ int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, String s, int r, int g, i
 	return drawtext(x, y, s, r, g, b, a);
 }
 
-int PIXELMETHODS_CLASS::drawtext(int x, int y, String str, int r, int g, int b, int a)
+int PIXELMETHODS_CLASS::drawtext(int x, int y, const String &str, int r, int g, int b, int a)
 {
 	if(!str.size())
 		return 0;
@@ -21,42 +21,43 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, String str, int r, int g, int b, 
 	int oR = r, oG = g, oB = b;
 	int characterX = x, characterY = y;
 	int startX = characterX;
-	String::value_type const *s = str.c_str();
-	for (; *s; s++)
+	for (size_t i = 0; i < str.length(); i++)
 	{
-		if (*s == '\n')
+		if (str[i] == '\n')
 		{
 			characterX = startX;
 			characterY += FONT_H;
 		}
-		else if (*s == '\x0F')
+		else if (str[i] == '\x0F')
 		{
-			if(!s[1] || !s[2] || !s[3]) break;
+			if (str.length() <= i+3)
+				break;
 			oR = r;
 			oG = g;
 			oB = b;
-			r = (unsigned char)s[1];
-			g = (unsigned char)s[2];
-			b = (unsigned char)s[3];
-			s += 3;
+			r = (unsigned char)str[i + 1];
+			g = (unsigned char)str[i + 2];
+			b = (unsigned char)str[i + 3];
+			i += 3;
 		}
-		else if (*s == '\x0E')
+		else if (str[i] == '\x0E')
 		{
 			r = oR;
 			g = oG;
 			b = oB;
 		}
-		else if (*s == '\x01')
+		else if (str[i] == '\x01')
 		{
 			invert = !invert;
 			r = 255-r;
 			g = 255-g;
 			b = 255-b;
 		}
-		else if (*s == '\b')
+		else if (str[i] == '\b')
 		{
-			if(!s[1]) break;
-			switch (s[1])
+			if (str.length() <= i + 1)
+				break;
+			switch (str[i + 1])
 			{
 			case 'w': r = 255; g = 255; b = 255; break;
 			case 'g': r = 192; g = 192; b = 192; break;
@@ -73,11 +74,11 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, String str, int r, int g, int b, 
 				g = 255-g;
 				b = 255-b;
 			}
-			s++;
+			i++;
 		}
 		else
 		{
-			characterX = drawchar(characterX, characterY, *s, r, g, b, a);
+			characterX = drawchar(characterX, characterY, str[i], r, g, b, a);
 		}
 	}
 	return x;
