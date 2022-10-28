@@ -1,0 +1,6 @@
+[wrap-file]
+directory = tpt-libs-prebuilt-x86_64-windows-mingw-dynamic-release-v20221029072839
+
+source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20221029072839/tpt-libs-prebuilt-x86_64-windows-mingw-dynamic-release-v20221029072839.zip
+source_filename = tpt-libs-prebuilt-x86_64-windows-mingw-dynamic-release-v20221029072839.zip
+source_hash = 4e6487baeba6a60dcbb4901bb706d27da1805f5fe4016a2e457352bc9cd0af33

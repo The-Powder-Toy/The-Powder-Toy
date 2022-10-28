@@ -105,7 +105,8 @@ if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == windows-msvc ]]; then
 	x86_64) vs_env_arch=x64;;
 	x86)    vs_env_arch=x86;;
 	esac
-	. ./.github/vs-env.sh $vs_env_arch
+	VS_ENV_PARAMS=$vs_env_arch$'\t'-vcvars_ver=14.1
+	. ./.github/vs-env.sh
 elif [[ $BSH_HOST_PLATFORM == darwin ]]; then
 	# may need export SDKROOT=$(xcrun --show-sdk-path --sdk macosx11.1)
 	CC=clang
@@ -284,7 +285,7 @@ if [[ $RELEASE_TYPE == tptlibsdev ]] && ([[ $BSH_HOST_PLATFORM == windows ]] || 
 	tpt_libs_vtag=v00000000000000
 	if [[ ! -f build-tpt-libs/tpt-libs/.ok ]]; then
 		cd build-tpt-libs/tpt-libs
-		BSH_VTAG=$tpt_libs_vtag ./build.sh
+		BSH_VTAG=$tpt_libs_vtag ./.github/build.sh
 		touch .ok
 		cd ../../subprojects
 		for i in tpt-libs-prebuilt-*; do
