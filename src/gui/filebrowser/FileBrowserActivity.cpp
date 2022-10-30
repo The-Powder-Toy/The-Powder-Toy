@@ -83,6 +83,7 @@ FileBrowserActivity::FileBrowserActivity(ByteString directory, OnSelected onSele
 	WindowActivity(ui::Point(-1, -1), ui::Point(500, 350)),
 	onSelected(onSelected_),
 	directory(directory),
+	hasQueuedSearch(false),
 	totalFiles(0)
 {
 
@@ -127,7 +128,12 @@ FileBrowserActivity::FileBrowserActivity(ByteString directory, OnSelected onSele
 
 void FileBrowserActivity::DoSearch(ByteString search)
 {
-	if(!loadFiles)
+	if (loadFiles)
+	{
+		hasQueuedSearch = true;
+		queuedSearch = search;
+	}
+	else
 	{
 		loadDirectory(directory, search);
 	}
@@ -221,6 +227,12 @@ void FileBrowserActivity::NotifyDone(Task * task)
 		delete components[i];
 	}
 	components.clear();
+
+	if (hasQueuedSearch)
+	{
+		hasQueuedSearch = false;
+		loadDirectory(directory, queuedSearch);
+	}
 }
 
 void FileBrowserActivity::OnMouseDown(int x, int y, unsigned button)

@@ -30,6 +30,8 @@ class FileBrowserActivity: public TaskListener, public WindowActivity
 	std::vector<ui::Component*> components;
 	std::vector<ui::Component*> componentsQueue;
 	ByteString directory;
+	bool hasQueuedSearch;
+	ByteString queuedSearch;
 
 	ui::ProgressBar * progressBar;
 
