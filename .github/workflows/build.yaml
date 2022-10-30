@@ -133,7 +133,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.asset_name }}
-      - run: mv ${{ matrix.asset_name }} ${{ matrix.starcatcher_name }}
+      - run: mv ${{ matrix.asset_path }} ${{ matrix.starcatcher_name }}
       - run: sudo apt update && sudo apt install lftp && bash -c './.github/starcatcher-publish.sh'
         env:
           PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
