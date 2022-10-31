@@ -489,7 +489,7 @@ int Graphics::textwidthx(const String &str, int w)
 			i += 3;
 			continue;
 		}
-		cw += FontReader(str[i]).GetWidth();
+		cw = FontReader(str[i]).GetWidth();
 		if (x+(cw/2) >= w)
 			break;
 		x += cw;
