@@ -4077,7 +4077,7 @@ private:
 	}
 
 public:
-	static int Make(lua_State *l, const ByteString &uri, bool isPost, RequestType type, const std::map<ByteString, ByteString> &post_data, const std::vector<ByteString> &headers)
+	static int Make(lua_State *l, const ByteString &uri, bool isPost, const ByteString &verb, RequestType type, const std::map<ByteString, ByteString> &post_data, const std::vector<ByteString> &headers)
 	{
 		auto authUser = Client::Ref().GetAuthUser();
 		if (type == getAuthToken && !authUser.UserID)
@@ -4094,6 +4094,10 @@ public:
 		new(rh) RequestHandle();
 		rh->type = type;
 		rh->request = new http::Request(uri);
+		if (verb.size())
+		{
+			rh->request->Verb(verb);
+		}
 		for (auto &header : headers)
 		{
 			rh->request->AddHeader(header);
@@ -4240,8 +4244,13 @@ static int http_request(lua_State *l, bool isPost)
 {
 	ByteString uri = tpt_lua_checkByteString(l, 1);
 	std::map<ByteString, ByteString> post_data;
+	auto headersIndex = 2;
+	auto verbIndex = 3;
+
 	if (isPost)
 	{
+		headersIndex += 1;
+		verbIndex += 1;
 		if (lua_istable(l, 2))
 		{
 			lua_pushnil(l);
@@ -4255,7 +4264,6 @@ static int http_request(lua_State *l, bool isPost)
 	}
 
 	std::vector<ByteString> headers;
-	auto headersIndex = isPost ? 3 : 2;
 	if (lua_istable(l, headersIndex))
 	{
 		auto size = lua_objlen(l, headersIndex);
@@ -4280,12 +4288,14 @@ static int http_request(lua_State *l, bool isPost)
 			}
 		}
 	}
-	return RequestHandle::Make(l, uri, isPost, RequestHandle::normal, post_data, headers);
+
+	auto verb = tpt_lua_optByteString(l, verbIndex, "");
+	return RequestHandle::Make(l, uri, isPost, verb, RequestHandle::normal, post_data, headers);
 }
 
 static int http_get_auth_token(lua_State *l)
 {
-	return RequestHandle::Make(l, SCHEME SERVER "/ExternalAuth.api?Action=Get&Audience=" + format::URLEncode(tpt_lua_checkByteString(l, 1)), false, RequestHandle::getAuthToken, {}, {});
+	return RequestHandle::Make(l, SCHEME SERVER "/ExternalAuth.api?Action=Get&Audience=" + format::URLEncode(tpt_lua_checkByteString(l, 1)), false, {}, RequestHandle::getAuthToken, {}, {});
 }
 
 int LuaScriptInterface::http_get(lua_State * l)

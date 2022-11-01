@@ -44,6 +44,7 @@ namespace http
 		bool added_to_multi;
 		int status;
 
+		ByteString verb;
 		struct curl_slist *headers;
 
 		bool isPost = false;
@@ -64,6 +65,7 @@ namespace http
 		Request(ByteString uri);
 		virtual ~Request();
 
+		void Verb(ByteString newVerb);
 		void AddHeader(ByteString header);
 		void AddPostData(std::map<ByteString, ByteString> data);
 		void AuthHeaders(ByteString ID, ByteString session);

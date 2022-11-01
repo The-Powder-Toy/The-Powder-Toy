@@ -201,3 +201,9 @@ option(
 	value: 'powdertoy',
 	description: 'App vendor prefix, used for desktop integration, do not change even if you work on a mod, only if you know what you are doing'
 )
+option(
+	'enforce_https',
+	type: 'boolean',
+	value: true,
+	description: 'Enforce encrypted HTTP traffic, may be disabled for debugging'
+)

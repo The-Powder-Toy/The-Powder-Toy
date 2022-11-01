@@ -29,6 +29,7 @@
 #mesondefine UPDATESERVER
 #mesondefine IDENT_PLATFORM
 #mesondefine IDENT
+#mesondefine ENFORCE_HTTPS
 #define APPNAME "@APPNAME@"
 #define APPCOMMENT "@APPCOMMENT@"
 #define APPEXE "@APPEXE@"
@@ -86,7 +87,6 @@
 
 #define SCHEME "https://"
 #define STATICSCHEME "https://"
-#define ENFORCE_HTTPS
 
 #define LOCAL_SAVE_DIR "Saves"
 

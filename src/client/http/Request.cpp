@@ -77,6 +77,13 @@ namespace http
 #endif
 	}
 
+	void Request::Verb(ByteString newVerb)
+	{
+#ifndef NOHTTP
+		verb = newVerb;
+#endif
+	}
+
 	void Request::AddHeader(ByteString header)
 	{
 #ifndef NOHTTP
@@ -216,6 +223,10 @@ namespace http
 			else
 			{
 				curl_easy_setopt(easy, CURLOPT_HTTPGET, 1L);
+			}
+			if (verb.size())
+			{
+				curl_easy_setopt(easy, CURLOPT_CUSTOMREQUEST, verb.c_str());
 			}
 
 			curl_easy_setopt(easy, CURLOPT_FOLLOWLOCATION, 1L);

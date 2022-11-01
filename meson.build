@@ -56,6 +56,11 @@ endif
 
 is_static = static_variant != 'none'
 is_debug = get_option('optimization') in [ '0', 'g' ]
+enforce_https = get_option('enforce_https')
+
+if not is_debug and not enforce_https
+	error('refusing to build a release binary with enforce_https=false')
+endif
 
 tpt_libs_static = 'none'
 if static_variant == 'prebuilt'
@@ -323,6 +328,7 @@ conf_data.set('SERVER', '"@0@"'.format(get_option('server')))
 conf_data.set('STATICSERVER', '"@0@"'.format(get_option('static_server')))
 conf_data.set('IDENT_PLATFORM', '"@0@"'.format(ident_platform))
 conf_data.set('IDENT', '"@0@-@1@-@2@"'.format(host_arch, host_platform, host_libc).to_upper())
+conf_data.set('ENFORCE_HTTPS', enforce_https)
 conf_data.set('APPNAME', get_option('app_name'))
 conf_data.set('APPCOMMENT', get_option('app_comment'))
 conf_data.set('APPEXE', get_option('app_exe'))
