@@ -394,17 +394,17 @@ if [[ $BUILD_PACKAGE == yes ]]; then
 	curl -fsSLo AppRun "https://github.com/AppImage/AppImageKit/releases/download/continuous/AppRun-$appimage_arch"
 	chmod +x appimagetool
 	chmod +x AppRun
-	mkdir -p ThePowderToy.AppDir/usr/bin
-	mkdir -p ThePowderToy.AppDir/usr/share/metainfo
-	mkdir -p ThePowderToy.AppDir/usr/share/applications
-	mkdir -p ThePowderToy.AppDir/usr/share/icons
-	cp powder ThePowderToy.AppDir/usr/bin/powder
-	mv AppRun ThePowderToy.AppDir/AppRun
-	cp ../resources/icon/powder-128.png ThePowderToy.AppDir/powder.png
-	cp resources/powder.desktop ThePowderToy.AppDir/uk.co.powdertoy.tpt.desktop
-	cp appdata.xml ThePowderToy.AppDir/usr/share/metainfo/uk.co.powdertoy.tpt.appdata.xml
-	cp ThePowderToy.AppDir/powder.png ThePowderToy.AppDir/usr/share/icons/powder.png
-	cp ThePowderToy.AppDir/uk.co.powdertoy.tpt.desktop ThePowderToy.AppDir/usr/share/applications/uk.co.powdertoy.tpt.desktop
-	./appimagetool ThePowderToy.AppDir
-	[[ -f $PACKAGE_ASSET_PATH ]]
+	appdir=bagels.AppDir # doesn't matter, won't be visible in the resulting appimage
+	mkdir -p $appdir/usr/bin
+	mkdir -p $appdir/usr/share/metainfo
+	mkdir -p $appdir/usr/share/applications
+	mkdir -p $appdir/usr/share/icons
+	cp powder $appdir/usr/bin/powder
+	mv AppRun $appdir/AppRun
+	cp ../resources/icon/powder-128.png $appdir/powder.png
+	cp resources/powder.desktop $appdir/uk.co.powdertoy.tpt.desktop
+	cp appdata.xml $appdir/usr/share/metainfo/uk.co.powdertoy.tpt.appdata.xml
+	cp $appdir/powder.png $appdir/usr/share/icons/powder.png
+	cp $appdir/uk.co.powdertoy.tpt.desktop $appdir/usr/share/applications/uk.co.powdertoy.tpt.desktop
+	./appimagetool $appdir $PACKAGE_ASSET_PATH
 fi
