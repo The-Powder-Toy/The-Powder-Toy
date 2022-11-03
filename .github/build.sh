@@ -43,8 +43,8 @@ if [[ -z ${SEPARATE_DEBUG-} ]]; then
 	>&2 echo "SEPARATE_DEBUG not set"
 	exit 1
 fi
-if [[ -z ${BUILD_PACKAGE-} ]]; then
-	>&2 echo "BUILD_PACKAGE not set"
+if [[ -z ${PACKAGE_MODE-} ]]; then
+	>&2 echo "PACKAGE_MODE not set"
 	exit 1
 fi
 if [[ -z ${ASSET_PATH-} ]]; then
@@ -53,14 +53,6 @@ if [[ -z ${ASSET_PATH-} ]]; then
 fi
 if [[ -z ${DEBUG_ASSET_PATH-} ]]; then
 	>&2 echo "DEBUG_ASSET_PATH not set"
-	exit 1
-fi
-if [[ -z ${PACKAGE_ASSET_PATH-} ]]; then
-	>&2 echo "PACKAGE_ASSET_PATH not set"
-	exit 1
-fi
-if [[ -z ${PACKAGE_DEBUG_ASSET_PATH-} ]]; then
-	>&2 echo "PACKAGE_DEBUG_ASSET_PATH not set"
 	exit 1
 fi
 
@@ -335,6 +327,19 @@ meson_configure+=$'\t'-Dc_link_args=[$c_link_args]
 meson_configure+=$'\t'-Dcpp_link_args=[$c_link_args]
 $meson_configure build
 cd build
+strip=strip
+objcopy=objcopy
+strip_target=$ASSET_PATH
+if [[ $BSH_HOST_PLATFORM == android ]]; then
+	strip=$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-$strip
+	objcopy=$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-$objcopy
+	strip_target=libpowder.so
+fi
+if [[ $PACKAGE_MODE == appimage ]]; then
+	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
+	meson configure -Dinstall_check=false -Dignore_updates=true -Dbuild_render=false -Dbuild_font=false
+	strip_target=powder
+fi
 if [[ $BSH_BUILD_PLATFORM == windows ]]; then
 	set +e
 	ninja -v -d keeprsp
@@ -346,25 +351,11 @@ else
 	ninja -v
 fi
 
-strip=strip
-objcopy=objcopy
-function separate_debug() {
-	local binary=$1
-	local debug=$2
-	$objcopy --only-keep-debug $binary $debug
-	$strip --strip-debug --strip-unneeded $binary
-	$objcopy --add-gnu-debuglink $debug $binary
-	chmod -x $debug
-}
-
-strip_target=$ASSET_PATH
-if [[ $BSH_HOST_PLATFORM == android ]]; then
-	strip=$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-$strip
-	objcopy=$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-$objcopy
-	strip_target=libpowder.so
-fi
 if [[ $SEPARATE_DEBUG == yes ]] && [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC != windows-msvc ]]; then
-	separate_debug $strip_target $DEBUG_ASSET_PATH
+	$objcopy --only-keep-debug $strip_target $DEBUG_ASSET_PATH
+	$strip --strip-debug --strip-unneeded $strip_target
+	$objcopy --add-gnu-debuglink $DEBUG_ASSET_PATH $strip_target
+	chmod -x $DEBUG_ASSET_PATH
 fi
 if [[ $BSH_HOST_PLATFORM == android ]]; then
 	$JAVA_HOME_8_X64/bin/keytool -genkeypair -keystore keystore.jks -alias androidkey -validity 10000 -keyalg RSA -keysize 2048 -keypass bagelsbagels -storepass bagelsbagels -dname "CN=nobody"
@@ -372,13 +363,8 @@ if [[ $BSH_HOST_PLATFORM == android ]]; then
 	ANDROID_KEYSTORE_PASS=bagelsbagels ninja android/powder.apk
 	mv android/powder.apk powder.apk
 fi
-if [[ $BUILD_PACKAGE == yes ]]; then
+if [[ $PACKAGE_MODE == appimage ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
-	meson configure -Dinstall_check=false -Dignore_updates=true -Dbuild_render=false -Dbuild_font=false
-	ninja -v
-	if [[ $SEPARATE_DEBUG == yes ]]; then
-		separate_debug $ASSET_PATH $PACKAGE_DEBUG_ASSET_PATH
-	fi
 	cp resources/appdata.xml appdata.xml
 	sed -i "s|SUBST_DATE|$(date --iso-8601)|g" appdata.xml
 	sed -i "s|SUBST_SAVE_VERSION|$save_version|g" appdata.xml
@@ -406,5 +392,5 @@ if [[ $BUILD_PACKAGE == yes ]]; then
 	cp appdata.xml $appdir/usr/share/metainfo/uk.co.powdertoy.tpt.appdata.xml
 	cp $appdir/powder.png $appdir/usr/share/icons/powder.png
 	cp $appdir/uk.co.powdertoy.tpt.desktop $appdir/usr/share/applications/uk.co.powdertoy.tpt.desktop
-	./appimagetool $appdir $PACKAGE_ASSET_PATH
+	./appimagetool $appdir $ASSET_PATH
 fi
