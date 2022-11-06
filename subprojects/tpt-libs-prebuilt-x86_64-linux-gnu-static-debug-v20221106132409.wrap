@@ -1,0 +1,6 @@
+[wrap-file]
+directory = tpt-libs-prebuilt-x86_64-linux-gnu-static-debug-v20221106132409
+
+source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20221106132409/tpt-libs-prebuilt-x86_64-linux-gnu-static-debug-v20221106132409.zip
+source_filename = tpt-libs-prebuilt-x86_64-linux-gnu-static-debug-v20221106132409.zip
+source_hash = 8fd39e2f08057ffeaa31be8ace13932a0605bf6db73f1eb298cbaa343c15f343
