@@ -1,5 +1,4 @@
 #include "Config.h"
-#ifdef LUACONSOLE
 
 #include "client/http/Request.h" // includes curl.h, needs to come first to silence a warning on windows
 #include "bzip2/bz2wrap.h"
@@ -5029,4 +5028,7 @@ bool tpt_lua_equalsString(lua_State *L, int index, const char *data, size_t size
 	return lua_isstring(L, index) && lua_objlen(L, index) == size && !memcmp(lua_tostring(L, index), data, size);
 }
 
-#endif
+CommandInterface *CommandInterface::Create(GameController * c, GameModel * m)
+{
+	return new LuaScriptInterface(c, m);
+}

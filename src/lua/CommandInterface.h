@@ -14,15 +14,17 @@ protected:
 	String lastError;
 	GameModel * m;
 	GameController * c;
+	CommandInterface(GameController * c, GameModel * m);
+
 public:
 	enum LogType { LogError, LogWarning, LogNotice };
 	enum FormatType { FormatInt, FormatString, FormatChar, FormatFloat, FormatElement };
-	CommandInterface(GameController * c, GameModel * m);
 	int GetPropertyOffset(ByteString key, FormatType & format);
 	void Log(LogType type, String message);
 	//void AttachGameModel(GameModel * m);
 
 	virtual void OnTick() { }
+	virtual void Init() { }
 
 	virtual bool HandleEvent(const GameControllerEvent &event) { return true; }
 
@@ -34,4 +36,6 @@ public:
 	}
 	String GetLastError();
 	virtual ~CommandInterface();
+
+	static CommandInterface *Create(GameController * c, GameModel * m);
 };

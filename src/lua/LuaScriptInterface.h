@@ -215,7 +215,7 @@ public:
 	void OnTick() override;
 	bool HandleEvent(const GameControllerEvent &event) override;
 
-	void Init();
+	void Init() override;
 	void SetWindow(ui::Window * window);
 	int Command(String command) override;
 	String FormatCommand(String command) override;

@@ -33,6 +33,10 @@ subdir('graphics')
 subdir('gui')
 if lua_variant != 'none'
 	subdir('lua')
+else
+	powder_files += files(
+		'lua/PlainCommandInterface.cpp',
+	)
 endif
 subdir('resampler')
 subdir('simulation')

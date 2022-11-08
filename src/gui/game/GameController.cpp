@@ -14,11 +14,7 @@
 #include "Tool.h"
 
 #include "GameControllerEvents.h"
-#ifdef LUACONSOLE
-# include "lua/LuaScriptInterface.h"
-#else
-# include "lua/TPTScriptInterface.h"
-#endif
+#include "lua/CommandInterface.h"
 
 #include "client/Client.h"
 #include "client/GameSave.h"
@@ -94,11 +90,7 @@ GameController::GameController():
 
 	gameView->SetDebugHUD(Client::Ref().GetPrefBool("Renderer.DebugMode", false));
 
-#ifdef LUACONSOLE
-	commandInterface = new LuaScriptInterface(this, gameModel);
-#else
-	commandInterface = new TPTScriptInterface(this, gameModel);
-#endif
+	commandInterface = CommandInterface::Create(this, gameModel);
 
 	Client::Ref().AddListener(this);
 
@@ -733,9 +725,7 @@ void GameController::Tick()
 {
 	if(firstTick)
 	{
-#ifdef LUACONSOLE
-		((LuaScriptInterface*)commandInterface)->Init();
-#endif
+		commandInterface->Init();
 #if !defined(MACOSX)
 		if constexpr (INSTALL_CHECK)
 		{

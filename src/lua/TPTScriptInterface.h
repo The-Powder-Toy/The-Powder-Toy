@@ -6,7 +6,6 @@
 #include <deque>
 
 class TPTScriptInterface: public CommandInterface {
-protected:
 	AnyType eval(std::deque<String> * words);
 	int parseNumber(String str);
 	AnyType tptS_set(std::deque<String> * words);
@@ -21,5 +20,4 @@ public:
 	TPTScriptInterface(GameController * c, GameModel * m);
 	int Command(String command) override;
 	String FormatCommand(String command) override;
-	virtual ~TPTScriptInterface();
 };
