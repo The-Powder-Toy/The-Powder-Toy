@@ -168,7 +168,7 @@ if [[ $BSH_HOST_PLATFORM-$BSH_STATIC_DYNAMIC == darwin-static ]]; then
 	fi
 fi
 
-meson_configure=meson
+meson_configure=meson$'\t'setup
 if [[ $BSH_DEBUG_RELEASE == release ]]; then
 	meson_configure+=$'\t'-Dbuildtype=debugoptimized
 fi
