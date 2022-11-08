@@ -3,6 +3,7 @@
 
 #include "client/http/Request.h" // includes curl.h, needs to come first to silence a warning on windows
 #include "bzip2/bz2wrap.h"
+#include "common/VariantIndex.h"
 
 #include "LuaScriptInterface.h"
 
@@ -18,7 +19,6 @@
 #include "LuaBit.h"
 #include "LuaButton.h"
 #include "LuaCheckbox.h"
-#include "LuaEvents.h"
 #include "LuaLabel.h"
 #include "LuaProgressBar.h"
 #include "LuaSlider.h"
@@ -419,6 +419,14 @@ tpt.partsdata = nil");
 	lua_el_func = &lua_el_func_v[0];
 	lua_el_mode_v = std::vector<int>(PT_NUM, 0);
 	lua_el_mode = &lua_el_mode_v[0];
+
+	gameControllerEventHandlers = std::vector<LuaSmartRef>(std::variant_size<GameControllerEvent>::value, l);
+	for (auto &ref : gameControllerEventHandlers)
+	{
+		lua_newtable(l);
+		ref.Assign(l, -1);
+		lua_pop(l, 1);
+	}
 
 	luaCtypeDrawHandlers = std::vector<LuaSmartRef>(PT_NUM, l);
 	luaCreateHandlers = std::vector<LuaSmartRef>(PT_NUM, l);
@@ -4156,33 +4164,60 @@ void LuaScriptInterface::initEventAPI()
 	lua_getglobal(l, "event");
 	lua_setglobal(l, "evt");
 
-	lua_pushinteger(l, LuaEvents::keypress); lua_setfield(l, -2, "keypress");
-	lua_pushinteger(l, LuaEvents::keyrelease); lua_setfield(l, -2, "keyrelease");
-	lua_pushinteger(l, LuaEvents::textinput); lua_setfield(l, -2, "textinput");
-	lua_pushinteger(l, LuaEvents::textediting); lua_setfield(l, -2, "textediting");
-	lua_pushinteger(l, LuaEvents::mousedown); lua_setfield(l, -2, "mousedown");
-	lua_pushinteger(l, LuaEvents::mouseup); lua_setfield(l, -2, "mouseup");
-	lua_pushinteger(l, LuaEvents::mousemove); lua_setfield(l, -2, "mousemove");
-	lua_pushinteger(l, LuaEvents::mousewheel); lua_setfield(l, -2, "mousewheel");
-	lua_pushinteger(l, LuaEvents::tick); lua_setfield(l, -2, "tick");
-	lua_pushinteger(l, LuaEvents::blur); lua_setfield(l, -2, "blur");
-	lua_pushinteger(l, LuaEvents::close); lua_setfield(l, -2, "close");
-	lua_pushinteger(l, LuaEvents::beforesim); lua_setfield(l, -2, "beforesim");
-	lua_pushinteger(l, LuaEvents::aftersim); lua_setfield(l, -2, "aftersim");
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, TextInputEvent  >()); lua_setfield(l, -2, "textinput"  );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, TextEditingEvent>()); lua_setfield(l, -2, "textediting");
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, KeyPressEvent   >()); lua_setfield(l, -2, "keypress"   );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, KeyReleaseEvent >()); lua_setfield(l, -2, "keyrelease" );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, MouseDownEvent  >()); lua_setfield(l, -2, "mousedown"  );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, MouseUpEvent    >()); lua_setfield(l, -2, "mouseup"    );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, MouseMoveEvent  >()); lua_setfield(l, -2, "mousemove"  );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, MouseWheelEvent >()); lua_setfield(l, -2, "mousewheel" );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, TickEvent       >()); lua_setfield(l, -2, "tick"       );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, BlurEvent       >()); lua_setfield(l, -2, "blur"       );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, CloseEvent      >()); lua_setfield(l, -2, "close"      );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, BeforeSimEvent  >()); lua_setfield(l, -2, "beforesim"  );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, AfterSimEvent   >()); lua_setfield(l, -2, "aftersim"   );
 }
 
 int LuaScriptInterface::event_register(lua_State * l)
 {
-	int eventName = luaL_checkinteger(l, 1);
+	int eventType = luaL_checkinteger(l, 1);
 	luaL_checktype(l, 2, LUA_TFUNCTION);
-	return LuaEvents::RegisterEventHook(l, ByteString::Build("tptevents-", eventName));
+	if (eventType < 0 || eventType >= int(luacon_ci->gameControllerEventHandlers.size()))
+	{
+		luaL_error(l, "Invalid event type: %i", lua_tointeger(l, 1));
+	}
+	luacon_ci->gameControllerEventHandlers[eventType].Push(l);
+	auto length = lua_objlen(l, -1);
+	lua_pushvalue(l, 2);
+	lua_rawseti(l, -2, length + 1);
+	lua_pushvalue(l, 2);
+	return 1;
 }
 
 int LuaScriptInterface::event_unregister(lua_State * l)
 {
-	int eventName = luaL_checkinteger(l, 1);
+	int eventType = luaL_checkinteger(l, 1);
 	luaL_checktype(l, 2, LUA_TFUNCTION);
-	return LuaEvents::UnregisterEventHook(l, ByteString::Build("tptevents-", eventName));
+	if (eventType < 0 || eventType >= int(luacon_ci->gameControllerEventHandlers.size()))
+	{
+		luaL_error(l, "Invalid event type: %i", lua_tointeger(l, 1));
+	}
+	luacon_ci->gameControllerEventHandlers[eventType].Push(l);
+	auto length = lua_objlen(l, -1);
+	int skip = 0;
+	for (auto i = 1U; i <= length; ++i)
+	{
+		lua_rawgeti(l, -1, i);
+		if (!skip && lua_equal(l, -1, 2))
+		{
+			skip = 1;
+		}
+		lua_pop(l, 1);
+		lua_rawgeti(l, -1, i + skip);
+		lua_rawseti(l, -2, i);
+	}
+	return 0;
 }
 
 int LuaScriptInterface::event_getmodifiers(lua_State * l)
@@ -4494,9 +4529,109 @@ void LuaScriptInterface::initHttpAPI()
 	lua_setglobal(l, "http");
 }
 
-bool LuaScriptInterface::HandleEvent(LuaEvents::EventTypes eventType, Event * event)
+static int PushGameControllerEvent(lua_State * l, const GameControllerEvent &event)
 {
-	return LuaEvents::HandleEvent(this, event, ByteString::Build("tptevents-", eventType));
+	if (auto *textInputEvent = std::get_if<TextInputEvent>(&event))
+	{
+		tpt_lua_pushString(l, textInputEvent->text);
+		return 1;
+	}
+	else if (auto *textEditingEvent = std::get_if<TextEditingEvent>(&event))
+	{
+		tpt_lua_pushString(l, textEditingEvent->text);
+		return 1;
+	}
+	else if (auto *keyPressEvent = std::get_if<KeyPressEvent>(&event))
+	{
+		lua_pushinteger(l, keyPressEvent->key);
+		lua_pushinteger(l, keyPressEvent->scan);
+		lua_pushboolean(l, keyPressEvent->repeat);
+		lua_pushboolean(l, keyPressEvent->shift);
+		lua_pushboolean(l, keyPressEvent->ctrl);
+		lua_pushboolean(l, keyPressEvent->alt);
+		return 6;
+	}
+	else if (auto *keyReleaseEvent = std::get_if<KeyReleaseEvent>(&event))
+	{
+		lua_pushinteger(l, keyReleaseEvent->key);
+		lua_pushinteger(l, keyReleaseEvent->scan);
+		lua_pushboolean(l, keyReleaseEvent->repeat);
+		lua_pushboolean(l, keyReleaseEvent->shift);
+		lua_pushboolean(l, keyReleaseEvent->ctrl);
+		lua_pushboolean(l, keyReleaseEvent->alt);
+		return 6;
+	}
+	else if (auto *mouseDownEvent = std::get_if<MouseDownEvent>(&event))
+	{
+		lua_pushinteger(l, mouseDownEvent->x);
+		lua_pushinteger(l, mouseDownEvent->y);
+		lua_pushinteger(l, mouseDownEvent->button);
+		return 3;
+	}
+	else if (auto *mouseUpEvent = std::get_if<MouseUpEvent>(&event))
+	{
+		lua_pushinteger(l, mouseUpEvent->x);
+		lua_pushinteger(l, mouseUpEvent->y);
+		lua_pushinteger(l, mouseUpEvent->button);
+		lua_pushinteger(l, mouseUpEvent->reason);
+		return 4;
+	}
+	else if (auto *mouseMoveEvent = std::get_if<MouseMoveEvent>(&event))
+	{
+		lua_pushinteger(l, mouseMoveEvent->x);
+		lua_pushinteger(l, mouseMoveEvent->y);
+		lua_pushinteger(l, mouseMoveEvent->dx);
+		lua_pushinteger(l, mouseMoveEvent->dy);
+		return 4;
+	}
+	else if (auto *mouseWheelEvent = std::get_if<MouseWheelEvent>(&event))
+	{
+		lua_pushinteger(l, mouseWheelEvent->x);
+		lua_pushinteger(l, mouseWheelEvent->y);
+		lua_pushinteger(l, mouseWheelEvent->d);
+		return 3;
+	}
+	return 0;
+}
+
+bool LuaScriptInterface::HandleEvent(const GameControllerEvent &event)
+{
+	ui::Engine::Ref().LastTick(Platform::GetTime());
+	bool cont = true;
+	gameControllerEventHandlers[event.index()].Push(l);
+	int len = lua_objlen(l, -1);
+	for (int i = 1; i <= len && cont; i++)
+	{
+		lua_rawgeti(l, -1, i);
+		int numArgs = PushGameControllerEvent(l, event);
+		int callret = lua_pcall(l, numArgs, 1, 0);
+		if (callret)
+		{
+			if (luacon_geterror() == "Error: Script not responding")
+			{
+				ui::Engine::Ref().LastTick(Platform::GetTime());
+				for (int j = i; j <= len - 1; j++)
+				{
+					lua_rawgeti(l, -2, j + 1);
+					lua_rawseti(l, -3, j);
+				}
+				lua_pushnil(l);
+				lua_rawseti(l, -3, len);
+				i--;
+			}
+			Log(CommandInterface::LogError, luacon_geterror());
+			lua_pop(l, 1);
+		}
+		else
+		{
+			if (!lua_isnoneornil(l, -1))
+				cont = lua_toboolean(l, -1);
+			lua_pop(l, 1);
+		}
+		len = lua_objlen(l, -1);
+	}
+	lua_pop(l, 1);
+	return cont;
 }
 
 void LuaScriptInterface::OnTick()
@@ -4508,8 +4643,7 @@ void LuaScriptInterface::OnTick()
 		lua_setfield(l, -2, "NUM_PARTS");
 	}
 	lua_pop(l, 1);
-	TickEvent ev;
-	HandleEvent(LuaEvents::tick, &ev);
+	HandleEvent(TickEvent{});
 }
 
 int LuaScriptInterface::Command(String command)
@@ -4806,6 +4940,7 @@ LuaScriptInterface::~LuaScriptInterface() {
 	luaCreateAllowedHandlers.clear();
 	luaCreateHandlers.clear();
 	luaCtypeDrawHandlers.clear();
+	gameControllerEventHandlers.clear();
 	lua_el_mode_v.clear();
 	lua_el_func_v.clear();
 	lua_gr_func_v.clear();

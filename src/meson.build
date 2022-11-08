@@ -6,7 +6,6 @@ powder_files = files(
 	'Update.cpp',
 	'PowderToySDL.cpp',
 	'lua/CommandInterface.cpp',
-	'lua/LuaEvents.cpp',
 	'lua/TPTScriptInterface.cpp',
 	'lua/TPTSTypes.cpp',
 )

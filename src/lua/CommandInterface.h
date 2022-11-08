@@ -2,9 +2,8 @@
 #include "Config.h"
 
 #include "common/String.h"
-#include "lua/LuaEvents.h"
+#include "gui/game/GameControllerEvents.h"
 
-class Event;
 class GameModel;
 class GameController;
 class Tool;
@@ -25,7 +24,7 @@ public:
 
 	virtual void OnTick() { }
 
-	virtual bool HandleEvent(LuaEvents::EventTypes eventType, Event * event) { return true; }
+	virtual bool HandleEvent(const GameControllerEvent &event) { return true; }
 
 	virtual int Command(String command);
 	virtual String FormatCommand(String command);

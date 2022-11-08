@@ -13,9 +13,9 @@
 #include "RenderPreset.h"
 #include "Tool.h"
 
+#include "GameControllerEvents.h"
 #ifdef LUACONSOLE
 # include "lua/LuaScriptInterface.h"
-# include "lua/LuaEvents.h"
 #else
 # include "lua/TPTScriptInterface.h"
 #endif
@@ -521,14 +521,12 @@ void GameController::CutRegion(ui::Point point1, ui::Point point2)
 
 bool GameController::MouseMove(int x, int y, int dx, int dy)
 {
-	MouseMoveEvent ev(x, y, dx, dy);
-	return commandInterface->HandleEvent(LuaEvents::mousemove, &ev);
+	return commandInterface->HandleEvent(MouseMoveEvent{ x, y, dx, dy });
 }
 
 bool GameController::MouseDown(int x, int y, unsigned button)
 {
-	MouseDownEvent ev(x, y, button);
-	bool ret = commandInterface->HandleEvent(LuaEvents::mousedown, &ev);
+	bool ret = commandInterface->HandleEvent(MouseDownEvent{ x, y, button });
 	if (ret && y<YRES && x<XRES && !gameView->GetPlacingSave() && !gameView->GetPlacingZoom())
 	{
 		ui::Point point = gameModel->AdjustZoomCoords(ui::Point(x, y));
@@ -551,8 +549,7 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 
 bool GameController::MouseUp(int x, int y, unsigned button, MouseupReason reason)
 {
-	MouseUpEvent ev(x, y, button, reason);
-	bool ret = commandInterface->HandleEvent(LuaEvents::mouseup, &ev);
+	bool ret = commandInterface->HandleEvent(MouseUpEvent{ x, y, button, reason });
 	if (reason != mouseUpNormal)
 		return ret;
 	if (ret && foundSignID != -1 && y<YRES && x<XRES && !gameView->GetPlacingSave())
@@ -601,26 +598,22 @@ bool GameController::MouseUp(int x, int y, unsigned button, MouseupReason reason
 
 bool GameController::MouseWheel(int x, int y, int d)
 {
-	MouseWheelEvent ev(x, y, d);
-	return commandInterface->HandleEvent(LuaEvents::mousewheel, &ev);
+	return commandInterface->HandleEvent(MouseWheelEvent{ x, y, d });
 }
 
 bool GameController::TextInput(String text)
 {
-	TextInputEvent ev(text);
-	return commandInterface->HandleEvent(LuaEvents::textinput, &ev);
+	return commandInterface->HandleEvent(TextInputEvent{ text });
 }
 
 bool GameController::TextEditing(String text)
 {
-	TextEditingEvent ev(text);
-	return commandInterface->HandleEvent(LuaEvents::textediting, &ev);
+	return commandInterface->HandleEvent(TextEditingEvent{ text });
 }
 
 bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	KeyEvent ev(key, scan, repeat, shift, ctrl, alt);
-	bool ret = commandInterface->HandleEvent(LuaEvents::keypress, &ev);
+	bool ret = commandInterface->HandleEvent(KeyPressEvent{ key, scan, repeat, shift, ctrl, alt });
 	if (repeat)
 		return ret;
 	if (ret)
@@ -699,8 +692,7 @@ bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool c
 
 bool GameController::KeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	KeyEvent ev(key, scan, repeat, shift, ctrl, alt);
-	bool ret = commandInterface->HandleEvent(LuaEvents::keyrelease, &ev);
+	bool ret = commandInterface->HandleEvent(KeyReleaseEvent{ key, scan, repeat, shift, ctrl, alt });
 	if (repeat)
 		return ret;
 	if (ret)
@@ -773,14 +765,12 @@ void GameController::Blur()
 {
 	// Tell lua that mouse is up (even if it really isn't)
 	MouseUp(0, 0, 0, mouseUpBlur);
-	BlurEvent ev;
-	commandInterface->HandleEvent(LuaEvents::blur, &ev);
+	commandInterface->HandleEvent(BlurEvent{});
 }
 
 void GameController::Exit()
 {
-	CloseEvent ev;
-	commandInterface->HandleEvent(LuaEvents::close, &ev);
+	commandInterface->HandleEvent(CloseEvent{});
 	gameView->CloseActiveWindow();
 	HasDone = true;
 }

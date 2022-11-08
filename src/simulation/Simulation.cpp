@@ -4999,7 +4999,7 @@ void Simulation::BeforeSim()
 	if (!sys_pause||framerender)
 	{
 #ifdef LUACONSOLE
-		luacon_ci->HandleEvent(LuaEvents::beforesim, new BeforeSimEvent());
+		luacon_ci->HandleEvent(BeforeSimEvent{});
 #endif
 
 		air->update_air();
@@ -5204,7 +5204,7 @@ void Simulation::AfterSim()
 	}
 
 #ifdef LUACONSOLE
-	luacon_ci->HandleEvent(LuaEvents::aftersim, new AfterSimEvent());
+	luacon_ci->HandleEvent(AfterSimEvent{});
 #endif
 }
 

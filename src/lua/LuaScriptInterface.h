@@ -5,7 +5,7 @@
 #include "LuaSmartRef.h"
 
 #include "CommandInterface.h"
-#include "lua/LuaEvents.h"
+#include "gui/game/GameControllerEvents.h"
 #include "simulation/StructProperty.h"
 #include "simulation/ElementDefs.h"
 
@@ -194,6 +194,7 @@ class LuaScriptInterface: public CommandInterface
 
 	std::vector<LuaSmartRef> lua_el_func_v, lua_gr_func_v, lua_cd_func_v;
 	std::vector<int> lua_el_mode_v;
+	std::vector<LuaSmartRef> gameControllerEventHandlers;
 
 public:
 	int tpt_index(lua_State *l);
@@ -212,7 +213,7 @@ public:
 	void custom_init_can_move();
 
 	void OnTick() override;
-	bool HandleEvent(LuaEvents::EventTypes eventType, Event * event) override;
+	bool HandleEvent(const GameControllerEvent &event) override;
 
 	void Init();
 	void SetWindow(ui::Window * window);
