@@ -53,17 +53,6 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 	if (!originalSave)
 		return 1;
 	auto save = std::unique_ptr<GameSave>(new GameSave(*originalSave));
-	try
-	{
-		save->Expand();
-	}
-	catch (const ParseException &e)
-	{
-#ifdef LUACONSOLE
-		luacon_ci->SetLastError(ByteString(e.what()).FromUtf8());
-#endif
-		return 1;
-	}
 
 	//Align to blockMap
 	int blockX = (fullX + CELL/2)/CELL;

@@ -117,7 +117,7 @@ public:
 	GameSave();
 	GameSave(const GameSave & save);
 	GameSave(int width, int height);
-	GameSave(std::vector<char> data);
+	GameSave(const std::vector<char> &data);
 	~GameSave();
 	void setSize(int width, int height);
 	char * Serialise(unsigned int & dataSize);
@@ -126,9 +126,7 @@ public:
 	void Transform(matrix2d transform, vector2d translate);
 	void Transform(matrix2d transform, vector2d translate, vector2d translateReal, int newWidth, int newHeight);
 
-	void Expand();
-	void Collapse();
-	bool Collapsed();
+	void Expand(const std::vector<char> &data);
 
 	static bool TypeInCtype(int type, int ctype);
 	static bool TypeInTmp(int type);
@@ -139,12 +137,8 @@ public:
 	GameSave& operator << (sign &v);
 
 private:
-	bool expanded;
-	bool hasOriginalData;
 	// number of pixels translated. When translating CELL pixels, shift all CELL grids
 	vector2d translated;
-
-	std::vector<char> originalData;
 
 	void InitData();
 	void InitVars();
@@ -155,9 +149,9 @@ private:
 	template <typename T> T ** Allocate2DArray(int blockWidth, int blockHeight, T defaultVal);
 	template <typename T> void Deallocate2DArray(T ***array, int blockHeight);
 	void dealloc();
-	void read(char * data, int dataSize);
-	void readOPS(char * data, int dataLength);
-	void readPSv(char * data, int dataLength);
+	void read(const char * data, int dataSize);
+	void readOPS(const char * data, int dataLength);
+	void readPSv(const char * data, int dataLength);
 	char * serialiseOPS(unsigned int & dataSize);
 	void ConvertJsonToBson(bson *b, Json::Value j, int depth = 0);
 	void ConvertBsonToJson(bson_iterator *b, Json::Value *j, int depth = 0);

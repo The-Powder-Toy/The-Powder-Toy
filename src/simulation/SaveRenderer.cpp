@@ -37,7 +37,6 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire,
 	VideoBuffer * tempThumb = NULL;
 	width = save->blockWidth;
 	height = save->blockHeight;
-	bool doCollapse = save->Collapsed();
 
 	g->Clear();
 	sim->clear_sim();
@@ -79,8 +78,6 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire,
 		tempThumb = new VideoBuffer(pData, width*CELL, height*CELL);
 		free(pData);
 	}
-	if(doCollapse)
-		save->Collapse();
 
 	return tempThumb;
 }

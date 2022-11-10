@@ -34,34 +34,23 @@ GameSave::GameSave(const GameSave & save):
 	signs(save.signs),
 	stkm(save.stkm),
 	palette(save.palette),
-	pmapbits(save.pmapbits),
-	expanded(save.expanded),
-	hasOriginalData(save.hasOriginalData),
-	originalData(save.originalData)
+	pmapbits(save.pmapbits)
 {
 	InitData();
 	hasPressure = save.hasPressure;
 	hasAmbientHeat = save.hasAmbientHeat;
-	if (save.expanded)
-	{
-		setSize(save.blockWidth, save.blockHeight);
+	setSize(save.blockWidth, save.blockHeight);
 
-		std::copy(save.particles, save.particles+NPART, particles);
-		for (int j = 0; j < blockHeight; j++)
-		{
-			std::copy(save.blockMap[j], save.blockMap[j]+blockWidth, blockMap[j]);
-			std::copy(save.fanVelX[j], save.fanVelX[j]+blockWidth, fanVelX[j]);
-			std::copy(save.fanVelY[j], save.fanVelY[j]+blockWidth, fanVelY[j]);
-			std::copy(save.pressure[j], save.pressure[j]+blockWidth, pressure[j]);
-			std::copy(save.velocityX[j], save.velocityX[j]+blockWidth, velocityX[j]);
-			std::copy(save.velocityY[j], save.velocityY[j]+blockWidth, velocityY[j]);
-			std::copy(save.ambientHeat[j], save.ambientHeat[j]+blockWidth, ambientHeat[j]);
-		}
-	}
-	else
+	std::copy(save.particles, save.particles+NPART, particles);
+	for (int j = 0; j < blockHeight; j++)
 	{
-		blockWidth = save.blockWidth;
-		blockHeight = save.blockHeight;
+		std::copy(save.blockMap[j], save.blockMap[j]+blockWidth, blockMap[j]);
+		std::copy(save.fanVelX[j], save.fanVelX[j]+blockWidth, fanVelX[j]);
+		std::copy(save.fanVelY[j], save.fanVelY[j]+blockWidth, fanVelY[j]);
+		std::copy(save.pressure[j], save.pressure[j]+blockWidth, pressure[j]);
+		std::copy(save.velocityX[j], save.velocityX[j]+blockWidth, velocityX[j]);
+		std::copy(save.velocityY[j], save.velocityY[j]+blockWidth, velocityY[j]);
+		std::copy(save.ambientHeat[j], save.ambientHeat[j]+blockWidth, ambientHeat[j]);
 	}
 	particlesCount = save.particlesCount;
 	authors = save.authors;
@@ -71,24 +60,19 @@ GameSave::GameSave(int width, int height)
 {
 	InitData();
 	InitVars();
-	hasOriginalData = false;
-	expanded = true;
 	setSize(width, height);
 }
 
-GameSave::GameSave(std::vector<char> data)
+GameSave::GameSave(const std::vector<char> &data)
 {
 	blockWidth = 0;
 	blockHeight = 0;
 
 	InitData();
 	InitVars();
-	expanded = false;
-	hasOriginalData = true;
-	originalData = data;
 	try
 	{
-		Expand();
+		Expand(data);
 	}
 	catch(ParseException & e)
 	{
@@ -96,7 +80,6 @@ GameSave::GameSave(std::vector<char> data)
 		dealloc();	//Free any allocated memory
 		throw;
 	}
-	Collapse();
 }
 
 // Called on every new GameSave, including the copy constructor
@@ -136,32 +119,13 @@ void GameSave::InitVars()
 	pmapbits = 8; // default to 8 bits for older saves
 }
 
-bool GameSave::Collapsed()
+void GameSave::Expand(const std::vector<char> &data)
 {
-	return !expanded;
+	InitVars();
+	read(&data[0], data.size());
 }
 
-void GameSave::Expand()
-{
-	if(hasOriginalData && !expanded)
-	{
-		InitVars();
-		expanded = true;
-		read(&originalData[0], originalData.size());
-	}
-}
-
-void GameSave::Collapse()
-{
-	if(expanded && hasOriginalData)
-	{
-		expanded = false;
-		dealloc();
-		signs.clear();
-	}
-}
-
-void GameSave::read(char * data, int dataSize)
+void GameSave::read(const char * data, int dataSize)
 {
 	if(dataSize > 15)
 	{
@@ -242,8 +206,6 @@ char * GameSave::Serialise(unsigned int & dataSize)
 
 vector2d GameSave::Translate(vector2d translate)
 {
-	if (Collapsed())
-		Expand();
 	float nx, ny;
 	vector2d pos;
 	vector2d translateReal = translate;
@@ -313,9 +275,6 @@ vector2d GameSave::Translate(vector2d translate)
 
 void GameSave::Transform(matrix2d transform, vector2d translate)
 {
-	if (Collapsed())
-		Expand();
-
 	int width = blockWidth*CELL, height = blockHeight*CELL, newWidth, newHeight;
 	vector2d tmp, ctl, cbr;
 	vector2d cornerso[4];
@@ -347,9 +306,6 @@ void GameSave::Transform(matrix2d transform, vector2d translate)
 // translateReal is the original amount we tried to translate, used to calculate wall shifting
 void GameSave::Transform(matrix2d transform, vector2d translate, vector2d translateReal, int newWidth, int newHeight)
 {
-	if (Collapsed())
-		Expand();
-
 	if (newWidth>XRES) newWidth = XRES;
 	if (newHeight>YRES) newHeight = YRES;
 
@@ -558,7 +514,7 @@ void GameSave::CheckBsonFieldFloat(bson_iterator iter, const char *field, float 
 	}
 }
 
-void GameSave::readOPS(char * data, int dataLength)
+void GameSave::readOPS(const char * data, int dataLength)
 {
 	unsigned char *inputData = (unsigned char*)data, *bsonData = NULL, *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
 	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL, *ambientData = NULL;
@@ -1390,7 +1346,7 @@ void GameSave::readOPS(char * data, int dataLength)
 	}
 }
 
-void GameSave::readPSv(char * saveDataChar, int dataLength)
+void GameSave::readPSv(const char * saveDataChar, int dataLength)
 {
 	unsigned char * saveData = (unsigned char *)saveDataChar;
 	int q,j,k,x,y,p=0, ver, pty, ty, legacy_beta=0;

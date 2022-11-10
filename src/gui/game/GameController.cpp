@@ -432,16 +432,12 @@ bool GameController::LoadClipboard()
 	if (!clip)
 		return false;
 	gameModel->SetPlaceSave(clip);
-	if (gameModel->GetPlaceSave() && gameModel->GetPlaceSave()->Collapsed())
-		gameModel->GetPlaceSave()->Expand();
 	return true;
 }
 
 void GameController::LoadStamp(GameSave *stamp)
 {
 	gameModel->SetPlaceSave(stamp);
-	if(gameModel->GetPlaceSave() && gameModel->GetPlaceSave()->Collapsed())
-		gameModel->GetPlaceSave()->Expand();
 }
 
 void GameController::TranslateSave(ui::Point point)
