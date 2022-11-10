@@ -36,7 +36,14 @@ BZ2WCompressResult BZ2WCompress(std::vector<char> &dest, const char *srcData, si
 		{
 			return BZ2WCompressLimit;
 		}
-		dest.resize(newSize);
+		try
+		{
+			dest.resize(newSize);
+		}
+		catch (const std::bad_alloc &)
+		{
+			return BZ2WCompressNomem;
+		}
 		stream.next_out = &dest[stream.total_out_lo32];
 		stream.avail_out = dest.size() - stream.total_out_lo32;
 		if (BZ2_bzCompress(&stream, BZ_FINISH) == BZ_STREAM_END)
@@ -75,7 +82,14 @@ BZ2WDecompressResult BZ2WDecompress(std::vector<char> &dest, const char *srcData
 		{
 			return BZ2WDecompressLimit;
 		}
-		dest.resize(newSize);
+		try
+		{
+			dest.resize(newSize);
+		}
+		catch (const std::bad_alloc &)
+		{
+			return BZ2WDecompressNomem;
+		}
 		stream.next_out = &dest[stream.total_out_lo32];
 		stream.avail_out = dest.size() - stream.total_out_lo32;
 		switch (BZ2_bzDecompress(&stream))

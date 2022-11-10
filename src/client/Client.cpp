@@ -2,6 +2,7 @@
 
 #include "client/http/Request.h" // includes curl.h, needs to come first to silence a warning on windows
 
+#include <cstring>
 #include <cstdlib>
 #include <vector>
 #include <map>
@@ -496,8 +497,6 @@ User Client::GetAuthUser()
 RequestStatus Client::UploadSave(SaveInfo & save)
 {
 	lastError = "";
-	unsigned int gameDataLength;
-	char * gameData = NULL;
 	int dataStatus;
 	ByteString data;
 	ByteString userID = ByteString::Build(authUser.UserID);
@@ -511,15 +510,15 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 
 		save.SetID(0);
 
-		gameData = save.GetGameSave()->Serialise(gameDataLength);
+		auto [ fromNewerVersion, gameData ] = save.GetGameSave()->Serialise();
 
-		if (!gameData)
+		if (!gameData.size())
 		{
 			lastError = "Cannot serialize game save";
 			return RequestFailure;
 		}
 #if defined(SNAPSHOT) || defined(BETA) || defined(DEBUG) || MOD_ID > 0
-		else if (save.gameSave->fromNewerVersion && save.GetPublished())
+		else if (fromNewerVersion && save.GetPublished())
 		{
 			lastError = "Cannot publish save, incompatible with latest release version.";
 			return RequestFailure;
@@ -529,7 +528,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		data = http::Request::SimpleAuth(SCHEME SERVER "/Save.api", &dataStatus, userID, authUser.SessionID, {
 			{ "Name", save.GetName().ToUtf8() },
 			{ "Description", save.GetDescription().ToUtf8() },
-			{ "Data:save.bin", ByteString(gameData, gameData + gameDataLength) },
+			{ "Data:save.bin", ByteString(gameData.begin(), gameData.end()) },
 			{ "Publish", save.GetPublished() ? "Public" : "Private" },
 		});
 	}
@@ -551,7 +550,6 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		else
 			save.SetID(saveID);
 	}
-	delete[] gameData;
 	return ret;
 }
 
@@ -623,17 +621,11 @@ ByteString Client::AddStamp(GameSave * saveData)
 	}
 	saveData->authors = stampInfo;
 
-	unsigned int gameDataLength;
-	char * gameData = saveData->Serialise(gameDataLength);
-	if (gameData == NULL)
+	auto [ _, gameData ] = saveData->Serialise();
+	if (!gameData.size())
 		return "";
 
-	std::ofstream stampStream;
-	stampStream.open(filename.c_str(), std::ios::binary);
-	stampStream.write((const char *)gameData, gameDataLength);
-	stampStream.close();
-
-	delete[] gameData;
+	Platform::WriteFile(gameData, filename);
 
 	stampIDs.push_front(saveID);
 

@@ -4,7 +4,6 @@
 #include "Config.h"
 //#include "Simulation.h"
 
-#define R_TEMP 22
 #define MAX_TEMP 9999
 #define MIN_TEMP 0
 #define O_MAX_TEMP 3500

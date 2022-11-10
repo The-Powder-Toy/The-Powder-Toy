@@ -1,12 +1,12 @@
-#ifndef The_Powder_Toy_GameSave_h
-#define The_Powder_Toy_GameSave_h
+#pragma once
 #include "Config.h"
 
 #include <vector>
 #include "common/String.h"
+#include "simulation/Sign.h"
+#include "simulation/Particle.h"
 #include "Misc.h"
 
-#include "bson/BSON.h"
 #include <json/json.h>
 
 struct sign;
@@ -43,63 +43,80 @@ public:
 	bool rocketBoots2 = false;
 	bool fan1 = false;
 	bool fan2 = false;
-	std::vector<unsigned int> rocketBootsFigh = std::vector<unsigned int>();
-	std::vector<unsigned int> fanFigh = std::vector<unsigned int>();
+	std::vector<unsigned int> rocketBootsFigh;
+	std::vector<unsigned int> fanFigh;
 
-	StkmData() = default;
-
-	StkmData(const StkmData & stkmData):
-		rocketBoots1(stkmData.rocketBoots1),
-		rocketBoots2(stkmData.rocketBoots2),
-		fan1(stkmData.fan1),
-		fan2(stkmData.fan2),
-		rocketBootsFigh(stkmData.rocketBootsFigh),
-		fanFigh(stkmData.fanFigh)
-	{
-
-	}
-
-	bool hasData()
+	bool hasData() const
 	{
 		return rocketBoots1 || rocketBoots2 || fan1 || fan2
 		        || rocketBootsFigh.size() || fanFigh.size();
 	}
 };
 
+template<class Item>
+struct Plane
+{
+	int width = 0;
+	int height = 0;
+	std::vector<Item> items;
+	// invariant: items.size() == width * height
+
+	Item *operator [](int y)
+	{
+		return &items[y * width];
+	}
+
+	const Item *operator [](int y) const
+	{
+		return &items[y * width];
+	}
+
+	Plane() = default;
+	Plane(int newWidth, int newHeight, Item defaultVal) : width(newWidth), height(newHeight), items(width * height, defaultVal)
+	{
+	}
+};
+
 class GameSave
 {
-public:
+	// number of pixels translated. When translating CELL pixels, shift all CELL grids
+	vector2d translated = { 0, 0 };
+	void readOPS(const std::vector<char> &data);
+	void readPSv(const std::vector<char> &data);
+	std::pair<bool, std::vector<char>> serialiseOPS() const;
 
-	int blockWidth, blockHeight;
-	bool fromNewerVersion;
-	int majorVersion, minorVersion;
-	bool hasPressure;
-	bool hasAmbientHeat;
+public:
+	int blockWidth = 0;
+	int blockHeight = 0;
+	bool fromNewerVersion = false;
+	int majorVersion = 0;
+	int minorVersion = 0;
+	bool hasPressure = false;
+	bool hasAmbientHeat = false;
 
 	//Simulation data
-	//int ** particleMap;
-	int particlesCount;
-	Particle * particles;
-	unsigned char ** blockMap;
-	float ** fanVelX;
-	float ** fanVelY;
-	float ** pressure;
-	float ** velocityX;
-	float ** velocityY;
-	float ** ambientHeat;
+	int particlesCount = 0;
+	std::vector<Particle> particles;
+	Plane<unsigned char> blockMap;
+	Plane<float> fanVelX;
+	Plane<float> fanVelY;
+	Plane<float> pressure;
+	Plane<float> velocityX;
+	Plane<float> velocityY;
+	Plane<float> ambientHeat;
 
 	//Simulation Options
-	bool waterEEnabled;
-	bool legacyEnable;
-	bool gravityEnable;
-	bool aheatEnable;
-	bool paused;
-	int gravityMode;
-	float customGravityX;
-	float customGravityY;
-	int airMode;
-	float ambientAirTemp;
-	int edgeMode;
+	bool waterEEnabled = false;
+	bool legacyEnable = false;
+	bool gravityEnable = false;
+	bool aheatEnable = false;
+	bool paused = false;
+	int gravityMode = 0;
+	float customGravityX = 0.0f;
+	float customGravityY = 0.0f;
+	int airMode = 0;
+	float ambientAirTemp = R_TEMP + 273.15f;
+	int edgeMode = 0;
 
 	//Signs
 	std::vector<sign> signs;
@@ -112,16 +129,13 @@ public:
 	// author information
 	Json::Value authors;
 
-	int pmapbits;
+	int pmapbits = 8; // default to 8 bits for older saves
 
-	GameSave();
-	GameSave(const GameSave & save);
 	GameSave(int width, int height);
 	GameSave(const std::vector<char> &data);
-	~GameSave();
 	void setSize(int width, int height);
-	char * Serialise(unsigned int & dataSize);
-	std::vector<char> Serialise();
+	// return value is [ fakeFromNewerVersion, gameData ]
+	std::pair<bool, std::vector<char>> Serialise() const;
 	vector2d Translate(vector2d translate);
 	void Transform(matrix2d transform, vector2d translate);
 	void Transform(matrix2d transform, vector2d translate, vector2d translateReal, int newWidth, int newHeight);
@@ -135,26 +149,4 @@ public:
 
 	GameSave& operator << (Particle &v);
 	GameSave& operator << (sign &v);
-
-private:
-	// number of pixels translated. When translating CELL pixels, shift all CELL grids
-	vector2d translated;
-
-	void InitData();
-	void InitVars();
-	void CheckBsonFieldUser(bson_iterator iter, const char *field, unsigned char **data, unsigned int *fieldLen);
-	void CheckBsonFieldBool(bson_iterator iter, const char *field, bool *flag);
-	void CheckBsonFieldInt(bson_iterator iter, const char *field, int *setting);
-	void CheckBsonFieldFloat(bson_iterator iter, const char *field, float *setting);
-	template <typename T> T ** Allocate2DArray(int blockWidth, int blockHeight, T defaultVal);
-	template <typename T> void Deallocate2DArray(T ***array, int blockHeight);
-	void dealloc();
-	void read(const char * data, int dataSize);
-	void readOPS(const char * data, int dataLength);
-	void readPSv(const char * data, int dataLength);
-	char * serialiseOPS(unsigned int & dataSize);
-	void ConvertJsonToBson(bson *b, Json::Value j, int depth = 0);
-	void ConvertBsonToJson(bson_iterator *b, Json::Value *j, int depth = 0);
 };
-
-#endif

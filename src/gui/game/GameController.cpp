@@ -1203,7 +1203,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 
 			gameModel->SetSaveFile(&tempSave, gameView->ShiftBehaviour());
 			Platform::MakeDirectory(LOCAL_SAVE_DIR);
-			std::vector<char> saveData = gameSave->Serialise();
+			auto [ _, saveData ] = gameSave->Serialise();
 			if (saveData.size() == 0)
 				new ErrorMessage("Error", "Unable to serialize game data.");
 			else if (!Platform::WriteFile(saveData, gameModel->GetSaveFile()->GetName()))

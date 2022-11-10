@@ -153,5 +153,6 @@
 #define GLASS_DISP		0.07
 
 #define SDEUT
+#define R_TEMP 22
 
 #endif /* CONFIG_H */
