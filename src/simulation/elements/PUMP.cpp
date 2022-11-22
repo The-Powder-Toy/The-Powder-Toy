@@ -60,10 +60,10 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	else
 	{
-		if (parts[i].temp >= 256.0f+273.15f)
-			parts[i].temp = 256.0f+273.15f;
-		if (parts[i].temp <= -256.0f+273.15f)
-			parts[i].temp = -256.0f+273.15f;
+		if (parts[i].temp >= MAX_PRESSURE+273.15f)
+			parts[i].temp = MAX_PRESSURE+273.15f;
+		if (parts[i].temp <= MIN_PRESSURE+273.15f)
+			parts[i].temp = MIN_PRESSURE+273.15f;
 
 		for (rx = -1; rx <= 1; rx++)
 			for (ry = -1; ry <= 1; ry++)

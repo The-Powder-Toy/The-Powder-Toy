@@ -897,6 +897,8 @@ void LuaScriptInterface::initSimulationAPI()
 	SETCONST(l, R_TEMP);
 	SETCONST(l, MAX_TEMP);
 	SETCONST(l, MIN_TEMP);
+	SETCONSTF(l, MAX_PRESSURE);
+	SETCONSTF(l, MIN_PRESSURE);
 
 	SETCONST(l, TOOL_HEAT);
 	SETCONST(l, TOOL_COOL);
@@ -1235,10 +1237,10 @@ int LuaScriptInterface::simulation_pressure(lua_State* l)
 		height = lua_tointeger(l, 4);
 		value = (float)lua_tonumber(l, 5);
 	}
-	if(value > 256.0f)
-		value = 256.0f;
-	else if(value < -256.0f)
-		value = -256.0f;
+	if(value > MAX_PRESSURE)
+		value = MAX_PRESSURE;
+	else if(value < MIN_PRESSURE)
+		value = MIN_PRESSURE;
 
 	set_map(x, y, width, height, value, 1);
 	return 0;
@@ -1309,10 +1311,10 @@ int LuaScriptInterface::simulation_velocityX(lua_State* l)
 		height = lua_tointeger(l, 4);
 		value = (float)lua_tonumber(l, 5);
 	}
-	if(value > 256.0f)
-		value = 256.0f;
-	else if(value < -256.0f)
-		value = -256.0f;
+	if(value > MAX_PRESSURE)
+		value = MAX_PRESSURE;
+	else if(value < MIN_PRESSURE)
+		value = MIN_PRESSURE;
 
 	set_map(x, y, width, height, value, 3);
 	return 0;
@@ -1346,10 +1348,10 @@ int LuaScriptInterface::simulation_velocityY(lua_State* l)
 		height = lua_tointeger(l, 4);
 		value = (float)lua_tonumber(l, 5);
 	}
-	if(value > 256.0f)
-		value = 256.0f;
-	else if(value < -256.0f)
-		value = -256.0f;
+	if(value > MAX_PRESSURE)
+		value = MAX_PRESSURE;
+	else if(value < MIN_PRESSURE)
+		value = MIN_PRESSURE;
 
 	set_map(x, y, width, height, value, 4);
 	return 0;

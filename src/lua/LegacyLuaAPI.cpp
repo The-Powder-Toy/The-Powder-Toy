@@ -455,10 +455,10 @@ int luatpt_set_pressure(lua_State* l)
 	width = abs(luaL_optint(l, 3, XRES/CELL));
 	height = abs(luaL_optint(l, 4, YRES/CELL));
 	value = luaL_optnumber(l, 5, 0.0f);
-	if(value > 256.0f)
-		value = 256.0f;
-	else if(value < -256.0f)
-		value = -256.0f;
+	if(value > MAX_PRESSURE)
+		value = MAX_PRESSURE;
+	else if(value < MIN_PRESSURE)
+		value = MIN_PRESSURE;
 
 	if(x1 > (XRES/CELL)-1)
 		x1 = (XRES/CELL)-1;
@@ -486,10 +486,10 @@ int luatpt_set_gravity(lua_State* l)
 	width = abs(luaL_optint(l, 3, XRES/CELL));
 	height = abs(luaL_optint(l, 4, YRES/CELL));
 	value = luaL_optnumber(l, 5, 0.0f);
-	if(value > 256.0f)
-		value = 256.0f;
-	else if(value < -256.0f)
-		value = -256.0f;
+	if(value > MAX_PRESSURE)
+		value = MAX_PRESSURE;
+	else if(value < MIN_PRESSURE)
+		value = MIN_PRESSURE;
 
 	if(x1 > (XRES/CELL)-1)
 		x1 = (XRES/CELL)-1;
