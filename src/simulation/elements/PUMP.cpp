@@ -79,9 +79,9 @@ static int update(UPDATE_FUNC_ARGS)
 					if (TYP(r) == PT_FILT)
 					{
 						int newPressure = parts[ID(r)].ctype - 0x10000000;
-						if (newPressure >= 0 && newPressure <= 512)
+						if (newPressure >= 0 && newPressure <= MAX_PRESSURE - MIN_PRESSURE)
 						{
-							sim->pv[(y + ry) / CELL][(x + rx) / CELL] = float(newPressure - MAX_PRESSURE);
+							sim->pv[(y + ry) / CELL][(x + rx) / CELL] = float(newPressure) + MIN_PRESSURE;
 						}
 					}
 				}
