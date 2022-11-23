@@ -81,7 +81,7 @@ static int update(UPDATE_FUNC_ARGS)
 						int newPressure = parts[ID(r)].ctype - 0x10000000;
 						if (newPressure >= 0 && newPressure <= 512)
 						{
-							sim->pv[(y + ry) / CELL][(x + rx) / CELL] = float(newPressure - 256);
+							sim->pv[(y + ry) / CELL][(x + rx) / CELL] = float(newPressure - MAX_PRESSURE);
 						}
 					}
 				}

@@ -3625,8 +3625,8 @@ void Simulation::UpdateParticles(int start, int end)
 					if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
 					{
 #ifdef REALISTIC
-						c_heat = parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight) + hv[y/CELL][x/CELL]*100*(pv[y/CELL][x/CELL]+273.15f)/256;
-						float c_Cm = 96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight)  + 100*(pv[y/CELL][x/CELL]+273.15f)/256;
+						c_heat = parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight) + hv[y/CELL][x/CELL]*100*(pv[y/CELL][x/CELL]-MIN_PRESSURE)/(MAX_PRESSURE-MIN_PRESSURE)*2;
+						float c_Cm = 96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight) + 100*(pv[y/CELL][x/CELL]-MIN_PRESSURE)/(MAX_PRESSURE-MIN_PRESSURE)*2;
 						pt = c_heat/c_Cm;
 						pt = restrict_flt(pt, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
 						parts[i].temp = pt;
