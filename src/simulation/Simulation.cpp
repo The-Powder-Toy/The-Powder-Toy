@@ -2312,6 +2312,8 @@ bool Simulation::IsWallBlocking(int x, int y, int type)
 		int wall = bmap[y/CELL][x/CELL];
 		if (wall == WL_ALLOWGAS && !(elements[type].Properties&TYPE_GAS))
 			return true;
+		else if (type == PT_BOOM)
+			return false;
 		else if (wall == WL_ALLOWENERGY && !(elements[type].Properties&TYPE_ENERGY))
 			return true;
 		else if (wall == WL_ALLOWLIQUID && !(elements[type].Properties&TYPE_LIQUID))
@@ -2424,7 +2426,7 @@ void Simulation::init_can_move()
 		 || destinationType == PT_ISOZ || destinationType == PT_ISZS || destinationType == PT_QRTZ || destinationType == PT_PQRT
 		 || destinationType == PT_H2   || destinationType == PT_BGLA || destinationType == PT_C5)
 			can_move[PT_PHOT][destinationType] = 2;
-		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO)
+		if (destinationType != PT_INDE2 && destinationType != PT_INDE && destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO)
 		{
 			can_move[PT_PROT][destinationType] = 2;
 			can_move[PT_GRVT][destinationType] = 2;
@@ -2438,6 +2440,11 @@ void Simulation::init_can_move()
 	can_move[PT_DEST][PT_BCLN] = 0;
 	can_move[PT_DEST][PT_PBCN] = 0;
 	can_move[PT_DEST][PT_ROCK] = 0;
+	can_move[PT_DEST][PT_INDE2] = 0;
+	can_move[PT_DEST][PT_INDE] = 0;
+
+	can_move[PT_BOOM][PT_INDE] = 0;
+	can_move[PT_BOOM][PT_INDE2] = 0;
 
 	can_move[PT_NEUT][PT_INVIS] = 2;
 	can_move[PT_ELEC][PT_LCRY] = 2;
@@ -3489,6 +3496,9 @@ void Simulation::UpdateParticles(int start, int end)
 				kill_part(i);
 				continue;
 			}
+			
+			// Kill every wall which BOOM is in:
+			if (t == PT_BOOM) { bmap[y/CELL][x/CELL] = 0; }
 
 			// Kill a particle in a wall where it isn't supposed to go
 			if (bmap[y/CELL][x/CELL] &&
@@ -3560,9 +3570,9 @@ void Simulation::UpdateParticles(int start, int end)
 				parts[i].vx *= elements[t].Loss;
 				parts[i].vy *= elements[t].Loss;
 			}
-			//particle gets velocity from the vx and vy maps
-			parts[i].vx += elements[t].Advection*vx[y/CELL][x/CELL] + pGravX;
-			parts[i].vy += elements[t].Advection*vy[y/CELL][x/CELL] + pGravY;
+			//particle gets velocity from the vx and vy maps, and BOOM isn't affected by gravity
+			parts[i].vx += elements[t].Advection*vx[y/CELL][x/CELL] + ((t != PT_BOOM) ? pGravX : 0);
+			parts[i].vy += elements[t].Advection*vy[y/CELL][x/CELL] + ((t != PT_BOOM) ? pGravY : 0);
 
 
 			if (elements[t].Diffusion)//the random diffusion that gasses have

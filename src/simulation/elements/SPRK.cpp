@@ -259,7 +259,7 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				}
 
-				if (pavg == PT_INSL) continue; //Insulation blocks everything past here
+				if (pavg == PT_INSL || pavg == PT_INDE || pavg == PT_INDE2) continue; //Insulation blocks everything past here
 				if (!((sim->elements[receiver].Properties&PROP_CONDUCTS)||receiver==PT_INST||receiver==PT_QRTZ)) continue; //Stop non-conducting receivers, allow INST and QRTZ as special cases
 				if (abs(rx)+abs(ry)>=4 &&sender!=PT_SWCH&&receiver!=PT_SWCH) continue; //Only switch conducts really far
 				if (receiver==sender && receiver!=PT_INST && receiver!=PT_QRTZ) goto conduct; //Everything conducts to itself, except INST.

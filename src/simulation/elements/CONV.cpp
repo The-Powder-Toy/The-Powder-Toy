@@ -83,9 +83,18 @@ static int update(UPDATE_FUNC_ARGS)
 					r = sim->photons[y+ry][x+rx];
 					if (!r || (restrictElement && ((TYP(r) == restrictElement) == (parts[i].tmp2 == 1))))
 						r = pmap[y+ry][x+rx];
+
+						if (TYP(r) == PT_BOOM) {
+							if (RNG::Ref().chance(1, 2)) {
+								sim->kill_part(i);
+								return 1;
+							} else {
+								parts[i].ctype = PT_BOOM;
+							}
+						}
 					if (!r || (restrictElement && ((TYP(r) == restrictElement) == (parts[i].tmp2 == 1))))
 						continue;
-					if (TYP(r) != PT_CONV && TYP(r) != PT_DMND && TYP(r) != ctype)
+					if (TYP(r) != PT_CONV && TYP(r) != PT_DMND && TYP(r) != PT_INDE2 && TYP(r) != ctype)
 					{
 							sim->create_part(ID(r), x+rx, y+ry, TYP(parts[i].ctype), ID(parts[i].ctype));
 					}
