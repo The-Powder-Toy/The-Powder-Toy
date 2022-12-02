@@ -87,8 +87,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 			}
 		}
 		break;
-	case (PT_LAVA):
-
+	case PT_LAVA: {
 		float pres = sim->pv[y / CELL][x / CELL];
 		if (parts[i].ctype == PT_ROCK)
 		{			
@@ -138,6 +137,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 			parts[i].ctype = PT_ROCK;
 		}
 		break;
+	}
 	default:
 		break;
 	}
