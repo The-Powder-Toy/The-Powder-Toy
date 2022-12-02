@@ -3203,8 +3203,13 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		parts[index].life = 4;
 		parts[index].ctype = type;
 		pmap[y][x] = (pmap[y][x]&~PMAPMASK) | PT_SPRK;
-		if (parts[index].temp+10.0f < 673.0f && !legacy_enable && (type==PT_METL || type == PT_BMTL || type == PT_BRMT || type == PT_PSCN || type == PT_NSCN || type == PT_ETRD || type == PT_NBLE || type == PT_IRON))
-			parts[index].temp = parts[index].temp+10.0f;
+		if (!legacy_enable && (type==PT_METL || type == PT_BMTL || type == PT_BRMT || type == PT_PSCN || type == PT_NSCN || type == PT_ETRD || type == PT_NBLE || type == PT_IRON)) {
+			if (parts[index].temp < 663.0f) 
+				parts[index].temp += 10.0f; // Each SPRK heats conductor particles 10 degrees
+			else if (parts[index].temp >= 663.0f && parts[index].temp < 673.0f)
+				parts[index].temp = 673.0f; // SPRK can at most heat up to limit 673
+		}
+			
 		return index;
 	}
 
