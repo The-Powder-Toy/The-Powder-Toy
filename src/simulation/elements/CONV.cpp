@@ -81,9 +81,9 @@ static int update(UPDATE_FUNC_ARGS)
 				if (x+rx>=0 && y+ry>=0 && x+rx<XRES && y+ry<YRES)
 				{
 					r = sim->photons[y+ry][x+rx];
-					if (!r || (restrictElement && TYP(r) != restrictElement))
+					if (!r || (restrictElement && ((TYP(r) == restrictElement) == (parts[i].tmp2 == 1))))
 						r = pmap[y+ry][x+rx];
-					if (!r || (restrictElement && TYP(r) != restrictElement))
+					if (!r || (restrictElement && ((TYP(r) == restrictElement) == (parts[i].tmp2 == 1))))
 						continue;
 					if (TYP(r) != PT_CONV && TYP(r) != PT_DMND && TYP(r) != ctype)
 					{
