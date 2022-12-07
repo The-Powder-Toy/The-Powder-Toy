@@ -112,7 +112,8 @@ void LocalSaveActivity::saveWrite(ByteString finalFilename)
 	localSaveInfo["date"] = (Json::Value::UInt64)time(NULL);
 	Client::Ref().SaveAuthorInfo(&localSaveInfo);
 	gameSave->authors = localSaveInfo;
-	auto [ _, saveData ] = gameSave->Serialise();
+	auto [ fromNewerVersion, saveData ] = gameSave->Serialise();
+	(void)fromNewerVersion;
 	if (saveData.size() == 0)
 		new ErrorMessage("Error", "Unable to serialize game data.");
 	else if (!Platform::WriteFile(saveData, finalFilename))

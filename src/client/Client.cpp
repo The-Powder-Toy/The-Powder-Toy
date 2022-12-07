@@ -511,6 +511,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		save.SetID(0);
 
 		auto [ fromNewerVersion, gameData ] = save.GetGameSave()->Serialise();
+		(void)fromNewerVersion;
 
 		if (!gameData.size())
 		{
@@ -621,7 +622,8 @@ ByteString Client::AddStamp(GameSave * saveData)
 	}
 	saveData->authors = stampInfo;
 
-	auto [ _, gameData ] = saveData->Serialise();
+	auto [ fromNewerVersion, gameData ] = saveData->Serialise();
+	(void)fromNewerVersion;
 	if (!gameData.size())
 		return "";
 

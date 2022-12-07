@@ -1203,7 +1203,8 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 
 			gameModel->SetSaveFile(&tempSave, gameView->ShiftBehaviour());
 			Platform::MakeDirectory(LOCAL_SAVE_DIR);
-			auto [ _, saveData ] = gameSave->Serialise();
+			auto [ fromNewerVersion, saveData ] = gameSave->Serialise();
+			(void)fromNewerVersion;
 			if (saveData.size() == 0)
 				new ErrorMessage("Error", "Unable to serialize game data.");
 			else if (!Platform::WriteFile(saveData, gameModel->GetSaveFile()->GetName()))
