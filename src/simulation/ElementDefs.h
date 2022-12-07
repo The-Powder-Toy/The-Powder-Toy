@@ -9,6 +9,9 @@
 #define O_MAX_TEMP 3500
 #define O_MIN_TEMP -273
 
+#define MAX_PRESSURE 256.0f
+#define MIN_PRESSURE -256.0f
+
 #define TYPE_PART			0x00001  //1 Powders
 #define TYPE_LIQUID			0x00002  //2 Liquids
 #define TYPE_SOLID			0x00004  //4 Solids

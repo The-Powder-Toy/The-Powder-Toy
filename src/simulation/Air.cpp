@@ -306,12 +306,12 @@ void Air::update_air(void)
 					dy += fvy[y][x];
 				}
 				// pressure/velocity caps
-				if (dp > 256.0f) dp = 256.0f;
-				if (dp < -256.0f) dp = -256.0f;
-				if (dx > 256.0f) dx = 256.0f;
-				if (dx < -256.0f) dx = -256.0f;
-				if (dy > 256.0f) dy = 256.0f;
-				if (dy < -256.0f) dy = -256.0f;
+				if (dp > MAX_PRESSURE) dp = MAX_PRESSURE;
+				if (dp < MIN_PRESSURE) dp = MIN_PRESSURE;
+				if (dx > MAX_PRESSURE) dx = MAX_PRESSURE;
+				if (dx < MIN_PRESSURE) dx = MIN_PRESSURE;
+				if (dy > MAX_PRESSURE) dy = MAX_PRESSURE;
+				if (dy < MIN_PRESSURE) dy = MIN_PRESSURE;
 
 
 				switch (airMode)

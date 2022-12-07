@@ -60,10 +60,10 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	else
 	{
-		if (parts[i].temp >= 256.0f+273.15f)
-			parts[i].temp = 256.0f+273.15f;
-		if (parts[i].temp <= -256.0f+273.15f)
-			parts[i].temp = -256.0f+273.15f;
+		if (parts[i].temp >= MAX_PRESSURE+273.15f)
+			parts[i].temp = MAX_PRESSURE+273.15f;
+		if (parts[i].temp <= MIN_PRESSURE+273.15f)
+			parts[i].temp = MIN_PRESSURE+273.15f;
 
 		for (rx = -1; rx <= 1; rx++)
 			for (ry = -1; ry <= 1; ry++)
@@ -79,9 +79,9 @@ static int update(UPDATE_FUNC_ARGS)
 					if (TYP(r) == PT_FILT)
 					{
 						int newPressure = parts[ID(r)].ctype - 0x10000000;
-						if (newPressure >= 0 && newPressure <= 512)
+						if (newPressure >= 0 && newPressure <= MAX_PRESSURE - MIN_PRESSURE)
 						{
-							sim->pv[(y + ry) / CELL][(x + rx) / CELL] = float(newPressure - 256);
+							sim->pv[(y + ry) / CELL][(x + rx) / CELL] = float(newPressure) + MIN_PRESSURE;
 						}
 					}
 				}
