@@ -114,7 +114,7 @@ option(
 option(
 	'workaround_elusive_bzip2',
 	type: 'boolean',
-	value: false,
+	value: true,
 	description: 'acquire bzip2 dependency with find_library'
 )
 option(
