@@ -105,7 +105,7 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 		}
 
 		int type = tempPart->type;
-		if (type < 0 && type >= PT_NUM)
+		if (type < 0 || type >= PT_NUM)
 		{
 			tempPart->type = 0;
 			continue;

@@ -1317,8 +1317,8 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	if (size > 209715200 || !size)
 		throw ParseException(ParseException::InvalidDimensions, "Save data too large");
 
-	std::vector<char> data;
-	switch (auto status = BZ2WDecompress(data, (char *)(saveData + 12), dataLength - 12, size))
+	std::vector<char> bsonData;
+	switch (auto status = BZ2WDecompress(bsonData, (char *)(saveData + 12), dataLength - 12, size))
 	{
 	case BZ2WDecompressOk: break;
 	case BZ2WDecompressNomem: throw ParseException(ParseException::Corrupt, "Cannot allocate memory");
@@ -1326,7 +1326,8 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	}
 
 	setSize(bw, bh);
-	dataLength = data.size();
+	const auto *data = reinterpret_cast<unsigned char *>(&bsonData[0]);
+	dataLength = bsonData.size();
 
 #ifdef DEBUG
 	std::cout << "Parsing " << dataLength << " bytes of data, version " << ver << std::endl;
