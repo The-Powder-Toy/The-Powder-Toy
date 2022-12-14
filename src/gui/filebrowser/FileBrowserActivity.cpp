@@ -43,24 +43,12 @@ class LoadFilesTask: public Task
 		notifyProgress(-1);
 		for(std::vector<ByteString>::iterator iter = files.begin(), end = files.end(); iter != end; ++iter)
 		{
-			SaveFile * saveFile = new SaveFile(directory + *iter);
-			try
-			{
-				std::vector<char> data;
-				if (!Platform::ReadFile(data, directory + *iter))
-					continue;
-				GameSave * tempSave = new GameSave(std::move(data));
-				saveFile->SetGameSave(tempSave);
-				saveFiles.push_back(saveFile);
+			SaveFile * saveFile = new SaveFile(directory + *iter, true);
+			saveFiles.push_back(saveFile);
 
-				ByteString filename = (*iter).SplitFromEndBy(PATH_SEP).After();
-				filename = filename.SplitFromEndBy('.').Before();
-				saveFile->SetDisplayName(filename.FromUtf8());
-			}
-			catch(std::exception & e)
-			{
-				//:(
-			}
+			ByteString filename = (*iter).SplitFromEndBy(PATH_SEP).After();
+			filename = filename.SplitFromEndBy('.').Before();
+			saveFile->SetDisplayName(filename.FromUtf8());
 		}
 		return true;
 	}
@@ -266,7 +254,7 @@ void FileBrowserActivity::OnTick(float dt)
 	if(loadFiles)
 		loadFiles->Poll();
 
-	if(files.size())
+	while(files.size())
 	{
 		SaveFile * saveFile = files.back();
 		files.pop_back();
@@ -296,7 +284,7 @@ void FileBrowserActivity::OnTick(float dt)
 		componentsQueue.push_back(saveButton);
 		fileX++;
 	}
-	else if(componentsQueue.size())
+	if(componentsQueue.size())
 	{
 		for(std::vector<ui::Component*>::iterator iter = componentsQueue.begin(), end = componentsQueue.end(); iter != end; ++iter)
 		{

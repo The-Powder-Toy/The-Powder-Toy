@@ -126,7 +126,7 @@ void SaveButton::Tick(float dt)
 {
 	if (!thumbnail)
 	{
-		if (!triedThumbnail)
+		if (!triedThumbnail && wantsDraw && ThumbnailRendererTask::QueueSize() < 10)
 		{
 			float scaleFactor = (Size.Y-25)/((float)YRES);
 			ui::Point thumbBoxSize = ui::Point(int(XRES*scaleFactor), int(YRES*scaleFactor));
@@ -170,6 +170,14 @@ void SaveButton::Tick(float dt)
 			thumbSize = ui::Point(thumbnail->Width, thumbnail->Height);
 		}
 	}
+	if (!wantsDraw && !thumbnailRenderer)
+	{
+		file->LazyUnload();
+		thumbnail.reset();
+		thumbSize = { 0, 0 };
+		triedThumbnail = false;
+	}
+	wantsDraw = false;
 }
 
 void SaveButton::Draw(const Point& screenPos)

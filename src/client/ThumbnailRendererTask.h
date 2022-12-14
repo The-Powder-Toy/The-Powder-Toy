@@ -16,12 +16,16 @@ class ThumbnailRendererTask : public AbandonableTask
 	bool AutoRescale;
 	std::unique_ptr<VideoBuffer> thumbnail;
 
+	static int queueSize;
+
 public:
 	ThumbnailRendererTask(GameSave *save, int width, int height, bool autoRescale = false, bool decorations = true, bool fire = true);
 	virtual ~ThumbnailRendererTask();
 
 	virtual bool doWork() override;
 	std::unique_ptr<VideoBuffer> Finish();
+
+	static int QueueSize();
 };
 
 #endif // THUMBNAILRENDERER_H

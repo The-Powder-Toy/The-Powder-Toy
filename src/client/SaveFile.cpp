@@ -1,28 +1,59 @@
 #include "SaveFile.h"
 #include "GameSave.h"
+#include "common/Platform.h"
 
 SaveFile::SaveFile(SaveFile & save):
 	gameSave(NULL),
 	filename(save.filename),
 	displayName(save.displayName),
-	loadingError(save.loadingError)
+	loadingError(save.loadingError),
+	lazyLoad(save.lazyLoad)
 {
 	if (save.gameSave)
 		gameSave = new GameSave(*save.gameSave);
 }
 
-SaveFile::SaveFile(ByteString filename):
+SaveFile::SaveFile(ByteString filename, bool newLazyLoad):
 	gameSave(NULL),
 	filename(filename),
 	displayName(filename.FromUtf8()),
-	loadingError("")
+	loadingError(""),
+	lazyLoad(newLazyLoad)
 {
 
 }
 
 GameSave * SaveFile::GetGameSave()
 {
+	if (!gameSave && !loadingError.size() && lazyLoad)
+	{
+		try
+		{
+			std::vector<char> data;
+			if (Platform::ReadFile(data, filename))
+			{
+				gameSave = new GameSave(std::move(data));
+			}
+			else
+			{
+				loadingError = "cannot access file";
+			}
+		}
+		catch(std::exception & e)
+		{
+			loadingError = ByteString(e.what()).FromUtf8();
+		}
+	}
 	return gameSave;
+}
+
+void SaveFile::LazyUnload()
+{
+	if (lazyLoad && gameSave)
+	{
+		delete gameSave;
+		gameSave = nullptr;
+	}
 }
 
 void SaveFile::SetGameSave(GameSave * save)
@@ -61,6 +92,8 @@ void SaveFile::SetLoadingError(String error)
 }
 
 SaveFile::~SaveFile() {
-	delete gameSave;
+	if (gameSave)
+	{
+		delete gameSave;
+	}
 }
-

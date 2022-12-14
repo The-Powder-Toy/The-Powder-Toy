@@ -6,6 +6,13 @@
 #include "simulation/SaveRenderer.h"
 #include "client/GameSave.h"
 
+int ThumbnailRendererTask::queueSize = 0;
+
+int ThumbnailRendererTask::QueueSize()
+{
+	return queueSize;
+}
+
 ThumbnailRendererTask::ThumbnailRendererTask(GameSave *save, int width, int height, bool autoRescale, bool decorations, bool fire) :
 	Save(new GameSave(*save)),
 	Width(width),
@@ -14,10 +21,12 @@ ThumbnailRendererTask::ThumbnailRendererTask(GameSave *save, int width, int heig
 	Fire(fire),
 	AutoRescale(autoRescale)
 {
+	queueSize += 1;
 }
 
 ThumbnailRendererTask::~ThumbnailRendererTask()
 {
+	queueSize -= 1;
 }
 
 bool ThumbnailRendererTask::doWork()
