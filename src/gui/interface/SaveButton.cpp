@@ -170,7 +170,7 @@ void SaveButton::Tick(float dt)
 			thumbSize = ui::Point(thumbnail->Width, thumbnail->Height);
 		}
 	}
-	if (!wantsDraw && !thumbnailRenderer)
+	if (file && !wantsDraw && !thumbnailRenderer)
 	{
 		file->LazyUnload();
 		thumbnail.reset();
