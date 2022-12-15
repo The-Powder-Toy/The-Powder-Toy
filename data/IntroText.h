@@ -37,17 +37,8 @@ const char *const introTextData =
 #elif MOD_ID > 0
 	" MODVER " MTOS(SNAPSHOT_ID)
 #endif
-#ifdef X86
-	" X86"
-#endif
-#ifdef X86_SSE
-	" X86_SSE"
-#endif
-#ifdef X86_SSE2
-	" X86_SSE2"
-#endif
-#ifdef X86_SSE3
-	" X86_SSE3"
+#if defined(X86_SSE) || defined(X86_SSE2) || defined(X86_SSE3)
+	" " IDENT_BUILD
 #endif
 #ifdef LUACONSOLE
 	" LUACONSOLE"
@@ -57,5 +48,14 @@ const char *const introTextData =
 #endif
 #ifdef REALISTIC
 	" REALISTIC"
+#endif
+#ifdef NOHTTP
+	" NOHTTP"
+#endif
+#ifdef DEBUG
+	" DEBUG"
+#endif
+#ifdef ENFORCE_HTTPS
+	" HTTPS"
 #endif
 	;

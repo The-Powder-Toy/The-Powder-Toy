@@ -387,10 +387,10 @@ if [[ $PACKAGE_MODE == appimage ]]; then
 	mkdir -p $appdir/usr/share/icons
 	cp powder $appdir/usr/bin/powder
 	mv AppRun $appdir/AppRun
-	cp ../resources/icon/powder-128.png $appdir/powder.png
+	cp ../resources/icon/powder-128.png $appdir/powdertoy-powder.png
 	cp resources/powder.desktop $appdir/uk.co.powdertoy.tpt.desktop
 	cp appdata.xml $appdir/usr/share/metainfo/uk.co.powdertoy.tpt.appdata.xml
-	cp $appdir/powder.png $appdir/usr/share/icons/powder.png
+	cp $appdir/powdertoy-powder.png $appdir/usr/share/icons/powdertoy-powder.png
 	cp $appdir/uk.co.powdertoy.tpt.desktop $appdir/usr/share/applications/uk.co.powdertoy.tpt.desktop
 	./appimagetool $appdir $ASSET_PATH
 fi
