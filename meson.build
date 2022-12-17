@@ -13,6 +13,11 @@ project(
 	meson_version: '>=0.61.0',
 )
 
+if get_option('prepare')
+	# we're being run by prepare.py in a ghactions workflow only to determine the values of options; exit early
+	subdir_done()
+endif
+
 to_array = generator(
 	executable('toarray', sources: 'data/ToArray.cpp', native: true),
 	output: [ '@PLAINNAME@.cpp', '@PLAINNAME@.h' ],
@@ -308,6 +313,9 @@ else
 	ident_platform = 'UNKNOWN'
 endif
 
+app_exe = get_option('app_exe')
+app_id = get_option('app_id')
+
 conf_data.set('LIN', host_platform == 'linux')
 conf_data.set('AND', host_platform == 'android')
 conf_data.set('WIN', host_platform == 'windows')
@@ -331,8 +339,8 @@ conf_data.set('IDENT', '"@0@-@1@-@2@"'.format(host_arch, host_platform, host_lib
 conf_data.set('ENFORCE_HTTPS', enforce_https)
 conf_data.set('APPNAME', get_option('app_name'))
 conf_data.set('APPCOMMENT', get_option('app_comment'))
-conf_data.set('APPEXE', get_option('app_exe'))
-conf_data.set('APPID', get_option('app_id'))
+conf_data.set('APPEXE', app_exe)
+conf_data.set('APPID', app_id)
 conf_data.set('APPDATA', get_option('app_data'))
 conf_data.set('APPVENDOR', get_option('app_vendor'))
 
@@ -366,7 +374,7 @@ if get_option('build_powder')
 	]
 	if host_platform == 'android'
 		powder_sha = shared_library(
-			'powder',
+			app_exe,
 			sources: powder_files,
 			include_directories: [ project_inc, powder_inc ],
 			c_args: project_c_args,
@@ -377,7 +385,7 @@ if get_option('build_powder')
 		subdir('android')
 	else
 		executable(
-			'powder',
+			app_exe,
 			sources: powder_files,
 			include_directories: [ project_inc, powder_inc ],
 			c_args: project_c_args,

@@ -137,7 +137,7 @@ void DoRestart()
 			exit(0);
 		}
 #elif defined(LIN) || defined(MACOSX)
-		execl(exename.c_str(), "powder", NULL);
+		execl(exename.c_str(), exename.c_str(), NULL);
 		int ret = errno;
 		fprintf(stderr, "cannot restart: execl(...) failed: code %i\n", ret);
 #endif

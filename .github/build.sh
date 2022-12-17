@@ -3,58 +3,25 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-if [[ -z ${BSH_BUILD_PLATFORM-} ]]; then
-	>&2 echo "BSH_BUILD_PLATFORM not set"
-	exit 1
-fi
-if [[ -z ${BSH_HOST_ARCH-} ]]; then
-	>&2 echo "BSH_HOST_ARCH not set"
-	exit 1
-fi
-if [[ -z ${BSH_HOST_PLATFORM-} ]]; then
-	>&2 echo "BSH_HOST_PLATFORM not set"
-	exit 1
-fi
-if [[ -z ${BSH_HOST_LIBC-} ]]; then
-	>&2 echo "BSH_HOST_LIBC not set"
-	exit 1
-fi
-if [[ -z ${BSH_STATIC_DYNAMIC-} ]]; then
-	>&2 echo "BSH_STATIC_DYNAMIC not set"
-	exit 1
-fi
-if [[ -z ${BSH_DEBUG_RELEASE-} ]]; then
-	>&2 echo "BSH_DEBUG_RELEASE not set"
-	exit 1
-fi
-if [[ -z ${RELEASE_NAME-} ]]; then
-	>&2 echo "RELEASE_NAME not set"
-	exit 1
-fi
-if [[ -z ${RELEASE_TYPE-} ]]; then
-	>&2 echo "RELEASE_TYPE not set"
-	exit 1
-fi
-if [[ -z ${MOD_ID-} ]]; then
-	>&2 echo "MOD_ID not set"
-	exit 1
-fi
-if [[ -z ${SEPARATE_DEBUG-} ]]; then
-	>&2 echo "SEPARATE_DEBUG not set"
-	exit 1
-fi
-if [[ -z ${PACKAGE_MODE-} ]]; then
-	>&2 echo "PACKAGE_MODE not set"
-	exit 1
-fi
-if [[ -z ${ASSET_PATH-} ]]; then
-	>&2 echo "ASSET_PATH not set"
-	exit 1
-fi
-if [[ -z ${DEBUG_ASSET_PATH-} ]]; then
-	>&2 echo "DEBUG_ASSET_PATH not set"
-	exit 1
-fi
+if [[ -z ${BSH_BUILD_PLATFORM-} ]]; then >&2 echo "BSH_BUILD_PLATFORM not set"; exit 1; fi
+if [[ -z      ${BSH_HOST_ARCH-} ]]; then >&2 echo      "BSH_HOST_ARCH not set"; exit 1; fi
+if [[ -z  ${BSH_HOST_PLATFORM-} ]]; then >&2 echo  "BSH_HOST_PLATFORM not set"; exit 1; fi
+if [[ -z      ${BSH_HOST_LIBC-} ]]; then >&2 echo      "BSH_HOST_LIBC not set"; exit 1; fi
+if [[ -z ${BSH_STATIC_DYNAMIC-} ]]; then >&2 echo "BSH_STATIC_DYNAMIC not set"; exit 1; fi
+if [[ -z  ${BSH_DEBUG_RELEASE-} ]]; then >&2 echo  "BSH_DEBUG_RELEASE not set"; exit 1; fi
+if [[ -z       ${RELEASE_NAME-} ]]; then >&2 echo       "RELEASE_NAME not set"; exit 1; fi
+if [[ -z       ${RELEASE_TYPE-} ]]; then >&2 echo       "RELEASE_TYPE not set"; exit 1; fi
+if [[ -z             ${MOD_ID-} ]]; then >&2 echo             "MOD_ID not set"; exit 1; fi
+if [[ -z     ${SEPARATE_DEBUG-} ]]; then >&2 echo     "SEPARATE_DEBUG not set"; exit 1; fi
+if [[ -z       ${PACKAGE_MODE-} ]]; then >&2 echo       "PACKAGE_MODE not set"; exit 1; fi
+if [[ -z         ${ASSET_PATH-} ]]; then >&2 echo         "ASSET_PATH not set"; exit 1; fi
+if [[ -z   ${DEBUG_ASSET_PATH-} ]]; then >&2 echo   "DEBUG_ASSET_PATH not set"; exit 1; fi
+if [[ -z           ${APP_NAME-} ]]; then >&2 echo           "APP_NAME not set"; exit 1; fi
+if [[ -z        ${APP_COMMENT-} ]]; then >&2 echo        "APP_COMMENT not set"; exit 1; fi
+if [[ -z            ${APP_EXE-} ]]; then >&2 echo            "APP_EXE not set"; exit 1; fi
+if [[ -z             ${APP_ID-} ]]; then >&2 echo             "APP_ID not set"; exit 1; fi
+if [[ -z           ${APP_DATA-} ]]; then >&2 echo           "APP_DATA not set"; exit 1; fi
+if [[ -z         ${APP_VENDOR-} ]]; then >&2 echo         "APP_VENDOR not set"; exit 1; fi
 
 case $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC in
 x86_64-linux-gnu-static) ;;
@@ -333,19 +300,19 @@ strip_target=$ASSET_PATH
 if [[ $BSH_HOST_PLATFORM == android ]]; then
 	strip=$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-$strip
 	objcopy=$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-$objcopy
-	strip_target=libpowder.so
+	strip_target=lib$APP_EXE.so
 fi
 if [[ $PACKAGE_MODE == appimage ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
 	meson configure -Dinstall_check=false -Dignore_updates=true -Dbuild_render=false -Dbuild_font=false
-	strip_target=powder
+	strip_target=$APP_EXE
 fi
 if [[ $BSH_BUILD_PLATFORM == windows ]]; then
 	set +e
 	ninja -v -d keeprsp
 	ninja_code=$?
 	set -e
-	cat powder.exe.rsp
+	cat $APP_EXE.exe.rsp
 	[[ $ninja_code == 0 ]];
 else
 	ninja -v
@@ -360,8 +327,8 @@ fi
 if [[ $BSH_HOST_PLATFORM == android ]]; then
 	$JAVA_HOME_8_X64/bin/keytool -genkeypair -keystore keystore.jks -alias androidkey -validity 10000 -keyalg RSA -keysize 2048 -keypass bagelsbagels -storepass bagelsbagels -dname "CN=nobody"
 	meson configure -Dandroid_keystore=$(realpath keystore.jks)
-	ANDROID_KEYSTORE_PASS=bagelsbagels ninja android/powder.apk
-	mv android/powder.apk powder.apk
+	ANDROID_KEYSTORE_PASS=bagelsbagels ninja android/$APP_EXE.apk
+	mv android/$APP_EXE.apk $APP_EXE.apk
 fi
 if [[ $PACKAGE_MODE == appimage ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
@@ -385,12 +352,12 @@ if [[ $PACKAGE_MODE == appimage ]]; then
 	mkdir -p $appdir/usr/share/metainfo
 	mkdir -p $appdir/usr/share/applications
 	mkdir -p $appdir/usr/share/icons
-	cp powder $appdir/usr/bin/powder
+	cp $APP_EXE $appdir/usr/bin/$APP_EXE
 	mv AppRun $appdir/AppRun
-	cp ../resources/icon/powder-128.png $appdir/powdertoy-powder.png
-	cp resources/powder.desktop $appdir/uk.co.powdertoy.tpt.desktop
-	cp appdata.xml $appdir/usr/share/metainfo/uk.co.powdertoy.tpt.appdata.xml
-	cp $appdir/powdertoy-powder.png $appdir/usr/share/icons/powdertoy-powder.png
-	cp $appdir/uk.co.powdertoy.tpt.desktop $appdir/usr/share/applications/uk.co.powdertoy.tpt.desktop
+	cp ../resources/icon/icon-128.png $appdir/$APP_VENDOR-$APP_EXE.png
+	cp resources/powder.desktop $appdir/$APP_ID.desktop
+	cp appdata.xml $appdir/usr/share/metainfo/$APP_ID.appdata.xml
+	cp $appdir/$APP_VENDOR-$APP_EXE.png $appdir/usr/share/icons/$APP_VENDOR-$APP_EXE.png
+	cp $appdir/$APP_ID.desktop $appdir/usr/share/applications/$APP_ID.desktop
 	./appimagetool $appdir $ASSET_PATH
 fi

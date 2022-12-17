@@ -15,7 +15,7 @@
 
 #include <iostream>
 #if defined(LIN)
-# include "powder-128.png.h"
+# include "icon-128.png.h"
 #endif
 #include <stdexcept>
 

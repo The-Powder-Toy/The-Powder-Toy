@@ -13,7 +13,7 @@ if host_platform == 'linux'
 	data_files += to_array.process('cps16.png', extra_args: 'cps16_png')
 	data_files += to_array.process('cps32.png', extra_args: 'cps32_png')
 	data_files += to_array.process('exe48.png', extra_args: 'exe48_png')
-	data_files += to_array.process('icon/powder-128.png', extra_args: 'icon_png')
+	data_files += to_array.process('icon/icon-128.png', extra_args: 'icon_png')
 	data_files += to_array.process('save.xml', extra_args: 'save_xml')
 	data_files += to_array.process(configure_file(
 		input: 'powder.template.desktop',

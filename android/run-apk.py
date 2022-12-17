@@ -9,6 +9,7 @@ import sys
 	build_dir,
 	phony,
 	apk_name,
+	app_id,
 ) = sys.argv
 
 apk_path = os.path.join(build_dir, apk_name)
@@ -19,6 +20,6 @@ if subprocess.run([
 	'am',
 	'start',
 	'--activity-clear-top',
-	'-n', 'uk.co.powdertoy.tpt/.PowderActivity',
+	'-n', app_id + '/.PowderActivity',
 ]).returncode:
 	sys.exit(1)

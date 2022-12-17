@@ -32,12 +32,14 @@ if tpt_arch == 'aarch64':
 if tpt_arch == 'x86_64':
 	android_arch = 'x86_64'
 
+sha_packaged_name = 'libpowder.so'
+
 manifest_path  = os.path.join(build_dir, manifest_xml)
 sha_path       = os.path.join(build_dir, sha_name)
 unaligned_path = os.path.join(build_dir, unaligned_name)
 private_dir    = os.path.join(build_dir, private_name)
 arch_dir       = os.path.join(private_dir, 'lib', android_arch)
-sha_lib_path   = os.path.join(arch_dir, sha_name)
+sha_lib_path   = os.path.join(arch_dir, sha_packaged_name)
 flat_dir       = os.path.join(private_dir, 'flat')
 
 if os.path.exists(arch_dir):
@@ -79,7 +81,7 @@ if subprocess.run([
 	aapt,
 	'add',
 	unaligned_path,
-	os.path.join('lib', android_arch, sha_name),
+	os.path.join('lib', android_arch, sha_packaged_name),
 ], cwd = private_dir).returncode:
 	sys.exit(1)
 

@@ -1,4 +1,4 @@
-package uk.co.powdertoy.tpt;
+package @APPID@;
 
 import org.libsdl.app.SDLActivity;
 

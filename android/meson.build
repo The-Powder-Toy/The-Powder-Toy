@@ -1,6 +1,12 @@
-android_manifest_xml = files('AndroidManifest.xml')
-powder_jar_sources = files(
-	'uk/co/powdertoy/tpt/PowderActivity.java',
+android_manifest_xml = configure_file(
+	input: 'AndroidManifest.template.xml',
+	output: 'AndroidManifest.xml',
+	configuration: conf_data,
+)
+powder_jar_sources = configure_file(
+	input: 'PowderActivity.template.java',
+	output: 'PowderActivity.java',
+	configuration: conf_data,
 )
 
 subdir('res')
@@ -12,7 +18,7 @@ android_keystore = get_option('android_keystore')
 sdl_jar = tpt_libs.get_variable('sdl_jar')
 powder_jar = custom_target(
 	'powder-jar',
-	output: 'powder.jar',
+	output: app_exe + '.jar',
 	command: [
 		python3,
 		files('powder-jar.py'),
@@ -31,7 +37,7 @@ powder_jar = custom_target(
 )
 unaligned_apk = custom_target(
 	'build-apk',
-	output: 'powder.unaligned.apk',
+	output: app_exe + '.unaligned.apk',
 	input: powder_sha,
 	command: [
 		python3,
@@ -55,7 +61,7 @@ unaligned_apk = custom_target(
 )
 unsigned_apk = custom_target(
 	'align-apk',
-	output: 'powder.unsigned.apk',
+	output: app_exe + '.unsigned.apk',
 	input: unaligned_apk,
 	command: [
 		python3,
@@ -68,7 +74,7 @@ unsigned_apk = custom_target(
 )
 signed_apk = custom_target(
 	'sign-apk',
-	output: 'powder.apk',
+	output: app_exe + '.apk',
 	input: unsigned_apk,
 	command: [
 		python3,
@@ -94,6 +100,6 @@ if adb.found()
 		input: [ signed_apk, install_apk ],
 		build_always_stale: true,
 		output: 'run-apk',
-		command: [ python3, files('run-apk.py'), adb, meson.project_build_root(), '@OUTPUT@', '@INPUT0@' ],
+		command: [ python3, files('run-apk.py'), adb, meson.project_build_root(), '@OUTPUT@', '@INPUT0@', app_id ],
 	)
 endif

@@ -207,3 +207,9 @@ option(
 	value: true,
 	description: 'Enforce encrypted HTTP traffic, may be disabled for debugging'
 )
+option(
+	'prepare',
+	type: 'boolean',
+	value: false,
+	description: 'Used by ghactions workflows, not useful otherwise'
+)
