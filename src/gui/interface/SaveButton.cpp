@@ -10,6 +10,7 @@
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
 
+#include "gui/dialogues/ErrorMessage.h"
 #include "graphics/Graphics.h"
 
 namespace ui {
@@ -296,6 +297,11 @@ void SaveButton::OnMouseUnclick(int x, int y, unsigned int button)
 	if(button != 1)
 	{
 		return; //left click only!
+	}
+	if (file && !file->GetGameSave())
+	{
+		new ErrorMessage("Error loading save", file->GetError());
+		return;
 	}
 
 	if(x>=Size.X-20 && y>=6 && y<=20 && x<=Size.X-6 && selectable)
