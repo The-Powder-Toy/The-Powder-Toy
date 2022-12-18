@@ -173,9 +173,6 @@ void SaveButton::Tick(float dt)
 	if (file && !wantsDraw && !thumbnailRenderer)
 	{
 		file->LazyUnload();
-		thumbnail.reset();
-		thumbSize = { 0, 0 };
-		triedThumbnail = false;
 	}
 	wantsDraw = false;
 }
