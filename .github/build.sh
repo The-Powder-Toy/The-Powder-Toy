@@ -143,10 +143,15 @@ meson_configure+=$'\t'-Db_strip=false
 meson_configure+=$'\t'-Db_staticpic=false
 meson_configure+=$'\t'-Dinstall_check=true
 meson_configure+=$'\t'-Dmod_id=$MOD_ID
-if [[ $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC == x86_64-linux-gnu ]]; then
+case $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_DEBUG_RELEASE in
+x86_64-linux-gnu-debug) ;&
+x86_64-windows-mingw-debug) ;&
+x86_64-windows-msvc-debug) ;&
+x86_64-darwin-macos-debug)
 	meson_configure+=$'\t'-Dbuild_render=true
 	meson_configure+=$'\t'-Dbuild_font=true
-fi
+	;;
+esac
 if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 	meson_configure+=$'\t'-Dstatic=prebuilt
 	if [[ $BSH_HOST_PLATFORM == windows ]]; then

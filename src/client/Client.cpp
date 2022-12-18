@@ -32,7 +32,6 @@
 # include <shlwapi.h>
 # include <windows.h>
 # include <direct.h>
-# include "resource.h"
 #else
 # include <sys/stat.h>
 # include <unistd.h>
