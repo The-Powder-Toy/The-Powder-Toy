@@ -46,7 +46,7 @@ with open('build-prepare/meson-info/intro-buildoptions.json') as f:
 	for option in json.loads(f.read()):
 		build_options[option['name']] = option['value']
 
-if os.path.exists('.github/mod_id.txt'):
+if int(build_options['mod_id']) == 0 and os.path.exists('.github/mod_id.txt'):
 	with open('.github/mod_id.txt') as f:
 		build_options['mod_id'] = f.read()
 
