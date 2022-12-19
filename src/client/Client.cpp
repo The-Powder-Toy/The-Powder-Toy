@@ -32,6 +32,7 @@
 # include <shlwapi.h>
 # include <windows.h>
 # include <direct.h>
+# include "resource.h"
 #else
 # include <sys/stat.h>
 # include <unistd.h>
@@ -1573,6 +1574,10 @@ bool Client::DoInstallation()
 
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	auto exe = Platform::ExecutableName();
+#ifndef IDI_DOC_ICON
+	// make this fail so I don't remove #include "resource.h" again and get away with it
+# error where muh IDI_DOC_ICON D:
+#endif
 	auto icon = exe + ",-" MTOS(IDI_DOC_ICON);
 	auto path = Platform::GetCwd();
 	auto open = ByteString::Build("\"", exe, "\" ddir \"", path, "\" \"file://%1\"");
