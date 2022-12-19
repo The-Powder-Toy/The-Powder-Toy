@@ -46,6 +46,10 @@ with open('build-prepare/meson-info/intro-buildoptions.json') as f:
 	for option in json.loads(f.read()):
 		build_options[option['name']] = option['value']
 
+if os.path.exists('.github/mod_id.txt'):
+	with open('.github/mod_id.txt') as f:
+		build_options['mod_id'] = f.read()
+
 set_output('mod_id'     , build_options['mod_id'     ])
 set_output('app_name'   , build_options['app_name'   ])
 set_output('app_comment', build_options['app_comment'])
