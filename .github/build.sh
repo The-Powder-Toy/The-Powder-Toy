@@ -43,6 +43,26 @@ aarch64-android-bionic-static) ;;
 *) >&2 echo "configuration $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC is not supported" && exit 1;;
 esac
 
+function inplace_sed() {
+	local subst=$1
+	local path=$2
+	if [[ $BSH_BUILD_PLATFORM == darwin ]]; then
+		sed -i "" -e $subst $path
+	else
+		sed -i $subst $path
+	fi
+}
+
+function subst_version() {
+	local path=$1
+	if [[ $BSH_HOST_PLATFORM != darwin ]]; then
+		inplace_sed "s|SUBST_DATE|$(date --iso-8601)|g" $path
+	fi
+	inplace_sed "s|SUBST_SAVE_VERSION|$save_version|g" $path
+	inplace_sed "s|SUBST_MINOR_VERSION|$minor_version|g" $path
+	inplace_sed "s|SUBST_BUILD_NUM|$build_num|g" $path
+}
+
 if [[ $BSH_HOST_PLATFORM == android ]]; then
 	android_platform=android-30
 	if [[ -z "${JAVA_HOME_8_X64-}" ]]; then
@@ -335,13 +355,36 @@ if [[ $BSH_HOST_PLATFORM == android ]]; then
 	ANDROID_KEYSTORE_PASS=bagelsbagels ninja android/$APP_EXE.apk
 	mv android/$APP_EXE.apk $APP_EXE.apk
 fi
-if [[ $PACKAGE_MODE == appimage ]]; then
+if [[ $PACKAGE_MODE == dmg ]]; then
+	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == darwin-macos
+	appdir=$APP_NAME.app
+	mkdir $appdir
+	mkdir $appdir/Contents
+	cp resources/Info.plist $appdir/Contents/Info.plist
+	subst_version $appdir/Contents/Info.plist
+	mkdir $appdir/Contents/MacOS
+	cp $APP_EXE $appdir/Contents/MacOS/$APP_EXE
+	mkdir $appdir/Contents/Resources
+	mkdir icon_exe.iconset
+	cp ../resources/generated_icons/icon_exe_16.png icon_exe.iconset/icon_16x16.png
+	cp ../resources/generated_icons/icon_exe_32.png icon_exe.iconset/icon_32x32.png
+	cp ../resources/generated_icons/icon_exe.png    icon_exe.iconset/icon_128x128.png
+	iconutil -c icns icon_exe.iconset
+	cp icon_exe.icns $appdir/Contents/Resources/icon_exe.icns
+	mkdir icon_cps.iconset
+	cp ../resources/generated_icons/icon_cps_16.png icon_cps.iconset/icon_16x16.png
+	cp ../resources/generated_icons/icon_cps_32.png icon_cps.iconset/icon_32x32.png
+	cp ../resources/generated_icons/icon_cps.png    icon_cps.iconset/icon_128x128.png
+	iconutil -c icns icon_cps.iconset
+	cp icon_cps.icns $appdir/Contents/Resources/icon_cps.icns
+	mkdir dmgroot
+	mv $appdir dmgroot/$appdir
+	cp ../LICENSE dmgroot/LICENSE
+	cp ../README.md dmgroot/README.md
+	hdiutil create uncompressed.dmg -ov -volname $APP_NAME -fs HFS+ -srcfolder dmgroot
+	hdiutil convert uncompressed.dmg -format UDZO -o $ASSET_PATH
+elif [[ $PACKAGE_MODE == appimage ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
-	cp resources/appdata.xml appdata.xml
-	sed -i "s|SUBST_DATE|$(date --iso-8601)|g" appdata.xml
-	sed -i "s|SUBST_SAVE_VERSION|$save_version|g" appdata.xml
-	sed -i "s|SUBST_MINOR_VERSION|$minor_version|g" appdata.xml
-	sed -i "s|SUBST_BUILD_NUM|$build_num|g" appdata.xml
 	case $BSH_HOST_ARCH in
 	aarch64) appimage_arch=aarch64;;
 	arm)     appimage_arch=armhf  ;;
@@ -361,7 +404,8 @@ if [[ $PACKAGE_MODE == appimage ]]; then
 	mv AppRun $appdir/AppRun
 	cp ../resources/icon_exe.svg $appdir/$APP_VENDOR-$APP_EXE.svg
 	cp resources/powder.desktop $appdir/$APP_ID.desktop
-	cp appdata.xml $appdir/usr/share/metainfo/$APP_ID.appdata.xml
+	cp resources/appdata.xml $appdir/usr/share/metainfo/$APP_ID.appdata.xml
+	subst_version $appdir/usr/share/metainfo/$APP_ID.appdata.xml
 	cp $appdir/$APP_VENDOR-$APP_EXE.svg $appdir/usr/share/icons/$APP_VENDOR-$APP_EXE.svg
 	cp $appdir/$APP_ID.desktop $appdir/usr/share/applications/$APP_ID.desktop
 	./appimagetool $appdir $ASSET_PATH

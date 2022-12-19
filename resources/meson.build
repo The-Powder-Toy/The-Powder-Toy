@@ -62,9 +62,13 @@ if host_platform == 'windows'
 			'resource.h',
 		],
 	)
-endif
-
-if host_platform == 'linux'
+elif host_platform == 'darwin'
+	configure_file(
+		input: 'Info.template.plist',
+		output: 'Info.plist',
+		configuration: conf_data,
+	)
+elif host_platform == 'linux'
 	data_files += to_array.process(rendered_icons['icon_exe'], extra_args: 'icon_exe_png')
 	data_files += to_array.process(rendered_icons['icon_cps'], extra_args: 'icon_cps_png')
 	data_files += to_array.process('save.xml', extra_args: 'save_xml')

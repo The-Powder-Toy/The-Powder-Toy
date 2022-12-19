@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>ptsave</string>
+				</array>
+				<key>CFBundleURLName</key>
+				<string>Powder Toy Save URL</string>
+			</dict>
+		</array>
+		<key>CFBundleName</key>
+		<string>@APPNAME@</string>
+		<key>CFBundleIconFile</key>
+		<string>icon_exe.icns</string>
+		<key>NSHumanReadableCopyright</key>
+		<string>Copyright © 2008-2011 Stanislaw K Skowrenek, Copyright © 2011-2022 Simon Robertshaw, Copyright © 2016-2022 jacob1</string>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>English</string>
+		<key>CFBundleDocumentTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeExtensions</key>
+				<array>
+					<string>stm</string>
+				</array>
+				<key>CFBundleTypeIconFile</key>
+				<string>icon_cps.icns</string>
+				<key>CFBundleTypeName</key>
+				<string>Powder Toy Save</string>
+				<key>CFBundleTypeRole</key>
+				<string>Viewer</string>
+			</dict>
+			<dict>
+				<key>CFBundleTypeExtensions</key>
+				<array>
+					<string>cps</string>
+				</array>
+				<key>CFBundleTypeIconFile</key>
+				<string>icon_cps.icns</string>
+				<key>CFBundleTypeName</key>
+				<string>Powder Toy Stamp</string>
+				<key>CFBundleTypeRole</key>
+				<string>Viewer</string>
+			</dict>
+		</array>
+		<key>CFBundleExecutable</key>
+		<string>@APPEXE@</string>
+		<key>CFBundleIdentifier</key>
+		<string>@APPID@</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>SUBST_SAVE_VERSION.SUBST_MINOR_VERSION</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleVersion</key>
+		<string>SUBST_SAVE_VERSION.SUBST_MINOR_VERSION (build SUBST_BUILD_NUM)</string>
+		<key>LSMinimumSystemVersion</key>
+		<string>10.9.0</string>
+		<key>NSPrincipalClass</key>
+		<string>NSApplication</string>
+	</dict>
+</plist>
