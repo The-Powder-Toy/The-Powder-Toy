@@ -1915,6 +1915,11 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 	int coord_stack_size = 0;
 	int created_something = 0;
 
+	// Bitmap for checking where we've already looked
+	auto bitmapPtr = std::unique_ptr<char[]>(new char[XRES * YRES]);
+	char *bitmap = bitmapPtr.get();
+	std::fill(&bitmap[0], &bitmap[XRES * YRES], 0);
+
 	if (cm==-1)
 	{
 		//if initial flood point is out of bounds, do nothing
@@ -1962,7 +1967,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 		// go left as far as possible
 		while (c?x1>CELL:x1>0)
 		{
-			if (!FloodFillPmapCheck(x1-1, y, cm) || (c != 0 && IsWallBlocking(x1-1, y, c)))
+			if (bitmap[(y * XRES) + x1 - 1] || !FloodFillPmapCheck(x1-1, y, cm) || (c != 0 && IsWallBlocking(x1-1, y, c)))
 			{
 				break;
 			}
@@ -1971,7 +1976,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 		// go right as far as possible
 		while (c?x2<XRES-CELL-1:x2<XRES-1)
 		{
-			if (!FloodFillPmapCheck(x2+1, y, cm) || (c != 0 && IsWallBlocking(x2+1, y, c)))
+			if (bitmap[(y * XRES) + x2 + 1] || !FloodFillPmapCheck(x2+1, y, cm) || (c != 0 && IsWallBlocking(x2+1, y, c)))
 			{
 				break;
 			}
@@ -1998,11 +2003,12 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 			}
 			else if (CreateParts(x, y, 0, 0, fullc, flags))
 				created_something = 1;
+			bitmap[(y * XRES) + x] = 1;
 		}
 
 		if (c?y>=CELL+dy:y>=dy)
 			for (x=x1; x<=x2; x++)
-				if (FloodFillPmapCheck(x, y-dy, cm) && (c == 0 || !IsWallBlocking(x, y-dy, c)))
+				if (!bitmap[((y - dy) * XRES) + x] && FloodFillPmapCheck(x, y-dy, cm) && (c == 0 || !IsWallBlocking(x, y-dy, c)))
 				{
 					coord_stack[coord_stack_size][0] = x;
 					coord_stack[coord_stack_size][1] = y-dy;
@@ -2016,7 +2022,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 
 		if (c?y<YRES-CELL-dy:y<YRES-dy)
 			for (x=x1; x<=x2; x++)
-				if (FloodFillPmapCheck(x, y+dy, cm) && (c == 0 || !IsWallBlocking(x, y+dy, c)))
+				if (!bitmap[((y + dy) * XRES) + x] && FloodFillPmapCheck(x, y+dy, cm) && (c == 0 || !IsWallBlocking(x, y+dy, c)))
 				{
 					coord_stack[coord_stack_size][0] = x;
 					coord_stack[coord_stack_size][1] = y+dy;
