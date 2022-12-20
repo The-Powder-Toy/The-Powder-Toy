@@ -2328,6 +2328,8 @@ bool Simulation::IsWallBlocking(int x, int y, int type)
 			return true;
 		else if (wall == WL_EWALL && !emap[y/CELL][x/CELL])
 			return true;
+		else if (wall == WL_DETECT && (elements[type].Properties&TYPE_SOLID))
+			return true;
 	}
 	return false;
 }
@@ -3224,8 +3226,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			return -1;
 		}
 		else if (IsWallBlocking(x, y, t))
-			return -1;
-		else if (bmap[y/CELL][x/CELL]==WL_DETECT && elements[t].Properties & TYPE_SOLID)
 			return -1;
 		else if (photons[y][x] && (elements[t].Properties & TYPE_ENERGY))
 			return -1;
