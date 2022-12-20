@@ -4077,6 +4077,8 @@ void LuaScriptInterface::initEventAPI()
 	lua_pushinteger(l, LuaEvents::tick); lua_setfield(l, -2, "tick");
 	lua_pushinteger(l, LuaEvents::blur); lua_setfield(l, -2, "blur");
 	lua_pushinteger(l, LuaEvents::close); lua_setfield(l, -2, "close");
+	lua_pushinteger(l, LuaEvents::beforesim); lua_setfield(l, -2, "beforesim");
+	lua_pushinteger(l, LuaEvents::aftersim); lua_setfield(l, -2, "aftersim");
 }
 
 int LuaScriptInterface::event_register(lua_State * l)
