@@ -3484,6 +3484,7 @@ void Simulation::UpdateParticles(int start, int end)
 	for (i = start; i <= end && i <= parts_lastActiveIndex; i++)
 		if (parts[i].type)
 		{
+			debug_mostRecentlyUpdated = i;
 			t = parts[i].type;
 
 			x = (int)(parts[i].x+0.5f);
@@ -5183,6 +5184,8 @@ void Simulation::BeforeSim()
 
 void Simulation::AfterSim()
 {
+	debug_mostRecentlyUpdated = -1;
+
 	if (emp_trigger_count)
 	{
 		// pitiful attempt at trying to keep code relating to a given element in the same file

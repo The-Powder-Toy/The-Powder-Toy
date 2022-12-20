@@ -939,6 +939,8 @@ void LuaScriptInterface::initSimulationAPI()
 		{"listCustomGol", simulation_listCustomGol},
 		{"addCustomGol", simulation_addCustomGol},
 		{"removeCustomGol", simulation_removeCustomGol},
+		{"lastUpdatedID", simulation_lastUpdatedID},
+		{"updateUpTo", simulation_updateUpTo},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -2475,6 +2477,53 @@ int LuaScriptInterface::simulation_removeCustomGol(lua_State *l)
 		luacon_model->BuildMenus();
 	lua_pushboolean(l, removedAny);
 	return 1;
+}
+
+int LuaScriptInterface::simulation_lastUpdatedID(lua_State *l)
+{
+	if (luacon_sim->debug_mostRecentlyUpdated != -1)
+	{
+		lua_pushinteger(l, luacon_sim->debug_mostRecentlyUpdated);
+	}
+	else
+	{
+		lua_pushnil(l);
+	}
+	return 1;
+}
+
+int LuaScriptInterface::simulation_updateUpTo(lua_State *l)
+{
+	int upTo = NPART - 1;
+	if (lua_gettop(l) > 0)
+	{
+		upTo = luaL_checkinteger(l, 1);
+	}
+	if (upTo < 0 || upTo >= NPART)
+	{
+		return luaL_error(l, "ID not in valid range");
+	}
+	if (upTo < luacon_sim->debug_currentParticle)
+	{
+		upTo = NPART - 1;
+	}
+	if (luacon_sim->debug_currentParticle == 0)
+	{
+		luacon_sim->framerender = 1;
+		luacon_sim->BeforeSim();
+		luacon_sim->framerender = 0;
+	}
+	luacon_sim->UpdateParticles(luacon_sim->debug_currentParticle, upTo);
+	if (upTo < NPART - 1)
+	{
+		luacon_sim->debug_currentParticle = upTo + 1;
+	}
+	else
+	{
+		luacon_sim->AfterSim();
+		luacon_sim->debug_currentParticle = 0;
+	}
+	return 0;
 }
 
 //// Begin Renderer API
