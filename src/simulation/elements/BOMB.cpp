@@ -64,7 +64,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					int rad = 8, nt;
 					int nxi, nxj;
-					pmap[y][x] = 0;
+					sim->kill_part(i);
 					for (nxj=-rad; nxj<=rad; nxj++)
 						for (nxi=-rad; nxi<=rad; nxi++)
 							if ((pow((float)nxi,2))/(pow((float)rad,2))+(pow((float)nxj,2))/(pow((float)rad,2))<=1)
@@ -103,7 +103,6 @@ static int update(UPDATE_FUNC_ARGS)
 									parts[nb].vy = float(RNG::Ref().between(-20, 20));
 								}
 							}
-					sim->kill_part(i);
 					return 1;
 				}
 			}
