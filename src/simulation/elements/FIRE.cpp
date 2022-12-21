@@ -251,9 +251,9 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 						if (rx > 1 || rx < -1) // Trend veins vertical
 							parts[i].tmp = 1;
 					}
-					else if (parts[i].ctype == PT_SALT && rt == PT_GLAS && parts[ID(r)].life < 250) 
+					else if (parts[i].ctype == PT_SALT && rt == PT_GLAS && parts[ID(r)].life < 234 * 120)
 					{
-						parts[ID(r)].tmp4 += 1;
+						parts[ID(r)].life++;
 					}
 				}
 

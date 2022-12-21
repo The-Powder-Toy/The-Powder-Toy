@@ -49,23 +49,17 @@ void Element::Element_GLAS()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	if (parts[i].tmp4 >= 120) // To make life increments not so random but still way more controllable (1 for every 120 frames).
-	{
-		parts[i].tmp4 = 0;
-		parts[i].life += 1;
-	}
-	if (parts[i].life < 16)// Compatibilty stuff
-	{
-		parts[i].life = 16;
-	}
 	auto press = int(sim->pv[y/CELL][x/CELL] * 64);
 	auto diff = press - parts[i].tmp3;
 
 	// Determine whether the GLAS is chemically strengthened via .life setting. (250 = Max., 16 = Min.)
-		if (diff > parts[i].life || diff < -1*(parts[i].life))
-		{
-			sim->part_change_type(i, x, y, PT_BGLA);
-		}
+	int strength = (parts[i].life / 120) + 16;
+	if (strength < 16)
+		strength = 16;
+	if (diff > strength || diff < -1 * strength)
+	{
+		sim->part_change_type(i, x, y, PT_BGLA);
+	}
 	parts[i].tmp3 = press;
 	return 0;
 }
