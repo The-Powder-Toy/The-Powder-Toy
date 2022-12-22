@@ -16,8 +16,9 @@ class ReadBDFError(RuntimeError):
 
 
 class FontTool:
-    def __init__(self):
-        with open(FONT_CPP, 'rb') as font_cpp:
+    def __init__(self, file):
+        self.file = file
+        with open(self.file, 'rb') as font_cpp:
             font_cpp_data = bz2.decompress(font_cpp.read())
         i = 0
         self.code_points = [False for _ in range(CP_MAX + 2)]
@@ -36,7 +37,7 @@ class FontTool:
                 l.append((i >> 8) & 0xFF)
                 l.append((i >> 16) & 0xFF)
                 l += data
-        with open(FONT_CPP, 'wb') as font_cpp:
+        with open(self.file, 'wb') as font_cpp:
             font_cpp.write(bz2.compress(bytes(l)))
 
     def pack(cp_matrix):
@@ -72,6 +73,17 @@ class FontTool:
                 buf >>= 2
                 bits -= 2
         return cp_matrix
+
+    def dump(self, i, print):
+        lut = ['  ', '░░', '▒▒', '▓▓']
+        if self.code_points[i]:
+            print('code point %i (%c)' % (i, i))
+            print('')
+            for l in [''.join([lut[ch] for ch in row]) for row in FontTool.unpack(self.code_points[i])]:
+                print(l)
+            print('')
+        else:
+            print('code point %i (%c) is not available' % (i, i))
 
 
 class RawReader:
@@ -174,6 +186,8 @@ class BDFReader:
                     if not startchar:
                         global_dw = char_dw
 
+def pad_str(s, pad, n):
+    return s + pad * (n - len(s))
 
 if __name__ == "__main__":
 
@@ -201,31 +215,35 @@ structures laid out as follows:
   * the width in pixels of the character being described;
   * width times %i brightness levels between 0 and 3, a row-major matrix.""")
 
-    remove = command.add_parser("remove", help="Remove")
+    remove = command.add_parser("remove", help="Remove a range of characters")
     remove.add_argument("first", metavar="FIRST", type=int)
     remove.add_argument("last", metavar="LAST", type=int, default=None, nargs="?", help="Defaults to FIRST")
 
-    copy = command.add_parser("copy", help="Copy")
+    copy = command.add_parser("copy", help="Copy a range of characters to another range")
     copy.add_argument("dest", metavar="DSTFIRST", type=int)
     copy.add_argument("first", metavar="SRCFIRST", type=int)
     copy.add_argument("last", metavar="SRCLAST", type=int, default=None, nargs="?", help="Defaults to SRCFIRST")
 
-    inspect = command.add_parser("inspect", help="Inspect")
+    inspect = command.add_parser("inspect", help="Inspect a range of characters")
     inspect.add_argument("first", metavar="FIRST", type=int)
     inspect.add_argument("last", metavar="LAST", type=int, default=None, nargs="?", help="Defaults to FIRST")
 
+    diff = command.add_parser("diff", help="Prints subranges that changed between the current and an external font file")
+    diff.add_argument("external", metavar="EXTERNAL", help="External font.bz2")
+
     args = parser.parse_args()
 
-    cp_first = args.first
-    if args.last is None:
-        cp_last = cp_first
-    else:
-        cp_last = args.last
-    if cp_first < 0 or cp_last > CP_MAX or cp_first > cp_last:
-        print('invalid range')
-        exit(1)
+    if 'first' in args:
+        cp_first = args.first
+        if args.last is None:
+            cp_last = cp_first
+        else:
+            cp_last = args.last
+        if cp_first < 0 or cp_last > CP_MAX or cp_first > cp_last:
+            print('invalid range')
+            exit(1)
 
-    ft = FontTool()
+    ft = FontTool(FONT_CPP)
 
     if args.command == "addbdf":
         xoffs = args.xoffs
@@ -250,12 +268,23 @@ structures laid out as follows:
             ft.code_points[i + (args.dest - cp_first)] = ft.code_points[i]
         ft.commit()
     elif args.command == 'inspect':
-        lut = ['  ', '░░', '▒▒', '▓▓']
         for i in range(cp_first, cp_last + 1):
-            if ft.code_points[i]:
-                print('code point %i (%c)' % (i, i))
-                print('')
-                print('\n'.join([''.join([lut[ch] for ch in row]) for row in FontTool.unpack(ft.code_points[i])]))
-                print('')
-            else:
-                print('code point %i (%c) is not available' % (i, i))
+            ft.dump(i, print)
+    elif args.command == 'diff':
+        pad_to = 50
+        eft = FontTool(args.external)
+        for i in range(0, CP_MAX + 1):
+            if eft.code_points[i] != ft.code_points[i]:
+                cur = []
+                def add_cur(line):
+                    global cur
+                    cur.append(line)
+                ft.dump(i, add_cur)
+                ext = []
+                def add_ext(line):
+                    global ext
+                    ext.append(line)
+                eft.dump(i, add_ext)
+                print('#' * (2 * pad_to + 7))
+                for j in range(max(len(cur), len(ext))):
+                    print('# ' + pad_str(j < len(cur) and cur[j] or '', ' ', pad_to) + ' # ' + pad_str(j < len(ext) and ext[j] or '', ' ', pad_to) + ' #')
