@@ -891,7 +891,7 @@ void GameController::Update()
 	sim->BeforeSim();
 	if (!sim->sys_pause || sim->framerender)
 	{
-		sim->UpdateParticles(0, NPART);
+		sim->UpdateParticles(0, NPART - 1);
 		sim->AfterSim();
 	}
 
