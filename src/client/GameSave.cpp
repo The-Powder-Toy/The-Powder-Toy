@@ -1852,8 +1852,8 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		}
 	}
 
-	if (p >= dataLength)
-		throw ParseException(ParseException::Corrupt, "Ran past data buffer");
+	if (p == dataLength) // no sign data, "version 1" PSv
+		return;
 
 	j = data[p++];
 	for (i=0; i<j; i++)
