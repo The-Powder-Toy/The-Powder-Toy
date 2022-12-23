@@ -52,28 +52,16 @@ static int update(UPDATE_FUNC_ARGS)
 	auto press = int(sim->pv[y/CELL][x/CELL] * 64);
 	auto diff = press - parts[i].tmp3;
 
-	// Determine whether the GLAS is chemically strengthened via life setting.
-	if (parts[i].life > 0) 
+	// Determine whether the GLAS is chemically strengthened via .life setting. (250 = Max., 16 = Min.)
+	int strength = (parts[i].life / 120) + 16;
+	if (strength < 16)
+		strength = 16;
+	if (diff > strength || diff < -1 * strength)
 	{
-		// determined to be strengthened GLAS, increase the pressure by which it shatters
-		// set to 160 because that's a value where the effect is noticable. the 3x increase didn't do much
-		if (diff > 160 || diff < -160)
-		{
-			sim->part_change_type(i, x, y, PT_BGLA);
-		}
+		sim->part_change_type(i, x, y, PT_BGLA);
 	}
-	else 
-	{
-		// regular ol' GLAS
-		if (diff > 16 || diff < -16)
-		{
-			sim->part_change_type(i, x, y, PT_BGLA);
-		}
-	}
-	
 	parts[i].tmp3 = press;
 	return 0;
-	
 }
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
