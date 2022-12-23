@@ -23,9 +23,9 @@ void ParticleDebug::Debug(int mode, int x, int y)
 		if (!sim->NUM_PARTS)
 			return;
 		i = debug_currentParticle;
-		while (i < NPART && !sim->parts[i].type)
+		while (i < NPART - 1 && !sim->parts[i].type)
 			i++;
-		if (i == NPART)
+		if (i == NPART - 1)
 			logmessage = "End of particles reached, updated sim";
 		else
 			logmessage = String::Build("Updated particle #", i);
