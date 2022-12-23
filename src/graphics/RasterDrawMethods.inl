@@ -17,6 +17,7 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const String &str, int r, int g, 
 	if(!str.size())
 		return 0;
 
+	bool underline = false;
 	int invert = 0;
 	int oR = r, oG = g, oB = b;
 	int characterX = x, characterY = y;
@@ -57,18 +58,20 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const String &str, int r, int g, 
 		{
 			if (str.length() <= i + 1)
 				break;
+			auto colorCode = false;
 			switch (str[i + 1])
 			{
-			case 'w': r = 255; g = 255; b = 255; break;
-			case 'g': r = 192; g = 192; b = 192; break;
-			case 'o': r = 255; g = 216; b =  32; break;
-			case 'r': r = 255; g =   0; b =   0; break;
-			case 'l': r = 255; g =  75; b =  75; break;
-			case 'b': r =   0; g =   0; b = 255; break;
-			case 't': b = 255; g = 170; r =  32; break;
-			case 'u': r = 147; g =  83; b = 211; break;
+			case 'U':                    underline = !underline; break;
+			case 'w': r = 255; g = 255; b = 255; colorCode = true; break;
+			case 'g': r = 192; g = 192; b = 192; colorCode = true; break;
+			case 'o': r = 255; g = 216; b =  32; colorCode = true; break;
+			case 'r': r = 255; g =   0; b =   0; colorCode = true; break;
+			case 'l': r = 255; g =  75; b =  75; colorCode = true; break;
+			case 'b': r =   0; g =   0; b = 255; colorCode = true; break;
+			case 't': b = 255; g = 170; r =  32; colorCode = true; break;
+			case 'u': r = 147; g =  83; b = 211; colorCode = true; break;
 			}
-			if(invert)
+			if (colorCode && invert)
 			{
 				r = 255-r;
 				g = 255-g;
@@ -78,7 +81,15 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const String &str, int r, int g, 
 		}
 		else
 		{
-			characterX = drawchar(characterX, characterY, str[i], r, g, b, a);
+			auto newCharacterX = drawchar(characterX, characterY, str[i], r, g, b, a);
+			if (underline)
+			{
+				for (int i = characterX; i < newCharacterX; ++i)
+				{
+					blendpixel(i, y + FONT_H, r, g, b, a);
+				}
+			}
+			characterX = newCharacterX;
 		}
 	}
 	return x;
