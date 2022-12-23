@@ -164,11 +164,11 @@ GameController::~GameController()
 	}
 }
 
-void GameController::HistoryRestore()
+bool GameController::HistoryRestore()
 {
 	if (!gameModel->HistoryCanRestore())
 	{
-		return;
+		return false;
 	}
 	// * When undoing for the first time since the last call to HistorySnapshot, save the current state.
 	//   Ctrl+Y needs this in order to bring you back to the point right before your last Ctrl+Z, because
@@ -182,6 +182,8 @@ void GameController::HistoryRestore()
 	auto &current = *gameModel->HistoryCurrent();
 	gameModel->GetSimulation()->Restore(current);
 	Client::Ref().OverwriteAuthorInfo(current.Authors);
+
+	return true;
 }
 
 void GameController::HistorySnapshot()
@@ -192,11 +194,11 @@ void GameController::HistorySnapshot()
 	gameModel->HistoryPush(gameModel->GetSimulation()->CreateSnapshot());
 }
 
-void GameController::HistoryForward()
+bool GameController::HistoryForward()
 {
 	if (!gameModel->HistoryCanForward())
 	{
-		return;
+		return false;
 	}
 	gameModel->HistoryForward();
 	// * If gameModel has nothing more to give, we've Ctrl+Y'd our way back to the original
@@ -208,6 +210,8 @@ void GameController::HistoryForward()
 	{
 		beforeRestore.reset();
 	}
+
+	return true;
 }
 
 GameView * GameController::GetView()

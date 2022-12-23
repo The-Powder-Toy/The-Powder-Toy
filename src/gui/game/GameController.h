@@ -87,9 +87,9 @@ public:
 
 	void Install();
 
-	void HistoryRestore();
+	bool HistoryRestore();
 	void HistorySnapshot();
-	void HistoryForward();
+	bool HistoryForward();
 
 	void AdjustGridSize(int direction);
 	void InvertAirSim();
