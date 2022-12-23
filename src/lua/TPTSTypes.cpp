@@ -11,22 +11,12 @@ ValueType AnyType::GetType()
 	return type;
 }
 
-AnyType::AnyType(const AnyType & v):
-	type(v.type),
-	value(v.value)
-{
-	if(type == TypeString)
-		value.str = new String(*(value.str));
-	else if(type == TypePoint)
-		value.pt = new ui::Point(*(value.pt));
-}
-
 AnyType::operator NumberType()
 {
 	if (type == TypeNumber)
-		return NumberType(value.num);
+		return NumberType(std::get<int>(value));
 	else if (type == TypeFloat)
-		return NumberType(int(value.numf));
+		return NumberType(int(std::get<float>(value)));
 	else
 		throw InvalidConversionException(type, TypeNumber);
 }
@@ -34,9 +24,9 @@ AnyType::operator NumberType()
 AnyType::operator FloatType()
 {
 	if (type == TypeNumber)
-		return FloatType(float(value.num));
+		return FloatType(float(std::get<int>(value)));
 	else if (type == TypeFloat)
-		return FloatType(value.numf);
+		return FloatType(std::get<float>(value));
 	else
 		throw InvalidConversionException(type, TypeFloat);
 }
@@ -47,13 +37,13 @@ AnyType::operator StringType()
 	{
 		return StringType(String::Build(((NumberType *)this)->Value()));
 	}
-	else if(type == TypeString && value.str)
+	else if(type == TypeString && std::holds_alternative<String>(value))
 	{
-		return StringType(*(value.str));
+		return StringType(std::get<String>(value));
 	}
-	else if (type == TypePoint && value.pt)
+	else if (type == TypePoint && std::holds_alternative<ui::Point>(value))
 	{
-		ui::Point thisPoint = *(value.pt);
+		ui::Point thisPoint = std::get<ui::Point>(value);
 		return StringType(String::Build(thisPoint.X, ",", thisPoint.Y));
 	}
 	else
@@ -65,12 +55,12 @@ AnyType::operator PointType()
 {
 	if(type == TypePoint)
 	{
-		return PointType(*(value.pt));
+		return PointType(std::get<ui::Point>(value));
 	}
 	else if(type == TypeString)
 	{
 		int x, y;
-		if(String::Split comma = (*value.str).SplitNumber(x))
+		if(String::Split comma = std::get<String>(value).SplitNumber(x))
 			if(comma.After().BeginsWith(","))
 				if(String::Split end = comma.After().Substr(1).SplitNumber(y))
 					if(!end.After().size())
@@ -81,63 +71,55 @@ AnyType::operator PointType()
 		throw InvalidConversionException(type, TypePoint);
 }
 
-AnyType::~AnyType()
-{
-	if(type == TypeString)
-		delete value.str;
-	else if(type == TypePoint)
-		delete value.pt;
-}
-
 //Number Type
 
 NumberType::NumberType(int number): AnyType(TypeNumber, ValueValue())
 {
-	value.num = number;
+	value = number;
 }
 
 int NumberType::Value()
 {
-	return value.num;
+	return std::get<int>(value);
 }
 
 //Float Type
 
 FloatType::FloatType(float number): AnyType(TypeFloat, ValueValue())
 {
-	value.numf = number;
+	value = number;
 }
 
 float FloatType::Value()
 {
-	return value.numf;
+	return std::get<float>(value);
 }
 
 //String type
 
 StringType::StringType(String string):	AnyType(TypeString, ValueValue())
 {
-	value.str = new String(string);
+	value = string;
 }
 
 String StringType::Value()
 {
-	return *value.str;
+	return std::get<String>(value);
 }
 
 //Point type
 
 PointType::PointType(ui::Point point): AnyType(TypePoint, ValueValue())
 {
-	value.pt = new ui::Point(point);
+	value = point;
 }
 
 PointType::PointType(int pointX, int pointY): AnyType(TypePoint, ValueValue())
 {
-	value.pt = new ui::Point(pointX, pointY);
+	value = ui::Point(pointX, pointY);
 }
 
 ui::Point PointType::Value()
 {
-	return *value.pt;
+	return std::get<ui::Point>(value);
 }
