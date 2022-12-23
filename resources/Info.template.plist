@@ -63,7 +63,7 @@
 		<key>CFBundleVersion</key>
 		<string>SUBST_SAVE_VERSION.SUBST_MINOR_VERSION (build SUBST_BUILD_NUM)</string>
 		<key>LSMinimumSystemVersion</key>
-		<string>10.9.0</string>
+		<string>SUBST_MACOS_MIN_VER</string>
 		<key>NSPrincipalClass</key>
 		<string>NSApplication</string>
 	</dict>

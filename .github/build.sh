@@ -55,7 +55,9 @@ function inplace_sed() {
 
 function subst_version() {
 	local path=$1
-	if [[ $BSH_HOST_PLATFORM != darwin ]]; then
+	if [[ $BSH_HOST_PLATFORM == darwin ]]; then
+		inplace_sed "s|SUBST_MACOS_MIN_VER|$macos_min_ver|g" $path
+	else
 		inplace_sed "s|SUBST_DATE|$(date --iso-8601)|g" $path
 	fi
 	inplace_sed "s|SUBST_SAVE_VERSION|$save_version|g" $path
@@ -91,17 +93,16 @@ elif [[ $BSH_HOST_PLATFORM == darwin ]]; then
 	CC=clang
 	CXX=clang++
 	if [[ $BSH_HOST_ARCH == aarch64 ]]; then
-		if [[ $BSH_STATIC_DYNAMIC == static ]]; then
-			export MACOSX_DEPLOYMENT_TARGET=11.0
-		fi
+		macos_min_ver=11.0
 		CC+=" -arch arm64"
 		CXX+=" -arch arm64"
 	else
-		if [[ $BSH_STATIC_DYNAMIC == static ]]; then
-			export MACOSX_DEPLOYMENT_TARGET=10.9
-		fi
+		macos_min_ver=10.13
 		CC+=" -arch x86_64"
 		CXX+=" -arch x86_64"
+	fi
+	if [[ $BSH_STATIC_DYNAMIC == static ]]; then
+		export MACOSX_DEPLOYMENT_TARGET=$macos_min_ver
 	fi
 	export CC
 	export CXX
@@ -146,13 +147,8 @@ if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC != windows-msvc ]]; then
 	fi
 fi
 if [[ $BSH_HOST_PLATFORM-$BSH_STATIC_DYNAMIC == darwin-static ]]; then
-	if [[ $BSH_HOST_ARCH == aarch64 ]]; then
-		c_args+=\'-mmacosx-version-min=11.0\',
-		c_link_args+=\'-mmacosx-version-min=11.0\',
-	else
-		c_args+=\'-mmacosx-version-min=10.9\',
-		c_link_args+=\'-mmacosx-version-min=10.9\',
-	fi
+	c_args+=\'-mmacosx-version-min=$macos_min_ver\',
+	c_link_args+=\'-mmacosx-version-min=$macos_min_ver\',
 fi
 
 meson_configure=meson$'\t'setup

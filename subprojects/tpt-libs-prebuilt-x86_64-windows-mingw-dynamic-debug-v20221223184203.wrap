@@ -1,0 +1,6 @@
+[wrap-file]
+directory = tpt-libs-prebuilt-x86_64-windows-mingw-dynamic-debug-v20221223184203
+
+source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20221223184203/tpt-libs-prebuilt-x86_64-windows-mingw-dynamic-debug-v20221223184203.zip
+source_filename = tpt-libs-prebuilt-x86_64-windows-mingw-dynamic-debug-v20221223184203.zip
+source_hash = 9b6c40b30a9a3851a393eea6e070845d447a1d09812e31fe2da721854b6d76ad
