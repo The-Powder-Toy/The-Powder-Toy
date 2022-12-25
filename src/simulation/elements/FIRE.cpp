@@ -353,10 +353,10 @@ static int updateLegacy(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	int caddress = int(restrict_flt(float(cpart->life), 0, 199)) * 3;
-	*colr = (unsigned char)ren->flm_data[caddress];
-	*colg = (unsigned char)ren->flm_data[caddress+1];
-	*colb = (unsigned char)ren->flm_data[caddress+2];
+	auto color = Renderer::flameTableAt(cpart->life);
+	*colr = PIXR(color);
+	*colg = PIXG(color);
+	*colb = PIXB(color);
 
 	*firea = 255;
 	*firer = *colr;

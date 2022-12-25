@@ -10,7 +10,6 @@
 #include "bzip2/bz2wrap.h"
 #include "Config.h"
 #include "Format.h"
-#include "hmap.h"
 
 #include "simulation/Simulation.h"
 #include "simulation/ElementClasses.h"
@@ -18,6 +17,7 @@
 #include "common/tpt-minmax.h"
 #include "common/tpt-compat.h"
 #include "bson/BSON.h"
+#include "graphics/Renderer.h"
 
 static void ConvertJsonToBson(bson *b, Json::Value j, int depth = 0);
 static void ConvertBsonToJson(bson_iterator *b, Json::Value *j, int depth = 0);
@@ -404,6 +404,7 @@ static void CheckBsonFieldFloat(bson_iterator iter, const char *field, float *se
 
 void GameSave::readOPS(const std::vector<char> &data)
 {
+	Renderer::PopulateTables();
 
 	unsigned char *inputData = (unsigned char*)&data[0], *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
 	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL, *ambientData = NULL;
@@ -1078,10 +1079,9 @@ void GameSave::readOPS(const std::vector<char> &data)
 					case PT_FIRW:
 						if (particles[newIndex].tmp>=2 && savedVersion < 81)
 						{
-							auto caddress = int(restrict_flt(float(particles[newIndex].tmp-4), 0.0f, 199.0f)) * 3;
 							particles[newIndex].type = PT_EMBR;
+							particles[newIndex].ctype = Renderer::firwTableAt(particles[newIndex].tmp - 4);
 							particles[newIndex].tmp = 1;
-							particles[newIndex].ctype = (((firw_data[caddress]))<<16) | (((firw_data[caddress+1]))<<8) | ((firw_data[caddress+2]));
 						}
 						break;
 					case PT_PSTN:
@@ -1243,6 +1243,8 @@ void GameSave::readOPS(const std::vector<char> &data)
 
 void GameSave::readPSv(const std::vector<char> &dataVec)
 {
+	Renderer::PopulateTables();
+
 	unsigned char * saveData = (unsigned char *)&dataVec[0];
 	auto dataLength = int(dataVec.size());
 	int q,j,k,x,y,p=0, ver, pty, ty, legacy_beta=0;
@@ -1800,10 +1802,9 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 				}
 				if (particles[i-1].type==PT_FIRW && particles[i-1].tmp>=2)
 				{
-					auto caddress = int(restrict_flt(float(particles[i-1].tmp-4), 0.0f, 199.0f))*3;
 					particles[i-1].type = PT_EMBR;
+					particles[i-1].ctype = Renderer::firwTableAt(particles[i-1].tmp-4);
 					particles[i-1].tmp = 1;
-					particles[i-1].ctype = (((firw_data[caddress]))<<16) | (((firw_data[caddress+1]))<<8) | ((firw_data[caddress+2]));
 				}
 			}
 			if (ver < 89)

@@ -1,5 +1,4 @@
 #include "simulation/ElementCommon.h"
-#include "hmap.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
@@ -51,10 +50,10 @@ void Element::Element_CFLM()
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	int caddress = int(restrict_flt(float(cpart->life / 2), 0, 199)) * 3;
-	*colr = hflm_data[caddress];
-	*colg = hflm_data[caddress+1];
-	*colb = hflm_data[caddress+2];
+	auto color = Renderer::clfmTableAt(cpart->life / 2);
+	*colr = PIXR(color);
+	*colg = PIXG(color);
+	*colb = PIXB(color);
 
 	*firea = 255;
 	*firer = *colr;

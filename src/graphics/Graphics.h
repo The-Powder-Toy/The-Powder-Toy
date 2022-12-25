@@ -80,8 +80,14 @@ public:
 	pixel *vid;
 	int sdl_scale;
 
-	//Common graphics methods in Graphics.cpp
-	static char * GenerateGradient(pixel * colours, float * points, int pointcount, int size);
+	struct GradientStop
+	{
+		pixel color;
+		float point;
+
+		bool operator <(const GradientStop &other) const;
+	};
+	static std::vector<pixel> Gradient(std::vector<GradientStop> stops, int resolution);
 
 	//PTIF methods
 	static pixel *resample_img_nn(pixel *src, int sw, int sh, int rw, int rh);

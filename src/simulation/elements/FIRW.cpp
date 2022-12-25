@@ -1,5 +1,4 @@
 #include "simulation/ElementCommon.h"
-#include "hmap.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -88,17 +87,14 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	else //if (parts[i].tmp>=2)
 	{
-		float angle, magnitude;
-		int caddress = RNG::Ref().between(0, 199) * 3;
-		int n;
-		unsigned col = (((firw_data[caddress]))<<16) | (((firw_data[caddress+1]))<<8) | ((firw_data[caddress+2]));
-		for (n=0; n<40; n++)
+		unsigned col = Renderer::firwTableAt(RNG::Ref().between(0, 199));
+		for (int n=0; n<40; n++)
 		{
 			np = sim->create_part(-3, x, y, PT_EMBR);
 			if (np>-1)
 			{
-				magnitude = RNG::Ref().between(40, 99) * 0.05f;
-				angle = RNG::Ref().between(0, 6283) * 0.001f;//(in radians, between 0 and 2*pi)
+				auto magnitude = RNG::Ref().between(40, 99) * 0.05f;
+				auto angle = RNG::Ref().between(0, 6283) * 0.001f;//(in radians, between 0 and 2*pi)
 				parts[np].vx = parts[i].vx*0.5f + cosf(angle)*magnitude;
 				parts[np].vy = parts[i].vy*0.5f + sinf(angle)*magnitude;
 				parts[np].ctype = col;

@@ -25,7 +25,6 @@
 #include "lua/LuaScriptHelper.h"
 #include "lua/LuaSmartRef.h"
 #endif
-#include "hmap.h"
 
 #define VIDXRES WINDOWW
 #define VIDYRES WINDOWH
@@ -701,7 +700,7 @@ void Renderer::prepare_alpha(int size, float intensity)
 #ifndef FONTEDITOR
 void Renderer::render_parts()
 {
-	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y, caddress;
+	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y;
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
 	float gradv, flicker;
 	Particle * parts;
@@ -790,7 +789,7 @@ void Renderer::render_parts()
 				if((elements[t].Properties & PROP_HOT_GLOW) && sim->parts[i].temp>(elements[t].HighTemperature-800.0f))
 				{
 					gradv = 3.1415/(2*elements[t].HighTemperature-(elements[t].HighTemperature-800.0f));
-					caddress = int((sim->parts[i].temp>elements[t].HighTemperature)?elements[t].HighTemperature-(elements[t].HighTemperature-800.0f):sim->parts[i].temp-(elements[t].HighTemperature-800.0f));
+					auto caddress = int((sim->parts[i].temp>elements[t].HighTemperature)?elements[t].HighTemperature-(elements[t].HighTemperature-800.0f):sim->parts[i].temp-(elements[t].HighTemperature-800.0f));
 					colr += int(sin(gradv*caddress) * 226);
 					colg += int(sin(gradv*caddress*4.55 +3.14) * 34);
 					colb += int(sin(gradv*caddress*2.22 +3.14) * 64);
@@ -814,11 +813,11 @@ void Renderer::render_parts()
 				{
 					constexpr float min_temp = MIN_TEMP;
 					constexpr float max_temp = MAX_TEMP;
-					caddress = int(restrict_flt((sim->parts[i].temp - min_temp) / (max_temp - min_temp) * 1024, 0, 1023)) * 3;
 					firea = 255;
-					firer = colr = color_data[caddress];
-					fireg = colg = color_data[caddress+1];
-					fireb = colb = color_data[caddress+2];
+					auto color = heatTableAt(int((sim->parts[i].temp - min_temp) / (max_temp - min_temp) * 1024));
+					firer = colr = PIXR(color);
+					fireg = colg = PIXG(color);
+					fireb = colb = PIXB(color);
 					cola = 255;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW))
 						pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
@@ -1322,8 +1321,8 @@ int HeatToColour(float temp)
 {
 	constexpr float min_temp = MIN_TEMP;
 	constexpr float max_temp = MAX_TEMP;
-	int caddress = int(restrict_flt((temp - min_temp) / (max_temp - min_temp) * 1024, 0, 1023)) * 3;
-	return PIXRGB((int)(color_data[caddress]*0.7f), (int)(color_data[caddress+1]*0.7f), (int)(color_data[caddress+2]*0.7f));
+	auto color = Renderer::heatTableAt(int((temp - min_temp) / (max_temp - min_temp) * 1024));
+	return PIXRGB((int)(PIXR(color)*0.7f), (int)(PIXG(color)*0.7f), (int)(PIXB(color)*0.7f));
 }
 
 void Renderer::draw_air()
@@ -1444,6 +1443,65 @@ pixel Renderer::GetPixel(int x, int y)
 	return vid[(y*VIDXRES)+x];
 }
 
+std::vector<pixel> Renderer::flameTable;
+std::vector<pixel> Renderer::plasmaTable;
+std::vector<pixel> Renderer::heatTable;
+std::vector<pixel> Renderer::clfmTable;
+std::vector<pixel> Renderer::firwTable;
+static bool tablesPopulated = false;
+static std::mutex tablesPopulatedMx;
+void Renderer::PopulateTables()
+{
+	std::lock_guard g(tablesPopulatedMx);
+	if (!tablesPopulated)
+	{
+		tablesPopulated = true;
+		flameTable = Graphics::Gradient({
+			{ 0x000000, 0.00f },
+			{ 0x60300F, 0.50f },
+			{ 0xDFBF6F, 0.90f },
+			{ 0xAF9F0F, 1.00f },
+		}, 200);
+		plasmaTable = Graphics::Gradient({
+			{ 0x000000, 0.00f },
+			{ 0x301040, 0.25f },
+			{ 0x301060, 0.50f },
+			{ 0xAFFFFF, 0.90f },
+			{ 0xAFFFFF, 1.00f },
+		}, 200);
+		heatTable = Graphics::Gradient({
+			{ 0x2B00FF, 0.00f },
+			{ 0x003CFF, 0.01f },
+			{ 0x00C0FF, 0.05f },
+			{ 0x00FFEB, 0.08f },
+			{ 0x00FF14, 0.19f },
+			{ 0x4BFF00, 0.25f },
+			{ 0xC8FF00, 0.37f },
+			{ 0xFFDC00, 0.45f },
+			{ 0xFF0000, 0.71f },
+			{ 0xFF00DC, 1.00f },
+		}, 1024);
+		clfmTable = Graphics::Gradient({
+			{ 0x000000, 0.00f },
+			{ 0x0A0917, 0.10f },
+			{ 0x19163C, 0.20f },
+			{ 0x28285E, 0.30f },
+			{ 0x343E77, 0.40f },
+			{ 0x49769A, 0.60f },
+			{ 0x57A0B4, 0.80f },
+			{ 0x5EC4C6, 1.00f },
+		}, 200);
+		firwTable = Graphics::Gradient({
+			{ 0xFF00FF, 0.00f },
+			{ 0x0000FF, 0.20f },
+			{ 0x00FFFF, 0.40f },
+			{ 0x00FF00, 0.60f },
+			{ 0xFFFF00, 0.80f },
+			{ 0xFF0000, 1.00f },
+		}, 200);
+	}
+}
+
 Renderer::Renderer(Graphics * g, Simulation * sim):
 	sim(NULL),
 	g(NULL),
@@ -1466,6 +1524,8 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	ZFACTOR(8),
 	gridSize(0)
 {
+	PopulateTables();
+
 	this->g = g;
 	this->sim = sim;
 	vid = g->vid;
@@ -1550,17 +1610,6 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	//Prepare the graphics cache
 	graphicscache = new gcache_item[PT_NUM];
 	std::fill(&graphicscache[0], &graphicscache[PT_NUM], gcache_item());
-
-	int fireColoursCount = 4;
-	pixel fireColours[] = {PIXPACK(0xAF9F0F), PIXPACK(0xDFBF6F), PIXPACK(0x60300F), PIXPACK(0x000000)};
-	float fireColoursPoints[] = {1.0f, 0.9f, 0.5f, 0.0f};
-
-	int plasmaColoursCount = 5;
-	pixel plasmaColours[] = {PIXPACK(0xAFFFFF), PIXPACK(0xAFFFFF), PIXPACK(0x301060), PIXPACK(0x301040), PIXPACK(0x000000)};
-	float plasmaColoursPoints[] = {1.0f, 0.9f, 0.5f, 0.25, 0.0f};
-
-	flm_data = Graphics::GenerateGradient(fireColours, fireColoursPoints, fireColoursCount, 200);
-	plasma_data = Graphics::GenerateGradient(plasmaColours, plasmaColoursPoints, plasmaColoursCount, 200);
 
 	prepare_alpha(CELL, 1.0f);
 }
@@ -1709,8 +1758,6 @@ Renderer::~Renderer()
 	delete[] persistentVid;
 	delete[] warpVid;
 	delete[] graphicscache;
-	free(flm_data);
-	free(plasma_data);
 }
 
 #define PIXELMETHODS_CLASS Renderer

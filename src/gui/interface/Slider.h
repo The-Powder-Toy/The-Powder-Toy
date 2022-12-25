@@ -3,6 +3,7 @@
 
 #include "Component.h"
 #include "Colour.h"
+#include "graphics/Pixel.h"
 
 #include <functional>
 
@@ -12,7 +13,7 @@ class Slider : public ui::Component
 	int sliderSteps;
 	int sliderPosition;
 	bool isMouseDown;
-	unsigned char * bgGradient;
+	std::vector<pixel> bgGradient;
 
 	struct SliderAction
 	{

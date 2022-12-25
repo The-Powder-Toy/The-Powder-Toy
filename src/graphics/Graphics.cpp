@@ -137,58 +137,6 @@ VideoBuffer::~VideoBuffer()
 	delete[] Buffer;
 }
 
-/**
- * Common graphics functions, mostly static methods that provide
- * encoding/decoding of different formats and font metrics
- */
-
-char * Graphics::GenerateGradient(pixel * colours, float * points, int pointcount, int size)
-{
-	int cp, i, j;
-	pixel ptemp;
-	char * newdata = (char*)malloc(size * 3);
-	float poss, pose, temp;
-	memset(newdata, 0, size*3);
-	//Sort the Colours and Points
-	for (i = (pointcount - 1); i > 0; i--)
-	{
-		for (j = 1; j <= i; j++)
-		{
-			if (points[j-1] > points[j])
-			{
-				temp = points[j-1];
-				points[j-1] = points[j];
-				points[j] = temp;
-
-				ptemp = colours[j-1];
-				colours[j-1] = colours[j];
-				colours[j] = ptemp;
-			}
-		}
-	}
-	i = 0;
-	j = 1;
-	poss = points[i];
-	pose = points[j];
-	for (cp = 0; cp < size; cp++)
-	{
-		float cpos = (float)cp / (float)size, ccpos, cccpos;
-		if(cpos > pose && j+1 < pointcount)
-		{
-			poss = points[++i];
-			pose = points[++j];
-		}
-		ccpos = cpos - poss;
-		cccpos = ccpos / (pose - poss);
-		if(cccpos > 1.0f)
-			cccpos = 1.0f;
-		newdata[(cp*3)  ] = char(PIXR(colours[i])*(1.0f-cccpos) + PIXR(colours[j])*(cccpos));
-		newdata[(cp*3)+1] = char(PIXG(colours[i])*(1.0f-cccpos) + PIXG(colours[j])*(cccpos));
-		newdata[(cp*3)+2] = char(PIXB(colours[i])*(1.0f-cccpos) + PIXB(colours[j])*(cccpos));
-	}
-	return newdata;
-}
-
 pixel *Graphics::resample_img_nn(pixel * src, int sw, int sh, int rw, int rh)
 {
 	int y, x;
@@ -964,4 +912,40 @@ bool PngDataToPixels(std::vector<pixel> &imageData, int &imgw, int &imgh, const 
 	png_read_image(png, (png_bytepp)&rowPointers[0]);
 	png_destroy_read_struct(&png, &info, (png_infopp)NULL);
 	return true;
+}
+
+bool Graphics::GradientStop::operator <(const GradientStop &other) const
+{
+	return point < other.point;
+}
+
+std::vector<pixel> Graphics::Gradient(std::vector<GradientStop> stops, int resolution)
+{
+	std::vector<pixel> table(resolution, 0);
+	if (stops.size() >= 2)
+	{
+		std::sort(stops.begin(), stops.end());
+		auto stop = -1;
+		for (auto i = 0; i < resolution; ++i)
+		{
+			auto point = i / (float)resolution;
+			while (stop < (int)stops.size() - 1 && stops[stop + 1].point <= point)
+			{
+				++stop;
+			}
+			if (stop < 0 || stop >= (int)stops.size() - 1)
+			{
+				continue;
+			}
+			auto &left = stops[stop];
+			auto &right = stops[stop + 1];
+			auto f = (point - left.point) / (right.point - left.point);
+			table[i] = PIXRGB(
+				int(PIXR(left.color) + (PIXR(right.color) - PIXR(left.color)) * f),
+				int(PIXG(left.color) + (PIXG(right.color) - PIXG(left.color)) * f),
+				int(PIXB(left.color) + (PIXB(right.color) - PIXB(left.color)) * f)
+			);
+		}
+	}
+	return table;
 }

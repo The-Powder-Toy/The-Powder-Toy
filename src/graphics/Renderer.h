@@ -50,8 +50,6 @@ public:
 	unsigned char fire_g[YRES/CELL][XRES/CELL];
 	unsigned char fire_b[YRES/CELL][XRES/CELL];
 	unsigned int fire_alpha[CELL*3][CELL*3];
-	char * flm_data;
-	char * plasma_data;
 	//
 	bool gravityZonesEnabled;
 	bool gravityFieldEnabled;
@@ -152,6 +150,23 @@ public:
 
 	Renderer(Graphics * g, Simulation * sim);
 	~Renderer();
+
+#define RENDERER_TABLE(name) \
+	static std::vector<pixel> name; \
+	static inline pixel name ## At(int index) \
+	{ \
+		auto size = int(name.size()); \
+		if (index <        0) index =        0; \
+		if (index > size - 1) index = size - 1; \
+		return name[index]; \
+	}
+	RENDERER_TABLE(flameTable)
+	RENDERER_TABLE(plasmaTable)
+	RENDERER_TABLE(heatTable)
+	RENDERER_TABLE(clfmTable)
+	RENDERER_TABLE(firwTable)
+#undef RENDERER_TABLE
+	static void PopulateTables();
 
 private:
 	int gridSize;
