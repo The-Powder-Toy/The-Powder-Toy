@@ -468,15 +468,25 @@ namespace LuaTCPSocket
 				curl_easy_setopt(tcps->easy, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
 				if (lua_toboolean(l, 4))
 				{
+#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 85, 0)
+					curl_easy_setopt(tcps->easy, CURLOPT_PROTOCOLS_STR, "https");
+					curl_easy_setopt(tcps->easy, CURLOPT_REDIR_PROTOCOLS_STR, "https");
+#else
 					curl_easy_setopt(tcps->easy, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
 					curl_easy_setopt(tcps->easy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+#endif
 					SetupCurlEasyCiphers(tcps->easy);
 					address = "https://" + address;
 				}
 				else
 				{
+#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 85, 0)
+					curl_easy_setopt(tcps->easy, CURLOPT_PROTOCOLS_STR, "http");
+					curl_easy_setopt(tcps->easy, CURLOPT_REDIR_PROTOCOLS_STR, "http");
+#else
 					curl_easy_setopt(tcps->easy, CURLOPT_PROTOCOLS, CURLPROTO_HTTP);
 					curl_easy_setopt(tcps->easy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTP);
+#endif
 					address = "http://" + address;
 				}
 				curl_easy_setopt(tcps->easy, CURLOPT_URL, address.c_str());
