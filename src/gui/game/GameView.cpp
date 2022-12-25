@@ -2221,11 +2221,12 @@ void GameView::OnDraw()
 	else if(showHud)
 	{
 		//Draw info about simulation under cursor
-		int wavelengthGfx = 0, alpha = 255;
+		int wavelengthGfx = 0;
+		int alpha = 255-introText*5;
 		if (toolTipPosition.Y < 120)
-			alpha = 255-toolTipPresence*3;
-		if (alpha < 50)
-			alpha = 50;
+			alpha -= toolTipPresence*3;
+		if (alpha < 0)
+			alpha = 0;
 		StringBuilder sampleInfo;
 		sampleInfo << Format::Precision(2);
 
@@ -2445,7 +2446,7 @@ void GameView::OnDraw()
 	if(introText && showHud)
 	{
 		g->fillrect(0, 0, WINDOWW, WINDOWH, 0, 0, 0, introText>51?102:introText*2);
-		g->drawtext(16, 20, introTextMessage, 255, 255, 255, introText>51?255:introText*5);
+		g->drawtext(16, 16, introTextMessage, 255, 255, 255, introText>51?255:introText*5);
 	}
 
 	// Clear menu areas, to ensure particle graphics don't overlap
