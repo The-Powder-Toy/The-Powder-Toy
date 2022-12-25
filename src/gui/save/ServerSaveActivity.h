@@ -3,9 +3,11 @@
 #include "Activity.h"
 #include "client/SaveInfo.h"
 #include "tasks/TaskListener.h"
+#include "graphics/Pixel.h"
 
 #include <memory>
 #include <functional>
+#include <vector>
 
 namespace ui
 {
@@ -20,7 +22,8 @@ class VideoBuffer;
 class ServerSaveActivity: public WindowActivity, public TaskListener
 {
 	using OnUploaded = std::function<void (SaveInfo &)>;
-
+	std::vector<pixel> save_to_server_image;
+	int save_to_server_imageW, save_to_server_imageH;
 
 public:
 	ServerSaveActivity(SaveInfo save, OnUploaded onUploaded);

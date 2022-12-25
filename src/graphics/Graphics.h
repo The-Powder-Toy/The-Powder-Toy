@@ -86,8 +86,6 @@ public:
 	//PTIF methods
 	static pixel *resample_img_nn(pixel *src, int sw, int sh, int rw, int rh);
 	static pixel *resample_img(pixel *src, int sw, int sh, int rw, int rh);
-	static pixel *rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f);
-	static pixel *render_packed_rgb(void *image, int width, int height, int cmp_size);
 
 	//Font/text metrics
 	static int CharWidth(String::value_type c);
@@ -125,7 +123,7 @@ public:
 
 	void draw_image(const pixel *img, int x, int y, int w, int h, int a);
 	void draw_image(const VideoBuffer * vidBuf, int x, int y, int a);
-	void draw_rgba_image(const unsigned char *data, int x, int y, float alpha);
+	void draw_rgba_image(const pixel *data, int w, int h, int x, int y, float alpha);
 
 	Graphics();
 	~Graphics();

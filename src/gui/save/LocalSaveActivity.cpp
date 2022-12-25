@@ -1,7 +1,5 @@
 #include "LocalSaveActivity.h"
 
-#include "images.h"
-
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "client/ThumbnailRendererTask.h"
@@ -15,12 +13,16 @@
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 
+#include "save_local.png.h"
+
 LocalSaveActivity::LocalSaveActivity(SaveFile save, OnSaved onSaved_) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(220, 200)),
 	save(save),
 	thumbnailRenderer(nullptr),
 	onSaved(onSaved_)
 {
+	PngDataToPixels(save_to_disk_image, save_to_disk_imageW, save_to_disk_imageH, reinterpret_cast<const char *>(save_local_png), save_local_png_size, false);
+
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), "Save to computer:");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -131,7 +133,7 @@ void LocalSaveActivity::saveWrite(ByteString finalFilename)
 void LocalSaveActivity::OnDraw()
 {
 	Graphics * g = GetGraphics();
-	g->draw_rgba_image(save_to_disk_image, 0, 0, 0.7f);
+	g->draw_rgba_image(&save_to_disk_image[0], save_to_disk_imageW, save_to_disk_imageH, 0, 0, 0.7f);
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 

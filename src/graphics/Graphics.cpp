@@ -406,43 +406,6 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 #endif
 }
 
-pixel *Graphics::rescale_img(pixel *src, int sw, int sh, int *qw, int *qh, int f)
-{
-	int i,j,x,y,w,h,r,g,b,c;
-	pixel p, *q;
-	w = (sw+f-1)/f;
-	h = (sh+f-1)/f;
-	q = (pixel *)malloc(w*h*PIXELSIZE);
-	for (y=0; y<h; y++)
-		for (x=0; x<w; x++)
-		{
-			r = g = b = c = 0;
-			for (j=0; j<f; j++)
-				for (i=0; i<f; i++)
-					if (x*f+i<sw && y*f+j<sh)
-					{
-						p = src[(y*f+j)*sw + (x*f+i)];
-						if (p)
-						{
-							r += PIXR(p);
-							g += PIXG(p);
-							b += PIXB(p);
-							c ++;
-						}
-					}
-			if (c>1)
-			{
-				r = (r+c/2)/c;
-				g = (g+c/2)/c;
-				b = (b+c/2)/c;
-			}
-			q[y*w+x] = PIXRGB(r, g, b);
-		}
-	*qw = w;
-	*qh = h;
-	return q;
-}
-
 int Graphics::textwidth(const String &str)
 {
 	int x = 0;
@@ -812,57 +775,20 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 	}
 }
 
-void Graphics::draw_rgba_image(const unsigned char *data_, int x, int y, float alpha)
+void Graphics::draw_rgba_image(const pixel *data, int w, int h, int x, int y, float alpha)
 {
-	unsigned char w, h;
-	int i, j;
-	unsigned char r, g, b, a;
-	unsigned char *data = (unsigned char*)data_;
-	if (!data) return;
-	w = *(data++)&0xFF;
-	h = *(data++)&0xFF;
-	for (j=0; j<h; j++)
+	for (int j = 0; j < h; j++)
 	{
-		for (i=0; i<w; i++)
+		for (int i = 0; i < w; i++)
 		{
-			r = *(data++)&0xFF;
-			g = *(data++)&0xFF;
-			b = *(data++)&0xFF;
-			a = *(data++)&0xFF;
+			auto rgba = *(data++);
+			auto a = (rgba >> 24) & 0xFF;
+			auto r = (rgba >> 16) & 0xFF;
+			auto g = (rgba >>  8) & 0xFF;
+			auto b = (rgba      ) & 0xFF;
 			addpixel(x+i, y+j, r, g, b, (int)(a*alpha));
 		}
 	}
-}
-
-pixel *Graphics::render_packed_rgb(void *image, int width, int height, int cmp_size)
-{
-	unsigned char *tmp;
-	pixel *res;
-	int i;
-
-	tmp = (unsigned char *)malloc(width*height*3);
-	if (!tmp)
-		return NULL;
-	res = (pixel *)malloc(width*height*PIXELSIZE);
-	if (!res)
-	{
-		free(tmp);
-		return NULL;
-	}
-
-	i = width*height*3;
-	if (BZ2_bzBuffToBuffDecompress((char *)tmp, (unsigned *)&i, (char *)image, cmp_size, 0, 0))
-	{
-		free(res);
-		free(tmp);
-		return NULL;
-	}
-
-	for (i=0; i<width*height; i++)
-		res[i] = PIXRGB(tmp[3*i], tmp[3*i+1], tmp[3*i+2]);
-
-	free(tmp);
-	return res;
 }
 
 VideoBuffer Graphics::DumpFrame()

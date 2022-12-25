@@ -19,7 +19,7 @@
 
 #include "gui/Style.h"
 
-#include "images.h"
+#include "save_online.png.h"
 
 class SaveUploadTask: public Task
 {
@@ -61,6 +61,8 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, OnUploaded onUploaded_) :
 	onUploaded(onUploaded_),
 	saveUploadTask(NULL)
 {
+	PngDataToPixels(save_to_server_image, save_to_server_imageW, save_to_server_imageH, reinterpret_cast<const char *>(save_online_png), save_online_png_size, false);
+
 	titleLabel = new ui::Label(ui::Point(4, 5), ui::Point((Size.X/2)-8, 16), "");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -157,6 +159,8 @@ ServerSaveActivity::ServerSaveActivity(SaveInfo save, bool saveNow, OnUploaded o
 	onUploaded(onUploaded_),
 	saveUploadTask(NULL)
 {
+	PngDataToPixels(save_to_server_image, save_to_server_imageW, save_to_server_imageH, reinterpret_cast<const char *>(save_online_png), save_online_png_size, false);
+
 	ui::Label * titleLabel = new ui::Label(ui::Point(0, 0), Size, "Saving to server...");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
@@ -370,7 +374,7 @@ void ServerSaveActivity::OnTick(float dt)
 void ServerSaveActivity::OnDraw()
 {
 	Graphics * g = GetGraphics();
-	g->draw_rgba_image(save_to_server_image, -10, 0, 0.7f);
+	g->draw_rgba_image(&save_to_server_image[0], save_to_server_imageW, save_to_server_imageH, -10, 0, 0.7f);
 	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
 

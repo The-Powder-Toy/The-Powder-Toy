@@ -84,3 +84,6 @@ elif host_platform == 'linux'
 		configuration: conf_data,
 	)
 endif
+
+data_files += to_array.process('save_local.png', extra_args: 'save_local_png')
+data_files += to_array.process('save_online.png', extra_args: 'save_online_png')
