@@ -6,7 +6,7 @@ import re
 import argparse
 
 CP_MAX = 0x10FFFF
-FONT_CPP = "data/font.bz2"
+FONT_CPP = "resources/font.bz2"
 FONT_HEIGHT = 12
 
 

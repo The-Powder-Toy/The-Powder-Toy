@@ -19,7 +19,7 @@ if get_option('prepare')
 endif
 
 to_array = generator(
-	executable('toarray', sources: 'data/ToArray.cpp', native: true),
+	executable('toarray', sources: 'resources/ToArray.cpp', native: true),
 	output: [ '@PLAINNAME@.cpp', '@PLAINNAME@.h' ],
 	arguments: [ '@OUTPUT0@', '@OUTPUT1@', '@INPUT@', '@EXTRA_ARGS@' ]
 )
@@ -304,7 +304,7 @@ if host_platform == 'windows'
 	endif
 endif
 
-project_inc = include_directories([ 'src', 'data', 'resources' ])
+project_inc = include_directories([ 'src', 'resources' ])
 
 if host_platform == 'windows'
 	ident_platform = is_64bit ? 'WIN64' : 'WIN32'
@@ -356,7 +356,6 @@ endif
 data_files = []
 
 subdir('src')
-subdir('data')
 subdir('resources')
 
 powder_files += data_files
