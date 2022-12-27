@@ -26,7 +26,7 @@ void Element::Element_CRMC()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 5;
+	Hardness = 0;
 
 	Weight = 100;
 
