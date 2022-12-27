@@ -530,6 +530,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 			{ "Description", save.GetDescription().ToUtf8() },
 			{ "Data:save.bin", ByteString(gameData.begin(), gameData.end()) },
 			{ "Publish", save.GetPublished() ? "Public" : "Private" },
+			{ "Key", authUser.SessionKey }
 		});
 	}
 	else
@@ -702,6 +703,7 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 		data = http::Request::SimpleAuth(SCHEME SERVER "/Vote.api", &dataStatus, userIDText, authUser.SessionID, {
 			{ "ID", saveIDText },
 			{ "Action", direction ? (direction == 1 ? "Up" : "Down") : "Reset" },
+			{ "Key", authUser.SessionKey }
 		});
 	}
 	else
@@ -829,6 +831,7 @@ RequestStatus Client::AddComment(int saveID, String comment)
 		ByteString userID = ByteString::Build(authUser.UserID);
 		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID, {
 			{ "Comment", comment.ToUtf8() },
+			{ "Key", authUser.SessionKey }
 		});
 	}
 	else
