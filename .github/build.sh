@@ -155,6 +155,12 @@ meson_configure=meson$'\t'setup
 if [[ $BSH_DEBUG_RELEASE == release ]]; then
 	meson_configure+=$'\t'-Dbuildtype=debugoptimized
 fi
+meson_configure+=$'\t'-Dapp_name=$APP_NAME
+meson_configure+=$'\t'-Dapp_comment=$APP_COMMENT
+meson_configure+=$'\t'-Dapp_exe=$APP_EXE
+meson_configure+=$'\t'-Dapp_id=$APP_ID
+meson_configure+=$'\t'-Dapp_data=$APP_DATA
+meson_configure+=$'\t'-Dapp_vendor=$APP_VENDOR
 meson_configure+=$'\t'-Db_strip=false
 meson_configure+=$'\t'-Db_staticpic=false
 meson_configure+=$'\t'-Dinstall_check=true
