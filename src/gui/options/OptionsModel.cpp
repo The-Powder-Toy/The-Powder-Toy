@@ -90,6 +90,17 @@ void OptionsModel::SetEdgeMode(int edgeMode)
 	notifySettingsChanged();
 }
 
+int OptionsModel::GetTemperatureScale()
+{
+	return gModel->GetTemperatureScale();
+}
+void OptionsModel::SetTemperatureScale(int temperatureScale)
+{
+	Client::Ref().SetPref("Renderer.TemperatureScale", temperatureScale);
+	gModel->SetTemperatureScale(temperatureScale);
+	notifySettingsChanged();
+}
+
 float OptionsModel::GetAmbientAirTemperature()
 {
 	return gModel->GetSimulation()->air->ambientAirTemp;

@@ -26,6 +26,7 @@ public:
 	void SetAirMode(int airMode);
 	void SetAmbientAirTemperature(float ambientAirTemp);
 	void SetEdgeMode(int edgeMode);
+	void SetTemperatureScale(int temperatureScale);
 	void SetFullscreen(bool fullscreen);
 	void SetAltFullscreen(bool altFullscreen);
 	void SetForceIntegerScaling(bool forceIntegerScaling);

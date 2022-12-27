@@ -67,6 +67,11 @@ void OptionsController::SetEdgeMode(int edgeMode)
 	model->SetEdgeMode(edgeMode);
 }
 
+void OptionsController::SetTemperatureScale(int temperatureScale)
+{
+	model->SetTemperatureScale(temperatureScale);
+}
+
 void OptionsController::SetFullscreen(bool fullscreen)
 {
 	model->SetFullscreen(fullscreen);

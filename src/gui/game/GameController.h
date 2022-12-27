@@ -119,6 +119,8 @@ public:
 	bool GetBrushEnable();
 	void SetDebugHUD(bool hudState);
 	bool GetDebugHUD();
+	void SetTemperatureScale(int temperatureScale);
+	int GetTemperatureScale();
 	void SetDebugFlags(unsigned int flags) { debugFlags = flags; }
 	void SetActiveMenu(int menuID);
 	std::vector<Menu*> GetMenuList();

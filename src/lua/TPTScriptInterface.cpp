@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "Config.h"
+#include "Format.h"
 
 #include "simulation/Simulation.h"
 #include "simulation/Air.h"
@@ -271,6 +272,21 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 	//Selector
 	int newValue = 0;
 	float newValuef = 0.0f;
+	if (property.Value() == "temp")
+	{
+		// convert non-string temperature values to strings to format::StringToTemperature can take care of them
+		switch (value.GetType())
+		{
+		case TypeNumber:
+			value = StringType(String::Build(((NumberType)value).Value()));
+			break;
+		case TypeFloat:
+			value = StringType(String::Build(((FloatType)value).Value()));
+			break;
+		default:
+			break;
+		}
+	}
 	if (value.GetType() == TypeNumber)
 	{
 		newValuef = float(newValue = ((NumberType)value).Value());
@@ -283,13 +299,14 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 	{
 		if (property.Value() == "temp")
 		{
-			String newString = ((StringType)value).Value();
-			if (newString.at(newString.length()-1) == 'C')
-				newValuef = atof(newString.SubstrFromEnd(1).ToUtf8().c_str())+273.15;
-			else if (newString.at(newString.length()-1) == 'F')
-				newValuef = (atof(newString.SubstrFromEnd(1).ToUtf8().c_str())-32.0f)*5/9+273.15f;
-			else
+			try
+			{
+				newValuef = format::StringToTemperature(((StringType)value).Value(), c->GetTemperatureScale());
+			}
+			catch (const std::exception &ex)
+			{
 				throw GeneralException("Invalid value for assignment");
+			}
 		}
 		else
 		{
