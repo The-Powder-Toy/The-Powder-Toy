@@ -14,4 +14,6 @@ namespace format
 	ByteString UnixtimeToDateMini(time_t unixtime);
 	String CleanString(String dirtyString, bool ascii, bool color, bool newlines, bool numeric = false);
 	std::vector<char> VideoBufferToPPM(const VideoBuffer & vidBuf);
+	void RenderTemperature(StringBuilder &sb, float temp, int scale);
+	float StringToTemperature(String str, int defaultScale);
 }

@@ -178,3 +178,57 @@ ByteString format::URLDecode(ByteString source)
 	}
 	return result;
 }
+
+void format::RenderTemperature(StringBuilder &sb, float temp, int scale)
+{
+	switch (scale)
+	{
+	case 1:
+		sb << (temp - 273.15f) << " °C";
+		break;
+	case 2:
+		sb << (temp - 273.15f) * 1.8f + 32.0f << " °F";
+		break;
+	default:
+		sb << temp << " K";
+		break;
+	}
+}
+
+float format::StringToTemperature(String str, int defaultScale)
+{
+	auto scale = defaultScale;
+	if (str.size())
+	{
+		if (str.EndsWith("K"))
+		{
+			scale = 0;
+			str = str.SubstrFromEnd(1);
+		}
+		else if (str.EndsWith("C"))
+		{
+			scale = 1;
+			str = str.SubstrFromEnd(1);
+		}
+		else if (str.EndsWith("F"))
+		{
+			scale = 2;
+			str = str.SubstrFromEnd(1);
+		}
+	}
+	if (!str.size())
+	{
+		throw std::out_of_range("empty string");
+	}
+	auto out = str.ToNumber<float>();
+	switch (scale)
+	{
+	case 1:
+		out = out + 273.15;
+		break;
+	case 2:
+		out = (out - 32.0f) / 1.8f + 273.15f;
+		break;
+	}
+	return out;
+}

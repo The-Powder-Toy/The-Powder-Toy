@@ -154,6 +154,7 @@ GameModel::GameModel():
 
 	mouseClickRequired = Client::Ref().GetPrefBool("MouseClickRequired", false);
 	includePressure = Client::Ref().GetPrefBool("Simulation.IncludePressure", true);
+	temperatureScale = Client::Ref().GetPrefInteger("Renderer.TemperatureScale", 1);
 
 	ClearSimulation();
 }
@@ -532,6 +533,11 @@ void GameModel::SetEdgeMode(int edgeMode)
 int GameModel::GetEdgeMode()
 {
 	return this->edgeMode;
+}
+
+void GameModel::SetTemperatureScale(int temperatureScale)
+{
+	this->temperatureScale = temperatureScale;
 }
 
 void GameModel::SetAmbientAirTemperature(float ambientAirTemp)

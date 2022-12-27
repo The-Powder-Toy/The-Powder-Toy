@@ -2,6 +2,7 @@
 
 #include "client/Client.h"
 #include "Menu.h"
+#include "Format.h"
 
 #include "gui/game/GameModel.h"
 #include "gui/Style.h"
@@ -22,31 +23,6 @@
 #include "graphics/Graphics.h"
 
 #include <iostream>
-
-void ParseFloatProperty(String value, float &out)
-{
-	if (!value.size())
-	{
-		throw std::out_of_range("empty string");
-	}
-	if (value.EndsWith("C"))
-	{
-		float v = value.SubstrFromEnd(1).ToNumber<float>();
-		out = v + 273.15;
-	}
-	else if(value.EndsWith("F"))
-	{
-		float v = value.SubstrFromEnd(1).ToNumber<float>();
-		out = (v-32.0f)*5/9+273.15f;
-	}
-	else
-	{
-		out = value.ToNumber<float>();
-	}
-#ifdef DEBUG
-	std::cout << "Got float value " << out << std::endl;
-#endif
-}
 
 class PropertyWindow: public ui::Window
 {
@@ -219,7 +195,7 @@ void PropertyWindow::SetProperty(bool warn)
 				}
 				case StructProperty::Float:
 				{
-					ParseFloatProperty(value, tool->propValue.Float);
+					tool->propValue.Float = format::StringToTemperature(value, tool->gameModel->GetTemperatureScale());
 				}
 					break;
 				default:

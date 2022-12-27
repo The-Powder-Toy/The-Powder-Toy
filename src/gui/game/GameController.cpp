@@ -1035,6 +1035,16 @@ bool GameController::GetDebugHUD()
 	return gameView->GetDebugHUD();
 }
 
+void GameController::SetTemperatureScale(int temperatureScale)
+{
+	gameModel->SetTemperatureScale(temperatureScale);
+}
+
+int GameController::GetTemperatureScale()
+{
+	return gameModel->GetTemperatureScale();
+}
+
 void GameController::SetActiveColourPreset(int preset)
 {
 	gameModel->SetActiveColourPreset(preset);
