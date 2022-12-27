@@ -184,13 +184,13 @@ void format::RenderTemperature(StringBuilder &sb, float temp, int scale)
 	switch (scale)
 	{
 	case 1:
-		sb << (temp - 273.15f) << " °C";
+		sb << (temp - 273.15f) << "C";
 		break;
 	case 2:
-		sb << (temp - 273.15f) * 1.8f + 32.0f << " °F";
+		sb << (temp - 273.15f) * 1.8f + 32.0f << "F";
 		break;
 	default:
-		sb << temp << " K";
+		sb << temp << "K";
 		break;
 	}
 }

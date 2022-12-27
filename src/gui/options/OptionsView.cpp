@@ -455,18 +455,7 @@ void OptionsView::AmbientAirTempToTextBox(float airTemp)
 {
 	StringBuilder sb;
 	sb << Format::Precision(2);
-	switch (temperatureScale->GetOption().second)
-	{
-	case 1:
-		sb << (airTemp - 273.15f) << "C";
-		break;
-	case 2:
-		sb << (airTemp - 273.15f) * 1.8f + 32.0f << "F";
-		break;
-	default:
-		sb << airTemp;
-		break;
-	}
+	format::RenderTemperature(sb, airTemp, temperatureScale->GetOption().second);
 	ambientAirTemp->SetText(sb.Build());
 }
 
@@ -499,8 +488,6 @@ void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
 			airTemp = MIN_TEMP;
 		else if (airTemp > MAX_TEMP)
 			airTemp = MAX_TEMP;
-		else
-			return;
 
 		AmbientAirTempToTextBox(airTemp);
 	}
