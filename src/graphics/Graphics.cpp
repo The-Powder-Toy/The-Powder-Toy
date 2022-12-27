@@ -941,9 +941,9 @@ std::vector<pixel> Graphics::Gradient(std::vector<GradientStop> stops, int resol
 			auto &right = stops[stop + 1];
 			auto f = (point - left.point) / (right.point - left.point);
 			table[i] = PIXRGB(
-				int(PIXR(left.color) + (PIXR(right.color) - PIXR(left.color)) * f),
-				int(PIXG(left.color) + (PIXG(right.color) - PIXG(left.color)) * f),
-				int(PIXB(left.color) + (PIXB(right.color) - PIXB(left.color)) * f)
+				int(int(PIXR(left.color)) + (int(PIXR(right.color)) - int(PIXR(left.color))) * f),
+				int(int(PIXG(left.color)) + (int(PIXG(right.color)) - int(PIXG(left.color))) * f),
+				int(int(PIXB(left.color)) + (int(PIXB(right.color)) - int(PIXB(left.color))) * f)
 			);
 		}
 	}
