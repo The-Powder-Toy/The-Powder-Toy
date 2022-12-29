@@ -195,7 +195,10 @@ void PropertyWindow::SetProperty(bool warn)
 				}
 				case StructProperty::Float:
 				{
-					tool->propValue.Float = format::StringToTemperature(value, tool->gameModel->GetTemperatureScale());
+					if (properties[property->GetOption().second].Name == "temp")
+						tool->propValue.Float = format::StringToTemperature(value, tool->gameModel->GetTemperatureScale());
+					else
+						tool->propValue.Float = value.ToNumber<float>();
 				}
 					break;
 				default:
