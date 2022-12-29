@@ -462,7 +462,7 @@ void OptionsView::AmbientAirTempToTextBox(float airTemp)
 void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
 {
 	// Parse air temp and determine validity
-	float airTemp;
+	float airTemp = 0;
 	bool isValid;
 	try
 	{
