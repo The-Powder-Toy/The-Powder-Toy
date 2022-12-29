@@ -28,7 +28,8 @@ const char *const introTextData =
 #ifndef BETA
 	"\bgTo use online features such as saving, you need to register at: \brhttps://powdertoy.co.uk/Register.html\n"
 #else
-	"\brThis is a BETA, you cannot save things publicly. If you are planning on publishing any saves, use the release version\n"
+	"\brThis is a BETA, you cannot save things publicly, nor open local saves and stamps made with it in older versions.\n"
+	"\brIf you are planning on publishing any saves, use the release version.\n"
 #endif
 	"\n"
 	"\bt" MTOS(SAVE_VERSION) "." MTOS(MINOR_VERSION) "." MTOS(BUILD_NUM) " " IDENT
