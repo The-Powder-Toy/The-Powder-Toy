@@ -710,7 +710,7 @@ int GuessBestScale()
 
 int main(int argc, char * argv[])
 {
-#if defined(_DEBUG) && defined(_MSC_VER)
+#if defined(DEBUG) && defined(_MSC_VER)
 	_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
 #endif
 	currentWidth = WINDOWW;
@@ -865,7 +865,7 @@ int main(int argc, char * argv[])
 	engine->Begin(WINDOWW, WINDOWH);
 	engine->SetFastQuit(Client::Ref().GetPrefBool("FastQuit", true));
 
-#if !defined(DEBUG) && !defined(_DEBUG)
+#if !defined(DEBUG)
 	//Get ready to catch any dodgy errors
 	signal(SIGSEGV, SigHandler);
 	signal(SIGFPE, SigHandler);
@@ -881,7 +881,7 @@ int main(int argc, char * argv[])
 #endif
 
 	GameController * gameController = NULL;
-#if !defined(DEBUG) && !defined(_DEBUG)
+#if !defined(DEBUG)
 	try {
 #endif
 
@@ -971,7 +971,7 @@ int main(int argc, char * argv[])
 		EngineProcess();
 		SaveWindowPosition();
 
-#if !defined(DEBUG) && !defined(_DEBUG)
+#if !defined(DEBUG)
 	}
 	catch(std::exception& e)
 	{
