@@ -103,7 +103,7 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 	if (parts[targetId].tmp2 && parts[targetId].tmp > parts[targetId].tmp2) // Invalid range if max is set
 		return -1;
 
-	constexpr int maxDistance = std::hypot(XRES, YRES);
+	const int maxDistance = std::hypot(XRES, YRES);
 	int foundDistance = parts[targetId].tmp2 ? std::min(parts[targetId].tmp2, maxDistance) : maxDistance; // tmp2 sets max distance
 	int foundI = -1;
 	ui::Point targetPos = ui::Point(int(parts[targetId].x), int(parts[targetId].y));
