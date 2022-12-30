@@ -309,6 +309,7 @@ std::map<ByteString, ByteString> readArguments(int argc, char * argv[])
 	arguments["sound"] = "false";
 	arguments["kiosk"] = "false";
 	arguments["redirect"] = "false";
+	arguments["nobluescreen"] = "false";
 	arguments["scripts"] = "false";
 	arguments["open"] = "";
 	arguments["ddir"] = "";
@@ -352,6 +353,10 @@ std::map<ByteString, ByteString> readArguments(int argc, char * argv[])
 		else if (!strncmp(argv[i], "redirect", 8))
 		{
 			arguments["redirect"] = "true";
+		}
+		else if (!strncmp(argv[i], "nobluescreen", 12))
+		{
+			arguments["nobluescreen"] = "true";
 		}
 		else if (!strncmp(argv[i], "sound", 5))
 		{
@@ -866,11 +871,19 @@ int main(int argc, char * argv[])
 	engine->SetFastQuit(Client::Ref().GetPrefBool("FastQuit", true));
 
 #if !defined(DEBUG)
-	//Get ready to catch any dodgy errors
-	signal(SIGSEGV, SigHandler);
-	signal(SIGFPE, SigHandler);
-	signal(SIGILL, SigHandler);
-	signal(SIGABRT, SigHandler);
+	bool enableBluescreen = true;
+	if(arguments["nobluescreen"] == "true")
+	{
+		enableBluescreen = false;
+	}
+	if (enableBluescreen)
+	{
+		//Get ready to catch any dodgy errors
+		signal(SIGSEGV, SigHandler);
+		signal(SIGFPE, SigHandler);
+		signal(SIGILL, SigHandler);
+		signal(SIGABRT, SigHandler);
+	}
 #endif
 
 #ifdef X86_SSE
@@ -881,10 +894,8 @@ int main(int argc, char * argv[])
 #endif
 
 	GameController * gameController = NULL;
-#if !defined(DEBUG)
-	try {
-#endif
 
+	auto wrapWithBluescreen = [&]() {
 		gameController = new GameController();
 		engine->ShowWindow(gameController->GetView());
 
@@ -970,14 +981,23 @@ int main(int argc, char * argv[])
 
 		EngineProcess();
 		SaveWindowPosition();
+	};
 
 #if !defined(DEBUG)
-	}
-	catch(std::exception& e)
+	if (enableBluescreen)
 	{
-		BlueScreen(ByteString(e.what()).FromUtf8());
+		try
+		{
+			wrapWithBluescreen();
+		}
+		catch (const std::exception &e)
+		{
+			BlueScreen(ByteString(e.what()).FromUtf8());
+		}
 	}
+	else
 #endif
+	wrapWithBluescreen(); // the else branch of the if in the #if !defined(DEBUG)
 
 	ui::Engine::Ref().CloseWindow();
 	delete gameController;
