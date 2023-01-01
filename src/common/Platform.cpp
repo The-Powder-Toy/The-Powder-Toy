@@ -58,66 +58,6 @@ ByteString GetCwd()
 	return cwd;
 }
 
-ByteString ExecutableName()
-{
-	ByteString ret;
-#if defined(WIN)
-	wchar_t *name = (wchar_t *)malloc(sizeof(wchar_t) * 64);
-	DWORD max = 64, res;
-	while ((res = GetModuleFileNameW(NULL, name, max)) >= max)
-	{
-#elif defined MACOSX
-	char *fn = (char*)malloc(64),*name = (char*)malloc(PATH_MAX);
-	uint32_t max = 64, res;
-	if (_NSGetExecutablePath(fn, &max) != 0)
-	{
-		char *realloced_fn = (char*)realloc(fn, max);
-		assert(realloced_fn != NULL);
-		fn = realloced_fn;
-		_NSGetExecutablePath(fn, &max);
-	}
-	if (realpath(fn, name) == NULL)
-	{
-		free(fn);
-		free(name);
-		return "";
-	}
-	res = 1;
-#else
-	char fn[64], *name = (char *)malloc(64);
-	size_t max = 64, res;
-	sprintf(fn, "/proc/self/exe");
-	memset(name, 0, max);
-	while ((res = readlink(fn, name, max)) >= max-1)
-	{
-#endif
-#ifndef MACOSX
-#if defined(WIN)
-		using Char = wchar_t;
-#else
-		using Char = char;
-#endif
-		max *= 2;
-		Char* realloced_name = (Char *)realloc(name, sizeof(Char) * max);
-		assert(realloced_name != NULL);
-		name = realloced_name;
-		memset(name, 0, sizeof(Char) * max);
-	}
-#endif
-	if (res <= 0)
-	{
-		free(name);
-		return "";
-	}
-#if defined(WIN)
-	ret = WinNarrow(name);
-#else
-	ret = name;
-#endif
-	free(name);
-	return ret;
-}
-
 void DoRestart()
 {
 	ByteString exename = ExecutableName();
@@ -195,18 +135,6 @@ long unsigned int GetTime()
 	struct timespec s;
 	clock_gettime(CLOCK_MONOTONIC, &s);
 	return s.tv_sec * 1000 + s.tv_nsec / 1000000;
-#endif
-}
-
-
-void LoadFileInResource(int name, int type, unsigned int& size, const char*& data)
-{
-#ifdef _MSC_VER
-	HMODULE handle = ::GetModuleHandle(NULL);
-	HRSRC rc = ::FindResource(handle, MAKEINTRESOURCE(name), MAKEINTRESOURCE(type));
-	HGLOBAL rcData = ::LoadResource(handle, rc);
-	size = ::SizeofResource(handle, rc);
-	data = static_cast<const char*>(::LockResource(rcData));
 #endif
 }
 
@@ -572,6 +500,57 @@ bool WriteFile(std::vector<char> fileData, ByteString filename)
 		return false;
 	}
 	return true;
+}
+
+ByteString ExecutableName()
+{
+#ifdef WIN
+	std::wstring buf(L"?");
+	while (true)
+	{
+		SetLastError(ERROR_SUCCESS);
+		if (!GetModuleFileNameW(NULL, &buf[0], DWORD(buf.size())))
+		{
+			std::cerr << "GetModuleFileNameW: " << GetLastError() << std::endl;
+			return "";
+		}
+		if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
+		{
+			break;
+		}
+		buf.resize(buf.size() * 2);
+	}
+	return WinNarrow(&buf[0]); // Pass pointer to copy only up to the zero terminator.
+#else
+# ifdef MACOSX
+	ByteString firstApproximation("?");
+	{
+		auto bufSize = uint32_t(firstApproximation.size());
+		auto ret = _NSGetExecutablePath(&firstApproximation[0], &bufSize);
+		if (ret == -1)
+		{
+			// Buffer not large enough; likely to happen since it's initially a single byte.
+			firstApproximation.resize(bufSize);
+			ret = _NSGetExecutablePath(&firstApproximation[0], &bufSize);
+		}
+		if (ret != 0)
+		{
+			// Can't even get a first approximation.
+			std::cerr << "_NSGetExecutablePath: " << ret << std::endl;
+			return "";
+		}
+	}
+# else
+	ByteString firstApproximation("/proc/self/exe");
+# endif
+	auto rp = std::unique_ptr<char, decltype(std::free) *>(realpath(&firstApproximation[0], NULL), std::free);
+	if (!rp)
+	{
+		std::cerr << "realpath: " << errno << std::endl;
+		return "";
+	}
+	return rp.get();
+#endif
 }
 
 }
