@@ -31,6 +31,7 @@ jobs:
       app_vendor: ${{ steps.prepare.outputs.app_vendor }}
       do_publish: ${{ steps.prepare.outputs.do_publish }}
     steps:
+      - run: git config --global core.autocrlf false
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
@@ -58,21 +59,14 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.prepare.outputs.build_matrix) }}
     steps:
+      - run: git config --global core.autocrlf false
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
       - run: python -m pip install meson ninja
       - if: matrix.bsh_build_platform == 'darwin'
-        run: brew install pkg-config coreutils binutils bash
-      - if: matrix.bsh_build_platform == 'darwin' && matrix.bsh_static_dynamic != 'static'
-        run: brew install luajit curl fftw zlib sdl2 bzip2 jsoncpp
-      - if: matrix.bsh_build_platform == 'linux' && matrix.bsh_host_libc == 'mingw'
-        run: sudo apt update && sudo apt install g++-mingw-w64-x86-64
-      - if: matrix.bsh_build_platform == 'linux' && matrix.bsh_static_dynamic != 'static'
-        run: sudo apt update && sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev libbz2-dev libjsoncpp-dev
-      - if: matrix.bsh_build_platform == 'linux' && matrix.bsh_static_dynamic == 'static'
-        run: sudo apt update && sudo apt install libc6-dev libc6-dev-i386
+        run: brew install bash coreutils
       - run: bash -c './.github/build.sh'
         env:
           BSH_HOST_ARCH: ${{ matrix.bsh_host_arch }}
@@ -130,6 +124,7 @@ jobs:
       matrix: ${{ fromJSON(needs.prepare.outputs.publish_matrix) }}
     if: needs.prepare.outputs.do_publish == 'yes'
     steps:
+      - run: git config --global core.autocrlf false
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
@@ -147,6 +142,7 @@ jobs:
     needs: [build, publish, prepare]
     if: needs.prepare.outputs.do_publish == 'yes'
     steps:
+      - run: git config --global core.autocrlf false
       - uses: actions/checkout@v3
       - run: ./.github/starcatcher-release.sh
         env:

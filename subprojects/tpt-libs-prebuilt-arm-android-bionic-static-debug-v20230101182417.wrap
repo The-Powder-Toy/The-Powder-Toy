@@ -1,0 +1,6 @@
+[wrap-file]
+directory = tpt-libs-prebuilt-arm-android-bionic-static-debug-v20230101182417
+
+source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20230101182417/tpt-libs-prebuilt-arm-android-bionic-static-debug-v20230101182417.zip
+source_filename = tpt-libs-prebuilt-arm-android-bionic-static-debug-v20230101182417.zip
+source_hash = 3d55ad05f9157c32aade2f738ebbf17e2bb41300ebc89af44ae87a191c085476

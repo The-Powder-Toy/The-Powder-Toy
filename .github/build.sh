@@ -43,6 +43,26 @@ aarch64-android-bionic-static) ;;
 *) >&2 echo "configuration $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC is not supported" && exit 1;;
 esac
 
+case $BSH_BUILD_PLATFORM in
+linux)
+	sudo apt update
+	if [[ $BSH_STATIC_DYNAMIC == static ]]; then
+		sudo apt install libc6-dev libc6-dev-i386
+	else
+		sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev libbz2-dev libjsoncpp-dev
+	fi
+	if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
+		sudo apt install g++-mingw-w64-x86-64
+	fi
+	;;
+darwin)
+	brew install pkg-config binutils
+	if [[ $BSH_STATIC_DYNAMIC != static ]]; then
+		brew install luajit curl fftw zlib sdl2 bzip2 jsoncpp
+	fi
+	;;
+esac
+
 function inplace_sed() {
 	local subst=$1
 	local path=$2
@@ -252,9 +272,14 @@ if [[ $BSH_HOST_PLATFORM-$BSH_HOST_ARCH == darwin-aarch64 ]]; then
 	meson_configure+=$'\t'--cross-file=.github/macaa64-ghactions.ini
 fi
 if [[ $RELEASE_TYPE == tptlibsdev ]] && ([[ $BSH_HOST_PLATFORM == windows ]] || [[ $BSH_STATIC_DYNAMIC == static ]]); then
-	if [[ -z "${GITHUB_REPOSITORY_OWNER-}" ]]; then
-		>&2 echo "GITHUB_REPOSITORY_OWNER not set"
-		exit 1
+	if [[ -z ${TPTLIBSREMOTE-} ]]; then
+		if [[ -z "${GITHUB_REPOSITORY_OWNER-}" ]]; then
+			>&2 echo "GITHUB_REPOSITORY_OWNER not set"
+			exit 1
+		fi
+		tptlibsremote=https://github.com/$GITHUB_REPOSITORY_OWNER/tpt-libs
+	else
+		tptlibsremote=$TPTLIBSREMOTE
 	fi
 	if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC $BSH_BUILD_PLATFORM" == "x86_64-windows-mingw-dynamic linux" ]]; then
 		>&2 echo "this configuration is not supported in tptlibsdev mode"
@@ -262,10 +287,13 @@ if [[ $RELEASE_TYPE == tptlibsdev ]] && ([[ $BSH_HOST_PLATFORM == windows ]] || 
 		exit 0
 	fi
 	tptlibsbranch=$(echo $RELEASE_NAME | cut -d '-' -f 2-) # $RELEASE_NAME is tptlibsdev-BRANCH
+	if [[ -d build-tpt-libs ]] && [[ ${TPTLIBSRESET-} == yes ]]; then
+		rm -rf build-tpt-libs
+	fi
 	if [[ ! -d build-tpt-libs/tpt-libs ]]; then
 		mkdir -p build-tpt-libs
 		cd build-tpt-libs
-		git clone https://github.com/$GITHUB_REPOSITORY_OWNER/tpt-libs --branch $tptlibsbranch --depth 1
+		git clone $tptlibsremote --branch $tptlibsbranch --depth 1
 		cd ..
 	fi
 	tpt_libs_vtag=v00000000000000

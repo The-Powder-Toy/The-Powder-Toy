@@ -1,6 +1,0 @@
-[wrap-file]
-directory = tpt-libs-prebuilt-arm-android-bionic-static-release-v20221223184203
-
-source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20221223184203/tpt-libs-prebuilt-arm-android-bionic-static-release-v20221223184203.zip
-source_filename = tpt-libs-prebuilt-arm-android-bionic-static-release-v20221223184203.zip
-source_hash = 8586c04b6443303bb30f3410c17d15bc3132a5e949b97bd99406b214e894226e

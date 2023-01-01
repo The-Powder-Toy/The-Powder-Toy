@@ -1,0 +1,6 @@
+[wrap-file]
+directory = tpt-libs-prebuilt-x86_64-darwin-macos-static-release-v20230101182417
+
+source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20230101182417/tpt-libs-prebuilt-x86_64-darwin-macos-static-release-v20230101182417.zip
+source_filename = tpt-libs-prebuilt-x86_64-darwin-macos-static-release-v20230101182417.zip
+source_hash = 55d8525ed077e8fef0ad74baeda6d4cbd23d4da1c70d39f44dc935ab4fd3a8ce
