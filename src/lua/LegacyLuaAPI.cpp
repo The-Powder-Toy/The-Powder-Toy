@@ -77,68 +77,70 @@ void initLegacyProps()
 #ifndef FFI
 int luacon_partread(lua_State* l)
 {
-	int tempinteger, i = cIndex;
-	float tempfloat;
-	ByteString key = tpt_lua_optByteString(l, 2, "");
-	CommandInterface::FormatType format;
-	int offset = luacon_ci->GetPropertyOffset(key, format);
-
+	int i = cIndex;
 	if (i < 0 || i >= NPART)
 		return luaL_error(l, "Out of range");
-	if (offset == -1)
-	{
-		if (byteStringEqualsLiteral(key, "id"))
-		{
-			lua_pushnumber(l, i);
-			return 1;
-		}
-		return luaL_error(l, "Invalid property");
-	}
+	if (!luacon_sim->parts[i].type)
+		return luaL_error(l, "Dead particle");
 
-	switch(format)
+	auto &properties = Particle::GetProperties();
+	auto prop = properties.end();
+
+	ByteString fieldName = tpt_lua_toByteString(l, 2);
+	if (fieldName == "id")
 	{
-	case CommandInterface::FormatInt:
-	case CommandInterface::FormatElement:
-		tempinteger = *((int*)(((unsigned char*)&luacon_sim->parts[i])+offset));
-		lua_pushnumber(l, tempinteger);
-		break;
-	case CommandInterface::FormatFloat:
-		tempfloat = *((float*)(((unsigned char*)&luacon_sim->parts[i])+offset));
-		lua_pushnumber(l, tempfloat);
-		break;
-	default:
-		break;
+		lua_pushnumber(l, i);
+		return 1;
 	}
+	for (auto &alias : Particle::GetPropertyAliases())
+	{
+		if (fieldName == alias.from)
+		{
+			fieldName = alias.to;
+		}
+	}
+	prop = std::find_if(properties.begin(), properties.end(), [&fieldName](StructProperty const &p) {
+		return p.Name == fieldName;
+	});
+	if (prop == properties.end())
+		return luaL_error(l, "Invalid property");
+
+	//Calculate memory address of property
+	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->parts[i]) + prop->Offset);
+
+	LuaScriptInterface::LuaGetProperty(l, *prop, propertyAddress);
 	return 1;
 }
 
 int luacon_partwrite(lua_State* l)
 {
 	int i = cIndex;
-	ByteString key = tpt_lua_optByteString(l, 2, "");
-	CommandInterface::FormatType format;
-	int offset = luacon_ci->GetPropertyOffset(key, format);
-
 	if (i < 0 || i >= NPART)
 		return luaL_error(l, "Out of range");
 	if (!luacon_sim->parts[i].type)
 		return luaL_error(l, "Dead particle");
-	if (offset == -1)
-		return luaL_error(l, "Invalid property");
 
-	switch(format)
+	auto &properties = Particle::GetProperties();
+	auto prop = properties.end();
+
+	ByteString fieldName = tpt_lua_toByteString(l, 2);
+	for (auto &alias : Particle::GetPropertyAliases())
 	{
-	case CommandInterface::FormatInt:
-		*((int*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = luaL_optinteger(l, 3, 0);
-		break;
-	case CommandInterface::FormatFloat:
-		*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = luaL_optnumber(l, 3, 0);
-		break;
-	case CommandInterface::FormatElement:
-		luacon_sim->part_change_type(i, int(luacon_sim->parts[i].x + 0.5f), int(luacon_sim->parts[i].y + 0.5f), luaL_optinteger(l, 3, 0));
-	default:
-		break;
+		if (fieldName == alias.from)
+		{
+			fieldName = alias.to;
+		}
 	}
+	prop = std::find_if(properties.begin(), properties.end(), [&fieldName](StructProperty const &p) {
+		return p.Name == fieldName;
+	});
+	if (prop == properties.end())
+		return luaL_error(l, "Invalid property");
+	
+	//Calculate memory address of property
+	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->parts[i]) + prop->Offset);
+
+	LuaScriptInterface::LuaSetParticleProperty(l, i, *prop, propertyAddress, 3);
 	return 0;
 }
 
@@ -254,15 +256,8 @@ int luacon_elementwrite(lua_State* l)
 		return luaL_error(l, "Invalid index");
 	}
 
-	if (prop.Name == "type") // i.e. it's .type
-	{
-		luacon_sim->part_change_type(i, int(luacon_sim->parts[i].x+0.5f), int(luacon_sim->parts[i].y+0.5f), luaL_checkinteger(l, 3));
-	}
-	else
-	{
-		intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[i]) + prop.Offset);
-		LuaScriptInterface::LuaSetProperty(l, prop, propertyAddress, 3);
-	}
+	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[i]) + prop.Offset);
+	LuaScriptInterface::LuaSetProperty(l, prop, propertyAddress, 3);
 
 	luacon_model->BuildMenus();
 	luacon_sim->init_can_move();
@@ -575,6 +570,8 @@ int luatpt_set_property(lua_State* l)
 	int offset = luacon_ci->GetPropertyOffset(prop, format);
 	if (offset == -1)
 		return luaL_error(l, "Invalid property '%s'", prop.c_str());
+	bool isX = byteStringEqualsLiteral(prop, "x");
+	bool isY = byteStringEqualsLiteral(prop, "y");
 
 	if (acount > 2)
 	{
@@ -639,6 +636,14 @@ int luatpt_set_property(lua_State* l)
 				{
 					if (format == CommandInterface::FormatElement)
 						luacon_sim->part_change_type(i, nx, ny, t);
+					else if (isX || isY)
+					{
+						float x = luacon_sim->parts[i].x;
+						float y = luacon_sim->parts[i].y;
+						float nx = isX ? f : x;
+						float ny = isY ? f : y;
+						luacon_sim->move(i, (int)(x + 0.5f), (int)(y + 0.5f), nx, ny);
+					}
 					else if(format == CommandInterface::FormatFloat)
 						*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = f;
 					else
@@ -672,6 +677,14 @@ int luatpt_set_property(lua_State* l)
 
 		if (format == CommandInterface::FormatElement)
 			luacon_sim->part_change_type(i, int(luacon_sim->parts[i].x + 0.5f), int(luacon_sim->parts[i].y + 0.5f), t);
+		else if (isX || isY)
+		{
+			float x = luacon_sim->parts[i].x;
+			float y = luacon_sim->parts[i].y;
+			float nx = isX ? f : x;
+			float ny = isY ? f : y;
+			luacon_sim->move(i, (int)(x + 0.5f), (int)(y + 0.5f), nx, ny);
+		}
 		else if (format == CommandInterface::FormatFloat)
 			*((float*)(((unsigned char*)&luacon_sim->parts[i])+offset)) = f;
 		else

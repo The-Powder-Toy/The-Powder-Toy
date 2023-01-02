@@ -215,6 +215,7 @@ public:
 
 	static void LuaGetProperty(lua_State* l, StructProperty property, intptr_t propertyAddress);
 	static void LuaSetProperty(lua_State* l, StructProperty property, intptr_t propertyAddress, int stackPos);
+	static void LuaSetParticleProperty(lua_State* l, int particleID, StructProperty property, intptr_t propertyAddress, int stackPos);
 
 	ui::Window * Window;
 	lua_State *l;

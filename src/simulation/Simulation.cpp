@@ -2904,28 +2904,37 @@ int Simulation::do_move(int i, int x, int y, float nxf, float nyf)
 	result = try_move(i, x, y, nx, ny);
 	if (result)
 	{
-		int t = parts[i].type;
-		parts[i].x = nxf;
-		parts[i].y = nyf;
-		if (ny!=y || nx!=x)
-		{
-			if (ID(pmap[y][x]) == i)
-				pmap[y][x] = 0;
-			if (ID(photons[y][x]) == i)
-				photons[y][x] = 0;
-			// kill_part if particle is out of bounds
-			if (nx < CELL || nx >= XRES - CELL || ny < CELL || ny >= YRES - CELL)
-			{
-				kill_part(i);
-				return -1;
-			}
-			if (elements[t].Properties & TYPE_ENERGY)
-				photons[ny][nx] = PMAP(i, t);
-			else if (t)
-				pmap[ny][nx] = PMAP(i, t);
-		}
+		if (!move(i, x, y, nxf, nyf))
+			return -1;
 	}
 	return result;
+}
+
+bool Simulation::move(int i, int x, int y, float nxf, float nyf)
+{
+	int nx = (int)(nxf+0.5f), ny = (int)(nyf+0.5f);
+	int t = parts[i].type;
+	parts[i].x = nxf;
+	parts[i].y = nyf;
+	if (ny != y || nx != x)
+	{
+		if (ID(pmap[y][x]) == i)
+			pmap[y][x] = 0;
+		if (ID(photons[y][x]) == i)
+			photons[y][x] = 0;
+		// kill_part if particle is out of bounds
+		if (nx < CELL || nx >= XRES - CELL || ny < CELL || ny >= YRES - CELL)
+		{
+			kill_part(i);
+			return false;
+		}
+		if (elements[t].Properties & TYPE_ENERGY)
+			photons[ny][nx] = PMAP(i, t);
+		else if (t)
+			pmap[ny][nx] = PMAP(i, t);
+	}
+
+	return true;
 }
 
 void Simulation::photoelectric_effect(int nx, int ny)//create sparks from PHOT when hitting PSCN and NSCN
