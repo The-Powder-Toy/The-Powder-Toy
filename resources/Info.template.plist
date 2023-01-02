@@ -18,7 +18,7 @@
 		<key>CFBundleIconFile</key>
 		<string>icon_exe.icns</string>
 		<key>NSHumanReadableCopyright</key>
-		<string>Copyright © 2008-2011 Stanislaw K Skowrenek, Copyright © 2011-2022 Simon Robertshaw, Copyright © 2016-2022 jacob1</string>
+		<string>Copyright © 2008-2011 Stanislaw K Skowrenek, Copyright © 2011-2023 Simon Robertshaw, Copyright © 2016-2023 jacob1</string>
 		<key>CFBundleDevelopmentRegion</key>
 		<string>English</string>
 		<key>CFBundleDocumentTypes</key>
