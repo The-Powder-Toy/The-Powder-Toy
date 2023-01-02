@@ -806,11 +806,13 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		{
 			upVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 128, 30, 255));
 			upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 108, 10, 255));
+			upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 108, 10, 255));
 		}
 		else
 		{
 			upVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 20, 20));
 			upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
+			upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 		}
 
 		downVoteButton->Enabled = upVoteButton->Enabled;
@@ -818,11 +820,13 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		{
 			downVoteButton->Appearance.BackgroundHover = (ui::Colour(128, 20, 30, 255));
 			downVoteButton->Appearance.BackgroundInactive = (ui::Colour(108, 0, 10, 255));
+			downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(108, 0, 10, 255));
 		}
 		else
 		{
 			downVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 20, 20));
 			downVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
+			downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 		}
 
 		if (sender->GetUser().UserID)
