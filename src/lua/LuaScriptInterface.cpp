@@ -943,6 +943,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"removeCustomGol", simulation_removeCustomGol},
 		{"lastUpdatedID", simulation_lastUpdatedID},
 		{"updateUpTo", simulation_updateUpTo},
+		{"temperatureScale", simulation_temperatureScale},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -2537,6 +2538,21 @@ int LuaScriptInterface::simulation_updateUpTo(lua_State *l)
 		luacon_sim->AfterSim();
 		luacon_sim->debug_currentParticle = 0;
 	}
+	return 0;
+}
+
+
+int LuaScriptInterface::simulation_temperatureScale(lua_State *l)
+{
+	if (lua_gettop(l) == 0)
+	{
+		lua_pushinteger(l, luacon_model->GetTemperatureScale());
+		return 1;
+	}
+	int temperatureScale = luaL_checkinteger(l, 1);
+	if (temperatureScale < 0 || temperatureScale > 2)
+		return luaL_error(l, "Invalid temperature scale");
+	luacon_model->SetTemperatureScale(temperatureScale);
 	return 0;
 }
 
