@@ -64,7 +64,7 @@ static int update(UPDATE_FUNC_ARGS)
 		if (parts[i].temp<= -256.0f+273.15f)
 			parts[i].temp = -256.0f+273.15f;
 
-		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 0.2f*(parts[i].temp-273.15);
+		sim->gravmap[(y/CELL)*XCELLS+(x/CELL)] = 0.2f*(parts[i].temp-273.15);
 		for (rx=-2; rx<3; rx++)
 			for (ry=-2; ry<3; ry++)
 				if (BOUNDS_CHECK && (rx || ry))

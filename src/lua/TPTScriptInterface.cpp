@@ -567,16 +567,16 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<String> * words)
 
 	if (resetStr == "pressure")
 	{
-		for (int nx = 0; nx < XRES/CELL; nx++)
-			for (int ny = 0; ny < YRES/CELL; ny++)
+		for (int nx = 0; nx < XCELLS; nx++)
+			for (int ny = 0; ny < YCELLS; ny++)
 			{
 				sim->air->pv[ny][nx] = 0;
 			}
 	}
 	else if (resetStr == "velocity")
 	{
-		for (int nx = 0; nx < XRES/CELL; nx++)
-			for (int ny = 0; ny < YRES/CELL; ny++)
+		for (int nx = 0; nx < XCELLS; nx++)
+			for (int ny = 0; ny < YCELLS; ny++)
 			{
 				sim->air->vx[ny][nx] = 0;
 				sim->air->vy[ny][nx] = 0;

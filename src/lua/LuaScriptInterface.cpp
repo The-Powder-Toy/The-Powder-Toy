@@ -953,9 +953,13 @@ void LuaScriptInterface::initSimulationAPI()
 	lua_setglobal(l, "sim");
 
 	//Static values
+	SETCONST(l, CELL);
+	SETCONST(l, XCELLS);
+	SETCONST(l, YCELLS);
+	SETCONST(l, NCELL);
 	SETCONST(l, XRES);
 	SETCONST(l, YRES);
-	SETCONST(l, CELL);
+	SETCONST(l, NPART);
 	SETCONST(l, NT);
 	SETCONST(l, ST);
 	SETCONSTF(l, ITH);
@@ -1034,14 +1038,14 @@ void LuaScriptInterface::initSimulationAPI()
 void LuaScriptInterface::set_map(int x, int y, int width, int height, float value, int map) // A function so this won't need to be repeated many times later
 {
 	int nx, ny;
-	if(x > (XRES/CELL)-1)
-		x = (XRES/CELL)-1;
-	if(y > (YRES/CELL)-1)
-		y = (YRES/CELL)-1;
-	if(x+width > (XRES/CELL)-1)
-		width = (XRES/CELL)-x;
-	if(y+height > (YRES/CELL)-1)
-		height = (YRES/CELL)-y;
+	if(x > XCELLS-1)
+		x = XCELLS-1;
+	if(y > YCELLS-1)
+		y = YCELLS-1;
+	if(x+width > XCELLS-1)
+		width = XCELLS-x;
+	if(y+height > YCELLS-1)
+		height = YCELLS-y;
 	for (nx = x; nx<x+width; nx++)
 		for (ny = y; ny<y+height; ny++)
 		{
@@ -1054,7 +1058,7 @@ void LuaScriptInterface::set_map(int x, int y, int width, int height, float valu
 			else if (map == 4)
 				luacon_sim->vy[ny][nx] = value;
 			else if (map == 5)
-				luacon_sim->gravmap[ny*XRES/CELL+nx] = value; //gravx/y don't seem to work, but this does. opposite of tpt
+				luacon_sim->gravmap[ny*XCELLS+nx] = value; //gravx/y don't seem to work, but this does. opposite of tpt
 		}
 }
 
@@ -1283,7 +1287,7 @@ int LuaScriptInterface::simulation_pressure(lua_State* l)
 	luaL_checktype(l, 2, LUA_TNUMBER);
 	int x = lua_tointeger(l, 1);
 	int y = lua_tointeger(l, 2);
-	if (x*CELL<0 || y*CELL<0 || x*CELL>=XRES || y*CELL>=YRES)
+	if (x<0 || y<0 || x>=XCELLS || y>=YCELLS)
 		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
 
 	if (argCount == 2)
@@ -1320,7 +1324,7 @@ int LuaScriptInterface::simulation_ambientHeat(lua_State* l)
 	luaL_checktype(l, 2, LUA_TNUMBER);
 	int x = lua_tointeger(l, 1);
 	int y = lua_tointeger(l, 2);
-	if (x*CELL<0 || y*CELL<0 || x*CELL>=XRES || y*CELL>=YRES)
+	if (x<0 || y<0 || x>=XCELLS || y>=YCELLS)
 		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
 
 	if (argCount == 2)
@@ -1357,7 +1361,7 @@ int LuaScriptInterface::simulation_velocityX(lua_State* l)
 	luaL_checktype(l, 2, LUA_TNUMBER);
 	int x = lua_tointeger(l, 1);
 	int y = lua_tointeger(l, 2);
-	if (x*CELL<0 || y*CELL<0 || x*CELL>=XRES || y*CELL>=YRES)
+	if (x<0 || y<0 || x>=XCELLS || y>=YCELLS)
 		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
 
 	if (argCount == 2)
@@ -1394,7 +1398,7 @@ int LuaScriptInterface::simulation_velocityY(lua_State* l)
 	luaL_checktype(l, 2, LUA_TNUMBER);
 	int x = lua_tointeger(l, 1);
 	int y = lua_tointeger(l, 2);
-	if (x*CELL<0 || y*CELL<0 || x*CELL>=XRES || y*CELL>=YRES)
+	if (x<0 || y<0 || x>=XCELLS || y>=YCELLS)
 		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
 
 	if (argCount == 2)
@@ -1431,12 +1435,12 @@ int LuaScriptInterface::simulation_gravMap(lua_State* l)
 	luaL_checktype(l, 2, LUA_TNUMBER);
 	int x = lua_tointeger(l, 1);
 	int y = lua_tointeger(l, 2);
-	if (x*CELL<0 || y*CELL<0 || x*CELL>=XRES || y*CELL>=YRES)
+	if (x<0 || y<0 || x>=XCELLS || y>=YCELLS)
 		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
 
 	if (argCount == 2)
 	{
-		lua_pushnumber(l, luacon_sim->gravp[y*XRES/CELL+x]);
+		lua_pushnumber(l, luacon_sim->gravp[y*XCELLS+x]);
 		return 1;
 	}
 	int width = 1, height = 1;
@@ -1850,27 +1854,27 @@ int LuaScriptInterface::simulation_resetTemp(lua_State * l)
 
 int LuaScriptInterface::simulation_resetPressure(lua_State * l)
 {
-	int aCount = lua_gettop(l), width = XRES/CELL, height = YRES/CELL;
+	int aCount = lua_gettop(l), width = XCELLS, height = YCELLS;
 	int x1 = abs(luaL_optint(l, 1, 0));
 	int y1 = abs(luaL_optint(l, 2, 0));
 	if (aCount > 2)
 	{
-		width = abs(luaL_optint(l, 3, XRES/CELL));
-		height = abs(luaL_optint(l, 4, YRES/CELL));
+		width = abs(luaL_optint(l, 3, XCELLS));
+		height = abs(luaL_optint(l, 4, YCELLS));
 	}
 	else if (aCount)
 	{
 		width = 1;
 		height = 1;
 	}
-	if(x1 > (XRES/CELL)-1)
-		x1 = (XRES/CELL)-1;
-	if(y1 > (YRES/CELL)-1)
-		y1 = (YRES/CELL)-1;
-	if(x1+width > (XRES/CELL)-1)
-		width = (XRES/CELL)-x1;
-	if(y1+height > (YRES/CELL)-1)
-		height = (YRES/CELL)-y1;
+	if(x1 > XCELLS-1)
+		x1 = XCELLS-1;
+	if(y1 > YCELLS-1)
+		y1 = YCELLS-1;
+	if(x1+width > XCELLS-1)
+		width = XCELLS-x1;
+	if(y1+height > YCELLS-1)
+		height = YCELLS-y1;
 	for (int nx = x1; nx<x1+width; nx++)
 		for (int ny = y1; ny<y1+height; ny++)
 		{

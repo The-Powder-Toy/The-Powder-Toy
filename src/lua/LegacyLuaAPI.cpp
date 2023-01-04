@@ -446,22 +446,22 @@ int luatpt_set_pressure(lua_State* l)
 	float value;
 	x1 = abs(luaL_optint(l, 1, 0));
 	y1 = abs(luaL_optint(l, 2, 0));
-	width = abs(luaL_optint(l, 3, XRES/CELL));
-	height = abs(luaL_optint(l, 4, YRES/CELL));
+	width = abs(luaL_optint(l, 3, XCELLS));
+	height = abs(luaL_optint(l, 4, YCELLS));
 	value = luaL_optnumber(l, 5, 0.0f);
 	if(value > MAX_PRESSURE)
 		value = MAX_PRESSURE;
 	else if(value < MIN_PRESSURE)
 		value = MIN_PRESSURE;
 
-	if(x1 > (XRES/CELL)-1)
-		x1 = (XRES/CELL)-1;
-	if(y1 > (YRES/CELL)-1)
-		y1 = (YRES/CELL)-1;
-	if(x1+width > (XRES/CELL)-1)
-		width = (XRES/CELL)-x1;
-	if(y1+height > (YRES/CELL)-1)
-		height = (YRES/CELL)-y1;
+	if(x1 > XCELLS-1)
+		x1 = XCELLS-1;
+	if(y1 > YCELLS-1)
+		y1 = YCELLS-1;
+	if(x1+width > XCELLS-1)
+		width = XCELLS-x1;
+	if(y1+height > YCELLS-1)
+		height = YCELLS-y1;
 	for (nx = x1; nx<x1+width; nx++)
 		for (ny = y1; ny<y1+height; ny++)
 		{
@@ -477,26 +477,26 @@ int luatpt_set_gravity(lua_State* l)
 	float value;
 	x1 = abs(luaL_optint(l, 1, 0));
 	y1 = abs(luaL_optint(l, 2, 0));
-	width = abs(luaL_optint(l, 3, XRES/CELL));
-	height = abs(luaL_optint(l, 4, YRES/CELL));
+	width = abs(luaL_optint(l, 3, XCELLS));
+	height = abs(luaL_optint(l, 4, YCELLS));
 	value = luaL_optnumber(l, 5, 0.0f);
 	if(value > MAX_PRESSURE)
 		value = MAX_PRESSURE;
 	else if(value < MIN_PRESSURE)
 		value = MIN_PRESSURE;
 
-	if(x1 > (XRES/CELL)-1)
-		x1 = (XRES/CELL)-1;
-	if(y1 > (YRES/CELL)-1)
-		y1 = (YRES/CELL)-1;
-	if(x1+width > (XRES/CELL)-1)
-		width = (XRES/CELL)-x1;
-	if(y1+height > (YRES/CELL)-1)
-		height = (YRES/CELL)-y1;
+	if(x1 > XCELLS-1)
+		x1 = XCELLS-1;
+	if(y1 > YCELLS-1)
+		y1 = YCELLS-1;
+	if(x1+width > XCELLS-1)
+		width = XCELLS-x1;
+	if(y1+height > YCELLS-1)
+		height = YCELLS-y1;
 	for (nx = x1; nx<x1+width; nx++)
 		for (ny = y1; ny<y1+height; ny++)
 		{
-			luacon_sim->gravmap[ny*(XRES/CELL)+nx] = value;
+			luacon_sim->gravmap[ny*XCELLS+nx] = value;
 		}
 	return 0;
 }
@@ -507,22 +507,22 @@ int luatpt_reset_gravity_field(lua_State* l)
 	int x1, y1, width, height;
 	x1 = abs(luaL_optint(l, 1, 0));
 	y1 = abs(luaL_optint(l, 2, 0));
-	width = abs(luaL_optint(l, 3, XRES/CELL));
-	height = abs(luaL_optint(l, 4, YRES/CELL));
-	if(x1 > (XRES/CELL)-1)
-		x1 = (XRES/CELL)-1;
-	if(y1 > (YRES/CELL)-1)
-		y1 = (YRES/CELL)-1;
-	if(x1+width > (XRES/CELL)-1)
-		width = (XRES/CELL)-x1;
-	if(y1+height > (YRES/CELL)-1)
-		height = (YRES/CELL)-y1;
+	width = abs(luaL_optint(l, 3, XCELLS));
+	height = abs(luaL_optint(l, 4, YCELLS));
+	if(x1 > XCELLS-1)
+		x1 = XCELLS-1;
+	if(y1 > YCELLS-1)
+		y1 = YCELLS-1;
+	if(x1+width > XCELLS-1)
+		width = XCELLS-x1;
+	if(y1+height > YCELLS-1)
+		height = YCELLS-y1;
 	for (nx = x1; nx<x1+width; nx++)
 		for (ny = y1; ny<y1+height; ny++)
 		{
-			luacon_sim->gravx[ny*(XRES/CELL)+nx] = 0;
-			luacon_sim->gravy[ny*(XRES/CELL)+nx] = 0;
-			luacon_sim->gravp[ny*(XRES/CELL)+nx] = 0;
+			luacon_sim->gravx[ny*XCELLS+nx] = 0;
+			luacon_sim->gravy[ny*XCELLS+nx] = 0;
+			luacon_sim->gravp[ny*XCELLS+nx] = 0;
 		}
 	return 0;
 }
@@ -533,16 +533,16 @@ int luatpt_reset_velocity(lua_State* l)
 	int x1, y1, width, height;
 	x1 = abs(luaL_optint(l, 1, 0));
 	y1 = abs(luaL_optint(l, 2, 0));
-	width = abs(luaL_optint(l, 3, XRES/CELL));
-	height = abs(luaL_optint(l, 4, YRES/CELL));
-	if(x1 > (XRES/CELL)-1)
-		x1 = (XRES/CELL)-1;
-	if(y1 > (YRES/CELL)-1)
-		y1 = (YRES/CELL)-1;
-	if(x1+width > (XRES/CELL)-1)
-		width = (XRES/CELL)-x1;
-	if(y1+height > (YRES/CELL)-1)
-		height = (YRES/CELL)-y1;
+	width = abs(luaL_optint(l, 3, XCELLS));
+	height = abs(luaL_optint(l, 4, YCELLS));
+	if(x1 > XCELLS-1)
+		x1 = XCELLS-1;
+	if(y1 > YCELLS-1)
+		y1 = YCELLS-1;
+	if(x1+width > XCELLS-1)
+		width = XCELLS-x1;
+	if(y1+height > YCELLS-1)
+		height = YCELLS-y1;
 	for (nx = x1; nx<x1+width; nx++)
 		for (ny = y1; ny<y1+height; ny++)
 		{
@@ -697,7 +697,7 @@ int luatpt_get_wallmap(lua_State* l)
 	int x1 = abs(luaL_optint(l, 1, 0));
 	int y1 = abs(luaL_optint(l, 2, 0));
 
-	if(x1 > (XRES/CELL) || y1 > (YRES/CELL))
+	if(x1 > XCELLS || y1 > YCELLS)
 		return luaL_error(l, "Out of range");
 
 	lua_pushinteger(l, luacon_sim->bmap[y1][x1]);
@@ -730,10 +730,10 @@ int luatpt_set_wallmap(lua_State* l)
 	}
 	if (x < 0              ) x = 0              ;
 	if (y < 0              ) y = 0              ;
-	if (x > XRES / CELL    ) x = XRES / CELL    ;
-	if (y > YRES / CELL    ) y = YRES / CELL    ;
-	if (w > XRES / CELL - x) w = XRES / CELL - x;
-	if (h > YRES / CELL - y) h = YRES / CELL - y;
+	if (x > XCELLS    ) x = XCELLS    ;
+	if (y > YCELLS    ) y = YCELLS    ;
+	if (w > XCELLS - x) w = XCELLS - x;
+	if (h > YCELLS - y) h = YCELLS - y;
 	for (int yy = y; yy < y + h; ++yy)
 	{
 		for (int xx = x; xx < x + w; ++xx)
@@ -758,20 +758,20 @@ int luatpt_set_elecmap(lua_State* l)
 
 	x1 = abs(luaL_optint(l, 1, 0));
 	y1 = abs(luaL_optint(l, 2, 0));
-	width = abs(luaL_optint(l, 3, XRES/CELL));
-	height = abs(luaL_optint(l, 4, YRES/CELL));
+	width = abs(luaL_optint(l, 3, XCELLS));
+	height = abs(luaL_optint(l, 4, YCELLS));
 	value = luaL_optint(l, acount, 0);
 
 	if(acount==5)	//Draw rect
 	{
-		if(x1 > (XRES/CELL))
-			x1 = (XRES/CELL);
-		if(y1 > (YRES/CELL))
-			y1 = (YRES/CELL);
-		if(x1+width > (XRES/CELL))
-			width = (XRES/CELL)-x1;
-		if(y1+height > (YRES/CELL))
-			height = (YRES/CELL)-y1;
+		if(x1 > XCELLS)
+			x1 = XCELLS;
+		if(y1 > YCELLS)
+			y1 = YCELLS;
+		if(x1+width > XCELLS)
+			width = XCELLS-x1;
+		if(y1+height > YCELLS)
+			height = YCELLS-y1;
 		for (nx = x1; nx<x1+width; nx++)
 			for (ny = y1; ny<y1+height; ny++)
 			{
@@ -780,10 +780,10 @@ int luatpt_set_elecmap(lua_State* l)
 	}
 	else	//Set point
 	{
-		if(x1 > (XRES/CELL))
-			x1 = (XRES/CELL);
-		if(y1 > (YRES/CELL))
-			y1 = (YRES/CELL);
+		if(x1 > XCELLS)
+			x1 = XCELLS;
+		if(y1 > YCELLS)
+			y1 = YCELLS;
 		luacon_sim->emap[y1][x1] = value;
 	}
 	return 0;
@@ -794,7 +794,7 @@ int luatpt_get_elecmap(lua_State* l)
 	int x1 = abs(luaL_optint(l, 1, 0));
 	int y1 = abs(luaL_optint(l, 2, 0));
 
-	if(x1 > (XRES/CELL) || y1 > (YRES/CELL))
+	if(x1 > XCELLS || y1 > YCELLS)
 		return luaL_error(l, "Out of range");
 
 	lua_pushinteger(l, luacon_sim->emap[y1][x1]);

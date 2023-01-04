@@ -72,9 +72,9 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 	}
 	if (parts[i].life>20)
-		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 20;
+		sim->gravmap[(y/CELL)*XCELLS+(x/CELL)] = 20;
 	else if (parts[i].life>=1)
-		sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = -80;
+		sim->gravmap[(y/CELL)*XCELLS+(x/CELL)] = -80;
 	return 0;
 }
 

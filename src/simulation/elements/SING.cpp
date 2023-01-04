@@ -71,7 +71,7 @@ static int update(UPDATE_FUNC_ARGS)
 			crx = (x/CELL)+rx;
 			for (ry=-1; ry<2; ry++) {
 				cry = (y/CELL)+ry;
-				if (cry >= 0 && crx >= 0 && crx < (XRES/CELL) && cry < (YRES/CELL)) {
+				if (cry >= 0 && crx >= 0 && crx < XCELLS && cry < YCELLS) {
 					sim->pv[cry][crx] += (float)parts[i].tmp;
 				}
 			}

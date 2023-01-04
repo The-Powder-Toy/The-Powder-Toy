@@ -83,20 +83,20 @@ public:
 	int GSPEED;
 	unsigned int gol[YRES][XRES][5];
 	//Air sim
-	float (*vx)[XRES/CELL];
-	float (*vy)[XRES/CELL];
-	float (*pv)[XRES/CELL];
-	float (*hv)[XRES/CELL];
+	float (*vx)[XCELLS];
+	float (*vy)[XCELLS];
+	float (*pv)[XCELLS];
+	float (*hv)[XCELLS];
 	//Gravity sim
-	float *gravx;//gravx[(YRES/CELL) * (XRES/CELL)];
-	float *gravy;//gravy[(YRES/CELL) * (XRES/CELL)];
-	float *gravp;//gravp[(YRES/CELL) * (XRES/CELL)];
-	float *gravmap;//gravmap[(YRES/CELL) * (XRES/CELL)];
+	float *gravx;//gravx[YCELLS * XCELLS];
+	float *gravy;//gravy[YCELLS * XCELLS];
+	float *gravp;//gravp[YCELLS * XCELLS];
+	float *gravmap;//gravmap[YCELLS * XCELLS];
 	//Walls
-	unsigned char bmap[YRES/CELL][XRES/CELL];
-	unsigned char emap[YRES/CELL][XRES/CELL];
-	float fvx[YRES/CELL][XRES/CELL];
-	float fvy[YRES/CELL][XRES/CELL];
+	unsigned char bmap[YCELLS][XCELLS];
+	unsigned char emap[YCELLS][XCELLS];
+	float fvx[YCELLS][XCELLS];
+	float fvy[YCELLS][XCELLS];
 	//Particles
 	Particle parts[NPART];
 	int pmap[YRES][XRES];

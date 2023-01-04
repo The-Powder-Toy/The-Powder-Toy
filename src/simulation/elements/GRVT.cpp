@@ -59,7 +59,7 @@ static int update(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp <= -100)
 		parts[i].tmp = -100;
 
-	sim->gravmap[(y/CELL)*(XRES/CELL)+(x/CELL)] = 0.2f*parts[i].tmp;
+	sim->gravmap[(y/CELL)*XCELLS+(x/CELL)] = 0.2f*parts[i].tmp;
 	return 0;
 }
 

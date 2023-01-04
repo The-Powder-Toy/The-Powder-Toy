@@ -315,8 +315,8 @@ void Renderer::DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsign
 
 void Renderer::DrawWalls()
 {
-	for (int y = 0; y < YRES/CELL; y++)
-		for (int x =0; x < XRES/CELL; x++)
+	for (int y = 0; y < YCELLS; y++)
+		for (int x =0; x < XCELLS; x++)
 			if (sim->bmap[y][x])
 			{
 				unsigned char wt = sim->bmap[y][x];
@@ -604,7 +604,7 @@ void Renderer::render_gravlensing(pixel * source)
 	{
 		for(ny = 0; ny < YRES; ny++)
 		{
-			co = (ny/CELL)*(XRES/CELL)+(nx/CELL);
+			co = (ny/CELL)*XCELLS+(nx/CELL);
 			rx = (int)(nx-sim->gravx[co]*0.75f+0.5f);
 			ry = (int)(ny-sim->gravy[co]*0.75f+0.5f);
 			gx = (int)(nx-sim->gravx[co]*0.875f+0.5f);
@@ -634,8 +634,8 @@ void Renderer::render_fire()
 	if(!(render_mode & FIREMODE))
 		return;
 	int i,j,x,y,r,g,b,a;
-	for (j=0; j<YRES/CELL; j++)
-		for (i=0; i<XRES/CELL; i++)
+	for (j=0; j<YCELLS; j++)
+		for (i=0; i<XCELLS; i++)
 		{
 			r = fire_r[j][i];
 			g = fire_g[j][i];
@@ -654,7 +654,7 @@ void Renderer::render_fire()
 			b *= 8;
 			for (y=-1; y<2; y++)
 				for (x=-1; x<2; x++)
-					if ((x || y) && i+x>=0 && j+y>=0 && i+x<XRES/CELL && j+y<YRES/CELL)
+					if ((x || y) && i+x>=0 && j+y>=0 && i+x<XCELLS && j+y<YCELLS)
 					{
 						r += fire_r[j+y][i+x];
 						g += fire_g[j+y][i+x];
@@ -1291,11 +1291,11 @@ void Renderer::draw_grav()
 	if(!gravityFieldEnabled)
 		return;
 
-	for (y=0; y<YRES/CELL; y++)
+	for (y=0; y<YCELLS; y++)
 	{
-		for (x=0; x<XRES/CELL; x++)
+		for (x=0; x<XCELLS; x++)
 		{
-			ca = y*(XRES/CELL)+x;
+			ca = y*XCELLS+x;
 			if(fabsf(sim->gravx[ca]) <= 0.001f && fabsf(sim->gravy[ca]) <= 0.001f)
 				continue;
 			nx = float(x*CELL);
@@ -1326,13 +1326,13 @@ void Renderer::draw_air()
 	if(!(display_mode & DISPLAY_AIR))
 		return;
 	int x, y, i, j;
-	float (*pv)[XRES/CELL] = sim->air->pv;
-	float (*hv)[XRES/CELL] = sim->air->hv;
-	float (*vx)[XRES/CELL] = sim->air->vx;
-	float (*vy)[XRES/CELL] = sim->air->vy;
+	float (*pv)[XCELLS] = sim->air->pv;
+	float (*hv)[XCELLS] = sim->air->hv;
+	float (*vx)[XCELLS] = sim->air->vx;
+	float (*vy)[XCELLS] = sim->air->vy;
 	pixel c = 0;
-	for (y=0; y<YRES/CELL; y++)
-		for (x=0; x<XRES/CELL; x++)
+	for (y=0; y<YCELLS; y++)
+		for (x=0; x<XCELLS; x++)
 		{
 			if (display_mode & DISPLAY_AIRP)
 			{
@@ -1400,11 +1400,11 @@ void Renderer::draw_grav_zones()
 		return;
 
 	int x, y, i, j;
-	for (y=0; y<YRES/CELL; y++)
+	for (y=0; y<YCELLS; y++)
 	{
-		for (x=0; x<XRES/CELL; x++)
+		for (x=0; x<XCELLS; x++)
 		{
-			if(sim->grav->gravmask[y*(XRES/CELL)+x])
+			if(sim->grav->gravmask[y*XCELLS+x])
 			{
 				for (j=0; j<CELL; j++)//draws the colors
 					for (i=0; i<CELL; i++)
@@ -1624,9 +1624,9 @@ void Renderer::CompileRenderMode()
 
 void Renderer::ClearAccumulation()
 {
-	std::fill(&fire_r[0][0], &fire_r[0][0] + (YRES/CELL)*(XRES/CELL), 0);
-	std::fill(&fire_g[0][0], &fire_g[0][0] + (YRES/CELL)*(XRES/CELL), 0);
-	std::fill(&fire_b[0][0], &fire_b[0][0] + (YRES/CELL)*(XRES/CELL), 0);
+	std::fill(&fire_r[0][0], &fire_r[0][0] + NCELL, 0);
+	std::fill(&fire_g[0][0], &fire_g[0][0] + NCELL, 0);
+	std::fill(&fire_b[0][0], &fire_b[0][0] + NCELL, 0);
 	std::fill(persistentVid, persistentVid+(VIDXRES*YRES), 0);
 }
 

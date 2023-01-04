@@ -45,9 +45,9 @@ public:
 	unsigned int display_mode;
 	std::vector<RenderPreset> renderModePresets;
 	//
-	unsigned char fire_r[YRES/CELL][XRES/CELL];
-	unsigned char fire_g[YRES/CELL][XRES/CELL];
-	unsigned char fire_b[YRES/CELL][XRES/CELL];
+	unsigned char fire_r[YCELLS][XCELLS];
+	unsigned char fire_g[YCELLS][XCELLS];
+	unsigned char fire_b[YCELLS][XCELLS];
 	unsigned int fire_alpha[CELL*3][CELL*3];
 	//
 	bool gravityZonesEnabled;

@@ -52,7 +52,7 @@ private:
 	};
 	using mask_el = struct mask_el;
 
-	bool grav_mask_r(int x, int y, char checkmap[YRES/CELL][XRES/CELL], char shape[YRES/CELL][XRES/CELL]);
+	bool grav_mask_r(int x, int y, char checkmap[YCELLS][XCELLS], char shape[YCELLS][XCELLS]);
 	void mask_free(mask_el *c_mask_el);
 
 	void update_grav();
@@ -72,7 +72,7 @@ public:
 	float *gravx = nullptr;
 	unsigned *gravmask = nullptr;
 
-	unsigned char (*bmap)[XRES/CELL];
+	unsigned char (*bmap)[XCELLS];
 
 	bool IsEnabled() { return enabled; }
 

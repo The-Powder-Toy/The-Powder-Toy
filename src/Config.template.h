@@ -76,9 +76,14 @@ constexpr int BARSIZE  = 0;
 constexpr int MENUSIZE = 40;
 constexpr int BARSIZE  = 17;
 #endif
-constexpr int XRES = 612;
-constexpr int YRES = 384;
-constexpr int NPART = XRES * YRES;
+//CELL, the size of the pressure, gravity, and wall maps. Larger than 1 to prevent extreme lag
+constexpr int CELL   =   4;
+constexpr int XCELLS = 153;
+constexpr int YCELLS =  96;
+constexpr int NCELL  = XCELLS * YCELLS;
+constexpr int XRES   = XCELLS * CELL;
+constexpr int YRES   = YCELLS * CELL;
+constexpr int NPART  = XRES * YRES;
 
 constexpr int XCNTR = XRES / 2;
 constexpr int YCNTR = YRES / 2;
@@ -88,8 +93,6 @@ constexpr int WINDOWH = YRES + MENUSIZE;
 
 constexpr int MAXSIGNS = 16;
 
-//CELL, the size of the pressure, gravity, and wall maps. Larger than 1 to prevent extreme lag
-constexpr int   CELL            = 4;
 constexpr int   ISTP            = CELL / 2;
 constexpr float CFDS            = 4.0f / CELL;
 constexpr float SIM_MAXVELOCITY = 1e4f;

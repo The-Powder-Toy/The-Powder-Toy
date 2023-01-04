@@ -451,7 +451,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 		throw ParseException(ParseException::InvalidDimensions, "Save too small");
 
 	//Too large/off screen
-	if (blockX+blockW > XRES/CELL || blockY+blockH > YRES/CELL)
+	if (blockX+blockW > XCELLS || blockY+blockH > YCELLS)
 		throw ParseException(ParseException::InvalidDimensions, "Save too large");
 
 	setSize(blockW, blockH);
@@ -1300,16 +1300,16 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 
 	bw = saveData[6];
 	bh = saveData[7];
-	if (bx0+bw > XRES/CELL)
-		bx0 = XRES/CELL - bw;
-	if (by0+bh > YRES/CELL)
-		by0 = YRES/CELL - bh;
+	if (bx0+bw > XCELLS)
+		bx0 = XCELLS - bw;
+	if (by0+bh > YCELLS)
+		by0 = YCELLS - bh;
 	if (bx0 < 0)
 		bx0 = 0;
 	if (by0 < 0)
 		by0 = 0;
 
-	if (saveData[5]!=CELL || bx0+bw>XRES/CELL || by0+bh>YRES/CELL)
+	if (saveData[5]!=CELL || bx0+bw>XCELLS || by0+bh>YCELLS)
 		throw ParseException(ParseException::InvalidDimensions, "Save too large");
 	int size = (unsigned)saveData[8];
 	size |= ((unsigned)saveData[9])<<8;

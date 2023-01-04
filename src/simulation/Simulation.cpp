@@ -548,22 +548,22 @@ void Simulation::SaveSimOptions(GameSave * gameSave)
 std::unique_ptr<Snapshot> Simulation::CreateSnapshot()
 {
 	auto snap = std::make_unique<Snapshot>();
-	snap->AirPressure    .insert   (snap->AirPressure    .begin(), &pv  [0][0]      , &pv  [0][0] + ((XRES / CELL) * (YRES / CELL)));
-	snap->AirVelocityX   .insert   (snap->AirVelocityX   .begin(), &vx  [0][0]      , &vx  [0][0] + ((XRES / CELL) * (YRES / CELL)));
-	snap->AirVelocityY   .insert   (snap->AirVelocityY   .begin(), &vy  [0][0]      , &vy  [0][0] + ((XRES / CELL) * (YRES / CELL)));
-	snap->AmbientHeat    .insert   (snap->AmbientHeat    .begin(), &hv  [0][0]      , &hv  [0][0] + ((XRES / CELL) * (YRES / CELL)));
-	snap->BlockMap       .insert   (snap->BlockMap       .begin(), &bmap[0][0]      , &bmap[0][0] + ((XRES / CELL) * (YRES / CELL)));
-	snap->ElecMap        .insert   (snap->ElecMap        .begin(), &emap[0][0]      , &emap[0][0] + ((XRES / CELL) * (YRES / CELL)));
-	snap->FanVelocityX   .insert   (snap->FanVelocityX   .begin(), &fvx [0][0]      , &fvx [0][0] + ((XRES / CELL) * (YRES / CELL)));
-	snap->FanVelocityY   .insert   (snap->FanVelocityY   .begin(), &fvy [0][0]      , &fvy [0][0] + ((XRES / CELL) * (YRES / CELL)));
-	snap->GravVelocityX  .insert   (snap->GravVelocityX  .begin(), &gravx  [0]      , &gravx  [0] + ((XRES / CELL) * (YRES / CELL)));
-	snap->GravVelocityY  .insert   (snap->GravVelocityY  .begin(), &gravy  [0]      , &gravy  [0] + ((XRES / CELL) * (YRES / CELL)));
-	snap->GravValue      .insert   (snap->GravValue      .begin(), &gravp  [0]      , &gravp  [0] + ((XRES / CELL) * (YRES / CELL)));
-	snap->GravMap        .insert   (snap->GravMap        .begin(), &gravmap[0]      , &gravmap[0] + ((XRES / CELL) * (YRES / CELL)));
-	snap->Particles      .insert   (snap->Particles      .begin(), &parts  [0]      , &parts  [0] + parts_lastActiveIndex + 1      );
-	snap->PortalParticles.insert   (snap->PortalParticles.begin(), &portalp[0][0][0], &portalp[0][0][0] + CHANNELS * 8 * 80        );
-	snap->WirelessData   .insert   (snap->WirelessData   .begin(), &wireless[0][0]  , &wireless[0][0] + CHANNELS * 2               );
-	snap->stickmen       .insert   (snap->stickmen       .begin(), &fighters[0]     , &fighters[0] + MAX_FIGHTERS                  );
+	snap->AirPressure    .insert   (snap->AirPressure    .begin(), &pv  [0][0]      , &pv  [0][0] + NCELL);
+	snap->AirVelocityX   .insert   (snap->AirVelocityX   .begin(), &vx  [0][0]      , &vx  [0][0] + NCELL);
+	snap->AirVelocityY   .insert   (snap->AirVelocityY   .begin(), &vy  [0][0]      , &vy  [0][0] + NCELL);
+	snap->AmbientHeat    .insert   (snap->AmbientHeat    .begin(), &hv  [0][0]      , &hv  [0][0] + NCELL);
+	snap->BlockMap       .insert   (snap->BlockMap       .begin(), &bmap[0][0]      , &bmap[0][0] + NCELL);
+	snap->ElecMap        .insert   (snap->ElecMap        .begin(), &emap[0][0]      , &emap[0][0] + NCELL);
+	snap->FanVelocityX   .insert   (snap->FanVelocityX   .begin(), &fvx [0][0]      , &fvx [0][0] + NCELL);
+	snap->FanVelocityY   .insert   (snap->FanVelocityY   .begin(), &fvy [0][0]      , &fvy [0][0] + NCELL);
+	snap->GravVelocityX  .insert   (snap->GravVelocityX  .begin(), &gravx  [0]      , &gravx  [0] + NCELL);
+	snap->GravVelocityY  .insert   (snap->GravVelocityY  .begin(), &gravy  [0]      , &gravy  [0] + NCELL);
+	snap->GravValue      .insert   (snap->GravValue      .begin(), &gravp  [0]      , &gravp  [0] + NCELL);
+	snap->GravMap        .insert   (snap->GravMap        .begin(), &gravmap[0]      , &gravmap[0] + NCELL);
+	snap->Particles      .insert   (snap->Particles      .begin(), &parts  [0]      , &parts  [0] + parts_lastActiveIndex + 1);
+	snap->PortalParticles.insert   (snap->PortalParticles.begin(), &portalp[0][0][0], &portalp[0][0][0] + CHANNELS * 8 * 80);
+	snap->WirelessData   .insert   (snap->WirelessData   .begin(), &wireless[0][0]  , &wireless[0][0] + CHANNELS * 2);
+	snap->stickmen       .insert   (snap->stickmen       .begin(), &fighters[0]     , &fighters[0] + MAX_FIGHTERS);
 	snap->stickmen       .push_back(player2);
 	snap->stickmen       .push_back(player);
 	snap->signs = signs;
@@ -764,9 +764,9 @@ SimulationSample Simulation::GetSample(int x, int y)
 
 		if(grav->IsEnabled())
 		{
-			sample.Gravity = gravp[(y/CELL)*(XRES/CELL)+(x/CELL)];
-			sample.GravityVelocityX = gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
-			sample.GravityVelocityY = gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
+			sample.Gravity = gravp[(y/CELL)*XCELLS+(x/CELL)];
+			sample.GravityVelocityX = gravx[(y/CELL)*XCELLS+(x/CELL)];
+			sample.GravityVelocityY = gravy[(y/CELL)*XCELLS+(x/CELL)];
 		}
 	}
 	else
@@ -988,28 +988,28 @@ void Simulation::SetEdgeMode(int newEdgeMode)
 	{
 	case 0:
 	case 2:
-		for(int i = 0; i<(XRES/CELL); i++)
+		for(int i = 0; i<XCELLS; i++)
 		{
 			bmap[0][i] = 0;
-			bmap[YRES/CELL-1][i] = 0;
+			bmap[YCELLS-1][i] = 0;
 		}
-		for(int i = 1; i<((YRES/CELL)-1); i++)
+		for(int i = 1; i<(YCELLS-1); i++)
 		{
 			bmap[i][0] = 0;
-			bmap[i][XRES/CELL-1] = 0;
+			bmap[i][XCELLS-1] = 0;
 		}
 		break;
 	case 1:
 		int i;
-		for(i=0; i<(XRES/CELL); i++)
+		for(i=0; i<XCELLS; i++)
 		{
 			bmap[0][i] = WL_WALL;
-			bmap[YRES/CELL-1][i] = WL_WALL;
+			bmap[YCELLS-1][i] = WL_WALL;
 		}
-		for(i=1; i<((YRES/CELL)-1); i++)
+		for(i=1; i<(YCELLS-1); i++)
 		{
 			bmap[i][0] = WL_WALL;
-			bmap[i][XRES/CELL-1] = WL_WALL;
+			bmap[i][XCELLS-1] = WL_WALL;
 		}
 		break;
 	default:
@@ -1483,7 +1483,7 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBru
 	{
 		for (int wallY = y; wallY <= y+ry+ry; wallY++)
 		{
-			if (wallX >= 0 && wallX < XRES/CELL && wallY >= 0 && wallY < YRES/CELL)
+			if (wallX >= 0 && wallX < XCELLS && wallY >= 0 && wallY < YCELLS)
 			{
 				if (wall == WL_FAN)
 				{
@@ -1498,7 +1498,7 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush * cBru
 					for (int tempY = wallY-1; tempY < wallY+2; tempY++)
 						for (int tempX = wallX-1; tempX < wallX+2; tempX++)
 						{
-							if (tempX >= 0 && tempX < XRES/CELL && tempY >= 0 && tempY < YRES/CELL && bmap[tempY][tempX] == WL_STREAM)
+							if (tempX >= 0 && tempX < XCELLS && tempY >= 0 && tempY < YCELLS && bmap[tempY][tempX] == WL_STREAM)
 								return 1;
 						}
 				}
@@ -2158,7 +2158,7 @@ void Simulation::set_emap(int x, int y)
 			break;
 		x1--;
 	}
-	while (x2<XRES/CELL-1)
+	while (x2<XCELLS-1)
 	{
 		if (!is_wire_off(x2+1, y))
 			break;
@@ -2179,17 +2179,17 @@ void Simulation::set_emap(int x, int y)
 		for (x=x1; x<=x2; x++)
 			if (is_wire_off(x, y-1))
 			{
-				if (x==x1 || x==x2 || y>=YRES/CELL-1 ||
+				if (x==x1 || x==x2 || y>=YCELLS-1 ||
 				        is_wire(x-1, y-1) || is_wire(x+1, y-1) ||
 				        is_wire(x-1, y+1) || !is_wire(x, y+1) || is_wire(x+1, y+1))
 					set_emap(x, y-1);
 			}
 
-	if (y<YRES/CELL-2 && x1==x2 &&
+	if (y<YCELLS-2 && x1==x2 &&
 	        is_wire(x1-1, y+1) && is_wire(x1, y+1) && is_wire(x1+1, y+1) &&
 	        !is_wire(x1-1, y+2) && is_wire(x1, y+2) && !is_wire(x1+1, y+2))
 		set_emap(x1, y+2);
-	else if (y<YRES/CELL-1)
+	else if (y<YCELLS-1)
 		for (x=x1; x<=x2; x++)
 			if (is_wire_off(x, y+1))
 			{
@@ -2300,7 +2300,7 @@ void Simulation::clear_sim(void)
 	//memset(fire_g, 0, sizeof(fire_g));
 	//memset(fire_b, 0, sizeof(fire_b));
 	//if(gravmask)
-		//memset(gravmask, 0xFFFFFFFF, (XRES/CELL)*(YRES/CELL)*sizeof(unsigned));
+		//memset(gravmask, 0xFFFFFFFF, NCELL*sizeof(unsigned));
 	if(grav)
 		grav->Clear();
 	if(air)
@@ -3365,8 +3365,8 @@ void Simulation::GetGravityField(int x, int y, float particleGrav, float newtonG
 	}
 	if (newtonGrav)
 	{
-		pGravX += newtonGrav*gravx[(y/CELL)*(XRES/CELL)+(x/CELL)];
-		pGravY += newtonGrav*gravy[(y/CELL)*(XRES/CELL)+(x/CELL)];
+		pGravX += newtonGrav*gravx[(y/CELL)*XCELLS+(x/CELL)];
+		pGravY += newtonGrav*gravy[(y/CELL)*XCELLS+(x/CELL)];
 	}
 }
 
@@ -4008,7 +4008,7 @@ void Simulation::UpdateParticles(int start, int end)
 					ny = y/CELL + 1;
 				else
 					ny = y/CELL;
-				if (nx>=0 && ny>=0 && nx<XRES/CELL && ny<YRES/CELL)
+				if (nx>=0 && ny>=0 && nx<XCELLS && ny<YCELLS)
 				{
 					if (t!=PT_SPRK)
 					{
@@ -4037,7 +4037,7 @@ void Simulation::UpdateParticles(int start, int end)
 
 
 			s = 1;
-			gravtot = fabs(gravy[(y/CELL)*(XRES/CELL)+(x/CELL)])+fabs(gravx[(y/CELL)*(XRES/CELL)+(x/CELL)]);
+			gravtot = fabs(gravy[(y/CELL)*XCELLS+(x/CELL)])+fabs(gravx[(y/CELL)*XCELLS+(x/CELL)]);
 			if (elements[t].HighPressureTransition>-1 && pv[y/CELL][x/CELL]>elements[t].HighPressure) {
 				// particle type change due to high pressure
 				if (elements[t].HighPressureTransition!=PT_NUM)
@@ -5046,9 +5046,9 @@ void Simulation::BeforeSim()
 	{
 		// decrease wall conduction, make walls block air and ambient heat
 		int x, y;
-		for (y = 0; y < YRES/CELL; y++)
+		for (y = 0; y < YCELLS; y++)
 		{
-			for (x = 0; x < XRES/CELL; x++)
+			for (x = 0; x < XCELLS; x++)
 			{
 				if (emap[y][x])
 					emap[y][x] --;
