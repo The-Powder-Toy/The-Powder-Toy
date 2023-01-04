@@ -5030,7 +5030,7 @@ void Simulation::BeforeSim()
 		if (elementRecount)
 			std::fill(elementCount, elementCount+PT_NUM, 0);
 	}
-	sandcolour = (int)(20.0f*sin((float)sandcolour_frame*(M_PI/180.0f)));
+	sandcolour = (int)(20.0f*sin((float)sandcolour_frame*(TPT_PI_FLT/180.0f)));
 	sandcolour_frame = (sandcolour_frame+1)%360;
 
 	if (gravWallChanged)

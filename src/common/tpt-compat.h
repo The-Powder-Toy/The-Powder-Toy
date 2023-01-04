@@ -19,13 +19,20 @@
 #include <type_traits>
 #include <utility>
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 //some compatibility stuff for non-standard compilers
 #if defined(WIN) && !defined(strcasecmp)
 #define strcasecmp stricmp
 #endif
 
-#ifndef M_PI
-#define M_PI 3.14159265f
+#ifdef M_PI
+constexpr float  TPT_PI_FLT = float(M_PI);
+constexpr double TPT_PI_DBL = double(M_PI);
+#else
+constexpr float  TPT_PI_FLT = 3.14159265f;
+constexpr double TPT_PI_DBL = 3.14159265358979323846;
 #endif
 
 typedef unsigned short Uint16;

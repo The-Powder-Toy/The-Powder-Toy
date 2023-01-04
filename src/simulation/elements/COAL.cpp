@@ -97,8 +97,8 @@ int Element_COAL_graphics(GRAPHICS_FUNC_ARGS)
 		auto q = int((cpart->temp > 595.15f) ? 200.0f : cpart->temp - 395.15f);
 
 		*colr += int(sin(FREQUENCY*q) * 226);
-		*colg += int(sin(FREQUENCY*q*4.55 + 3.14) * 34);
-		*colb += int(sin(FREQUENCY*q*2.22 + 3.14) * 64);
+		*colg += int(sin(FREQUENCY*q*4.55 + TPT_PI_DBL) * 34);
+		*colb += int(sin(FREQUENCY*q*2.22 + TPT_PI_DBL) * 64);
 	}
 	return 0;
 }

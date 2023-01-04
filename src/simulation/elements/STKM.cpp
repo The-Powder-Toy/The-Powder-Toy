@@ -499,7 +499,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 					int angle;
 					int power = 100;
 					if (gvx!=0 || gvy!=0)
-						angle = int(atan2(mvx, mvy)*180.0f/M_PI);
+						angle = int(atan2(mvx, mvy)*180.0f/TPT_PI_FLT);
 					else
 						angle = RNG::Ref().between(0, 359);
 					if (((int)playerp->pcomm)&0x01)

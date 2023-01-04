@@ -169,14 +169,14 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	angle = float((parts[i].tmp + RNG::Ref().between(-30, 30)) % 360);
 	multipler = int(parts[i].life * 1.5) + RNG::Ref().between(0, parts[i].life);
-	rx=int(cos(angle*M_PI/180)*multipler);
-	ry=int(-sin(angle*M_PI/180)*multipler);
+	rx=int(cos(angle*TPT_PI_FLT/180)*multipler);
+	ry=int(-sin(angle*TPT_PI_FLT/180)*multipler);
 	create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, int(angle), parts[i].tmp2, i);
 	if (parts[i].tmp2 == 2)// && pNear == -1)
 	{
 		angle2 = float(((int)angle + RNG::Ref().between(-100, 100)) % 360);
-		rx=int(cos(angle2*M_PI/180)*multipler);
-		ry=int(-sin(angle2*M_PI/180)*multipler);
+		rx=int(cos(angle2*TPT_PI_FLT/180)*multipler);
+		ry=int(-sin(angle2*TPT_PI_FLT/180)*multipler);
 		create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, int(angle2), parts[i].tmp2, i);
 	}
 
@@ -321,6 +321,6 @@ static void create(ELEMENT_CREATE_FUNC_ARGS)
 		gx += cosf(angle) * (0.04f - gsize);
 		gy += sinf(angle) * (0.04f - gsize);
 	}
-	sim->parts[i].tmp = (static_cast<int>(atan2f(-gy, gx) * (180.0f / M_PI)) + RNG::Ref().between(-20, 20) + 360) % 360;
+	sim->parts[i].tmp = (static_cast<int>(atan2f(-gy, gx) * (180.0f / TPT_PI_FLT)) + RNG::Ref().between(-20, 20) + 360) % 360;
 	sim->parts[i].tmp2 = 4;
 }

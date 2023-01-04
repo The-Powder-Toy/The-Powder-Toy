@@ -791,8 +791,8 @@ void Renderer::render_parts()
 					gradv = 3.1415/(2*elements[t].HighTemperature-(elements[t].HighTemperature-800.0f));
 					auto caddress = int((sim->parts[i].temp>elements[t].HighTemperature)?elements[t].HighTemperature-(elements[t].HighTemperature-800.0f):sim->parts[i].temp-(elements[t].HighTemperature-800.0f));
 					colr += int(sin(gradv*caddress) * 226);
-					colg += int(sin(gradv*caddress*4.55 +3.14) * 34);
-					colb += int(sin(gradv*caddress*2.22 +3.14) * 64);
+					colg += int(sin(gradv*caddress*4.55 +TPT_PI_DBL) * 34);
+					colb += int(sin(gradv*caddress*2.22 +TPT_PI_DBL) * 64);
 				}
 
 				if((pixel_mode & FIRE_ADD) && !(render_mode & FIRE_ADD))
@@ -1181,7 +1181,7 @@ void Renderer::render_parts()
 					sim->orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
 					for (r = 0; r < 4; r++) {
 						ddist = ((float)orbd[r])/16.0f;
-						drad = (M_PI * ((float)orbl[r]) / 180.0f)*1.41f;
+						drad = (TPT_PI_FLT * ((float)orbl[r]) / 180.0f)*1.41f;
 						nxo = (int)(ddist*cos(drad));
 						nyo = (int)(ddist*sin(drad));
 						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES && TYP(sim->pmap[ny+nyo][nx+nxo]) != PT_PRTI)
@@ -1198,7 +1198,7 @@ void Renderer::render_parts()
 					sim->orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
 					for (r = 0; r < 4; r++) {
 						ddist = ((float)orbd[r])/16.0f;
-						drad = (M_PI * ((float)orbl[r]) / 180.0f)*1.41f;
+						drad = (TPT_PI_FLT * ((float)orbl[r]) / 180.0f)*1.41f;
 						nxo = (int)(ddist*cos(drad));
 						nyo = (int)(ddist*sin(drad));
 						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES && TYP(sim->pmap[ny+nyo][nx+nxo]) != PT_PRTO)

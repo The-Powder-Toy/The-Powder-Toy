@@ -77,7 +77,7 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 		}
 		spawncount = std::abs(parts[i].tmp);
-		spawncount = (spawncount>255) ? 3019 : int(std::pow((double)(spawncount/8), 2)*M_PI);
+		spawncount = (spawncount>255) ? 3019 : int(std::pow((double)(spawncount/8), 2)*TPT_PI_FLT);
 		for (int j = 0;j < spawncount; j++)
 		{
 			switch (RNG::Ref().gen() % 3)
@@ -95,7 +95,7 @@ static int update(UPDATE_FUNC_ARGS)
 			if (nb!=-1) {
 				parts[nb].life = RNG::Ref().between(0, 299);
 				parts[nb].temp = MAX_TEMP/2;
-				angle = RNG::Ref().uniform01()*2.0f*M_PI;
+				angle = RNG::Ref().uniform01()*2.0f*TPT_PI_FLT;
 				v = RNG::Ref().uniform01()*5.0f;
 				parts[nb].vx = v*cosf(angle);
 				parts[nb].vy = v*sinf(angle);
