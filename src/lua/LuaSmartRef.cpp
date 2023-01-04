@@ -1,5 +1,4 @@
 #include "Config.h"
-#ifdef LUACONSOLE
 #include "LuaSmartRef.h"
 
 void LuaSmartRef::Clear()
@@ -37,5 +36,3 @@ int LuaSmartRef::Push(lua_State *l)
 	lua_rawgeti(l, LUA_REGISTRYINDEX, ref);
 	return lua_type(l, -1);
 }
-
-#endif

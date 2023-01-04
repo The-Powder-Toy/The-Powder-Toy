@@ -1,6 +1,4 @@
 #include "Config.h"
-#ifdef LUACONSOLE
-
 #include "LuaComponent.h"
 
 #include "LuaScriptInterface.h"
@@ -94,4 +92,3 @@ LuaComponent::~LuaComponent()
 		delete component;
 	}
 }
-#endif

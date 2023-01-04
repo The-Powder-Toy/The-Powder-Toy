@@ -349,6 +349,7 @@ conf_data.set('APPEXE', app_exe)
 conf_data.set('APPID', app_id)
 conf_data.set('APPDATA', get_option('app_data'))
 conf_data.set('APPVENDOR', get_option('app_vendor'))
+conf_data.set('LUACONSOLE', lua_variant != 'none' ? 'true' : 'false')
 
 data_files = []
 

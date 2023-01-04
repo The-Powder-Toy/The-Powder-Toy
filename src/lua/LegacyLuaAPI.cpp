@@ -1,6 +1,4 @@
 #include "Config.h"
-#ifdef LUACONSOLE
-
 #include "client/http/Request.h" // includes curl.h, needs to come first to silence a warning on windows
 
 #include <iomanip>
@@ -1369,5 +1367,3 @@ int luatpt_perfectCircle(lua_State* l)
 	luacon_model->SetPerfectCircle(lua_toboolean(l, 1));
 	return 0;
 }
-
-#endif

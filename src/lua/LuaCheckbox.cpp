@@ -1,10 +1,6 @@
 #include "Config.h"
-#ifdef LUACONSOLE
-
 #include "LuaCheckbox.h"
-
 #include "LuaScriptInterface.h"
-
 #include "gui/interface/Checkbox.h"
 
 const char LuaCheckbox::className[] = "Checkbox";
@@ -87,4 +83,3 @@ void LuaCheckbox::triggerAction()
 LuaCheckbox::~LuaCheckbox()
 {
 }
-#endif

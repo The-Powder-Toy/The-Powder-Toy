@@ -2,7 +2,6 @@
 #include <cstdint>
 
 // Boolean macros (defined / not defined), would be great to get rid of them all.
-#mesondefine LUACONSOLE
 #mesondefine NOHTTP
 #mesondefine GRAVFFT
 #mesondefine RENDERER
@@ -17,6 +16,7 @@
 #mesondefine MACOSX
 #mesondefine X86
 
+constexpr bool LUACONSOLE               = @LUACONSOLE@;
 constexpr bool ALLOW_FAKE_NEWER_VERSION = @ALLOW_FAKE_NEWER_VERSION@;
 constexpr bool USE_UPDATESERVER         = @USE_UPDATESERVER@;
 constexpr bool INSTALL_CHECK            = @INSTALL_CHECK@;

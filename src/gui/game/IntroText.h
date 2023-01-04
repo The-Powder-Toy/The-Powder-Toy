@@ -41,9 +41,10 @@ inline ByteString IntroText()
 #elif defined(MOD)
 	sb << " MODVER " << SNAPSHOT_ID;
 #endif
-#ifdef LUACONSOLE
-	sb << " LUACONSOLE";
-#endif
+	if constexpr (LUACONSOLE)
+	{
+		sb << " LUACONSOLE";
+	}
 #ifdef GRAVFFT
 	sb << " GRAVFFT";
 #endif

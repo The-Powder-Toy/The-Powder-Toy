@@ -1,10 +1,6 @@
 #include "Config.h"
-#ifdef LUACONSOLE
-
 #include "LuaButton.h"
-
 #include "LuaScriptInterface.h"
-
 #include "gui/interface/Button.h"
 
 const char LuaButton::className[] = "Button";
@@ -88,4 +84,3 @@ void LuaButton::triggerAction()
 LuaButton::~LuaButton()
 {
 }
-#endif

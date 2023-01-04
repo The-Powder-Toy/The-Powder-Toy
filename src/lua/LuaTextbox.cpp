@@ -1,10 +1,6 @@
 #include "Config.h"
-#ifdef LUACONSOLE
-
 #include "LuaTextbox.h"
-
 #include "LuaScriptInterface.h"
-
 #include "gui/interface/Textbox.h"
 
 const char LuaTextbox::className[] = "Textbox";
@@ -90,4 +86,3 @@ int LuaTextbox::text(lua_State * l)
 LuaTextbox::~LuaTextbox()
 {
 }
-#endif

@@ -1,6 +1,4 @@
 #include "Config.h"
-#ifdef LUACONSOLE
-
 #include "LuaWindow.h"
 
 #include "LuaScriptInterface.h"
@@ -511,4 +509,3 @@ LuaWindow::~LuaWindow()
 	window->CloseActiveWindow();
 	delete window;
 }
-#endif

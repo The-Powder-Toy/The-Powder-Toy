@@ -1,10 +1,6 @@
 #include "Config.h"
-#ifdef LUACONSOLE
-
 #include "LuaSlider.h"
-
 #include "LuaScriptInterface.h"
-
 #include "gui/interface/Slider.h"
 
 const char LuaSlider::className[] = "Slider";
@@ -87,4 +83,3 @@ void LuaSlider::triggerOnValueChanged()
 LuaSlider::~LuaSlider()
 {
 }
-#endif
