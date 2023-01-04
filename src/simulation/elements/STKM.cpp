@@ -97,7 +97,10 @@ static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
 		sim->player.spwn = 0;
 }
 
-#define INBOND(x, y) ((x)>=0 && (y)>=0 && (x)<XRES && (y)<YRES)
+constexpr bool INBOND(int x, int y)
+{
+	return x >= 0 && y >= 0 && x < XRES && y < YRES;
+}
 
 int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 {
@@ -247,7 +250,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		bool moved = false;
 		if (dl>dr)
 		{
-			if (INBOND(playerp->legs[4], playerp->legs[5]) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL))
+			if (INBOND(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL))
 			{
 				playerp->accs[2] = -3*mvy-3*mvx;
 				playerp->accs[3] = 3*mvx-3*mvy;
@@ -258,7 +261,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		}
 		else
 		{
-			if (INBOND(playerp->legs[12], playerp->legs[13]) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL))
+			if (INBOND(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL))
 			{
 				playerp->accs[6] = -3*mvy-3*mvx;
 				playerp->accs[7] = 3*mvx-3*mvy;
@@ -297,7 +300,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		bool moved = false;
 		if (dl<dr)
 		{
-			if (INBOND(playerp->legs[4], playerp->legs[5]) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL))
+			if (INBOND(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL))
 			{
 				playerp->accs[2] = 3*mvy-3*mvx;
 				playerp->accs[3] = -3*mvx-3*mvy;
@@ -308,7 +311,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		}
 		else
 		{
-			if (INBOND(playerp->legs[12], playerp->legs[13]) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL))
+			if (INBOND(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL))
 			{
 				playerp->accs[6] = 3*mvy-3*mvx;
 				playerp->accs[7] = -3*mvx-3*mvy;
@@ -374,8 +377,8 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 				}
 			}
 		}
-		else if ((INBOND(playerp->legs[4], playerp->legs[5]) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL)) ||
-				 (INBOND(playerp->legs[12], playerp->legs[13]) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL)))
+		else if ((INBOND(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL)) ||
+				 (INBOND(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL)))
 		{
 			parts[i].vx -= 4*mvx;
 			parts[i].vy -= 4*mvy;
@@ -387,10 +390,10 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 	}
 
 	//Charge detector wall if foot inside
-	if (INBOND((int)(playerp->legs[4]+0.5)/CELL, (int)(playerp->legs[5]+0.5)/CELL) &&
+	if (INBOND(int(playerp->legs[4]+0.5)/CELL, int(playerp->legs[5]+0.5)/CELL) &&
 	       sim->bmap[(int)(playerp->legs[5]+0.5)/CELL][(int)(playerp->legs[4]+0.5)/CELL]==WL_DETECT)
 		sim->set_emap((int)playerp->legs[4]/CELL, (int)playerp->legs[5]/CELL);
-	if (INBOND((int)(playerp->legs[12]+0.5)/CELL, (int)(playerp->legs[13]+0.5)/CELL) &&
+	if (INBOND(int(playerp->legs[12]+0.5)/CELL, int(playerp->legs[13]+0.5)/CELL) &&
 	        sim->bmap[(int)(playerp->legs[13]+0.5)/CELL][(int)(playerp->legs[12]+0.5)/CELL]==WL_DETECT)
 		sim->set_emap((int)(playerp->legs[12]+0.5)/CELL, (int)(playerp->legs[13]+0.5)/CELL);
 
@@ -547,27 +550,27 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 	playerp->legs[8] += (playerp->legs[8]-parts[i].x)*d;
 	playerp->legs[9] += (playerp->legs[9]-parts[i].y)*d;
 
-	if (INBOND(playerp->legs[4], playerp->legs[5]) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL))
+	if (INBOND(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL))
 	{
 		playerp->legs[4] = playerp->legs[6];
 		playerp->legs[5] = playerp->legs[7];
 	}
 
-	if (INBOND(playerp->legs[12], playerp->legs[13]) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL))
+	if (INBOND(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL))
 	{
 		playerp->legs[12] = playerp->legs[14];
 		playerp->legs[13] = playerp->legs[15];
 	}
 
 	//This makes stick man "pop" from obstacles
-	if (INBOND(playerp->legs[4], playerp->legs[5]) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL))
+	if (INBOND(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL))
 	{
 		float t;
 		t = playerp->legs[4]; playerp->legs[4] = playerp->legs[6]; playerp->legs[6] = t;
 		t = playerp->legs[5]; playerp->legs[5] = playerp->legs[7]; playerp->legs[7] = t;
 	}
 
-	if (INBOND(playerp->legs[12], playerp->legs[13]) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL))
+	if (INBOND(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL))
 	{
 		float t;
 		t = playerp->legs[12]; playerp->legs[12] = playerp->legs[14]; playerp->legs[14] = t;

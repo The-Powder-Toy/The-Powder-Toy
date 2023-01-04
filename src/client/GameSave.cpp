@@ -1896,12 +1896,6 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	}
 }
 
-// restrict the minimum version this save can be opened with
-#define RESTRICTVERSION(major, minor) if ((major) > minimumMajorVersion || (((major) == minimumMajorVersion && (minor) > minimumMinorVersion))) {\
-	minimumMajorVersion = major;\
-	minimumMinorVersion = minor;\
-}
-
 std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 {
 	int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
@@ -1910,6 +1904,14 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	// when building, this number may be increased depending on what elements are used
 	// or what properties are detected
 	int minimumMajorVersion = 90, minimumMinorVersion = 2;
+	auto RESTRICTVERSION = [&minimumMajorVersion, &minimumMinorVersion](int major, int minor) {
+		// restrict the minimum version this save can be opened with
+		if (major > minimumMajorVersion || ((major == minimumMajorVersion && minor > minimumMinorVersion)))
+		{
+			minimumMajorVersion = major;
+			minimumMinorVersion = minor;
+		}
+	};
 
 	//Get coords in blocks
 	blockX = 0;//orig_x0/CELL;

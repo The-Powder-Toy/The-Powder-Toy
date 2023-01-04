@@ -2959,11 +2959,7 @@ void LuaScriptInterface::LuaGetProperty(lua_State* l, StructProperty property, i
 			break;
 		}
 		case StructProperty::Colour:
-#if PIXELSIZE == 4
 			lua_pushinteger(l, *((unsigned int*)propertyAddress));
-#else
-			lua_pushinteger(l, *((unsigned short*)propertyAddress));
-#endif
 			break;
 		case StructProperty::Removed:
 			lua_pushnil(l);
@@ -3004,11 +3000,7 @@ void LuaScriptInterface::LuaSetProperty(lua_State* l, StructProperty property, i
 			*((String*)propertyAddress) = tpt_lua_checkString(l, stackPos);
 			break;
 		case StructProperty::Colour:
-#if PIXELSIZE == 4
 			*((unsigned int*)propertyAddress) = int32_truncate(luaL_checknumber(l, stackPos));
-#else
-			*((unsigned short*)propertyAddress) = int32_truncate(luaL_checknumber(l, stackPos));
-#endif
 			break;
 		case StructProperty::Removed:
 			break;
