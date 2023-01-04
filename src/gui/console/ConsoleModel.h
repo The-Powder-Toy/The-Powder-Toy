@@ -1,5 +1,4 @@
-#ifndef CONSOLEMODEL_H_
-#define CONSOLEMODEL_H_
+#pragma once
 #include "Config.h"
 
 #include <vector>
@@ -24,5 +23,3 @@ public:
 	void AddObserver(ConsoleView * observer);
 	void AddLastCommand(ConsoleCommand command);
 };
-
-#endif /* CONSOLEMODEL_H_ */

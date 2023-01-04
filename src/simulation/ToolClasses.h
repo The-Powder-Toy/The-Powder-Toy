@@ -1,6 +1,4 @@
-#ifndef TOOLCLASSES_H
-#define TOOLCLASSES_H
-
+#pragma once
 #include <vector>
 #include <memory>
 
@@ -11,5 +9,3 @@
 #undef TOOL_NUMBERS_ENUMERATE
 
 std::vector<SimTool> const &GetTools();
-
-#endif

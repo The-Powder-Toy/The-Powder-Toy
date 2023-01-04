@@ -1,6 +1,4 @@
-#ifndef SAVEFILE_H_
-#define SAVEFILE_H_
-
+#pragma once
 #include "common/String.h"
 
 class GameSave;
@@ -29,5 +27,3 @@ private:
 	String loadingError;
 	bool lazyLoad;
 };
-
-#endif /* SAVEFILE_H_ */

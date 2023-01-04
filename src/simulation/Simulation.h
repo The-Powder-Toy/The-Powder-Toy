@@ -1,5 +1,4 @@
-#ifndef SIMULATION_H
-#define SIMULATION_H
+#pragma once
 #include "Config.h"
 
 #include <cstring>
@@ -251,5 +250,3 @@ public:
 private:
 	CoordStack& getCoordStackSingleton();
 };
-
-#endif /* SIMULATION_H */

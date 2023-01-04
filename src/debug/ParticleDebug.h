@@ -1,6 +1,4 @@
-#ifndef PARTICLE_DEBUG_H
-#define PARTICLE_DEBUG_H
-
+#pragma once
 #include "DebugInfo.h"
 
 class Simulation;
@@ -15,5 +13,3 @@ public:
 	bool KeyPress(int key, int scan, bool shift, bool ctrl, bool alt, ui::Point currentMouse) override;
 	virtual ~ParticleDebug();
 };
-
-#endif

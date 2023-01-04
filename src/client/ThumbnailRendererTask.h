@@ -1,6 +1,4 @@
-#ifndef THUMBNAILRENDERER_H
-#define THUMBNAILRENDERER_H
-
+#pragma once
 #include "tasks/AbandonableTask.h"
 
 #include <memory>
@@ -27,6 +25,3 @@ public:
 
 	static int QueueSize();
 };
-
-#endif // THUMBNAILRENDERER_H
-

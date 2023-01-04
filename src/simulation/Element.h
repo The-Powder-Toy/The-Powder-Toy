@@ -1,6 +1,4 @@
-#ifndef ELEMENTCLASS_H
-#define ELEMENTCLASS_H
-
+#pragma once
 #include "graphics/Pixel.h"
 #include "ElementDefs.h"
 #include "Particle.h"
@@ -78,5 +76,3 @@ public:
 #include "ElementNumbers.h"
 #undef ELEMENT_NUMBERS_DECLARE
 };
-
-#endif

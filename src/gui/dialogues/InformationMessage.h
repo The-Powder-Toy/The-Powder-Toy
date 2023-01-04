@@ -1,6 +1,4 @@
-#ifndef INFORMATIONMESSAGE_H_
-#define INFORMATIONMESSAGE_H_
-
+#pragma once
 #include "gui/interface/Window.h"
 
 class InformationMessage : public ui::Window
@@ -11,5 +9,3 @@ public:
 
 	void OnDraw() override;
 };
-
-#endif /* INFORMATIONMESSAGE_H_ */

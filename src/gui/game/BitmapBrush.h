@@ -5,9 +5,7 @@
  *      Author: Simon Robertshaw
  */
 
-#ifndef BTIMAPBRUSH_H_
-#define BTIMAPBRUSH_H_
-
+#pragma once
 #include <vector>
 #include "Brush.h"
 
@@ -21,5 +19,3 @@ public:
 	void GenerateBitmap() override;
 	virtual ~BitmapBrush();
 };
-
-#endif /* BTIMAPBRUSH_H_ */

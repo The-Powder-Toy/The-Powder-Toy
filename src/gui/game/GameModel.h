@@ -1,5 +1,4 @@
-#ifndef GAMEMODEL_H
-#define GAMEMODEL_H
+#pragma once
 #include "Config.h"
 
 #include <vector>
@@ -249,5 +248,3 @@ public:
 	ByteString SelectNextIdentifier;
 	int SelectNextTool;
 };
-
-#endif // GAMEMODEL_H

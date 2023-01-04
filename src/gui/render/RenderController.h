@@ -1,5 +1,4 @@
-#ifndef RENDERCONTROLLER_H_
-#define RENDERCONTROLLER_H_
+#pragma once
 #include "Config.h"
 
 #include <functional>
@@ -25,5 +24,3 @@ public:
 	void SetColourMode(unsigned int renderMode);
 	void LoadRenderPreset(int presetNum);
 };
-
-#endif /* RENDERCONTROLLER_H_ */

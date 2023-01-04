@@ -1,6 +1,4 @@
-#ifndef The_Powder_Toy_Sample_h
-#define The_Powder_Toy_Sample_h
-
+#pragma once
 #include "Particle.h"
 
 class SimulationSample
@@ -24,5 +22,3 @@ public:
 
 	SimulationSample() : particle(), ParticleID(0), PositionX(0), PositionY(0), AirPressure(0), AirTemperature(0), AirVelocityX(0), AirVelocityY(0), WallType(0), Gravity(0), GravityVelocityX(0), GravityVelocityY(0), NumParts(0), isMouseInSim(true) {}
 };
-
-#endif

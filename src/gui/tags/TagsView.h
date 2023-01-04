@@ -1,6 +1,4 @@
-#ifndef TAGSVIEW_H_
-#define TAGSVIEW_H_
-
+#pragma once
 #include <vector>
 #include "gui/interface/Window.h"
 
@@ -28,5 +26,3 @@ public:
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void NotifyTagsChanged(TagsModel * sender);
 };
-
-#endif /* TAGSVIEW_H_ */

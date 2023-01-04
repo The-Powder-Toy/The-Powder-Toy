@@ -1,6 +1,4 @@
-#ifndef USERINFO_H_
-#define USERINFO_H_
-
+#pragma once
 #include "common/String.h"
 
 class UserInfo
@@ -37,6 +35,3 @@ public:
 	{ }
 	UserInfo() {}
 };
-
-
-#endif /* USER_H_ */

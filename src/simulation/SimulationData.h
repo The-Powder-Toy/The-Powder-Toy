@@ -1,5 +1,4 @@
-#ifndef SIMULATIONDATA_H
-#define SIMULATIONDATA_H
+#pragma once
 #include "Config.h"
 
 #include <cstdint>
@@ -152,5 +151,3 @@ std::vector<wall_type> LoadWalls();
 std::vector<menu_section> LoadMenus();
 
 std::vector<unsigned int> LoadLatent();
-
-#endif /* SIMULATIONDATA_H */

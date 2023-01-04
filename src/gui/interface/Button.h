@@ -1,6 +1,4 @@
-#ifndef BUTTON_H_
-#define BUTTON_H_
-
+#pragma once
 #include "common/String.h"
 #include "Component.h"
 
@@ -54,4 +52,3 @@ protected:
 	ButtonAction actionCallback;
 };
 }
-#endif /* BUTTON_H_ */

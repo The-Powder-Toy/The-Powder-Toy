@@ -1,6 +1,4 @@
-#ifndef AVATARBUTTON_H_
-#define AVATARBUTTON_H_
-
+#pragma once
 #include "common/String.h"
 
 #include "Component.h"
@@ -52,5 +50,3 @@ protected:
 	bool isMouseInside, isButtonDown;
 };
 }
-#endif /* AVATARBUTTON_H_ */
-

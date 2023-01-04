@@ -1,5 +1,4 @@
-#ifndef PREVIEWCONTROLLER_H_
-#define PREVIEWCONTROLLER_H_
+#pragma once
 #include "Config.h"
 
 #include "client/ClientListener.h"
@@ -39,5 +38,3 @@ public:
 
 	virtual ~PreviewController();
 };
-
-#endif /* PREVIEWCONTROLLER_H_ */

@@ -1,6 +1,4 @@
-#ifndef TASKWINDOW_H_
-#define TASKWINDOW_H_
-
+#pragma once
 #include "gui/interface/Window.h"
 #include "tasks/TaskListener.h"
 
@@ -30,5 +28,3 @@ public:
 	void Exit();
 	virtual ~TaskWindow();
 };
-
-#endif /* TASKWINDOW_H_ */

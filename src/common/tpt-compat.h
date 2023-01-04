@@ -13,10 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TPT_COMPAT_H
-#define TPT_COMPAT_H
-
-
+#pragma once
 #include <cstddef>
 #include <memory>
 #include <type_traits>
@@ -35,6 +32,4 @@ typedef unsigned short Uint16;
 
 #ifndef NULL
 # define NULL 0
-#endif
-
 #endif

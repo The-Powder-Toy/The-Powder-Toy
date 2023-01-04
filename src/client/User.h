@@ -1,6 +1,4 @@
-#ifndef USER_H_
-#define USER_H_
-
+#pragma once
 #include "common/String.h"
 
 
@@ -27,5 +25,3 @@ public:
 	}
 };
 
-
-#endif /* USER_H_ */

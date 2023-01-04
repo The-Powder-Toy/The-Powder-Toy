@@ -1,6 +1,4 @@
-#ifndef CONTROLLER_H_
-#define CONTROLLER_H_
-
+#pragma once
 class Controller
 {
 private:
@@ -9,5 +7,3 @@ private:
 	virtual void Hide();
 	virtual ~Controller() = default;
 };
-
-#endif /* CONTROLLER_H_ */

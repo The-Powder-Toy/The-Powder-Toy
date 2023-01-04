@@ -1,5 +1,4 @@
-#ifndef SAVERENDERER_H_
-#define SAVERENDERER_H_
+#pragma once
 #include "Config.h"
 #include "common/Singleton.h"
 #include <mutex>
@@ -22,5 +21,3 @@ public:
 	void Flush(int begin, int end);
 	virtual ~SaveRenderer();
 };
-
-#endif /* SAVERENDERER_H_ */

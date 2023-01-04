@@ -1,5 +1,4 @@
-#ifndef GRAPHICS_H
-#define GRAPHICS_H
+#pragma once
 #include "Config.h"
 
 #include "common/String.h"
@@ -138,5 +137,3 @@ public:
 };
 
 bool PngDataToPixels(std::vector<pixel> &imageData, int &imgw, int &imgh, const char *pngData, size_t pngDataSize, bool addBackground);
-
-#endif

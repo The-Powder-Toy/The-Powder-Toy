@@ -1,6 +1,4 @@
-#ifndef CLIENTLISTENER_H_
-#define CLIENTLISTENER_H_
-
+#pragma once
 #include "common/String.h"
 
 class Client;
@@ -16,5 +14,3 @@ public:
 	virtual void NotifyNewNotification(Client * sender, std::pair<String, ByteString> notification) {}
 };
 
-
-#endif /* CLIENTLISTENER_H_ */

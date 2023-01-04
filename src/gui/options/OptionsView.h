@@ -1,6 +1,4 @@
-#ifndef OPTIONSVIEW_H_
-#define OPTIONSVIEW_H_
-
+#pragma once
 #include "common/String.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/ScrollPanel.h"
@@ -53,5 +51,3 @@ public:
 	void OnTryExit(ExitMethod method) override;
 	virtual ~OptionsView();
 };
-
-#endif /* OPTIONSVIEW_H_ */

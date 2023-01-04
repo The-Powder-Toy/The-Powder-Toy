@@ -1,6 +1,4 @@
-#ifndef SPINNER_H_
-#define SPINNER_H_
-
+#pragma once
 #include "Component.h"
 
 namespace ui
@@ -19,5 +17,3 @@ public:
 
 }
 
-
-#endif /* SPINNER_H_ */

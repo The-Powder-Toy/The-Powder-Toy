@@ -1,5 +1,4 @@
-#ifndef TASKLISTENER_H_
-#define TASKLISTENER_H_
+#pragma once
 
 class Task;
 class TaskListener {
@@ -10,5 +9,3 @@ public:
 	virtual void NotifyStatus(Task * task) {}
 	virtual ~TaskListener() {}
 };
-
-#endif /* TASK_H_ */

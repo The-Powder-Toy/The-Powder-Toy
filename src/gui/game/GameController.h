@@ -1,5 +1,4 @@
-#ifndef GAMECONTROLLER_H
-#define GAMECONTROLLER_H
+#pragma once
 #include "Config.h"
 
 #include <vector>
@@ -195,5 +194,3 @@ public:
 
 	void RemoveCustomGOLType(const ByteString &identifier);
 };
-
-#endif // GAMECONTROLLER_H

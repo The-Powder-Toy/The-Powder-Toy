@@ -1,6 +1,4 @@
-#ifndef PREVIEWMODELEXCEPTION_H_
-#define PREVIEWMODELEXCEPTION_H_
-
+#pragma once
 #include "common/String.h"
 #include <exception>
 
@@ -15,5 +13,3 @@ public:
 	}
 	~PreviewModelException() throw() {}
 };
-
-#endif /* PREVIEWMODELEXCEPTION_H_ */

@@ -1,6 +1,4 @@
-#ifndef PROFILEACTIVITY_H_
-#define PROFILEACTIVITY_H_
-
+#pragma once
 #include "common/String.h"
 #include "Activity.h"
 #include "client/UserInfo.h"
@@ -38,5 +36,3 @@ public:
 
 	void ResizeArea();
 };
-
-#endif /* PROFILEACTIVITY_H_ */

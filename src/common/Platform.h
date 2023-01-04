@@ -1,5 +1,4 @@
-#ifndef PLATFORM_H
-#define PLATFORM_H
+#pragma once
 #include "Config.h"
 
 #include "common/String.h"
@@ -51,5 +50,3 @@ namespace Platform
 	extern std::string originalCwd;
 	extern std::string sharedCwd;
 }
-
-#endif

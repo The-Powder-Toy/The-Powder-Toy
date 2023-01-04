@@ -1,5 +1,4 @@
-#ifndef CONSOLECONTROLLER_H_
-#define CONSOLECONTROLLER_H_
+#pragma once
 #include "Config.h"
 
 #include "common/String.h"
@@ -27,5 +26,3 @@ public:
 	ConsoleView * GetView();
 	virtual ~ConsoleController();
 };
-
-#endif /* CONSOLECONTROLLER_H_ */

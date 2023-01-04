@@ -1,6 +1,4 @@
-#ifndef ELIPSEBRUSH_H_
-#define ELIPSEBRUSH_H_
-
+#pragma once
 #include <cmath>
 #include "Brush.h"
 
@@ -65,5 +63,3 @@ public:
 		}
 	}
 };
-
-#endif /* ELIPSEBRUSH_H_ */

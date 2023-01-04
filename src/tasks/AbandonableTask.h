@@ -1,6 +1,4 @@
-#ifndef ABANDONABLETASK_H_
-#define ABANDONABLETASK_H_
-
+#pragma once
 #include "Task.h"
 
 #include <condition_variable>
@@ -19,5 +17,3 @@ protected:
 	void doWork_wrapper() override;
 	bool thAbandoned;
 };
-
-#endif /* ABANDONABLETASK_H_ */

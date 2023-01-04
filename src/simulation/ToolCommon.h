@@ -1,6 +1,4 @@
-#ifndef SIMTOOLCOMMON_H
-#define SIMTOOLCOMMON_H
-
+#pragma once
 #include "Config.h"
 
 #include "ToolClasses.h"
@@ -8,5 +6,3 @@
 #include "graphics/Renderer.h"
 #include "ElementDefs.h"
 #include "ElementClasses.h"
-
-#endif // SIMTOOLCOMMON_H

@@ -1,5 +1,4 @@
-#ifndef STICKMAN_H_
-#define STICKMAN_H_
+#pragma once
 
 constexpr auto MAX_FIGHTERS = 100;
 struct playerst
@@ -15,5 +14,3 @@ struct playerst
 	bool fan;
 	int spawnID;         //id of the SPWN particle that spawns it
 };
-
-#endif

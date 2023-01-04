@@ -1,6 +1,4 @@
-#ifndef THUMBNAILREQUEST2_H
-#define THUMBNAILREQUEST2_H
-
+#pragma once
 #include "ImageRequest.h"
 
 namespace http
@@ -12,6 +10,3 @@ namespace http
 		virtual ~ThumbnailRequest();
 	};
 }
-
-#endif // THUMBNAILREQUEST2_H
-

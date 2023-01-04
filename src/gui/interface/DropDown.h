@@ -1,6 +1,4 @@
-#ifndef DROPDOWN_H_
-#define DROPDOWN_H_
-
+#pragma once
 #include <utility>
 #include "Component.h"
 
@@ -42,4 +40,3 @@ public:
 };
 
 } /* namespace ui */
-#endif /* DROPDOWN_H_ */

@@ -1,6 +1,4 @@
-#ifndef CONSOLECOMMAND_H_
-#define CONSOLECOMMAND_H_
-
+#pragma once
 #include "common/String.h"
 
 class ConsoleCommand
@@ -21,5 +19,3 @@ public:
 	}
 };
 
-
-#endif /* CONSOLECOMMAND_H_ */

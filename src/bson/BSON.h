@@ -18,8 +18,7 @@
  *    limitations under the License.
  */
 
-#ifndef _BSON_H_
-#define _BSON_H_
+#pragma once
 #include "Config.h"
 
 #include <ctime>
@@ -1210,5 +1209,3 @@ static TPT_INLINE void bson_swap_endian32( void *outp, const void *inp ) {
 	out[2] = in[1];
 	out[3] = in[0];
 }
-
-#endif

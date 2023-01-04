@@ -1,6 +1,4 @@
-#ifndef STAMPSVIEW_H_
-#define STAMPSVIEW_H_
-
+#pragma once
 #include <vector>
 #include "gui/interface/Window.h"
 
@@ -42,5 +40,3 @@ public:
 	void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	virtual ~LocalBrowserView();
 };
-
-#endif /* STAMPSVIEW_H_ */

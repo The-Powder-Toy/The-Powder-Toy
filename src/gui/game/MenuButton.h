@@ -1,6 +1,4 @@
-#ifndef MENUBUTTON_H_
-#define MENUBUTTON_H_
-
+#pragma once
 #include "gui/interface/Button.h"
 
 class MenuButton : public ui::Button
@@ -10,5 +8,3 @@ public:
 	int menuID;
 	bool needsClick;
 };
-
-#endif /* MENUBUTTON_H_ */

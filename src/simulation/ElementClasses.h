@@ -1,6 +1,4 @@
-#ifndef ELEMENTCLASSES_H
-#define ELEMENTCLASSES_H
-
+#pragma once
 #include <vector>
 
 #include "SimulationData.h"
@@ -11,5 +9,3 @@
 #undef ELEMENT_NUMBERS_ENUMERATE
 
 std::vector<Element> const &GetElements();
-
-#endif

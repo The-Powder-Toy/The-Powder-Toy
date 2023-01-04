@@ -1,5 +1,4 @@
-#ifndef SEARCHMODEL_H
-#define SEARCHMODEL_H
+#pragma once
 #include "Config.h"
 
 #include <vector>
@@ -74,5 +73,3 @@ public:
 	void DeselectSave(int saveID);
 	void Update();
 };
-
-#endif // SEARCHMODEL_H

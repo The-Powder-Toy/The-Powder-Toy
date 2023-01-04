@@ -1,6 +1,4 @@
-#ifndef SAVEUSERINFOREQUEST2_H
-#define SAVEUSERINFOREQUEST2_H
-
+#pragma once
 #include "APIRequest.h"
 
 class UserInfo;
@@ -16,6 +14,3 @@ namespace http
 		bool Finish();
 	};
 }
-
-#endif // SAVEUSERINFOREQUEST2_H
-

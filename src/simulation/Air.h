@@ -1,5 +1,4 @@
-#ifndef AIR_H
-#define AIR_H
+#pragma once
 #include "Config.h"
 
 class Simulation;
@@ -36,5 +35,3 @@ public:
 	void RecalculateBlockAirMaps();
 	Air(Simulation & sim);
 };
-
-#endif

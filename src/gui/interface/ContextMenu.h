@@ -1,6 +1,4 @@
-#ifndef The_Powder_Toy_ContextMenu_h
-#define The_Powder_Toy_ContextMenu_h
-
+#pragma once
 #include "Window.h"
 #include "Appearance.h"
 #include "Button.h"
@@ -36,5 +34,3 @@ public:
 	void OnMouseDown(int x, int y, unsigned button) override;
 };
 }
-
-#endif

@@ -1,6 +1,4 @@
-#ifndef WALLTYPE_H_
-#define WALLTYPE_H_
-
+#pragma once
 #include "common/String.h"
 #include "graphics/Pixel.h"
 class VideoBuffer;
@@ -15,5 +13,3 @@ struct wall_type
 	ByteString identifier;
 	String descs;
 };
-
-#endif

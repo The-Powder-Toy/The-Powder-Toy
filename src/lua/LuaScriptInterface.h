@@ -1,5 +1,4 @@
-#ifndef LUASCRIPTINTERFACE_H_
-#define LUASCRIPTINTERFACE_H_
+#pragma once
 #include "Config.h"
 
 #include "LuaCompat.h"
@@ -250,5 +249,3 @@ bool tpt_lua_equalsLiteral(lua_State *L, int index, const char (&lit)[N])
 {
 	return tpt_lua_equalsString(L, index, lit, N - 1U);
 }
-
-#endif /* LUASCRIPTINTERFACE_H_ */

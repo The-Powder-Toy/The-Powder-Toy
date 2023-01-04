@@ -1,5 +1,4 @@
-#ifndef PGRAPHICS_H
-#define PGRAPHICS_H
+#pragma once
 #include <cstdint>
 
 constexpr auto PMODE           = UINT32_C(0x00000FFF);
@@ -54,5 +53,3 @@ constexpr auto DISPLAY_AIR     = UINT32_C(0x0000000F);
 constexpr auto DISPLAY_WARP    = UINT32_C(0x00000010);
 constexpr auto DISPLAY_PERS    = UINT32_C(0x00000020);
 constexpr auto DISPLAY_EFFE    = UINT32_C(0x00000040);
-
-#endif

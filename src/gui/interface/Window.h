@@ -1,6 +1,4 @@
-#ifndef WINDOW_H
-#define WINDOW_H
-
+#pragma once
 #include "common/String.h"
 #include <vector>
 #include "gui/interface/Point.h"
@@ -126,4 +124,3 @@ namespace ui
 
 	};
 }
-#endif // WINDOW_H

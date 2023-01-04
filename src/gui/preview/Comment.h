@@ -1,6 +1,4 @@
-#ifndef COMMENT_H_
-#define COMMENT_H_
-
+#pragma once
 #include "common/String.h"
 
 class SaveComment
@@ -24,5 +22,3 @@ public:
 	}
 };
 
-
-#endif /* COMMENT_H_ */

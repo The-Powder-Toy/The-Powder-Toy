@@ -1,5 +1,4 @@
-#ifndef UTILS_H
-#define UTILS_H
+#pragma once
 #include "Config.h"
 #include <cmath>
 #include <cstdio>
@@ -110,5 +109,3 @@ bool byteStringEqualsLiteral(const ByteString &str, const char (&lit)[N])
 {
 	return byteStringEqualsString(str, lit, N - 1U);
 }
-
-#endif

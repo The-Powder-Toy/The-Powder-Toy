@@ -1,5 +1,4 @@
-#ifndef OPTIONSCONTROLLER_H_
-#define OPTIONSCONTROLLER_H_
+#pragma once
 #include "Config.h"
 
 #include <functional>
@@ -44,5 +43,3 @@ public:
 	OptionsView * GetView();
 	virtual ~OptionsController();
 };
-
-#endif /* OPTIONSCONTROLLER_H_ */

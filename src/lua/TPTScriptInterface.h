@@ -1,5 +1,4 @@
-#ifndef TPTSCRIPTINTERFACE_H_
-#define TPTSCRIPTINTERFACE_H_
+#pragma once
 #include "Config.h"
 
 #include "CommandInterface.h"
@@ -24,5 +23,3 @@ public:
 	String FormatCommand(String command) override;
 	virtual ~TPTScriptInterface();
 };
-
-#endif /* TPTSCRIPTINTERFACE_H_ */

@@ -1,5 +1,5 @@
-#ifndef MENUSECTION_H_
-#define MENUSECTION_H_
+#pragma once
+#include "common/String.h"
 
 struct menu_section
 {
@@ -8,5 +8,3 @@ struct menu_section
 	int itemcount;
 	int doshow;
 };
-
-#endif

@@ -1,6 +1,4 @@
-#ifndef ELEMENTSEARCHACTIVITY_H_
-#define ELEMENTSEARCHACTIVITY_H_
-
+#pragma once
 #include <vector>
 #include "Activity.h"
 #include "common/String.h"
@@ -42,5 +40,3 @@ public:
 	void OnDraw() override;
 	void ToolTip(ui::Point senderPosition, String ToolTip) override;
 };
-
-#endif /* ELEMENTSEARCHACTIVITY_H_ */

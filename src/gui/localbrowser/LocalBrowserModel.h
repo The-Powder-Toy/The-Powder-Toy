@@ -1,5 +1,4 @@
-#ifndef STAMPSMODEL_H_
-#define STAMPSMODEL_H_
+#pragma once
 #include "Config.h"
 
 #include <vector>
@@ -37,5 +36,3 @@ public:
 	void DeselectSave(ByteString stampID);
 	virtual ~LocalBrowserModel();
 };
-
-#endif /* STAMPSMODEL_H_ */

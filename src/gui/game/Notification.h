@@ -1,6 +1,4 @@
-#ifndef NOTIFICATION_H_
-#define NOTIFICATION_H_
-
+#pragma once
 #include "common/String.h"
 
 class Notification
@@ -12,5 +10,3 @@ public:
 
 	virtual void Action() { }
 };
-
-#endif /* NOTIFICATION_H_ */

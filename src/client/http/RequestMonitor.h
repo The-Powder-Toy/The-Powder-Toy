@@ -1,6 +1,4 @@
-#ifndef REQUESTMONITOR_H
-#define REQUESTMONITOR_H
-
+#pragma once
 #include <type_traits>
 #include <cassert>
 
@@ -50,7 +48,3 @@ namespace http
 		virtual void OnResponse(typename std::invoke_result<decltype(&R::Finish), R>::type v) = 0;
 	};
 }
-
-#endif // REQUESTMONITOR_H
-
-

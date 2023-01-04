@@ -1,5 +1,4 @@
-#ifndef REQUEST_H
-#define REQUEST_H
+#pragma once
 #include "Config.h"
 
 #ifndef NOHTTP
@@ -87,5 +86,3 @@ namespace http
 
 	String StatusText(int code);
 }
-
-#endif // REQUEST_H

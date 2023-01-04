@@ -1,6 +1,4 @@
-#ifndef STRUCTPROPERTY_H_
-#define STRUCTPROPERTY_H_
-
+#pragma once
 #include "common/String.h"
 #include <cstdint>
 
@@ -50,5 +48,3 @@ struct StructPropertyAlias
 {
 	ByteString from, to;
 };
-
-#endif

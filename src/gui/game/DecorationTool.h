@@ -1,6 +1,4 @@
-#ifndef DECORATIONTOOL_H_
-#define DECORATIONTOOL_H_
-
+#pragma once
 #include "Tool.h"
 #include "graphics/Graphics.h"
 
@@ -23,5 +21,3 @@ public:
 	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override;
 	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override;
 };
-
-#endif

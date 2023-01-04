@@ -1,5 +1,4 @@
-#ifndef CLIENT_H
-#define CLIENT_H
+#pragma once
 #include "Config.h"
 
 #include <vector>
@@ -177,5 +176,3 @@ public:
 	void SetPref(ByteString property, std::vector<Json::Value> value);
 	void SetPrefUnicode(ByteString prop, String value);
 };
-
-#endif // CLIENT_H

@@ -1,6 +1,4 @@
-#ifndef COPYTEXTBUTTON_H
-#define COPYTEXTBUTTON_H
-
+#pragma once
 #include "Button.h"
 
 namespace ui
@@ -18,5 +16,3 @@ public:
 	void OnMouseLeave(int x, int y) override;
 };
 }
-#endif /* COPYTEXTBUTTON_H */
-

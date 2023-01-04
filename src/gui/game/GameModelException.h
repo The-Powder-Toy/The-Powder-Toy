@@ -1,6 +1,4 @@
-#ifndef GAMEMODELEXCEPTION_H_
-#define GAMEMODELEXCEPTION_H_
-
+#pragma once
 #include "common/String.h"
 #include <exception>
 
@@ -15,5 +13,3 @@ public:
 	}
 	~GameModelException() throw() {}
 };
-
-#endif /* GAMEMODELEXCEPTION_H_ */

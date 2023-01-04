@@ -13,13 +13,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TPT_INLINE_H
-#define TPT_INLINE_H
-
+#pragma once
 #if defined(_MSC_VER)
-#define TPT_INLINE _inline
+# define TPT_INLINE _inline
 #else
-#define TPT_INLINE inline
-#endif
-
+# define TPT_INLINE inline
 #endif

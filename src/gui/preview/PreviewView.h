@@ -1,6 +1,4 @@
-#ifndef PREVIEWVIEW_H_
-#define PREVIEWVIEW_H_
-
+#pragma once
 #include <vector>
 #include <set>
 #include "common/String.h"
@@ -82,5 +80,3 @@ public:
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	virtual ~PreviewView();
 };
-
-#endif /* PREVIEWVIEW_H_ */

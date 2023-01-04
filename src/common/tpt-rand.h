@@ -1,5 +1,4 @@
-#ifndef TPT_RAND_
-#define TPT_RAND_
+#pragma once
 #include "Config.h"
 
 #include <stdint.h>
@@ -22,5 +21,3 @@ public:
 };
 
 extern RNG random_gen;
-
-#endif /* TPT_RAND_ */

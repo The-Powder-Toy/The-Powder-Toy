@@ -1,6 +1,4 @@
-#ifndef LUASCRIPTHELPER_H_
-#define LUASCRIPTHELPER_H_
-
+#pragma once
 #include "simulation/Particle.h"
 #include "simulation/ElementDefs.h"
 #include "common/String.h"
@@ -130,5 +128,3 @@ int luatpt_screenshot(lua_State* l);
 int luatpt_record(lua_State* l);
 
 int luatpt_perfectCircle(lua_State* l);
-
-#endif /* LUASCRIPTHELPER_H_ */

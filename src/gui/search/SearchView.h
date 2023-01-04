@@ -1,6 +1,4 @@
-#ifndef SEARCHVIEW_H
-#define SEARCHVIEW_H
-
+#pragma once
 #include <vector>
 #include "client/ClientListener.h"
 #include "gui/interface/Window.h"
@@ -71,5 +69,3 @@ public:
 	void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 
 };
-
-#endif // SEARCHVIEW_H

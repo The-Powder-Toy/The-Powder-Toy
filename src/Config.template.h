@@ -1,6 +1,4 @@
-#ifndef CONFIG_H
-#define CONFIG_H
-
+#pragma once
 #mesondefine CURL_STATICLIB
 #mesondefine ZLIB_WINAPI
 
@@ -154,5 +152,3 @@
 
 #define SDEUT
 #define R_TEMP 22
-
-#endif /* CONFIG_H */

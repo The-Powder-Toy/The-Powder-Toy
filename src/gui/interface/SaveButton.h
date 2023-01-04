@@ -1,6 +1,4 @@
-#ifndef SAVEBUTTON_H_
-#define SAVEBUTTON_H_
-
+#pragma once
 #include "common/String.h"
 
 #include "Component.h"
@@ -82,5 +80,3 @@ protected:
 	bool isButtonDown, state, isMouseInside, selected, selectable;
 };
 }
-#endif /* BUTTON_H_ */
-

@@ -1,5 +1,4 @@
-#ifndef LOGINCONTROLLER_H_
-#define LOGINCONTROLLER_H_
+#pragma once
 #include "Config.h"
 
 #include "common/String.h"
@@ -23,5 +22,3 @@ public:
 	User GetUser();
 	virtual ~LoginController();
 };
-
-#endif /* LOGINCONTROLLER_H_ */

@@ -1,6 +1,4 @@
-#ifndef SLIDER_H_
-#define SLIDER_H_
-
+#pragma once
 #include "Component.h"
 #include "Colour.h"
 #include "graphics/Pixel.h"
@@ -40,4 +38,3 @@ public:
 };
 
 } /* namespace ui */
-#endif /* SLIDER_H_ */

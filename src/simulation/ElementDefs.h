@@ -1,6 +1,4 @@
-#ifndef ELEMENTS_H_
-#define ELEMENTS_H_
-
+#pragma once
 #include "Config.h"
 #include <cstdint>
 
@@ -82,6 +80,3 @@ constexpr int PMAPID(int id)
 constexpr int PT_NUM = 1 << PMAPBITS;
 
 struct playerst;
-
-
-#endif /* ELEMENTS_H_ */

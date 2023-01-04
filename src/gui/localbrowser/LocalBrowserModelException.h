@@ -1,6 +1,4 @@
-#ifndef STAMPSMODELEXCEPTION_H_
-#define STAMPSMODELEXCEPTION_H_
-
+#pragma once
 #include "common/String.h"
 #include <exception>
 
@@ -12,5 +10,3 @@ public:
 	const char * what() const throw() { return message.c_str(); };
 	~LocalBrowserModelException() throw() {};
 };
-
-#endif /* STAMPSMODELEXCEPTION_H_ */

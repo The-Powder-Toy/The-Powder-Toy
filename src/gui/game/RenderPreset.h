@@ -1,5 +1,7 @@
-#ifndef RENDER_PRESET_H
-#define RENDER_PRESET_H
+#pragma once
+#include "common/String.h"
+#include <vector>
+
 class RenderPreset
 {
 public:
@@ -16,4 +18,3 @@ public:
 		ColourMode(colourMode)
 	{}
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef STAMPSCONTROLLER_H_
-#define STAMPSCONTROLLER_H_
+#pragma once
 #include "Config.h"
 
 #include "common/String.h"
@@ -34,5 +33,3 @@ public:
 	void Exit();
 	virtual ~LocalBrowserController();
 };
-
-#endif /* STAMPSCONTROLLER_H_ */

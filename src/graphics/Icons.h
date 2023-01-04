@@ -1,6 +1,4 @@
-#ifndef ICONS_H
-#define ICONS_H
-
+#pragma once
 //Icon names, see Graphics::draw_icon
 enum Icon
 {
@@ -42,5 +40,3 @@ enum Icon
 	IconLife,
 	IconGradient
 };
-
-#endif // ICONS_H

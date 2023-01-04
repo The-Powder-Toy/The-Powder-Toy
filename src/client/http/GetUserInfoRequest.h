@@ -1,6 +1,4 @@
-#ifndef GETUSERINFOREQUEST2_H
-#define GETUSERINFOREQUEST2_H
-
+#pragma once
 #include "APIRequest.h"
 
 class UserInfo;
@@ -16,6 +14,3 @@ namespace http
 		std::unique_ptr<UserInfo> Finish();
 	};
 }
-
-#endif // GETUSERINFOREQUEST2_H
-

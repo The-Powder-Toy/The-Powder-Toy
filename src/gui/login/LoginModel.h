@@ -1,5 +1,4 @@
-#ifndef LOGINMODEL_H_
-#define LOGINMODEL_H_
+#pragma once
 #include "Config.h"
 
 #include <vector>
@@ -23,5 +22,3 @@ public:
 	User GetUser();
 	virtual ~LoginModel();
 };
-
-#endif /* LOGINMODEL_H_ */

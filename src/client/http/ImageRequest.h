@@ -1,6 +1,4 @@
-#ifndef IMAGEREQUEST2_H
-#define IMAGEREQUEST2_H
-
+#pragma once
 #include "Request.h"
 #include "common/String.h"
 
@@ -21,6 +19,3 @@ namespace http
 		std::unique_ptr<VideoBuffer> Finish();
 	};
 }
-
-#endif // IMAGEREQUEST2_H
-

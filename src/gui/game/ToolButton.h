@@ -1,6 +1,4 @@
-#ifndef TOOLBUTTON_H_
-#define TOOLBUTTON_H_
-
+#pragma once
 #include "gui/interface/Button.h"
 
 class Tool;
@@ -23,5 +21,3 @@ public:
 	int clipRectW = 0;
 	int clipRectH = 0;
 };
-
-#endif /* TOOLBUTTON_H_ */

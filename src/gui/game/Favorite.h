@@ -1,5 +1,4 @@
-#ifndef FAVORITE_H
-#define FAVORITE_H
+#pragma once
 #include "Config.h"
 
 #include "common/String.h"
@@ -23,4 +22,3 @@ public:
 	void SaveFavoritesToPrefs();
 	void LoadFavoritesFromPrefs();
 };
-#endif //FAVORITE_H

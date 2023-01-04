@@ -1,8 +1,6 @@
+#pragma once
 #include "Config.h"
 #ifndef NOHTTP
-#ifndef REQUESTMANAGER_H
-#define REQUESTMANAGER_H
-
 #include "Config.h"
 #include "common/tpt-minmax.h" // for MSVC, ensures windows.h doesn't cause compile errors by defining min/max
 #include <thread>
@@ -56,6 +54,4 @@ namespace http
 	extern ByteString capath;
 	extern ByteString user_agent;
 }
-
-#endif // REQUESTMANAGER_H
 #endif

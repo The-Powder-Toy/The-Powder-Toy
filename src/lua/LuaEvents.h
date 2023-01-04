@@ -1,5 +1,4 @@
-#ifndef LUAEVENTS_H
-#define LUAEVENTS_H
+#pragma once
 #include "Config.h"
 
 #include "common/String.h"
@@ -159,5 +158,3 @@ public:
 
 	static String luacon_geterror(LuaScriptInterface *luacon_ci);
 };
-
-#endif // LUAEVENTS_H

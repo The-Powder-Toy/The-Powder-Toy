@@ -1,5 +1,4 @@
-#ifndef SAVE_H
-#define SAVE_H
+#pragma once
 #include "Config.h"
 
 #include <list>
@@ -75,5 +74,3 @@ public:
 	GameSave * GetGameSave();
 	void SetGameSave(GameSave * gameSave);
 };
-
-#endif // SAVE_H

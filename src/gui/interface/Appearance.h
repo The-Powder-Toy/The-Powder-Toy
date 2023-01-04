@@ -1,5 +1,4 @@
-#ifndef APPEARANCE_H_
-#define APPEARANCE_H_
+#pragma once
 #include "Config.h"
 
 #include "Border.h"
@@ -56,5 +55,3 @@ namespace ui
 		~Appearance();
 	};
 }
-
-#endif

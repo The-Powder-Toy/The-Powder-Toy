@@ -1,6 +1,4 @@
-#ifndef GAMEVIEW_H
-#define GAMEVIEW_H
-
+#pragma once
 #include <ctime>
 #include <vector>
 #include <deque>
@@ -221,5 +219,3 @@ public:
 
 	class OptionListener;
 };
-
-#endif // GAMEVIEW_H

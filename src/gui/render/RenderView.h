@@ -1,6 +1,4 @@
-#ifndef RENDERVIEW_H_
-#define RENDERVIEW_H_
-
+#pragma once
 #include <vector>
 #include "gui/interface/Window.h"
 
@@ -34,5 +32,3 @@ public:
 	void ToolTip(ui::Point senderPosition, String toolTip) override;
 	virtual ~RenderView();
 };
-
-#endif /* RENDERVIEW_H_ */

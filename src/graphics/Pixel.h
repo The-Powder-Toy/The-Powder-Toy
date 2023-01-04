@@ -1,6 +1,4 @@
-#ifndef PIXEL_H
-#define PIXEL_H
-
+#pragma once
 #define PIXELCHANNELS 3
 #ifdef PIX16
 # define PIXELSIZE 2
@@ -39,5 +37,3 @@ typedef unsigned short pixel;
 #else
 typedef unsigned int pixel;
 #endif
-
-#endif // PIXEL_H

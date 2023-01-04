@@ -1,6 +1,4 @@
-#ifndef TEXTBOX_H
-#define TEXTBOX_H
-
+#pragma once
 #include "Label.h"
 
 #include <functional>
@@ -101,5 +99,3 @@ protected:
 
 }
 
-
-#endif // TEXTBOX_H

@@ -1,5 +1,4 @@
-#ifndef COLOUR_H
-#define COLOUR_H
+#pragma once
 
 namespace ui
 {
@@ -20,5 +19,3 @@ public:
 	}
 };
 }
-
-#endif

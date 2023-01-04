@@ -1,6 +1,4 @@
-#ifndef LABEL_H
-#define LABEL_H
-
+#pragma once
 #include "common/String.h"
 
 #include "Component.h"
@@ -67,5 +65,3 @@ namespace ui
 		void Tick(float dt) override;
 	};
 }
-
-#endif // LABEL_H

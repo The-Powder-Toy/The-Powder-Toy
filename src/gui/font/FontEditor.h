@@ -1,6 +1,4 @@
-#ifndef FONTEDITOR_H
-#define FONTEDITOR_H
-
+#pragma once
 #include <vector>
 #include <array>
 #include <map>
@@ -77,5 +75,3 @@ public:
 	void OnMouseDown(int x, int y, unsigned button) override;
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 };
-
-#endif

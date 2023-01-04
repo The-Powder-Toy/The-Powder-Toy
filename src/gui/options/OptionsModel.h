@@ -1,5 +1,4 @@
-#ifndef OPTIONSMODEL_H_
-#define OPTIONSMODEL_H_
+#pragma once
 #include "Config.h"
 
 #include <vector>
@@ -64,5 +63,3 @@ public:
 	void SetMomentumScroll(bool momentumScroll);
 	virtual ~OptionsModel();
 };
-
-#endif /* OPTIONSMODEL_H_ */

@@ -13,9 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TPT_MINMAX_H
-#define TPT_MINMAX_H
-
+#pragma once
 #include <algorithm>
 
 #ifdef _MSC_VER
@@ -26,6 +24,4 @@
 # ifdef max
 #  undef max
 # endif
-#endif
-
 #endif

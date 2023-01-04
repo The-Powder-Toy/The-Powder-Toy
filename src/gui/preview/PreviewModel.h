@@ -1,5 +1,4 @@
-#ifndef PREVIEWMODEL_H
-#define PREVIEWMODEL_H
+#pragma once
 #include "Config.h"
 
 #include <vector>
@@ -64,5 +63,3 @@ public:
 	bool ParseComments(ByteString &commentsResponse);
 	virtual ~PreviewModel();
 };
-
-#endif /* PREVIEWMODEL_H */

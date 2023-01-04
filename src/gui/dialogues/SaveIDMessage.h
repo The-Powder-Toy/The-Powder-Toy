@@ -1,6 +1,4 @@
-#ifndef SAVEIDMESSAGE_H
-#define SAVEIDMESSAGE_H
-
+#pragma once
 #include "gui/interface/Window.h"
 
 class SaveIDMessage : public ui::Window
@@ -12,5 +10,3 @@ public:
 	void OnDraw() override;
 	void OnTryExit(ExitMethod method) override;
 };
-
-#endif /* SAVEIDMESSAGE_H */

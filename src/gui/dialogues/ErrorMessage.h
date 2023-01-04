@@ -1,6 +1,4 @@
-#ifndef ERRORMESSAGE_H_
-#define ERRORMESSAGE_H_
-
+#pragma once
 #include "gui/interface/Window.h"
 
 #include <functional>
@@ -21,5 +19,3 @@ public:
 	static void Blocking(String title, String message);
 	void OnDraw() override;
 };
-
-#endif /* ERRORMESSAGE_H_ */

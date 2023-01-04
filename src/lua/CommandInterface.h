@@ -1,5 +1,4 @@
-#ifndef COMMANDINTERFACE_H_
-#define COMMANDINTERFACE_H_
+#pragma once
 #include "Config.h"
 
 #include "common/String.h"
@@ -37,5 +36,3 @@ public:
 	String GetLastError();
 	virtual ~CommandInterface();
 };
-
-#endif /* COMMANDINTERFACE_H_ */

@@ -1,6 +1,4 @@
-#ifndef ELEMENTCOMMON_H
-#define ELEMENTCOMMON_H
-
+#pragma once
 #include "Config.h"
 
 // This header should be included by all files in src/elements/
@@ -31,5 +29,3 @@ constexpr int NT = -1;
 
 // special transition - lava ctypes etc need extra code, which is only found and run if ST is given
 constexpr int ST = PT_NUM;
-
-#endif

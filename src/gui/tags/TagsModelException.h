@@ -1,6 +1,4 @@
-#ifndef TAGSMODELEXCEPTION_H_
-#define TAGSMODELEXCEPTION_H_
-
+#pragma once
 #include "common/String.h"
 #include <exception>
 
@@ -11,5 +9,3 @@ public:
 	const char * what() const throw() override { return message.c_str(); };
 	~TagsModelException() throw() {};
 };
-
-#endif /* TAGSMODELEXCEPTION_H_ */

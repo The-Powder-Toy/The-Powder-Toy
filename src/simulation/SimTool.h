@@ -1,6 +1,4 @@
-#ifndef SIMTOOL_H
-#define SIMTOOL_H
-
+#pragma once
 #include "common/String.h"
 #include "graphics/Pixel.h"
 
@@ -22,5 +20,3 @@ public:
 #include "ToolNumbers.h"
 #undef TOOL_NUMBERS_DECLARE
 };
-
-#endif

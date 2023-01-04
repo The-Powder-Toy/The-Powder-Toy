@@ -1,5 +1,4 @@
-#ifndef TASK_H_
-#define TASK_H_
+#pragma once
 #include "Config.h"
 
 #include "common/String.h"
@@ -50,5 +49,3 @@ protected:
 	virtual void notifyStatusMain();
 	virtual void notifyDoneMain();
 };
-
-#endif /* TASK_H_ */

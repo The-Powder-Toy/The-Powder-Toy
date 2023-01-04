@@ -1,5 +1,4 @@
-#ifndef RENDERER_H
-#define RENDERER_H
+#pragma once
 #include "Config.h"
 
 #include <vector>
@@ -171,5 +170,3 @@ public:
 private:
 	int gridSize;
 };
-
-#endif

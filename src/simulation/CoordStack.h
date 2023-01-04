@@ -13,9 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef Simulation_CoordStack_h
-#define Simulation_CoordStack_h
-
+#pragma once
 #include "Config.h" // for XRES and YRES
 #include <cstdlib>
 #include <exception>
@@ -71,5 +69,3 @@ public:
 		stack_size = 0;
 	}
 };
-
-#endif

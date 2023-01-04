@@ -1,6 +1,4 @@
-#ifndef UPDATEACTIVITY_H_
-#define UPDATEACTIVITY_H_
-
+#pragma once
 class Task;
 class TaskWindow;
 class UpdateActivity
@@ -14,5 +12,3 @@ public:
 	virtual void NotifyDone(Task * sender);
 	virtual void NotifyError(Task * sender);
 };
-
-#endif /* UPDATEACTIVITY_H_ */
