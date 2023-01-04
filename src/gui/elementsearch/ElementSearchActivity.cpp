@@ -3,10 +3,10 @@
 #include <set>
 #include <map>
 #include <algorithm>
+#include <SDL.h>
 
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"
-#include "gui/interface/Keys.h"
 #include "gui/game/Tool.h"
 #include "gui/game/Menu.h"
 #include "gui/Style.h"

@@ -4,12 +4,13 @@
 #include "gui/interface/Slider.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
-#include "gui/interface/Keys.h"
 #include "gui/Style.h"
 
 #include "graphics/Graphics.h"
 
 #include "Misc.h"
+
+#include <SDL.h>
 
 ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, OnPicked onPicked_) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(266, 215)),

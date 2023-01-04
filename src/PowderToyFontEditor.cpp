@@ -4,7 +4,6 @@
 #ifdef WIN
 #include <direct.h>
 #endif
-#include "SDLCompat.h"
 
 #ifdef X86_SSE
 #include <xmmintrin.h>
@@ -25,6 +24,7 @@
 #ifdef MACOSX
 # include "common/macosx.h"
 #endif
+#include <SDL.h>
 
 #include "Format.h"
 #include "Misc.h"
@@ -40,11 +40,8 @@
 #include "gui/font/FontEditor.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
-#include "gui/interface/Keys.h"
 #include "gui/Style.h"
 #include "gui/interface/Engine.h"
-
-#include "SDLCompat.h"
 
 int desktopWidth = 1280, desktopHeight = 1024;
 

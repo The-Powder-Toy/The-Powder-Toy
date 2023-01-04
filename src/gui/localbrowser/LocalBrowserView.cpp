@@ -7,7 +7,6 @@
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/SaveButton.h"
-#include "gui/interface/Keys.h"
 
 #include "PowderToy.h"
 #include "Config.h"
@@ -15,6 +14,8 @@
 #include "client/SaveFile.h"
 
 #include "graphics/Graphics.h"
+
+#include <SDL.h>
 
 LocalBrowserView::LocalBrowserView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH)),

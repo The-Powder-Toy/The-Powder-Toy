@@ -13,7 +13,8 @@
 #include "gui/interface/Button.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"
-#include "gui/interface/Keys.h"
+
+#include <SDL.h>
 
 TagsView::TagsView():
 	ui::Window(ui::Point(-1, -1), ui::Point(195, 250))

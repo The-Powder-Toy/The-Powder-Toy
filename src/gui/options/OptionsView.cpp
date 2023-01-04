@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cmath>
-#include "SDLCompat.h"
+#include <SDL.h>
 #include "Format.h"
 
 #include "OptionsController.h"

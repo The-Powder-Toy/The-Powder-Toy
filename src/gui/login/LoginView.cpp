@@ -7,12 +7,13 @@
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
-#include "gui/interface/Keys.h"
 #include "gui/Style.h"
 
 #include "client/Client.h"
 
 #include "Misc.h"
+
+#include <SDL.h>
 
 LoginView::LoginView():
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 87)),

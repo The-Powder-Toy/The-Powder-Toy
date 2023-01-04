@@ -38,8 +38,6 @@
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
-#include "gui/interface/Keys.h"
-#include "gui/interface/Mouse.h"
 #include "gui/interface/Engine.h"
 
 #include "gui/colourpicker/ColourPickerActivity.h"
@@ -66,6 +64,8 @@
 #include "gui/search/SearchView.h"
 #include "gui/tags/TagsController.h"
 #include "gui/tags/TagsView.h"
+
+#include <SDL.h>
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows

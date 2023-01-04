@@ -6,7 +6,6 @@
 #include "client/Client.h"
 #include "client/SaveInfo.h"
 
-#include "gui/interface/Keys.h"
 #include "gui/interface/SaveButton.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
@@ -18,6 +17,8 @@
 #include "Config.h"
 
 #include "graphics/Graphics.h"
+
+#include <SDL.h>
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows

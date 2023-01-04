@@ -12,7 +12,7 @@
 #include "graphics/Graphics.h"
 
 #ifndef RENDERER
-# include "SDLCompat.h"
+# include <SDL.h>
 #endif
 
 ByteString format::UnixtimeToDate(time_t unixtime, ByteString dateFormat)

@@ -13,10 +13,10 @@
 #include "gui/interface/Engine.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Button.h"
-#include "gui/interface/Mouse.h"
-#include "gui/interface/Keys.h"
 #include "gui/interface/ScrollPanel.h"
 #include "graphics/Graphics.h"
+
+#include <SDL.h>
 
 extern unsigned char *font_data;
 extern unsigned int *font_ptrs;

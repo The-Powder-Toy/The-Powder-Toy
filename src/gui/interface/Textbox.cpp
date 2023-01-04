@@ -9,11 +9,11 @@
 #include "graphics/Graphics.h"
 
 #include "gui/interface/Engine.h"
-#include "gui/interface/Keys.h"
-#include "gui/interface/Mouse.h"
 #include "gui/interface/Point.h"
 
 #include "ContextMenu.h"
+
+#include <SDL.h>
 
 using namespace ui;
 

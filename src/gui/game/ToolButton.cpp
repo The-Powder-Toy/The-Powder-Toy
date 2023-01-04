@@ -2,8 +2,7 @@
 
 #include "graphics/Graphics.h"
 
-#include "gui/interface/Keys.h"
-#include "gui/interface/Mouse.h"
+#include <SDL.h>
 
 #include "Favorite.h"
 

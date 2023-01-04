@@ -32,11 +32,11 @@
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Colour.h"
-#include "gui/interface/Keys.h"
 #include "gui/interface/Engine.h"
 
 #include <cstring>
 #include <iostream>
+#include <SDL.h>
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows

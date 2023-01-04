@@ -9,7 +9,7 @@
 #ifdef WIN
 #include <direct.h>
 #endif
-#include "SDLCompat.h"
+#include <SDL.h>
 
 #ifdef X86_SSE
 #include <xmmintrin.h>
@@ -36,6 +36,7 @@
 # include <CoreServices/CoreServices.h>
 #endif
 #include <sys/stat.h>
+#include <SDL.h>
 
 #include "Format.h"
 #include "Misc.h"
@@ -53,9 +54,6 @@
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/interface/Engine.h"
-#include "gui/interface/Keys.h"
-
-#include "SDLCompat.h"
 
 int desktopWidth = 1280, desktopHeight = 1024;
 

@@ -2,13 +2,13 @@
 
 #include "Format.h"
 #include "Point.h"
-#include "Keys.h"
-#include "Mouse.h"
 #include "PowderToy.h"
 #include "ContextMenu.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/FontReader.h"
+
+#include <SDL.h>
 
 using namespace ui;
 

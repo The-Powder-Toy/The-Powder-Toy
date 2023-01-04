@@ -12,7 +12,6 @@
 #include "gui/preview/PreviewController.h"
 #include "gui/preview/PreviewModel.h"
 #include "gui/interface/Button.h"
-#include "gui/interface/Keys.h"
 #include "gui/interface/CopyTextButton.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
@@ -26,6 +25,8 @@
 #include "Comment.h"
 #include "Format.h"
 #include "Misc.h"
+
+#include <SDL.h>
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows

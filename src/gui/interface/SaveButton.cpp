@@ -2,8 +2,6 @@
 
 #include "ContextMenu.h"
 #include "Format.h"
-#include "Keys.h"
-#include "Mouse.h"
 
 #include "client/Client.h"
 #include "client/ThumbnailRendererTask.h"
@@ -12,6 +10,8 @@
 
 #include "gui/dialogues/ErrorMessage.h"
 #include "graphics/Graphics.h"
+
+#include <SDL.h>
 
 namespace ui {
 

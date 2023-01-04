@@ -12,7 +12,6 @@
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/DropDown.h"
-#include "gui/interface/Keys.h"
 #include "gui/dialogues/ErrorMessage.h"
 
 #include "simulation/GOLString.h"
@@ -23,6 +22,7 @@
 #include "graphics/Graphics.h"
 
 #include <iostream>
+#include <SDL.h>
 
 class PropertyWindow: public ui::Window
 {
