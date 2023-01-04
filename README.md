@@ -48,6 +48,7 @@ Libraries and other assets used
 * [libpng](http://www.libpng.org/pub/png/libpng.html)
 * [Lua](https://www.lua.org/)
 * [LuaJIT](https://luajit.org/)
+* [M PLUS Font](https://mplusfonts.github.io/)
 * [Mallangche](https://github.com/JammPark/Mallangche)
 * [mbedtls](https://www.trustedfirmware.org/projects/mbed-tls/)
 * [SDL](https://libsdl.org/)
