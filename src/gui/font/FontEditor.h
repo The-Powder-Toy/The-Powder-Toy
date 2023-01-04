@@ -15,7 +15,7 @@ namespace ui
 	class Button;
 }
 
-#define MAX_WIDTH 64
+constexpr int MAX_WIDTH = 64;
 class FontEditor: public ui::Window
 {
 private:

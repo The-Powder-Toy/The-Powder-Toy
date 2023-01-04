@@ -251,7 +251,7 @@ public:
 	}
 };
 
-#define FONT_SCALE 16
+constexpr int FONT_SCALE = 16;
 FontEditor::FontEditor(ByteString _dataFile):
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH)),
 	dataFile(_dataFile),

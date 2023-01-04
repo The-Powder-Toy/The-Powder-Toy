@@ -55,7 +55,7 @@ static int update(UPDATE_FUNC_ARGS)
 			if (BOUNDS_CHECK && (rx || ry))
 			{
 				r = pmap[y+ry][x+rx];
-				switch TYP(r)
+				switch (TYP(r))
 				{
 				case PT_SALT:
 					if (RNG::Ref().chance(1, 47))

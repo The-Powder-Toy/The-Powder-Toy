@@ -74,12 +74,12 @@ void Element::Element_TRON()
  * .ctype Contains the colour, lost on save, regenerated using hue tmp (bits 7 - 16)
  */
 
-#define TRON_HEAD 1
-#define TRON_NOGROW 2
-#define TRON_WAIT 4 //it was just created, so WAIT a frame
-#define TRON_NODIE 8
-#define TRON_DEATH 16 //Crashed, now dying
-#define TRON_NORANDOM 65536
+constexpr auto TRON_HEAD     = UINT32_C(0x00000001);
+constexpr auto TRON_NOGROW   = UINT32_C(0x00000002);
+constexpr auto TRON_WAIT     = UINT32_C(0x00000004); //it was just created, so WAIT a frame
+constexpr auto TRON_NODIE    = UINT32_C(0x00000008);
+constexpr auto TRON_DEATH    = UINT32_C(0x00000010); //Crashed, now dying
+constexpr auto TRON_NORANDOM = UINT32_C(0x00010000);
 int tron_rx[4] = {-1, 0, 1, 0};
 int tron_ry[4] = { 0,-1, 0, 1};
 unsigned int tron_colours[32];

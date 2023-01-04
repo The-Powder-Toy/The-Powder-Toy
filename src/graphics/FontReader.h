@@ -3,7 +3,7 @@
 
 #include "common/String.h"
 
-#define FONT_H 12
+constexpr auto FONT_H = 12;
 
 class FontReader
 {

@@ -32,8 +32,8 @@
 
 #include <cstdint>
 
-#define BSON_OK 0
-#define BSON_ERROR -1
+constexpr int BSON_OK = 0;
+constexpr int BSON_ERROR = -1;
 
 static const char bson_numstrs[1000][4] = {
 	"0",  "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9",

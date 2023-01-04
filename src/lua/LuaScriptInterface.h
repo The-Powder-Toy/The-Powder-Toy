@@ -21,19 +21,6 @@ class Tool;
 
 //Because lua only has bindings for C, we're going to have to go outside "outside" the LuaScriptInterface, this means we can only have one instance :(
 
-#define LUACON_MDOWN 1
-#define LUACON_MUP 2
-#define LUACON_MPRESS 3
-#define LUACON_MUPALT 4
-#define LUACON_MUPZOOM 5
-#define LUACON_KDOWN 1
-#define LUACON_KUP 2
-
-//Bitmasks for things that might need recalculating after changes to tpt.el
-#define LUACON_EL_MODIFIED_CANMOVE 0x1
-#define LUACON_EL_MODIFIED_GRAPHICS 0x2
-#define LUACON_EL_MODIFIED_MENUS 0x4
-
 class Simulation;
 class TPTScriptInterface;
 class LuaComponent;

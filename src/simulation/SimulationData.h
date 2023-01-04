@@ -2,137 +2,138 @@
 #define SIMULATIONDATA_H
 #include "Config.h"
 
+#include <cstdint>
 #include <vector>
 #include <array>
 
-#define SC_WALL 0
-#define SC_ELEC 1
-#define SC_POWERED 2
-#define SC_SENSOR 3
-#define SC_FORCE 4
-#define SC_EXPLOSIVE 5
-#define SC_GAS 6
-#define SC_LIQUID 7
-#define SC_POWDERS 8
-#define SC_SOLIDS 9
-#define SC_NUCLEAR 10
-#define SC_SPECIAL 11
-#define SC_LIFE 12
-#define SC_TOOL 13
-#define SC_FAVORITES 14
-#define SC_DECO 15
-#define SC_CRACKER 16
-#define SC_CRACKER2 17
-#define SC_TOTAL 16
+constexpr int SC_WALL      =  0;
+constexpr int SC_ELEC      =  1;
+constexpr int SC_POWERED   =  2;
+constexpr int SC_SENSOR    =  3;
+constexpr int SC_FORCE     =  4;
+constexpr int SC_EXPLOSIVE =  5;
+constexpr int SC_GAS       =  6;
+constexpr int SC_LIQUID    =  7;
+constexpr int SC_POWDERS   =  8;
+constexpr int SC_SOLIDS    =  9;
+constexpr int SC_NUCLEAR   = 10;
+constexpr int SC_SPECIAL   = 11;
+constexpr int SC_LIFE      = 12;
+constexpr int SC_TOOL      = 13;
+constexpr int SC_FAVORITES = 14;
+constexpr int SC_DECO      = 15;
+constexpr int SC_CRACKER   = 16;
+constexpr int SC_CRACKER2  = 17;
+constexpr int SC_TOTAL     = 16;
 
-#define O_WL_WALLELEC	122
-#define O_WL_EWALL		123
-#define O_WL_DETECT		124
-#define O_WL_STREAM		125
-#define O_WL_SIGN		126
-#define O_WL_FAN		127
-#define O_WL_FANHELPER	255
-#define O_WL_ALLOWLIQUID	128
-#define O_WL_DESTROYALL	129
-#define O_WL_ERASE		130
-#define O_WL_WALL		131
-#define O_WL_ALLOWAIR	132
-#define O_WL_ALLOWSOLID	133
-#define O_WL_ALLOWALLELEC	134
-#define O_WL_EHOLE		135
-#define O_WL_ALLOWGAS	140
-#define O_WL_GRAV		142
-#define O_WL_ALLOWENERGY 145
+constexpr int O_WL_WALLELEC     = 122;
+constexpr int O_WL_EWALL        = 123;
+constexpr int O_WL_DETECT       = 124;
+constexpr int O_WL_STREAM       = 125;
+constexpr int O_WL_SIGN         = 126;
+constexpr int O_WL_FAN          = 127;
+constexpr int O_WL_FANHELPER    = 255;
+constexpr int O_WL_ALLOWLIQUID  = 128;
+constexpr int O_WL_DESTROYALL   = 129;
+constexpr int O_WL_ERASE        = 130;
+constexpr int O_WL_WALL         = 131;
+constexpr int O_WL_ALLOWAIR     = 132;
+constexpr int O_WL_ALLOWSOLID   = 133;
+constexpr int O_WL_ALLOWALLELEC = 134;
+constexpr int O_WL_EHOLE        = 135;
+constexpr int O_WL_ALLOWGAS     = 140;
+constexpr int O_WL_GRAV         = 142;
+constexpr int O_WL_ALLOWENERGY  = 145;
 
-#define WL_ERASE		0
-#define WL_WALLELEC		1
-#define WL_EWALL		2
-#define WL_DETECT		3
-#define WL_STREAM		4
-#define WL_FAN			5
-#define WL_ALLOWLIQUID	6
-#define WL_DESTROYALL	7
-#define WL_WALL			8
-#define WL_ALLOWAIR		9
-#define WL_ALLOWPOWDER	10
-#define WL_ALLOWALLELEC	11
-#define WL_EHOLE		12
-#define WL_ALLOWGAS		13
-#define WL_GRAV			14
-#define WL_ALLOWENERGY	15
-#define WL_BLOCKAIR		16
-#define WL_ERASEALL		17
-#define WL_STASIS		18
-#define WL_FLOODHELPER	255
+constexpr int WL_ERASE        =  0;
+constexpr int WL_WALLELEC     =  1;
+constexpr int WL_EWALL        =  2;
+constexpr int WL_DETECT       =  3;
+constexpr int WL_STREAM       =  4;
+constexpr int WL_FAN          =  5;
+constexpr int WL_ALLOWLIQUID  =  6;
+constexpr int WL_DESTROYALL   =  7;
+constexpr int WL_WALL         =  8;
+constexpr int WL_ALLOWAIR     =  9;
+constexpr int WL_ALLOWPOWDER  = 10;
+constexpr int WL_ALLOWALLELEC = 11;
+constexpr int WL_EHOLE        = 12;
+constexpr int WL_ALLOWGAS     = 13;
+constexpr int WL_GRAV         = 14;
+constexpr int WL_ALLOWENERGY  = 15;
+constexpr int WL_BLOCKAIR     = 16;
+constexpr int WL_ERASEALL     = 17;
+constexpr int WL_STASIS       = 18;
+constexpr int WL_FLOODHELPER  =255;
 
-#define UI_WALLCOUNT 19
+constexpr int UI_WALLCOUNT = 19;
 
-#define OLD_SPC_AIR 236
-#define SPC_AIR 256
+constexpr int OLD_SPC_AIR = 236;
+constexpr int SPC_AIR     = 256;
 
-#define DECO_DRAW	0
-#define DECO_CLEAR	1
-#define DECO_ADD	2
-#define DECO_SUBTRACT	3
-#define DECO_MULTIPLY	4
-#define DECO_DIVIDE	5
-#define DECO_SMUDGE 6
+constexpr int DECO_DRAW     = 0;
+constexpr int DECO_CLEAR    = 1;
+constexpr int DECO_ADD      = 2;
+constexpr int DECO_SUBTRACT = 3;
+constexpr int DECO_MULTIPLY = 4;
+constexpr int DECO_DIVIDE   = 5;
+constexpr int DECO_SMUDGE   = 6;
 
 //Old IDs for GOL types
-#define GT_GOL 78
-#define GT_HLIF 79
-#define GT_ASIM 80
-#define GT_2x2 81
-#define GT_DANI 82
-#define GT_AMOE 83
-#define GT_MOVE 84
-#define GT_PGOL 85
-#define GT_DMOE 86
-#define GT_34 87
-#define GT_LLIF 88
-#define GT_STAN 89
-#define GT_SEED 134
-#define GT_MAZE 135
-#define GT_COAG 136
-#define GT_WALL 137
-#define GT_GNAR 138
-#define GT_REPL 139
-#define GT_MYST 140
-#define GT_LOTE 142
-#define GT_FRG2 143
-#define GT_STAR 144
-#define GT_FROG 145
-#define GT_BRAN 146
+constexpr int GT_GOL  =  78;
+constexpr int GT_HLIF =  79;
+constexpr int GT_ASIM =  80;
+constexpr int GT_2x2  =  81;
+constexpr int GT_DANI =  82;
+constexpr int GT_AMOE =  83;
+constexpr int GT_MOVE =  84;
+constexpr int GT_PGOL =  85;
+constexpr int GT_DMOE =  86;
+constexpr int GT_34   =  87;
+constexpr int GT_LLIF =  88;
+constexpr int GT_STAN =  89;
+constexpr int GT_SEED = 134;
+constexpr int GT_MAZE = 135;
+constexpr int GT_COAG = 136;
+constexpr int GT_WALL = 137;
+constexpr int GT_GNAR = 138;
+constexpr int GT_REPL = 139;
+constexpr int GT_MYST = 140;
+constexpr int GT_LOTE = 142;
+constexpr int GT_FRG2 = 143;
+constexpr int GT_STAR = 144;
+constexpr int GT_FROG = 145;
+constexpr int GT_BRAN = 146;
 
 //New IDs for GOL types
-#define NGT_GOL 0
-#define NGT_HLIF 1
-#define NGT_ASIM 2
-#define NGT_2x2 3
-#define NGT_DANI 4
-#define NGT_AMOE 5
-#define NGT_MOVE 6
-#define NGT_PGOL 7
-#define NGT_DMOE 8
-#define NGT_34 9
-#define NGT_LLIF 10
-#define NGT_STAN 11
-#define NGT_SEED 12
-#define NGT_MAZE 13
-#define NGT_COAG 14
-#define NGT_WALL 15
-#define NGT_GNAR 16
-#define NGT_REPL 17
-#define NGT_MYST 18
-#define NGT_LOTE 19
-#define NGT_FRG2 20
-#define NGT_STAR 21
-#define NGT_FROG 22
-#define NGT_BRAN 23
+constexpr int NGT_GOL  =  0;
+constexpr int NGT_HLIF =  1;
+constexpr int NGT_ASIM =  2;
+constexpr int NGT_2x2  =  3;
+constexpr int NGT_DANI =  4;
+constexpr int NGT_AMOE =  5;
+constexpr int NGT_MOVE =  6;
+constexpr int NGT_PGOL =  7;
+constexpr int NGT_DMOE =  8;
+constexpr int NGT_34   =  9;
+constexpr int NGT_LLIF = 10;
+constexpr int NGT_STAN = 11;
+constexpr int NGT_SEED = 12;
+constexpr int NGT_MAZE = 13;
+constexpr int NGT_COAG = 14;
+constexpr int NGT_WALL = 15;
+constexpr int NGT_GNAR = 16;
+constexpr int NGT_REPL = 17;
+constexpr int NGT_MYST = 18;
+constexpr int NGT_LOTE = 19;
+constexpr int NGT_FRG2 = 20;
+constexpr int NGT_STAR = 21;
+constexpr int NGT_FROG = 22;
+constexpr int NGT_BRAN = 23;
 
 //replace mode / specific delete flags
-#define REPLACE_MODE 0x1
-#define SPECIFIC_DELETE 0x2
+constexpr auto REPLACE_MODE    = UINT32_C(0x00000001);
+constexpr auto SPECIFIC_DELETE = UINT32_C(0x00000002);
 
 struct part_type;
 struct part_transition;

@@ -19,7 +19,7 @@
 
 #include "Element.h"
 
-#define CHANNELS ((int)(MAX_TEMP-73)/100+2)
+constexpr int CHANNELS = int(MAX_TEMP - 73) / 100 + 2;
 
 class Snapshot;
 class SimTool;
