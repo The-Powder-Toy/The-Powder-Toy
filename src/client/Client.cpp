@@ -142,16 +142,17 @@ void Client::Initialise(ByteString proxy, ByteString cafile, ByteString capath, 
 	}
 	versionCheckRequest->Start();
 
-#ifdef USE_UPDATESERVER
-	// use an alternate update server
-	alternateVersionCheckRequest = new http::Request(ByteString::Build(SCHEME, UPDATESERVER, "/Startup.json"));
-	usingAltUpdateServer = true;
-	if (authUser.UserID)
+	if constexpr (USE_UPDATESERVER)
 	{
-		alternateVersionCheckRequest->AuthHeaders(authUser.Username, "");
+		// use an alternate update server
+		alternateVersionCheckRequest = new http::Request(ByteString::Build(SCHEME, UPDATESERVER, "/Startup.json"));
+		usingAltUpdateServer = true;
+		if (authUser.UserID)
+		{
+			alternateVersionCheckRequest->AuthHeaders(authUser.Username, "");
+		}
+		alternateVersionCheckRequest->Start();
 	}
-	alternateVersionCheckRequest->Start();
-#endif
 }
 
 bool Client::IsFirstRun()
@@ -312,7 +313,8 @@ bool Client::CheckUpdate(http::Request *updateRequest, bool checkSession)
 					this->messageOfTheDay = ByteString(objDocument["MessageOfTheDay"].asString()).FromUtf8();
 					notifyMessageOfTheDay();
 
-#ifndef IGNORE_UPDATES
+					if constexpr (!IGNORE_UPDATES)
+					{
 					//Check for updates
 					Json::Value versions = objDocument["Updates"];
 #ifndef SNAPSHOT
@@ -360,7 +362,7 @@ bool Client::CheckUpdate(http::Request *updateRequest, bool checkSession)
 					{
 						notifyUpdateAvailable();
 					}
-#endif
+					}
 				}
 			}
 			catch (std::exception & e)
@@ -517,13 +519,11 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 			lastError = "Cannot serialize game save";
 			return RequestFailure;
 		}
-#ifdef ALLOW_FAKE_NEWER_VERSION
-		else if (fromNewerVersion && save.GetPublished())
+		else if (ALLOW_FAKE_NEWER_VERSION && fromNewerVersion && save.GetPublished())
 		{
 			lastError = "Cannot publish save, incompatible with latest release version.";
 			return RequestFailure;
 		}
-#endif
 
 		data = http::Request::SimpleAuth(ByteString::Build(SCHEME, SERVER, "/Save.api"), &dataStatus, userID, authUser.SessionID, {
 			{ "Name", save.GetName().ToUtf8() },

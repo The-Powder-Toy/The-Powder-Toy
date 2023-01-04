@@ -4067,7 +4067,6 @@ void LuaScriptInterface::initPlatformAPI()
 	struct luaL_Reg platformAPIMethods [] = {
 		{"platform", platform_platform},
 		{"ident", platform_ident},
-		{"build", platform_build},
 		{"releaseType", platform_releaseType},
 		{"exeName", platform_exeName},
 		{"restart", platform_restart},
@@ -4092,12 +4091,6 @@ int LuaScriptInterface::platform_platform(lua_State * l)
 int LuaScriptInterface::platform_ident(lua_State * l)
 {
 	tpt_lua_pushByteString(l, IDENT);
-	return 1;
-}
-
-int LuaScriptInterface::platform_build(lua_State * l)
-{
-	tpt_lua_pushByteString(l, IDENT_BUILD);
 	return 1;
 }
 

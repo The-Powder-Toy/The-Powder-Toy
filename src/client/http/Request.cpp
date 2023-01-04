@@ -230,23 +230,26 @@ namespace http
 			}
 
 			curl_easy_setopt(easy, CURLOPT_FOLLOWLOCATION, 1L);
+			if constexpr (ENFORCE_HTTPS)
+			{
 #if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 85, 0)
-# ifdef ENFORCE_HTTPS
-			curl_easy_setopt(easy, CURLOPT_PROTOCOLS_STR, "https");
-			curl_easy_setopt(easy, CURLOPT_REDIR_PROTOCOLS_STR, "https");
-# else
-			curl_easy_setopt(easy, CURLOPT_PROTOCOLS_STR, "https,http");
-			curl_easy_setopt(easy, CURLOPT_REDIR_PROTOCOLS_STR, "https,http");
-# endif
+				curl_easy_setopt(easy, CURLOPT_PROTOCOLS_STR, "https");
+				curl_easy_setopt(easy, CURLOPT_REDIR_PROTOCOLS_STR, "https");
 #else
-# ifdef ENFORCE_HTTPS
-			curl_easy_setopt(easy, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
-			curl_easy_setopt(easy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
-# else
-			curl_easy_setopt(easy, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP);
-			curl_easy_setopt(easy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP);
-# endif
+				curl_easy_setopt(easy, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+				curl_easy_setopt(easy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
 #endif
+			}
+			else
+			{
+#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 85, 0)
+				curl_easy_setopt(easy, CURLOPT_PROTOCOLS_STR, "https,http");
+				curl_easy_setopt(easy, CURLOPT_REDIR_PROTOCOLS_STR, "https,http");
+#else
+				curl_easy_setopt(easy, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP);
+				curl_easy_setopt(easy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP);
+#endif
+			}
 
 			SetupCurlEasyCiphers(easy);
 

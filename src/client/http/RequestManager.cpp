@@ -55,7 +55,7 @@ namespace http
 		user_agent = ByteString::Build(
 			"PowderToy/", SAVE_VERSION, ".", MINOR_VERSION,
 			" (", IDENT_PLATFORM,
-			"; ", IDENT_BUILD,
+			"; NO", // Unused, used to be SSE level.
 			"; M", MOD_ID,
 			"; ", IDENT,
 			") TPTPP/", SAVE_VERSION, ".", MINOR_VERSION, ".", BUILD_NUM, IDENT_RELTYPE, ".", SNAPSHOT_ID

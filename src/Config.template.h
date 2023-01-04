@@ -2,8 +2,6 @@
 #include <cstdint>
 
 // Boolean macros (defined / not defined), would be great to get rid of them all.
-#mesondefine CURL_STATICLIB
-#mesondefine ZLIB_WINAPI
 #mesondefine LUACONSOLE
 #mesondefine NOHTTP
 #mesondefine GRAVFFT
@@ -11,22 +9,19 @@
 #mesondefine FONTEDITOR
 #mesondefine BETA
 #mesondefine DEBUG
-#mesondefine IGNORE_UPDATES
 #mesondefine LIN
 #mesondefine AND
-#mesondefine NO_INSTALL_CHECK
 #mesondefine SNAPSHOT
 #mesondefine MOD
 #mesondefine WIN
 #mesondefine MACOSX
 #mesondefine X86
-#mesondefine X86_SSE
-#mesondefine X86_SSE2
-#mesondefine X86_SSE3
-#mesondefine _64BIT
-#mesondefine ENFORCE_HTTPS
-#mesondefine ALLOW_FAKE_NEWER_VERSION
-#mesondefine USE_UPDATESERVER
+
+constexpr bool ALLOW_FAKE_NEWER_VERSION = @ALLOW_FAKE_NEWER_VERSION@;
+constexpr bool USE_UPDATESERVER         = @USE_UPDATESERVER@;
+constexpr bool INSTALL_CHECK            = @INSTALL_CHECK@;
+constexpr bool IGNORE_UPDATES           = @IGNORE_UPDATES@;
+constexpr bool ENFORCE_HTTPS            = @ENFORCE_HTTPS@;
 
 constexpr char SERVER[]         = "@SERVER@";
 constexpr char STATICSERVER[]   = "@STATICSERVER@";
@@ -64,16 +59,6 @@ constexpr char IDENT_RELTYPE[] = "S";
 constexpr char IDENT_RELTYPE[] = "B";
 #else
 constexpr char IDENT_RELTYPE[] = "R";
-#endif
-
-#if defined(X86_SSE3)
-constexpr char IDENT_BUILD[] = "SSE3";
-#elif defined(X86_SSE2)
-constexpr char IDENT_BUILD[] = "SSE2";
-#elif defined(X86_SSE)
-constexpr char IDENT_BUILD[] = "SSE";
-#else
-constexpr char IDENT_BUILD[] = "NO";
 #endif
 
 constexpr char SCHEME[]         = "https://";

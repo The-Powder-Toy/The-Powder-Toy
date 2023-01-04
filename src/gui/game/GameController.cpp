@@ -744,10 +744,13 @@ void GameController::Tick()
 #ifdef LUACONSOLE
 		((LuaScriptInterface*)commandInterface)->Init();
 #endif
-#if !defined(MACOSX) && !defined(NO_INSTALL_CHECK)
-		if (Client::Ref().IsFirstRun())
+#if !defined(MACOSX)
+		if constexpr (INSTALL_CHECK)
 		{
-			Install();
+			if (Client::Ref().IsFirstRun())
+			{
+				Install();
+			}
 		}
 #endif
 		firstTick = false;
@@ -1672,13 +1675,15 @@ void GameController::RunUpdater()
 	Exit();
 	new UpdateActivity();
 #else
-
-#ifdef USE_UPDATESERVER
-	ByteString file = ByteString::Build(SCHEME, UPDATESERVER, Client::Ref().GetUpdateInfo().File);
-#else
-	ByteString file = ByteString::Build(SCHEME, SERVER, Client::Ref().GetUpdateInfo().File);
-#endif
-
+	ByteString file;
+	if constexpr (USE_UPDATESERVER)
+	{
+		file = ByteString::Build(SCHEME, UPDATESERVER, Client::Ref().GetUpdateInfo().File);
+	}
+	else
+	{
+		file = ByteString::Build(SCHEME, SERVER, Client::Ref().GetUpdateInfo().File);
+	}
 	Platform::OpenURI(file);
 #endif // MACOSX
 }

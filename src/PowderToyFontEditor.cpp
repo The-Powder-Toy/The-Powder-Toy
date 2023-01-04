@@ -5,13 +5,6 @@
 #include <direct.h>
 #endif
 
-#ifdef X86_SSE
-#include <xmmintrin.h>
-#endif
-#ifdef X86_SSE3
-#include <pmmintrin.h>
-#endif
-
 #include <iostream>
 #if defined(LIN)
 # include "icon_exe.png.h"

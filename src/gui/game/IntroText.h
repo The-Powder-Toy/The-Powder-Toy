@@ -41,9 +41,6 @@ inline ByteString IntroText()
 #elif defined(MOD)
 	sb << " MODVER " << SNAPSHOT_ID;
 #endif
-#if defined(X86_SSE) || defined(X86_SSE2) || defined(X86_SSE3)
-	sb << " " << IDENT_BUILD;
-#endif
 #ifdef LUACONSOLE
 	sb << " LUACONSOLE";
 #endif
@@ -59,8 +56,9 @@ inline ByteString IntroText()
 #ifdef DEBUG
 	sb << " DEBUG";
 #endif
-#ifdef ENFORCE_HTTPS
-	sb << " HTTPS";
-#endif
+	if constexpr (ENFORCE_HTTPS)
+	{
+		sb << " HTTPS";
+	}
 	return sb.Build();
 }

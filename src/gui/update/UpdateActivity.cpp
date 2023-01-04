@@ -118,12 +118,7 @@ private:
 };
 
 UpdateActivity::UpdateActivity() {
-	ByteString file;
-#ifdef USE_UPDATESERVER
-	file = ByteString::Build(SCHEME, UPDATESERVER, Client::Ref().GetUpdateInfo().File);
-#else
-	file = ByteString::Build(SCHEME, SERVER, Client::Ref().GetUpdateInfo().File);
-#endif
+	ByteString file = ByteString::Build(SCHEME, USE_UPDATESERVER ? UPDATESERVER : SERVER, Client::Ref().GetUpdateInfo().File);
 	updateDownloadTask = new UpdateDownloadTask(file, this);
 	updateWindow = new TaskWindow("Downloading update...", updateDownloadTask, true);
 }
@@ -145,18 +140,23 @@ void UpdateActivity::Exit()
 
 void UpdateActivity::NotifyError(Task * sender)
 {
-#ifdef USE_UPDATESERVER
-# define FIRST_LINE "Please go online to manually download a newer version.\n"
-#else
-# define FIRST_LINE "Please visit the website to download a newer version.\n"
-#endif
-	new ConfirmPrompt("Autoupdate failed", FIRST_LINE "Error: " + sender->GetError(), { [this] {
-#ifndef USE_UPDATESERVER
-		Platform::OpenURI(ByteString(SCHEME) + "powdertoy.co.uk/Download.html");
-#endif
+	StringBuilder sb;
+	if constexpr (USE_UPDATESERVER)
+	{
+		sb << "Please go online to manually download a newer version.\n";
+	}
+	else
+	{
+		sb << "Please visit the website to download a newer version.\n";
+	}
+	sb << "Error: " << sender->GetError();
+	new ConfirmPrompt("Autoupdate failed", sb.Build(), { [this] {
+		if constexpr (!USE_UPDATESERVER)
+		{
+			Platform::OpenURI(ByteString(SCHEME) + "powdertoy.co.uk/Download.html");
+		}
 		Exit();
 	}, [this] { Exit(); } });
-#undef FIRST_LINE
 }
 
 

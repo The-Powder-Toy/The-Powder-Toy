@@ -174,7 +174,6 @@ class LuaScriptInterface: public CommandInterface
 	void initPlatformAPI();
 	static int platform_platform(lua_State * l);
 	static int platform_ident(lua_State * l);
-	static int platform_build(lua_State * l);
 	static int platform_releaseType(lua_State * l);
 	static int platform_exeName(lua_State * l);
 	static int platform_restart(lua_State * l);

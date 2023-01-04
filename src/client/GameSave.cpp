@@ -675,19 +675,17 @@ void GameSave::readOPS(const std::vector<char> &data)
 							minor = bson_iterator_int(&subiter);
 					}
 				}
-#ifdef ALLOW_FAKE_NEWER_VERSION
-				if (major > FUTURE_SAVE_VERSION || (major == FUTURE_SAVE_VERSION && minor > FUTURE_MINOR_VERSION))
-#else
-				if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))
-#endif
+				auto majorToCheck = ALLOW_FAKE_NEWER_VERSION ? FUTURE_SAVE_VERSION : SAVE_VERSION;
+				auto minorToCheck = ALLOW_FAKE_NEWER_VERSION ? FUTURE_MINOR_VERSION : MINOR_VERSION;
+				if (major > majorToCheck || (major == majorToCheck && minor > minorToCheck))
 				{
 					String errorMessage = String::Build("Save from a newer version: Requires version ", major, ".", minor);
 					throw ParseException(ParseException::WrongVersion, errorMessage);
 				}
-#ifdef ALLOW_FAKE_NEWER_VERSION
-				else if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))
+				else if (ALLOW_FAKE_NEWER_VERSION && (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION)))
+				{
 					fakeNewerVersion = true;
-#endif
+				}
 			}
 			else
 			{
@@ -2388,12 +2386,8 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 		}
 	}
 
-	bool fakeFromNewerVersion = false;
-#ifdef ALLOW_FAKE_NEWER_VERSION
 	// Mark save as incompatible with latest release
-	if (minimumMajorVersion > SAVE_VERSION || (minimumMajorVersion == SAVE_VERSION && minimumMinorVersion > MINOR_VERSION))
-		fakeFromNewerVersion = true;
-#endif
+	bool fakeFromNewerVersion = ALLOW_FAKE_NEWER_VERSION && (minimumMajorVersion > SAVE_VERSION || (minimumMajorVersion == SAVE_VERSION && minimumMinorVersion > MINOR_VERSION));
 
 	bson b;
 	b.data = NULL;
@@ -2411,7 +2405,6 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	bson_append_int(&b, "modId", MOD_ID);
 	bson_append_string(&b, "releaseType", IDENT_RELTYPE);
 	bson_append_string(&b, "platform", IDENT_PLATFORM);
-	bson_append_string(&b, "builtType", IDENT_BUILD);
 	bson_append_string(&b, "ident", IDENT);
 	bson_append_finish_object(&b);
 	if (gravityMode == 3)

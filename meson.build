@@ -123,8 +123,6 @@ else
 endif
 
 conf_data = configuration_data()
-conf_data.set('CURL_STATICLIB', false)
-conf_data.set('ZLIB_WINAPI', false)
 
 x86_sse_level_str = get_option('x86_sse')
 if x86_sse_level_str == 'auto'
@@ -278,13 +276,11 @@ endif
 
 if host_platform == 'windows'
 	args_ccomp_win = [ '-D_WIN32_WINNT=0x0501' ]
-	project_c_args   += args_ccomp_win
-	project_cpp_args += args_ccomp_win
 	windows_mod = import('windows')
 	if is_static
-		conf_data.set('CURL_STATICLIB', true)
+		args_ccomp_win += [ '-DCURL_STATICLIB' ]
 		if host_arch == 'x86_64'
-			conf_data.set('ZLIB_WINAPI', true)
+			args_ccomp_win += [ '-DZLIB_WINAPI' ]
 		endif
 	else
 		foreach input_output_condition : tpt_libs.get_variable('config_dlls')
@@ -302,6 +298,8 @@ if host_platform == 'windows'
 			endif
 		endforeach
 	endif
+	project_c_args   += args_ccomp_win
+	project_cpp_args += args_ccomp_win
 endif
 
 project_inc = include_directories([ 'src', 'resources' ])
@@ -329,13 +327,9 @@ conf_data.set('AND', host_platform == 'android')
 conf_data.set('WIN', host_platform == 'windows')
 conf_data.set('MACOSX', host_platform == 'darwin')
 conf_data.set('X86', is_x86)
-conf_data.set('X86_SSE3', x86_sse_level >= 30)
-conf_data.set('X86_SSE2', x86_sse_level >= 20)
-conf_data.set('X86_SSE', x86_sse_level >= 10)
-conf_data.set('_64BIT', is_64bit)
 conf_data.set('BETA', is_beta)
-conf_data.set('NO_INSTALL_CHECK', not get_option('install_check'))
-conf_data.set('IGNORE_UPDATES', get_option('ignore_updates'))
+conf_data.set('INSTALL_CHECK', get_option('install_check') ? 'true' : 'false')
+conf_data.set('IGNORE_UPDATES', get_option('ignore_updates') ? 'true' : 'false')
 conf_data.set('MOD_ID', mod_id)
 conf_data.set('DEBUG', is_debug)
 conf_data.set('SNAPSHOT', is_snapshot)
@@ -344,11 +338,11 @@ conf_data.set('SNAPSHOT_ID', get_option('snapshot_id'))
 conf_data.set('SERVER', get_option('server'))
 conf_data.set('STATICSERVER', get_option('static_server'))
 conf_data.set('UPDATESERVER', update_server)
-conf_data.set('USE_UPDATESERVER', update_server != '')
+conf_data.set('USE_UPDATESERVER', update_server != '' ? 'true' : 'false')
 conf_data.set('IDENT_PLATFORM', ident_platform)
 conf_data.set('IDENT', '@0@-@1@-@2@'.format(host_arch, host_platform, host_libc).to_upper())
-conf_data.set('ENFORCE_HTTPS', enforce_https)
-conf_data.set('ALLOW_FAKE_NEWER_VERSION', is_snapshot or is_beta or is_debug or is_mod)
+conf_data.set('ENFORCE_HTTPS', enforce_https ? 'true' : 'false')
+conf_data.set('ALLOW_FAKE_NEWER_VERSION', (is_snapshot or is_beta or is_debug or is_mod) ? 'true' : 'false')
 conf_data.set('APPNAME', get_option('app_name'))
 conf_data.set('APPCOMMENT', get_option('app_comment'))
 conf_data.set('APPEXE', app_exe)

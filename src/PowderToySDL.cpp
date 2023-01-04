@@ -11,11 +11,9 @@
 #endif
 #include <SDL.h>
 
-#ifdef X86_SSE
-#include <xmmintrin.h>
-#endif
-#ifdef X86_SSE3
-#include <pmmintrin.h>
+#ifdef X86
+# include <xmmintrin.h>
+# include <pmmintrin.h>
 #endif
 
 #include <iostream>
@@ -835,10 +833,8 @@ int main(int argc, char * argv[])
 	}
 #endif
 
-#ifdef X86_SSE
+#ifdef X86
 	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
-#endif
-#ifdef X86_SSE3
 	_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
 #endif
 
