@@ -53,12 +53,12 @@ namespace http
 		capath = newCapath;
 
 		user_agent = ByteString::Build(
-			"PowderToy/", SAVE_VERSION, ".", MINOR_VERSION, " ("
-			IDENT_PLATFORM
-			"; " IDENT_BUILD
+			"PowderToy/", SAVE_VERSION, ".", MINOR_VERSION,
+			" (", IDENT_PLATFORM,
+			"; ", IDENT_BUILD,
 			"; M", MOD_ID,
-			"; " IDENT
-			") TPTPP/", SAVE_VERSION, ".", MINOR_VERSION, ".", BUILD_NUM, IDENT_RELTYPE ".", SNAPSHOT_ID
+			"; ", IDENT,
+			") TPTPP/", SAVE_VERSION, ".", MINOR_VERSION, ".", BUILD_NUM, IDENT_RELTYPE, ".", SNAPSHOT_ID
 		);
 
 		worker_thread = std::thread([this]() { Worker(); });

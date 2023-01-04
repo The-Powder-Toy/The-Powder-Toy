@@ -5,6 +5,8 @@
 #include "Config.h"
 #include <cstdlib>
 
+#define HIGH_QUALITY_RESAMPLE
+
 #define RESAMPLER_DEBUG_OPS 0
 #define RESAMPLER_DEFAULT_FILTER "lanczos4"
 

@@ -23,13 +23,7 @@
 
 static inline int resampler_range_check(int v, int h) { (void)h; resampler_assert((v >= 0) && (v < h)); return v; }
 
-#ifndef max
-   #define max(a,b) (((a) > (b)) ? (a) : (b))
-#endif
-
-#ifndef min
-   #define min(a,b) (((a) < (b)) ? (a) : (b))
-#endif
+#include "common/tpt-minmax.h"
 
 #ifndef TRUE
    #define TRUE (1)

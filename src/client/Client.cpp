@@ -121,7 +121,7 @@ void Client::Initialise(ByteString proxy, ByteString cafile, ByteString capath, 
 
 	//Read stamps library
 	std::ifstream stampsLib;
-	stampsLib.open(STAMPS_DIR PATH_SEP "stamps.def", std::ios::binary);
+	stampsLib.open(ByteString::Build(STAMPS_DIR, PATH_SEP, "stamps.def"), std::ios::binary);
 	while (!stampsLib.eof())
 	{
 		char data[11];
@@ -134,7 +134,7 @@ void Client::Initialise(ByteString proxy, ByteString cafile, ByteString capath, 
 	stampsLib.close();
 
 	//Begin version check
-	versionCheckRequest = new http::Request(SCHEME SERVER "/Startup.json");
+	versionCheckRequest = new http::Request(ByteString::Build(SCHEME, SERVER, "/Startup.json"));
 
 	if (authUser.UserID)
 	{
@@ -142,9 +142,9 @@ void Client::Initialise(ByteString proxy, ByteString cafile, ByteString capath, 
 	}
 	versionCheckRequest->Start();
 
-#ifdef UPDATESERVER
+#ifdef USE_UPDATESERVER
 	// use an alternate update server
-	alternateVersionCheckRequest = new http::Request(SCHEME UPDATESERVER "/Startup.json");
+	alternateVersionCheckRequest = new http::Request(ByteString::Build(SCHEME, UPDATESERVER, "/Startup.json"));
 	usingAltUpdateServer = true;
 	if (authUser.UserID)
 	{
@@ -265,7 +265,7 @@ bool Client::CheckUpdate(http::Request *updateRequest, bool checkSession)
 
 		if (checkSession && status == 618)
 		{
-			AddServerNotification({ "Failed to load SSL certificates", SCHEME "powdertoy.co.uk/FAQ.html" });
+			AddServerNotification({ "Failed to load SSL certificates", ByteString(SCHEME) + "powdertoy.co.uk/FAQ.html" });
 		}
 
 		if (status != 200)
@@ -344,7 +344,7 @@ bool Client::CheckUpdate(http::Request *updateRequest, bool checkSession)
 						}
 					}
 
-#if defined(SNAPSHOT) || MOD_ID > 0
+#if defined(SNAPSHOT) || defined(MOD)
 					Json::Value snapshotVersion = versions["Snapshot"];
 					int snapshotSnapshot = snapshotVersion["Snapshot"].asInt();
 					ByteString snapshotFile = snapshotVersion["File"].asString();
@@ -517,7 +517,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 			lastError = "Cannot serialize game save";
 			return RequestFailure;
 		}
-#if defined(SNAPSHOT) || defined(BETA) || defined(DEBUG) || MOD_ID > 0
+#ifdef ALLOW_FAKE_NEWER_VERSION
 		else if (fromNewerVersion && save.GetPublished())
 		{
 			lastError = "Cannot publish save, incompatible with latest release version.";
@@ -525,7 +525,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 		}
 #endif
 
-		data = http::Request::SimpleAuth(SCHEME SERVER "/Save.api", &dataStatus, userID, authUser.SessionID, {
+		data = http::Request::SimpleAuth(ByteString::Build(SCHEME, SERVER, "/Save.api"), &dataStatus, userID, authUser.SessionID, {
 			{ "Name", save.GetName().ToUtf8() },
 			{ "Description", save.GetDescription().ToUtf8() },
 			{ "Data:save.bin", ByteString(gameData.begin(), gameData.end()) },
@@ -570,7 +570,7 @@ void Client::MoveStampToFront(ByteString stampID)
 
 SaveFile * Client::GetStamp(ByteString stampID)
 {
-	ByteString stampFile = ByteString(STAMPS_DIR PATH_SEP + stampID + ".stm");
+	ByteString stampFile = ByteString(ByteString::Build(STAMPS_DIR, PATH_SEP, stampID, ".stm"));
 	SaveFile *saveFile = LoadSaveFile(stampFile);
 	if (!saveFile)
 		saveFile = LoadSaveFile(stampID);
@@ -606,7 +606,7 @@ ByteString Client::AddStamp(GameSave * saveData)
 	else
 		lastStampName++;
 	ByteString saveID = ByteString::Build(Format::Hex(Format::Width(lastStampTime, 8)), Format::Hex(Format::Width(lastStampName, 2)));
-	ByteString filename = STAMPS_DIR PATH_SEP + saveID + ".stm";
+	ByteString filename = ByteString::Build(STAMPS_DIR, PATH_SEP, saveID, ".stm");
 
 	Platform::MakeDirectory(STAMPS_DIR);
 
@@ -641,7 +641,7 @@ void Client::updateStamps()
 	Platform::MakeDirectory(STAMPS_DIR);
 
 	std::ofstream stampsStream;
-	stampsStream.open(ByteString(STAMPS_DIR PATH_SEP "stamps.def").c_str(), std::ios::binary);
+	stampsStream.open(ByteString::Build(STAMPS_DIR, PATH_SEP, "stamps.def").c_str(), std::ios::binary);
 	for (std::list<ByteString>::const_iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
 	{
 		stampsStream.write((*iterator).c_str(), 10);
@@ -700,7 +700,7 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 	{
 		ByteString saveIDText = ByteString::Build(saveID);
 		ByteString userIDText = ByteString::Build(authUser.UserID);
-		data = http::Request::SimpleAuth(SCHEME SERVER "/Vote.api", &dataStatus, userIDText, authUser.SessionID, {
+		data = http::Request::SimpleAuth(ByteString::Build(SCHEME, SERVER, "/Vote.api"), &dataStatus, userIDText, authUser.SessionID, {
 			{ "ID", saveIDText },
 			{ "Action", direction ? (direction == 1 ? "Up" : "Down") : "Reset" },
 			{ "Key", authUser.SessionKey }
@@ -748,7 +748,7 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 
 	ByteString data;
 	int dataStatus;
-	data = http::Request::Simple("https://" SERVER "/Login.json", &dataStatus, {
+	data = http::Request::Simple(ByteString::Build("https://", SERVER, "/Login.json"), &dataStatus, {
 		{ "name", username },
 		{ "pass", password },
 	});
@@ -1577,11 +1577,7 @@ bool Client::DoInstallation()
 
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	auto exe = Platform::ExecutableName();
-#ifndef IDI_DOC_ICON
-	// make this fail so I don't remove #include "resource.h" again and get away with it
-# error where muh IDI_DOC_ICON D:
-#endif
-	auto icon = exe + ",-" MTOS(IDI_DOC_ICON);
+	auto icon = ByteString::Build(exe, ",-", IDI_DOC_ICON);
 	auto path = Platform::GetCwd();
 	auto open = ByteString::Build("\"", exe, "\" ddir \"", path, "\" \"file://%1\"");
 	auto ptsave = ByteString::Build("\"", exe, "\" ddir \"", path, "\" \"%1\"");
@@ -1606,7 +1602,7 @@ bool Client::DoInstallation()
 	ok = ok && shellLink->SetWorkingDirectory(Platform::WinWiden(path).c_str()) == S_OK;
 	ok = ok && shellLink->SetDescription(Platform::WinWiden(APPNAME).c_str()) == S_OK;
 	ok = ok && shellLink->QueryInterface(IID_IPersistFile, (LPVOID *)&shellLinkPersist) == S_OK;
-	ok = ok && shellLinkPersist->Save(Platform::WinWiden(Platform::WinNarrow(programsPath) + "\\" APPNAME ".lnk").c_str(), TRUE) == S_OK;
+	ok = ok && shellLinkPersist->Save(Platform::WinWiden(ByteString::Build(Platform::WinNarrow(programsPath), "\\", APPNAME, ".lnk")).c_str(), TRUE) == S_OK;
 	if (shellLinkPersist)
 	{
 		shellLinkPersist->Release();
@@ -1653,9 +1649,9 @@ bool Client::DoInstallation()
 		ByteString desktopData(powder_desktop, powder_desktop + powder_desktop_size);
 		auto exe = Platform::ExecutableName();
 		auto path = exe.SplitFromEndBy('/').Before();
-		desktopData = desktopData.Substitute("Exec=" APPEXE, "Exec=" + desktopEscapeString(desktopEscapeExec(exe)));
+		desktopData = desktopData.Substitute("Exec=" + ByteString(APPEXE), "Exec=" + desktopEscapeString(desktopEscapeExec(exe)));
 		desktopData += ByteString::Build("Path=", desktopEscapeString(path), "\n");
-		ByteString file = APPVENDOR "-" APPID ".desktop";
+		ByteString file = ByteString::Build(APPVENDOR, "-", APPID, ".desktop");
 		ok = ok && Platform::WriteFile(std::vector<char>(desktopData.begin(), desktopData.end()), file);
 		ok = ok && !system(ByteString::Build("xdg-desktop-menu install ", file).c_str());
 		ok = ok && !system(ByteString::Build("xdg-mime default ", file, " application/vnd.powdertoy.save").c_str());
@@ -1664,23 +1660,23 @@ bool Client::DoInstallation()
 	}
 	if (ok)
 	{
-		ByteString file = APPVENDOR "-save.xml";
+		ByteString file = ByteString(APPVENDOR) + "-save.xml";
 		ok = ok && Platform::WriteFile(std::vector<char>(save_xml, save_xml + save_xml_size), file);
 		ok = ok && !system(ByteString::Build("xdg-mime install ", file).c_str());
 		Platform::RemoveFile(file);
 	}
 	if (ok)
 	{
-		ByteString file = APPVENDOR "-cps.png";
+		ByteString file = ByteString(APPVENDOR) + "-cps.png";
 		ok = ok && Platform::WriteFile(std::vector<char>(icon_cps_png, icon_cps_png + icon_cps_png_size), file);
 		ok = ok && !system(ByteString::Build("xdg-icon-resource install --noupdate --context mimetypes --size 64 ", file, " application-vnd.powdertoy.save").c_str());
 		Platform::RemoveFile(file);
 	}
 	if (ok)
 	{
-		ByteString file = APPVENDOR "-exe.png";
+		ByteString file = ByteString(APPVENDOR) + "-exe.png";
 		ok = ok && Platform::WriteFile(std::vector<char>(icon_exe_png, icon_exe_png + icon_exe_png_size), file);
-		ok = ok && !system(ByteString::Build("xdg-icon-resource install --noupdate --size 64 ", file, " " APPVENDOR "-" APPEXE).c_str());
+		ok = ok && !system(ByteString::Build("xdg-icon-resource install --noupdate --size 64 ", file, " ", APPVENDOR, "-", APPEXE).c_str());
 		Platform::RemoveFile(file);
 	}
 	if (ok)

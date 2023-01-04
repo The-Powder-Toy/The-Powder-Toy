@@ -5,7 +5,7 @@
 inline ByteString IntroText()
 {
 	ByteStringBuilder sb;
-	sb << "\bl\bU" APPNAME "\bU - Version " << SAVE_VERSION << "." << MINOR_VERSION << " - https://powdertoy.co.uk, irc.libera.chat #powder, https://tpt.io/discord\n"
+	sb << "\bl\bU" << APPNAME << "\bU - Version " << SAVE_VERSION << "." << MINOR_VERSION << " - https://powdertoy.co.uk, irc.libera.chat #powder, https://tpt.io/discord\n"
 	      "\n"
 	      "\n"
 	      "\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
@@ -35,14 +35,14 @@ inline ByteString IntroText()
 	      "\brIf you are planning on publishing any saves, use the release version.\n";
 #endif
 	sb << "\n"
-	   << "\bt" << SAVE_VERSION << "." << MINOR_VERSION << "." << BUILD_NUM << " " IDENT;
+	   << "\bt" << SAVE_VERSION << "." << MINOR_VERSION << "." << BUILD_NUM << " " << IDENT;
 #ifdef SNAPSHOT
 	sb << " SNAPSHOT " << SNAPSHOT_ID;
-#elif MOD_ID > 0
+#elif defined(MOD)
 	sb << " MODVER " << SNAPSHOT_ID;
 #endif
 #if defined(X86_SSE) || defined(X86_SSE2) || defined(X86_SSE3)
-	sb << " " IDENT_BUILD;
+	sb << " " << IDENT_BUILD;
 #endif
 #ifdef LUACONSOLE
 	sb << " LUACONSOLE";

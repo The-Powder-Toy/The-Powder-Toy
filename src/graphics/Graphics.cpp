@@ -9,9 +9,7 @@
 #include "common/Platform.h"
 
 #include "FontReader.h"
-#ifdef HIGH_QUALITY_RESAMPLE
 #include "resampler/resampler.h"
-#endif
 
 #include <png.h>
 

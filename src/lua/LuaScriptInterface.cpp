@@ -318,7 +318,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	lua_setfield(l, tptPropertiesVersion, "minor");
 	lua_pushinteger(l, BUILD_NUM);
 	lua_setfield(l, tptPropertiesVersion, "build");
-#if defined(SNAPSHOT) || MOD_ID > 0
+#if defined(SNAPSHOT) || defined(MOD)
 	lua_pushinteger(l, SNAPSHOT_ID);
 #else
 	lua_pushinteger(l, 0);
@@ -958,15 +958,15 @@ void LuaScriptInterface::initSimulationAPI()
 	SETCONST(l, CELL);
 	SETCONST(l, NT);
 	SETCONST(l, ST);
-	SETCONST(l, ITH);
-	SETCONST(l, ITL);
+	SETCONSTF(l, ITH);
+	SETCONSTF(l, ITL);
 	SETCONSTF(l, IPH);
 	SETCONSTF(l, IPL);
 	SETCONST(l, PT_NUM);
 	lua_pushinteger(l, 0); lua_setfield(l, -2, "NUM_PARTS");
-	SETCONST(l, R_TEMP);
-	SETCONST(l, MAX_TEMP);
-	SETCONST(l, MIN_TEMP);
+	SETCONSTF(l, R_TEMP);
+	SETCONSTF(l, MAX_TEMP);
+	SETCONSTF(l, MIN_TEMP);
 	SETCONSTF(l, MAX_PRESSURE);
 	SETCONSTF(l, MIN_PRESSURE);
 
@@ -4085,25 +4085,25 @@ void LuaScriptInterface::initPlatformAPI()
 
 int LuaScriptInterface::platform_platform(lua_State * l)
 {
-	lua_pushliteral(l, IDENT_PLATFORM);
+	tpt_lua_pushByteString(l, IDENT_PLATFORM);
 	return 1;
 }
 
 int LuaScriptInterface::platform_ident(lua_State * l)
 {
-	lua_pushliteral(l, IDENT);
+	tpt_lua_pushByteString(l, IDENT);
 	return 1;
 }
 
 int LuaScriptInterface::platform_build(lua_State * l)
 {
-	lua_pushliteral(l, IDENT_BUILD);
+	tpt_lua_pushByteString(l, IDENT_BUILD);
 	return 1;
 }
 
 int LuaScriptInterface::platform_releaseType(lua_State * l)
 {
-	lua_pushliteral(l, IDENT_RELTYPE);
+	tpt_lua_pushByteString(l, IDENT_RELTYPE);
 	return 1;
 }
 
@@ -4457,7 +4457,7 @@ static int http_request(lua_State *l, bool isPost)
 
 static int http_get_auth_token(lua_State *l)
 {
-	return RequestHandle::Make(l, SCHEME SERVER "/ExternalAuth.api?Action=Get&Audience=" + format::URLEncode(tpt_lua_checkByteString(l, 1)), false, {}, RequestHandle::getAuthToken, {}, {});
+	return RequestHandle::Make(l, ByteString::Build(SCHEME, SERVER, "/ExternalAuth.api?Action=Get&Audience=", format::URLEncode(tpt_lua_checkByteString(l, 1))), false, {}, RequestHandle::getAuthToken, {}, {});
 }
 
 int LuaScriptInterface::http_get(lua_State * l)

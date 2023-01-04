@@ -675,7 +675,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 							minor = bson_iterator_int(&subiter);
 					}
 				}
-#if defined(SNAPSHOT) || defined(BETA) || defined(DEBUG) || MOD_ID > 0
+#ifdef ALLOW_FAKE_NEWER_VERSION
 				if (major > FUTURE_SAVE_VERSION || (major == FUTURE_SAVE_VERSION && minor > FUTURE_MINOR_VERSION))
 #else
 				if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))
@@ -684,7 +684,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 					String errorMessage = String::Build("Save from a newer version: Requires version ", major, ".", minor);
 					throw ParseException(ParseException::WrongVersion, errorMessage);
 				}
-#if defined(SNAPSHOT) || defined(BETA) || defined(DEBUG) || MOD_ID > 0
+#ifdef ALLOW_FAKE_NEWER_VERSION
 				else if (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION))
 					fakeNewerVersion = true;
 #endif
@@ -1241,6 +1241,8 @@ void GameSave::readOPS(const std::vector<char> &data)
 	}
 }
 
+#define MTOS_EXPAND(str) #str
+#define MTOS(str) MTOS_EXPAND(str)
 void GameSave::readPSv(const std::vector<char> &dataVec)
 {
 	Renderer::PopulateTables();
@@ -1895,6 +1897,8 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		signs.push_back(tempSigns[i]);
 	}
 }
+#undef MTOS
+#undef MTOS_EXPAND
 
 std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 {
@@ -2385,7 +2389,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	}
 
 	bool fakeFromNewerVersion = false;
-#if defined(SNAPSHOT) || defined(BETA) || defined(DEBUG) || MOD_ID > 0
+#ifdef ALLOW_FAKE_NEWER_VERSION
 	// Mark save as incompatible with latest release
 	if (minimumMajorVersion > SAVE_VERSION || (minimumMajorVersion == SAVE_VERSION && minimumMinorVersion > MINOR_VERSION))
 		fakeFromNewerVersion = true;

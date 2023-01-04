@@ -93,7 +93,6 @@ static int update(UPDATE_FUNC_ARGS)
 						Element_FIRE_update(UPDATE_FUNC_SUBCALL_ARGS);
 					}
 					break;
-#ifdef SDEUT
 				case PT_DEUT:
 					if (RNG::Ref().chance(pressureFactor + 1 + (parts[ID(r)].life/100), 1000))
 					{
@@ -101,20 +100,6 @@ static int update(UPDATE_FUNC_ARGS)
 						sim->kill_part(ID(r));
 					}
 					break;
-#else
-				case PT_DEUT:
-					if (RNG::Ref().chance(pressureFactor+1, 1000))
-					{
-						create_part(ID(r), x+rx, y+ry, PT_NEUT);
-						parts[ID(r)].vx = 0.25f*parts[ID(r)].vx + parts[i].vx;
-						parts[ID(r)].vy = 0.25f*parts[ID(r)].vy + parts[i].vy;
-						parts[ID(r)].life --;
-						parts[ID(r)].temp = restrict_flt(parts[ID(r)].temp + parts[ID(r)].life*17.0f, MIN_TEMP, MAX_TEMP);
-						pv[y/CELL][x/CELL] += 6.0f * CFDS;
-
-					}
-					break;
-#endif
 				case PT_GUNP:
 					if (RNG::Ref().chance(3, 200))
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_DUST);

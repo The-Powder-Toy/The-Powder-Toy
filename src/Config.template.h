@@ -1,13 +1,14 @@
 #pragma once
+#include <cstdint>
+
+// Boolean macros (defined / not defined), would be great to get rid of them all.
 #mesondefine CURL_STATICLIB
 #mesondefine ZLIB_WINAPI
-
 #mesondefine LUACONSOLE
 #mesondefine NOHTTP
 #mesondefine GRAVFFT
 #mesondefine RENDERER
 #mesondefine FONTEDITOR
-
 #mesondefine BETA
 #mesondefine DEBUG
 #mesondefine IGNORE_UPDATES
@@ -15,6 +16,7 @@
 #mesondefine AND
 #mesondefine NO_INSTALL_CHECK
 #mesondefine SNAPSHOT
+#mesondefine MOD
 #mesondefine WIN
 #mesondefine MACOSX
 #mesondefine X86
@@ -22,133 +24,116 @@
 #mesondefine X86_SSE2
 #mesondefine X86_SSE3
 #mesondefine _64BIT
-#mesondefine SERVER
-#mesondefine STATICSERVER
-#mesondefine UPDATESERVER
-#mesondefine IDENT_PLATFORM
-#mesondefine IDENT
 #mesondefine ENFORCE_HTTPS
-#define APPNAME "@APPNAME@"
-#define APPCOMMENT "@APPCOMMENT@"
-#define APPEXE "@APPEXE@"
-#define APPID "@APPID@"
-#define APPDATA "@APPDATA@"
-#define APPVENDOR "@APPVENDOR@"
+#mesondefine ALLOW_FAKE_NEWER_VERSION
+#mesondefine USE_UPDATESERVER
+
+constexpr char SERVER[]         = "@SERVER@";
+constexpr char STATICSERVER[]   = "@STATICSERVER@";
+constexpr char UPDATESERVER[]   = "@UPDATESERVER@";
+constexpr char IDENT_PLATFORM[] = "@IDENT_PLATFORM@";
+constexpr char IDENT[]          = "@IDENT@";
+constexpr char APPNAME[]        = "@APPNAME@";
+constexpr char APPCOMMENT[]     = "@APPCOMMENT@";
+constexpr char APPEXE[]         = "@APPEXE@";
+constexpr char APPID[]          = "@APPID@";
+constexpr char APPDATA[]        = "@APPDATA@";
+constexpr char APPVENDOR[]      = "@APPVENDOR@";
 
 #ifdef WIN
-# define PATH_SEP "\\"
-# define PATH_SEP_CHAR '\\'
+constexpr char PATH_SEP[] = "\\";
+constexpr char PATH_SEP_CHAR = '\\';
 #else
-# define PATH_SEP "/"
-# define PATH_SEP_CHAR '/'
+constexpr char PATH_SEP[] = "/";
+constexpr char PATH_SEP_CHAR = '/';
 #endif
 
 //VersionInfoStart
-#define SAVE_VERSION 97
-#define MINOR_VERSION 0
-#define BUILD_NUM 352
-#mesondefine SNAPSHOT_ID
-#mesondefine MOD_ID
-#define FUTURE_SAVE_VERSION 97
-#define FUTURE_MINOR_VERSION 0
-
-#if !(defined(SNAPSHOT) || defined(BETA) || defined(DEBUG) || MOD_ID > 0)
-#undef FUTURE_SAVE_VERSION
-#undef FUTURE_MINOR_VERSION
-#endif
+constexpr int SAVE_VERSION         = 97;
+constexpr int MINOR_VERSION        = 0;
+constexpr int BUILD_NUM            = 352;
+constexpr int SNAPSHOT_ID          = @SNAPSHOT_ID@;
+constexpr int MOD_ID               = @MOD_ID@;
+constexpr int FUTURE_SAVE_VERSION  = 97;
+constexpr int FUTURE_MINOR_VERSION = 0;
 //VersionInfoEnd
 
-#if !(defined(MACOSX) && defined(DEBUG))
-#define HIGH_QUALITY_RESAMPLE			//High quality image resampling, slower but much higher quality than my terribad linear interpolation
-#endif
-
 #if defined(SNAPSHOT)
-#define IDENT_RELTYPE "S"
+constexpr char IDENT_RELTYPE[] = "S";
 #elif defined(BETA)
-#define IDENT_RELTYPE "B"
+constexpr char IDENT_RELTYPE[] = "B";
 #else
-#define IDENT_RELTYPE "R"
+constexpr char IDENT_RELTYPE[] = "R";
 #endif
 
 #if defined(X86_SSE3)
-#define IDENT_BUILD "SSE3"
+constexpr char IDENT_BUILD[] = "SSE3";
 #elif defined(X86_SSE2)
-#define IDENT_BUILD "SSE2"
+constexpr char IDENT_BUILD[] = "SSE2";
 #elif defined(X86_SSE)
-#define IDENT_BUILD "SSE"
+constexpr char IDENT_BUILD[] = "SSE";
 #else
-#define IDENT_BUILD "NO"
+constexpr char IDENT_BUILD[] = "NO";
 #endif
 
-#define MTOS_EXPAND(str) #str
-#define MTOS(str) MTOS_EXPAND(str)
+constexpr char SCHEME[]         = "https://";
+constexpr char STATICSCHEME[]   = "https://";
+constexpr char LOCAL_SAVE_DIR[] = "Saves";
+constexpr char STAMPS_DIR[]     = "stamps";
+constexpr char BRUSH_DIR[]      = "Brushes";
 
-#define SCHEME "https://"
-#define STATICSCHEME "https://"
-
-#define LOCAL_SAVE_DIR "Saves"
-
-#define STAMPS_DIR "stamps"
-
-#define BRUSH_DIR "Brushes"
-
-#ifndef M_GRAV
-#define M_GRAV 6.67300e-1
-#endif
+constexpr float M_GRAV = 6.67300e-1f;
 
 #ifdef RENDERER
-#define MENUSIZE 0
-#define BARSIZE 0
+constexpr int MENUSIZE = 0;
+constexpr int BARSIZE  = 0;
 #else
-#define MENUSIZE 40
-#define BARSIZE 17
+constexpr int MENUSIZE = 40;
+constexpr int BARSIZE  = 17;
 #endif
-#define XRES	612
-#define YRES	384
-#define NPART XRES*YRES
+constexpr int XRES = 612;
+constexpr int YRES = 384;
+constexpr int NPART = XRES * YRES;
 
-#define XCNTR   XRES/2
-#define YCNTR   YRES/2
+constexpr int XCNTR = XRES / 2;
+constexpr int YCNTR = YRES / 2;
 
-#define WINDOWW (XRES+BARSIZE)
-#define WINDOWH (YRES+MENUSIZE)
+constexpr int WINDOWW = XRES + BARSIZE;
+constexpr int WINDOWH = YRES + MENUSIZE;
 
-#define GRAV_DIFF
-
-#define MAXSIGNS 16
+constexpr int MAXSIGNS = 16;
 
 //CELL, the size of the pressure, gravity, and wall maps. Larger than 1 to prevent extreme lag
-#define CELL	4
-#define ISTP	(CELL/2)
-#define CFDS	(4.0f/CELL)
-#define SIM_MAXVELOCITY 1e4f
+constexpr int   CELL            = 4;
+constexpr int   ISTP            = CELL / 2;
+constexpr float CFDS            = 4.0f / CELL;
+constexpr float SIM_MAXVELOCITY = 1e4f;
 
 //Air constants
-#define AIR_TSTEPP 0.3f
-#define AIR_TSTEPV 0.4f
-#define AIR_VADV 0.3f
-#define AIR_VLOSS 0.999f
-#define AIR_PLOSS 0.9999f
+constexpr float AIR_TSTEPP = 0.3f;
+constexpr float AIR_TSTEPV = 0.4f;
+constexpr float AIR_VADV   = 0.3f;
+constexpr float AIR_VLOSS  = 0.999f;
+constexpr float AIR_PLOSS  = 0.9999f;
 
-#define NGOL 24
+constexpr int NGOL = 24;
 
-#define CIRCLE_BRUSH 0
-#define SQUARE_BRUSH 1
-#define TRI_BRUSH 2
-#define BRUSH_NUM 3
+constexpr int CIRCLE_BRUSH = 0;
+constexpr int SQUARE_BRUSH = 1;
+constexpr int TRI_BRUSH    = 2;
+constexpr int BRUSH_NUM    = 3;
 
 //Photon constants
-#define SURF_RANGE		10
-#define NORMAL_MIN_EST	3
-#define NORMAL_INTERP	20
-#define NORMAL_FRAC		16
+constexpr int SURF_RANGE     = 10;
+constexpr int NORMAL_MIN_EST =  3;
+constexpr int NORMAL_INTERP  = 20;
+constexpr int NORMAL_FRAC    = 16;
 
-#define REFRACT			0x80000000
+constexpr auto REFRACT = UINT32_C(0x80000000);
 
 /* heavy flint glass, for awesome refraction/dispersion
    this way you can make roof prisms easily */
-#define GLASS_IOR		1.9
-#define GLASS_DISP		0.07
+constexpr float GLASS_IOR  = 1.9f;
+constexpr float GLASS_DISP = 0.07f;
 
-#define SDEUT
-#define R_TEMP 22
+constexpr float R_TEMP = 22;

@@ -544,8 +544,7 @@ void BlueScreen(String detailMessage)
 
 	String errorTitle = "ERROR";
 	String errorDetails = "Details: " + detailMessage;
-	String errorHelp = "An unrecoverable fault has occurred, please report the error by visiting the website below\n"
-		SCHEME SERVER;
+	String errorHelp = String("An unrecoverable fault has occurred, please report the error by visiting the website below\n") + SCHEME + SERVER;
 	int currentY = 0, width, height;
 	int errorWidth = 0;
 	Graphics::textsize(errorHelp, errorWidth, height);

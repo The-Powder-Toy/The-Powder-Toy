@@ -119,7 +119,7 @@ private:
 
 UpdateActivity::UpdateActivity() {
 	ByteString file;
-#ifdef UPDATESERVER
+#ifdef USE_UPDATESERVER
 	file = ByteString::Build(SCHEME, UPDATESERVER, Client::Ref().GetUpdateInfo().File);
 #else
 	file = ByteString::Build(SCHEME, SERVER, Client::Ref().GetUpdateInfo().File);
@@ -145,14 +145,14 @@ void UpdateActivity::Exit()
 
 void UpdateActivity::NotifyError(Task * sender)
 {
-#ifdef UPDATESERVER
+#ifdef USE_UPDATESERVER
 # define FIRST_LINE "Please go online to manually download a newer version.\n"
 #else
 # define FIRST_LINE "Please visit the website to download a newer version.\n"
 #endif
 	new ConfirmPrompt("Autoupdate failed", FIRST_LINE "Error: " + sender->GetError(), { [this] {
-#ifndef UPDATESERVER
-		Platform::OpenURI(SCHEME "powdertoy.co.uk/Download.html");
+#ifndef USE_UPDATESERVER
+		Platform::OpenURI(ByteString(SCHEME) + "powdertoy.co.uk/Download.html");
 #endif
 		Exit();
 	}, [this] { Exit(); } });

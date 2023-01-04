@@ -318,6 +318,11 @@ endif
 
 app_exe = get_option('app_exe')
 app_id = get_option('app_id')
+mod_id = get_option('mod_id')
+is_snapshot = get_option('snapshot')
+is_beta = get_option('beta')
+is_mod = mod_id > 0
+update_server = get_option('update_server')
 
 conf_data.set('LIN', host_platform == 'linux')
 conf_data.set('AND', host_platform == 'android')
@@ -328,30 +333,28 @@ conf_data.set('X86_SSE3', x86_sse_level >= 30)
 conf_data.set('X86_SSE2', x86_sse_level >= 20)
 conf_data.set('X86_SSE', x86_sse_level >= 10)
 conf_data.set('_64BIT', is_64bit)
-conf_data.set('BETA', get_option('beta'))
+conf_data.set('BETA', is_beta)
 conf_data.set('NO_INSTALL_CHECK', not get_option('install_check'))
 conf_data.set('IGNORE_UPDATES', get_option('ignore_updates'))
-conf_data.set('MOD_ID', get_option('mod_id'))
+conf_data.set('MOD_ID', mod_id)
 conf_data.set('DEBUG', is_debug)
-conf_data.set('SNAPSHOT', get_option('snapshot'))
+conf_data.set('SNAPSHOT', is_snapshot)
+conf_data.set('MOD', is_mod)
 conf_data.set('SNAPSHOT_ID', get_option('snapshot_id'))
-conf_data.set('SERVER', '"@0@"'.format(get_option('server')))
-conf_data.set('STATICSERVER', '"@0@"'.format(get_option('static_server')))
-conf_data.set('IDENT_PLATFORM', '"@0@"'.format(ident_platform))
-conf_data.set('IDENT', '"@0@-@1@-@2@"'.format(host_arch, host_platform, host_libc).to_upper())
+conf_data.set('SERVER', get_option('server'))
+conf_data.set('STATICSERVER', get_option('static_server'))
+conf_data.set('UPDATESERVER', update_server)
+conf_data.set('USE_UPDATESERVER', update_server != '')
+conf_data.set('IDENT_PLATFORM', ident_platform)
+conf_data.set('IDENT', '@0@-@1@-@2@'.format(host_arch, host_platform, host_libc).to_upper())
 conf_data.set('ENFORCE_HTTPS', enforce_https)
+conf_data.set('ALLOW_FAKE_NEWER_VERSION', is_snapshot or is_beta or is_debug or is_mod)
 conf_data.set('APPNAME', get_option('app_name'))
 conf_data.set('APPCOMMENT', get_option('app_comment'))
 conf_data.set('APPEXE', app_exe)
 conf_data.set('APPID', app_id)
 conf_data.set('APPDATA', get_option('app_data'))
 conf_data.set('APPVENDOR', get_option('app_vendor'))
-
-if get_option('update_server') != ''
-	conf_data.set('UPDATESERVER', '"@0@"'.format(get_option('update_server')))
-else
-	conf_data.set('UPDATESERVER', false)
-endif
 
 data_files = []
 

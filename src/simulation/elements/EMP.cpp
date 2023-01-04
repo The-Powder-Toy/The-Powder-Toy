@@ -165,7 +165,7 @@ void Element_EMP_Trigger(Simulation *sim, int triggerCount)
 								if (RNG::Ref().uniform01() < prob_randWIFI)
 								{
 									// Randomize channel
-									parts[n].temp = float(RNG::Ref().between(0, MAX_TEMP-1));
+									parts[n].temp = float(RNG::Ref().between(0, int(MAX_TEMP)-1));
 								}
 								if (RNG::Ref().uniform01() < prob_breakWIFI)
 								{

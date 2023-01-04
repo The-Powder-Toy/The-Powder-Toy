@@ -260,9 +260,9 @@ void GameController::PlaceSave(ui::Point position)
 void GameController::Install()
 {
 #if defined(MACOSX)
-	new InformationMessage("No installation necessary", "You don't need to install " APPNAME " on OS X", false);
+	new InformationMessage("No installation necessary", "You don't need to install " + String(APPNAME) + " on OS X", false);
 #elif defined(WIN) || defined(LIN)
-	new ConfirmPrompt("Install " APPNAME, "Do you wish to install " APPNAME " on this computer?\nThis allows you to open save files and saves directly from the website.", { [] {
+	new ConfirmPrompt("Install " + String(APPNAME), "Do you wish to install " + String(APPNAME) + " on this computer?\nThis allows you to open save files and saves directly from the website.", { [] {
 		if (Client::Ref().DoInstallation())
 		{
 			new InformationMessage("Success", "Installation completed", false);
@@ -273,7 +273,7 @@ void GameController::Install()
 		}
 	} });
 #else
-	new ErrorMessage("Cannot install", "You cannot install " APPNAME " on this platform");
+	new ErrorMessage("Cannot install", "You cannot install " + String(APPNAME) + " on this platform");
 #endif
 }
 
@@ -581,7 +581,7 @@ bool GameController::MouseUp(int x, int y, unsigned button, MouseupReason reason
 						}
 						break;
 					case sign::Type::Thread:
-						Platform::OpenURI(ByteString::Build(SCHEME "powdertoy.co.uk/Discussions/Thread/View.html?Thread=", str.Substr(3, si.first - 3).ToUtf8()));
+						Platform::OpenURI(ByteString::Build(SCHEME, "powdertoy.co.uk/Discussions/Thread/View.html?Thread=", str.Substr(3, si.first - 3).ToUtf8()));
 						break;
 					case sign::Type::Search:
 						OpenSearch(str.Substr(3, si.first - 3));
@@ -1278,7 +1278,7 @@ void GameController::OpenSavePreview()
 
 void GameController::OpenLocalBrowse()
 {
-	new FileBrowserActivity(LOCAL_SAVE_DIR PATH_SEP, [this](std::unique_ptr<SaveFile> file) {
+	new FileBrowserActivity(ByteString(LOCAL_SAVE_DIR) + PATH_SEP, [this](std::unique_ptr<SaveFile> file) {
 		HistorySnapshot();
 		LoadSaveFile(file.get());
 	});
@@ -1616,7 +1616,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 
 #ifdef SNAPSHOT
 			updateMessage << "Snapshot " << SNAPSHOT_ID;
-#elif MOD_ID > 0
+#elif defined(MOD)
 			updateMessage << "Mod version " << SNAPSHOT_ID;
 #elif defined(BETA)
 			updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Beta, Build " << BUILD_NUM;
@@ -1628,7 +1628,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 			if (info.Type == UpdateInfo::Beta)
 				updateMessage << info.Major << "." << info.Minor << " Beta, Build " << info.Build;
 			else if (info.Type == UpdateInfo::Snapshot)
-#if MOD_ID > 0
+#if defined(MOD)
 				updateMessage << "Mod version " << info.Time;
 #else
 				updateMessage << "Snapshot " << info.Time;
@@ -1646,7 +1646,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 	switch(sender->GetUpdateInfo().Type)
 	{
 		case UpdateInfo::Snapshot:
-#if MOD_ID > 0
+#if defined(MOD)
 			gameModel->AddNotification(new UpdateNotification(this, "A new mod update is available - click here to update"));
 #else
 			gameModel->AddNotification(new UpdateNotification(this, "A new snapshot is available - click here to update"));
@@ -1673,7 +1673,7 @@ void GameController::RunUpdater()
 	new UpdateActivity();
 #else
 
-#ifdef UPDATESERVER
+#ifdef USE_UPDATESERVER
 	ByteString file = ByteString::Build(SCHEME, UPDATESERVER, Client::Ref().GetUpdateInfo().File);
 #else
 	ByteString file = ByteString::Build(SCHEME, SERVER, Client::Ref().GetUpdateInfo().File);

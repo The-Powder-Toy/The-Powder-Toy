@@ -43,25 +43,27 @@ aarch64-android-bionic-static) ;;
 *) >&2 echo "configuration $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC is not supported" && exit 1;;
 esac
 
-case $BSH_BUILD_PLATFORM in
-linux)
-	sudo apt update
-	if [[ $BSH_STATIC_DYNAMIC == static ]]; then
-		sudo apt install libc6-dev libc6-dev-i386
-	else
-		sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev libbz2-dev libjsoncpp-dev
-	fi
-	if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
-		sudo apt install g++-mingw-w64-x86-64
-	fi
-	;;
-darwin)
-	brew install pkg-config binutils
-	if [[ $BSH_STATIC_DYNAMIC != static ]]; then
-		brew install luajit curl fftw zlib sdl2 bzip2 jsoncpp
-	fi
-	;;
-esac
+if [[ -z ${BSH_NO_PACKAGES-} ]]; then
+	case $BSH_BUILD_PLATFORM in
+	linux)
+		sudo apt update
+		if [[ $BSH_STATIC_DYNAMIC == static ]]; then
+			sudo apt install libc6-dev libc6-dev-i386
+		else
+			sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev libbz2-dev libjsoncpp-dev
+		fi
+		if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
+			sudo apt install g++-mingw-w64-x86-64
+		fi
+		;;
+	darwin)
+		brew install pkg-config binutils
+		if [[ $BSH_STATIC_DYNAMIC != static ]]; then
+			brew install luajit curl fftw zlib sdl2 bzip2 jsoncpp
+		fi
+		;;
+	esac
+fi
 
 function inplace_sed() {
 	local subst=$1
@@ -232,9 +234,15 @@ fi
 if [[ $RELEASE_TYPE == stable ]]; then
 	stable_or_beta=yes
 fi
-save_version=$(grep -w src/Config.template.h -e "#define SAVE_VERSION" | cut -d ' ' -f 3)
-minor_version=$(grep -w src/Config.template.h -e "#define MINOR_VERSION" | cut -d ' ' -f 3)
-build_num=$(grep -w src/Config.template.h -e "#define BUILD_NUM" | cut -d ' ' -f 3)
+set +e
+save_version=$(cat src/Config.template.h | sed -n 's/constexpr int SAVE_VERSION * = \([^;]*\);/\1/p')
+minor_version=$(cat src/Config.template.h | sed -n 's/constexpr int MINOR_VERSION * = \([^;]*\);/\1/p')
+build_num=$(cat src/Config.template.h | sed -n 's/constexpr int BUILD_NUM * = \([^;]*\);/\1/p')
+if [[ -z ${save_version-} ]] || [[ -z ${minor_version-} ]] || [[ -z ${build_num-} ]]; then
+	>&2 echo "failed to extract version from Config.template.h"
+	exit 1
+fi
+set -e
 if [[ $stable_or_beta == yes ]] && [[ $MOD_ID != 0 ]]; then
 	save_version=$(echo $RELEASE_NAME | cut -d '.' -f 1)
 	minor_version=$(echo $RELEASE_NAME | cut -d '.' -f 2)

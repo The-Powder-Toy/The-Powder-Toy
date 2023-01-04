@@ -20,14 +20,8 @@
 #include "simulation/Gravity.h"
 #include "simulation/ElementClasses.h"
 
-#ifdef LUACONSOLE
-#include "lua/LuaScriptInterface.h"
-#include "lua/LuaScriptHelper.h"
-#include "lua/LuaSmartRef.h"
-#endif
-
-#define VIDXRES WINDOWW
-#define VIDYRES WINDOWH
+constexpr auto VIDXRES = WINDOWW;
+constexpr auto VIDYRES = WINDOWH;
 
 
 void Renderer::RenderBegin()

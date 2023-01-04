@@ -6,7 +6,7 @@
 namespace http
 {
 	GetUserInfoRequest::GetUserInfoRequest(ByteString username) :
-		APIRequest(SCHEME SERVER "/User.json?Name=" + username)
+		APIRequest(ByteString::Build(SCHEME, SERVER, "/User.json?Name=", username))
 	{
 	}
 

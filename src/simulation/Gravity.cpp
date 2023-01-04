@@ -9,6 +9,7 @@
 #include "Simulation.h"
 #include "SimulationData.h"
 
+#define GRAV_DIFF
 
 Gravity::Gravity()
 {

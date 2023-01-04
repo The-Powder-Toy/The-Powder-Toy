@@ -25,8 +25,8 @@ void Graphics::Finalise()
 
 }
 
-#define VIDXRES WINDOWW
-#define VIDYRES WINDOWH
+constexpr auto VIDXRES = WINDOWW;
+constexpr auto VIDYRES = WINDOWH;
 #define PIXELMETHODS_CLASS Graphics
 #define DO_CLIPCHECK
 #include "RasterDrawMethods.inl"

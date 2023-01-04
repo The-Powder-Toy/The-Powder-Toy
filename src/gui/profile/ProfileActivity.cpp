@@ -82,7 +82,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	{
 		ui::Button * editAvatar = new ui::Button(ui::Point(Size.X - (40 + 16 + 75), currentY), ui::Point(75, 15), "Edit Avatar");
 		editAvatar->SetActionCallback({ [] {
-			Platform::OpenURI(SCHEME SERVER "/Profile/Avatar.html");
+			Platform::OpenURI(ByteString::Build(SCHEME, SERVER, "/Profile/Avatar.html"));
 		} });
 		scrollPanel->AddChild(editAvatar);
 	}

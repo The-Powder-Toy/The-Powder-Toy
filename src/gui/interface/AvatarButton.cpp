@@ -27,7 +27,7 @@ void AvatarButton::Tick(float dt)
 	if (!avatar && !tried && name.size() > 0)
 	{
 		tried = true;
-		RequestSetup(SCHEME STATICSERVER "/avatars/" + name + ".png", Size.X, Size.Y);
+		RequestSetup(ByteString::Build(SCHEME, STATICSERVER, "/avatars/", name, ".png"), Size.X, Size.Y);
 		RequestStart();
 	}
 

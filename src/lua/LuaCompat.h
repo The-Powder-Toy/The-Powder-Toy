@@ -1,5 +1,4 @@
 #pragma once
-#include "Config.h"
 
 #ifdef __cplusplus
 extern "C"
