@@ -1,4 +1,4 @@
-The Powder Toy - December 2022
+The Powder Toy - January 2023
 ==========================
 
 Get the latest version [from the Powder Toy website](https://powdertoy.co.uk/Download.html).
