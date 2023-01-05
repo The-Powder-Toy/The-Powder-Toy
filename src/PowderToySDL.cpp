@@ -5,6 +5,7 @@
 #include <optional>
 #include <ctime>
 #include <climits>
+#include <cstdint>
 #ifdef WIN
 #include <direct.h>
 #endif
@@ -298,8 +299,8 @@ unsigned int GetTicks()
 }
 
 int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
-unsigned int lastTick = 0;
-unsigned int lastFpsUpdate = 0;
+uint64_t lastTick = 0;
+uint64_t lastFpsUpdate = 0;
 float fps = 0;
 ui::Engine * engine = NULL;
 bool showLargeScreenDialog = false;
@@ -467,18 +468,14 @@ void LargeScreenDialog()
 
 void EngineProcess()
 {
-	double frameTimeAvg = 0.0f, correctedFrameTimeAvg = 0.0f;
+	double correctedFrameTimeAvg = 0;
 	SDL_Event event;
 
-	int drawingTimer = 0;
-	int frameStart = 0;
+	uint64_t drawingTimer = 0;
+	auto frameStart = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
 
 	while(engine->Running())
 	{
-		int oldFrameStart = frameStart;
-		frameStart = SDL_GetTicks();
-		drawingTimer += frameStart - oldFrameStart;
-
 		if(engine->Broken()) { engine->UnBreak(); break; }
 		event.type = 0;
 		while (SDL_PollEvent(&event))
@@ -491,7 +488,7 @@ void EngineProcess()
 		engine->Tick();
 
 		int drawcap = ui::Engine::Ref().GetDrawingFrequencyLimit();
-		if (!drawcap || drawingTimer > 1000.f/drawcap)
+		if (!drawcap || drawingTimer > 1e9f / drawcap)
 		{
 			engine->Draw();
 			drawingTimer = 0;
@@ -506,24 +503,27 @@ void EngineProcess()
 
 			blit(engine->g->vid);
 		}
-
-		int frameTime = SDL_GetTicks() - frameStart;
-		frameTimeAvg = frameTimeAvg * 0.8 + frameTime * 0.2;
-		float fpsLimit = ui::Engine::Ref().FpsLimit;
-		if(fpsLimit > 2)
+		auto fpsLimit = ui::Engine::Ref().FpsLimit;
+		auto now = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
+		auto oldFrameStart = frameStart;
+		frameStart = now;
+		if (fpsLimit > 2)
 		{
-			double offset = 1000.0 / fpsLimit - frameTimeAvg;
-			if(offset > 0)
-				SDL_Delay(Uint32(offset + 0.5));
+			auto timeBlockDuration = uint64_t(UINT64_C(1'000'000'000) / fpsLimit);
+			auto oldFrameStartTimeBlock = oldFrameStart / timeBlockDuration;
+			auto frameStartTimeBlock = oldFrameStartTimeBlock + 1U;
+			frameStart = std::max(frameStart, frameStartTimeBlock * timeBlockDuration);
+			SDL_Delay((frameStart - now) / UINT64_C(1'000'000));
 		}
-		int correctedFrameTime = SDL_GetTicks() - frameStart;
-		correctedFrameTimeAvg = correctedFrameTimeAvg * 0.95 + correctedFrameTime * 0.05;
-		if (frameStart - lastFpsUpdate > 200)
+		auto correctedFrameTime = frameStart - oldFrameStart;
+		drawingTimer += correctedFrameTime;
+		correctedFrameTimeAvg = correctedFrameTimeAvg + (correctedFrameTime - correctedFrameTimeAvg) * 0.05;
+		if (frameStart - lastFpsUpdate > UINT64_C(200'000'000))
 		{
-			engine->SetFps(1000.0 / correctedFrameTimeAvg);
+			engine->SetFps(1e9f / correctedFrameTimeAvg);
 			lastFpsUpdate = frameStart;
 		}
-		if (frameStart - lastTick > 100)
+		if (frameStart - lastTick > UINT64_C(100'000'000))
 		{
 			lastTick = frameStart;
 			Client::Ref().Tick();
