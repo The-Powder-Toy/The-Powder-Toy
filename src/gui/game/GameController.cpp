@@ -91,6 +91,7 @@ GameController::GameController():
 	gameView->SetDebugHUD(Client::Ref().GetPrefBool("Renderer.DebugMode", false));
 
 	commandInterface = CommandInterface::Create(this, gameModel);
+	gameModel->commandInterface = commandInterface;
 
 	Client::Ref().AddListener(this);
 
@@ -880,11 +881,13 @@ void GameController::Update()
 		gameView->SetSample(gameModel->GetSimulation()->GetSample(pos.X, pos.Y));
 
 	Simulation * sim = gameModel->GetSimulation();
-	sim->BeforeSim();
 	if (!sim->sys_pause || sim->framerender)
 	{
-		sim->UpdateParticles(0, NPART - 1);
-		sim->AfterSim();
+		gameModel->UpdateUpTo(NPART);
+	}
+	else
+	{
+		gameModel->BeforeSim();
 	}
 
 	//if either STKM or STK2 isn't out, reset it's selected element. Defaults to PT_DUST unless right selected is something else

@@ -14,7 +14,6 @@ ParticleDebug::ParticleDebug(unsigned int id, Simulation * sim, GameModel * mode
 
 void ParticleDebug::Debug(int mode, int x, int y)
 {
-	int debug_currentParticle = sim->debug_currentParticle;
 	int i = 0;
 	String logmessage;
 
@@ -22,7 +21,7 @@ void ParticleDebug::Debug(int mode, int x, int y)
 	{
 		if (!sim->NUM_PARTS)
 			return;
-		i = debug_currentParticle;
+		i = sim->debug_nextToUpdate;
 		while (i < NPART - 1 && !sim->parts[i].type)
 			i++;
 		if (i == NPART - 1)
@@ -32,30 +31,31 @@ void ParticleDebug::Debug(int mode, int x, int y)
 	}
 	else if (mode == 1)
 	{
-		if (x < 0 || x >= XRES || y < 0 || y >= YRES || !sim->pmap[y][x] || (i = ID(sim->pmap[y][x])) < debug_currentParticle)
+		i = NPART - 1;
+		if (x >= 0 && x < XRES && y >= 0 && y < YRES)
 		{
-			i = NPART - 1;
-			logmessage = String::Build("Updated particles from #", debug_currentParticle, " to end, updated sim");
+			if (sim->pmap[y][x] && ID(sim->pmap[y][x]) >= sim->debug_nextToUpdate)
+			{
+				i = ID(sim->pmap[y][x]);
+			}
+			else if (sim->photons[y][x] && ID(sim->photons[y][x]) >= sim->debug_nextToUpdate)
+			{
+				i = ID(sim->photons[y][x]);
+			}
 		}
-		else
-			logmessage = String::Build("Updated particles #", debug_currentParticle, " through #", i);
 	}
-	model->Log(logmessage, false);
-
-	if (sim->debug_currentParticle == 0)
+	sim->framerender = 1;
+	auto prevToUpdate = sim->debug_nextToUpdate;
+	model->UpdateUpTo(i + 1);
+	if (sim->debug_nextToUpdate)
 	{
-		sim->framerender = 1;
-		sim->BeforeSim();
-		sim->framerender = 0;
+		logmessage = String::Build("Updated particles from #", prevToUpdate, " through #", i);
 	}
-	sim->UpdateParticles(debug_currentParticle, i);
-	if (i < NPART-1)
-		sim->debug_currentParticle = i+1;
 	else
 	{
-		sim->AfterSim();
-		sim->debug_currentParticle = 0;
+		logmessage = String::Build("Updated particles from #", prevToUpdate, " to end");
 	}
+	model->Log(logmessage, false);
 }
 
 bool ParticleDebug::KeyPress(int key, int scan, bool shift, bool ctrl, bool alt, ui::Point currentMouse)
@@ -86,13 +86,11 @@ bool ParticleDebug::KeyPress(int key, int scan, bool shift, bool ctrl, bool alt,
 		{
 			if (ctrl)
 				return true;
-			if (sim->debug_currentParticle > 0)
+			if (sim->debug_nextToUpdate > 0)
 			{
-				sim->UpdateParticles(sim->debug_currentParticle, NPART - 1);
-				sim->AfterSim();
-				String logmessage = String::Build("Updated particles from #", sim->debug_currentParticle, " to end, updated sim");
+				String logmessage = String::Build("Updated particles from #", sim->debug_nextToUpdate, " to end due to frame step");
+				model->UpdateUpTo(NPART);
 				model->Log(logmessage, false);
-				sim->debug_currentParticle = 0;
 			}
 			else
 			{
@@ -102,9 +100,4 @@ bool ParticleDebug::KeyPress(int key, int scan, bool shift, bool ctrl, bool alt,
 		return false;
 	}
 	return true;
-}
-
-ParticleDebug::~ParticleDebug()
-{
-
 }

@@ -14,6 +14,7 @@
 #include "Notification.h"
 #include "TriangleBrush.h"
 #include "QuickOptions.h"
+#include "lua/CommandInterface.h"
 
 #include "client/Client.h"
 #include "client/GameSave.h"
@@ -1239,12 +1240,10 @@ void GameModel::SetUser(User user)
 
 void GameModel::SetPaused(bool pauseState)
 {
-	if (!pauseState && sim->debug_currentParticle > 0)
+	if (!pauseState && sim->debug_nextToUpdate > 0)
 	{
-		String logmessage = String::Build("Updated particles from #", sim->debug_currentParticle, " to end due to unpause");
-		sim->UpdateParticles(sim->debug_currentParticle, NPART - 1);
-		sim->AfterSim();
-		sim->debug_currentParticle = 0;
+		String logmessage = String::Build("Updated particles from #", sim->debug_nextToUpdate, " to end due to unpause");
+		UpdateUpTo(NPART);
 		Log(logmessage, false);
 	}
 
@@ -1667,4 +1666,41 @@ bool GameModel::RemoveCustomGOLType(const ByteString &identifier)
 	Client::Ref().SetPref("CustomGOL.Types", newCustomGOLTypes);
 	BuildMenus();
 	return removedAny;
+}
+
+void GameModel::UpdateUpTo(int upTo)
+{
+	if (upTo < sim->debug_nextToUpdate)
+	{
+		upTo = NPART;
+	}
+	if (sim->debug_nextToUpdate == 0)
+	{
+		BeforeSim();
+	}
+	sim->UpdateParticles(sim->debug_nextToUpdate, upTo);
+	if (upTo < NPART)
+	{
+		sim->debug_nextToUpdate = upTo;
+	}
+	else
+	{
+		AfterSim();
+		sim->debug_nextToUpdate = 0;
+	}
+}
+
+void GameModel::BeforeSim()
+{
+	if (!sim->sys_pause || sim->framerender)
+	{
+		commandInterface->HandleEvent(BeforeSimEvent{});
+	}
+	sim->BeforeSim();
+}
+
+void GameModel::AfterSim()
+{
+	sim->AfterSim();
+	commandInterface->HandleEvent(AfterSimEvent{});
 }

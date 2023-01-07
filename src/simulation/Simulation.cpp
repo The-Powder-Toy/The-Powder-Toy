@@ -32,11 +32,6 @@
 #include "common/tpt-thread-local.h"
 #include "gui/game/Brush.h"
 
-#ifdef LUACONSOLE
-#include "lua/LuaScriptInterface.h"
-#include "lua/LuaScriptHelper.h"
-#endif
-
 extern int Element_PPIP_ppip_changed;
 extern int Element_LOLZ_RuleTable[9][9];
 extern int Element_LOLZ_lolz[XRES/9][YRES/9];
@@ -2262,7 +2257,8 @@ void Simulation::create_arc(int sx, int sy, int dx, int dy, int midpoints, int v
 
 void Simulation::clear_sim(void)
 {
-	debug_currentParticle = 0;
+	debug_nextToUpdate = 0;
+	debug_mostRecentlyUpdated = -1;
 	emp_decor = 0;
 	emp_trigger_count = 0;
 	signs.clear();
@@ -3490,7 +3486,7 @@ void Simulation::UpdateParticles(int start, int end)
 	bool transitionOccurred;
 
 	//the main particle loop function, goes over all particles.
-	for (i = start; i <= end && i <= parts_lastActiveIndex; i++)
+	for (i = start; i < end && i <= parts_lastActiveIndex; i++)
 		if (parts[i].type)
 		{
 			debug_mostRecentlyUpdated = i;
@@ -4998,10 +4994,6 @@ void Simulation::BeforeSim()
 {
 	if (!sys_pause||framerender)
 	{
-#ifdef LUACONSOLE
-		luacon_ci->HandleEvent(BeforeSimEvent{});
-#endif
-
 		air->update_air();
 
 		if(aheat_enable)
@@ -5039,7 +5031,7 @@ void Simulation::BeforeSim()
 		gravWallChanged = false;
 	}
 
-	if (debug_currentParticle == 0)
+	if (debug_nextToUpdate == 0)
 		RecalcFreeParticles(true);
 
 	if (!sys_pause || framerender)
@@ -5202,10 +5194,6 @@ void Simulation::AfterSim()
 		Element_EMP_Trigger(this, emp_trigger_count);
 		emp_trigger_count = 0;
 	}
-
-#ifdef LUACONSOLE
-	luacon_ci->HandleEvent(AfterSimEvent{});
-#endif
 }
 
 Simulation::~Simulation()
@@ -5217,7 +5205,7 @@ Simulation::~Simulation()
 Simulation::Simulation():
 	replaceModeSelected(0),
 	replaceModeFlags(0),
-	debug_currentParticle(0),
+	debug_nextToUpdate(0),
 	ISWIRE(0),
 	force_stacking_check(false),
 	emp_decor(0),

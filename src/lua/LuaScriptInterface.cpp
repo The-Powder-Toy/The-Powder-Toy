@@ -2520,38 +2520,21 @@ int LuaScriptInterface::simulation_lastUpdatedID(lua_State *l)
 
 int LuaScriptInterface::simulation_updateUpTo(lua_State *l)
 {
+	// sim.updateUpTo dispatches an update to the range [current, upTo], but GameModel::UpdateUpTo takes a range [current, upTo).
+	// As a result, upTo here will be one smaller than it's logical for the duration of this function.
 	int upTo = NPART - 1;
 	if (lua_gettop(l) > 0)
 	{
 		upTo = luaL_checkinteger(l, 1);
 	}
-	if (upTo < 0 || upTo >= NPART)
+	if (upTo < -1 || upTo >= NPART) // -1 instead of 0 to allow for the empty range [0, -1] aka [0, 0)
 	{
 		return luaL_error(l, "ID not in valid range");
 	}
-	if (upTo < luacon_sim->debug_currentParticle)
-	{
-		upTo = NPART - 1;
-	}
-	if (luacon_sim->debug_currentParticle == 0)
-	{
-		luacon_sim->framerender = 1;
-		luacon_sim->BeforeSim();
-		luacon_sim->framerender = 0;
-	}
-	luacon_sim->UpdateParticles(luacon_sim->debug_currentParticle, upTo);
-	if (upTo < NPART - 1)
-	{
-		luacon_sim->debug_currentParticle = upTo + 1;
-	}
-	else
-	{
-		luacon_sim->AfterSim();
-		luacon_sim->debug_currentParticle = 0;
-	}
+	luacon_sim->framerender = 1;
+	luacon_model->UpdateUpTo(upTo + 1);
 	return 0;
 }
-
 
 int LuaScriptInterface::simulation_temperatureScale(lua_State *l)
 {
