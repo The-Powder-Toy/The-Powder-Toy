@@ -560,10 +560,10 @@ std::unique_ptr<Snapshot> Simulation::CreateSnapshot()
 	snap->GravVelocityY  .insert   (snap->GravVelocityY  .begin(), &gravy  [0]      , &gravy  [0] + ((XRES / CELL) * (YRES / CELL)));
 	snap->GravValue      .insert   (snap->GravValue      .begin(), &gravp  [0]      , &gravp  [0] + ((XRES / CELL) * (YRES / CELL)));
 	snap->GravMap        .insert   (snap->GravMap        .begin(), &gravmap[0]      , &gravmap[0] + ((XRES / CELL) * (YRES / CELL)));
-	snap->Particles      .insert   (snap->Particles      .begin(), &parts  [0]      , &parts[parts_lastActiveIndex + 1]            );
-	snap->PortalParticles.insert   (snap->PortalParticles.begin(), &portalp[0][0][0], &portalp [CHANNELS - 1][8 - 1][80 - 1]       );
-	snap->WirelessData   .insert   (snap->WirelessData   .begin(), &wireless[0][0]  , &wireless[CHANNELS - 1][2 - 1]               );
-	snap->stickmen       .insert   (snap->stickmen       .begin(), &fighters[0]     , &fighters[MAX_FIGHTERS]                      );
+	snap->Particles      .insert   (snap->Particles      .begin(), &parts  [0]      , &parts  [0] + parts_lastActiveIndex + 1      );
+	snap->PortalParticles.insert   (snap->PortalParticles.begin(), &portalp[0][0][0], &portalp[0][0][0] + CHANNELS * 8 * 80        );
+	snap->WirelessData   .insert   (snap->WirelessData   .begin(), &wireless[0][0]  , &wireless[0][0] + CHANNELS * 2               );
+	snap->stickmen       .insert   (snap->stickmen       .begin(), &fighters[0]     , &fighters[0] + MAX_FIGHTERS                  );
 	snap->stickmen       .push_back(player2);
 	snap->stickmen       .push_back(player);
 	snap->signs = signs;
@@ -893,7 +893,7 @@ bool Simulation::flood_water(int x, int y, int i)
 	// Bitmap for checking where we've already looked
 	auto bitmapPtr = std::unique_ptr<char[]>(new char[XRES * YRES]);
 	char *bitmap = bitmapPtr.get();
-	std::fill(&bitmap[0], &bitmap[XRES * YRES], 0);
+	std::fill(&bitmap[0], &bitmap[0] + XRES * YRES, 0);
 
 	try
 	{
@@ -1918,7 +1918,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 	// Bitmap for checking where we've already looked
 	auto bitmapPtr = std::unique_ptr<char[]>(new char[XRES * YRES]);
 	char *bitmap = bitmapPtr.get();
-	std::fill(&bitmap[0], &bitmap[XRES * YRES], 0);
+	std::fill(&bitmap[0], &bitmap[0] + XRES * YRES, 0);
 
 	if (cm==-1)
 	{

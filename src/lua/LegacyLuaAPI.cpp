@@ -261,7 +261,7 @@ int luacon_elementwrite(lua_State* l)
 
 	luacon_model->BuildMenus();
 	luacon_sim->init_can_move();
-	std::fill(&luacon_ren->graphicscache[0], &luacon_ren->graphicscache[PT_NUM], gcache_item());
+	std::fill(&luacon_ren->graphicscache[0], &luacon_ren->graphicscache[0] + PT_NUM, gcache_item());
 
 	return 0;
 }

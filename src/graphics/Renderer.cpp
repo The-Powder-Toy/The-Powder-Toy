@@ -1609,7 +1609,7 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 
 	//Prepare the graphics cache
 	graphicscache = new gcache_item[PT_NUM];
-	std::fill(&graphicscache[0], &graphicscache[PT_NUM], gcache_item());
+	std::fill(&graphicscache[0], &graphicscache[0] + PT_NUM, gcache_item());
 
 	prepare_alpha(CELL, 1.0f);
 }
@@ -1630,9 +1630,9 @@ void Renderer::CompileRenderMode()
 
 void Renderer::ClearAccumulation()
 {
-	std::fill(fire_r[0]+0, fire_r[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
-	std::fill(fire_g[0]+0, fire_g[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
-	std::fill(fire_b[0]+0, fire_b[(YRES/CELL)-1]+((XRES/CELL)-1), 0);
+	std::fill(&fire_r[0][0], &fire_r[0][0] + (YRES/CELL)*(XRES/CELL), 0);
+	std::fill(&fire_g[0][0], &fire_g[0][0] + (YRES/CELL)*(XRES/CELL), 0);
+	std::fill(&fire_b[0][0], &fire_b[0][0] + (YRES/CELL)*(XRES/CELL), 0);
 	std::fill(persistentVid, persistentVid+(VIDXRES*YRES), 0);
 }
 

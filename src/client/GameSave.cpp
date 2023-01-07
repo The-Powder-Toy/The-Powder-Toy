@@ -2052,7 +2052,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	unsigned int partsDataLen = 0;
 	std::vector<unsigned> partsSaveIndex(NPART);
 	unsigned int partsCount = 0;
-	std::fill(&partsSaveIndex[0], &partsSaveIndex[NPART], 0);
+	std::fill(&partsSaveIndex[0], &partsSaveIndex[0] + NPART, 0);
 	for (y=0;y<fullH;y++)
 	{
 		for (x=0;x<fullW;x++)

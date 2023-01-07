@@ -180,7 +180,7 @@ void Gravity::gravity_update_async()
 	unsigned int size = (XRES / CELL) * (YRES / CELL);
 	membwand(gravy, gravmask, size * sizeof(float), size * sizeof(unsigned));
 	membwand(gravx, gravmask, size * sizeof(float), size * sizeof(unsigned));
-	std::fill(&gravmap[0], &gravmap[size], 0.0f);
+	std::fill(&gravmap[0], &gravmap[0] + size, 0.0f);
 }
 
 void Gravity::update_grav_async()
@@ -188,11 +188,11 @@ void Gravity::update_grav_async()
 	int done = 0;
 	int thread_done = 0;
 	unsigned int size = (XRES / CELL) * (YRES / CELL);
-	std::fill(&th_ogravmap[0], &th_ogravmap[size], 0.0f);
-	std::fill(&th_gravmap[0], &th_gravmap[size], 0.0f);
-	std::fill(&th_gravy[0], &th_gravy[size], 0.0f);
-	std::fill(&th_gravx[0], &th_gravx[size], 0.0f);
-	std::fill(&th_gravp[0], &th_gravp[size], 0.0f);
+	std::fill(&th_ogravmap[0], &th_ogravmap[0] + size, 0.0f);
+	std::fill(&th_gravmap[0], &th_gravmap[0] + size, 0.0f);
+	std::fill(&th_gravy[0], &th_gravy[0] + size, 0.0f);
+	std::fill(&th_gravx[0], &th_gravx[0] + size, 0.0f);
+	std::fill(&th_gravp[0], &th_gravp[0] + size, 0.0f);
 
 #ifdef GRAVFFT
 	if (!grav_fft_status)
@@ -231,10 +231,10 @@ void Gravity::start_grav_async()
 	enabled = true;
 
 	unsigned int size = (XRES / CELL) * (YRES / CELL);
-	std::fill(&gravy[0], &gravy[size], 0.0f);
-	std::fill(&gravx[0], &gravx[size], 0.0f);
-	std::fill(&gravp[0], &gravp[size], 0.0f);
-	std::fill(&gravmap[0], &gravmap[size], 0.0f);
+	std::fill(&gravy[0], &gravy[0] + size, 0.0f);
+	std::fill(&gravx[0], &gravx[0] + size, 0.0f);
+	std::fill(&gravp[0], &gravp[0] + size, 0.0f);
+	std::fill(&gravmap[0], &gravmap[0] + size, 0.0f);
 }
 
 void Gravity::stop_grav_async()
@@ -251,10 +251,10 @@ void Gravity::stop_grav_async()
 	}
 	// Clear the grav velocities
 	unsigned int size = (XRES / CELL) * (YRES / CELL);
-	std::fill(&gravy[0], &gravy[size], 0.0f);
-	std::fill(&gravx[0], &gravx[size], 0.0f);
-	std::fill(&gravp[0], &gravp[size], 0.0f);
-	std::fill(&gravmap[0], &gravmap[size], 0.0f);
+	std::fill(&gravy[0], &gravy[0] + size, 0.0f);
+	std::fill(&gravx[0], &gravx[0] + size, 0.0f);
+	std::fill(&gravp[0], &gravp[0] + size, 0.0f);
+	std::fill(&gravmap[0], &gravmap[0] + size, 0.0f);
 }
 
 #ifdef GRAVFFT
@@ -481,7 +481,7 @@ void Gravity::gravity_mask()
 				{
 					t_mask_el = new mask_el[sizeof(mask_el)];
 					t_mask_el->shape = new char[(XRES / CELL) * (YRES / CELL)];
-					std::fill(&t_mask_el->shape[0], &t_mask_el->shape[(XRES / CELL) * (YRES / CELL)], 0);
+					std::fill(&t_mask_el->shape[0], &t_mask_el->shape[0] + (XRES / CELL) * (YRES / CELL), 0);
 					t_mask_el->shapeout = 0;
 					t_mask_el->next = nullptr;
 					c_mask_el = t_mask_el;
@@ -491,7 +491,7 @@ void Gravity::gravity_mask()
 					c_mask_el->next = new mask_el[sizeof(mask_el)];
 					c_mask_el = c_mask_el->next;
 					c_mask_el->shape = new char[(XRES / CELL) * (YRES / CELL)];
-					std::fill(&c_mask_el->shape[0], &c_mask_el->shape[(XRES / CELL) * (YRES / CELL)], 0);
+					std::fill(&c_mask_el->shape[0], &c_mask_el->shape[0] + (XRES / CELL) * (YRES / CELL), 0);
 					c_mask_el->shapeout = 0;
 					c_mask_el->next = nullptr;
 				}
@@ -502,7 +502,7 @@ void Gravity::gravity_mask()
 		}
 	}
 	c_mask_el = t_mask_el;
-	std::fill(&gravmask[0], &gravmask[(XRES / CELL) * (YRES / CELL)], 0);
+	std::fill(&gravmask[0], &gravmask[0] + (XRES / CELL) * (YRES / CELL), 0);
 	while (c_mask_el != nullptr)
 	{
 		char *cshape = c_mask_el->shape;
