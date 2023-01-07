@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <cstddef>
+#include <cassert>
 #if !defined(WIN) || defined(__GNUC__)
 #include <strings.h>
 #endif
@@ -10,15 +11,20 @@
 #include "gui/game/GameModel.h"
 #include "simulation/Particle.h"
 
-CommandInterface::CommandInterface(GameController * c, GameModel * m) {
+CommandInterface *commandInterface = nullptr;
+
+CommandInterface::CommandInterface(GameController * c, GameModel * m)
+{
+	assert(!commandInterface);
+	commandInterface = this;
 	this->m = m;
 	this->c = c;
 }
 
-/*void CommandInterface::AttachGameModel(GameModel * m)
+CommandInterface::~CommandInterface()
 {
-	this->m = m;
-}*/
+	commandInterface = nullptr;
+}
 
 int CommandInterface::Command(String command)
 {
@@ -77,7 +83,4 @@ int CommandInterface::GetPropertyOffset(ByteString key, FormatType & format)
 String CommandInterface::GetLastError()
 {
 	return lastError;
-}
-
-CommandInterface::~CommandInterface() {
 }

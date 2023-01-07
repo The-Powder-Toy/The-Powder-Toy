@@ -6,6 +6,7 @@
 
 #include "CommandInterface.h"
 #include "gui/game/GameControllerEvents.h"
+#include "TPTScriptInterface.h"
 #include "simulation/StructProperty.h"
 #include "simulation/ElementDefs.h"
 
@@ -21,16 +22,14 @@ class Tool;
 //Because lua only has bindings for C, we're going to have to go outside "outside" the LuaScriptInterface, this means we can only have one instance :(
 
 class Simulation;
-class TPTScriptInterface;
 class LuaComponent;
 
-class LuaScriptInterface: public CommandInterface
+class LuaScriptInterface: public TPTScriptInterface
 {
 	int luacon_mousex, luacon_mousey, luacon_mousebutton;
 	ByteString luacon_selectedl, luacon_selectedr, luacon_selectedalt, luacon_selectedreplace;
 	bool luacon_mousedown;
 	bool currentCommand;
-	TPTScriptInterface * legacy;
 	int textInputRefcount;
 
 	// signs
@@ -221,8 +220,6 @@ public:
 	String FormatCommand(String command) override;
 	virtual ~LuaScriptInterface();
 };
-
-extern LuaScriptInterface *luacon_ci;
 
 void tpt_lua_pushByteString(lua_State *L, const ByteString &str);
 void tpt_lua_pushString(lua_State *L, const String &str);

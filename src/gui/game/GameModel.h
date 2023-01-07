@@ -23,7 +23,6 @@ class Renderer;
 class Snapshot;
 struct SnapshotDelta;
 class GameSave;
-class CommandInterface;
 
 class ToolSelection
 {
@@ -252,6 +251,4 @@ public:
 	void UpdateUpTo(int upTo);
 	void BeforeSim();
 	void AfterSim();
-
-	CommandInterface *commandInterface = nullptr;
 };

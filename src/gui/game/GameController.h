@@ -50,7 +50,6 @@ private:
 	TagsController * tagsWindow;
 	LocalBrowserController * localBrowser;
 	OptionsController * options;
-	CommandInterface * commandInterface;
 	std::vector<DebugInfo*> debugInfo;
 	std::unique_ptr<Snapshot> beforeRestore;
 	unsigned int debugFlags;

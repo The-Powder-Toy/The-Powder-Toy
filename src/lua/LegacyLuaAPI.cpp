@@ -277,6 +277,7 @@ void luacon_hook(lua_State * l, lua_Debug * ar)
 
 String luacon_geterror()
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	luaL_tostring(luacon_ci->l, -1);
 	String err = tpt_lua_optString(luacon_ci->l, -1, "failed to execute");
 	lua_pop(luacon_ci->l, 1);
@@ -395,6 +396,7 @@ int luatpt_togglewater(lua_State* l)
 
 int luatpt_setconsole(lua_State* l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	int acount = lua_gettop(l);
 	if (acount == 0)
 	{
@@ -410,6 +412,7 @@ int luatpt_setconsole(lua_State* l)
 
 int luatpt_log(lua_State* l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	int args = lua_gettop(l);
 	String text;
 	bool hasText = false;
@@ -560,6 +563,7 @@ int luatpt_reset_spark(lua_State* l)
 
 int luatpt_set_property(lua_State* l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	int r, i, x, y, w, h, t = 0, nx, ny, partsel = 0;
 	float f = 0;
 	int acount = lua_gettop(l);
@@ -803,6 +807,7 @@ int luatpt_get_elecmap(lua_State* l)
 
 int luatpt_get_property(lua_State* l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	ByteString prop = tpt_lua_optByteString(l, 1, "");
 	int i = luaL_optint(l, 2, 0); //x coord or particle index, depending on arguments
 	int y = luaL_optint(l, 3, -1);

@@ -52,9 +52,7 @@
 #include "common/String.h"
 #include "graphics/Graphics.h"
 
-#ifdef LUACONSOLE
-# include "lua/LuaScriptInterface.h"
-#endif
+#include "lua/CommandInterface.h"
 
 #include "client/http/RequestManager.h"
 #include "gui/preview/Comment.h"
@@ -1036,9 +1034,7 @@ SaveFile * Client::LoadSaveFile(ByteString filename)
 		{
 			file->SetLoadingError(err.FromUtf8());
 		}
-#ifdef LUACONSOLE
-		luacon_ci->SetLastError(err.FromUtf8());
-#endif
+		commandInterface->SetLastError(err.FromUtf8());
 	}
 	return file;
 }

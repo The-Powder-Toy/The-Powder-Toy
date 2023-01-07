@@ -8,14 +8,13 @@
 class GameModel;
 class GameController;
 class Simulation;
-class LuaScriptInterface;
+class CommandInterface;
 class Graphics;
 class Renderer;
 
 extern GameModel * luacon_model;
 extern GameController * luacon_controller;
 extern Simulation * luacon_sim;
-extern LuaScriptInterface * luacon_ci;
 extern Graphics * luacon_g;
 extern Renderer * luacon_ren;
 

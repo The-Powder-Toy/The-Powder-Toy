@@ -90,8 +90,7 @@ GameController::GameController():
 
 	gameView->SetDebugHUD(Client::Ref().GetPrefBool("Renderer.DebugMode", false));
 
-	commandInterface = CommandInterface::Create(this, gameModel);
-	gameModel->commandInterface = commandInterface;
+	CommandInterface::Create(this, gameModel);
 
 	Client::Ref().AddListener(this);
 

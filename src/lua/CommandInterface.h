@@ -39,3 +39,5 @@ public:
 
 	static CommandInterface *Create(GameController * c, GameModel * m);
 };
+
+extern CommandInterface *commandInterface;

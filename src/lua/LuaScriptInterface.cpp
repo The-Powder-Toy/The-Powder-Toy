@@ -76,7 +76,6 @@ extern "C"
 GameModel * luacon_model;
 GameController * luacon_controller;
 Simulation * luacon_sim;
-LuaScriptInterface * luacon_ci;
 Graphics * luacon_g;
 Renderer * luacon_ren;
 
@@ -103,14 +102,14 @@ int atPanic(lua_State *l)
 
 int TptIndexClosure(lua_State *l)
 {
-	LuaScriptInterface *lsi = (LuaScriptInterface *)lua_touserdata(l, lua_upvalueindex(1));
-	return lsi->tpt_index(l);
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+	return luacon_ci->tpt_index(l);
 }
 
 int TptNewindexClosure(lua_State *l)
 {
-	LuaScriptInterface *lsi = (LuaScriptInterface *)lua_touserdata(l, lua_upvalueindex(1));
-	return lsi->tpt_newIndex(l);
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+	return luacon_ci->tpt_newIndex(l);
 }
 
 static int bz2_compress_wrapper(lua_State *L)
@@ -176,7 +175,7 @@ static void initBZ2API(lua_State *L)
 }
 
 LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
-	CommandInterface(c, m),
+	TPTScriptInterface(c, m),
 	luacon_mousex(0),
 	luacon_mousey(0),
 	luacon_mousebutton(0),
@@ -186,7 +185,6 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_selectedreplace(""),
 	luacon_mousedown(false),
 	currentCommand(false),
-	legacy(new TPTScriptInterface(c, m)),
 	textInputRefcount(0)
 {
 	luacon_model = m;
@@ -194,7 +192,6 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luacon_sim = m->GetSimulation();
 	luacon_g = ui::Engine::Ref().g;
 	luacon_ren = m->GetRenderer();
-	luacon_ci = this;
 
 	for (auto moving = 0; moving < PT_NUM; ++moving)
 	{
@@ -434,11 +431,9 @@ tpt.partsdata = nil");
 
 	//make tpt.* a metatable
 	lua_newtable(l);
-	lua_pushlightuserdata(l, this);
-	lua_pushcclosure(l, TptIndexClosure, 1);
+	lua_pushcfunction(l, TptIndexClosure);
 	lua_setfield(l, -2, "__index");
-	lua_pushlightuserdata(l, this);
-	lua_pushcclosure(l, TptNewindexClosure, 1);
+	lua_pushcfunction(l, TptNewindexClosure);
 	lua_setfield(l, -2, "__newindex");
 	lua_setmetatable(l, -2);
 
@@ -470,11 +465,10 @@ void LuaScriptInterface::Init()
 {
 	if (Platform::FileExists("autorun.lua"))
 	{
-		lua_State *l = luacon_ci->l;
 		if(luaL_loadfile(l, "autorun.lua") || lua_pcall(l, 0, 0, 0))
-			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+			Log(CommandInterface::LogError, luacon_geterror());
 		else
-			luacon_ci->Log(CommandInterface::LogWarning, "Loaded autorun.lua");
+			Log(CommandInterface::LogWarning, "Loaded autorun.lua");
 	}
 }
 
@@ -609,6 +603,7 @@ void LuaScriptInterface::initInterfaceAPI()
 
 int LuaScriptInterface::interface_addComponent(lua_State * l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	void *opaque = nullptr;
 	LuaComponent *luaComponent = nullptr;
 	if ((opaque = Luna<LuaButton>::tryGet(l, 1)))
@@ -641,6 +636,7 @@ int LuaScriptInterface::interface_addComponent(lua_State * l)
 
 int LuaScriptInterface::interface_removeComponent(lua_State * l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	void *opaque = nullptr;
 	LuaComponent *luaComponent = nullptr;
 	if ((opaque = Luna<LuaButton>::tryGet(l, 1)))
@@ -674,6 +670,7 @@ int LuaScriptInterface::interface_removeComponent(lua_State * l)
 
 int LuaScriptInterface::interface_grabTextInput(lua_State * l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	luacon_ci->textInputRefcount += 1;
 	luacon_controller->GetView()->DoesTextInput = luacon_ci->textInputRefcount > 0;
 	return 0;
@@ -681,6 +678,7 @@ int LuaScriptInterface::interface_grabTextInput(lua_State * l)
 
 int LuaScriptInterface::interface_dropTextInput(lua_State * l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	luacon_ci->textInputRefcount -= 1;
 	luacon_controller->GetView()->DoesTextInput = luacon_ci->textInputRefcount > 0;
 	return 0;
@@ -1903,6 +1901,7 @@ int LuaScriptInterface::simulation_saveStamp(lua_State * l)
 
 int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	int i = -1;
 	int pushed = 1;
 	SaveFile * tempfile = NULL;
@@ -2143,6 +2142,7 @@ int LuaScriptInterface::simulation_elementCount(lua_State * l)
 
 int LuaScriptInterface::simulation_canMove(lua_State * l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	int movingElement = luaL_checkint(l, 1);
 	int destinationElement = luaL_checkint(l, 2);
 	if (movingElement < 0 || movingElement >= PT_NUM)
@@ -3025,6 +3025,7 @@ void LuaScriptInterface::LuaSetParticleProperty(lua_State* l, int particleID, St
 
 int LuaScriptInterface::elements_loadDefault(lua_State * l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	int args = lua_gettop(l);
 	if (args)
 	{
@@ -3088,6 +3089,7 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 
 int LuaScriptInterface::elements_allocate(lua_State * l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	luaL_checktype(l, 1, LUA_TSTRING);
 	luaL_checktype(l, 2, LUA_TSTRING);
 	auto group = tpt_lua_toByteString(l, 1).ToUpper();
@@ -3164,6 +3166,7 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 
 static int luaUpdateWrapper(UPDATE_FUNC_ARGS)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	auto *builtinUpdate = GetElements()[parts[i].type].Update;
 	if (builtinUpdate && lua_el_mode[parts[i].type] == 1)
 	{
@@ -3207,6 +3210,7 @@ static int luaUpdateWrapper(UPDATE_FUNC_ARGS)
 
 static int luaGraphicsWrapper(GRAPHICS_FUNC_ARGS)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	if (lua_gr_func[cpart->type])
 	{
 		int cache = 0, callret;
@@ -3253,6 +3257,7 @@ static int luaGraphicsWrapper(GRAPHICS_FUNC_ARGS)
 
 static void luaCreateWrapper(ELEMENT_CREATE_FUNC_ARGS)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	if (luaCreateHandlers[sim->parts[i].type])
 	{
 		lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, luaCreateHandlers[sim->parts[i].type]);
@@ -3271,6 +3276,7 @@ static void luaCreateWrapper(ELEMENT_CREATE_FUNC_ARGS)
 
 static bool luaCreateAllowedWrapper(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	bool ret = false;
 	if (luaCreateAllowedHandlers[t])
 	{
@@ -3296,6 +3302,7 @@ static bool luaCreateAllowedWrapper(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
 
 static void luaChangeTypeWrapper(ELEMENT_CHANGETYPE_FUNC_ARGS)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	if (luaChangeTypeHandlers[sim->parts[i].type])
 	{
 		lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, luaChangeTypeHandlers[sim->parts[i].type]);
@@ -3314,6 +3321,7 @@ static void luaChangeTypeWrapper(ELEMENT_CHANGETYPE_FUNC_ARGS)
 
 static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	bool ret = false;
 	if (luaCtypeDrawHandlers[sim->parts[i].type])
 	{
@@ -3338,6 +3346,7 @@ static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 
 int LuaScriptInterface::elements_element(lua_State * l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	int id = luaL_checkinteger(l, 1);
 	if (!luacon_sim->IsElementOrNone(id))
 	{
@@ -3524,6 +3533,7 @@ void LuaScriptInterface::SetDefaultProperties(lua_State * l, int id, int stackPo
 
 int LuaScriptInterface::elements_property(lua_State * l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	int id = luaL_checkinteger(l, 1);
 	if (!luacon_sim->IsElementOrNone(id))
 	{
@@ -4163,6 +4173,7 @@ void LuaScriptInterface::initEventAPI()
 
 int LuaScriptInterface::event_register(lua_State * l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	int eventType = luaL_checkinteger(l, 1);
 	luaL_checktype(l, 2, LUA_TFUNCTION);
 	if (eventType < 0 || eventType >= int(luacon_ci->gameControllerEventHandlers.size()))
@@ -4179,6 +4190,7 @@ int LuaScriptInterface::event_register(lua_State * l)
 
 int LuaScriptInterface::event_unregister(lua_State * l)
 {
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	int eventType = luaL_checkinteger(l, 1);
 	luaL_checktype(l, 2, LUA_TFUNCTION);
 	if (eventType < 0 || eventType >= int(luacon_ci->gameControllerEventHandlers.size()))
@@ -4634,8 +4646,8 @@ int LuaScriptInterface::Command(String command)
 	luacon_hasLastError = false;
 	if (command[0] == '!')
 	{
-		int ret = legacy->Command(command.Substr(1));
-		lastError = legacy->GetLastError();
+		int ret = TPTScriptInterface::Command(command.Substr(1));
+		lastError = GetLastError();
 		return ret;
 	}
 	else
@@ -4903,17 +4915,18 @@ String LuaScriptInterface::FormatCommand(String command)
 {
 	if(command.size() && command[0] == '!')
 	{
-		return "!"+legacy->FormatCommand(command.Substr(1));
+		return "!" + TPTScriptInterface::FormatCommand(command.Substr(1));
 	}
 	else
 		return highlight(command);
 }
 
-LuaScriptInterface::~LuaScriptInterface() {
+LuaScriptInterface::~LuaScriptInterface()
+{
 	delete tptPart;
 	for (auto &component_and_ref : grabbed_components)
 	{
-		luacon_ci->Window->RemoveComponent(component_and_ref.first->GetComponent());
+		Window->RemoveComponent(component_and_ref.first->GetComponent());
 		component_and_ref.second.Clear();
 		component_and_ref.first->owner_ref = component_and_ref.second;
 		component_and_ref.first->SetParentWindow(nullptr);
@@ -4928,7 +4941,6 @@ LuaScriptInterface::~LuaScriptInterface() {
 	lua_gr_func_v.clear();
 	lua_cd_func_v.clear();
 	lua_close(l);
-	delete legacy;
 }
 
 #ifndef NOHTTP
