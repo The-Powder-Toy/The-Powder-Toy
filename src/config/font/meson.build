@@ -1,7 +1,6 @@
 font_conf_data = conf_data
 font_conf_data.set('FONTEDITOR', true)
 font_conf_data.set('RENDERER', false)
-font_conf_data.set('NOHTTP', true)
 configure_file(
 	input: config_template,
 	output: 'Config.h',

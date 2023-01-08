@@ -13,11 +13,12 @@ luaconsole_files = files(
 	'LuaSmartRef.cpp',
 	'LuaTextbox.cpp',
 	'LuaWindow.cpp',
+	'LuaSocket.cpp',
 )
 if enable_http
-	luaconsole_files += files(
-		'LuaTCPSocket.cpp',
-	)
+	luaconsole_files += files('LuaSocketTCPHttp.cpp')
+else
+	luaconsole_files += files('LuaSocketTCPNoHttp.cpp')
 endif
 
 subdir('luascripts')

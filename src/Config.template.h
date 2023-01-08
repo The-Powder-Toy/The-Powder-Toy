@@ -2,7 +2,6 @@
 #include <cstdint>
 
 // Boolean macros (defined / not defined), would be great to get rid of them all.
-#mesondefine NOHTTP
 #mesondefine RENDERER
 #mesondefine FONTEDITOR
 #mesondefine DEBUG
@@ -16,6 +15,7 @@ constexpr bool BETA                     = @BETA@;
 constexpr bool SNAPSHOT                 = @SNAPSHOT@;
 constexpr bool MOD                      = @MOD@;
 constexpr bool GRAVFFT                  = @GRAVFFT@;
+constexpr bool NOHTTP                   = @NOHTTP@;
 constexpr bool LUACONSOLE               = @LUACONSOLE@;
 constexpr bool ALLOW_FAKE_NEWER_VERSION = @ALLOW_FAKE_NEWER_VERSION@;
 constexpr bool USE_UPDATESERVER         = @USE_UPDATESERVER@;

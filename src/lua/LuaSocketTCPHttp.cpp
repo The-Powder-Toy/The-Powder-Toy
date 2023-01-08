@@ -1,12 +1,10 @@
-#include "LuaTCPSocket.h"
+#include "LuaSocket.h"
 
-#ifndef NOHTTP
-# include "common/String.h"
-# include <curl/curl.h>
-# include <vector>
-# include <stdexcept>
-# include <cstring>
-#endif
+#include "common/String.h"
+#include <curl/curl.h>
+#include <vector>
+#include <stdexcept>
+#include <cstring>
 #include <stdint.h>
 #include <algorithm>
 #ifdef WIN
@@ -22,56 +20,8 @@
 #include "client/http/CurlError.h"
 #include "Misc.h"
 
-namespace LuaTCPSocket
+namespace LuaSocket
 {
-	static double Now()
-	{
-#ifdef WIN
-		FILETIME rt;
-		GetSystemTimeAsFileTime(&rt);
-		return (rt.dwLowDateTime + (uint64_t(rt.dwHighDateTime) << 32) - uint64_t(116444736000000000ULL)) / 1e7;
-#else
-		struct timeval rt;
-		gettimeofday(&rt, (struct timezone *)NULL);
-		return rt.tv_sec + rt.tv_usec / 1e6;
-#endif
-	}
-
-	static int GetTime(lua_State *l)
-	{
-		lua_pushnumber(l, Now());
-		return 1;
-	}
-
-	static void Timeout(double timeout)
-	{
-#ifdef WIN
-		if (timeout <              0.0) timeout  =     0.0;
-		if (timeout < DBL_MAX / 1000.0) timeout *=  1000.0;
-		if (timeout >          INT_MAX) timeout  = INT_MAX;
-		::Sleep(int(timeout));
-#else
-		struct timespec req, rem;
-		if (timeout <     0.0) timeout =     0.0;
-		if (timeout > INT_MAX) timeout = INT_MAX;
-		req.tv_sec = int(timeout);
-		req.tv_nsec = int((timeout - req.tv_sec) * 1000000000);
-		if (req.tv_nsec > 999999999) req.tv_nsec = 999999999;
-		while (nanosleep(&req, &rem))
-		{
-			req.tv_sec = rem.tv_sec;
-			req.tv_nsec = rem.tv_nsec;
-		}
-#endif
-	}
-
-	static int Sleep(lua_State *l)
-	{
-		Timeout(luaL_checknumber(l, 1));
-		return 0;
-	}
-
-#ifndef NOHTTP
 	enum Status
 	{
 		StatusReady,
@@ -663,43 +613,33 @@ namespace LuaTCPSocket
 		}
 		return luaL_error(l, "unknown direction");
 	}
-#endif
 
-	void Open(lua_State *l)
+	void OpenTCP(lua_State *l)
 	{
-#ifndef NOHTTP
 		luaL_newmetatable(l, "TCPSocket");
-		lua_pushcfunction(l, LuaTCPSocket::GC);
+		lua_pushcfunction(l, LuaSocket::GC);
 		lua_setfield(l, -2, "__gc");
 		lua_newtable(l);
 		struct luaL_Reg tcpSocketIndexMethods[] = {
-			{     "connect", LuaTCPSocket::Connect     },
-			{       "close", LuaTCPSocket::Close       },
-			{        "send", LuaTCPSocket::Send        },
-			{     "receive", LuaTCPSocket::Receive     },
-			{   "lasterror", LuaTCPSocket::LastError   },
-			{      "status", LuaTCPSocket::GetStatus   },
-			{ "getpeername", LuaTCPSocket::GetPeerName },
-			{ "getsockname", LuaTCPSocket::GetSockName },
-			{  "settimeout", LuaTCPSocket::SetTimeout  },
-			{   "setoption", LuaTCPSocket::SetOption   },
-			{    "shutdown", LuaTCPSocket::Shutdown    },
+			{     "connect", LuaSocket::Connect     },
+			{       "close", LuaSocket::Close       },
+			{        "send", LuaSocket::Send        },
+			{     "receive", LuaSocket::Receive     },
+			{   "lasterror", LuaSocket::LastError   },
+			{      "status", LuaSocket::GetStatus   },
+			{ "getpeername", LuaSocket::GetPeerName },
+			{ "getsockname", LuaSocket::GetSockName },
+			{  "settimeout", LuaSocket::SetTimeout  },
+			{   "setoption", LuaSocket::SetOption   },
+			{    "shutdown", LuaSocket::Shutdown    },
 			{          NULL, NULL                      },
 		};
 		luaL_register(l, NULL, tcpSocketIndexMethods);
 		lua_setfield(l, -2, "__index");
 		lua_pop(l, 1);
-#endif
-		lua_newtable(l);
-		struct luaL_Reg socketMethods[] = {
-#ifndef NOHTTP
-			{     "tcp", LuaTCPSocket::New     },
-#endif
-			{   "sleep", LuaTCPSocket::Sleep   },
-			{ "gettime", LuaTCPSocket::GetTime },
-			{      NULL, NULL                  },
-		};
-		luaL_register(l, NULL, socketMethods);
-		lua_setglobal(l, "socket");
+		lua_getglobal(l, "socket");
+		lua_pushcfunction(l, LuaSocket::New);
+		lua_setfield(l, -2, "tcp");
+		lua_pop(l, 1);
 	}
 }

@@ -351,6 +351,7 @@ conf_data.set('APPDATA', get_option('app_data'))
 conf_data.set('APPVENDOR', get_option('app_vendor'))
 conf_data.set('LUACONSOLE', lua_variant != 'none' ? 'true' : 'false')
 conf_data.set('GRAVFFT', enable_gravfft ? 'true' : 'false')
+conf_data.set('NOHTTP', not enable_http ? 'true' : 'false')
 
 data_files = []
 

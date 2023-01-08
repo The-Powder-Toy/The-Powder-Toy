@@ -22,7 +22,7 @@
 #include "LuaSlider.h"
 #include "LuaTextbox.h"
 #include "LuaWindow.h"
-#include "LuaTCPSocket.h"
+#include "LuaSocket.h"
 #include "LuaHttp.h"
 #include "LuaSDLKeys.h"
 #include "PowderToy.h"
@@ -222,9 +222,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	initPlatformAPI();
 	initEventAPI();
 	initHttpAPI();
-#ifndef NOHTTP
 	initSocketAPI();
-#endif
 
 	initBZ2API(l);
 
@@ -4648,12 +4646,10 @@ LuaScriptInterface::~LuaScriptInterface()
 	lua_close(l);
 }
 
-#ifndef NOHTTP
 void LuaScriptInterface::initSocketAPI()
 {
-	LuaTCPSocket::Open(l);
+	LuaSocket::Open(l);
 }
-#endif
 
 void tpt_lua_pushByteString(lua_State *L, const ByteString &str)
 {

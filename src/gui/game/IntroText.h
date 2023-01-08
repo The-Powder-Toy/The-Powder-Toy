@@ -58,9 +58,10 @@ inline ByteString IntroText()
 #ifdef REALISTIC
 	sb << " REALISTIC";
 #endif
-#ifdef NOHTTP
-	sb << " NOHTTP";
-#endif
+	if constexpr (NOHTTP)
+	{
+		sb << " NOHTTP";
+	}
 #ifdef DEBUG
 	sb << " DEBUG";
 #endif
