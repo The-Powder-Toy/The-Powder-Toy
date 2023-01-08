@@ -15,6 +15,7 @@
 #include "BuiltinGOL.h"
 #include "MenuSection.h"
 #include "CoordStack.h"
+#include "GravityPtr.h"
 
 #include "Element.h"
 
@@ -37,7 +38,7 @@ class Simulation
 {
 public:
 
-	Gravity * grav;
+	GravityPtr grav;
 	Air * air;
 
 	std::vector<sign> signs;

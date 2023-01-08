@@ -45,9 +45,10 @@ inline ByteString IntroText()
 	{
 		sb << " LUACONSOLE";
 	}
-#ifdef GRAVFFT
-	sb << " GRAVFFT";
-#endif
+	if constexpr (GRAVFFT)
+	{
+		sb << " GRAVFFT";
+	}
 #ifdef REALISTIC
 	sb << " REALISTIC";
 #endif

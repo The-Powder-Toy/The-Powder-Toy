@@ -3,7 +3,6 @@
 
 // Boolean macros (defined / not defined), would be great to get rid of them all.
 #mesondefine NOHTTP
-#mesondefine GRAVFFT
 #mesondefine RENDERER
 #mesondefine FONTEDITOR
 #mesondefine BETA
@@ -16,6 +15,7 @@
 #mesondefine MACOSX
 #mesondefine X86
 
+constexpr bool GRAVFFT                  = @GRAVFFT@;
 constexpr bool LUACONSOLE               = @LUACONSOLE@;
 constexpr bool ALLOW_FAKE_NEWER_VERSION = @ALLOW_FAKE_NEWER_VERSION@;
 constexpr bool USE_UPDATESERVER         = @USE_UPDATESERVER@;

@@ -5198,7 +5198,6 @@ void Simulation::AfterSim()
 
 Simulation::~Simulation()
 {
-	delete grav;
 	delete air;
 }
 
@@ -5240,7 +5239,7 @@ Simulation::Simulation():
 	elementRecount = true;
 
 	//Create and attach gravity simulation
-	grav = new Gravity();
+	grav = Gravity::Create();
 	//Give air sim references to our data
 	grav->bmap = bmap;
 	//Gravity sim gives us maps to use

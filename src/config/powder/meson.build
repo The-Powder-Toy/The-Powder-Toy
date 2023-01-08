@@ -2,7 +2,6 @@ powder_conf_data = conf_data
 powder_conf_data.set('FONTEDITOR', false)
 powder_conf_data.set('RENDERER', false)
 powder_conf_data.set('NOHTTP', not enable_http)
-powder_conf_data.set('GRAVFFT', enable_gravfft)
 configure_file(
 	input: config_template,
 	output: 'Config.h',

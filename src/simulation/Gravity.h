@@ -1,20 +1,17 @@
 #pragma once
 #include "Config.h"
+#include "GravityPtr.h"
 
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-
-#ifdef GRAVFFT
-#include <fftw3.h>
-#endif
+#include <memory>
 
 class Simulation;
 
 class Gravity
 {
-private:
-
+protected:
 	bool enabled = false;
 
 	// Maps to be processed by the gravity thread
@@ -33,18 +30,6 @@ private:
 	int gravthread_done = 0;
 	bool ignoreNextResult = false;
 
-#ifdef GRAVFFT
-	bool grav_fft_status = false;
-	float *th_ptgravx = nullptr;
-	float *th_ptgravy = nullptr;
-	float *th_gravmapbig = nullptr;
-	float *th_gravxbig = nullptr;
-	float *th_gravybig = nullptr;
-
-	fftwf_complex *th_ptgravxt, *th_ptgravyt, *th_gravmapbigt, *th_gravxbigt, *th_gravybigt;
-	fftwf_plan plan_gravmap, plan_gravx_inverse, plan_gravy_inverse;
-#endif
-
 	struct mask_el {
 		char *shape;
 		char shapeout;
@@ -56,15 +41,17 @@ private:
 	void mask_free(mask_el *c_mask_el);
 
 	void update_grav();
+	void get_result();
 	void update_grav_async();
-
-
-#ifdef GRAVFFT
-	void grav_fft_init();
-	void grav_fft_cleanup();
-#endif
+	
+	struct CtorTag // Please use Gravity::Create().
+	{
+	};
 
 public:
+	Gravity(CtorTag);
+	~Gravity();
+
 	//Maps to be used by the main thread
 	float *gravmap = nullptr;
 	float *gravp = nullptr;
@@ -84,6 +71,5 @@ public:
 	void stop_grav_async();
 	void gravity_mask();
 
-	Gravity();
-	~Gravity();
+	static GravityPtr Create();
 };
