@@ -11,11 +11,6 @@
 #endif
 #include <SDL.h>
 
-#ifdef X86
-# include <xmmintrin.h>
-# include <pmmintrin.h>
-#endif
-
 #include <iostream>
 #if defined(LIN)
 # include "icon_exe.png.h"
@@ -37,6 +32,7 @@
 #include <SDL.h>
 
 #include "Format.h"
+#include "X86KillDenormals.h"
 #include "Misc.h"
 
 #include "client/Client.h"
@@ -833,10 +829,10 @@ int main(int argc, char * argv[])
 	}
 #endif
 
-#ifdef X86
-	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
-	_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
-#endif
+	if constexpr (X86)
+	{
+		X86KillDenormals();
+	}
 
 	GameController * gameController = NULL;
 

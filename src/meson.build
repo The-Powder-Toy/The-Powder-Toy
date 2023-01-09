@@ -9,6 +9,9 @@ powder_files = files(
 	'lua/TPTScriptInterface.cpp',
 	'lua/TPTSTypes.cpp',
 )
+if is_x86
+	powder_files += files('X86KillDenormals.cpp')
+endif
 
 render_files = files(
 	'PowderToyRenderer.cpp',

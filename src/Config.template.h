@@ -10,8 +10,8 @@
 #mesondefine AND
 #mesondefine WIN
 #mesondefine MACOSX
-#mesondefine X86
 
+constexpr bool X86                      = @X86@;
 constexpr bool BETA                     = @BETA@;
 constexpr bool SNAPSHOT                 = @SNAPSHOT@;
 constexpr bool MOD                      = @MOD@;
