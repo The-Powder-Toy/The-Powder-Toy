@@ -5,11 +5,7 @@ namespace ui
 
 	struct Border
 	{
-#if ENABLE_FLOAT_UI
-# define BORDER_T float
-#else
-# define BORDER_T int
-#endif
+		using BORDER_T = int;
 
 		BORDER_T Top;
 		BORDER_T Right;

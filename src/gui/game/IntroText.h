@@ -28,19 +28,25 @@ inline ByteString IntroText()
 	      "\bgSimon Robertshaw, Skresanov Savely, cracker64, Catelite, Bryan Hoyle, Nathan Cousins, jacksonmj,\n"
 	      "\bgFelix Wallin, Lieuwe Mosch, Anthony Boot, Me4502, MaksProg, jacob1, mniip, LBPHacker\n"
 	      "\n";
-#ifndef BETA
-	sb << "\bgTo use online features such as saving, you need to register at: \brhttps://powdertoy.co.uk/Register.html\n";
-#else
-	sb << "\brThis is a BETA, you cannot save things publicly, nor open local saves and stamps made with it in older versions.\n"
-	      "\brIf you are planning on publishing any saves, use the release version.\n";
-#endif
+	if constexpr (BETA)
+	{
+		sb << "\brThis is a BETA, you cannot save things publicly, nor open local saves and stamps made with it in older versions.\n"
+		      "\brIf you are planning on publishing any saves, use the release version.\n";
+	}
+	else
+	{
+		sb << "\bgTo use online features such as saving, you need to register at: \brhttps://powdertoy.co.uk/Register.html\n";
+	}
 	sb << "\n"
 	   << "\bt" << SAVE_VERSION << "." << MINOR_VERSION << "." << BUILD_NUM << " " << IDENT;
-#ifdef SNAPSHOT
-	sb << " SNAPSHOT " << SNAPSHOT_ID;
-#elif defined(MOD)
-	sb << " MODVER " << SNAPSHOT_ID;
-#endif
+	if constexpr (SNAPSHOT)
+	{
+		sb << " SNAPSHOT " << SNAPSHOT_ID;
+	}
+	else if constexpr (MOD)
+	{
+		sb << " MODVER " << SNAPSHOT_ID;
+	}
 	if constexpr (LUACONSOLE)
 	{
 		sb << " LUACONSOLE";

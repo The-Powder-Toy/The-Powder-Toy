@@ -5,16 +5,16 @@
 #mesondefine NOHTTP
 #mesondefine RENDERER
 #mesondefine FONTEDITOR
-#mesondefine BETA
 #mesondefine DEBUG
 #mesondefine LIN
 #mesondefine AND
-#mesondefine SNAPSHOT
-#mesondefine MOD
 #mesondefine WIN
 #mesondefine MACOSX
 #mesondefine X86
 
+constexpr bool BETA                     = @BETA@;
+constexpr bool SNAPSHOT                 = @SNAPSHOT@;
+constexpr bool MOD                      = @MOD@;
 constexpr bool GRAVFFT                  = @GRAVFFT@;
 constexpr bool LUACONSOLE               = @LUACONSOLE@;
 constexpr bool ALLOW_FAKE_NEWER_VERSION = @ALLOW_FAKE_NEWER_VERSION@;
@@ -53,13 +53,7 @@ constexpr int FUTURE_SAVE_VERSION  = 97;
 constexpr int FUTURE_MINOR_VERSION = 0;
 //VersionInfoEnd
 
-#if defined(SNAPSHOT)
-constexpr char IDENT_RELTYPE[] = "S";
-#elif defined(BETA)
-constexpr char IDENT_RELTYPE[] = "B";
-#else
-constexpr char IDENT_RELTYPE[] = "R";
-#endif
+constexpr char IDENT_RELTYPE    = SNAPSHOT ? 'S' : (BETA ? 'B' : 'R');
 
 constexpr char SCHEME[]         = "https://";
 constexpr char STATICSCHEME[]   = "https://";

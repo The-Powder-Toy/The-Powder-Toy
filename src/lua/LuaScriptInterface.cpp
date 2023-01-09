@@ -314,11 +314,14 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	lua_setfield(l, tptPropertiesVersion, "minor");
 	lua_pushinteger(l, BUILD_NUM);
 	lua_setfield(l, tptPropertiesVersion, "build");
-#if defined(SNAPSHOT) || defined(MOD)
-	lua_pushinteger(l, SNAPSHOT_ID);
-#else
-	lua_pushinteger(l, 0);
-#endif
+	if constexpr (SNAPSHOT || MOD)
+	{
+		lua_pushinteger(l, SNAPSHOT_ID);
+	}
+	else
+	{
+		lua_pushinteger(l, 0);
+	}
 	lua_setfield(l, tptPropertiesVersion, "snapshot");
 	lua_pushinteger(l, MOD_ID);
 	lua_setfield(l, tptPropertiesVersion, "modid");
@@ -4100,7 +4103,7 @@ int LuaScriptInterface::platform_ident(lua_State * l)
 
 int LuaScriptInterface::platform_releaseType(lua_State * l)
 {
-	tpt_lua_pushByteString(l, IDENT_RELTYPE);
+	tpt_lua_pushByteString(l, ByteString(1, IDENT_RELTYPE));
 	return 1;
 }
 

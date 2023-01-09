@@ -313,53 +313,55 @@ bool Client::CheckUpdate(http::Request *updateRequest, bool checkSession)
 
 					if constexpr (!IGNORE_UPDATES)
 					{
-					//Check for updates
-					Json::Value versions = objDocument["Updates"];
-#ifndef SNAPSHOT
-					Json::Value stableVersion = versions["Stable"];
-					int stableMajor = stableVersion["Major"].asInt();
-					int stableMinor = stableVersion["Minor"].asInt();
-					int stableBuild = stableVersion["Build"].asInt();
-					ByteString stableFile = stableVersion["File"].asString();
-					String stableChangelog = ByteString(stableVersion["Changelog"].asString()).FromUtf8();
-					if (stableBuild > BUILD_NUM)
-					{
-						updateAvailable = true;
-						updateInfo = UpdateInfo(stableMajor, stableMinor, stableBuild, stableFile, stableChangelog, UpdateInfo::Stable);
-					}
-#endif
-
-					if (!updateAvailable)
-					{
-						Json::Value betaVersion = versions["Beta"];
-						int betaMajor = betaVersion["Major"].asInt();
-						int betaMinor = betaVersion["Minor"].asInt();
-						int betaBuild = betaVersion["Build"].asInt();
-						ByteString betaFile = betaVersion["File"].asString();
-						String betaChangelog = ByteString(betaVersion["Changelog"].asString()).FromUtf8();
-						if (betaBuild > BUILD_NUM)
+						//Check for updates
+						Json::Value versions = objDocument["Updates"];
+						if constexpr (!SNAPSHOT)
 						{
-							updateAvailable = true;
-							updateInfo = UpdateInfo(betaMajor, betaMinor, betaBuild, betaFile, betaChangelog, UpdateInfo::Beta);
+							Json::Value stableVersion = versions["Stable"];
+							int stableMajor = stableVersion["Major"].asInt();
+							int stableMinor = stableVersion["Minor"].asInt();
+							int stableBuild = stableVersion["Build"].asInt();
+							ByteString stableFile = stableVersion["File"].asString();
+							String stableChangelog = ByteString(stableVersion["Changelog"].asString()).FromUtf8();
+							if (stableBuild > BUILD_NUM)
+							{
+								updateAvailable = true;
+								updateInfo = UpdateInfo(stableMajor, stableMinor, stableBuild, stableFile, stableChangelog, UpdateInfo::Stable);
+							}
 						}
-					}
 
-#if defined(SNAPSHOT) || defined(MOD)
-					Json::Value snapshotVersion = versions["Snapshot"];
-					int snapshotSnapshot = snapshotVersion["Snapshot"].asInt();
-					ByteString snapshotFile = snapshotVersion["File"].asString();
-					String snapshotChangelog = ByteString(snapshotVersion["Changelog"].asString()).FromUtf8();
-					if (snapshotSnapshot > SNAPSHOT_ID)
-					{
-						updateAvailable = true;
-						updateInfo = UpdateInfo(snapshotSnapshot, snapshotFile, snapshotChangelog, UpdateInfo::Snapshot);
-					}
-#endif
+						if (!updateAvailable)
+						{
+							Json::Value betaVersion = versions["Beta"];
+							int betaMajor = betaVersion["Major"].asInt();
+							int betaMinor = betaVersion["Minor"].asInt();
+							int betaBuild = betaVersion["Build"].asInt();
+							ByteString betaFile = betaVersion["File"].asString();
+							String betaChangelog = ByteString(betaVersion["Changelog"].asString()).FromUtf8();
+							if (betaBuild > BUILD_NUM)
+							{
+								updateAvailable = true;
+								updateInfo = UpdateInfo(betaMajor, betaMinor, betaBuild, betaFile, betaChangelog, UpdateInfo::Beta);
+							}
+						}
 
-					if(updateAvailable)
-					{
-						notifyUpdateAvailable();
-					}
+						if constexpr (SNAPSHOT || MOD)
+						{
+							Json::Value snapshotVersion = versions["Snapshot"];
+							int snapshotSnapshot = snapshotVersion["Snapshot"].asInt();
+							ByteString snapshotFile = snapshotVersion["File"].asString();
+							String snapshotChangelog = ByteString(snapshotVersion["Changelog"].asString()).FromUtf8();
+							if (snapshotSnapshot > SNAPSHOT_ID)
+							{
+								updateAvailable = true;
+								updateInfo = UpdateInfo(snapshotSnapshot, snapshotFile, snapshotChangelog, UpdateInfo::Snapshot);
+							}
+						}
+
+						if(updateAvailable)
+						{
+							notifyUpdateAvailable();
+						}
 					}
 				}
 			}

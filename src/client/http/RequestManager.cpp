@@ -58,7 +58,7 @@ namespace http
 			"; NO", // Unused, used to be SSE level.
 			"; M", MOD_ID,
 			"; ", IDENT,
-			") TPTPP/", SAVE_VERSION, ".", MINOR_VERSION, ".", BUILD_NUM, IDENT_RELTYPE, ".", SNAPSHOT_ID
+			") TPTPP/", SAVE_VERSION, ".", MINOR_VERSION, ".", BUILD_NUM, ByteString(1, IDENT_RELTYPE), ".", SNAPSHOT_ID
 		);
 
 		worker_thread = std::thread([this]() { Worker(); });

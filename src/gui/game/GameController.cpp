@@ -1599,27 +1599,43 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 			updateMessage << "Click \"Continue\" to download the latest version from our website.\n\nCurrent version:\n ";
 #endif
 
-#ifdef SNAPSHOT
-			updateMessage << "Snapshot " << SNAPSHOT_ID;
-#elif defined(MOD)
-			updateMessage << "Mod version " << SNAPSHOT_ID;
-#elif defined(BETA)
-			updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Beta, Build " << BUILD_NUM;
-#else
-			updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Stable, Build " << BUILD_NUM;
-#endif
+			if constexpr (SNAPSHOT)
+			{
+				updateMessage << "Snapshot " << SNAPSHOT_ID;
+			}
+			else if constexpr (MOD)
+			{
+				updateMessage << "Mod version " << SNAPSHOT_ID;
+			}
+			else if constexpr (BETA)
+			{
+				updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Beta, Build " << BUILD_NUM;
+			}
+			else
+			{
+				updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Stable, Build " << BUILD_NUM;
+			}
 
 			updateMessage << "\nNew version:\n ";
 			if (info.Type == UpdateInfo::Beta)
+			{
 				updateMessage << info.Major << "." << info.Minor << " Beta, Build " << info.Build;
+			}
 			else if (info.Type == UpdateInfo::Snapshot)
-#if defined(MOD)
-				updateMessage << "Mod version " << info.Time;
-#else
-				updateMessage << "Snapshot " << info.Time;
-#endif
+			{
+				if constexpr (MOD)
+				{
+					updateMessage << "Mod version " << info.Time;
+				}
+				else
+				{
+					updateMessage << "Snapshot " << info.Time;
+				}
+			}
 			else if(info.Type == UpdateInfo::Stable)
+			{
 				updateMessage << info.Major << "." << info.Minor << " Stable, Build " << info.Build;
+			}
 
 			if (info.Changelog.length())
 				updateMessage << "\n\nChangelog:\n" << info.Changelog;
@@ -1631,11 +1647,14 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 	switch(sender->GetUpdateInfo().Type)
 	{
 		case UpdateInfo::Snapshot:
-#if defined(MOD)
-			gameModel->AddNotification(new UpdateNotification(this, "A new mod update is available - click here to update"));
-#else
-			gameModel->AddNotification(new UpdateNotification(this, "A new snapshot is available - click here to update"));
-#endif
+			if constexpr (MOD)
+			{
+				gameModel->AddNotification(new UpdateNotification(this, "A new mod update is available - click here to update"));
+			}
+			else
+			{
+				gameModel->AddNotification(new UpdateNotification(this, "A new snapshot is available - click here to update"));
+			}
 			break;
 		case UpdateInfo::Stable:
 			gameModel->AddNotification(new UpdateNotification(this, "A new version is available - click here to update"));
