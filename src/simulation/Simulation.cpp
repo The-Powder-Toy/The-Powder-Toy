@@ -87,7 +87,8 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 		}
 	}
 
-	int r;
+	RecalcFreeParticles(false);
+
 	bool doFullScan = false;
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
@@ -133,13 +134,13 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 			continue;
 		}
 
-		if ((r = pmap[y][x]))
+		if (pmap[y][x])
 		{
 			// Particle already exists in this location. Set pmap to 0, then kill it and all stacked particles in the loop below
 			pmap[y][x] = 0;
 			doFullScan = true;
 		}
-		else if ((r = photons[y][x]))
+		else if (photons[y][x])
 		{
 			// Particle already exists in this location. Set photons to 0, then kill it and all stacked particles in the loop below
 			photons[y][x] = 0;
@@ -169,7 +170,6 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 		}
 	}
 
-	int i;
 	// Map of soap particles loaded into this save, old ID -> new ID
 	std::map<unsigned int, unsigned int> soapList;
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
@@ -209,7 +209,7 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 		// Allocate particle (this location is guaranteed to be empty due to "full scan" logic above)
 		if (pfree == -1)
 			break;
-		i = pfree;
+		auto i = pfree;
 		pfree = parts[i].life;
 		if (i > parts_lastActiveIndex)
 			parts_lastActiveIndex = i;
