@@ -3,6 +3,7 @@
 #include "UpdateActivity.h"
 
 #include <bzlib.h>
+#include <memory>
 
 #include "Config.h"
 #include "Update.h"
@@ -32,20 +33,19 @@ private:
 	bool doWork() override
 	{
 		String error;
-		http::Request *request = new http::Request(updateName);
+		auto request = std::make_unique<http::Request>(updateName);
 		request->Start();
 		notifyStatus("Downloading update");
 		notifyProgress(-1);
 		while(!request->CheckDone())
 		{
 			int total, done;
-			request->CheckProgress(&total, &done);
+			std::tie(total, done) = request->CheckProgress();
 			notifyProgress(total ? done * 100 / total : 0);
 			Platform::Millisleep(1);
 		}
 
-		int status;
-		ByteString data = request->Finish(&status);
+		auto [ status, data ] = request->Finish();
 		if (status!=200)
 		{
 			error = String::Build("Server responded with Status ", status);

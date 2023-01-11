@@ -5,10 +5,11 @@ client_files += files(
 	'Request.cpp',
 	'SaveUserInfoRequest.cpp',
 	'ThumbnailRequest.cpp',
+	'RequestManager.cpp',
 )
 
 if enable_http
-	client_files += files(
-		'RequestManager.cpp',
-	)
+	client_files += files('RequestManagerHttp.cpp')
+else
+	client_files += files('RequestManagerNoHttp.cpp')
 endif

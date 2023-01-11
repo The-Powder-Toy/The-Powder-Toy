@@ -54,7 +54,6 @@
 
 #include "lua/CommandInterface.h"
 
-#include "client/http/RequestManager.h"
 #include "gui/preview/Comment.h"
 
 Client::Client():
@@ -102,7 +101,7 @@ Client::Client():
 		firstRun = true;
 }
 
-void Client::Initialise(ByteString proxy, ByteString cafile, ByteString capath, bool disableNetwork)
+void Client::Initialize()
 {
 #if !defined(FONTEDITOR) && !defined(RENDERER)
 	if (GetPrefBool("version.update", false))
@@ -110,11 +109,6 @@ void Client::Initialise(ByteString proxy, ByteString cafile, ByteString capath, 
 		SetPref("version.update", false);
 		update_finish();
 	}
-#endif
-
-#ifndef NOHTTP
-	if (!disableNetwork)
-		http::RequestManager::Ref().Initialise(proxy, cafile, capath);
 #endif
 
 	//Read stamps library
@@ -132,7 +126,7 @@ void Client::Initialise(ByteString proxy, ByteString cafile, ByteString capath, 
 	stampsLib.close();
 
 	//Begin version check
-	versionCheckRequest = new http::Request(ByteString::Build(SCHEME, SERVER, "/Startup.json"));
+	versionCheckRequest = std::make_unique<http::Request>(ByteString::Build(SCHEME, SERVER, "/Startup.json"));
 
 	if (authUser.UserID)
 	{
@@ -143,7 +137,7 @@ void Client::Initialise(ByteString proxy, ByteString cafile, ByteString capath, 
 	if constexpr (USE_UPDATESERVER)
 	{
 		// use an alternate update server
-		alternateVersionCheckRequest = new http::Request(ByteString::Build(SCHEME, UPDATESERVER, "/Startup.json"));
+		alternateVersionCheckRequest = std::make_unique<http::Request>(ByteString::Build(SCHEME, UPDATESERVER, "/Startup.json"));
 		usingAltUpdateServer = true;
 		if (authUser.UserID)
 		{
@@ -242,25 +236,16 @@ RequestStatus Client::ParseServerReturn(ByteString &result, int status, bool jso
 
 void Client::Tick()
 {
-	if (versionCheckRequest)
-	{
-		if (CheckUpdate(versionCheckRequest, true))
-			versionCheckRequest = nullptr;
-	}
-	if (alternateVersionCheckRequest)
-	{
-		if (CheckUpdate(alternateVersionCheckRequest, false))
-			alternateVersionCheckRequest = nullptr;
-	}
+	CheckUpdate(versionCheckRequest, true);
+	CheckUpdate(alternateVersionCheckRequest, false);
 }
 
-bool Client::CheckUpdate(http::Request *updateRequest, bool checkSession)
+void Client::CheckUpdate(std::unique_ptr<http::Request> &updateRequest, bool checkSession)
 {
 	//Check status on version check request
-	if (updateRequest->CheckDone())
+	if (updateRequest && updateRequest->CheckDone())
 	{
-		int status;
-		ByteString data = updateRequest->Finish(&status);
+		auto [ status, data ] = updateRequest->Finish();
 
 		if (checkSession && status == 618)
 		{
@@ -370,9 +355,8 @@ bool Client::CheckUpdate(http::Request *updateRequest, bool checkSession)
 				//Do nothing
 			}
 		}
-		return true;
+		updateRequest.reset();
 	}
-	return false;
 }
 
 UpdateInfo Client::GetUpdateInfo()
@@ -461,19 +445,6 @@ void Client::WritePrefs()
 
 void Client::Shutdown()
 {
-	if (versionCheckRequest)
-	{
-		versionCheckRequest->Cancel();
-	}
-	if (alternateVersionCheckRequest)
-	{
-		alternateVersionCheckRequest->Cancel();
-	}
-
-#ifndef NOHTTP
-	http::RequestManager::Ref().Shutdown();
-#endif
-
 	//Save config
 	WritePrefs();
 }
@@ -525,7 +496,7 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 			return RequestFailure;
 		}
 
-		data = http::Request::SimpleAuth(ByteString::Build(SCHEME, SERVER, "/Save.api"), &dataStatus, userID, authUser.SessionID, {
+		std::tie(dataStatus, data) = http::Request::SimpleAuth(ByteString::Build(SCHEME, SERVER, "/Save.api"), userID, authUser.SessionID, {
 			{ "Name", save.GetName().ToUtf8() },
 			{ "Description", save.GetDescription().ToUtf8() },
 			{ "Data:save.bin", ByteString(gameData.begin(), gameData.end()) },
@@ -700,7 +671,7 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 	{
 		ByteString saveIDText = ByteString::Build(saveID);
 		ByteString userIDText = ByteString::Build(authUser.UserID);
-		data = http::Request::SimpleAuth(ByteString::Build(SCHEME, SERVER, "/Vote.api"), &dataStatus, userIDText, authUser.SessionID, {
+		std::tie(dataStatus, data) = http::Request::SimpleAuth(ByteString::Build(SCHEME, SERVER, "/Vote.api"), userIDText, authUser.SessionID, {
 			{ "ID", saveIDText },
 			{ "Action", direction ? (direction == 1 ? "Up" : "Down") : "Reset" },
 			{ "Key", authUser.SessionKey }
@@ -718,15 +689,13 @@ RequestStatus Client::ExecVote(int saveID, int direction)
 std::vector<char> Client::GetSaveData(int saveID, int saveDate)
 {
 	lastError = "";
-	int dataStatus;
-	ByteString data;
 	ByteString urlStr;
 	if (saveDate)
 		urlStr = ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, "_", saveDate, ".cps");
 	else
 		urlStr = ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, ".cps");
 
-	data = http::Request::Simple(urlStr, &dataStatus);
+	auto [ dataStatus, data ] = http::Request::Simple(urlStr);
 
 	// will always return failure
 	ParseServerReturn(data, dataStatus, false);
@@ -746,9 +715,7 @@ LoginStatus Client::Login(ByteString username, ByteString password, User & user)
 	user.SessionID = "";
 	user.SessionKey = "";
 
-	ByteString data;
-	int dataStatus;
-	data = http::Request::Simple(ByteString::Build("https://", SERVER, "/Login.json"), &dataStatus, {
+	auto [ dataStatus, data ] = http::Request::Simple(ByteString::Build("https://", SERVER, "/Login.json"), {
 		{ "name", username },
 		{ "pass", password },
 	});
@@ -809,7 +776,7 @@ RequestStatus Client::DeleteSave(int saveID)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID);
+		std::tie(dataStatus, data) = http::Request::SimpleAuth(url, userID, authUser.SessionID);
 	}
 	else
 	{
@@ -829,7 +796,7 @@ RequestStatus Client::AddComment(int saveID, String comment)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID, {
+		std::tie(dataStatus, data) = http::Request::SimpleAuth(url, userID, authUser.SessionID, {
 			{ "Comment", comment.ToUtf8() },
 			{ "Key", authUser.SessionKey }
 		});
@@ -855,7 +822,7 @@ RequestStatus Client::FavouriteSave(int saveID, bool favourite)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Request::SimpleAuth(urlStream.Build(), &dataStatus, userID, authUser.SessionID);
+		std::tie(dataStatus, data) = http::Request::SimpleAuth(urlStream.Build(), userID, authUser.SessionID);
 	}
 	else
 	{
@@ -875,7 +842,7 @@ RequestStatus Client::ReportSave(int saveID, String message)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID, {
+		std::tie(dataStatus, data) = http::Request::SimpleAuth(url, userID, authUser.SessionID, {
 			{ "Reason", message.ToUtf8() },
 		});
 	}
@@ -897,7 +864,7 @@ RequestStatus Client::UnpublishSave(int saveID)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID);
+		std::tie(dataStatus, data) = http::Request::SimpleAuth(url, userID, authUser.SessionID);
 	}
 	else
 	{
@@ -917,7 +884,7 @@ RequestStatus Client::PublishSave(int saveID)
 	if (authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID, {
+		std::tie(dataStatus, data) = http::Request::SimpleAuth(url, userID, authUser.SessionID, {
 			{ "ActionPublish", "bagels" },
 		});
 	}
@@ -944,12 +911,11 @@ SaveInfo * Client::GetSave(int saveID, int saveDate)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		
-		data = http::Request::SimpleAuth(urlStream.Build(), &dataStatus, userID, authUser.SessionID);
+		std::tie(dataStatus, data) = http::Request::SimpleAuth(urlStream.Build(), userID, authUser.SessionID);
 	}
 	else
 	{
-		data = http::Request::Simple(urlStream.Build(), &dataStatus);
+		std::tie(dataStatus, data) = http::Request::Simple(urlStream.Build());
 	}
 	if(dataStatus == 200 && data.size())
 	{
@@ -1047,8 +1013,6 @@ std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count,
 	resultCount = 0;
 	std::vector<std::pair<ByteString, int> > * tagArray = new std::vector<std::pair<ByteString, int> >();
 	ByteStringBuilder urlStream;
-	ByteString data;
-	int dataStatus;
 	urlStream << SCHEME << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
 	if(query.length())
 	{
@@ -1057,7 +1021,7 @@ std::vector<std::pair<ByteString, int> > * Client::GetTags(int start, int count,
 			urlStream << format::URLEncode(query.ToUtf8());
 	}
 
-	data = http::Request::Simple(urlStream.Build(), &dataStatus);
+	auto [ dataStatus, data ] = http::Request::Simple(urlStream.Build());
 	if(dataStatus == 200 && data.size())
 	{
 		try
@@ -1115,11 +1079,11 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, String query,
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Request::SimpleAuth(urlStream.Build(), &dataStatus, userID, authUser.SessionID);
+		std::tie(dataStatus, data) = http::Request::SimpleAuth(urlStream.Build(), userID, authUser.SessionID);
 	}
 	else
 	{
-		data = http::Request::Simple(urlStream.Build(), &dataStatus);
+		std::tie(dataStatus, data) = http::Request::Simple(urlStream.Build());
 	}
 	ParseServerReturn(data, dataStatus, true);
 	if (dataStatus == 200 && data.size())
@@ -1167,7 +1131,7 @@ std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID);
+		std::tie(dataStatus, data) = http::Request::SimpleAuth(url, userID, authUser.SessionID);
 	}
 	else
 	{
@@ -1206,7 +1170,7 @@ std::list<ByteString> * Client::AddTag(int saveID, ByteString tag)
 	if(authUser.UserID)
 	{
 		ByteString userID = ByteString::Build(authUser.UserID);
-		data = http::Request::SimpleAuth(url, &dataStatus, userID, authUser.SessionID);
+		std::tie(dataStatus, data) = http::Request::SimpleAuth(url, userID, authUser.SessionID);
 	}
 	else
 	{

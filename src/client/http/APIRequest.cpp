@@ -19,10 +19,8 @@ namespace http
 		Result result;
 		try
 		{
-			ByteString data = Request::Finish(&result.status);
-			// Note that at this point it's not safe to use any member of the
-			// APIRequest object as Request::Finish signals RequestManager
-			// to delete it.
+			ByteString data;
+			std::tie(result.status, data) = Request::Finish();
 			Client::Ref().ParseServerReturn(data, result.status, true);
 			if (result.status == 200 && data.size())
 			{

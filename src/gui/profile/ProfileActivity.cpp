@@ -37,8 +37,8 @@ ProfileActivity::ProfileActivity(ByteString username) :
 				saving = true;
 				info.location = location->GetText();
 				info.biography = bio->GetText();
-				SaveUserInfoRequestMonitor::RequestSetup(info);
-				SaveUserInfoRequestMonitor::RequestStart();
+				saveUserInfoRequest = std::make_unique<http::SaveUserInfoRequest>(info);
+				saveUserInfoRequest->Start();
 			}
 		} });
 		AddComponent(saveButton);
@@ -48,8 +48,8 @@ ProfileActivity::ProfileActivity(ByteString username) :
 
 	loading = true;
 
-	GetUserInfoRequestMonitor::RequestSetup(username);
-	GetUserInfoRequestMonitor::RequestStart();
+	getUserInfoRequest = std::make_unique<http::GetUserInfoRequest>(username);
+	getUserInfoRequest->Start();
 }
 
 void ProfileActivity::setUserInfo(UserInfo newInfo)
@@ -191,33 +191,6 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	scrollPanel->InnerSize = ui::Point(Size.X, currentY);
 }
 
-void ProfileActivity::OnResponse(bool SaveUserInfoStatus)
-{
-	if (SaveUserInfoStatus)
-	{
-		Exit();
-	}
-	else
-	{
-		doError = true;
-		doErrorMessage = "Could not save user info: " + Client::Ref().GetLastError();
-	}
-}
-
-void ProfileActivity::OnResponse(std::unique_ptr<UserInfo> getUserInfoResult)
-{
-	if (getUserInfoResult)
-	{
-		loading = false;
-		setUserInfo(*getUserInfoResult);
-	}
-	else
-	{
-		doError = true;
-		doErrorMessage = "Could not load user info: " + Client::Ref().GetLastError();
-	}
-}
-
 void ProfileActivity::OnTick(float dt)
 {
 	if (doError)
@@ -226,8 +199,35 @@ void ProfileActivity::OnTick(float dt)
 		Exit();
 	}
 
-	SaveUserInfoRequestMonitor::RequestPoll();
-	GetUserInfoRequestMonitor::RequestPoll();
+	if (saveUserInfoRequest && saveUserInfoRequest->CheckDone())
+	{
+		auto SaveUserInfoStatus = saveUserInfoRequest->Finish();
+		if (SaveUserInfoStatus)
+		{
+			Exit();
+		}
+		else
+		{
+			doError = true;
+			doErrorMessage = "Could not save user info: " + Client::Ref().GetLastError();
+		}
+		saveUserInfoRequest.reset();
+	}
+	if (getUserInfoRequest && getUserInfoRequest->CheckDone())
+	{
+		auto getUserInfoResult = getUserInfoRequest->Finish();
+		if (getUserInfoResult)
+		{
+			loading = false;
+			setUserInfo(*getUserInfoResult);
+		}
+		else
+		{
+			doError = true;
+			doErrorMessage = "Could not load user info: " + Client::Ref().GetLastError();
+		}
+		getUserInfoRequest.reset();
+	}
 }
 
 void ProfileActivity::OnDraw()

@@ -2,6 +2,7 @@
 #include "Config.h"
 
 #include <vector>
+#include <memory>
 #include "common/String.h"
 
 namespace http
@@ -25,9 +26,9 @@ class PreviewModel
 	void notifyCommentsPageChanged();
 	void notifyCommentBoxEnabledChanged();
 
-	http::Request * saveDataDownload;
-	http::Request * saveInfoDownload;
-	http::Request * commentsDownload;
+	std::unique_ptr<http::Request> saveDataDownload;
+	std::unique_ptr<http::Request> saveInfoDownload;
+	std::unique_ptr<http::Request> commentsDownload;
 	int saveID;
 	int saveDate;
 
@@ -38,6 +39,8 @@ class PreviewModel
 
 public:
 	PreviewModel();
+	~PreviewModel();
+
 	SaveInfo * GetSaveInfo();
 	std::vector<SaveComment*> * GetComments();
 
@@ -61,5 +64,4 @@ public:
 	void OnSaveReady();
 	bool ParseSaveInfo(ByteString &saveInfoResponse);
 	bool ParseComments(ByteString &commentsResponse);
-	virtual ~PreviewModel();
 };

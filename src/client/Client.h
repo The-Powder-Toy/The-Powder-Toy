@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <list>
+#include <memory>
 
 #include "common/String.h"
 #include "common/Singleton.h"
@@ -51,8 +52,8 @@ private:
 	String messageOfTheDay;
 	std::vector<std::pair<String, ByteString> > serverNotifications;
 
-	http::Request *versionCheckRequest;
-	http::Request *alternateVersionCheckRequest;
+	std::unique_ptr<http::Request> versionCheckRequest;
+	std::unique_ptr<http::Request> alternateVersionCheckRequest;
 	bool usingAltUpdateServer;
 	bool updateAvailable;
 	UpdateInfo updateInfo;
@@ -109,7 +110,7 @@ public:
 	void SetMessageOfTheDay(String message);
 	String GetMessageOfTheDay();
 
-	void Initialise(ByteString proxy, ByteString cafile, ByteString capath, bool disableNetwork);
+	void Initialize();
 	bool IsFirstRun();
 
 	void AddListener(ClientListener * listener);
@@ -153,7 +154,7 @@ public:
 	}
 	RequestStatus ParseServerReturn(ByteString &result, int status, bool json);
 	void Tick();
-	bool CheckUpdate(http::Request *updateRequest, bool checkSession);
+	void CheckUpdate(std::unique_ptr<http::Request> &updateRequest, bool checkSession);
 	void Shutdown();
 
 	// preferences functions

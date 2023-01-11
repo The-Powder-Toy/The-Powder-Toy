@@ -18,9 +18,9 @@
 #endif
 
 #include "LuaScriptInterface.h"
+#include "client/http/RequestManager.h"
+#include "client/http/CurlError.h"
 #include "Misc.h"
-
-void SetupCurlEasyCiphers(CURL *easy);
 
 namespace LuaTCPSocket
 {
@@ -97,9 +97,10 @@ namespace LuaTCPSocket
 
 	static void Reset(TCPSocket *tcps)
 	{
+		using http::HandleCURLMcode;
 		if (tcps->multi)
 		{
-			curl_multi_remove_handle(tcps->multi, tcps->easy);
+			HandleCURLMcode(curl_multi_remove_handle(tcps->multi, tcps->easy));
 			curl_multi_cleanup(tcps->multi);
 			tcps->multi = nullptr;
 		}
@@ -113,10 +114,12 @@ namespace LuaTCPSocket
 
 	static bool ConnectPerform(TCPSocket *tcps, CURLcode *res)
 	{
+		using http::HandleCURLMcode;
 		while (true)
 		{
 			int dontcare;
 			auto mres = curl_multi_perform(tcps->multi, &dontcare);
+			http::HandleCURLMcode(mres);
 			struct CURLMsg *msg;
 			while ((msg = curl_multi_info_read(tcps->multi, &dontcare)))
 			{
@@ -136,8 +139,13 @@ namespace LuaTCPSocket
 
 	static int New(lua_State *l)
 	{
+		using http::HandleCURLMcode;
+		if (http::RequestManager::Ref().DisableNetwork())
+		{
+			return luaL_error(l, "network disabled");
+		}
 		auto *tcps = (TCPSocket *)lua_newuserdata(l, sizeof(TCPSocket));
-		new (tcps) TCPSocket;
+		new(tcps) TCPSocket;
 		tcps->errorBuf[0] = 0;
 		tcps->easy = curl_easy_init();
 		tcps->status = StatusReady;
@@ -157,7 +165,7 @@ namespace LuaTCPSocket
 			Reset(tcps);
 			return luaL_error(l, "curl_multi_init failed");
 		}
-		curl_multi_add_handle(tcps->multi, tcps->easy);
+		HandleCURLMcode(curl_multi_add_handle(tcps->multi, tcps->easy));
 		luaL_newmetatable(l, "TCPSocket");
 		lua_setmetatable(l, -2);
 		return 1;
@@ -440,6 +448,7 @@ namespace LuaTCPSocket
 
 	static int Connect(lua_State *l)
 	{
+		using http::HandleCURLcode;
 		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
 		if (tcps->status == StatusDead)
 		{
@@ -454,43 +463,51 @@ namespace LuaTCPSocket
 		{
 			if (tcps->status != StatusConnecting)
 			{
-				tcps->status = StatusConnecting;
-				// * Using CURLPROTO_HTTPS and CURLPROTO_HTTP with CURL_HTTP_VERSION_1_0
-				//   because these really don't send anything while connecting if
-				//   CURLOPT_CONNECT_ONLY is 1 and there are no proxies involved. The
-				//   only ugly bit is that we have to prepend http:// or https:// to
-				//   the hostnames.
-				curl_easy_setopt(tcps->easy, CURLOPT_ERRORBUFFER, tcps->errorBuf);
-				curl_easy_setopt(tcps->easy, CURLOPT_CONNECT_ONLY, 1L);
-				ByteString address = tpt_lua_checkByteString(l, 2);
-				curl_easy_setopt(tcps->easy, CURLOPT_PORT, long(luaL_checkinteger(l, 3)));
-				curl_easy_setopt(tcps->easy, CURLOPT_NOSIGNAL, 1L);
-				curl_easy_setopt(tcps->easy, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
-				if (lua_toboolean(l, 4))
+				try
 				{
+					tcps->status = StatusConnecting;
+					// * Using CURLPROTO_HTTPS and CURLPROTO_HTTP with CURL_HTTP_VERSION_1_0
+					//   because these really don't send anything while connecting if
+					//   CURLOPT_CONNECT_ONLY is 1 and there are no proxies involved. The
+					//   only ugly bit is that we have to prepend http:// or https:// to
+					//   the hostnames.
+					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_ERRORBUFFER, tcps->errorBuf));
+					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_CONNECT_ONLY, 1L));
+					ByteString address = tpt_lua_checkByteString(l, 2);
+					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_PORT, long(luaL_checkinteger(l, 3))));
+					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_NOSIGNAL, 1L));
+					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0));
+					if (lua_toboolean(l, 4))
+					{
 #if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 85, 0)
-					curl_easy_setopt(tcps->easy, CURLOPT_PROTOCOLS_STR, "https");
-					curl_easy_setopt(tcps->easy, CURLOPT_REDIR_PROTOCOLS_STR, "https");
+						HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_PROTOCOLS_STR, "https"));
+						HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_REDIR_PROTOCOLS_STR, "https"));
 #else
-					curl_easy_setopt(tcps->easy, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
-					curl_easy_setopt(tcps->easy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+						HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS));
+						HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS));
 #endif
-					SetupCurlEasyCiphers(tcps->easy);
-					address = "https://" + address;
+						http::SetupCurlEasyCiphers(tcps->easy);
+						address = "https://" + address;
+					}
+					else
+					{
+#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 85, 0)
+						HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_PROTOCOLS_STR, "http"));
+						HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_REDIR_PROTOCOLS_STR, "http"));
+#else
+						HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_PROTOCOLS, CURLPROTO_HTTP));
+						HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTP));
+#endif
+						address = "http://" + address;
+					}
+					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_URL, address.c_str()));
 				}
-				else
+				catch (const http::CurlError &ex)
 				{
-#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 85, 0)
-					curl_easy_setopt(tcps->easy, CURLOPT_PROTOCOLS_STR, "http");
-					curl_easy_setopt(tcps->easy, CURLOPT_REDIR_PROTOCOLS_STR, "http");
-#else
-					curl_easy_setopt(tcps->easy, CURLOPT_PROTOCOLS, CURLPROTO_HTTP);
-					curl_easy_setopt(tcps->easy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTP);
-#endif
-					address = "http://" + address;
+					return luaL_error(l, ex.what());
 				}
-				curl_easy_setopt(tcps->easy, CURLOPT_URL, address.c_str());
 			}
+
 			CURLcode res;
 			if (!ConnectPerform(tcps, &res))
 			{
@@ -542,16 +559,17 @@ namespace LuaTCPSocket
 
 	static int GetPeerName(lua_State *l)
 	{
+		using http::HandleCURLcode;
 		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
 		if (tcps->status != StatusConnected)
 		{
 			return luaL_error(l, "attempt to get remote socket info while not connected");
 		}
 		char *address;
-		curl_easy_getinfo(tcps->easy, CURLINFO_PRIMARY_IP, &address);
+		HandleCURLcode(curl_easy_getinfo(tcps->easy, CURLINFO_PRIMARY_IP, &address));
 		lua_pushstring(l, address);
 		long port;
-		curl_easy_getinfo(tcps->easy, CURLINFO_PRIMARY_PORT, &port);
+		HandleCURLcode(curl_easy_getinfo(tcps->easy, CURLINFO_PRIMARY_PORT, &port));
 		lua_pushinteger(l, port);
 		return 2;
 	}
@@ -578,38 +596,47 @@ namespace LuaTCPSocket
 
 	static int GetSockName(lua_State *l)
 	{
+		using http::HandleCURLcode;
 		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
 		if (tcps->status != StatusConnected)
 		{
 			return luaL_error(l, "attempt to get local socket info while not connected");
 		}
 		char *address;
-		curl_easy_getinfo(tcps->easy, CURLINFO_LOCAL_IP, &address);
+		HandleCURLcode(curl_easy_getinfo(tcps->easy, CURLINFO_LOCAL_IP, &address));
 		lua_pushstring(l, address);
 		long port;
-		curl_easy_getinfo(tcps->easy, CURLINFO_LOCAL_PORT, &port);
+		HandleCURLcode(curl_easy_getinfo(tcps->easy, CURLINFO_LOCAL_PORT, &port));
 		lua_pushinteger(l, port);
 		return 2;
 	}
 
 	static int SetOption(lua_State *l)
 	{
+		using http::HandleCURLcode;
 		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
 		auto option = tpt_lua_checkByteString(l, 2);
-		if (byteStringEqualsLiteral(option, "keepalive"))
+		try
 		{
-			curl_easy_setopt(tcps->easy, CURLOPT_TCP_KEEPALIVE, long(lua_toboolean(l, 3)));
-			return 0;
+			if (byteStringEqualsLiteral(option, "keepalive"))
+			{
+				HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_TCP_KEEPALIVE, long(lua_toboolean(l, 3))));
+				return 0;
+			}
+			else if (byteStringEqualsLiteral(option, "tcp-nodelay"))
+			{
+				HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_TCP_NODELAY, long(lua_toboolean(l, 3))));
+				return 0;
+			}
+			else if (byteStringEqualsLiteral(option, "verify-peer"))
+			{
+				HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_SSL_VERIFYPEER, long(lua_toboolean(l, 3))));
+				return 0;
+			}
 		}
-		else if (byteStringEqualsLiteral(option, "tcp-nodelay"))
+		catch (const http::CurlError &ex)
 		{
-			curl_easy_setopt(tcps->easy, CURLOPT_TCP_NODELAY, long(lua_toboolean(l, 3)));
-			return 0;
-		}
-		else if (byteStringEqualsLiteral(option, "verify-peer"))
-		{
-			curl_easy_setopt(tcps->easy, CURLOPT_SSL_VERIFYPEER, long(lua_toboolean(l, 3)));
-			return 0;
+			return luaL_error(l, ex.what());
 		}
 		return luaL_error(l, "unknown option");
 	}

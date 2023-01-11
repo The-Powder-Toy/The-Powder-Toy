@@ -4233,7 +4233,7 @@ public:
 	};
 
 private:
-	http::Request *request;
+	std::unique_ptr<http::Request> request;
 	bool dead = false;
 	RequestType type;
 
@@ -4284,7 +4284,7 @@ public:
 		}
 		new(rh) RequestHandle();
 		rh->type = type;
-		rh->request = new http::Request(uri);
+		rh->request = std::make_unique<http::Request>(uri);
 		if (verb.size())
 		{
 			rh->request->Verb(verb);
@@ -4322,14 +4322,14 @@ public:
 
 	bool Done() const
 	{
-		return dead || request->CheckDone();
+		return request->CheckDone();
 	}
 
 	void Progress(int *total, int *done)
 	{
 		if (!dead)
 		{
-			request->CheckProgress(total, done);
+			std::tie(*total, *done) = request->CheckProgress();
 		}
 	}
 
@@ -4337,7 +4337,7 @@ public:
 	{
 		if (!dead)
 		{
-			request->Cancel();
+			request.reset();
 			dead = true;
 		}
 	}
@@ -4349,7 +4349,9 @@ public:
 		{
 			if (request->CheckDone())
 			{
-				data = request->Finish(&status_out, &headers);
+				headers = request->ResponseHeaders();
+				std::tie(status_out, data) = request->Finish();
+				request.reset();
 				if (type == getAuthToken && status_out == 200)
 				{
 					FinishGetAuthToken(data, status_out, headers);

@@ -1284,8 +1284,7 @@ int luatpt_getscript(lua_State* l)
 	if (confirmPrompt && !ConfirmPrompt::Blocking("Do you want to install script?", url.FromUtf8(), "Install"))
 		return 0;
 
-	int ret;
-	ByteString scriptData = http::Request::Simple(url, &ret);
+	auto [ ret, scriptData ] = http::Request::Simple(url);
 	if (!scriptData.size())
 	{
 		return luaL_error(l, "Server did not return data");

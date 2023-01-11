@@ -5,14 +5,13 @@
 #include "graphics/Graphics.h"
 #include "gui/interface/Colour.h"
 #include "client/http/ImageRequest.h"
-#include "client/http/RequestMonitor.h"
 
 #include <memory>
 #include <functional>
 
 namespace ui
 {
-class AvatarButton : public Component, public http::RequestMonitor<http::ImageRequest>
+class AvatarButton : public Component
 {
 	std::unique_ptr<VideoBuffer> avatar;
 	ByteString name;
@@ -23,6 +22,8 @@ class AvatarButton : public Component, public http::RequestMonitor<http::ImageRe
 		std::function<void ()> action;
 	};
 	AvatarButtonAction actionCallback;
+
+	std::unique_ptr<http::ImageRequest> imageRequest;
 
 public:
 	AvatarButton(Point position, Point size, ByteString username);
@@ -38,8 +39,6 @@ public:
 
 	void Draw(const Point& screenPos) override;
 	void Tick(float dt) override;
-
-	void OnResponse(std::unique_ptr<VideoBuffer> avatar) override;
 
 	void DoAction();
 

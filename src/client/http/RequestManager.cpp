@@ -1,273 +1,114 @@
-#ifndef NOHTTP
-#include "Request.h" // includes curl.h, needs to come first to silence a warning on windows
 #include "RequestManager.h"
-
+#include "Request.h"
 #include <iostream>
-
-const int curl_multi_wait_timeout_ms = 100;
-const long curl_max_host_connections = 1;
-const long curl_max_concurrent_streams = 50;
 
 namespace http
 {
-	const long timeout = 15;
-	ByteString proxy;
-	ByteString cafile;
-	ByteString capath;
-	ByteString user_agent;
-
-	void RequestManager::Shutdown()
+	RequestManager::RequestManager(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork) :
+		proxy(newProxy),
+		cafile(newCafile),
+		capath(newCapath),
+		disableNetwork(newDisableNetwork)
 	{
-		if (rt_shutting_down)
-			return;
-		{
-			std::lock_guard<std::mutex> g(rt_mutex);
-			rt_shutting_down = true;
-		}
-		rt_cv.notify_one();
-
-		if (initialized)
-		{
-			worker_thread.join();
-
-			curl_multi_cleanup(multi);
-			multi = NULL;
-			curl_global_cleanup();
-		}
-	}
-
-	void RequestManager::Initialise(ByteString newProxy, ByteString newCafile, ByteString newCapath)
-	{
-		curl_global_init(CURL_GLOBAL_DEFAULT);
-		multi = curl_multi_init();
-		if (multi)
-		{
-			curl_multi_setopt(multi, CURLMOPT_MAX_HOST_CONNECTIONS, curl_max_host_connections);
-#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 67, 0)
-			curl_multi_setopt(multi, CURLMOPT_MAX_CONCURRENT_STREAMS, curl_max_concurrent_streams);
-#endif
-		}
-
-		proxy = newProxy;
-		cafile = newCafile;
-		capath = newCapath;
-
-		user_agent = ByteString::Build(
+		userAgent = ByteString::Build(
 			"PowderToy/", SAVE_VERSION, ".", MINOR_VERSION,
 			" (", IDENT_PLATFORM,
 			"; NO", // Unused, used to be SSE level.
 			"; M", MOD_ID,
 			"; ", IDENT,
-			") TPTPP/", SAVE_VERSION, ".", MINOR_VERSION, ".", BUILD_NUM, ByteString(1, IDENT_RELTYPE), ".", SNAPSHOT_ID
+			") TPTPP/", SAVE_VERSION, ".", MINOR_VERSION, ".", BUILD_NUM, IDENT_RELTYPE, ".", SNAPSHOT_ID
 		);
+		worker = std::thread([this]() {
+			Worker();
+		});
+	}
 
-		worker_thread = std::thread([this]() { Worker(); });
-		initialized = true;
+	RequestManager::~RequestManager()
+	{
+		{
+			std::lock_guard lk(sharedStateMx);
+			running = false;
+		}
+		worker.join();
 	}
 
 	void RequestManager::Worker()
 	{
-		bool shutting_down = false;
-		while (!shutting_down)
+		InitWorker();
+		while (true)
 		{
 			{
-				std::unique_lock<std::mutex> l(rt_mutex);
-				if (!requests_added_to_multi)
+				std::lock_guard lk(sharedStateMx);
+				if (!running)
 				{
-					while (!rt_shutting_down && requests_to_add.empty() && !requests_to_start && !requests_to_remove)
+					// TODO: Fix bad design.
+					// Bad design: Client should not outlive RequestManager because it has its own requests, but
+					//             RequestManager needs Client because Client is also responsible for configuration >_>
+					// Problem:    RequestManager's worker needs all requests to have been unregistered when it exits.
+					// Solution:   Knock out all live requests here on shutdown.
+					for (auto &requestHandle : requestHandles)
 					{
-						rt_cv.wait(l);
+						requestHandle->statusCode = 610;
 					}
 				}
-				shutting_down = rt_shutting_down;
-				requests_to_remove = false;
-				requests_to_start = false;
-				for (Request *request : requests_to_add)
+				for (auto &requestHandle : requestHandles)
 				{
-					request->status = 0;
-					requests.insert(request);
-				}
-				requests_to_add.clear();
-			}
-
-			if (multi && requests_added_to_multi)
-			{
-				int dontcare;
-				struct CURLMsg *msg;
-
-				curl_multi_wait(multi, nullptr, 0, curl_multi_wait_timeout_ms, &dontcare);
-				curl_multi_perform(multi, &dontcare);
-				while ((msg = curl_multi_info_read(multi, &dontcare)))
-				{
-					if (msg->msg == CURLMSG_DONE)
+					if (requestHandle->statusCode)
 					{
-						Request *request;
-						curl_easy_getinfo(msg->easy_handle, CURLINFO_PRIVATE, &request);
-
-						int finish_with = 600;
-
-						switch (msg->data.result)
-						{
-						case CURLE_OK:
-							long code;
-							curl_easy_getinfo(msg->easy_handle, CURLINFO_RESPONSE_CODE, &code);
-							finish_with = (int)code;
-							break;
-						
-						case CURLE_UNSUPPORTED_PROTOCOL:  finish_with = 601; break;
-						case CURLE_COULDNT_RESOLVE_HOST:  finish_with = 602; break;
-						case CURLE_OPERATION_TIMEDOUT:    finish_with = 605; break;
-						case CURLE_URL_MALFORMAT:         finish_with = 606; break;
-						case CURLE_COULDNT_CONNECT:       finish_with = 607; break;
-						case CURLE_COULDNT_RESOLVE_PROXY: finish_with = 608; break;
-						case CURLE_TOO_MANY_REDIRECTS:    finish_with = 611; break;
-
-						case CURLE_SSL_CONNECT_ERROR:        finish_with = 612; break;
-						case CURLE_SSL_ENGINE_NOTFOUND:      finish_with = 613; break;
-						case CURLE_SSL_ENGINE_SETFAILED:     finish_with = 614; break;
-						case CURLE_SSL_CERTPROBLEM:          finish_with = 615; break;
-						case CURLE_SSL_CIPHER:               finish_with = 616; break;
-						case CURLE_SSL_ENGINE_INITFAILED:    finish_with = 617; break;
-						case CURLE_SSL_CACERT_BADFILE:       finish_with = 618; break;
-						case CURLE_SSL_CRL_BADFILE:          finish_with = 619; break;
-						case CURLE_SSL_ISSUER_ERROR:         finish_with = 620; break;
-						case CURLE_SSL_PINNEDPUBKEYNOTMATCH: finish_with = 621; break;
-						case CURLE_SSL_INVALIDCERTSTATUS:    finish_with = 609; break;
-
-						case CURLE_HTTP2:
-						case CURLE_HTTP2_STREAM:
-						
-						case CURLE_FAILED_INIT:
-						case CURLE_NOT_BUILT_IN:
-						default:
-							break;
-						}
-
-						if (finish_with >= 600)
-						{
-							std::cerr << request->error_buffer << std::endl;
-						}
-
-						request->status = finish_with;
-					}
-				};
-			}
-
-			std::set<Request *> requests_to_remove;
-			for (Request *request : requests)
-			{
-				bool signal_done = false;
-
-				{
-					std::lock_guard<std::mutex> g(request->rm_mutex);
-					if (shutting_down)
-					{
-						// In the weird case that a http::Request::Simple* call is
-						// waiting on this Request, we should fail the request
-						// instead of cancelling it ourselves.
-						request->status = 610;
-					}
-					if (!request->rm_canceled && request->rm_started && !request->added_to_multi && !request->status)
-					{
-						if (multi && request->easy)
-						{
-							MultiAdd(request);
-						}
-						else
-						{
-							request->status = 604;
-						}
-					}
-					if (!request->rm_canceled && request->rm_started && !request->rm_finished)
-					{
-						if (multi && request->easy)
-						{
-#ifdef REQUEST_USE_CURL_OFFSET_T
-							curl_easy_getinfo(request->easy, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &request->rm_total);
-							curl_easy_getinfo(request->easy, CURLINFO_SIZE_DOWNLOAD_T, &request->rm_done);
-#else
-							double total, done;
-							curl_easy_getinfo(request->easy, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &total);
-							curl_easy_getinfo(request->easy, CURLINFO_SIZE_DOWNLOAD, &done);
-							request->rm_total = (curl_off_t)total;
-							request->rm_done = (curl_off_t)done;
-#endif
-						}
-						if (request->status)
-						{
-							request->rm_finished = true;
-							MultiRemove(request);
-							signal_done = true;
-						}
-					}
-					if (request->rm_canceled)
-					{
-						requests_to_remove.insert(request);
+						requestHandlesToUnregister.push_back(requestHandle);
 					}
 				}
-
-				if (signal_done)
+				for (auto &requestHandle : requestHandlesToRegister)
 				{
-					request->done_cv.notify_one();
+					requestHandles.push_back(requestHandle);
+					RegisterRequestHandle(requestHandle);
+				}
+				requestHandlesToRegister.clear();
+				for (auto &requestHandle : requestHandlesToUnregister)
+				{
+					auto eraseFrom = std::remove(requestHandles.begin(), requestHandles.end(), requestHandle);
+					if (eraseFrom != requestHandles.end())
+					{
+						assert(eraseFrom + 1 == requestHandles.end());
+						UnregisterRequestHandle(requestHandle);
+						requestHandles.erase(eraseFrom, requestHandles.end());
+						if (requestHandle->error.size())
+						{
+							std::cerr << requestHandle->error << std::endl;
+						}
+						{
+							std::lock_guard lk(requestHandle->stateMx);
+							requestHandle->state = RequestHandle::done;
+						}
+						requestHandle->stateCv.notify_one();
+					}
+				}
+				requestHandlesToUnregister.clear();
+				if (!running)
+				{
+					break;
 				}
 			}
-			for (Request *request : requests_to_remove)
-			{
-				requests.erase(request);
-				MultiRemove(request);
-				delete request;
-			}
+			Tick();
 		}
+		assert(!requestHandles.size());
+		ExitWorker();
 	}
 
-	void RequestManager::MultiAdd(Request *request)
+	bool RequestManager::DisableNetwork() const
 	{
-		if (multi && request->easy && !request->added_to_multi)
-		{
-			curl_multi_add_handle(multi, request->easy);
-			request->added_to_multi = true;
-			++requests_added_to_multi;
-		}
+		return disableNetwork;
 	}
 
-	void RequestManager::MultiRemove(Request *request)
+	void RequestManager::RegisterRequest(Request &request)
 	{
-		if (request->added_to_multi)
-		{
-			curl_multi_remove_handle(multi, request->easy);
-			request->added_to_multi = false;
-			--requests_added_to_multi;
-		}
+		std::lock_guard lk(sharedStateMx);
+		requestHandlesToRegister.push_back(request.handle);
 	}
 
-	bool RequestManager::AddRequest(Request *request)
+	void RequestManager::UnregisterRequest(Request &request)
 	{
-		if (!initialized)
-			return false;
-		{
-			std::lock_guard<std::mutex> g(rt_mutex);
-			requests_to_add.insert(request);
-		}
-		rt_cv.notify_one();
-		return true;
-	}
-
-	void RequestManager::StartRequest(Request *request)
-	{
-		{
-			std::lock_guard<std::mutex> g(rt_mutex);
-			requests_to_start = true;
-		}
-		rt_cv.notify_one();
-	}
-
-	void RequestManager::RemoveRequest(Request *request)
-	{
-		{
-			std::lock_guard<std::mutex> g(rt_mutex);
-			requests_to_remove = true;
-		}
-		rt_cv.notify_one();
+		std::lock_guard lk(sharedStateMx);
+		requestHandlesToUnregister.push_back(request.handle);
 	}
 }
-#endif

@@ -39,6 +39,7 @@
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
+#include "client/http/RequestManager.h"
 #include "common/Platform.h"
 #include "graphics/Graphics.h"
 #include "gui/Style.h"
@@ -779,10 +780,10 @@ int main(int argc, char * argv[])
 	ByteString proxyString = clientConfig(arguments["proxy"], "Proxy", "");
 	ByteString cafileString = clientConfig(arguments["cafile"], "CAFile", "");
 	ByteString capathString = clientConfig(arguments["capath"], "CAPath", "");
-
 	bool disableNetwork = true_arg(arguments["disable-network"]);
+	auto requestManager = http::RequestManager::Create(proxyString, cafileString, capathString, disableNetwork);
 
-	Client::Ref().Initialise(proxyString, cafileString, capathString, disableNetwork);
+	Client::Ref().Initialize();
 
 	// TODO: maybe bind the maximum allowed scale to screen size somehow
 	if(scale < 1 || scale > SCALE_MAXIMUM)

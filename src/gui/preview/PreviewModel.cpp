@@ -23,14 +23,18 @@ PreviewModel::PreviewModel():
 	saveInfo(NULL),
 	saveData(NULL),
 	saveComments(NULL),
-	saveDataDownload(NULL),
-	commentsDownload(NULL),
 	commentBoxEnabled(false),
 	commentsLoaded(false),
 	commentsTotal(0),
 	commentsPageNumber(1)
 {
+}
 
+PreviewModel::~PreviewModel()
+{
+	delete saveInfo;
+	delete saveData;
+	ClearComments();
 }
 
 void PreviewModel::SetFavourite(bool favourite)
@@ -85,13 +89,13 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 		url = ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, "_", saveDate, ".cps");
 	else
 		url = ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, ".cps");
-	saveDataDownload = new http::Request(url);
+	saveDataDownload = std::make_unique<http::Request>(url);
 	saveDataDownload->Start();
 
 	url = ByteString::Build(SCHEME, SERVER , "/Browse/View.json?ID=", saveID);
 	if (saveDate)
 		url += ByteString::Build("&Date=", saveDate);
-	saveInfoDownload = new http::Request(url);
+	saveInfoDownload = std::make_unique<http::Request>(url);
 	saveInfoDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 	saveInfoDownload->Start();
 
@@ -100,7 +104,7 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 		commentsLoaded = false;
 
 		url = ByteString::Build(SCHEME, SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
-		commentsDownload = new http::Request(url);
+		commentsDownload = std::make_unique<http::Request>(url);
 		commentsDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 		commentsDownload->Start();
 	}
@@ -152,7 +156,7 @@ void PreviewModel::UpdateComments(int pageNumber)
 		if (!GetDoOpen())
 		{
 			ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", (commentsPageNumber-1)*20, "&Count=20");
-			commentsDownload = new http::Request(url);
+			commentsDownload = std::make_unique<http::Request>(url);
 			commentsDownload->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
 			commentsDownload->Start();
 		}
@@ -245,11 +249,9 @@ bool PreviewModel::ParseSaveInfo(ByteString &saveInfoResponse)
 		// Redownload the .cps file for a fixed version of the 404 save
 		if (tempID == 404 && this->saveID != 404)
 		{
-			if (saveDataDownload)
-				saveDataDownload->Cancel();
 			delete saveData;
 			saveData = NULL;
-			saveDataDownload = new http::Request(ByteString::Build(STATICSCHEME, STATICSERVER, "/2157797.cps"));
+			saveDataDownload = std::make_unique<http::Request>(ByteString::Build(STATICSCHEME, STATICSERVER, "/2157797.cps"));
 			saveDataDownload->Start();
 		}
 		return true;
@@ -293,8 +295,7 @@ void PreviewModel::Update()
 {
 	if (saveDataDownload && saveDataDownload->CheckDone())
 	{
-		int status;
-		ByteString ret = saveDataDownload->Finish(&status);
+		auto [ status, ret ] = saveDataDownload->Finish();
 
 		ByteString nothing;
 		Client::Ref().ParseServerReturn(nothing, status, true);
@@ -312,13 +313,12 @@ void PreviewModel::Update()
 				observers[i]->SaveLoadingError(Client::Ref().GetLastError());
 			}
 		}
-		saveDataDownload = NULL;
+		saveDataDownload.reset();
 	}
 
 	if (saveInfoDownload && saveInfoDownload->CheckDone())
 	{
-		int status;
-		ByteString ret = saveInfoDownload->Finish(&status);
+		auto [ status, ret ] = saveInfoDownload->Finish();
 
 		ByteString nothing;
 		Client::Ref().ParseServerReturn(nothing, status, true);
@@ -340,13 +340,12 @@ void PreviewModel::Update()
 			for (size_t i = 0; i < observers.size(); i++)
 				observers[i]->SaveLoadingError(Client::Ref().GetLastError());
 		}
-		saveInfoDownload = NULL;
+		saveInfoDownload.reset();
 	}
 
 	if (commentsDownload && commentsDownload->CheckDone())
 	{
-		int status;
-		ByteString ret = commentsDownload->Finish(&status);
+		auto [ status, ret ] = commentsDownload->Finish();
 		ClearComments();
 
 		ByteString nothing;
@@ -358,7 +357,7 @@ void PreviewModel::Update()
 		notifySaveCommentsChanged();
 		notifyCommentsPageChanged();
 
-		commentsDownload = NULL;
+		commentsDownload.reset();
 	}
 }
 
@@ -406,18 +405,4 @@ void PreviewModel::AddObserver(PreviewView * observer)
 	observer->NotifyCommentsChanged(this);
 	observer->NotifyCommentsPageChanged(this);
 	observer->NotifyCommentBoxEnabledChanged(this);
-}
-
-
-PreviewModel::~PreviewModel()
-{
-	if (saveDataDownload)
-		saveDataDownload->Cancel();
-	if (saveInfoDownload)
-		saveInfoDownload->Cancel();
-	if (commentsDownload)
-		commentsDownload->Cancel();
-	delete saveInfo;
-	delete saveData;
-	ClearComments();
 }
