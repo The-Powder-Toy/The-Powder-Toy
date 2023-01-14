@@ -196,6 +196,15 @@ x86_64-darwin-macos-debug)
 	meson_configure+=$'\t'-Dbuild_font=true
 	;;
 esac
+if [[ $PACKAGE_MODE == nohttp ]]; then
+	meson_configure+=$'\t'-Dhttp=false
+fi
+if [[ $PACKAGE_MODE == nogravfft ]]; then
+	meson_configure+=$'\t'-Dgravfft=false
+fi
+if [[ $PACKAGE_MODE == nolua ]]; then
+	meson_configure+=$'\t'-Dlua=none
+fi
 if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 	meson_configure+=$'\t'-Dstatic=prebuilt
 	if [[ $BSH_HOST_PLATFORM == windows ]]; then

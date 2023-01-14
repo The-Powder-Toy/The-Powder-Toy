@@ -82,6 +82,9 @@ for        arch,  platform,     libc,   statdyn, bplatform,         runson, suff
 	(  'x86_64',   'linux',    'gnu',  'static',   'linux', 'ubuntu-18.04',     '',    True,     True,    '.dbg',       None, 'x86_64-lin-gcc-static', 'release' ),
 	(  'x86_64',   'linux',    'gnu',  'static',   'linux', 'ubuntu-18.04',     '',   False,     True,    '.dbg', 'appimage',                    None, 'release' ),
 	(  'x86_64',   'linux',    'gnu', 'dynamic',   'linux', 'ubuntu-18.04',     '',   False,    False,      None,       None,                    None,   'debug' ),
+	(  'x86_64',   'linux',    'gnu', 'dynamic',   'linux', 'ubuntu-18.04',     '',   False,    False,      None,   'nohttp',                    None,   'debug' ),
+	(  'x86_64',   'linux',    'gnu', 'dynamic',   'linux', 'ubuntu-18.04',     '',   False,    False,      None,'nogravfft',                    None,   'debug' ),
+	(  'x86_64',   'linux',    'gnu', 'dynamic',   'linux', 'ubuntu-18.04',     '',   False,    False,      None,    'nolua',                    None,   'debug' ),
 	(  'x86_64',   'linux',    'gnu', 'dynamic',   'linux', 'ubuntu-18.04',     '',   False,    False,      None,       None,                    None, 'release' ),
 #	(  'x86_64', 'windows',  'mingw',  'static',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,       None,                    None,   'debug' ), # ubuntu-20.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them
 #	(  'x86_64', 'windows',  'mingw',  'static',   'linux', 'ubuntu-20.04',     '',   False,     True,    '.dbg',       None,                    None, 'release' ), # ubuntu-20.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them
