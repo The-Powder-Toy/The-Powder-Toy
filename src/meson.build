@@ -1,5 +1,8 @@
-config_template = files('Config.template.h')
-subdir('config')
+configure_file(
+	input: 'Config.template.h',
+	output: 'Config.h',
+	configuration: conf_data
+)
 
 powder_files = files(
 	'SDLCompat.cpp',

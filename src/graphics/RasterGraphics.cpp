@@ -30,6 +30,4 @@ constexpr auto VIDYRES = WINDOWH;
 #define PIXELMETHODS_CLASS Graphics
 #define DO_CLIPCHECK
 #include "RasterDrawMethods.inl"
-#undef VIDYRES
-#undef VIDXRES
 #undef PIXELMETHODS_CLASS

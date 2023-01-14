@@ -177,3 +177,5 @@ public:
 	void SetPref(ByteString property, std::vector<Json::Value> value);
 	void SetPrefUnicode(ByteString prop, String value);
 };
+
+bool AddCustomGol(String ruleString, String nameString, unsigned int highColor, unsigned int lowColor);

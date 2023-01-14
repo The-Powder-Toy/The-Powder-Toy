@@ -692,7 +692,6 @@ void GameSave::readOPS(const std::vector<char> &data)
 				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
 			}
 		}
-#ifndef RENDERER
 		else if (!strcmp(bson_iterator_key(&iter), "authors"))
 		{
 			if (bson_iterator_type(&iter) == BSON_OBJECT)
@@ -707,7 +706,6 @@ void GameSave::readOPS(const std::vector<char> &data)
 				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
 			}
 		}
-#endif
 	}
 
 	//Read wall and fan data

@@ -11,6 +11,7 @@
 
 #include "common/Platform.h"
 #include "graphics/Graphics.h"
+#include "graphics/Renderer.h"
 #include "gui/Style.h"
 #include "simulation/ElementDefs.h"
 
@@ -438,7 +439,6 @@ void OptionsView::UpdateAmbientAirTempPreview(float airTemp, bool isValid)
 {
 	if (isValid)
 	{
-		int HeatToColour(float temp);
 		int c = HeatToColour(airTemp);
 		ambientAirTempPreview->Appearance.BackgroundInactive = ui::Colour(PIXR(c), PIXG(c), PIXB(c));
 		ambientAirTempPreview->SetText("");

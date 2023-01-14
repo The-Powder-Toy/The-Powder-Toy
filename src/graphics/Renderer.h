@@ -2,6 +2,7 @@
 #include "Config.h"
 
 #include <vector>
+#include <mutex>
 
 #include "Graphics.h"
 #include "gui/interface/Point.h"
@@ -30,6 +31,8 @@ struct gcache_item
 	}
 };
 typedef struct gcache_item gcache_item;
+
+int HeatToColour(float temp);
 
 class Renderer
 {

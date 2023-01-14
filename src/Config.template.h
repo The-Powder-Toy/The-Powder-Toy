@@ -2,8 +2,6 @@
 #include <cstdint>
 
 // Boolean macros (defined / not defined), would be great to get rid of them all.
-#mesondefine RENDERER
-#mesondefine FONTEDITOR
 #mesondefine DEBUG
 #mesondefine LIN
 #mesondefine AND
@@ -63,13 +61,9 @@ constexpr char BRUSH_DIR[]      = "Brushes";
 
 constexpr float M_GRAV = 6.67300e-1f;
 
-#ifdef RENDERER
-constexpr int MENUSIZE = 0;
-constexpr int BARSIZE  = 0;
-#else
 constexpr int MENUSIZE = 40;
 constexpr int BARSIZE  = 17;
-#endif
+
 //CELL, the size of the pressure, gravity, and wall maps. Larger than 1 to prevent extreme lag
 constexpr int CELL   =   4;
 constexpr int XCELLS = 153;

@@ -20,6 +20,9 @@ subdir('simtools')
 powder_files += simulation_files
 render_files += simulation_files
 
+powder_files += files(
+	'Editing.cpp',
+)
 if enable_gravfft
 	powder_files += files('FftGravity.cpp')
 else

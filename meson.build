@@ -378,7 +378,7 @@ if get_option('build_powder')
 		powder_sha = shared_library(
 			app_exe,
 			sources: powder_files,
-			include_directories: [ project_inc, powder_inc ],
+			include_directories: project_inc,
 			c_args: project_c_args,
 			cpp_args: project_cpp_args,
 			link_args: project_link_args,
@@ -389,7 +389,7 @@ if get_option('build_powder')
 		executable(
 			app_exe,
 			sources: powder_files,
-			include_directories: [ project_inc, powder_inc ],
+			include_directories: project_inc,
 			c_args: project_c_args,
 			cpp_args: project_cpp_args,
 			win_subsystem: is_debug ? 'console' : 'windows',
@@ -414,7 +414,7 @@ if get_option('build_render')
 	executable(
 		'render',
 		sources: render_files,
-		include_directories: [ project_inc, render_inc ],
+		include_directories: project_inc,
 		c_args: project_c_args,
 		cpp_args: project_cpp_args,
 		link_args: render_link_args,
@@ -434,7 +434,7 @@ if get_option('build_font')
 	executable(
 		'font',
 		sources: font_files,
-		include_directories: [ project_inc, font_inc ],
+		include_directories: project_inc,
 		c_args: project_c_args,
 		cpp_args: project_cpp_args,
 		link_args: project_link_args,
