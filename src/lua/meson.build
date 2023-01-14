@@ -5,6 +5,7 @@ luaconsole_files = files(
 	'LuaCheckbox.cpp',
 	'LuaCompat.c',
 	'LuaComponent.cpp',
+	'LuaHttp.cpp',
 	'LuaLabel.cpp',
 	'LuaProgressBar.cpp',
 	'LuaScriptInterface.cpp',

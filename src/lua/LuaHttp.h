@@ -2,7 +2,7 @@
 #include "Config.h"
 #include "LuaCompat.h"
 
-namespace LuaTCPSocket
+namespace LuaHttp
 {
 	void Open(lua_State *l);
 }
