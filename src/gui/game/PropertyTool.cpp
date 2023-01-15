@@ -162,11 +162,10 @@ void PropertyWindow::SetProperty(bool warn)
 							new ErrorMessage("Could not set property", "Invalid particle type");
 						return;
 					}
-
-#ifdef DEBUG
-					std::cout << "Got int value " << v << std::endl;
-#endif
-
+					if constexpr (DEBUG)
+					{
+						std::cout << "Got int value " << v << std::endl;
+					}
 					tool->propValue.Integer = v;
 					break;
 				}
@@ -187,9 +186,10 @@ void PropertyWindow::SetProperty(bool warn)
 					{
 						v = value.ToNumber<unsigned int>();
 					}
-#ifdef DEBUG
-					std::cout << "Got uint value " << v << std::endl;
-#endif
+					if constexpr (DEBUG)
+					{
+						std::cout << "Got uint value " << v << std::endl;
+					}
 					tool->propValue.UInteger = v;
 					break;
 				}

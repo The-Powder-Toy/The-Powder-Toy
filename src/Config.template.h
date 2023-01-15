@@ -2,12 +2,12 @@
 #include <cstdint>
 
 // Boolean macros (defined / not defined), would be great to get rid of them all.
-#mesondefine DEBUG
 #mesondefine LIN
 #mesondefine AND
 #mesondefine WIN
 #mesondefine MACOSX
 
+constexpr bool DEBUG                    = @DEBUG@;
 constexpr bool X86                      = @X86@;
 constexpr bool BETA                     = @BETA@;
 constexpr bool SNAPSHOT                 = @SNAPSHOT@;

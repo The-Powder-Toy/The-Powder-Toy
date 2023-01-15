@@ -1329,9 +1329,10 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	const auto *data = reinterpret_cast<unsigned char *>(&bsonData[0]);
 	dataLength = bsonData.size();
 
-#ifdef DEBUG
-	std::cout << "Parsing " << dataLength << " bytes of data, version " << ver << std::endl;
-#endif
+	if constexpr (DEBUG)
+	{
+		std::cout << "Parsing " << dataLength << " bytes of data, version " << ver << std::endl;
+	}
 
 	if (dataLength < bw*bh)
 		throw ParseException(ParseException::Corrupt, "Save data corrupt (missing data)");
@@ -2538,9 +2539,10 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	}
 	auto compressedSize = int(outputData.size());
 
-#ifdef DEBUG
-	printf("compressed data: %d\n", compressedSize);
-#endif
+	if constexpr (DEBUG)
+	{
+		printf("compressed data: %d\n", compressedSize);
+	}
 	outputData.resize(compressedSize + 12);
 
 	auto header = (unsigned char *)&outputData[compressedSize];

@@ -238,9 +238,10 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 
 	return (pixel*)resultImage;
 #else
-#ifdef DEBUG
-	std::cout << "Resampling " << sw << "x" << sh << " to " << rw << "x" << rh << std::endl;
-#endif
+	if constexpr (DEBUG)
+	{
+		std::cout << "Resampling " << sw << "x" << sh << " to " << rw << "x" << rh << std::endl;
+	}
 	bool stairstep = false;
 	if(rw < sw || rh < sh)
 	{
@@ -257,12 +258,13 @@ pixel *Graphics::resample_img(pixel *src, int sw, int sh, int rw, int rh)
 		if(((fxint & (fxint-1)) == 0 && fxf < 0.1f) || ((fyint & (fyint-1)) == 0 && fyf < 0.1f))
 			stairstep = true;
 
-#ifdef DEBUG
-		if(stairstep)
-			std::cout << "Downsampling by " << fx << "x" << fy << " using stairstepping" << std::endl;
-		else
-			std::cout << "Downsampling by " << fx << "x" << fy << " without stairstepping" << std::endl;
-#endif
+		if constexpr (DEBUG)
+		{
+			if(stairstep)
+				std::cout << "Downsampling by " << fx << "x" << fy << " using stairstepping" << std::endl;
+			else
+				std::cout << "Downsampling by " << fx << "x" << fy << " without stairstepping" << std::endl;
+		}
 	}
 
 	int y, x, fxceil, fyceil;

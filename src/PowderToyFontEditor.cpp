@@ -15,7 +15,8 @@
 #include <unistd.h>
 #endif
 #ifdef MACOSX
-# include "common/macosx.h"
+# include <mach-o/dyld.h>
+# include <ApplicationServices/ApplicationServices.h>
 #endif
 #include <SDL.h>
 
@@ -299,9 +300,10 @@ void EventProcess(SDL_Event event)
 		engine->onMouseClick(event.motion.x, event.motion.y, mouseButton);
 
 		mouseDown = true;
-#if !defined(NDEBUG) && !defined(DEBUG)
-		SDL_CaptureMouse(SDL_TRUE);
-#endif
+		if constexpr (!DEBUG)
+		{
+			SDL_CaptureMouse(SDL_TRUE);
+		}
 		break;
 	case SDL_MOUSEBUTTONUP:
 		// if mouse hasn't moved yet, sdl will send 0,0. We don't want that
@@ -314,9 +316,10 @@ void EventProcess(SDL_Event event)
 		engine->onMouseUnclick(mousex, mousey, mouseButton);
 
 		mouseDown = false;
-#if !defined(NDEBUG) && !defined(DEBUG)
-		SDL_CaptureMouse(SDL_FALSE);
-#endif
+		if constexpr (!DEBUG)
+		{
+			SDL_CaptureMouse(SDL_FALSE);
+		}
 		break;
 	case SDL_WINDOWEVENT:
 	{
@@ -418,9 +421,10 @@ void EngineProcess()
 			showDoubleScreenDialog = false;
 		}
 	}
-#ifdef DEBUG
-	std::cout << "Breaking out of EngineProcess" << std::endl;
-#endif
+	if constexpr (DEBUG)
+	{
+		std::cout << "Breaking out of EngineProcess" << std::endl;
+	}
 }
 
 int main(int argc, char * argv[])

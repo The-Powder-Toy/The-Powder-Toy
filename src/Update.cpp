@@ -101,29 +101,28 @@ int update_finish()
 #ifdef WIN
 	ByteString exeName = Platform::ExecutableName(), updName;
 	int timeout = 5, err;
-
-#ifdef DEBUG
-	printf("Update: Current EXE name: %s\n", exeName.c_str());
-#endif
-
+	if constexpr (DEBUG)
+	{
+		printf("Update: Current EXE name: %s\n", exeName.c_str());
+	}
 	updName = exeName;
 	ByteString extension = exeName.substr(exeName.length() - 4);
 	if (extension == ".exe")
 		updName = exeName.substr(0, exeName.length() - 4);
 	updName = updName + "_upd.exe";
-
-#ifdef DEBUG
-	printf("Update: Temp EXE name: %s\n", updName.c_str());
-#endif
-
+	if constexpr (DEBUG)
+	{
+		printf("Update: Temp EXE name: %s\n", updName.c_str());
+	}
 	while (!Platform::RemoveFile(updName))
 	{
 		err = GetLastError();
 		if (err == ERROR_FILE_NOT_FOUND)
 		{
-#ifdef DEBUG
-			printf("Update: Temp file not deleted\n");
-#endif
+			if constexpr (DEBUG)
+			{
+				printf("Update: Temp file not deleted\n");
+			}
 			// Old versions of powder toy name their update files with _update.exe, delete that upgrade file here
 			updName = exeName;
 			ByteString extension = exeName.substr(exeName.length() - 4);
@@ -137,9 +136,10 @@ int update_finish()
 		timeout--;
 		if (timeout <= 0)
 		{
-#ifdef DEBUG
-			printf("Update: Delete timeout\n");
-#endif
+			if constexpr (DEBUG)
+			{
+				printf("Update: Delete timeout\n");
+			}
 			return 1;
 		}
 	}

@@ -13,7 +13,8 @@
 #include <fstream>
 
 #ifdef MACOSX
-# include "common/macosx.h"
+# include <mach-o/dyld.h>
+# include <ApplicationServices/ApplicationServices.h>
 #endif
 
 #ifdef LIN

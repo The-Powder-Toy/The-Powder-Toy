@@ -113,9 +113,7 @@ namespace ui
 		Component *hoverComponent;
 		ChromeStyle chrome;
 
-#ifdef DEBUG
 		bool debugMode;
-#endif
 		//These controls allow a component to call the destruction of the Window inside an event (called by the Window)
 		void finalise();
 		bool halt;

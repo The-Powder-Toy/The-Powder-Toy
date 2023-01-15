@@ -19,9 +19,7 @@ Window::Window(Point _position, Point _size):
 	cancelButton(NULL),
 	focusedComponent_(NULL),
 	hoverComponent(NULL),
-#ifdef DEBUG
 	debugMode(false),
-#endif
 	halt(false),
 	destruct(false),
 	stop(false)
@@ -197,7 +195,6 @@ void Window::DoDraw()
 					Components[i]->Draw(scrpos);
 				}
 			}
-#ifdef DEBUG
 			if (debugMode)
 			{
 				if (focusedComponent_==Components[i])
@@ -209,7 +206,6 @@ void Window::DoDraw()
 					ui::Engine::Ref().g->fillrect(Components[i]->Position.X+Position.X, Components[i]->Position.Y+Position.Y, Components[i]->Size.X, Components[i]->Size.Y, 255, 0, 0, 90);
 				}
 			}
-#endif
 		}
 	// the component the mouse is hovering over and the focused component are always drawn last
 	if (hoverComponent && hoverComponent->Visible && hoverComponent->GetParent() == NULL)
@@ -236,7 +232,6 @@ void Window::DoDraw()
 			focusedComponent_->Draw(scrpos);
 		}
 	}
-#ifdef DEBUG
 	if (debugMode)
 	{
 		if (focusedComponent_)
@@ -260,16 +255,13 @@ void Window::DoDraw()
 		}
 		return;
 	}
-#endif
 
 }
 
 void Window::DoTick(float dt)
 {
-#ifdef DEBUG
 	if (debugMode)
 		return;
-#endif
 
 	if (DoesTextInput || (focusedComponent_ && focusedComponent_->Visible && focusedComponent_->Enabled && focusedComponent_->DoesTextInput))
 	{
@@ -311,8 +303,7 @@ void Window::DoTick(float dt)
 
 void Window::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-#ifdef DEBUG
-	if (key == SDLK_TAB && ctrl)
+	if (DEBUG && key == SDLK_TAB && ctrl)
 		debugMode = !debugMode;
 	if (debugMode)
 	{
@@ -395,7 +386,6 @@ void Window::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, b
 		}
 		return;
 	}
-#endif
 	//on key press
 	if (focusedComponent_ != NULL)
 	{
@@ -418,10 +408,8 @@ void Window::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, b
 
 void Window::DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-#ifdef DEBUG
 	if(debugMode)
 		return;
-#endif
 	//on key unpress
 	if (focusedComponent_ != NULL)
 	{
@@ -437,10 +425,8 @@ void Window::DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl,
 
 void Window::DoTextInput(String text)
 {
-#ifdef DEBUG
 	if (debugMode)
 		return;
-#endif
 	//on key unpress
 	if (focusedComponent_ != NULL)
 	{
@@ -482,10 +468,10 @@ void Window::DoMouseDown(int x_, int y_, unsigned button)
 			if (x >= Components[i]->Position.X && y >= Components[i]->Position.Y && x < Components[i]->Position.X + Components[i]->Size.X && y < Components[i]->Position.Y + Components[i]->Size.Y)
 			{
 				FocusComponent(Components[i]);
-#ifdef DEBUG
-				if (!debugMode)
-#endif
-				Components[i]->OnMouseClick(x - Components[i]->Position.X, y - Components[i]->Position.Y, button);
+				if (!DEBUG || !debugMode)
+				{
+					Components[i]->OnMouseClick(x - Components[i]->Position.X, y - Components[i]->Position.Y, button);
+				}
 				clickState = true;
 				break;
 			}
@@ -495,10 +481,8 @@ void Window::DoMouseDown(int x_, int y_, unsigned button)
 	if (!clickState)
 		FocusComponent(NULL);
 
-#ifdef DEBUG
 	if (debugMode)
 		return;
-#endif
 
 	//on mouse down
 	for (int i = Components.size() - 1; i > -1 && !halt; --i)
@@ -522,10 +506,8 @@ void Window::DoMouseMove(int x_, int y_, int dx, int dy)
 	//on mouse move (if true, and inside)
 	int x = x_ - Position.X;
 	int y = y_ - Position.Y;
-#ifdef DEBUG
 	if (debugMode)
 		return;
-#endif
 	for (int i = Components.size() - 1; i > -1  && !halt; --i)
 	{
 		if (Components[i]->Enabled && Components[i]->Visible)
@@ -578,10 +560,8 @@ void Window::DoMouseUp(int x_, int y_, unsigned button)
 {
 	int x = x_ - Position.X;
 	int y = y_ - Position.Y;
-#ifdef DEBUG
 	if (debugMode)
 		return;
-#endif
 	//on mouse unclick
 	for (int i = Components.size() - 1; i >= 0  && !halt; --i)
 	{
@@ -612,10 +592,8 @@ void Window::DoMouseWheel(int x_, int y_, int d)
 {
 	int x = x_ - Position.X;
 	int y = y_ - Position.Y;
-#ifdef DEBUG
 	if (debugMode)
 		return;
-#endif
 	//on mouse wheel focused
 	for (int i = Components.size() - 1; i >= 0  && !halt; --i)
 	{

@@ -62,9 +62,10 @@ inline ByteString IntroText()
 	{
 		sb << " NOHTTP";
 	}
-#ifdef DEBUG
-	sb << " DEBUG";
-#endif
+	if constexpr (DEBUG)
+	{
+		sb << " DEBUG";
+	}
 	if constexpr (ENFORCE_HTTPS)
 	{
 		sb << " HTTPS";

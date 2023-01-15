@@ -7,7 +7,8 @@
 #include <climits>
 #include <cstdint>
 #ifdef WIN
-#include <direct.h>
+# include <direct.h>
+# include <crtdbg.h>
 #endif
 #include <SDL.h>
 
@@ -22,10 +23,6 @@
 # include <unistd.h>
 #endif
 #ifdef MACOSX
-# ifdef DEBUG
-#  undef DEBUG
-#  define DEBUG 1
-# endif
 # include <CoreServices/CoreServices.h>
 #endif
 #include <sys/stat.h>
@@ -380,9 +377,10 @@ void EventProcess(SDL_Event event)
 		engine->onMouseClick(mousex, mousey, mouseButton);
 
 		mouseDown = true;
-#if !defined(NDEBUG) && !defined(DEBUG)
-		SDL_CaptureMouse(SDL_TRUE);
-#endif
+		if constexpr (!DEBUG)
+		{
+			SDL_CaptureMouse(SDL_TRUE);
+		}
 		break;
 	case SDL_MOUSEBUTTONUP:
 		// if mouse hasn't moved yet, sdl will send 0,0. We don't want that
@@ -395,9 +393,10 @@ void EventProcess(SDL_Event event)
 		engine->onMouseUnclick(mousex, mousey, mouseButton);
 
 		mouseDown = false;
-#if !defined(NDEBUG) && !defined(DEBUG)
-		SDL_CaptureMouse(SDL_FALSE);
-#endif
+		if constexpr (!DEBUG)
+		{
+			SDL_CaptureMouse(SDL_FALSE);
+		}
 		break;
 	case SDL_WINDOWEVENT:
 	{
@@ -527,9 +526,10 @@ void EngineProcess()
 			LargeScreenDialog();
 		}
 	}
-#ifdef DEBUG
-	std::cout << "Breaking out of EngineProcess" << std::endl;
-#endif
+	if constexpr (DEBUG)
+	{
+		std::cout << "Breaking out of EngineProcess" << std::endl;
+	}
 }
 
 void BlueScreen(String detailMessage)
@@ -605,8 +605,11 @@ int GuessBestScale()
 
 int main(int argc, char * argv[])
 {
-#if defined(DEBUG) && defined(_MSC_VER)
-	_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
+#ifdef WIN
+	if constexpr (DEBUG)
+	{
+		_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
+	}
 #endif
 	currentWidth = WINDOWW;
 	currentHeight = WINDOWH;
@@ -818,8 +821,7 @@ int main(int argc, char * argv[])
 	engine->Begin(WINDOWW, WINDOWH);
 	engine->SetFastQuit(Client::Ref().GetPrefBool("FastQuit", true));
 
-#if !defined(DEBUG)
-	bool enableBluescreen = !true_arg(arguments["disable-bluescreen"]);
+	bool enableBluescreen = !DEBUG && !true_arg(arguments["disable-bluescreen"]);
 	if (enableBluescreen)
 	{
 		//Get ready to catch any dodgy errors
@@ -828,7 +830,6 @@ int main(int argc, char * argv[])
 		signal(SIGILL, SigHandler);
 		signal(SIGABRT, SigHandler);
 	}
-#endif
 
 	if constexpr (X86)
 	{
@@ -844,9 +845,10 @@ int main(int argc, char * argv[])
 		auto openArg = arguments["open"];
 		if (openArg.has_value())
 		{
-#ifdef DEBUG
-			std::cout << "Loading " << openArg.value() << std::endl;
-#endif
+			if constexpr (DEBUG)
+			{
+				std::cout << "Loading " << openArg.value() << std::endl;
+			}
 			if (Platform::FileExists(openArg.value()))
 			{
 				try
@@ -900,9 +902,10 @@ int main(int argc, char * argv[])
 
 				if (!saveIdPart.size())
 					throw std::runtime_error("No Save ID");
-#ifdef DEBUG
-				std::cout << "Got Ptsave: id: " << saveIdPart << std::endl;
-#endif
+				if constexpr (DEBUG)
+				{
+					std::cout << "Got Ptsave: id: " << saveIdPart << std::endl;
+				}
 				int saveId = saveIdPart.ToNumber<int>();
 
 				SaveInfo * newSave = Client::Ref().GetSave(saveId, 0);
@@ -927,7 +930,6 @@ int main(int argc, char * argv[])
 		SaveWindowPosition();
 	};
 
-#if !defined(DEBUG)
 	if (enableBluescreen)
 	{
 		try
@@ -940,8 +942,9 @@ int main(int argc, char * argv[])
 		}
 	}
 	else
-#endif
-	wrapWithBluescreen(); // the else branch of the if in the #if !defined(DEBUG)
+	{
+		wrapWithBluescreen();
+	}
 
 	ui::Engine::Ref().CloseWindow();
 	delete gameController;
