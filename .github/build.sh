@@ -428,8 +428,7 @@ if [[ $PACKAGE_MODE == dmg ]]; then
 	mv $appdir dmgroot/$appdir
 	cp ../LICENSE dmgroot/LICENSE
 	cp ../README.md dmgroot/README.md
-	hdiutil create uncompressed.dmg -ov -volname $APP_NAME -fs HFS+ -srcfolder dmgroot
-	hdiutil convert uncompressed.dmg -format UDZO -o $ASSET_PATH
+	hdiutil create -format UDZO -volname $APP_NAME -fs HFS+ -srcfolder dmgroot -o $ASSET_PATH
 elif [[ $PACKAGE_MODE == appimage ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
 	case $BSH_HOST_ARCH in
