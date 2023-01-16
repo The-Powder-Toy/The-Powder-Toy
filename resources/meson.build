@@ -68,7 +68,7 @@ elif host_platform == 'darwin'
 		output: 'Info.plist',
 		configuration: conf_data,
 	)
-elif host_platform == 'linux'
+else  # linux, bsd, ...
 	data_files += to_array.process(rendered_icons['icon_exe'], extra_args: 'icon_exe_png')
 	data_files += to_array.process(rendered_icons['icon_cps'], extra_args: 'icon_cps_png')
 	data_files += to_array.process('save.xml', extra_args: 'save_xml')
