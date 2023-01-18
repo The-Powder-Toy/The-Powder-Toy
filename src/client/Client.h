@@ -129,8 +129,6 @@ public:
 	std::vector<char> GetSaveData(int saveID, int saveDate);
 
 	LoginStatus Login(ByteString username, ByteString password, User & user);
-	std::vector<SaveInfo*> * SearchSaves(int start, int count, String query, ByteString sort, ByteString category, int & resultCount);
-	std::vector<std::pair<ByteString, int> > * GetTags(int start, int count, String query, int & resultCount);
 
 	SaveInfo * GetSave(int saveID, int saveDate);
 	SaveFile * LoadSaveFile(ByteString filename);

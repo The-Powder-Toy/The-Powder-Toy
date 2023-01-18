@@ -39,18 +39,6 @@ namespace http
 		{
 			{
 				std::lock_guard lk(sharedStateMx);
-				if (!running)
-				{
-					// TODO: Fix bad design.
-					// Bad design: Client should not outlive RequestManager because it has its own requests, but
-					//             RequestManager needs Client because Client is also responsible for configuration >_>
-					// Problem:    RequestManager's worker needs all requests to have been unregistered when it exits.
-					// Solution:   Knock out all live requests here on shutdown.
-					for (auto &requestHandle : requestHandles)
-					{
-						requestHandle->statusCode = 610;
-					}
-				}
 				for (auto &requestHandle : requestHandles)
 				{
 					if (requestHandle->statusCode)

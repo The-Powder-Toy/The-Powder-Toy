@@ -2,6 +2,7 @@
 
 #include "SearchView.h"
 
+#include "Format.h"
 #include "client/SaveInfo.h"
 #include "client/Client.h"
 
@@ -17,14 +18,7 @@ SearchModel::SearchModel():
 	resultCount(0),
 	showOwn(false),
 	showFavourite(false),
-	showTags(true),
-	saveListLoaded(false),
-	updateSaveListWorking(false),
-	updateSaveListFinished(false),
-	updateSaveListResult(nullptr),
-	updateTagListWorking(false),
-	updateTagListFinished(false),
-	updateTagListResult(nullptr)
+	showTags(true)
 {
 }
 
@@ -38,32 +32,136 @@ bool SearchModel::GetShowTags()
 	return showTags;
 }
 
-void SearchModel::updateSaveListT()
+void SearchModel::BeginSearchSaves(int start, int count, String query, ByteString sort, ByteString category)
 {
-	ByteString category = "";
-	if(showFavourite)
-		category = "Favourites";
-	if(showOwn && Client::Ref().GetAuthUser().UserID)
-		category = "by:"+Client::Ref().GetAuthUser().Username;
-	std::vector<SaveInfo*> * saveList = Client::Ref().SearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", category, thResultCount);
-
-	updateSaveListResult = saveList;
-	updateSaveListFinished = true;
+	lastError = "";
+	resultCount = 0;
+	ByteStringBuilder urlStream;
+	ByteString data;
+	urlStream << SCHEME << SERVER << "/Browse.json?Start=" << start << "&Count=" << count;
+	if(query.length() || sort.length())
+	{
+		urlStream << "&Search_Query=";
+		if(query.length())
+			urlStream << format::URLEncode(query.ToUtf8());
+		if(sort == "date")
+		{
+			if(query.length())
+				urlStream << format::URLEncode(" ");
+			urlStream << format::URLEncode("sort:") << format::URLEncode(sort);
+		}
+	}
+	if(category.length())
+	{
+		urlStream << "&Category=" << format::URLEncode(category);
+	}
+	searchSaves = std::make_unique<http::Request>(urlStream.Build());
+	auto authUser = Client::Ref().GetAuthUser();
+	if (authUser.UserID)
+	{
+		searchSaves->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
+	}
+	searchSaves->Start();
 }
 
-void SearchModel::updateTagListT()
+std::vector<SaveInfo *> SearchModel::EndSearchSaves()
 {
-	int tagResultCount;
-	std::vector<std::pair<ByteString, int> > * tagList = Client::Ref().GetTags(0, 24, "", tagResultCount);
+	std::vector<SaveInfo *> saveArray;
+	auto [ dataStatus, data ] = searchSaves->Finish();
+	searchSaves.reset();
+	auto &client = Client::Ref();
+	client.ParseServerReturn(data, dataStatus, true);
+	if (dataStatus == 200 && data.size())
+	{
+		try
+		{
+			std::istringstream dataStream(data);
+			Json::Value objDocument;
+			dataStream >> objDocument;
 
-	updateTagListResult = tagList;
-	updateTagListFinished = true;
+			resultCount = objDocument["Count"].asInt();
+			Json::Value savesArray = objDocument["Saves"];
+			for (Json::UInt j = 0; j < savesArray.size(); j++)
+			{
+				int tempID = savesArray[j]["ID"].asInt();
+				int tempCreatedDate = savesArray[j]["Created"].asInt();
+				int tempUpdatedDate = savesArray[j]["Updated"].asInt();
+				int tempScoreUp = savesArray[j]["ScoreUp"].asInt();
+				int tempScoreDown = savesArray[j]["ScoreDown"].asInt();
+				ByteString tempUsername = savesArray[j]["Username"].asString();
+				String tempName = ByteString(savesArray[j]["Name"].asString()).FromUtf8();
+				int tempVersion = savesArray[j]["Version"].asInt();
+				bool tempPublished = savesArray[j]["Published"].asBool();
+				SaveInfo * tempSaveInfo = new SaveInfo(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp, tempScoreDown, tempUsername, tempName);
+				tempSaveInfo->Version = tempVersion;
+				tempSaveInfo->SetPublished(tempPublished);
+				saveArray.push_back(tempSaveInfo);
+			}
+		}
+		catch (std::exception &e)
+		{
+			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
+		}
+	}
+	else
+	{
+		lastError = client.GetLastError();
+	}
+	return saveArray;
+}
+
+void SearchModel::BeginGetTags(int start, int count, String query)
+{
+	lastError = "";
+	ByteStringBuilder urlStream;
+	urlStream << SCHEME << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
+	if(query.length())
+	{
+		urlStream << "&Search_Query=";
+		if(query.length())
+			urlStream << format::URLEncode(query.ToUtf8());
+	}
+	getTags = std::make_unique<http::Request>(urlStream.Build());
+	getTags->Start();
+}
+
+std::vector<std::pair<ByteString, int>> SearchModel::EndGetTags()
+{
+	std::vector<std::pair<ByteString, int>> tagArray;
+	auto [ dataStatus, data ] = getTags->Finish();
+	getTags.reset();
+	if(dataStatus == 200 && data.size())
+	{
+		try
+		{
+			std::istringstream dataStream(data);
+			Json::Value objDocument;
+			dataStream >> objDocument;
+
+			Json::Value tagsArray = objDocument["Tags"];
+			for (Json::UInt j = 0; j < tagsArray.size(); j++)
+			{
+				int tagCount = tagsArray[j]["Count"].asInt();
+				ByteString tag = tagsArray[j]["Tag"].asString();
+				tagArray.push_back(std::pair<ByteString, int>(tag, tagCount));
+			}
+		}
+		catch (std::exception & e)
+		{
+			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
+		}
+	}
+	else
+	{
+		lastError = http::StatusText(dataStatus);
+	}
+	return tagArray;
 }
 
 bool SearchModel::UpdateSaveList(int pageNumber, String query)
 {
 	//Threading
-	if (!updateSaveListWorking)
+	if (!searchSaves)
 	{
 		lastQuery = query;
 		lastError = "";
@@ -83,16 +181,17 @@ bool SearchModel::UpdateSaveList(int pageNumber, String query)
 		selected.clear();
 		notifySelectedChanged();
 
-		if(GetShowTags() && !tagList.size() && !updateTagListWorking)
+		if (GetShowTags() && !tagList.size() && !getTags)
 		{
-			updateTagListFinished = false;
-			updateTagListWorking = true;
-			std::thread([this]() { updateTagListT(); }).detach();
+			BeginGetTags(0, 24, "");
 		}
 
-		updateSaveListFinished = false;
-		updateSaveListWorking = true;
-		std::thread([this]() { updateSaveListT(); }).detach();
+		ByteString category = "";
+		if(showFavourite)
+			category = "Favourites";
+		if(showOwn && Client::Ref().GetAuthUser().UserID)
+			category = "by:"+Client::Ref().GetAuthUser().Username;
+		BeginSearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", category);
 		return true;
 	}
 	return false;
@@ -128,51 +227,19 @@ std::vector<std::pair<ByteString, int> > SearchModel::GetTagList()
 
 void SearchModel::Update()
 {
-	if(updateSaveListWorking)
+	if (searchSaves && searchSaves->CheckDone())
 	{
-		if(updateSaveListFinished)
-		{
-			updateSaveListWorking = false;
-			lastError = "";
-			saveListLoaded = true;
-
-			std::vector<SaveInfo *> *tempSaveList = updateSaveListResult;
-			updateSaveListResult = nullptr;
-
-			if(tempSaveList)
-			{
-				saveList = *tempSaveList;
-				delete tempSaveList;
-			}
-
-			if(!saveList.size())
-			{
-				lastError = Client::Ref().GetLastError();
-				if (lastError == "Unspecified Error")
-					lastError = "";
-			}
-
-			resultCount = thResultCount;
-			notifyPageChanged();
-			notifySaveListChanged();
-		}
+		saveListLoaded = true;
+		lastError = "";
+		saveList = EndSearchSaves();
+		notifyPageChanged();
+		notifySaveListChanged();
 	}
-	if(updateTagListWorking)
+	if (getTags && getTags->CheckDone())
 	{
-		if(updateTagListFinished)
-		{
-			updateTagListWorking = false;
-
-			std::vector<std::pair<ByteString, int>> *tempTagList = updateTagListResult;
-			updateTagListResult = nullptr;
-
-			if(tempTagList)
-			{
-				tagList = *tempTagList;
-				delete tempTagList;
-			}
-			notifyTagListChanged();
-		}
+		lastError = "";
+		tagList = EndGetTags();
+		notifyTagListChanged();
 	}
 }
 

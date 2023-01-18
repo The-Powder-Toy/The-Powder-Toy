@@ -28,9 +28,4 @@ public:
 	{
 		return *Instance();
 	}
-
-	static bool Exists()
-	{
-		return Instance();
-	}
 };

@@ -14,15 +14,7 @@ namespace http
 	{
 		if (handle->state != RequestHandle::ready)
 		{
-			// TODO: Fix bad design.
-			// Bad design: Client should not outlive RequestManager because it has its own requests, but
-			//             RequestManager needs Client because Client is also responsible for configuration >_>
-			// Problem:    Client outlives RequestManager, RequestManager doesn't necessarily exist at this point.
-			// Solution:   Check if it does >_> ExplicitSingleton::Exists exists for no other reason than this.
-			if (RequestManager::Exists())
-			{
-				RequestManager::Ref().UnregisterRequest(*this);
-			}
+			RequestManager::Ref().UnregisterRequest(*this);
 		}
 	}
 
@@ -67,15 +59,7 @@ namespace http
 	{
 		assert(handle->state == RequestHandle::ready);
 		handle->state = RequestHandle::running;
-		// TODO: Fix bad design.
-		// Bad design: Client should not outlive RequestManager because it has its own requests, but
-		//             RequestManager needs Client because Client is also responsible for configuration >_>
-		// Problem:    Client outlives RequestManager, RequestManager doesn't necessarily exist at this point.
-		// Solution:   Check if it does >_> ExplicitSingleton::Exists exists for no other reason than this.
-		if (RequestManager::Exists())
-		{
-			RequestManager::Ref().RegisterRequest(*this);
-		}
+		RequestManager::Ref().RegisterRequest(*this);
 	}
 
 	bool Request::CheckDone() const
@@ -201,7 +185,6 @@ namespace http
 		case 607: return "Connection Refused";
 		case 608: return "Proxy Server Not Found";
 		case 609: return "SSL: Invalid Certificate Status";
-		case 610: return "Cancelled by Shutdown";
 		case 611: return "Too Many Redirects";
 		case 612: return "SSL: Connect Error";
 		case 613: return "SSL: Crypto Engine Not Found";
