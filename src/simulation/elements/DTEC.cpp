@@ -92,6 +92,14 @@ static int update(UPDATE_FUNC_ARGS)
 					setFilt = true;
 					photonWl = parts[ID(r)].ctype;
 				}
+				if (TYP(r) == PT_LITH)
+				{
+					int wl_bin = parts[ID(r)].ctype / 4;
+					if (wl_bin < 0) wl_bin = 0;
+					if (wl_bin > 25) wl_bin = 25;
+					setFilt = true;
+					photonWl = (0x1F << wl_bin);
+				}
 			}
 	if (setFilt)
 	{
