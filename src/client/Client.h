@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "common/String.h"
-#include "common/Singleton.h"
+#include "common/ExplicitSingleton.h"
 #include <json/json.h>
 
 #include "User.h"
@@ -47,7 +47,7 @@ namespace http
 {
 	class Request;
 }
-class Client: public Singleton<Client> {
+class Client: public ExplicitSingleton<Client> {
 private:
 	String messageOfTheDay;
 	std::vector<std::pair<String, ByteString> > serverNotifications;
@@ -72,11 +72,6 @@ private:
 	void notifyAuthUserChanged();
 	void notifyMessageOfTheDay();
 	void notifyNewNotification(std::pair<String, ByteString> notification);
-
-	// internal preferences handling
-	Json::Value preferences;
-	Json::Value GetPref(Json::Value root, ByteString prop, Json::Value defaultValue = Json::nullValue);
-	Json::Value SetPrefHelper(Json::Value root, ByteString prop, Json::Value value);
 
 	// Save stealing info
 	Json::Value authors;
@@ -155,27 +150,8 @@ public:
 	RequestStatus ParseServerReturn(ByteString &result, int status, bool json);
 	void Tick();
 	void CheckUpdate(std::unique_ptr<http::Request> &updateRequest, bool checkSession);
-	void Shutdown();
-
-	// preferences functions
-	void WritePrefs();
-
-	ByteString GetPrefByteString(ByteString prop, ByteString defaultValue);
-	String GetPrefString(ByteString prop, String defaultValue);
-	double GetPrefNumber(ByteString prop, double defaultValue);
-	int GetPrefInteger(ByteString prop, int defaultValue);
-	unsigned int GetPrefUInteger(ByteString prop, unsigned int defaultValue);
-	bool GetPrefBool(ByteString prop, bool defaultValue);
-	std::vector<ByteString> GetPrefByteStringArray(ByteString prop);
-	std::vector<String> GetPrefStringArray(ByteString prop);
-	std::vector<double> GetPrefNumberArray(ByteString prop);
-	std::vector<int> GetPrefIntegerArray(ByteString prop);
-	std::vector<unsigned int> GetPrefUIntegerArray(ByteString prop);
-	std::vector<bool> GetPrefBoolArray(ByteString prop);
-
-	void SetPref(ByteString prop, Json::Value value);
-	void SetPref(ByteString property, std::vector<Json::Value> value);
-	void SetPrefUnicode(ByteString prop, String value);
+	
+	String DoMigration(ByteString fromDir, ByteString toDir);
 };
 
 bool AddCustomGol(String ruleString, String nameString, unsigned int highColor, unsigned int lowColor);

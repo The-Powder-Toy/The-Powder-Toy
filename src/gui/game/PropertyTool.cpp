@@ -1,6 +1,6 @@
 #include "Tool.h"
 
-#include "client/Client.h"
+#include "prefs/GlobalPrefs.h"
 #include "Menu.h"
 #include "Format.h"
 
@@ -75,12 +75,14 @@ sim(sim_)
 	{
 		property->AddOption(std::pair<String, int>(properties[i].Name.FromAscii(), i));
 	}
-	property->SetOption(Client::Ref().GetPrefInteger("Prop.Type", 0));
+
+	auto &prefs = GlobalPrefs::Ref();
+	property->SetOption(prefs.Get("Prop.Type", 0));
 
 	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "", "[value]");
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	textField->SetText(Client::Ref().GetPrefString("Prop.Value", ""));
+	textField->SetText(prefs.Get("Prop.Value", String("")));
 	AddComponent(textField);
 	FocusComponent(textField);
 	SetProperty(false);
@@ -216,8 +218,12 @@ void PropertyWindow::SetProperty(bool warn)
 				new ErrorMessage("Could not set property", "Invalid value provided");
 			return;
 		}
-		Client::Ref().SetPref("Prop.Type", property->GetOption().second);
-		Client::Ref().SetPrefUnicode("Prop.Value", textField->GetText());
+		{
+			auto &prefs = GlobalPrefs::Ref();
+			Prefs::DeferWrite dw(prefs);
+			prefs.Set("Prop.Type", property->GetOption().second);
+			prefs.Set("Prop.Value", textField->GetText());
+		}
 	}
 }
 

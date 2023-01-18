@@ -1,6 +1,5 @@
 #include "ImageRequest.h"
 
-#include "common/Singleton.h"
 #include "graphics/Graphics.h"
 #include "Config.h"
 

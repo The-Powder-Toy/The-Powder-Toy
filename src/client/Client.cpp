@@ -1,5 +1,6 @@
 #include "Client.h"
 
+#include "prefs/GlobalPrefs.h"
 #include "client/http/Request.h" // includes curl.h, needs to come first to silence a warning on windows
 
 #include <cstring>
@@ -65,48 +66,30 @@ Client::Client():
 	updateAvailable(false),
 	authUser(0, "")
 {
-	//Read config
-	std::ifstream configFile;
-	configFile.open("powder.pref", std::ios::binary);
-	if (configFile)
+	auto &prefs = GlobalPrefs::Ref();
+	authUser.UserID = prefs.Get("User.ID", 0);
+	authUser.Username = prefs.Get("User.Username", ByteString(""));
+	authUser.SessionID = prefs.Get("User.SessionID", ByteString(""));
+	authUser.SessionKey = prefs.Get("User.SessionKey", ByteString(""));
+	auto elevation = prefs.Get("User.Elevation", ByteString(""));
+	authUser.UserElevation = User::ElevationNone;
+	if (elevation == "Admin")
 	{
-		try
-		{
-			preferences.clear();
-			configFile >> preferences;
-			int ID = preferences["User"]["ID"].asInt();
-			ByteString Username = preferences["User"]["Username"].asString();
-			ByteString SessionID = preferences["User"]["SessionID"].asString();
-			ByteString SessionKey = preferences["User"]["SessionKey"].asString();
-			ByteString Elevation = preferences["User"]["Elevation"].asString();
-
-			authUser.UserID = ID;
-			authUser.Username = Username;
-			authUser.SessionID = SessionID;
-			authUser.SessionKey = SessionKey;
-			if (Elevation == "Admin")
-				authUser.UserElevation = User::ElevationAdmin;
-			else if (Elevation == "Mod")
-				authUser.UserElevation = User::ElevationModerator;
-			else
-				authUser.UserElevation = User::ElevationNone;
-		}
-		catch (std::exception &e)
-		{
-
-		}
-		configFile.close();
-		firstRun = false;
+		authUser.UserElevation = User::ElevationAdmin;
 	}
-	else
-		firstRun = true;
+	if (elevation == "Mod")
+	{
+		authUser.UserElevation = User::ElevationModerator;
+	}
+	firstRun = !prefs.BackedByFile();
 }
 
 void Client::Initialize()
 {
-	if (GetPrefBool("version.update", false))
+	auto &prefs = GlobalPrefs::Ref();
+	if (prefs.Get("version.update", false))
 	{
-		SetPref("version.update", false);
+		prefs.Set("version.update", false);
 		update_finish();
 	}
 
@@ -412,51 +395,38 @@ void Client::RemoveListener(ClientListener * listener)
 	}
 }
 
-void Client::WritePrefs()
-{
-	std::ofstream configFile;
-	configFile.open("powder.pref", std::ios::trunc);
-
-	if (configFile)
-	{
-		if (authUser.UserID)
-		{
-			preferences["User"]["ID"] = authUser.UserID;
-			preferences["User"]["SessionID"] = authUser.SessionID;
-			preferences["User"]["SessionKey"] = authUser.SessionKey;
-			preferences["User"]["Username"] = authUser.Username;
-			if (authUser.UserElevation == User::ElevationAdmin)
-				preferences["User"]["Elevation"] = "Admin";
-			else if (authUser.UserElevation == User::ElevationModerator)
-				preferences["User"]["Elevation"] = "Mod";
-			else
-				preferences["User"]["Elevation"] = "None";
-		}
-		else
-		{
-			preferences["User"] = Json::nullValue;
-		}
-		configFile << preferences;
-
-		configFile.close();
-	}
-}
-
-void Client::Shutdown()
-{
-	//Save config
-	WritePrefs();
-}
-
 Client::~Client()
 {
 }
 
-
 void Client::SetAuthUser(User user)
 {
 	authUser = user;
-	WritePrefs();
+	{
+		auto &prefs = GlobalPrefs::Ref();
+		Prefs::DeferWrite dw(prefs);
+		if (authUser.UserID)
+		{
+			prefs.Set("User.ID", authUser.UserID);
+			prefs.Set("User.SessionID", authUser.SessionID);
+			prefs.Set("User.SessionKey", authUser.SessionKey);
+			prefs.Set("User.Username", authUser.Username);
+			ByteString elevation = "None";
+			if (authUser.UserElevation == User::ElevationAdmin)
+			{
+				elevation = "Admin";
+			}
+			if (authUser.UserElevation == User::ElevationModerator)
+			{
+				elevation = "Mod";
+			}
+			prefs.Set("User.Elevation", elevation);
+		}
+		else
+		{
+			prefs.Clear("User");
+		}
+	}
 	notifyAuthUserChanged();
 }
 
@@ -1264,254 +1234,6 @@ void Client::SaveAuthorInfo(Json::Value *saveInto)
 	}
 }
 
-// powder.pref preference getting / setting functions
-
-// Recursively go down the json to get the setting we want
-Json::Value Client::GetPref(Json::Value root, ByteString prop, Json::Value defaultValue)
-{
-	try
-	{
-		if(ByteString::Split split = prop.SplitBy('.'))
-			return GetPref(root[split.Before()], split.After(), defaultValue);
-		else
-			return root.get(prop, defaultValue);
-	}
-	catch (std::exception & e)
-	{
-		return defaultValue;
-	}
-}
-
-ByteString Client::GetPrefByteString(ByteString prop, ByteString defaultValue)
-{
-	try
-	{
-		return GetPref(preferences, prop, defaultValue).asString();
-	}
-	catch (std::exception & e)
-	{
-		return defaultValue;
-	}
-}
-
-String Client::GetPrefString(ByteString prop, String defaultValue)
-{
-	try
-	{
-		return ByteString(GetPref(preferences, prop, defaultValue.ToUtf8()).asString()).FromUtf8(false);
-	}
-	catch (std::exception & e)
-	{
-		return defaultValue;
-	}
-}
-
-double Client::GetPrefNumber(ByteString prop, double defaultValue)
-{
-	try
-	{
-		return GetPref(preferences, prop, defaultValue).asDouble();
-	}
-	catch (std::exception & e)
-	{
-		return defaultValue;
-	}
-}
-
-int Client::GetPrefInteger(ByteString prop, int defaultValue)
-{
-	try
-	{
-		return GetPref(preferences, prop, defaultValue).asInt();
-	}
-	catch (std::exception & e)
-	{
-		return defaultValue;
-	}
-}
-
-unsigned int Client::GetPrefUInteger(ByteString prop, unsigned int defaultValue)
-{
-	try
-	{
-		return GetPref(preferences, prop, defaultValue).asUInt();
-	}
-	catch (std::exception & e)
-	{
-		return defaultValue;
-	}
-}
-
-bool Client::GetPrefBool(ByteString prop, bool defaultValue)
-{
-	try
-	{
-		return GetPref(preferences, prop, defaultValue).asBool();
-	}
-	catch (std::exception & e)
-	{
-		return defaultValue;
-	}
-}
-
-std::vector<ByteString> Client::GetPrefByteStringArray(ByteString prop)
-{
-	try
-	{
-		std::vector<ByteString> ret;
-		Json::Value arr = GetPref(preferences, prop);
-		for (int i = 0; i < (int)arr.size(); i++)
-			ret.push_back(arr[i].asString());
-		return ret;
-	}
-	catch (std::exception & e)
-	{
-
-	}
-	return std::vector<ByteString>();
-}
-
-std::vector<String> Client::GetPrefStringArray(ByteString prop)
-{
-	try
-	{
-		std::vector<String> ret;
-		Json::Value arr = GetPref(preferences, prop);
-		for (int i = 0; i < (int)arr.size(); i++)
-			ret.push_back(ByteString(arr[i].asString()).FromUtf8(false));
-		return ret;
-	}
-	catch (std::exception & e)
-	{
-
-	}
-	return std::vector<String>();
-}
-
-std::vector<double> Client::GetPrefNumberArray(ByteString prop)
-{
-	try
-	{
-		std::vector<double> ret;
-		Json::Value arr = GetPref(preferences, prop);
-		for (int i = 0; i < (int)arr.size(); i++)
-			ret.push_back(arr[i].asDouble());
-		return ret;
-	}
-	catch (std::exception & e)
-	{
-
-	}
-	return std::vector<double>();
-}
-
-std::vector<int> Client::GetPrefIntegerArray(ByteString prop)
-{
-	try
-	{
-		std::vector<int> ret;
-		Json::Value arr = GetPref(preferences, prop);
-		for (int i = 0; i < (int)arr.size(); i++)
-			ret.push_back(arr[i].asInt());
-		return ret;
-	}
-	catch (std::exception & e)
-	{
-
-	}
-	return std::vector<int>();
-}
-
-std::vector<unsigned int> Client::GetPrefUIntegerArray(ByteString prop)
-{
-	try
-	{
-		std::vector<unsigned int> ret;
-		Json::Value arr = GetPref(preferences, prop);
-		for (int i = 0; i < (int)arr.size(); i++)
-			ret.push_back(arr[i].asUInt());
-		return ret;
-	}
-	catch (std::exception & e)
-	{
-
-	}
-	return std::vector<unsigned int>();
-}
-
-std::vector<bool> Client::GetPrefBoolArray(ByteString prop)
-{
-	try
-	{
-		std::vector<bool> ret;
-		Json::Value arr = GetPref(preferences, prop);
-		for (int i = 0; i < (int)arr.size(); i++)
-			ret.push_back(arr[i].asBool());
-		return ret;
-	}
-	catch (std::exception & e)
-	{
-
-	}
-	return std::vector<bool>();
-}
-
-// Helper preference setting function.
-// To actually save any changes to preferences, we need to directly do preferences[property] = thing
-// any other way will set the value of a copy of preferences, not the original
-// This function will recursively go through and create an object with the property we wanted set,
-// and return it to SetPref to do the actual setting
-Json::Value Client::SetPrefHelper(Json::Value root, ByteString prop, Json::Value value)
-{
-	if(ByteString::Split split = prop.SplitBy('.'))
-	{
-		Json::Value toSet = GetPref(root, split.Before());
-		toSet = SetPrefHelper(toSet, split.After(), value);
-		root[split.Before()] = toSet;
-	}
-	else
-		root[prop] = value;
-	return root;
-}
-
-void Client::SetPref(ByteString prop, Json::Value value)
-{
-	try
-	{
-		if(ByteString::Split split = prop.SplitBy('.'))
-			preferences[split.Before()] = SetPrefHelper(preferences[split.Before()], split.After(), value);
-		else
-			preferences[prop] = value;
-		WritePrefs();
-	}
-	catch (std::exception & e)
-	{
-
-	}
-}
-
-void Client::SetPref(ByteString prop, std::vector<Json::Value> value)
-{
-	try
-	{
-		Json::Value arr;
-		for (int i = 0; i < (int)value.size(); i++)
-		{
-			arr.append(value[i]);
-		}
-		SetPref(prop, arr);
-	}
-	catch (std::exception & e)
-	{
-
-	}
-}
-
-void Client::SetPrefUnicode(ByteString prop, String value)
-{
-	SetPref(prop, value.ToUtf8());
-}
-
 bool Client::DoInstallation()
 {
 	bool ok = true;
@@ -1652,8 +1374,9 @@ bool Client::DoInstallation()
 
 bool AddCustomGol(String ruleString, String nameString, unsigned int highColor, unsigned int lowColor)
 {
-	auto customGOLTypes = Client::Ref().GetPrefByteStringArray("CustomGOL.Types");
-	Json::Value newCustomGOLTypes(Json::arrayValue);
+	auto &prefs = GlobalPrefs::Ref();
+	auto customGOLTypes = prefs.Get("CustomGOL.Types", std::vector<ByteString>{});
+	std::vector<ByteString> newCustomGOLTypes;
 	bool nameTaken = false;
 	for (auto gol : customGOLTypes)
 	{
@@ -1665,14 +1388,147 @@ bool AddCustomGol(String ruleString, String nameString, unsigned int highColor, 
 				nameTaken = true;
 			}
 		}
-		newCustomGOLTypes.append(gol);
+		newCustomGOLTypes.push_back(gol);
 	}
 	if (nameTaken)
 		return false;
 
 	StringBuilder sb;
 	sb << nameString << " " << ruleString << " " << highColor << " " << lowColor;
-	newCustomGOLTypes.append(sb.Build().ToUtf8());
-	Client::Ref().SetPref("CustomGOL.Types", newCustomGOLTypes);
+	newCustomGOLTypes.push_back(sb.Build().ToUtf8());
+	prefs.Set("CustomGOL.Types", newCustomGOLTypes);
 	return true;
+}
+
+String Client::DoMigration(ByteString fromDir, ByteString toDir)
+{
+	if (fromDir.at(fromDir.length() - 1) != '/')
+		fromDir = fromDir + '/';
+	if (toDir.at(toDir.length() - 1) != '/')
+		toDir = toDir + '/';
+
+	std::ofstream logFile(fromDir + "/migrationlog.txt", std::ios::out);
+	logFile << "Running migration of data from " << fromDir + " to " << toDir << std::endl;
+
+	// Get lists of files to migrate
+	auto stamps = Platform::DirectorySearch(fromDir + "stamps", "", { ".stm" });
+	auto saves = Platform::DirectorySearch(fromDir + "Saves", "", { ".cps", ".stm" });
+	auto scripts = Platform::DirectorySearch(fromDir + "scripts", "", { ".lua", ".txt" });
+	auto downloadedScripts = Platform::DirectorySearch(fromDir + "scripts/downloaded", "", { ".lua" });
+	bool hasScriptinfo = Platform::FileExists(toDir + "scripts/downloaded/scriptinfo");
+	auto screenshots = Platform::DirectorySearch(fromDir, "screenshot", { ".png" });
+	bool hasAutorun = Platform::FileExists(fromDir + "autorun.lua");
+	bool hasPref = Platform::FileExists(fromDir + "powder.pref");
+
+	if (stamps.empty() && saves.empty() && scripts.empty() && downloadedScripts.empty() && screenshots.empty() && !hasAutorun && !hasPref)
+	{
+		logFile << "Nothing to migrate.";
+		return "Nothing to migrate. This button is used to migrate data from pre-96.0 TPT installations to the shared directory";
+	}
+
+	StringBuilder result;
+	std::stack<ByteString> dirsToDelete;
+
+	// Migrate a list of files
+	auto migrateList = [&](std::vector<ByteString> list, ByteString directory, String niceName) {
+		result << '\n' << niceName << ": ";
+		if (!list.empty() && !directory.empty())
+			Platform::MakeDirectory(toDir + directory);
+		int migratedCount = 0, failedCount = 0;
+		for (auto &item : list)
+		{
+			std::string from = fromDir + directory + "/" + item;
+			std::string to = toDir + directory + "/" + item;
+			if (!Platform::FileExists(to))
+			{
+				if (rename(from.c_str(), to.c_str()))
+				{
+					failedCount++;
+					logFile << "failed to move " << from << " to " << to << std::endl;
+				}
+				else
+				{
+					migratedCount++;
+					logFile << "moved " << from << " to " << to << std::endl;
+				}
+			}
+			else
+			{
+				logFile << "skipping " << from << "(already exists)" << std::endl;
+			}
+		}
+
+		dirsToDelete.push(directory);
+		result << "\bt" << migratedCount << " migratated\x0E, \br" << failedCount << " failed\x0E";
+		int duplicates = list.size() - migratedCount - failedCount;
+		if (duplicates)
+			result << ", " << list.size() - migratedCount - failedCount << " skipped (duplicate)";
+	};
+
+	// Migrate a single file
+	auto migrateFile = [&fromDir, &toDir, &result, &logFile](ByteString filename) {
+		ByteString from = fromDir + filename;
+		ByteString to = toDir + filename;
+		if (!Platform::FileExists(to))
+		{
+			if (rename(from.c_str(), to.c_str()))
+			{
+				logFile << "failed to move " << from << " to " << to << std::endl;
+				result << "\n\br" << filename.FromUtf8() << " migration failed\x0E";
+			}
+			else
+			{
+				logFile << "moved " << from << " to " << to << std::endl;
+				result << '\n' << filename.FromUtf8() << " migrated";
+			}
+		}
+		else
+		{
+			logFile << "skipping " << from << "(already exists)" << std::endl;
+			result << '\n' << filename.FromUtf8() << " skipped (already exists)";
+		}
+
+		if (!Platform::RemoveFile(fromDir + filename)) {
+			logFile << "failed to delete " << filename << std::endl;
+		}
+	};
+
+	// Do actual migration
+	Platform::RemoveFile(fromDir + "stamps/stamps.def");
+	migrateList(stamps, "stamps", "Stamps");
+	migrateList(saves, "Saves", "Saves");
+	if (!scripts.empty())
+		migrateList(scripts, "scripts", "Scripts");
+	if (!hasScriptinfo && !downloadedScripts.empty())
+	{
+		migrateList(downloadedScripts, "scripts/downloaded", "Downloaded scripts");
+		migrateFile("scripts/downloaded/scriptinfo");
+	}
+	if (!screenshots.empty())
+		migrateList(screenshots, "", "Screenshots");
+	if (hasAutorun)
+		migrateFile("autorun.lua");
+	if (hasPref)
+		migrateFile("powder.pref");
+
+	// Delete leftover directories
+	while (!dirsToDelete.empty())
+	{
+		ByteString toDelete = dirsToDelete.top();
+		if (!Platform::DeleteDirectory(fromDir + toDelete)) {
+			logFile << "failed to delete " << toDelete << std::endl;
+		}
+		dirsToDelete.pop();
+	}
+
+	// chdir into the new directory
+	chdir(toDir.c_str());
+
+	if (scripts.size())
+		RescanStamps();
+
+	logFile << std::endl << std::endl << "Migration complete. Results: " << result.Build().ToUtf8();
+	logFile.close();
+
+	return result.Build();
 }

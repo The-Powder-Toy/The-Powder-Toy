@@ -4,7 +4,3 @@ common_files += files(
 	'tpt-rand.cpp',
 	'tpt-thread-local.cpp',
 )
-
-powder_files += files(
-	'PlatformPowder.cpp',
-)

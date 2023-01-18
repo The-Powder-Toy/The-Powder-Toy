@@ -1,5 +1,6 @@
 #include "Tool.h"
 
+#include "prefs/GlobalPrefs.h"
 #include "client/Client.h"
 #include "common/tpt-rand.h"
 #include "simulation/GOLString.h"
@@ -105,8 +106,9 @@ toolSelection(toolSelection)
 	}
 	else
 	{
-		ruleField->SetText(Client::Ref().GetPrefString("CustomGOL.Rule", "B3/S23"));
-		nameField->SetText(Client::Ref().GetPrefString("CustomGOL.Name", "CGOL"));
+		auto &prefs = GlobalPrefs::Ref();
+		ruleField->SetText(prefs.Get("CustomGOL.Rule", String("B3/S23")));
+		nameField->SetText(prefs.Get("CustomGOL.Name", String("CGOL")));
 		highColour.Red = RNG::Ref().between(0x80, 0xFF);
 		highColour.Green = RNG::Ref().between(0x80, 0xFF);
 		highColour.Blue = RNG::Ref().between(0x80, 0xFF);
@@ -152,8 +154,12 @@ void GOLWindow::Validate()
 	}
 	ruleString = SerialiseGOLRule(rule); // * Make it canonical.
 
-	Client::Ref().SetPrefUnicode("CustomGOL.Name", nameString);
-	Client::Ref().SetPrefUnicode("CustomGOL.Rule", ruleString);
+	{
+		auto &prefs = GlobalPrefs::Ref();
+		Prefs::DeferWrite dw(prefs);
+		prefs.Set("CustomGOL.Name", nameString);
+		prefs.Set("CustomGOL.Rule", ruleString);
+	}
 
 	auto color1 = (((highColour.Red << 8) | highColour.Green) << 8) | highColour.Blue;
 	auto color2 = (((lowColour.Red << 8) | lowColour.Green) << 8) | lowColour.Blue;

@@ -1,5 +1,4 @@
 #include "Simulation.h"
-#include "client/Client.h"
 #include "ElementClasses.h"
 #include "graphics/Renderer.h"
 #include "gui/game/Brush.h"

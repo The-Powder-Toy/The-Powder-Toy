@@ -318,8 +318,9 @@ bool ReadFile(std::vector<char> &fileData, ByteString filename)
 	return true;
 }
 
-bool WriteFile(std::vector<char> fileData, ByteString filename)
+bool WriteFile(std::vector<char> fileData, ByteString filename, bool replaceAtomically)
 {
+	// TODO: replaceAtomically
 	std::ofstream f(filename, std::ios::binary);
 	if (f) f.write(&fileData[0], fileData.size());
 	if (!f)
@@ -381,4 +382,31 @@ ByteString ExecutableName()
 #endif
 }
 
+void DoRestart()
+{
+	ByteString exename = ExecutableName();
+	if (exename.length())
+	{
+#ifdef WIN
+		int ret = int(INT_PTR(ShellExecuteW(NULL, NULL, WinWiden(exename).c_str(), NULL, NULL, SW_SHOWNORMAL)));
+		if (ret <= 32)
+		{
+			fprintf(stderr, "cannot restart: ShellExecute(...) failed: code %i\n", ret);
+		}
+		else
+		{
+			exit(0);
+		}
+#elif defined(LIN) || defined(MACOSX)
+		execl(exename.c_str(), exename.c_str(), NULL);
+		int ret = errno;
+		fprintf(stderr, "cannot restart: execl(...) failed: code %i\n", ret);
+#endif
+	}
+	else
+	{
+		fprintf(stderr, "cannot restart: no executable name???\n");
+	}
+	exit(-1);
+}
 }

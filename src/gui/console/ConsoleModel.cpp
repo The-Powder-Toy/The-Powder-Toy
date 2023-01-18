@@ -1,11 +1,9 @@
 #include "ConsoleModel.h"
-
 #include "ConsoleView.h"
-
-#include "client/Client.h"
+#include "prefs/GlobalPrefs.h"
 
 ConsoleModel::ConsoleModel() {
-	std::vector<String> previousHistory = Client::Ref().GetPrefStringArray("Console.History");
+	std::vector<String> previousHistory = GlobalPrefs::Ref().Get("Console.History", std::vector<String>{});
 	for(std::vector<String>::reverse_iterator iter = previousHistory.rbegin(), end = previousHistory.rend(); iter != end; ++iter)
 	{
 		if(previousCommands.size()<25)
@@ -48,7 +46,7 @@ void ConsoleModel::AddLastCommand(ConsoleCommand command)
 	if(previousCommands.size()>25)
 		previousCommands.pop_front();
 	currentCommandIndex = previousCommands.size();
-	Client::Ref().SetPref("Console.History", std::vector<Json::Value>(previousCommands.begin(), previousCommands.end()));
+	GlobalPrefs::Ref().Set("Console.History", std::vector<String>(previousCommands.begin(), previousCommands.end()));
 	notifyPreviousCommandsChanged();
 }
 

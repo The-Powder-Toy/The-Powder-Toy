@@ -16,6 +16,7 @@
 #include "GameControllerEvents.h"
 #include "lua/CommandInterface.h"
 
+#include "prefs/GlobalPrefs.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "common/Platform.h"
@@ -88,7 +89,7 @@ GameController::GameController():
 	gameView->AttachController(this);
 	gameModel->AddObserver(gameView);
 
-	gameView->SetDebugHUD(Client::Ref().GetPrefBool("Renderer.DebugMode", false));
+	gameView->SetDebugHUD(GlobalPrefs::Ref().Get("Renderer.DebugMode", false));
 
 	CommandInterface::Create(this, gameModel);
 
@@ -1352,7 +1353,6 @@ void GameController::OpenOptions()
 {
 	options = new OptionsController(gameModel, [this] {
 		gameModel->UpdateQuickOptions();
-		Client::Ref().WritePrefs(); // * I don't think there's a reason for this but I'm too lazy to check. -- LBPHacker
 	});
 	ui::Engine::Ref().ShowWindow(options->GetView());
 

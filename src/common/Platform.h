@@ -37,10 +37,9 @@ namespace Platform
 	 */
 	bool MakeDirectory(ByteString dir);
 	std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search, std::vector<ByteString> extensions);
-	String DoMigration(ByteString fromDir, ByteString toDir);
 
 	bool ReadFile(std::vector<char> &fileData, ByteString filename);
-	bool WriteFile(std::vector<char> fileData, ByteString filename);
+	bool WriteFile(std::vector<char> fileData, ByteString filename, bool replaceAtomically = false); // TODO: Revisit call sites, remove default.
 
 #ifdef WIN
 	ByteString WinNarrow(const std::wstring &source);

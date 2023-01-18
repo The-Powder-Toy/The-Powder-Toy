@@ -1,5 +1,4 @@
 #include "GOLString.h"
-#include "client/Client.h"
 
 int ParseGOLString(const String &value)
 {

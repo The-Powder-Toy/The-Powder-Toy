@@ -32,6 +32,7 @@
 #include "X86KillDenormals.h"
 #include "Misc.h"
 
+#include "prefs/GlobalPrefs.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
@@ -97,8 +98,9 @@ int GetModifiers()
 
 void LoadWindowPosition()
 {
-	int savedWindowX = Client::Ref().GetPrefInteger("WindowX", INT_MAX);
-	int savedWindowY = Client::Ref().GetPrefInteger("WindowY", INT_MAX);
+	auto &prefs = GlobalPrefs::Ref();
+	int savedWindowX = prefs.Get("WindowX", INT_MAX);
+	int savedWindowY = prefs.Get("WindowY", INT_MAX);
 
 	int borderTop, borderLeft;
 	SDL_GetWindowBordersSize(sdl_window, &borderTop, &borderLeft, nullptr, nullptr);
@@ -133,8 +135,9 @@ void SaveWindowPosition()
 	int borderTop, borderLeft;
 	SDL_GetWindowBordersSize(sdl_window, &borderTop, &borderLeft, nullptr, nullptr);
 
-	Client::Ref().SetPref("WindowX", x - borderLeft);
-	Client::Ref().SetPref("WindowY", y - borderTop);
+	auto &prefs = GlobalPrefs::Ref();
+	prefs.Set("WindowX", x - borderLeft);
+	prefs.Set("WindowY", y - borderTop);
 }
 
 void CalculateMousePosition(int *x, int *y)
@@ -453,7 +456,7 @@ void LargeScreenDialog()
 	message << "\nTo undo this, hit Cancel. You can change this in settings at any time.";
 	if (!ConfirmPrompt::Blocking("Large screen detected", message.Build()))
 	{
-		Client::Ref().SetPref("Scale", 1);
+		GlobalPrefs::Ref().Set("Scale", 1);
 		engine->SetScale(1);
 	}
 }
@@ -603,8 +606,21 @@ int GuessBestScale()
 	return guess;
 }
 
+struct ExplicitSingletons
+{
+	// These need to be listed in the order they are populated in main.
+	std::unique_ptr<GlobalPrefs> globalPrefs;
+	std::unique_ptr<Client> client;
+	http::RequestManagerPtr requestManager;
+};
+static std::unique_ptr<ExplicitSingletons> explicitSingletons;
+
 int main(int argc, char * argv[])
 {
+	atexit([]() {
+		explicitSingletons.reset();
+	});
+	explicitSingletons = std::make_unique<ExplicitSingletons>();
 #ifdef WIN
 	if constexpr (DEBUG)
 	{
@@ -710,14 +726,17 @@ int main(int argc, char * argv[])
 			SDL_free(ddir);
 		}
 	}
+	// We're now in the correct directory, time to get prefs.
+	explicitSingletons->globalPrefs = std::make_unique<GlobalPrefs>();
 
-	scale = Client::Ref().GetPrefInteger("Scale", 1);
-	resizable = Client::Ref().GetPrefBool("Resizable", false);
-	fullscreen = Client::Ref().GetPrefBool("Fullscreen", false);
-	altFullscreen = Client::Ref().GetPrefBool("AltFullscreen", false);
-	forceIntegerScaling = Client::Ref().GetPrefBool("ForceIntegerScaling", true);
-	momentumScroll = Client::Ref().GetPrefBool("MomentumScroll", true);
-	showAvatars = Client::Ref().GetPrefBool("ShowAvatars", true);
+	auto &prefs = GlobalPrefs::Ref();
+	scale = prefs.Get("Scale", 1);
+	resizable = prefs.Get("Resizable", false);
+	fullscreen = prefs.Get("Fullscreen", false);
+	altFullscreen = prefs.Get("AltFullscreen", false);
+	forceIntegerScaling = prefs.Get("ForceIntegerScaling", true);
+	momentumScroll = prefs.Get("MomentumScroll", true);
+	showAvatars = prefs.Get("ShowAvatars", true);
 
 	auto true_string = [](ByteString str) {
 		str = str.ToLower();
@@ -736,7 +755,7 @@ int main(int argc, char * argv[])
 	if (kioskArg.has_value())
 	{
 		fullscreen = true_string(kioskArg.value());
-		Client::Ref().SetPref("Fullscreen", fullscreen);
+		prefs.Set("Fullscreen", fullscreen);
 	}
 
 	if (true_arg(arguments["redirect"]))
@@ -755,7 +774,7 @@ int main(int argc, char * argv[])
 		try
 		{
 			scale = scaleArg.value().ToNumber<int>();
-			Client::Ref().SetPref("Scale", scale);
+			prefs.Set("Scale", scale);
 		}
 		catch (const std::runtime_error &e)
 		{
@@ -763,7 +782,7 @@ int main(int argc, char * argv[])
 		}
 	}
 
-	auto clientConfig = [](Argument arg, ByteString name, ByteString defaultValue) {
+	auto clientConfig = [&prefs](Argument arg, ByteString name, ByteString defaultValue) {
 		ByteString value;
 		if (arg.has_value())
 		{
@@ -772,11 +791,11 @@ int main(int argc, char * argv[])
 			{
 				value = defaultValue;
 			}
-			Client::Ref().SetPref(name, value);
+			prefs.Set(name, value);
 		}
 		else
 		{
-			value = Client::Ref().GetPrefByteString(name, defaultValue);
+			value = prefs.Get(name, defaultValue);
 		}
 		return value;
 	};
@@ -784,8 +803,9 @@ int main(int argc, char * argv[])
 	ByteString cafileString = clientConfig(arguments["cafile"], "CAFile", "");
 	ByteString capathString = clientConfig(arguments["capath"], "CAPath", "");
 	bool disableNetwork = true_arg(arguments["disable-network"]);
-	auto requestManager = http::RequestManager::Create(proxyString, cafileString, capathString, disableNetwork);
+	explicitSingletons->requestManager = http::RequestManager::Create(proxyString, cafileString, capathString, disableNetwork);
 
+	explicitSingletons->client = std::make_unique<Client>();
 	Client::Ref().Initialize();
 
 	// TODO: maybe bind the maximum allowed scale to screen size somehow
@@ -799,7 +819,7 @@ int main(int argc, char * argv[])
 		scale = GuessBestScale();
 		if (scale > 1)
 		{
-			Client::Ref().SetPref("Scale", scale);
+			prefs.Set("Scale", scale);
 			SDL_SetWindowSize(sdl_window, WINDOWW * scale, WINDOWH * scale);
 			showLargeScreenDialog = true;
 		}
@@ -819,7 +839,7 @@ int main(int argc, char * argv[])
 	engine = &ui::Engine::Ref();
 	engine->SetMaxSize(desktopWidth, desktopHeight);
 	engine->Begin(WINDOWW, WINDOWH);
-	engine->SetFastQuit(Client::Ref().GetPrefBool("FastQuit", true));
+	engine->SetFastQuit(prefs.Get("FastQuit", true));
 
 	bool enableBluescreen = !DEBUG && !true_arg(arguments["disable-bluescreen"]);
 	if (enableBluescreen)
@@ -949,7 +969,6 @@ int main(int argc, char * argv[])
 	ui::Engine::Ref().CloseWindow();
 	delete gameController;
 	delete ui::Engine::Ref().g;
-	Client::Ref().Shutdown();
 	if (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_OPENGL)
 	{
 		// * nvidia-460 egl registers callbacks with x11 that end up being called

@@ -13,9 +13,9 @@ public:
 	int ReturnStatus;
 	String ReturnValue;
 
-	operator ByteString() const
+	operator String() const
 	{
-		return Command.ToUtf8();
+		return Command;
 	}
 };
 

@@ -44,6 +44,7 @@ else
 		'lua/PlainCommandInterface.cpp',
 	)
 endif
+subdir('prefs')
 subdir('resampler')
 subdir('simulation')
 subdir('tasks')

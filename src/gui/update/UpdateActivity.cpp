@@ -8,6 +8,7 @@
 #include "Config.h"
 #include "Update.h"
 
+#include "prefs/GlobalPrefs.h"
 #include "client/Client.h"
 #include "common/Platform.h"
 #include "tasks/Task.h"
@@ -32,7 +33,13 @@ private:
 	}
 	bool doWork() override
 	{
-		String error;
+		auto &prefs = GlobalPrefs::Ref();
+
+		auto niceNotifyError = [this](String error) {
+			notifyError("Downloaded update is corrupted\n" + error);
+			return false;
+		};
+
 		auto request = std::make_unique<http::Request>(updateName);
 		request->Start();
 		notifyStatus("Downloading update");
@@ -48,15 +55,11 @@ private:
 		auto [ status, data ] = request->Finish();
 		if (status!=200)
 		{
-			error = String::Build("Server responded with Status ", status);
-			notifyError("Could not download update: " + error);
-			return false;
+			return niceNotifyError("Could not download update: " + String::Build("Server responded with Status ", status));
 		}
 		if (!data.size())
 		{
-			error = "Server responded with nothing";
-			notifyError("Server did not return any data");
-			return false;
+			return niceNotifyError("Server did not return any data");
 		}
 
 		notifyStatus("Unpacking update");
@@ -66,13 +69,11 @@ private:
 
 		if(data.size()<16)
 		{
-			error = String::Build("Unsufficient data, got ", data.size(), " bytes");
-			goto corrupt;
+			return niceNotifyError(String::Build("Unsufficient data, got ", data.size(), " bytes"));
 		}
 		if (data[0]!=0x42 || data[1]!=0x75 || data[2]!=0x54 || data[3]!=0x54)
 		{
-			error = "Invalid update format";
-			goto corrupt;
+			return niceNotifyError("Invalid update format");
 		}
 
 		uncompressedLength  = (unsigned char)data[4];
@@ -80,40 +81,28 @@ private:
 		uncompressedLength |= ((unsigned char)data[6])<<16;
 		uncompressedLength |= ((unsigned char)data[7])<<24;
 
-		char * res;
-		res = (char *)malloc(uncompressedLength);
-		if (!res)
-		{
-			error = String::Build("Unable to allocate ", uncompressedLength, " bytes of memory for decompression");
-			goto corrupt;
-		}
+		std::vector<char> res(uncompressedLength);
 
 		int dstate;
-		dstate = BZ2_bzBuffToBuffDecompress((char *)res, (unsigned *)&uncompressedLength, &data[8], data.size()-8, 0, 0);
+		dstate = BZ2_bzBuffToBuffDecompress(&res[0], (unsigned *)&uncompressedLength, &data[8], data.size()-8, 0, 0);
 		if (dstate)
 		{
-			error = String::Build("Unable to decompress update: ", dstate);
-			free(res);
-			goto corrupt;
+			return niceNotifyError(String::Build("Unable to decompress update: ", dstate));
 		}
 
 		notifyStatus("Applying update");
 		notifyProgress(-1);
 
-		Client::Ref().SetPref("version.update", true);
-		if (update_start(res, uncompressedLength))
+		prefs.Set("version.update", true);
+		if (update_start(&res[0], uncompressedLength))
 		{
-			Client::Ref().SetPref("version.update", false);
+			prefs.Set("version.update", false);
 			update_cleanup();
 			notifyError("Update failed - try downloading a new version.");
 			return false;
 		}
 
 		return true;
-
-	corrupt:
-		notifyError("Downloaded update is corrupted\n" + error);
-		return false;
 	}
 };
 

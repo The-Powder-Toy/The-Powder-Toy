@@ -16,6 +16,7 @@
 #include "QuickOptions.h"
 #include "lua/CommandInterface.h"
 
+#include "prefs/GlobalPrefs.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
@@ -67,56 +68,51 @@ GameModel::GameModel():
 	std::fill(regularToolset, regularToolset+4, (Tool*)NULL);
 
 	//Default render prefs
-	std::vector<unsigned int> tempArray;
-	tempArray.push_back(RENDER_FIRE);
-	tempArray.push_back(RENDER_EFFE);
-	tempArray.push_back(RENDER_BASC);
-	ren->SetRenderMode(tempArray);
-	tempArray.clear();
-
-	ren->SetDisplayMode(tempArray);
-
+	ren->SetRenderMode({
+		RENDER_FIRE,
+		RENDER_EFFE,
+		RENDER_BASC,
+	});
+	ren->SetDisplayMode({});
 	ren->SetColourMode(0);
 
 	//Load config into renderer
-	ren->SetColourMode(Client::Ref().GetPrefUInteger("Renderer.ColourMode", 0));
+	auto &prefs = GlobalPrefs::Ref();
+	ren->SetColourMode(prefs.Get("Renderer.ColourMode", 0U));
 
-	tempArray = Client::Ref().GetPrefUIntegerArray("Renderer.DisplayModes");
-	if(tempArray.size())
+	auto displayModes = prefs.Get("Renderer.DisplayModes", std::vector<unsigned int>{});
+	if (displayModes.size())
 	{
-		std::vector<unsigned int> displayModes(tempArray.begin(), tempArray.end());
 		ren->SetDisplayMode(displayModes);
 	}
-
-	tempArray = Client::Ref().GetPrefUIntegerArray("Renderer.RenderModes");
-	if(tempArray.size())
+	auto renderModes = prefs.Get("Renderer.RenderModes", std::vector<unsigned int>{});
+	if (renderModes.size())
 	{
-		std::vector<unsigned int> renderModes(tempArray.begin(), tempArray.end());
 		ren->SetRenderMode(renderModes);
 	}
 
-	ren->gravityFieldEnabled = Client::Ref().GetPrefBool("Renderer.GravityField", false);
-	ren->decorations_enable = Client::Ref().GetPrefBool("Renderer.Decorations", true);
+	ren->gravityFieldEnabled = prefs.Get("Renderer.GravityField", false);
+	ren->decorations_enable = prefs.Get("Renderer.Decorations", true);
 
 	//Load config into simulation
-	edgeMode = Client::Ref().GetPrefInteger("Simulation.EdgeMode", 0);
+	edgeMode = prefs.Get("Simulation.EdgeMode", 0); // TODO: EdgeMode enum
 	sim->SetEdgeMode(edgeMode);
 	ambientAirTemp = float(R_TEMP) + 273.15f;
 	{
-		auto temp = Client::Ref().GetPrefNumber("Simulation.AmbientAirTemp", ambientAirTemp);
+		auto temp = prefs.Get("Simulation.AmbientAirTemp", ambientAirTemp);
 		if (MIN_TEMP <= temp && MAX_TEMP >= temp)
 		{
 			ambientAirTemp = temp;
 		}
 	}
 	sim->air->ambientAirTemp = ambientAirTemp;
-	decoSpace = Client::Ref().GetPrefInteger("Simulation.DecoSpace", 0);
+	decoSpace = prefs.Get("Simulation.DecoSpace", 0); // TODO: DecoSpace enum
 	sim->SetDecoSpace(decoSpace);
-	int ngrav_enable = Client::Ref().GetPrefInteger("Simulation.NewtonianGravity", 0);
+	int ngrav_enable = prefs.Get("Simulation.NewtonianGravity", 0); // TODO: NewtonianGravity enum
 	if (ngrav_enable)
 		sim->grav->start_grav_async();
-	sim->aheat_enable =  Client::Ref().GetPrefInteger("Simulation.AmbientHeat", 0);
-	sim->pretty_powder =  Client::Ref().GetPrefInteger("Simulation.PrettyPowder", 0);
+	sim->aheat_enable = prefs.Get("Simulation.AmbientHeat", 0); // TODO: AmbientHeat enum
+	sim->pretty_powder = prefs.Get("Simulation.PrettyPowder", 0); // TODO: PrettyPowder enum
 
 	Favorite::Ref().LoadFavoritesFromPrefs();
 
@@ -128,14 +124,14 @@ GameModel::GameModel():
 
 	BuildMenus();
 
-	perfectCircle = Client::Ref().GetPrefBool("PerfectCircleBrush", true);
+	perfectCircle = prefs.Get("PerfectCircleBrush", true);
 	BuildBrushList();
 
 	//Set default decoration colour
-	unsigned char colourR = std::min(Client::Ref().GetPrefInteger("Decoration.Red", 200), 255);
-	unsigned char colourG = std::min(Client::Ref().GetPrefInteger("Decoration.Green", 100), 255);
-	unsigned char colourB = std::min(Client::Ref().GetPrefInteger("Decoration.Blue", 50), 255);
-	unsigned char colourA = std::min(Client::Ref().GetPrefInteger("Decoration.Alpha", 255), 255);
+	unsigned char colourR = std::max(std::min(prefs.Get("Decoration.Red", 200), 255), 0);
+	unsigned char colourG = std::max(std::min(prefs.Get("Decoration.Green", 100), 255), 0);
+	unsigned char colourB = std::max(std::min(prefs.Get("Decoration.Blue", 50), 255), 0);
+	unsigned char colourA = std::max(std::min(prefs.Get("Decoration.Alpha", 255), 255), 0);
 
 	SetColourSelectorColour(ui::Colour(colourR, colourG, colourB, colourA));
 
@@ -148,41 +144,38 @@ GameModel::GameModel():
 	colourPresets.push_back(ui::Colour(0, 0, 255));
 	colourPresets.push_back(ui::Colour(0, 0, 0));
 
-	undoHistoryLimit = Client::Ref().GetPrefInteger("Simulation.UndoHistoryLimit", 5);
+	undoHistoryLimit = prefs.Get("Simulation.UndoHistoryLimit", 5U);
 	// cap due to memory usage (this is about 3.4GB of RAM)
 	if (undoHistoryLimit > 200)
 		SetUndoHistoryLimit(200);
 
-	mouseClickRequired = Client::Ref().GetPrefBool("MouseClickRequired", false);
-	includePressure = Client::Ref().GetPrefBool("Simulation.IncludePressure", true);
-	temperatureScale = Client::Ref().GetPrefInteger("Renderer.TemperatureScale", 1);
+	mouseClickRequired = prefs.Get("MouseClickRequired", false);
+	includePressure = prefs.Get("Simulation.IncludePressure", true);
+	temperatureScale = prefs.Get("Renderer.TemperatureScale", 1); // TODO: TemperatureScale enum
 
 	ClearSimulation();
 }
 
 GameModel::~GameModel()
 {
-	//Save to config:
-	Client::Ref().SetPref("Renderer.ColourMode", ren->GetColourMode());
-
-	std::vector<unsigned int> displayModes = ren->GetDisplayMode();
-	Client::Ref().SetPref("Renderer.DisplayModes", std::vector<Json::Value>(displayModes.begin(), displayModes.end()));
-
-	std::vector<unsigned int> renderModes = ren->GetRenderMode();
-	Client::Ref().SetPref("Renderer.RenderModes", std::vector<Json::Value>(renderModes.begin(), renderModes.end()));
-
-	Client::Ref().SetPref("Renderer.GravityField", (bool)ren->gravityFieldEnabled);
-	Client::Ref().SetPref("Renderer.Decorations", (bool)ren->decorations_enable);
-	Client::Ref().SetPref("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things
-
-	Client::Ref().SetPref("Simulation.NewtonianGravity", sim->grav->IsEnabled());
-	Client::Ref().SetPref("Simulation.AmbientHeat", sim->aheat_enable);
-	Client::Ref().SetPref("Simulation.PrettyPowder", sim->pretty_powder);
-
-	Client::Ref().SetPref("Decoration.Red", (int)colour.Red);
-	Client::Ref().SetPref("Decoration.Green", (int)colour.Green);
-	Client::Ref().SetPref("Decoration.Blue", (int)colour.Blue);
-	Client::Ref().SetPref("Decoration.Alpha", (int)colour.Alpha);
+	auto &prefs = GlobalPrefs::Ref();
+	{
+		//Save to config:
+		Prefs::DeferWrite dw(prefs);
+		prefs.Set("Renderer.ColourMode", ren->GetColourMode());
+		prefs.Set("Renderer.DisplayModes", ren->GetDisplayMode());
+		prefs.Set("Renderer.RenderModes", ren->GetRenderMode());
+		prefs.Set("Renderer.GravityField", (bool)ren->gravityFieldEnabled);
+		prefs.Set("Renderer.Decorations", (bool)ren->decorations_enable);
+		prefs.Set("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things
+		prefs.Set("Simulation.NewtonianGravity", sim->grav->IsEnabled());
+		prefs.Set("Simulation.AmbientHeat", sim->aheat_enable);
+		prefs.Set("Simulation.PrettyPowder", sim->pretty_powder);
+		prefs.Set("Decoration.Red", (int)colour.Red);
+		prefs.Set("Decoration.Green", (int)colour.Green);
+		prefs.Set("Decoration.Blue", (int)colour.Blue);
+		prefs.Set("Decoration.Alpha", (int)colour.Alpha);
+	}
 
 	for (size_t i = 0; i < menuList.size(); i++)
 	{
@@ -317,8 +310,9 @@ void GameModel::BuildMenus()
 		menuList[SC_LIFE]->AddTool(tempTool);
 	}
 	{
-		auto customGOLTypes = Client::Ref().GetPrefByteStringArray("CustomGOL.Types");
-		Json::Value validatedCustomLifeTypes(Json::arrayValue);
+		auto &prefs = GlobalPrefs::Ref();
+		auto customGOLTypes = prefs.Get("CustomGOL.Types", std::vector<ByteString>{});
+		std::vector<ByteString> validatedCustomLifeTypes;
 		std::vector<Simulation::CustomGOLData> newCustomGol;
 		for (auto gol : customGOLTypes)
 		{
@@ -351,10 +345,10 @@ void GameModel::BuildMenus()
 				continue;
 			}
 			newCustomGol.push_back(gd);
-			validatedCustomLifeTypes.append(gol);
+			validatedCustomLifeTypes.push_back(gol);
 		}
 		// All custom rules that fail validation will be removed
-		Client::Ref().SetPref("CustomGOL.Types", validatedCustomLifeTypes);
+		prefs.Set("CustomGOL.Types", validatedCustomLifeTypes);
 		for (auto &gd : newCustomGol)
 		{
 			Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(gd.rule), gd.nameString, "Custom GOL type: " + gd.ruleString, PIXR(gd.colour1), PIXG(gd.colour1), PIXB(gd.colour1), "DEFAULT_PT_LIFECUST_"+gd.nameString.ToAscii(), NULL);
@@ -795,7 +789,7 @@ unsigned int GameModel::GetUndoHistoryLimit()
 void GameModel::SetUndoHistoryLimit(unsigned int undoHistoryLimit_)
 {
 	undoHistoryLimit = undoHistoryLimit_;
-	Client::Ref().SetPref("Simulation.UndoHistoryLimit", undoHistoryLimit);
+	GlobalPrefs::Ref().Set("Simulation.UndoHistoryLimit", undoHistoryLimit);
 }
 
 void GameModel::SetVote(int direction)
@@ -1653,17 +1647,18 @@ void GameModel::SetPerfectCircle(bool perfectCircle)
 bool GameModel::RemoveCustomGOLType(const ByteString &identifier)
 {
 	bool removedAny = false;
-	auto customGOLTypes = Client::Ref().GetPrefByteStringArray("CustomGOL.Types");
-	Json::Value newCustomGOLTypes(Json::arrayValue);
+	auto &prefs = GlobalPrefs::Ref();
+	auto customGOLTypes = prefs.Get("CustomGOL.Types", std::vector<ByteString>{});
+	std::vector<ByteString> newCustomGOLTypes;
 	for (auto gol : customGOLTypes)
 	{
 		auto parts = gol.PartitionBy(' ');
 		if (parts.size() && "DEFAULT_PT_LIFECUST_" + parts[0] == identifier)
 			removedAny = true;
 		else
-			newCustomGOLTypes.append(gol);
+			newCustomGOLTypes.push_back(gol);
 	}
-	Client::Ref().SetPref("CustomGOL.Types", newCustomGOLTypes);
+	prefs.Set("CustomGOL.Types", newCustomGOLTypes);
 	BuildMenus();
 	return removedAny;
 }

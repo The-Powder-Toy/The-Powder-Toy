@@ -12,7 +12,7 @@
 #include "LuaSmartRef.h"
 #include "PowderToy.h"
 
-#include "client/Client.h"
+#include "prefs/GlobalPrefs.h"
 #include "common/Platform.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
@@ -1321,9 +1321,20 @@ int luatpt_setwindowsize(lua_State* l)
 	int kiosk = luaL_optint(l,2,0);
 	// TODO: handle this the same way as it's handled in PowderToySDL.cpp
 	//   > maybe bind the maximum allowed scale to screen size somehow
-	if (scale < 1 || scale > 10) scale = 1;
-	if (kiosk!=1) kiosk = 0;
-	Client::Ref().SetPref("Scale", scale);
+	if (scale < 1 || scale > 10)
+	{
+		scale = 1;
+	}
+	if (kiosk!=1)
+	{
+		kiosk = 0;
+	}
+	{
+		auto &prefs = GlobalPrefs::Ref();
+		Prefs::DeferWrite dw(prefs);
+		prefs.Set("Scale", scale);
+		prefs.Set("Fullscreen", bool(kiosk));
+	}
 	ui::Engine::Ref().SetScale(scale);
 	ui::Engine::Ref().SetFullscreen(kiosk);
 	return 0;

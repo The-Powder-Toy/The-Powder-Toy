@@ -14,6 +14,7 @@
 #include "graphics/Renderer.h"
 #include "gui/Style.h"
 #include "simulation/ElementDefs.h"
+#include "client/Client.h"
 
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/InformationMessage.h"
@@ -420,7 +421,7 @@ OptionsView::OptionsView():
 		ByteString to = Platform::sharedCwd;
 		new ConfirmPrompt("Do Migration?", "This will migrate all stamps, saves, and scripts from\n\bt" + from.FromUtf8() + "\bw\nto the shared data directory at\n\bt" + to.FromUtf8() + "\bw\n\n" +
 			 "Files that already exist will not be overwritten.", { [=] () {
-				 String ret = Platform::DoMigration(from, to);
+				 String ret = Client::Ref().DoMigration(from, to);
 				new InformationMessage("Migration Complete", ret, false);
 			 } });
 	} });
