@@ -22,11 +22,6 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-//some compatibility stuff for non-standard compilers
-#if defined(WIN) && !defined(strcasecmp)
-#define strcasecmp stricmp
-#endif
-
 #ifdef M_PI
 constexpr float  TPT_PI_FLT = float(M_PI);
 constexpr double TPT_PI_DBL = double(M_PI);

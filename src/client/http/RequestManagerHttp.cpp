@@ -444,8 +444,6 @@ namespace http
 		HandleCURLcode(curl_easy_setopt(easy, CURLOPT_SSL_OPTIONS, CURLSSLOPT_REVOKE_BEST_EFFORT));
 #elif defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 44, 0)
 		HandleCURLcode(curl_easy_setopt(easy, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE));
-#elif defined(WIN)
-# error "That's unfortunate."
 #endif
 	}
 }

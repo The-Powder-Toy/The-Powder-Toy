@@ -773,21 +773,10 @@ bool VideoBuffer::WritePNG(const ByteString &path) const
 	{
 		rowPointers[y] = (png_const_bytep)&Buffer[y * Width];
 	}
-#ifdef WIN
-	FILE *f = _wfopen(Platform::WinWiden(path).c_str(), L"wb");
-#else
-	FILE *f = fopen(path.c_str(), "wb");
-#endif
-	if (!f)
-	{
-		std::cerr << "WritePNG: fopen failed" << std::endl;
-		return false;
-	}
 	png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png)
 	{
 		std::cerr << "WritePNG: png_create_write_struct failed" << std::endl;
-		fclose(f);
 		return false;
 	}
 	png_infop info = png_create_info_struct(png);
@@ -795,7 +784,6 @@ bool VideoBuffer::WritePNG(const ByteString &path) const
 	{
 		std::cerr << "WritePNG: png_create_info_struct failed" << std::endl;
 		png_destroy_write_struct(&png, (png_infopp)NULL);
-		fclose(f);
 		return false;
 	}
 	if (setjmp(png_jmpbuf(png)))
@@ -803,10 +791,17 @@ bool VideoBuffer::WritePNG(const ByteString &path) const
 		// libpng longjmp'd here in its infinite widsom, clean up and return
 		std::cerr << "WritePNG: longjmp from within libpng" << std::endl;
 		png_destroy_write_struct(&png, &info);
-		fclose(f);
 		return false;
 	}
-	png_init_io(png, f);
+	struct InMemoryFile
+	{
+		std::vector<char> data;
+	} imf;
+	png_set_write_fn(png, (png_voidp)&imf, [](png_structp png, png_bytep data, size_t length) -> void {
+		auto ud = png_get_io_ptr(png);
+		auto &imf = *(InMemoryFile *)ud;
+		imf.data.insert(imf.data.end(), data, data + length);
+	}, NULL);
 	png_set_IHDR(png, info, Width, Height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 	png_write_info(png, info);
 	png_set_filler(png, 0, PNG_FILLER_AFTER);
@@ -814,8 +809,7 @@ bool VideoBuffer::WritePNG(const ByteString &path) const
 	png_write_image(png, (png_bytepp)&rowPointers[0]);
 	png_write_end(png, NULL);
 	png_destroy_write_struct(&png, &info);
-	fclose(f);
-	return true;
+	return Platform::WriteFile(imf.data, path);
 }
 
 bool PngDataToPixels(std::vector<pixel> &imageData, int &imgw, int &imgh, const char *pngData, size_t pngDataSize, bool addBackground)

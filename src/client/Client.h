@@ -97,8 +97,6 @@ public:
 	ByteString FileOpenDialogue();
 	//std::string FileSaveDialogue();
 
-	bool DoInstallation();
-
 	void AddServerNotification(std::pair<String, ByteString> notification);
 	std::vector<std::pair<String, ByteString> > GetServerNotifications();
 

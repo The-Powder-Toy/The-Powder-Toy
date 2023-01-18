@@ -314,6 +314,10 @@ else
 	ident_platform = 'UNKNOWN'
 endif
 
+install_check = get_option('install_check')
+if host_platform == 'darwin' or host_platform == 'android'
+	install_check = false
+endif
 app_exe = get_option('app_exe')
 app_id = get_option('app_id')
 mod_id = get_option('mod_id')
@@ -328,7 +332,7 @@ conf_data.set('WIN', host_platform == 'windows')
 conf_data.set('MACOSX', host_platform == 'darwin')
 conf_data.set('X86', is_x86 ? 'true' : 'false')
 conf_data.set('BETA', is_beta ? 'true' : 'false')
-conf_data.set('INSTALL_CHECK', get_option('install_check') ? 'true' : 'false')
+conf_data.set('INSTALL_CHECK', install_check ? 'true' : 'false')
 conf_data.set('IGNORE_UPDATES', get_option('ignore_updates') ? 'true' : 'false')
 conf_data.set('MOD_ID', mod_id)
 conf_data.set('DEBUG', is_debug ? 'true' : 'false')

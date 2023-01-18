@@ -52,17 +52,6 @@
 #include "gui/game/Tool.h"
 #include "gui/game/Brush.h"
 
-#ifndef WIN
-#include <unistd.h>
-#endif
-
-extern "C"
-{
-#ifdef WIN
-#include <direct.h>
-#endif
-#include <sys/stat.h>
-}
 #include "eventcompat.lua.h"
 
 // idea from mniip, makes things much simpler

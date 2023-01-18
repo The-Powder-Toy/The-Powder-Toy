@@ -13,33 +13,6 @@
 #include <cstdio>
 #include <fstream>
 
-#ifdef MACOSX
-# include <mach-o/dyld.h>
-# include <ApplicationServices/ApplicationServices.h>
-#endif
-
-#ifdef LIN
-# include "icon_cps.png.h"
-# include "icon_exe.png.h"
-# include "save.xml.h"
-# include "powder.desktop.h"
-#endif
-
-#ifdef WIN
-# ifndef NOMINMAX
-#  define NOMINMAX
-# endif
-# include <shlobj.h>
-# include <objidl.h>
-# include <shlwapi.h>
-# include <windows.h>
-# include <direct.h>
-# include "resource.h"
-#else
-# include <sys/stat.h>
-# include <unistd.h>
-#endif
-
 #include "ClientListener.h"
 #include "Config.h"
 #include "Format.h"
@@ -1120,144 +1093,6 @@ void Client::SaveAuthorInfo(Json::Value *saveInto)
 	}
 }
 
-bool Client::DoInstallation()
-{
-	bool ok = true;
-#if defined(WIN)
-	auto deleteKey = [](ByteString path) {
-		RegDeleteKeyW(HKEY_CURRENT_USER, Platform::WinWiden(path).c_str());
-	};
-	auto createKey = [](ByteString path, ByteString value, ByteString extraKey = {}, ByteString extraValue = {}) {
-		auto ok = true;
-		auto wPath = Platform::WinWiden(path);
-		auto wValue = Platform::WinWiden(value);
-		auto wExtraKey = Platform::WinWiden(extraKey);
-		auto wExtraValue = Platform::WinWiden(extraValue);
-		HKEY k;
-		ok = ok && RegCreateKeyExW(HKEY_CURRENT_USER, wPath.c_str(), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &k, NULL) == ERROR_SUCCESS;
-		ok = ok && RegSetValueExW(k, NULL, 0, REG_SZ, reinterpret_cast<const BYTE *>(wValue.c_str()), (wValue.size() + 1) * 2) == ERROR_SUCCESS;
-		if (wExtraKey.size())
-		{
-			ok = ok && RegSetValueExW(k, wExtraKey.c_str(), 0, REG_SZ, reinterpret_cast<const BYTE *>(wExtraValue.c_str()), (wExtraValue.size() + 1) * 2) == ERROR_SUCCESS;
-		}
-		RegCloseKey(k);
-		return ok;
-	};
-
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	auto exe = Platform::ExecutableName();
-	auto icon = ByteString::Build(exe, ",-", IDI_DOC_ICON);
-	auto path = Platform::GetCwd();
-	auto open = ByteString::Build("\"", exe, "\" ddir \"", path, "\" \"file://%1\"");
-	auto ptsave = ByteString::Build("\"", exe, "\" ddir \"", path, "\" \"%1\"");
-	deleteKey("Software\\Classes\\ptsave");
-	deleteKey("Software\\Classes\\.cps");
-	deleteKey("Software\\Classes\\.stm");
-	deleteKey("Software\\Classes\\PowderToySave");
-	ok = ok && createKey("Software\\Classes\\ptsave", "Powder Toy Save", "URL Protocol", "");
-	ok = ok && createKey("Software\\Classes\\ptsave\\DefaultIcon", icon);
-	ok = ok && createKey("Software\\Classes\\ptsave\\shell\\open\\command", ptsave);
-	ok = ok && createKey("Software\\Classes\\.cps", "PowderToySave");
-	ok = ok && createKey("Software\\Classes\\.stm", "PowderToySave");
-	ok = ok && createKey("Software\\Classes\\PowderToySave", "Powder Toy Save");
-	ok = ok && createKey("Software\\Classes\\PowderToySave\\DefaultIcon", icon);
-	ok = ok && createKey("Software\\Classes\\PowderToySave\\shell\\open\\command", open);
-	IShellLinkW *shellLink = NULL;
-	IPersistFile *shellLinkPersist = NULL;
-	wchar_t programsPath[MAX_PATH];
-	ok = ok && SHGetFolderPathW(NULL, CSIDL_PROGRAMS, NULL, SHGFP_TYPE_CURRENT, programsPath) == S_OK;
-	ok = ok && CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLinkW, (LPVOID *)&shellLink) == S_OK;
-	ok = ok && shellLink->SetPath(Platform::WinWiden(exe).c_str()) == S_OK;
-	ok = ok && shellLink->SetWorkingDirectory(Platform::WinWiden(path).c_str()) == S_OK;
-	ok = ok && shellLink->SetDescription(Platform::WinWiden(APPNAME).c_str()) == S_OK;
-	ok = ok && shellLink->QueryInterface(IID_IPersistFile, (LPVOID *)&shellLinkPersist) == S_OK;
-	ok = ok && shellLinkPersist->Save(Platform::WinWiden(ByteString::Build(Platform::WinNarrow(programsPath), "\\", APPNAME, ".lnk")).c_str(), TRUE) == S_OK;
-	if (shellLinkPersist)
-	{
-		shellLinkPersist->Release();
-	}
-	if (shellLink)
-	{
-		shellLink->Release();
-	}
-	CoUninitialize();
-#elif defined(LIN)
-	auto desktopEscapeString = [](ByteString str) {
-		ByteString escaped;
-		for (auto ch : str)
-		{
-			auto from = " " "\n" "\t" "\r" "\\";
-			auto to   = "s"  "n"  "t"  "r" "\\";
-			if (auto off = strchr(from, ch))
-			{
-				escaped.append(1, '\\');
-				escaped.append(1, to[off - from]);
-			}
-			else
-			{
-				escaped.append(1, ch);
-			}
-		}
-		return escaped;
-	};
-	auto desktopEscapeExec = [](ByteString str) {
-		ByteString escaped;
-		for (auto ch : str)
-		{
-			if (strchr(" \t\n\"\'\\><~|&;$*?#()`", ch))
-			{
-				escaped.append(1, '\\');
-			}
-			escaped.append(1, ch);
-		}
-		return escaped;
-	};
-
-	if (ok)
-	{
-		ByteString desktopData(powder_desktop, powder_desktop + powder_desktop_size);
-		auto exe = Platform::ExecutableName();
-		auto path = exe.SplitFromEndBy('/').Before();
-		desktopData = desktopData.Substitute("Exec=" + ByteString(APPEXE), "Exec=" + desktopEscapeString(desktopEscapeExec(exe)));
-		desktopData += ByteString::Build("Path=", desktopEscapeString(path), "\n");
-		ByteString file = ByteString::Build(APPVENDOR, "-", APPID, ".desktop");
-		ok = ok && Platform::WriteFile(std::vector<char>(desktopData.begin(), desktopData.end()), file);
-		ok = ok && !system(ByteString::Build("xdg-desktop-menu install ", file).c_str());
-		ok = ok && !system(ByteString::Build("xdg-mime default ", file, " application/vnd.powdertoy.save").c_str());
-		ok = ok && !system(ByteString::Build("xdg-mime default ", file, " x-scheme-handler/ptsave").c_str());
-		Platform::RemoveFile(file);
-	}
-	if (ok)
-	{
-		ByteString file = ByteString(APPVENDOR) + "-save.xml";
-		ok = ok && Platform::WriteFile(std::vector<char>(save_xml, save_xml + save_xml_size), file);
-		ok = ok && !system(ByteString::Build("xdg-mime install ", file).c_str());
-		Platform::RemoveFile(file);
-	}
-	if (ok)
-	{
-		ByteString file = ByteString(APPVENDOR) + "-cps.png";
-		ok = ok && Platform::WriteFile(std::vector<char>(icon_cps_png, icon_cps_png + icon_cps_png_size), file);
-		ok = ok && !system(ByteString::Build("xdg-icon-resource install --noupdate --context mimetypes --size 64 ", file, " application-vnd.powdertoy.save").c_str());
-		Platform::RemoveFile(file);
-	}
-	if (ok)
-	{
-		ByteString file = ByteString(APPVENDOR) + "-exe.png";
-		ok = ok && Platform::WriteFile(std::vector<char>(icon_exe_png, icon_exe_png + icon_exe_png_size), file);
-		ok = ok && !system(ByteString::Build("xdg-icon-resource install --noupdate --size 64 ", file, " ", APPVENDOR, "-", APPEXE).c_str());
-		Platform::RemoveFile(file);
-	}
-	if (ok)
-	{
-		ok = ok && !system("xdg-icon-resource forceupdate");
-	}
-#else
-	ok = false;
-#endif
-	return ok;
-}
-
 bool AddCustomGol(String ruleString, String nameString, unsigned int highColor, unsigned int lowColor)
 {
 	auto &prefs = GlobalPrefs::Ref();
@@ -1408,7 +1243,7 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 	}
 
 	// chdir into the new directory
-	chdir(toDir.c_str());
+	Platform::ChangeDir(toDir);
 
 	if (scripts.size())
 		RescanStamps();

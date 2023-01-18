@@ -7,13 +7,6 @@
 #include <cstring>
 #include <stdint.h>
 #include <algorithm>
-#ifdef WIN
-# include <windows.h>
-# include <float.h>
-#else
-# include <sys/time.h>
-# include <time.h>
-#endif
 
 #include "LuaScriptInterface.h"
 #include "client/http/RequestManager.h"

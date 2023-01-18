@@ -1,11 +1,7 @@
 #pragma once
 #include "Config.h"
-
 #include "common/String.h"
-
-#ifdef WIN
-# include <string>
-#endif
+#include <string>
 
 namespace Platform
 {
@@ -41,11 +37,16 @@ namespace Platform
 	bool ReadFile(std::vector<char> &fileData, ByteString filename);
 	bool WriteFile(std::vector<char> fileData, ByteString filename, bool replaceAtomically = false); // TODO: Revisit call sites, remove default.
 
-#ifdef WIN
 	ByteString WinNarrow(const std::wstring &source);
 	std::wstring WinWiden(const ByteString &source);
-#endif
 
 	extern std::string originalCwd;
 	extern std::string sharedCwd;
+
+	bool CanUpdate();
+
+	bool CanInstall();
+	bool Install();
+
+	bool ChangeDir(ByteString toDir);
 }

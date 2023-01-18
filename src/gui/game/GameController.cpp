@@ -252,22 +252,23 @@ void GameController::PlaceSave(ui::Point position)
 
 void GameController::Install()
 {
-#if defined(MACOSX)
-	new InformationMessage("No installation necessary", "You don't need to install " + String(APPNAME) + " on OS X", false);
-#elif defined(WIN) || defined(LIN)
-	new ConfirmPrompt("Install " + String(APPNAME), "Do you wish to install " + String(APPNAME) + " on this computer?\nThis allows you to open save files and saves directly from the website.", { [] {
-		if (Client::Ref().DoInstallation())
-		{
-			new InformationMessage("Success", "Installation completed", false);
-		}
-		else
-		{
-			new ErrorMessage("Could not install", "The installation did not complete due to an error");
-		}
-	} });
-#else
-	new ErrorMessage("Cannot install", "You cannot install " + String(APPNAME) + " on this platform");
-#endif
+	if (Platform::CanInstall())
+	{
+		new ConfirmPrompt("Install " + String(APPNAME), "Do you wish to install " + String(APPNAME) + " on this computer?\nThis allows you to open save files and saves directly from the website.", { [] {
+			if (Platform::Install())
+			{
+				new InformationMessage("Success", "Installation completed", false);
+			}
+			else
+			{
+				new ErrorMessage("Could not install", "The installation did not complete due to an error");
+			}
+		} });
+	}
+	else
+	{
+		new InformationMessage("No installation necessary", "You don't need to install " + String(APPNAME) + " on this platform", false);
+	}
 }
 
 void GameController::AdjustGridSize(int direction)
@@ -727,7 +728,6 @@ void GameController::Tick()
 	if(firstTick)
 	{
 		commandInterface->Init();
-#if !defined(MACOSX)
 		if constexpr (INSTALL_CHECK)
 		{
 			if (Client::Ref().IsFirstRun())
@@ -735,7 +735,6 @@ void GameController::Tick()
 				Install();
 			}
 		}
-#endif
 		firstTick = false;
 	}
 	if (gameModel->SelectNextIdentifier.length())
@@ -1593,11 +1592,14 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 		{
 			UpdateInfo info = Client::Ref().GetUpdateInfo();
 			StringBuilder updateMessage;
-#ifndef MACOSX
-			updateMessage << "Are you sure you want to run the updater? Please save any changes before updating.\n\nCurrent version:\n ";
-#else
-			updateMessage << "Click \"Continue\" to download the latest version from our website.\n\nCurrent version:\n ";
-#endif
+			if (Platform::CanUpdate())
+			{
+				updateMessage << "Are you sure you want to run the updater? Please save any changes before updating.\n\nCurrent version:\n ";
+			}
+			else
+			{
+				updateMessage << "Click \"Continue\" to download the latest version from our website.\n\nCurrent version:\n ";
+			}
 
 			if constexpr (SNAPSHOT)
 			{
@@ -1672,21 +1674,24 @@ void GameController::RemoveNotification(Notification * notification)
 
 void GameController::RunUpdater()
 {
-#ifndef MACOSX
-	Exit();
-	new UpdateActivity();
-#else
-	ByteString file;
-	if constexpr (USE_UPDATESERVER)
+	if (Platform::CanUpdate())
 	{
-		file = ByteString::Build(SCHEME, UPDATESERVER, Client::Ref().GetUpdateInfo().File);
+		Exit();
+		new UpdateActivity();
 	}
 	else
 	{
-		file = ByteString::Build(SCHEME, SERVER, Client::Ref().GetUpdateInfo().File);
+		ByteString file;
+		if constexpr (USE_UPDATESERVER)
+		{
+			file = ByteString::Build(SCHEME, UPDATESERVER, Client::Ref().GetUpdateInfo().File);
+		}
+		else
+		{
+			file = ByteString::Build(SCHEME, SERVER, Client::Ref().GetUpdateInfo().File);
+		}
+		Platform::OpenURI(file);
 	}
-	Platform::OpenURI(file);
-#endif // MACOSX
 }
 
 bool GameController::GetMouseClickRequired()

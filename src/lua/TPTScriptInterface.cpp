@@ -1,9 +1,6 @@
 #include "TPTScriptInterface.h"
 
 #include <deque>
-#ifdef MACOSX
-#include <strings.h>
-#endif
 #include <cstdlib>
 #include <cmath>
 
@@ -314,7 +311,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 			if (newValue < 0 || newValue >= PT_NUM)
 			{
 				// TODO: add element CAKE to invalidate this
-				if (!strcasecmp(((StringType)value).Value().ToUtf8().c_str(),"cake"))
+				if (((StringType)value).Value().ToUpper() == "CAKE")
 					throw GeneralException("Cake is a lie, not an element");
 				throw GeneralException("Invalid element");
 			}

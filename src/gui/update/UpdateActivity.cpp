@@ -151,4 +151,3 @@ void UpdateActivity::NotifyError(Task * sender)
 
 UpdateActivity::~UpdateActivity() {
 }
-

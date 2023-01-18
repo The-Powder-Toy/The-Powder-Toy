@@ -3,9 +3,6 @@
 #include <cstring>
 #include <cstddef>
 #include <cassert>
-#if !defined(WIN) || defined(__GNUC__)
-#include <strings.h>
-#endif
 
 #include "Misc.h"
 #include "gui/game/GameModel.h"
