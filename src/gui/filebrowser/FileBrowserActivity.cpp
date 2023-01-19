@@ -46,7 +46,7 @@ class LoadFilesTask: public Task
 			SaveFile * saveFile = new SaveFile(directory + *iter, true);
 			saveFiles.push_back(saveFile);
 
-			ByteString filename = (*iter).SplitFromEndBy(PATH_SEP).After();
+			ByteString filename = (*iter).SplitFromEndBy(PATH_SEP_CHAR).After();
 			filename = filename.SplitFromEndBy('.').Before();
 			saveFile->SetDisplayName(filename.FromUtf8());
 		}
@@ -149,7 +149,7 @@ void FileBrowserActivity::RenameSave(SaveFile * file)
 	ByteString newName = TextPrompt::Blocking("Rename", "Change save name", file->GetDisplayName(), "", 0).ToUtf8();
 	if (newName.length())
 	{
-		newName = directory + PATH_SEP + newName + ".cps";
+		newName = ByteString::Build(directory, PATH_SEP_CHAR, newName, ".cps");
 		int ret = rename(file->GetName().c_str(), newName.c_str());
 		if (ret)
 			ErrorMessage::Blocking("Error", "Could not rename file");

@@ -15,6 +15,7 @@ constexpr bool USE_UPDATESERVER         = @USE_UPDATESERVER@;
 constexpr bool INSTALL_CHECK            = @INSTALL_CHECK@;
 constexpr bool IGNORE_UPDATES           = @IGNORE_UPDATES@;
 constexpr bool ENFORCE_HTTPS            = @ENFORCE_HTTPS@;
+constexpr char PATH_SEP_CHAR            = '@PATH_SEP_CHAR@';
 
 constexpr char SERVER[]         = "@SERVER@";
 constexpr char STATICSERVER[]   = "@STATICSERVER@";
@@ -27,14 +28,6 @@ constexpr char APPEXE[]         = "@APPEXE@";
 constexpr char APPID[]          = "@APPID@";
 constexpr char APPDATA[]        = "@APPDATA@";
 constexpr char APPVENDOR[]      = "@APPVENDOR@";
-
-#ifdef WIN
-constexpr char PATH_SEP[] = "\\";
-constexpr char PATH_SEP_CHAR = '\\';
-#else
-constexpr char PATH_SEP[] = "/";
-constexpr char PATH_SEP_CHAR = '/';
-#endif
 
 constexpr int SAVE_VERSION         = 97;
 constexpr int MINOR_VERSION        = 0;

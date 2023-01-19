@@ -478,7 +478,7 @@ void GameModel::BuildBrushList()
 	for (size_t i = 0; i < brushFiles.size(); i++)
 	{
 		std::vector<char> brushData;
-		if (!Platform::ReadFile(brushData, BRUSH_DIR + ByteString(PATH_SEP) + brushFiles[i]))
+		if (!Platform::ReadFile(brushData, ByteString::Build(BRUSH_DIR, PATH_SEP_CHAR, brushFiles[i])))
 		{
 			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Could not open" << std::endl;
 			continue;

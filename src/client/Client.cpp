@@ -67,7 +67,7 @@ void Client::Initialize()
 
 	//Read stamps library
 	std::ifstream stampsLib;
-	stampsLib.open(ByteString::Build(STAMPS_DIR, PATH_SEP, "stamps.def"), std::ios::binary);
+	stampsLib.open(ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, "stamps.def"), std::ios::binary);
 	while (!stampsLib.eof())
 	{
 		char data[11];
@@ -482,7 +482,7 @@ void Client::MoveStampToFront(ByteString stampID)
 
 SaveFile * Client::GetStamp(ByteString stampID)
 {
-	ByteString stampFile = ByteString(ByteString::Build(STAMPS_DIR, PATH_SEP, stampID, ".stm"));
+	ByteString stampFile = ByteString(ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, stampID, ".stm"));
 	SaveFile *saveFile = LoadSaveFile(stampFile);
 	if (!saveFile)
 		saveFile = LoadSaveFile(stampID);
@@ -497,7 +497,7 @@ void Client::DeleteStamp(ByteString stampID)
 	{
 		if ((*iterator) == stampID)
 		{
-			ByteString stampFilename = ByteString::Build(STAMPS_DIR, PATH_SEP, stampID, ".stm");
+			ByteString stampFilename = ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, stampID, ".stm");
 			remove(stampFilename.c_str());
 			stampIDs.erase(iterator);
 			break;
@@ -518,7 +518,7 @@ ByteString Client::AddStamp(GameSave * saveData)
 	else
 		lastStampName++;
 	ByteString saveID = ByteString::Build(Format::Hex(Format::Width(lastStampTime, 8)), Format::Hex(Format::Width(lastStampName, 2)));
-	ByteString filename = ByteString::Build(STAMPS_DIR, PATH_SEP, saveID, ".stm");
+	ByteString filename = ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, saveID, ".stm");
 
 	Platform::MakeDirectory(STAMPS_DIR);
 
@@ -553,7 +553,7 @@ void Client::updateStamps()
 	Platform::MakeDirectory(STAMPS_DIR);
 
 	std::ofstream stampsStream;
-	stampsStream.open(ByteString::Build(STAMPS_DIR, PATH_SEP, "stamps.def").c_str(), std::ios::binary);
+	stampsStream.open(ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, "stamps.def").c_str(), std::ios::binary);
 	for (std::list<ByteString>::const_iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
 	{
 		stampsStream.write((*iterator).c_str(), 10);

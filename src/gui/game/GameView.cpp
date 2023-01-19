@@ -1004,7 +1004,7 @@ int GameView::Record(bool record)
 			time_t startTime = time(NULL);
 			recordingFolder = startTime;
 			Platform::MakeDirectory("recordings");
-			Platform::MakeDirectory(ByteString::Build("recordings", PATH_SEP, recordingFolder).c_str());
+			Platform::MakeDirectory(ByteString::Build("recordings", PATH_SEP_CHAR, recordingFolder).c_str());
 			recording = true;
 			recordingIndex = 0;
 		}
@@ -2207,7 +2207,7 @@ void GameView::OnDraw()
 			VideoBuffer screenshot(ren->DumpFrame());
 			std::vector<char> data = format::VideoBufferToPPM(screenshot);
 
-			ByteString filename = ByteString::Build("recordings", PATH_SEP, recordingFolder, PATH_SEP, "frame_", Format::Width(recordingIndex++, 6), ".ppm");
+			ByteString filename = ByteString::Build("recordings", PATH_SEP_CHAR, recordingFolder, PATH_SEP_CHAR, "frame_", Format::Width(recordingIndex++, 6), ".ppm");
 
 			Platform::WriteFile(data, filename);
 		}

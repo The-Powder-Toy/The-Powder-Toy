@@ -20,7 +20,7 @@ std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search,
 	//Get full file listing
 	//Normalise directory string, ensure / or \ is present
 	if (!directory.size() || (directory.back() != '/' && directory.back() != '\\'))
-		directory += PATH_SEP;
+		directory.append(1, PATH_SEP_CHAR);
 	auto directoryList = DirectoryList(directory);
 
 	search = search.ToLower();

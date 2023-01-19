@@ -1263,7 +1263,7 @@ void GameController::OpenSavePreview()
 
 void GameController::OpenLocalBrowse()
 {
-	new FileBrowserActivity(ByteString(LOCAL_SAVE_DIR) + PATH_SEP, [this](std::unique_ptr<SaveFile> file) {
+	new FileBrowserActivity(ByteString::Build(LOCAL_SAVE_DIR, PATH_SEP_CHAR), [this](std::unique_ptr<SaveFile> file) {
 		HistorySnapshot();
 		LoadSaveFile(file.get());
 	});

@@ -83,7 +83,7 @@ void LocalSaveActivity::Save()
 	}
 	else if (filenameField->GetText().length())
 	{
-		ByteString finalFilename = ByteString(LOCAL_SAVE_DIR) + ByteString(PATH_SEP) + filenameField->GetText().ToUtf8() + ".cps";
+		ByteString finalFilename = ByteString::Build(LOCAL_SAVE_DIR, PATH_SEP_CHAR, filenameField->GetText().ToUtf8(), ".cps");
 		save.SetDisplayName(filenameField->GetText());
 		save.SetFileName(finalFilename);
 		if (Platform::FileExists(finalFilename))
