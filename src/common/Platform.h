@@ -21,7 +21,7 @@ namespace Platform
 	 * @return true on success
 	 */
 	bool RemoveFile(ByteString filename);
-	bool RenameFile(ByteString filename, ByteString newFilename);
+	bool RenameFile(ByteString filename, ByteString newFilename, bool replace = false);
 
 	/**
 	 * @return true on success
@@ -35,7 +35,7 @@ namespace Platform
 	std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search, std::vector<ByteString> extensions);
 
 	bool ReadFile(std::vector<char> &fileData, ByteString filename);
-	bool WriteFile(std::vector<char> fileData, ByteString filename, bool replaceAtomically = false); // TODO: Revisit call sites, remove default.
+	bool WriteFile(const std::vector<char> &fileData, ByteString filename);
 
 	ByteString WinNarrow(const std::wstring &source);
 	std::wstring WinWiden(const ByteString &source);

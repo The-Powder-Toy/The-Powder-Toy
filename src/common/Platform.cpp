@@ -1,5 +1,6 @@
 #include "Platform.h"
 #include "resource.h"
+#include "tpt-rand.h"
 #include <memory>
 #include <cstring>
 #include <fstream>
@@ -186,9 +187,14 @@ bool RemoveFile(ByteString filename)
 #endif
 }
 
-bool RenameFile(ByteString filename, ByteString newFilename)
+bool RenameFile(ByteString filename, ByteString newFilename, bool replace)
 {
 #ifdef WIN
+	if (replace)
+	{
+		// TODO: we rely on errno but errors from this are available through GetLastError(); fix
+		return MoveFileExW(WinWiden(filename).c_str(), WinWiden(newFilename).c_str(), MOVEFILE_REPLACE_EXISTING);
+	}
 	return _wrename(WinWiden(filename).c_str(), WinWiden(newFilename).c_str()) == 0;
 #else
 	return rename(filename.c_str(), newFilename.c_str()) == 0;
@@ -335,15 +341,42 @@ bool ReadFile(std::vector<char> &fileData, ByteString filename)
 	return true;
 }
 
-bool WriteFile(std::vector<char> fileData, ByteString filename, bool replaceAtomically)
+bool WriteFile(const std::vector<char> &fileData, ByteString filename)
 {
-	// TODO: replaceAtomically
-	std::ofstream f(filename, std::ios::binary);
-	if (f) f.write(&fileData[0], fileData.size());
+	auto replace = FileExists(filename);
+	auto writeFileName = filename;
+	if (replace)
+	{
+		while (true)
+		{
+			writeFileName = ByteString::Build(filename, ".temp.", random_gen() % 100000);
+			if (!FileExists(writeFileName))
+			{
+				break;
+			}
+		}
+	}
+	std::ofstream f(writeFileName, std::ios::binary);
+	if (f)
+	{
+		f.write(&fileData[0], fileData.size());
+	}
 	if (!f)
 	{
 		std::cerr << "WriteFile: " << filename << ": " << strerror(errno) << std::endl;
+		if (replace)
+		{
+			RemoveFile(writeFileName);
+		}
 		return false;
+	}
+	if (replace)
+	{
+		if (!RenameFile(writeFileName, filename, true))
+		{
+			RemoveFile(writeFileName);
+			return false;
+		}
 	}
 	return true;
 }
