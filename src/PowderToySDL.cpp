@@ -28,6 +28,9 @@
 #include "client/http/RequestManager.h"
 #include "common/Platform.h"
 #include "graphics/Graphics.h"
+#include "simulation/SaveRenderer.h"
+#include "common/tpt-rand.h"
+#include "gui/game/Favorite.h"
 #include "gui/Style.h"
 
 #include "gui/game/GameController.h"
@@ -277,7 +280,6 @@ int elapsedTime = 0, currentTime = 0, lastTime = 0, currentFrame = 0;
 uint64_t lastTick = 0;
 uint64_t lastFpsUpdate = 0;
 float fps = 0;
-ui::Engine * engine = NULL;
 bool showLargeScreenDialog = false;
 float currentWidth, currentHeight;
 
@@ -290,11 +292,12 @@ bool hasMouseMoved = false;
 
 void EventProcess(SDL_Event event)
 {
+	auto &engine = ui::Engine::Ref();
 	switch (event.type)
 	{
 	case SDL_QUIT:
-		if (engine->GetFastQuit() || engine->CloseWindow())
-			engine->Exit();
+		if (engine.GetFastQuit() || engine.CloseWindow())
+			engine.Exit();
 		break;
 	case SDL_KEYDOWN:
 		if (SDL_GetModState() & KMOD_GUI)
@@ -302,30 +305,30 @@ void EventProcess(SDL_Event event)
 			break;
 		}
 		if (!event.key.repeat && event.key.keysym.sym == 'q' && (event.key.keysym.mod&KMOD_CTRL))
-			engine->ConfirmExit();
+			engine.ConfirmExit();
 		else
-			engine->onKeyPress(event.key.keysym.sym, event.key.keysym.scancode, event.key.repeat, event.key.keysym.mod&KMOD_SHIFT, event.key.keysym.mod&KMOD_CTRL, event.key.keysym.mod&KMOD_ALT);
+			engine.onKeyPress(event.key.keysym.sym, event.key.keysym.scancode, event.key.repeat, event.key.keysym.mod&KMOD_SHIFT, event.key.keysym.mod&KMOD_CTRL, event.key.keysym.mod&KMOD_ALT);
 		break;
 	case SDL_KEYUP:
 		if (SDL_GetModState() & KMOD_GUI)
 		{
 			break;
 		}
-		engine->onKeyRelease(event.key.keysym.sym, event.key.keysym.scancode, event.key.repeat, event.key.keysym.mod&KMOD_SHIFT, event.key.keysym.mod&KMOD_CTRL, event.key.keysym.mod&KMOD_ALT);
+		engine.onKeyRelease(event.key.keysym.sym, event.key.keysym.scancode, event.key.repeat, event.key.keysym.mod&KMOD_SHIFT, event.key.keysym.mod&KMOD_CTRL, event.key.keysym.mod&KMOD_ALT);
 		break;
 	case SDL_TEXTINPUT:
 		if (SDL_GetModState() & KMOD_GUI)
 		{
 			break;
 		}
-		engine->onTextInput(ByteString(event.text.text).FromUtf8());
+		engine.onTextInput(ByteString(event.text.text).FromUtf8());
 		break;
 	case SDL_TEXTEDITING:
 		if (SDL_GetModState() & KMOD_GUI)
 		{
 			break;
 		}
-		engine->onTextEditing(ByteString(event.edit.text).FromUtf8(), event.edit.start);
+		engine.onTextEditing(ByteString(event.edit.text).FromUtf8(), event.edit.start);
 		break;
 	case SDL_MOUSEWHEEL:
 	{
@@ -337,18 +340,18 @@ void EventProcess(SDL_Event event)
 			y *= -1;
 		}
 
-		engine->onMouseWheel(mousex, mousey, y); // TODO: pass x?
+		engine.onMouseWheel(mousex, mousey, y); // TODO: pass x?
 		break;
 	}
 	case SDL_MOUSEMOTION:
 		mousex = event.motion.x;
 		mousey = event.motion.y;
-		engine->onMouseMove(mousex, mousey);
+		engine.onMouseMove(mousex, mousey);
 
 		hasMouseMoved = true;
 		break;
 	case SDL_DROPFILE:
-		engine->onFileDrop(event.drop.file);
+		engine.onFileDrop(event.drop.file);
 		SDL_free(event.drop.file);
 		break;
 	case SDL_MOUSEBUTTONDOWN:
@@ -359,7 +362,7 @@ void EventProcess(SDL_Event event)
 			mousey = event.button.y;
 		}
 		mouseButton = event.button.button;
-		engine->onMouseClick(mousex, mousey, mouseButton);
+		engine.onMouseClick(mousex, mousey, mouseButton);
 
 		mouseDown = true;
 		if constexpr (!DEBUG)
@@ -375,7 +378,7 @@ void EventProcess(SDL_Event event)
 			mousey = event.button.y;
 		}
 		mouseButton = event.button.button;
-		engine->onMouseUnclick(mousex, mousey, mouseButton);
+		engine.onMouseUnclick(mousex, mousey, mouseButton);
 
 		mouseDown = false;
 		if constexpr (!DEBUG)
@@ -392,8 +395,8 @@ void EventProcess(SDL_Event event)
 			{
 				//initial mouse coords, sdl won't tell us this if mouse hasn't moved
 				CalculateMousePosition(&mousex, &mousey);
-				engine->initialMouse(mousex, mousey);
-				engine->onMouseMove(mousex, mousey);
+				engine.initialMouse(mousex, mousey);
+				engine.onMouseMove(mousex, mousey);
 				calculatedInitialMouse = true;
 			}
 			break;
@@ -421,7 +424,7 @@ void EventProcess(SDL_Event event)
 			if (mouseDown)
 			{
 				mouseDown = false;
-				engine->onMouseUnclick(mousex, mousey, mouseButton);
+				engine.onMouseUnclick(mousex, mousey, mouseButton);
 			}
 			break;*/
 		}
@@ -439,7 +442,7 @@ void LargeScreenDialog()
 	if (!ConfirmPrompt::Blocking("Large screen detected", message.Build()))
 	{
 		GlobalPrefs::Ref().Set("Scale", 1);
-		engine->SetScale(1);
+		ui::Engine::Ref().SetScale(1);
 	}
 }
 
@@ -451,34 +454,35 @@ void EngineProcess()
 	uint64_t drawingTimer = 0;
 	auto frameStart = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
 
-	while(engine->Running())
+	auto &engine = ui::Engine::Ref();
+	while(engine.Running())
 	{
-		if(engine->Broken()) { engine->UnBreak(); break; }
+		if(engine.Broken()) { engine.UnBreak(); break; }
 		event.type = 0;
 		while (SDL_PollEvent(&event))
 		{
 			EventProcess(event);
 			event.type = 0; //Clear last event
 		}
-		if(engine->Broken()) { engine->UnBreak(); break; }
+		if(engine.Broken()) { engine.UnBreak(); break; }
 
-		engine->Tick();
+		engine.Tick();
 
 		int drawcap = ui::Engine::Ref().GetDrawingFrequencyLimit();
 		if (!drawcap || drawingTimer > 1e9f / drawcap)
 		{
-			engine->Draw();
+			engine.Draw();
 			drawingTimer = 0;
 
-			if (scale != engine->Scale || fullscreen != engine->Fullscreen ||
-					altFullscreen != engine->GetAltFullscreen() ||
-					forceIntegerScaling != engine->GetForceIntegerScaling() || resizable != engine->GetResizable())
+			if (scale != engine.Scale || fullscreen != engine.Fullscreen ||
+					altFullscreen != engine.GetAltFullscreen() ||
+					forceIntegerScaling != engine.GetForceIntegerScaling() || resizable != engine.GetResizable())
 			{
-				SDLSetScreen(engine->Scale, engine->GetResizable(), engine->Fullscreen, engine->GetAltFullscreen(),
-							 engine->GetForceIntegerScaling());
+				SDLSetScreen(engine.Scale, engine.GetResizable(), engine.Fullscreen, engine.GetAltFullscreen(),
+							 engine.GetForceIntegerScaling());
 			}
 
-			blit(engine->g->vid);
+			blit(engine.g->vid);
 		}
 		auto fpsLimit = ui::Engine::Ref().FpsLimit;
 		auto now = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
@@ -497,7 +501,7 @@ void EngineProcess()
 		correctedFrameTimeAvg = correctedFrameTimeAvg + (correctedFrameTime - correctedFrameTimeAvg) * 0.05;
 		if (frameStart - lastFpsUpdate > UINT64_C(200'000'000))
 		{
-			engine->SetFps(1e9f / correctedFrameTimeAvg);
+			engine.SetFps(1e9f / correctedFrameTimeAvg);
 			lastFpsUpdate = frameStart;
 		}
 		if (frameStart - lastTick > UINT64_C(100'000'000))
@@ -519,8 +523,8 @@ void EngineProcess()
 
 void BlueScreen(String detailMessage)
 {
-	ui::Engine * engine = &ui::Engine::Ref();
-	engine->g->fillrect(0, 0, engine->GetWidth(), engine->GetHeight(), 17, 114, 169, 210);
+	auto &engine = ui::Engine::Ref();
+	engine.g->fillrect(0, 0, engine.GetWidth(), engine.GetHeight(), 17, 114, 169, 210);
 
 	String errorTitle = "ERROR";
 	String errorDetails = "Details: " + detailMessage;
@@ -529,15 +533,15 @@ void BlueScreen(String detailMessage)
 	int errorWidth = 0;
 	Graphics::textsize(errorHelp, errorWidth, height);
 
-	engine->g->drawtext((engine->GetWidth()/2)-(errorWidth/2), ((engine->GetHeight()/2)-100) + currentY, errorTitle.c_str(), 255, 255, 255, 255);
+	engine.g->drawtext((engine.GetWidth()/2)-(errorWidth/2), ((engine.GetHeight()/2)-100) + currentY, errorTitle.c_str(), 255, 255, 255, 255);
 	Graphics::textsize(errorTitle, width, height);
 	currentY += height + 4;
 
-	engine->g->drawtext((engine->GetWidth()/2)-(errorWidth/2), ((engine->GetHeight()/2)-100) + currentY, errorDetails.c_str(), 255, 255, 255, 255);
+	engine.g->drawtext((engine.GetWidth()/2)-(errorWidth/2), ((engine.GetHeight()/2)-100) + currentY, errorDetails.c_str(), 255, 255, 255, 255);
 	Graphics::textsize(errorTitle, width, height);
 	currentY += height + 4;
 
-	engine->g->drawtext((engine->GetWidth()/2)-(errorWidth/2), ((engine->GetHeight()/2)-100) + currentY, errorHelp.c_str(), 255, 255, 255, 255);
+	engine.g->drawtext((engine.GetWidth()/2)-(errorWidth/2), ((engine.GetHeight()/2)-100) + currentY, errorHelp.c_str(), 255, 255, 255, 255);
 	Graphics::textsize(errorTitle, width, height);
 	currentY += height + 4;
 
@@ -548,7 +552,7 @@ void BlueScreen(String detailMessage)
 		while (SDL_PollEvent(&event))
 			if(event.type == SDL_QUIT)
 				exit(-1);
-		blit(engine->g->vid);
+		blit(engine.g->vid);
 	}
 }
 
@@ -592,8 +596,13 @@ struct ExplicitSingletons
 {
 	// These need to be listed in the order they are populated in main.
 	std::unique_ptr<GlobalPrefs> globalPrefs;
-	std::unique_ptr<Client> client;
 	http::RequestManagerPtr requestManager;
+	std::unique_ptr<Client> client;
+	std::unique_ptr<SaveRenderer> saveRenderer;
+	std::unique_ptr<RNG> rng;
+	std::unique_ptr<Favorite> favorite;
+	std::unique_ptr<ui::Engine> engine;
+	std::unique_ptr<GameController> gameController;
 };
 static std::unique_ptr<ExplicitSingletons> explicitSingletons;
 
@@ -601,7 +610,20 @@ int main(int argc, char * argv[])
 {
 	Platform::SetupCrt();
 	atexit([]() {
+		ui::Engine::Ref().CloseWindow();
 		explicitSingletons.reset();
+		if (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_OPENGL)
+		{
+			// * nvidia-460 egl registers callbacks with x11 that end up being called
+			//   after egl is unloaded unless we grab it here and release it after
+			//   sdl closes the display. this is an nvidia driver weirdness but
+			//   technically an sdl bug. glfw has this fixed:
+			//   https://github.com/glfw/glfw/commit/9e6c0c747be838d1f3dc38c2924a47a42416c081
+			SDL_GL_LoadLibrary(NULL);
+			SDL_QuitSubSystem(SDL_INIT_VIDEO);
+			SDL_GL_UnloadLibrary();
+		}
+		SDL_Quit();
 	});
 	explicitSingletons = std::make_unique<ExplicitSingletons>();
 	currentWidth = WINDOWW;
@@ -769,6 +791,11 @@ int main(int argc, char * argv[])
 	explicitSingletons->client = std::make_unique<Client>();
 	Client::Ref().Initialize();
 
+	explicitSingletons->saveRenderer = std::make_unique<SaveRenderer>();
+	explicitSingletons->rng = std::make_unique<RNG>();
+	explicitSingletons->favorite = std::make_unique<Favorite>();
+	explicitSingletons->engine = std::make_unique<ui::Engine>();
+
 	// TODO: maybe bind the maximum allowed scale to screen size somehow
 	if(scale < 1 || scale > SCALE_MAXIMUM)
 		scale = 1;
@@ -788,19 +815,18 @@ int main(int argc, char * argv[])
 
 	StopTextInput();
 
-	ui::Engine::Ref().g = new Graphics();
-	ui::Engine::Ref().Scale = scale;
-	ui::Engine::Ref().SetResizable(resizable);
-	ui::Engine::Ref().Fullscreen = fullscreen;
-	ui::Engine::Ref().SetAltFullscreen(altFullscreen);
-	ui::Engine::Ref().SetForceIntegerScaling(forceIntegerScaling);
-	ui::Engine::Ref().MomentumScroll = momentumScroll;
-	ui::Engine::Ref().ShowAvatars = showAvatars;
-
-	engine = &ui::Engine::Ref();
-	engine->SetMaxSize(desktopWidth, desktopHeight);
-	engine->Begin(WINDOWW, WINDOWH);
-	engine->SetFastQuit(prefs.Get("FastQuit", true));
+	auto &engine = ui::Engine::Ref();
+	engine.g = new Graphics();
+	engine.Scale = scale;
+	engine.SetResizable(resizable);
+	engine.Fullscreen = fullscreen;
+	engine.SetAltFullscreen(altFullscreen);
+	engine.SetForceIntegerScaling(forceIntegerScaling);
+	engine.MomentumScroll = momentumScroll;
+	engine.ShowAvatars = showAvatars;
+	engine.SetMaxSize(desktopWidth, desktopHeight);
+	engine.Begin(WINDOWW, WINDOWH);
+	engine.SetFastQuit(prefs.Get("FastQuit", true));
 
 	bool enableBluescreen = !DEBUG && !true_arg(arguments["disable-bluescreen"]);
 	if (enableBluescreen)
@@ -817,11 +843,10 @@ int main(int argc, char * argv[])
 		X86KillDenormals();
 	}
 
-	GameController * gameController = NULL;
-
 	auto wrapWithBluescreen = [&]() {
-		gameController = new GameController();
-		engine->ShowWindow(gameController->GetView());
+		explicitSingletons->gameController = std::make_unique<GameController>();
+		auto *gameController = explicitSingletons->gameController.get();
+		engine.ShowWindow(gameController->GetView());
 
 		auto openArg = arguments["open"];
 		if (openArg.has_value())
@@ -863,12 +888,12 @@ int main(int argc, char * argv[])
 		auto ptsaveArg = arguments["ptsave"];
 		if (ptsaveArg.has_value())
 		{
-			engine->g->Clear();
-			engine->g->fillrect((engine->GetWidth()/2)-101, (engine->GetHeight()/2)-26, 202, 52, 0, 0, 0, 210);
-			engine->g->drawrect((engine->GetWidth()/2)-100, (engine->GetHeight()/2)-25, 200, 50, 255, 255, 255, 180);
-			engine->g->drawtext((engine->GetWidth()/2)-(Graphics::textwidth("Loading save...")/2), (engine->GetHeight()/2)-5, "Loading save...", style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255);
+			engine.g->Clear();
+			engine.g->fillrect((engine.GetWidth()/2)-101, (engine.GetHeight()/2)-26, 202, 52, 0, 0, 0, 210);
+			engine.g->drawrect((engine.GetWidth()/2)-100, (engine.GetHeight()/2)-25, 200, 50, 255, 255, 255, 180);
+			engine.g->drawtext((engine.GetWidth()/2)-(Graphics::textwidth("Loading save...")/2), (engine.GetHeight()/2)-5, "Loading save...", style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255);
 
-			blit(engine->g->vid);
+			blit(engine.g->vid);
 			try
 			{
 				ByteString saveIdPart;
@@ -926,21 +951,5 @@ int main(int argc, char * argv[])
 	{
 		wrapWithBluescreen();
 	}
-
-	ui::Engine::Ref().CloseWindow();
-	delete gameController;
-	delete ui::Engine::Ref().g;
-	if (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_OPENGL)
-	{
-		// * nvidia-460 egl registers callbacks with x11 that end up being called
-		//   after egl is unloaded unless we grab it here and release it after
-		//   sdl closes the display. this is an nvidia driver weirdness but
-		//   technically an sdl bug. glfw has this fixed:
-		//   https://github.com/glfw/glfw/commit/9e6c0c747be838d1f3dc38c2924a47a42416c081
-		SDL_GL_LoadLibrary(NULL);
-		SDL_QuitSubSystem(SDL_INIT_VIDEO);
-		SDL_GL_UnloadLibrary();
-	}
-	SDL_Quit();
 	return 0;
 }

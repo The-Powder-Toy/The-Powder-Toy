@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "common/String.h"
+#include "common/tpt-rand.h"
 #include "Format.h"
 #include "gui/interface/Engine.h"
 
@@ -64,6 +65,7 @@ int main(int argc, char *argv[])
 			throw e;
 	}
 
+	auto rng = std::make_unique<RNG>();
 	Simulation * sim = new Simulation();
 	Renderer * ren = new Renderer(new Graphics(), sim);
 

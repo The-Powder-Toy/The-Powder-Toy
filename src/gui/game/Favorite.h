@@ -4,9 +4,9 @@
 #include "common/String.h"
 #include <vector>
 
-#include "common/Singleton.h"
+#include "common/ExplicitSingleton.h"
 
-class Favorite : public Singleton<Favorite>
+class Favorite : public ExplicitSingleton<Favorite>
 {
 	std::vector<ByteString> favoritesList;
 public:

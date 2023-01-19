@@ -17,6 +17,8 @@
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
 
+#include "common/Platform.h"
+#include "common/tpt-rand.h"
 #include "gui/game/GameController.h"
 #include "gui/game/GameView.h"
 #include "gui/font/FontEditor.h"
@@ -409,8 +411,34 @@ void EngineProcess()
 	}
 }
 
+struct ExplicitSingletons
+{
+	// These need to be listed in the order they are populated in main.
+	std::unique_ptr<RNG> rng;
+	std::unique_ptr<ui::Engine> engine;
+};
+static std::unique_ptr<ExplicitSingletons> explicitSingletons;
+
 int main(int argc, char * argv[])
 {
+	Platform::SetupCrt();
+	atexit([]() {
+		ui::Engine::Ref().CloseWindow();
+		explicitSingletons.reset();
+		if (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_OPENGL)
+		{
+			// * nvidia-460 egl registers callbacks with x11 that end up being called
+			//   after egl is unloaded unless we grab it here and release it after
+			//   sdl closes the display. this is an nvidia driver weirdness but
+			//   technically an sdl bug. glfw has this fixed:
+			//   https://github.com/glfw/glfw/commit/9e6c0c747be838d1f3dc38c2924a47a42416c081
+			SDL_GL_LoadLibrary(NULL);
+			SDL_QuitSubSystem(SDL_INIT_VIDEO);
+			SDL_GL_UnloadLibrary();
+		}
+		SDL_Quit();
+	});
+	explicitSingletons = std::make_unique<ExplicitSingletons>();
 	currentWidth = WINDOWW;
 	currentHeight = WINDOWH;
 	
@@ -433,6 +461,9 @@ int main(int argc, char * argv[])
 	if(scale < 1 || scale > 10)
 		scale = 1;
 
+	explicitSingletons->rng = std::make_unique<RNG>();
+	explicitSingletons->engine = std::make_unique<ui::Engine>();
+
 	SDLOpen();
 
 	StopTextInput();
@@ -449,8 +480,6 @@ int main(int argc, char * argv[])
 	engine->Begin(WINDOWW, WINDOWH);
 	engine->SetFastQuit(true);
 
-	GameController * gameController = NULL;
-
 	if (argc >= 2)
 	{
 		engine->ShowWindow(new FontEditor(argv[1]));
@@ -462,20 +491,5 @@ int main(int argc, char * argv[])
 	}
 
 	EngineProcess();
-	ui::Engine::Ref().CloseWindow();
-	delete gameController;
-	delete ui::Engine::Ref().g;
-	if (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_OPENGL)
-	{
-		// * nvidia-460 egl registers callbacks with x11 that end up being called
-		//   after egl is unloaded unless we grab it here and release it after
-		//   sdl closes the display. this is an nvidia driver weirdness but
-		//   technically an sdl bug. glfw has this fixed:
-		//   https://github.com/glfw/glfw/commit/9e6c0c747be838d1f3dc38c2924a47a42416c081
-		SDL_GL_LoadLibrary(NULL);
-		SDL_QuitSubSystem(SDL_INIT_VIDEO);
-		SDL_GL_UnloadLibrary();
-	}
-	SDL_Quit();
 	return 0;
 }

@@ -2,9 +2,9 @@
 #include "Config.h"
 
 #include <stdint.h>
-#include "Singleton.h"
+#include "ExplicitSingleton.h"
 
-class RNG : public Singleton<RNG>
+class RNGType
 {
 private:
 	uint64_t s[2];
@@ -16,8 +16,13 @@ public:
 	bool chance(int nominator, unsigned int denominator);
 	float uniform01();
 
-	RNG();
+	RNGType();
 	void seed(unsigned int sd);
 };
 
-extern RNG random_gen;
+// Needed because we also have random_gen, and that would take the singleton role if RNGType had an ExplicitSingleton base.
+class RNG : public RNGType, public ExplicitSingleton<RNG>
+{
+};
+
+extern RNGType random_gen;

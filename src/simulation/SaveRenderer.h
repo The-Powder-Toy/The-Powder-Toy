@@ -1,6 +1,6 @@
 #pragma once
 #include "Config.h"
-#include "common/Singleton.h"
+#include "common/ExplicitSingleton.h"
 #include <mutex>
 
 class GameSave;
@@ -9,7 +9,7 @@ class Graphics;
 class Simulation;
 class Renderer;
 
-class SaveRenderer: public Singleton<SaveRenderer> {
+class SaveRenderer: public ExplicitSingleton<SaveRenderer> {
 	Graphics * g;
 	Simulation * sim;
 	Renderer * ren;
