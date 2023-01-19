@@ -37,6 +37,9 @@ host_arch = host_machine.cpu_family()
 host_platform = host_machine.system()
 # educated guesses follow, PRs welcome
 if c_compiler.get_id() in [ 'msvc' ]
+	if host_platform != 'windows'
+		error('this seems fishy')
+	endif
 	host_libc = 'msvc'
 elif c_compiler.get_id() in [ 'gcc' ] and host_platform == 'windows'
 	host_libc = 'mingw'
@@ -49,6 +52,11 @@ elif host_platform in [ 'android' ]
 	host_platform = 'android'
 	host_libc = 'bionic'
 else
+	if host_platform != 'linux'
+		# TODO: maybe use 'default' in place of 'linux', or use something other than host_platform where details such as desktop integration are concerned
+		warning('host platform is not linux but we will pretend that it is')
+		host_platform = 'linux'
+	endif
 	host_libc = 'gnu'
 endif
 
@@ -326,10 +334,7 @@ is_beta = get_option('beta')
 is_mod = mod_id > 0
 update_server = get_option('update_server')
 
-conf_data.set('LIN', host_platform == 'linux')
-conf_data.set('AND', host_platform == 'android')
-conf_data.set('WIN', host_platform == 'windows')
-conf_data.set('MACOSX', host_platform == 'darwin')
+conf_data.set('SET_WINDOW_ICON', host_platform == 'linux' ? 'true' : 'false')
 conf_data.set('X86', is_x86 ? 'true' : 'false')
 conf_data.set('BETA', is_beta ? 'true' : 'false')
 conf_data.set('INSTALL_CHECK', install_check ? 'true' : 'false')

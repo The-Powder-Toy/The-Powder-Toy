@@ -1,12 +1,7 @@
 #pragma once
 #include <cstdint>
 
-// Boolean macros (defined / not defined), would be great to get rid of them all.
-#mesondefine LIN
-#mesondefine AND
-#mesondefine WIN
-#mesondefine MACOSX
-
+constexpr bool SET_WINDOW_ICON          = @SET_WINDOW_ICON@;
 constexpr bool DEBUG                    = @DEBUG@;
 constexpr bool X86                      = @X86@;
 constexpr bool BETA                     = @BETA@;

@@ -6,6 +6,7 @@
 namespace Platform
 {
 	ByteString GetCwd();
+	ByteString ExecutableNameFirstApprox();
 	ByteString ExecutableName();
 	void DoRestart();
 
@@ -32,6 +33,7 @@ namespace Platform
 	 * @return true on success
 	 */
 	bool MakeDirectory(ByteString dir);
+	std::vector<ByteString> DirectoryList(ByteString directory);
 	std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search, std::vector<ByteString> extensions);
 
 	bool ReadFile(std::vector<char> &fileData, ByteString filename);

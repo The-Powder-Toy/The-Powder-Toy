@@ -117,9 +117,10 @@ int SDLOpen()
 		}
 	}
 
-#ifdef LIN
-	WindowIcon(sdl_window);
-#endif
+	if constexpr (SET_WINDOW_ICON)
+	{
+		WindowIcon(sdl_window);
+	}
 
 	return 0;
 }

@@ -177,9 +177,10 @@ void SDLOpen()
 		}
 	}
 
-#ifdef LIN
-	WindowIcon(sdl_window);
-#endif
+	if constexpr (SET_WINDOW_ICON)
+	{
+		WindowIcon(sdl_window);
+	}
 }
 
 void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscreen_, bool forceIntegerScaling_)
