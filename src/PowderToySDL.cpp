@@ -6,30 +6,18 @@
 #include <ctime>
 #include <climits>
 #include <cstdint>
-#ifdef WIN
-# include <direct.h>
-# include <crtdbg.h>
-#endif
 #include <SDL.h>
 
 #include <iostream>
-#if defined(LIN)
-# include "icon_exe.png.h"
-#endif
 #include <csignal>
 #include <stdexcept>
 
-#ifndef WIN
-# include <unistd.h>
-#endif
-#ifdef MACOSX
-# include <CoreServices/CoreServices.h>
-#endif
 #include <sys/stat.h>
 #include <SDL.h>
 
 #include "Format.h"
 #include "X86KillDenormals.h"
+#include "WindowIcon.h"
 #include "Misc.h"
 
 #include "prefs/GlobalPrefs.h"
@@ -190,14 +178,7 @@ void SDLOpen()
 	}
 
 #ifdef LIN
-	std::vector<pixel> imageData;
-	int imgw, imgh;
-	if (PngDataToPixels(imageData, imgw, imgh, reinterpret_cast<const char *>(icon_exe_png), icon_exe_png_size, false))
-	{
-		SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(&imageData[0], imgw, imgh, 32, imgw * sizeof(pixel), 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-		SDL_SetWindowIcon(sdl_window, icon);
-		SDL_FreeSurface(icon);
-	}
+	WindowIcon(sdl_window);
 #endif
 }
 
@@ -617,16 +598,11 @@ static std::unique_ptr<ExplicitSingletons> explicitSingletons;
 
 int main(int argc, char * argv[])
 {
+	Platform::SetupCrt();
 	atexit([]() {
 		explicitSingletons.reset();
 	});
 	explicitSingletons = std::make_unique<ExplicitSingletons>();
-#ifdef WIN
-	if constexpr (DEBUG)
-	{
-		_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
-	}
-#endif
 	currentWidth = WINDOWW;
 	currentHeight = WINDOWH;
 
@@ -683,12 +659,7 @@ int main(int argc, char * argv[])
 	auto ddirArg = arguments["ddir"];
 	if (ddirArg.has_value())
 	{
-#ifdef WIN
-		int failure = _chdir(ddirArg.value().c_str());
-#else
-		int failure = chdir(ddirArg.value().c_str());
-#endif
-		if (!failure)
+		if (Platform::ChangeDir(ddirArg.value()))
 			Platform::sharedCwd = Platform::GetCwd();
 		else
 			perror("failed to chdir to requested ddir");
@@ -696,22 +667,11 @@ int main(int argc, char * argv[])
 	else
 	{
 		char *ddir = SDL_GetPrefPath(NULL, APPDATA);
-#ifdef WIN
-		struct _stat s;
-		if (_stat("powder.pref", &s) != 0)
-#else
-		struct stat s;
-		if (stat("powder.pref", &s) != 0)
-#endif
+		if (!Platform::FileExists("powder.pref"))
 		{
 			if (ddir)
 			{
-#ifdef WIN
-				int failure = _chdir(ddir);
-#else
-				int failure = chdir(ddir);
-#endif
-				if (failure)
+				if (!Platform::ChangeDir(ddir))
 				{
 					perror("failed to chdir to default ddir");
 					SDL_free(ddir);

@@ -1,28 +1,16 @@
 #include "Config.h"
 #include <ctime>
 #include <climits>
-#ifdef WIN
-#include <direct.h>
-#endif
 
 #include <iostream>
-#if defined(LIN)
-# include "icon_exe.png.h"
-#endif
 #include <stdexcept>
 
-#ifndef WIN
-#include <unistd.h>
-#endif
-#ifdef MACOSX
-# include <mach-o/dyld.h>
-# include <ApplicationServices/ApplicationServices.h>
-#endif
 #include <SDL.h>
 
 #include "Format.h"
 #include "Misc.h"
 
+#include "WindowIcon.h"
 #include "graphics/Graphics.h"
 
 #include "client/SaveInfo.h"
@@ -130,14 +118,7 @@ int SDLOpen()
 	}
 
 #ifdef LIN
-	std::vector<pixel> imageData;
-	int imgw, imgh;
-	if (PngDataToPixels(imageData, imgw, imgh, reinterpret_cast<const char *>(icon_exe_png), icon_exe_png_size, false))
-	{
-		SDL_Surface *icon = SDL_CreateRGBSurfaceFrom(&imageData[0], imgw, imgh, 32, imgw * sizeof(pixel), 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-		SDL_SetWindowIcon(sdl_window, icon);
-		SDL_FreeSurface(icon);
-	}
+	WindowIcon(sdl_window);
 #endif
 
 	return 0;

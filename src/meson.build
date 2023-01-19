@@ -29,6 +29,11 @@ common_files = files(
 	'Probability.cpp',
 )
 
+if host_platform == 'linux'
+	powder_files += files('WindowIcon.cpp')
+	font_files += files('WindowIcon.cpp')
+endif
+
 subdir('bson')
 subdir('bzip2')
 subdir('client')

@@ -53,4 +53,6 @@ namespace Platform
 	bool UpdateStart(const std::vector<char> &data);
 	bool UpdateFinish();
 	void UpdateCleanup();
+
+	void SetupCrt();
 }

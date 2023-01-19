@@ -16,6 +16,7 @@
 # include <shlwapi.h>
 # include <shellapi.h>
 # include <windows.h>
+# include <crtdbg.h>
 #else
 # include <unistd.h>
 # include <ctime>
@@ -727,6 +728,16 @@ void UpdateCleanup()
 {
 #ifdef WIN
 	UpdateFinish();
+#endif
+}
+
+void SetupCrt()
+{
+#ifdef WIN
+	if constexpr (DEBUG)
+	{
+		_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
+	}
 #endif
 }
 }
