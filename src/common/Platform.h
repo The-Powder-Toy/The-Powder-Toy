@@ -49,4 +49,8 @@ namespace Platform
 	bool Install();
 
 	bool ChangeDir(ByteString toDir);
+
+	bool UpdateStart(const std::vector<char> &data);
+	bool UpdateFinish();
+	void UpdateCleanup();
 }

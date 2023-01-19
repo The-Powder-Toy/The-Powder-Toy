@@ -6,7 +6,6 @@ configure_file(
 
 powder_files = files(
 	'SDLCompat.cpp',
-	'Update.cpp',
 	'PowderToySDL.cpp',
 	'lua/CommandInterface.cpp',
 	'lua/TPTScriptInterface.cpp',

@@ -17,7 +17,6 @@
 #include "Config.h"
 #include "Format.h"
 #include "MD5.h"
-#include "Update.h"
 
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
@@ -63,7 +62,7 @@ void Client::Initialize()
 	if (prefs.Get("version.update", false))
 	{
 		prefs.Set("version.update", false);
-		update_finish();
+		Platform::UpdateFinish();
 	}
 
 	//Read stamps library

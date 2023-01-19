@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "Config.h"
-#include "Update.h"
 
 #include "prefs/GlobalPrefs.h"
 #include "client/Client.h"
@@ -94,10 +93,10 @@ private:
 		notifyProgress(-1);
 
 		prefs.Set("version.update", true);
-		if (update_start(&res[0], uncompressedLength))
+		if (!Platform::UpdateStart(res))
 		{
 			prefs.Set("version.update", false);
-			update_cleanup();
+			Platform::UpdateCleanup();
 			notifyError("Update failed - try downloading a new version.");
 			return false;
 		}

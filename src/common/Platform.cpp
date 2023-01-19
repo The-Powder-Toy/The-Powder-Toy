@@ -615,4 +615,118 @@ bool Install()
 #endif
 	return ok;
 }
+
+bool UpdateStart(const std::vector<char> &data)
+{
+	ByteString exeName = Platform::ExecutableName(), updName;
+
+	if (!exeName.length())
+		return false;
+
+#ifdef WIN
+	updName = exeName;
+	ByteString extension = exeName.substr(exeName.length() - 4);
+	if (extension == ".exe")
+		updName = exeName.substr(0, exeName.length() - 4);
+	updName = updName + "_upd.exe";
+
+	if (!MoveFile(Platform::WinWiden(exeName).c_str(), Platform::WinWiden(updName).c_str()))
+		return false;
+
+	if (!WriteFile(data, exeName))
+	{
+		Platform::RemoveFile(exeName);
+		return false;
+	}
+
+	if ((uintptr_t)ShellExecute(NULL, L"open", Platform::WinWiden(exeName).c_str(), NULL, NULL, SW_SHOWNORMAL) <= 32)
+	{
+		Platform::RemoveFile(exeName);
+		return false;
+	}
+
+	return true;
+#else
+	updName = exeName + "-update";
+
+	if (!WriteFile(data, updName))
+	{
+		RemoveFile(updName);
+		return false;
+	}
+
+	if (chmod(updName.c_str(), 0755))
+	{
+		RemoveFile(updName);
+		return false;
+	}
+
+	if (!RenameFile(updName, exeName))
+	{
+		RemoveFile(updName);
+		return false;
+	}
+
+	execl(exeName.c_str(), "powder-update", NULL);
+	return false; // execl returned, we failed
+#endif
+}
+
+bool UpdateFinish()
+{
+#ifdef WIN
+	ByteString exeName = Platform::ExecutableName(), updName;
+	int timeout = 5, err;
+	if constexpr (DEBUG)
+	{
+		printf("Update: Current EXE name: %s\n", exeName.c_str());
+	}
+	updName = exeName;
+	ByteString extension = exeName.substr(exeName.length() - 4);
+	if (extension == ".exe")
+		updName = exeName.substr(0, exeName.length() - 4);
+	updName = updName + "_upd.exe";
+	if constexpr (DEBUG)
+	{
+		printf("Update: Temp EXE name: %s\n", updName.c_str());
+	}
+	while (!Platform::RemoveFile(updName))
+	{
+		err = GetLastError();
+		if (err == ERROR_FILE_NOT_FOUND)
+		{
+			if constexpr (DEBUG)
+			{
+				printf("Update: Temp file not deleted\n");
+			}
+			// Old versions of powder toy name their update files with _update.exe, delete that upgrade file here
+			updName = exeName;
+			ByteString extension = exeName.substr(exeName.length() - 4);
+			if (extension == ".exe")
+				updName = exeName.substr(0, exeName.length() - 4);
+			updName = updName + "_update.exe";
+			Platform::RemoveFile(updName);
+			return true;
+		}
+		Sleep(500);
+		timeout--;
+		if (timeout <= 0)
+		{
+			if constexpr (DEBUG)
+			{
+				printf("Update: Delete timeout\n");
+			}
+			return false;
+		}
+	}
+#endif
+	return true;
+}
+
+void UpdateCleanup()
+{
+#ifdef WIN
+	UpdateFinish();
+#endif
+}
 }
