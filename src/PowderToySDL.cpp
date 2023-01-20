@@ -728,6 +728,7 @@ int main(int argc, char * argv[])
 		       str == "on" ||
 		       str == "yes" ||
 		       str == "y" ||
+		       str == "1" ||
 		       str == ""; // standalone "redirect" or "disable-bluescreen" or similar arguments
 	};
 	auto true_arg = [&true_string](Argument arg) {
