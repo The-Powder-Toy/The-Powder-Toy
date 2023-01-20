@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <cstdint>
 #include <fstream>
 #include <iterator>
 #include <iomanip>

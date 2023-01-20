@@ -7,6 +7,7 @@
 #include <cstring>
 #include <zlib.h>
 #include <cstdio>
+#include <cstdint>
 
 #include "graphics/Graphics.h"
 
