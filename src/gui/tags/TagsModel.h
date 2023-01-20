@@ -1,8 +1,6 @@
 #pragma once
-#include "Config.h"
-
-#include <vector>
 #include "common/String.h"
+#include <vector>
 
 class SaveInfo;
 

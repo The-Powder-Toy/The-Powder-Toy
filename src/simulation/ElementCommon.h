@@ -1,23 +1,16 @@
 #pragma once
-#include "Config.h"
-
 // This header should be included by all files in src/elements/
-
-#include <cmath>
-
 #include "Misc.h"
-
 #include "common/tpt-rand.h"
 #include "common/tpt-compat.h"
 #include "common/tpt-minmax.h"
-
 #include "ElementDefs.h"
 #include "ElementClasses.h"
 #include "Particle.h"
 #include "ElementGraphics.h"
 #include "Simulation.h"
-
 #include "graphics/Renderer.h"
+#include <cmath>
 
 constexpr float IPL = MIN_PRESSURE - 1;
 constexpr float IPH = MAX_PRESSURE + 1;

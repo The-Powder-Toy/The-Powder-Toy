@@ -1,8 +1,4 @@
 #include "GameModel.h"
-
-#include <iostream>
-#include <algorithm>
-
 #include "BitmapBrush.h"
 #include "EllipseBrush.h"
 #include "Favorite.h"
@@ -15,7 +11,6 @@
 #include "TriangleBrush.h"
 #include "QuickOptions.h"
 #include "lua/CommandInterface.h"
-
 #include "prefs/GlobalPrefs.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
@@ -32,9 +27,10 @@
 #include "simulation/ElementClasses.h"
 #include "simulation/ElementGraphics.h"
 #include "simulation/ToolClasses.h"
-
 #include "gui/game/DecorationTool.h"
 #include "gui/interface/Engine.h"
+#include <iostream>
+#include <algorithm>
 
 HistoryEntry::~HistoryEntry()
 {

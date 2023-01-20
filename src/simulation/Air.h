@@ -1,5 +1,5 @@
 #pragma once
-#include "Config.h"
+#include "SimulationConfig.h"
 
 class Simulation;
 

@@ -11,6 +11,7 @@
 #include "gui/dialogues/ErrorMessage.h"
 #include "graphics/Graphics.h"
 
+#include "SimulationConfig.h"
 #include <SDL.h>
 
 namespace ui {

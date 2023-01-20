@@ -1,19 +1,13 @@
 #pragma once
-#include "Config.h"
-
+#include "client/ClientListener.h"
+#include "gui/interface/Point.h"
+#include "gui/interface/Colour.h"
+#include "simulation/Sign.h"
+#include "simulation/Particle.h"
+#include "Misc.h"
 #include <vector>
 #include <utility>
 #include <memory>
-
-#include "client/ClientListener.h"
-
-#include "gui/interface/Point.h"
-#include "gui/interface/Colour.h"
-
-#include "simulation/Sign.h"
-#include "simulation/Particle.h"
-
-#include "Misc.h"
 
 class DebugInfo;
 class SaveFile;

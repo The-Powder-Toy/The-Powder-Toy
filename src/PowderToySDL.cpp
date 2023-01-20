@@ -1,25 +1,9 @@
-#include "Config.h"
 #include "common/tpt-minmax.h"
-
-#include <map>
-#include <optional>
-#include <ctime>
-#include <climits>
-#include <cstdint>
-#include <SDL.h>
-
-#include <iostream>
-#include <csignal>
-#include <stdexcept>
-
-#include <sys/stat.h>
-#include <SDL.h>
-
+#include "SimulationConfig.h"
 #include "Format.h"
 #include "X86KillDenormals.h"
 #include "WindowIcon.h"
 #include "Misc.h"
-
 #include "prefs/GlobalPrefs.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
@@ -32,12 +16,23 @@
 #include "common/tpt-rand.h"
 #include "gui/game/Favorite.h"
 #include "gui/Style.h"
-
 #include "gui/game/GameController.h"
 #include "gui/game/GameView.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/interface/Engine.h"
+#include "Config.h"
+#include <map>
+#include <optional>
+#include <ctime>
+#include <climits>
+#include <cstdint>
+#include <SDL.h>
+#include <iostream>
+#include <csignal>
+#include <stdexcept>
+#include <sys/stat.h>
+#include <SDL.h>
 
 int desktopWidth = 1280, desktopHeight = 1024;
 

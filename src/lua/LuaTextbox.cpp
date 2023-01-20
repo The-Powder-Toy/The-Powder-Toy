@@ -1,4 +1,3 @@
-#include "Config.h"
 #include "LuaTextbox.h"
 #include "LuaScriptInterface.h"
 #include "gui/interface/Textbox.h"

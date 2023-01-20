@@ -2,6 +2,7 @@
 #include "RequestManager.h"
 #include "Request.h"
 #include "CurlError.h"
+#include "Config.h"
 
 #if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 55, 0)
 # define REQUEST_USE_CURL_OFFSET_T

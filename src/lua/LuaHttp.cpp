@@ -4,6 +4,7 @@
 #include "json/json.h"
 #include "LuaScriptInterface.h"
 #include "Format.h"
+#include "Config.h"
 #include <memory>
 #include <iostream>
 

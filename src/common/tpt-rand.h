@@ -1,8 +1,6 @@
 #pragma once
-#include "Config.h"
-
-#include <stdint.h>
 #include "ExplicitSingleton.h"
+#include <stdint.h>
 
 class RNGType
 {

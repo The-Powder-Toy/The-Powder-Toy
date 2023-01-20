@@ -2,9 +2,7 @@
 #include "Component.h"
 #include "Colour.h"
 #include "graphics/Graphics.h"
-
 #include <iostream>
-
 #include <cmath>
 #include <vector>
 #include <functional>

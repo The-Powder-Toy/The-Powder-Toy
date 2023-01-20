@@ -1,8 +1,6 @@
 #include "Spinner.h"
-
-#include <cmath>
-
 #include "graphics/Graphics.h"
+#include <cmath>
 
 using namespace ui;
 

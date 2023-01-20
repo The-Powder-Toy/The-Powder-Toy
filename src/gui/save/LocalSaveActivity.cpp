@@ -14,6 +14,7 @@
 #include "gui/interface/Textbox.h"
 
 #include "save_local.png.h"
+#include "Config.h"
 
 LocalSaveActivity::LocalSaveActivity(SaveFile save, OnSaved onSaved_) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(220, 200)),

@@ -1,6 +1,4 @@
 #pragma once
-#include "Config.h"
-
 #include "Border.h"
 #include "Colour.h"
 #include "graphics/Icons.h"

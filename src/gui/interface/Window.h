@@ -1,7 +1,7 @@
 #pragma once
 #include "common/String.h"
-#include <vector>
 #include "gui/interface/Point.h"
+#include <vector>
 
 class Graphics;
 namespace ui

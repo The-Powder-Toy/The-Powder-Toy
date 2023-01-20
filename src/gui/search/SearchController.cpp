@@ -14,6 +14,7 @@
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/preview/PreviewController.h"
 #include "gui/preview/PreviewView.h"
+#include "SimulationConfig.h"
 
 SearchController::SearchController(std::function<void ()> onDone_):
 	activePreview(NULL),

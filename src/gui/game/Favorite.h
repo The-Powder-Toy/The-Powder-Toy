@@ -1,10 +1,7 @@
 #pragma once
-#include "Config.h"
-
 #include "common/String.h"
-#include <vector>
-
 #include "common/ExplicitSingleton.h"
+#include <vector>
 
 class Favorite : public ExplicitSingleton<Favorite>
 {

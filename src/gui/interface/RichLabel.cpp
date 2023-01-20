@@ -1,16 +1,12 @@
 #include "RichLabel.h"
-
-#include <vector>
-#include <exception>
-
 #include "Colour.h"
-
 #include "common/Platform.h"
 #include "graphics/FontReader.h"
 #include "graphics/Graphics.h"
-
 #include "gui/interface/Component.h"
 #include "gui/interface/Point.h"
+#include <vector>
+#include <exception>
 
 using namespace ui;
 

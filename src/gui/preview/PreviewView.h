@@ -1,8 +1,8 @@
 #pragma once
-#include <vector>
-#include <set>
 #include "common/String.h"
 #include "gui/interface/Window.h"
+#include <vector>
+#include <set>
 
 namespace ui
 {

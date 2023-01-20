@@ -1,5 +1,6 @@
 #include "RequestManager.h"
 #include "Request.h"
+#include "Config.h"
 #include <iostream>
 
 namespace http

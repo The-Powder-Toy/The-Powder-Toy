@@ -1,9 +1,6 @@
-#include "Config.h"
 #include "LuaComponent.h"
-
 #include "LuaScriptInterface.h"
 #include "LuaWindow.h"
-
 #include "gui/interface/Component.h"
 #include "gui/interface/Window.h"
 

@@ -21,6 +21,7 @@
 
 #include "graphics/Graphics.h"
 
+#include "Config.h"
 #include <iostream>
 #include <SDL.h>
 

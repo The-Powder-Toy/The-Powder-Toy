@@ -1,8 +1,19 @@
 #include "Client.h"
-
 #include "prefs/GlobalPrefs.h"
-#include "client/http/Request.h" // includes curl.h, needs to come first to silence a warning on windows
-
+#include "client/http/Request.h"
+#include "ClientListener.h"
+#include "Format.h"
+#include "MD5.h"
+#include "client/GameSave.h"
+#include "client/SaveFile.h"
+#include "client/SaveInfo.h"
+#include "client/UserInfo.h"
+#include "common/Platform.h"
+#include "common/String.h"
+#include "graphics/Graphics.h"
+#include "lua/CommandInterface.h"
+#include "gui/preview/Comment.h"
+#include "Config.h"
 #include <cstring>
 #include <cstdlib>
 #include <vector>
@@ -12,23 +23,6 @@
 #include <ctime>
 #include <cstdio>
 #include <fstream>
-
-#include "ClientListener.h"
-#include "Config.h"
-#include "Format.h"
-#include "MD5.h"
-
-#include "client/GameSave.h"
-#include "client/SaveFile.h"
-#include "client/SaveInfo.h"
-#include "client/UserInfo.h"
-#include "common/Platform.h"
-#include "common/String.h"
-#include "graphics/Graphics.h"
-
-#include "lua/CommandInterface.h"
-
-#include "gui/preview/Comment.h"
 
 Client::Client():
 	messageOfTheDay("Fetching the message of the day..."),

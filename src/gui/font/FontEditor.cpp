@@ -1,21 +1,18 @@
-#include <stdexcept>
-#include <cstdint>
-#include <fstream>
-#include <iterator>
-#include <iomanip>
-#include <iostream>
-
 #include "FontEditor.h"
 #include "bzip2/bz2wrap.h"
-
-#include "Config.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Engine.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/ScrollPanel.h"
 #include "graphics/Graphics.h"
-
+#include "SimulationConfig.h"
+#include <stdexcept>
+#include <fstream>
+#include <iterator>
+#include <iomanip>
+#include <iostream>
+#include <cstdint>
 #include <SDL.h>
 
 extern unsigned char *font_data;

@@ -1,6 +1,4 @@
 #pragma once
-#include "Config.h"
-
 #include "CommandInterface.h"
 #include "TPTSTypes.h"
 #include <deque>

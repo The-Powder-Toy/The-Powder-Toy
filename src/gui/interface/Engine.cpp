@@ -1,16 +1,11 @@
 #include "Engine.h"
-
-#include <cmath>
-#include <cstring>
-
-#include "Config.h"
 #include "PowderToy.h"
 #include "Window.h"
-
 #include "common/Platform.h"
 #include "graphics/Graphics.h"
-
 #include "gui/dialogues/ConfirmPrompt.h"
+#include <cmath>
+#include <cstring>
 
 using namespace ui;
 

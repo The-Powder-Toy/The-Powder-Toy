@@ -1,6 +1,4 @@
 #pragma once
-#include "Config.h"
-
 #include "common/String.h"
 #include "gui/interface/Point.h"
 #include "simulation/StructProperty.h"

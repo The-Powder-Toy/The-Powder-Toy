@@ -1,17 +1,8 @@
-#include "Config.h"
-#include "client/http/Request.h" // includes curl.h, needs to come first to silence a warning on windows
-
-#include <iomanip>
-#include <vector>
-#include <algorithm>
-#include <locale>
-
 #include "Format.h"
 #include "LuaScriptHelper.h"
 #include "LuaScriptInterface.h"
 #include "LuaSmartRef.h"
 #include "PowderToy.h"
-
 #include "prefs/GlobalPrefs.h"
 #include "common/Platform.h"
 #include "graphics/Graphics.h"
@@ -20,7 +11,6 @@
 #include "simulation/Gravity.h"
 #include "simulation/Simulation.h"
 #include "simulation/SimulationData.h"
-
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
@@ -28,6 +18,11 @@
 #include "gui/game/GameController.h"
 #include "gui/game/GameModel.h"
 #include "gui/interface/Engine.h"
+#include "client/http/Request.h"
+#include <iomanip>
+#include <vector>
+#include <algorithm>
+#include <locale>
 
 std::map<ByteString, StructProperty> legacyPropNames;
 std::map<ByteString, StructProperty> legacyTransitionNames;

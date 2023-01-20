@@ -1,8 +1,8 @@
 #pragma once
-#include <vector>
 #include "Activity.h"
 #include "common/String.h"
 #include "gui/interface/Point.h"
+#include <vector>
 
 class Tool;
 class ToolButton;

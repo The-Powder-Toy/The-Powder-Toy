@@ -2,7 +2,6 @@
 // resampler.h, Separable filtering image rescaler v2.21, Rich Geldreich - richgel99@gmail.com
 // See unlicense.org text at the bottom of this file.
 #pragma once
-#include "Config.h"
 #include <cstdlib>
 
 #define HIGH_QUALITY_RESAMPLE

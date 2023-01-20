@@ -1,16 +1,13 @@
 #include "Graphics.h"
-
+#include "common/Platform.h"
+#include "FontReader.h"
+#include "resampler/resampler.h"
+#include "SimulationConfig.h"
 #include <cmath>
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
-
 #include <bzlib.h>
-#include "common/Platform.h"
-
-#include "FontReader.h"
-#include "resampler/resampler.h"
-
 #include <png.h>
 
 VideoBuffer::VideoBuffer(int width, int height):

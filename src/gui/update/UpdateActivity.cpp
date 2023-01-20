@@ -1,20 +1,15 @@
-#include "client/http/Request.h" // includes curl.h, needs to come first to silence a warning on windows
-
 #include "UpdateActivity.h"
-
-#include <bzlib.h>
-#include <memory>
-
-#include "Config.h"
-
+#include "client/http/Request.h"
 #include "prefs/GlobalPrefs.h"
 #include "client/Client.h"
 #include "common/Platform.h"
 #include "tasks/Task.h"
 #include "tasks/TaskWindow.h"
-
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/interface/Engine.h"
+#include "Config.h"
+#include <bzlib.h>
+#include <memory>
 
 class UpdateDownloadTask : public Task
 {

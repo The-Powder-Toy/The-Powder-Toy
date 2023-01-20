@@ -1,22 +1,10 @@
-#include "Config.h"
-#include <ctime>
-#include <climits>
-
-#include <iostream>
-#include <stdexcept>
-
-#include <SDL.h>
-
 #include "Format.h"
 #include "Misc.h"
-
 #include "WindowIcon.h"
 #include "graphics/Graphics.h"
-
 #include "client/SaveInfo.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
-
 #include "common/Platform.h"
 #include "common/tpt-rand.h"
 #include "gui/game/GameController.h"
@@ -26,6 +14,12 @@
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/Style.h"
 #include "gui/interface/Engine.h"
+#include "Config.h"
+#include <ctime>
+#include <climits>
+#include <iostream>
+#include <stdexcept>
+#include <SDL.h>
 
 int desktopWidth = 1280, desktopHeight = 1024;
 

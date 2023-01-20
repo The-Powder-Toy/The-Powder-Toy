@@ -14,10 +14,9 @@
  */
 
 #include "Probability.h"
-
+#include "common/tpt-rand.h"
 #include <numeric>
 #include <cstdlib>
-#include "common/tpt-rand.h"
 
 namespace Probability
 {

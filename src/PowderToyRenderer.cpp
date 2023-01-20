@@ -1,20 +1,15 @@
-#include "Config.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
-
-#include <ctime>
-#include <iostream>
-#include <fstream>
-#include <vector>
-
 #include "common/String.h"
 #include "common/tpt-rand.h"
 #include "Format.h"
 #include "gui/interface/Engine.h"
-
 #include "client/GameSave.h"
 #include "simulation/Simulation.h"
-
+#include <ctime>
+#include <iostream>
+#include <fstream>
+#include <vector>
 
 void EngineProcess() {}
 void ClipboardPush(ByteString) {}

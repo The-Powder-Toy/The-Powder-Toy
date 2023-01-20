@@ -1,23 +1,17 @@
 #include "SearchView.h"
-
 #include "SearchController.h"
 #include "SearchModel.h"
-
 #include "client/Client.h"
 #include "client/SaveInfo.h"
-
 #include "gui/interface/SaveButton.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/RichLabel.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Spinner.h"
-
 #include "PowderToy.h"
-#include "Config.h"
-
 #include "graphics/Graphics.h"
-
+#include "SimulationConfig.h"
 #include <SDL.h>
 
 #ifdef GetUserName

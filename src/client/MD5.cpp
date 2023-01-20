@@ -1,6 +1,6 @@
 // based on public-domain code from Colin Plumb (1993)
-#include <cstring>
 #include "MD5.h"
+#include <cstring>
 
 static unsigned getu32(const unsigned char *addr)
 {

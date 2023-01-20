@@ -1,11 +1,9 @@
 #pragma once
-#include "Config.h"
-
-#include <vector>
-#include <mutex>
-
 #include "Graphics.h"
 #include "gui/interface/Point.h"
+#include "SimulationConfig.h"
+#include <vector>
+#include <mutex>
 
 class RenderPreset;
 class Simulation;

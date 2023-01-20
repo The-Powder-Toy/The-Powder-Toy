@@ -1,15 +1,11 @@
 #include "SearchModel.h"
-
 #include "SearchView.h"
-
 #include "Format.h"
 #include "client/SaveInfo.h"
 #include "client/Client.h"
-
+#include "common/tpt-minmax.h"
 #include <thread>
 #include <cmath>
-
-#include "common/tpt-minmax.h"
 
 SearchModel::SearchModel():
 	loadedSave(NULL),

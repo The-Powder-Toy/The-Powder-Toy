@@ -1,5 +1,4 @@
 #include "Renderer.h"
-#include <cmath>
 #include "Misc.h"
 #include "common/tpt-rand.h"
 #include "common/tpt-compat.h"
@@ -8,6 +7,7 @@
 #include "simulation/ElementClasses.h"
 #include "simulation/Air.h"
 #include "simulation/Gravity.h"
+#include <cmath>
 
 constexpr auto VIDXRES = WINDOWW;
 constexpr auto VIDYRES = WINDOWH;

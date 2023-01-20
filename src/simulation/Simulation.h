@@ -1,12 +1,4 @@
 #pragma once
-#include "Config.h"
-
-#include <cstring>
-#include <cstddef>
-#include <vector>
-#include <array>
-#include <memory>
-
 #include "Particle.h"
 #include "Stickman.h"
 #include "WallType.h"
@@ -16,8 +8,13 @@
 #include "MenuSection.h"
 #include "CoordStack.h"
 #include "GravityPtr.h"
-
 #include "Element.h"
+#include "SimulationConfig.h"
+#include <cstring>
+#include <cstddef>
+#include <vector>
+#include <array>
+#include <memory>
 
 constexpr int CHANNELS = int(MAX_TEMP - 73) / 100 + 2;
 

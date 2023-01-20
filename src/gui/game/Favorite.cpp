@@ -1,8 +1,6 @@
 #include "Favorite.h"
-
-#include <json/json.h>
 #include "prefs/GlobalPrefs.h"
-
+#include <json/json.h>
 #include <algorithm>
 
 Favorite::Favorite():

@@ -1,7 +1,6 @@
 #include "GameView.h"
 
 #include "Brush.h"
-#include "Config.h"
 #include "DecorationTool.h"
 #include "Favorite.h"
 #include "Format.h"
@@ -34,6 +33,7 @@
 #include "gui/interface/Colour.h"
 #include "gui/interface/Engine.h"
 
+#include "Config.h"
 #include <cstring>
 #include <iostream>
 #include <SDL.h>

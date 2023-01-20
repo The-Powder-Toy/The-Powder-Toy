@@ -1,14 +1,11 @@
 #include "SaveIDMessage.h"
-
 #include "gui/Style.h"
-
 #include "graphics/Graphics.h"
-
 #include "gui/interface/Button.h"
 #include "gui/interface/CopyTextButton.h"
 #include "gui/interface/Label.h"
-
 #include "Format.h"
+#include "SimulationConfig.h"
 
 SaveIDMessage::SaveIDMessage(int id):
 	ui::Window(ui::Point((XRES-244)/2, (YRES-90)/2), ui::Point(244, 90))

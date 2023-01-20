@@ -1,6 +1,4 @@
 #pragma once
-#include "Config.h"
-
 #include "LuaCompat.h"
 #include <SDL.h>
 

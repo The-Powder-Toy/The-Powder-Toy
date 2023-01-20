@@ -2,7 +2,6 @@
 #include "Component.h"
 #include "Colour.h"
 #include "graphics/Pixel.h"
-
 #include <functional>
 
 namespace ui {

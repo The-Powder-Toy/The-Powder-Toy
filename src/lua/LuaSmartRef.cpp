@@ -1,4 +1,3 @@
-#include "Config.h"
 #include "LuaSmartRef.h"
 
 void LuaSmartRef::Clear()

@@ -1,5 +1,4 @@
 #pragma once
-#include "Config.h"
 
 struct md5_context
 {

@@ -1,8 +1,5 @@
 #pragma once
-#include "Config.h"
-
 #include "common/String.h"
-
 #include <functional>
 
 class SaveFile;

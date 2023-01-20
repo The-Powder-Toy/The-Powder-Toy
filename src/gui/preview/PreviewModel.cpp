@@ -1,21 +1,16 @@
-#include "client/http/Request.h" // includes curl.h, needs to come first to silence a warning on windows
-
 #include "PreviewModel.h"
-
-#include <cmath>
-#include <iostream>
-
+#include "client/http/Request.h"
 #include "Format.h"
-
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "client/SaveInfo.h"
-
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/preview/Comment.h"
-
 #include "PreviewModelException.h"
 #include "PreviewView.h"
+#include "Config.h"
+#include <cmath>
+#include <iostream>
 
 PreviewModel::PreviewModel():
 	doOpen(false),

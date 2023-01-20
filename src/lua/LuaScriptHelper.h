@@ -1,5 +1,4 @@
 #pragma once
-#include "Config.h"
 #include "simulation/Particle.h"
 #include "simulation/ElementDefs.h"
 #include "common/String.h"

@@ -1,15 +1,14 @@
 #include "ProfileActivity.h"
-
 #include "client/Client.h"
 #include "common/Platform.h"
 #include "gui/Style.h"
-
 #include "gui/interface/AvatarButton.h"
 #include "gui/interface/Button.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/ScrollPanel.h"
 #include "gui/interface/Textbox.h"
+#include "Config.h"
 
 ProfileActivity::ProfileActivity(ByteString username) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 300)),

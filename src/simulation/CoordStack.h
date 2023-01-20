@@ -14,7 +14,6 @@
  */
 
 #pragma once
-#include "Config.h" // for XRES and YRES
 #include <cstdlib>
 #include <exception>
 

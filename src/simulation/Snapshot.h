@@ -1,10 +1,8 @@
 #pragma once
-
-#include <vector>
-
 #include "Particle.h"
 #include "Sign.h"
 #include "Stickman.h"
+#include <vector>
 #include <json/json.h>
 
 class Snapshot

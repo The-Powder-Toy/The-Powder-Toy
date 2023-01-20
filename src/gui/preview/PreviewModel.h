@@ -1,9 +1,7 @@
 #pragma once
-#include "Config.h"
-
+#include "common/String.h"
 #include <vector>
 #include <memory>
-#include "common/String.h"
 
 namespace http
 {

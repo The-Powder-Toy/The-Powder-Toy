@@ -1,6 +1,4 @@
 #pragma once
-#include "Config.h"
-
 #ifdef __MINGW32__
 # include <cstddef>
 

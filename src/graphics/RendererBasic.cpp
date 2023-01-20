@@ -1,9 +1,9 @@
 #include "Renderer.h"
-#include <cmath>
 #include "gui/game/RenderPreset.h"
 #include "simulation/Simulation.h"
 #include "simulation/ElementGraphics.h"
 #include "simulation/ElementClasses.h"
+#include <cmath>
 
 constexpr auto VIDXRES = WINDOWW;
 constexpr auto VIDYRES = WINDOWH;

@@ -1,7 +1,5 @@
 #include "FileBrowserActivity.h"
 
-#include <algorithm>
-
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
 #include "common/Platform.h"
@@ -17,6 +15,9 @@
 #include "gui/interface/SaveButton.h"
 #include "gui/interface/ScrollPanel.h"
 #include "gui/interface/Textbox.h"
+
+#include "Config.h"
+#include <algorithm>
 
 //Currently, reading is done on another thread, we can't render outside the main thread due to some bullshit with OpenGL
 class LoadFilesTask: public Task

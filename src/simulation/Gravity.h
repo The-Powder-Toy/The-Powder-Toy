@@ -1,7 +1,7 @@
 #pragma once
 #include "Config.h"
 #include "GravityPtr.h"
-
+#include "SimulationConfig.h"
 #include <thread>
 #include <mutex>
 #include <condition_variable>

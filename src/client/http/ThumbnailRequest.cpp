@@ -1,5 +1,4 @@
 #include "ThumbnailRequest.h"
-
 #include "Config.h"
 
 namespace http

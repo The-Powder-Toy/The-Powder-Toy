@@ -1,5 +1,5 @@
 #pragma once
-#include "Config.h"
+
 class Task;
 class TaskWindow;
 class UpdateActivity

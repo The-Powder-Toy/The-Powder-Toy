@@ -1,9 +1,7 @@
 #include "BitmapBrush.h"
-
-#include <cmath>
-#include "Misc.h"
-
 #include "common/tpt-minmax.h"
+#include "Misc.h"
+#include <cmath>
 
 BitmapBrush::BitmapBrush(unsigned char *newBitmap, ui::Point rectSize_):
 	Brush(ui::Point(0, 0)),

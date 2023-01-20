@@ -19,16 +19,13 @@
  */
 
 #pragma once
-#include "Config.h"
-
+#include "common/tpt-inline.h"
 #include <ctime>
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
 #include <cstdarg>
 #include <climits>
-#include "common/tpt-inline.h"
-
 #include <cstdint>
 
 constexpr int BSON_OK = 0;

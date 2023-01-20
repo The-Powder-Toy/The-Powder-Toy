@@ -1,15 +1,11 @@
 #pragma once
-#include "Config.h"
-
+#include "common/String.h"
+#include "common/ExplicitSingleton.h"
+#include "User.h"
 #include <vector>
 #include <list>
 #include <memory>
-
-#include "common/String.h"
-#include "common/ExplicitSingleton.h"
 #include <json/json.h>
-
-#include "User.h"
 
 class SaveInfo;
 class SaveFile;

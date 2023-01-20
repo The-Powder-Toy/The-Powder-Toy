@@ -1,7 +1,5 @@
 #include "bz2wrap.h"
-
 #include "bzlib.h"
-
 #include <memory>
 #include <functional>
 #include <vector>

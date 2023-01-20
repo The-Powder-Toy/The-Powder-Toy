@@ -1,6 +1,6 @@
 #pragma once
-#include <vector>
 #include "gui/interface/Window.h"
+#include <vector>
 
 namespace ui
 {

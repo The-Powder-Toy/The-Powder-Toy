@@ -1,13 +1,10 @@
 #pragma once
-#include "Config.h"
-
-#include <vector>
-#include <deque>
-#include <memory>
-
 #include "gui/interface/Colour.h"
 #include "client/User.h"
 #include "gui/interface/Point.h"
+#include <vector>
+#include <deque>
+#include <memory>
 
 class Menu;
 class Tool;

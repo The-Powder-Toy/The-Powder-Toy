@@ -1,9 +1,7 @@
 #pragma once
-#include "Config.h"
-
-#include <vector>
 #include "common/String.h"
 #include "client/User.h"
+#include <vector>
 
 class LoginView;
 class LoginModel

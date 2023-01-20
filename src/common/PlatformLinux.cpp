@@ -1,10 +1,11 @@
 #include "Platform.h"
-#include <cstring>
-#include <ctime>
 #include "icon_cps.png.h"
 #include "icon_exe.png.h"
 #include "save.xml.h"
 #include "powder.desktop.h"
+#include "Config.h"
+#include <cstring>
+#include <ctime>
 
 namespace Platform
 {

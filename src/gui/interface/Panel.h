@@ -1,9 +1,8 @@
 #pragma once
-#include <vector>
-
 #include "graphics/Pixel.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Component.h"
+#include <vector>
 
 class Graphics;
 namespace ui

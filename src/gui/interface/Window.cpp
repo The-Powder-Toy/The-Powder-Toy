@@ -6,6 +6,8 @@
 
 #include "graphics/Graphics.h"
 
+#include "Config.h"
+#include "SimulationConfig.h"
 #include <SDL.h>
 
 using namespace ui;

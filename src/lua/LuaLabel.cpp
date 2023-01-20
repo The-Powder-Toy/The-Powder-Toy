@@ -1,4 +1,3 @@
-#include "Config.h"
 #include "LuaScriptInterface.h"
 #include "LuaLabel.h"
 #include "gui/interface/Label.h"

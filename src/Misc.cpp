@@ -1,13 +1,9 @@
 #include "Misc.h"
-
-#include "Config.h"
-
+#include "common/tpt-minmax.h"
+#include "common/String.h"
 #include <cstring>
 #include <sys/types.h>
 #include <cmath>
-
-#include "common/tpt-minmax.h"
-#include "common/String.h"
 
 const static char hex[] = "0123456789ABCDEF";
 void strcaturl(char *dst, char *src)

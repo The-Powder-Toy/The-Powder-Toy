@@ -1,7 +1,6 @@
 #include "SaveUserInfoRequest.h"
-
-#include "Config.h"
 #include "client/UserInfo.h"
+#include "Config.h"
 
 namespace http
 {

@@ -1,4 +1,3 @@
-#include "Config.h"
 #include "LuaSlider.h"
 #include "LuaScriptInterface.h"
 #include "gui/interface/Slider.h"

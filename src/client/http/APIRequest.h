@@ -2,7 +2,6 @@
 #include "Request.h"
 #include "common/String.h"
 #include <json/json.h>
-
 #include <memory>
 #include <map>
 

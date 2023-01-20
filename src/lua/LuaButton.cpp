@@ -1,4 +1,3 @@
-#include "Config.h"
 #include "LuaButton.h"
 #include "LuaScriptInterface.h"
 #include "gui/interface/Button.h"

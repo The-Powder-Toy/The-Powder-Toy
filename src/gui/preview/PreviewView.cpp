@@ -26,6 +26,7 @@
 #include "Format.h"
 #include "Misc.h"
 
+#include "SimulationConfig.h"
 #include <SDL.h>
 
 #ifdef GetUserName

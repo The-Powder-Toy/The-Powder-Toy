@@ -1,18 +1,12 @@
 #include "Textbox.h"
-
-#include "Config.h"
 #include "Format.h"
 #include "PowderToy.h"
-
 #include "common/Platform.h"
 #include "graphics/FontReader.h"
 #include "graphics/Graphics.h"
-
 #include "gui/interface/Engine.h"
 #include "gui/interface/Point.h"
-
 #include "ContextMenu.h"
-
 #include <SDL.h>
 
 using namespace ui;

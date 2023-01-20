@@ -1,4 +1,3 @@
-#include "Config.h"
 #include "LuaCheckbox.h"
 #include "LuaScriptInterface.h"
 #include "gui/interface/Checkbox.h"

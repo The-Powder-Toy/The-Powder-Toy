@@ -1,6 +1,5 @@
 #pragma once
-#include "Config.h"
-
+#include "SimulationConfig.h"
 #include <cstdint>
 #include <vector>
 #include <array>

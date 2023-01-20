@@ -1,9 +1,7 @@
 #pragma once
-#include "Config.h"
-
+#include "ConsoleCommand.h"
 #include <vector>
 #include <deque>
-#include "ConsoleCommand.h"
 
 class ConsoleView;
 class ConsoleModel

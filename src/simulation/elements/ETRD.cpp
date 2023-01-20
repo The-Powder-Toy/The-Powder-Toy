@@ -1,5 +1,5 @@
-#include <algorithm>
 #include "simulation/ElementCommon.h"
+#include <algorithm>
 
 static void initDeltaPos();
 static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);

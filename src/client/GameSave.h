@@ -1,12 +1,10 @@
 #pragma once
-#include "Config.h"
-
-#include <vector>
 #include "common/String.h"
 #include "simulation/Sign.h"
 #include "simulation/Particle.h"
 #include "Misc.h"
-
+#include "SimulationConfig.h"
+#include <vector>
 #include <json/json.h>
 
 struct sign;

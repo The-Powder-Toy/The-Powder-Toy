@@ -1,6 +1,7 @@
 #include "Platform.h"
 #include "resource.h"
 #include "tpt-rand.h"
+#include "Config.h"
 #include <memory>
 #include <cstring>
 #include <fstream>

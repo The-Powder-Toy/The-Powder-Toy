@@ -1,9 +1,7 @@
 #pragma once
-
 #include "LuaLuna.h"
 #include "LuaComponent.h"
 #include "LuaSmartRef.h"
-
 #include <map>
 
 namespace ui

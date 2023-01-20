@@ -1,8 +1,5 @@
 #include "ImageRequest.h"
-
 #include "graphics/Graphics.h"
-#include "Config.h"
-
 #include <iostream>
 
 namespace http

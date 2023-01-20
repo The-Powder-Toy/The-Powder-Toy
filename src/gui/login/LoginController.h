@@ -1,9 +1,6 @@
 #pragma once
-#include "Config.h"
-
 #include "common/String.h"
 #include "client/User.h"
-
 #include <functional>
 
 class LoginView;

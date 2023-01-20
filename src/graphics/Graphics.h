@@ -1,6 +1,4 @@
 #pragma once
-#include "Config.h"
-
 #include "common/String.h"
 #include "common/tpt-inline.h"
 #include "Pixel.h"
@@ -70,10 +68,10 @@ public:
 
 class Graphics
 {
-	int clipx1 = 0;
-	int clipy1 = 0;
-	int clipx2 = WINDOWW;
-	int clipy2 = WINDOWH;
+	int clipx1;
+	int clipy1;
+	int clipx2;
+	int clipy2;
 
 public:
 	pixel *vid;

@@ -1,8 +1,6 @@
 #pragma once
-#include "Config.h"
-
-#include <vector>
 #include "StructProperty.h"
+#include <vector>
 
 struct Particle
 {

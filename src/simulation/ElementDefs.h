@@ -1,5 +1,5 @@
 #pragma once
-#include "Config.h"
+#include "SimulationConfig.h"
 #include <cstdint>
 
 constexpr float MAX_TEMP = 9999;

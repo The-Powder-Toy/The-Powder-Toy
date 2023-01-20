@@ -27,7 +27,6 @@
 */
 
 #pragma once
-#include "Config.h"
 
 #define LUA_BITOP_VERSION	"1.0.2"
 

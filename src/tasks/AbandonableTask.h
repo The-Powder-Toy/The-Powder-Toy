@@ -1,6 +1,5 @@
 #pragma once
 #include "Task.h"
-
 #include <condition_variable>
 
 class AbandonableTask : public Task

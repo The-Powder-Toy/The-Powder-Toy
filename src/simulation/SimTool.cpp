@@ -1,13 +1,11 @@
-#include <cmath>
-
 #include "common/tpt-rand.h"
 #include "graphics/Renderer.h"
 #include "simulation/ElementGraphics.h"
 #include "simulation/Gravity.h"
 #include "simulation/Simulation.h"
-
 #include "Misc.h"
 #include "ToolClasses.h"
+#include <cmath>
 
 SimTool::SimTool():
 Identifier("DEFAULT_TOOL_INVALID"),

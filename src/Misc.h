@@ -1,5 +1,4 @@
 #pragma once
-#include "Config.h"
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>

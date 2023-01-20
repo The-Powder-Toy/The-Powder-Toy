@@ -1,4 +1,3 @@
-#include "Config.h"
 #include "LuaProgressBar.h"
 #include "LuaScriptInterface.h"
 #include "gui/interface/ProgressBar.h"

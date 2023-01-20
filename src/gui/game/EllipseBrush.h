@@ -1,6 +1,6 @@
 #pragma once
-#include <cmath>
 #include "Brush.h"
+#include <cmath>
 
 class EllipseBrush: public Brush
 {

@@ -1,20 +1,14 @@
 #include "LocalBrowserView.h"
-
 #include "LocalBrowserController.h"
 #include "LocalBrowserModel.h"
-
 #include "gui/interface/Button.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/SaveButton.h"
-
 #include "PowderToy.h"
-#include "Config.h"
-
 #include "client/SaveFile.h"
-
 #include "graphics/Graphics.h"
-
+#include "SimulationConfig.h"
 #include <SDL.h>
 
 LocalBrowserView::LocalBrowserView():

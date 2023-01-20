@@ -1,15 +1,7 @@
-#include "Config.h"
-
 #include "bzip2/bz2wrap.h"
 #include "common/VariantIndex.h"
 
 #include "LuaScriptInterface.h"
-
-#include <vector>
-#include <fstream>
-#include <algorithm>
-#include <iostream>
-#include <sstream>
 
 #include "Format.h"
 #include "LuaScriptHelper.h"
@@ -53,6 +45,13 @@
 #include "gui/game/Brush.h"
 
 #include "eventcompat.lua.h"
+
+#include "Config.h"
+#include <vector>
+#include <fstream>
+#include <algorithm>
+#include <iostream>
+#include <sstream>
 
 // idea from mniip, makes things much simpler
 #define SETCONST(L, NAME)\

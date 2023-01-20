@@ -1,7 +1,7 @@
 #pragma once
-#include <vector>
 #include "client/ClientListener.h"
 #include "gui/interface/Window.h"
+#include <vector>
 
 namespace ui
 {

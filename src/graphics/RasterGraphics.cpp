@@ -1,10 +1,14 @@
 #include "Graphics.h"
-
+#include "SimulationConfig.h"
 #include <cstdlib>
 #include <cstring>
 
 Graphics::Graphics():
-sdl_scale(1)
+	clipx1(0),
+	clipy1(0),
+	clipx2(WINDOWW),
+	clipy2(WINDOWH),
+	sdl_scale(1)
 {
 	vid = (pixel *)malloc(PIXELSIZE * (WINDOWW * WINDOWH));
 

@@ -1,7 +1,6 @@
 #pragma once
-#include <utility>
 #include "Component.h"
-
+#include <utility>
 #include <functional>
 
 namespace ui {

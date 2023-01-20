@@ -1,5 +1,5 @@
-#include <cstddef>
 #include "Particle.h"
+#include <cstddef>
 
 std::vector<StructProperty> const &Particle::GetProperties()
 {

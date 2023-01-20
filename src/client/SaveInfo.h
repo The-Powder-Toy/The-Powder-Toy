@@ -1,8 +1,6 @@
 #pragma once
-#include "Config.h"
-
-#include <list>
 #include "common/String.h"
+#include <list>
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows

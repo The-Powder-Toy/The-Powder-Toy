@@ -1,15 +1,11 @@
 #pragma once
-#include "Config.h"
-
 #include "LuaCompat.h"
 #include "LuaSmartRef.h"
-
 #include "CommandInterface.h"
 #include "gui/game/GameControllerEvents.h"
 #include "TPTScriptInterface.h"
 #include "simulation/StructProperty.h"
 #include "simulation/ElementDefs.h"
-
 #include <map>
 
 namespace ui

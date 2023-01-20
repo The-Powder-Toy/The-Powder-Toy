@@ -1,10 +1,10 @@
 #pragma once
-#include <ctime>
-#include <vector>
-#include <deque>
 #include "common/String.h"
 #include "gui/interface/Window.h"
 #include "simulation/Sample.h"
+#include <ctime>
+#include <vector>
+#include <deque>
 
 enum DrawMode
 {

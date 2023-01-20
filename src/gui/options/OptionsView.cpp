@@ -1,21 +1,13 @@
 #include "OptionsView.h"
-
-#include <cstdio>
-#include <cstring>
-#include <cmath>
-#include <SDL.h>
 #include "Format.h"
-
 #include "OptionsController.h"
 #include "OptionsModel.h"
-
 #include "common/Platform.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
 #include "gui/Style.h"
 #include "simulation/ElementDefs.h"
 #include "client/Client.h"
-
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/interface/Button.h"
@@ -25,6 +17,10 @@
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/DirectionSelector.h"
+#include <cstdio>
+#include <cstring>
+#include <cmath>
+#include <SDL.h>
 
 OptionsView::OptionsView():
 	ui::Window(ui::Point(-1, -1), ui::Point(320, 340))

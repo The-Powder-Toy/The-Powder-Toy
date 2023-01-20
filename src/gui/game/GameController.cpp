@@ -1,7 +1,6 @@
 #include "GameController.h"
 
 #include "Brush.h"
-#include "Config.h"
 #include "Controller.h"
 #include "Format.h"
 #include "GameModel.h"
@@ -62,6 +61,7 @@
 #include "gui/tags/TagsController.h"
 #include "gui/tags/TagsView.h"
 
+#include "Config.h"
 #include <SDL.h>
 
 #ifdef GetUserName

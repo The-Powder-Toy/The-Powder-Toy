@@ -1,10 +1,9 @@
 #pragma once
-
-#include <stack>
 #include "common/String.h"
 #include "common/ExplicitSingleton.h"
 #include "graphics/Pixel.h"
 #include "gui/interface/Point.h"
+#include <stack>
 
 class Graphics;
 namespace ui

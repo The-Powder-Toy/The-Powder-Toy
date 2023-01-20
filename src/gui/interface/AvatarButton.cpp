@@ -1,11 +1,11 @@
-#include <iostream>
-#include <SDL.h>
-
 #include "Button.h"
 #include "AvatarButton.h"
 #include "Format.h"
 #include "graphics/Graphics.h"
 #include "ContextMenu.h"
+#include "Config.h"
+#include <iostream>
+#include <SDL.h>
 
 namespace ui {
 

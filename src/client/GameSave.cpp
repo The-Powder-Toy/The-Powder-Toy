@@ -1,23 +1,19 @@
 #include "GameSave.h"
-
+#include "bzip2/bz2wrap.h"
+#include "Format.h"
+#include "simulation/Simulation.h"
+#include "simulation/ElementClasses.h"
+#include "common/tpt-minmax.h"
+#include "common/tpt-compat.h"
+#include "bson/BSON.h"
+#include "graphics/Renderer.h"
+#include "Config.h"
 #include <iostream>
 #include <cmath>
 #include <climits>
 #include <memory>
 #include <set>
 #include <cmath>
-
-#include "bzip2/bz2wrap.h"
-#include "Config.h"
-#include "Format.h"
-
-#include "simulation/Simulation.h"
-#include "simulation/ElementClasses.h"
-
-#include "common/tpt-minmax.h"
-#include "common/tpt-compat.h"
-#include "bson/BSON.h"
-#include "graphics/Renderer.h"
 
 static void ConvertJsonToBson(bson *b, Json::Value j, int depth = 0);
 static void ConvertBsonToJson(bson_iterator *b, Json::Value *j, int depth = 0);
