@@ -4,6 +4,7 @@
 #include "font.bz2.h"
 
 #include <array>
+#include <cstdint>
 
 unsigned char *font_data = nullptr;
 unsigned int *font_ptrs = nullptr;
