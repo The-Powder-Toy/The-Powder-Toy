@@ -310,11 +310,13 @@ void GameModel::BuildMenus()
 		auto customGOLTypes = prefs.Get("CustomGOL.Types", std::vector<ByteString>{});
 		std::vector<ByteString> validatedCustomLifeTypes;
 		std::vector<Simulation::CustomGOLData> newCustomGol;
+		bool removedAny = false;
 		for (auto gol : customGOLTypes)
 		{
 			auto parts = gol.FromUtf8().PartitionBy(' ');
 			if (parts.size() != 4)
 			{
+				removedAny = true;
 				continue;
 			}
 			Simulation::CustomGOLData gd;
@@ -324,11 +326,13 @@ void GameModel::BuildMenus()
 			auto &colour2String = parts[3];
 			if (!ValidateGOLName(gd.nameString))
 			{
+				removedAny = true;
 				continue;
 			}
 			gd.rule = ParseGOLString(gd.ruleString);
 			if (gd.rule == -1)
 			{
+				removedAny = true;
 				continue;
 			}
 			try
@@ -338,13 +342,17 @@ void GameModel::BuildMenus()
 			}
 			catch (std::exception &)
 			{
+				removedAny = true;
 				continue;
 			}
 			newCustomGol.push_back(gd);
 			validatedCustomLifeTypes.push_back(gol);
 		}
-		// All custom rules that fail validation will be removed
-		prefs.Set("CustomGOL.Types", validatedCustomLifeTypes);
+		if (removedAny)
+		{
+			// All custom rules that fail validation will be removed
+			prefs.Set("CustomGOL.Types", validatedCustomLifeTypes);
+		}
 		for (auto &gd : newCustomGol)
 		{
 			Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(gd.rule), gd.nameString, "Custom GOL type: " + gd.ruleString, PIXR(gd.colour1), PIXG(gd.colour1), PIXB(gd.colour1), "DEFAULT_PT_LIFECUST_"+gd.nameString.ToAscii(), NULL);
@@ -1654,7 +1662,10 @@ bool GameModel::RemoveCustomGOLType(const ByteString &identifier)
 		else
 			newCustomGOLTypes.push_back(gol);
 	}
-	prefs.Set("CustomGOL.Types", newCustomGOLTypes);
+	if (removedAny)
+	{
+		prefs.Set("CustomGOL.Types", newCustomGOLTypes);
+	}
 	BuildMenus();
 	return removedAny;
 }
