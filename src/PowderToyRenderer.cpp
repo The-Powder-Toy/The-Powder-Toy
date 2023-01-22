@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 	GameSave * gameSave = NULL;
 	try
 	{
-		gameSave = new GameSave(fileData);
+		gameSave = new GameSave(fileData, false);
 	}
 	catch (ParseException &e)
 	{

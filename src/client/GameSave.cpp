@@ -27,8 +27,9 @@ GameSave::GameSave(int width, int height)
 	setSize(width, height);
 }
 
-GameSave::GameSave(const std::vector<char> &data)
+GameSave::GameSave(const std::vector<char> &data, bool newWantAuthors)
 {
+	wantAuthors = newWantAuthors;
 	blockWidth = 0;
 	blockHeight = 0;
 
@@ -688,7 +689,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
 			}
 		}
-		else if (!strcmp(bson_iterator_key(&iter), "authors"))
+		else if (wantAuthors && !strcmp(bson_iterator_key(&iter), "authors"))
 		{
 			if (bson_iterator_type(&iter) == BSON_OBJECT)
 			{

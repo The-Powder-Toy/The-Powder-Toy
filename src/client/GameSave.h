@@ -115,6 +115,7 @@ public:
 	int airMode = 0;
 	float ambientAirTemp = R_TEMP + 273.15f;
 	int edgeMode = 0;
+	bool wantAuthors = true;
 
 	//Signs
 	std::vector<sign> signs;
@@ -130,7 +131,7 @@ public:
 	int pmapbits = 8; // default to 8 bits for older saves
 
 	GameSave(int width, int height);
-	GameSave(const std::vector<char> &data);
+	GameSave(const std::vector<char> &data, bool newWantAuthors = true);
 	void setSize(int width, int height);
 	// return value is [ fakeFromNewerVersion, gameData ]
 	std::pair<bool, std::vector<char>> Serialise() const;
