@@ -1553,10 +1553,10 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		break;
 	case SDL_SCANCODE_L:
 	{
-		std::vector<ByteString> stampList = Client::Ref().GetStamps(0, 1);
-		if (stampList.size())
+		auto &stampIDs = Client::Ref().GetStamps();
+		if (stampIDs.size())
 		{
-			SaveFile *saveFile = Client::Ref().GetStamp(stampList[0]);
+			SaveFile *saveFile = Client::Ref().GetStamp(stampIDs[0]);
 			if (!saveFile || !saveFile->GetGameSave())
 				break;
 			c->LoadStamp(saveFile->GetGameSave());

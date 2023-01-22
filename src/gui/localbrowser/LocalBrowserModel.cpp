@@ -1,21 +1,18 @@
 #include "LocalBrowserModel.h"
-
 #include "LocalBrowserView.h"
-
-#include <cmath>
-
 #include "client/Client.h"
 #include "client/SaveFile.h"
-
 #include "common/tpt-minmax.h"
+#include <algorithm>
+
+constexpr auto pageSize = 20;
 
 LocalBrowserModel::LocalBrowserModel():
 	stamp(NULL),
 	currentPage(1),
 	stampToFront(1)
 {
-	//stampIDs = Client::Ref().GetStamps();
-	stampIDs = Client::Ref().GetStamps(0, 16);
+	stampIDs = Client::Ref().GetStamps();
 }
 
 
@@ -82,9 +79,9 @@ void LocalBrowserModel::UpdateSavesList(int pageNumber)
 		delete tempSavesList[i];
 	}*/
 
-	stampIDs = Client::Ref().GetStamps((pageNumber-1)*20, 20);
-
-	for (size_t i = 0; i < stampIDs.size(); i++)
+	stampIDs = Client::Ref().GetStamps();
+	auto size = int(stampIDs.size());
+	for (int i = (currentPage - 1) * pageSize; i < size && i < currentPage * pageSize; i++)
 	{
 		SaveFile * tempSave = Client::Ref().GetStamp(stampIDs[i]);
 		if (tempSave)
@@ -102,17 +99,15 @@ void LocalBrowserModel::RescanStamps()
 
 int LocalBrowserModel::GetPageCount()
 {
-	return std::max(1, (int)(std::ceil(float(Client::Ref().GetStampsCount())/20.0f)));
+	auto size = int(stampIDs.size());
+	return size / pageSize + ((size % pageSize) ? 1 : 0);
 }
 
 void LocalBrowserModel::SelectSave(ByteString stampID)
 {
-	for (size_t i = 0; i < selected.size(); i++)
+	if (std::find(selected.begin(), selected.end(), stampID) != selected.end())
 	{
-		if (selected[i] == stampID)
-		{
-			return;
-		}
+		return;
 	}
 	selected.push_back(stampID);
 	notifySelectedChanged();
@@ -120,19 +115,12 @@ void LocalBrowserModel::SelectSave(ByteString stampID)
 
 void LocalBrowserModel::DeselectSave(ByteString stampID)
 {
-	bool changed = false;
-restart:
-	for (size_t i = 0; i < selected.size(); i++)
+	auto it = std::remove(selected.begin(), selected.end(), stampID);
+	if (it != selected.end())
 	{
-		if (selected[i] == stampID)
-		{
-			selected.erase(selected.begin()+i);
-			changed = true;
-			goto restart; //Just ensure all cases are removed.
-		}
-	}
-	if(changed)
+		selected.erase(it, selected.end());
 		notifySelectedChanged();
+	}
 }
 
 void LocalBrowserModel::notifySelectedChanged()

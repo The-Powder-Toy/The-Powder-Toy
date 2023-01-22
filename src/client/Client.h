@@ -3,6 +3,7 @@
 #include "common/ExplicitSingleton.h"
 #include "User.h"
 #include <vector>
+#include <cstdint>
 #include <list>
 #include <memory>
 #include <json/json.h>
@@ -37,6 +38,7 @@ public:
 	UpdateInfo(int time, ByteString file, String changelog, BuildType type) : File(file), Changelog(changelog), Major(0), Minor(0), Build(0), Time(time), Type(type) {}
 };
 
+class Prefs;
 class RequestListener;
 class ClientListener;
 namespace http
@@ -57,9 +59,9 @@ private:
 	String lastError;
 	bool firstRun;
 
-	std::list<ByteString> stampIDs;
-	unsigned lastStampTime;
-	int lastStampName;
+	std::vector<ByteString> stampIDs;
+	uint64_t lastStampTime = 0;
+	int lastStampName = 0;
 
 	//Auth session
 	User authUser;
@@ -71,6 +73,10 @@ private:
 
 	// Save stealing info
 	Json::Value authors;
+
+	std::unique_ptr<Prefs> stamps;
+	void MigrateStampsDef();
+	void WriteStamps();
 
 public:
 
@@ -111,12 +117,9 @@ public:
 	SaveFile * GetStamp(ByteString stampID);
 	void DeleteStamp(ByteString stampID);
 	ByteString AddStamp(GameSave * saveData);
-	std::vector<ByteString> GetStamps(int start, int count);
 	void RescanStamps();
-	int GetStampsCount();
-	SaveFile * GetFirstStamp();
+	const std::vector<ByteString> &GetStamps() const;
 	void MoveStampToFront(ByteString stampID);
-	void updateStamps();
 
 	RequestStatus AddComment(int saveID, String comment);
 

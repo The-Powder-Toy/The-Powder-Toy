@@ -1896,18 +1896,19 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 	SaveFile * tempfile = NULL;
 	int x = luaL_optint(l,2,0);
 	int y = luaL_optint(l,3,0);
+	auto &client = Client::Ref();
 	if (lua_isstring(l, 1)) //Load from 10 char name, or full filename
 	{
 		auto filename = tpt_lua_optByteString(l, 1, "");
-		tempfile = Client::Ref().GetStamp(filename);
+		tempfile = client.GetStamp(filename);
 	}
 	if ((!tempfile || !tempfile->GetGameSave()) && lua_isnumber(l, 1)) //Load from stamp ID
 	{
 		i = luaL_optint(l, 1, 0);
-		int stampCount = Client::Ref().GetStampsCount();
-		if (i < 0 || i >= stampCount)
+		auto &stampIDs = client.GetStamps();
+		if (i < 0 || i >= int(stampIDs.size()))
 			return luaL_error(l, "Invalid stamp ID: %d", i);
-		tempfile = Client::Ref().GetStamp(Client::Ref().GetStamps(0, stampCount)[i]);
+		tempfile = client.GetStamp(stampIDs[i]);
 	}
 
 	if (tempfile)
@@ -1920,7 +1921,7 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 			if (tempfile->GetGameSave()->authors.size())
 			{
 				tempfile->GetGameSave()->authors["type"] = "luastamp";
-				Client::Ref().MergeStampAuthorInfo(tempfile->GetGameSave()->authors);
+				client.MergeStampAuthorInfo(tempfile->GetGameSave()->authors);
 			}
 		}
 		else
@@ -1942,17 +1943,17 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 
 int LuaScriptInterface::simulation_deleteStamp(lua_State * l)
 {
-	int stampCount = Client::Ref().GetStampsCount();
-	std::vector<ByteString> stamps = Client::Ref().GetStamps(0, stampCount);
+	auto &client = Client::Ref();
+	auto &stampIDs = client.GetStamps();
 
 	if (lua_isstring(l, 1)) //note: lua_isstring returns true on numbers too
 	{
 		auto filename = tpt_lua_optByteString(l, 1, "");
-		for (auto &stamp : stamps)
+		for (auto &stampID : stampIDs)
 		{
-			if (stamp == filename)
+			if (stampID == filename)
 			{
-				Client::Ref().DeleteStamp(stamp);
+				client.DeleteStamp(stampID);
 				return 0;
 			}
 		}
@@ -1960,9 +1961,9 @@ int LuaScriptInterface::simulation_deleteStamp(lua_State * l)
 	if (lua_isnumber(l, 1)) //Load from stamp ID
 	{
 		int i = luaL_optint(l, 1, 0);
-		if (i < 0 || i >= stampCount)
+		if (i < 0 || i >= int(stampIDs.size()))
 			return luaL_error(l, "Invalid stamp ID: %d", i);
-		Client::Ref().DeleteStamp(stamps[i]);
+		client.DeleteStamp(stampIDs[i]);
 		return 0;
 	}
 	lua_pushnumber(l, -1);

@@ -65,7 +65,6 @@ void LocalBrowserController::removeSelectedC()
 		}
 		void after() override
 		{
-			Client::Ref().updateStamps();
 			c->RefreshSavesList();
 		}
 	};
@@ -75,11 +74,6 @@ void LocalBrowserController::removeSelectedC()
 }
 
 void LocalBrowserController::RescanStamps()
-{
-	new ConfirmPrompt("Rescan", "Rescanning the stamps folder can find stamps added to the stamps folder or recover stamps when the stamps.def file has been lost or damaged. However, be warned that this will mess up the current sorting order", { [this] { rescanStampsC(); } });
-}
-
-void LocalBrowserController::rescanStampsC()
 {
 	browserModel->RescanStamps();
 	browserModel->UpdateSavesList(browserModel->GetPageNum());

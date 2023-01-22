@@ -11,6 +11,7 @@
 #include "common/Platform.h"
 #include "common/String.h"
 #include "graphics/Graphics.h"
+#include "prefs/Prefs.h"
 #include "lua/CommandInterface.h"
 #include "gui/preview/Comment.h"
 #include "Config.h"
@@ -20,9 +21,11 @@
 #include <map>
 #include <iostream>
 #include <iomanip>
-#include <ctime>
 #include <cstdio>
 #include <fstream>
+#include <chrono>
+#include <algorithm>
+#include <set>
 
 Client::Client():
 	messageOfTheDay("Fetching the message of the day..."),
@@ -50,6 +53,19 @@ Client::Client():
 	firstRun = !prefs.BackedByFile();
 }
 
+void Client::MigrateStampsDef()
+{
+	std::vector<char> data;
+	if (!Platform::ReadFile(data, ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, "stamps.def")))
+	{
+		return;
+	}
+	for (auto i = 0; i < int(data.size()); i += 10)
+	{
+		stampIDs.push_back(ByteString(&data[0] + i, &data[0] + i + 10));
+	}
+}
+
 void Client::Initialize()
 {
 	auto &prefs = GlobalPrefs::Ref();
@@ -59,19 +75,17 @@ void Client::Initialize()
 		Platform::UpdateFinish();
 	}
 
-	//Read stamps library
-	std::ifstream stampsLib;
-	stampsLib.open(ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, "stamps.def"), std::ios::binary);
-	while (!stampsLib.eof())
+	stamps = std::make_unique<Prefs>(ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, "stamps.json"));
+	stampIDs = stamps->Get("MostRecentlyUsedFirst", std::vector<ByteString>{});
 	{
-		char data[11];
-		memset(data, 0, 11);
-		stampsLib.read(data, 10);
-		if(!data[0])
-			break;
-		stampIDs.push_back(data);
+		Prefs::DeferWrite dw(*stamps);
+		if (!stamps->BackedByFile())
+		{
+			MigrateStampsDef();
+			WriteStamps();
+		}
+		RescanStamps();
 	}
-	stampsLib.close();
 
 	//Begin version check
 	versionCheckRequest = std::make_unique<http::Request>(ByteString::Build(SCHEME, SERVER, "/Startup.json"));
@@ -462,16 +476,23 @@ RequestStatus Client::UploadSave(SaveInfo & save)
 
 void Client::MoveStampToFront(ByteString stampID)
 {
-	for (std::list<ByteString>::iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
+	auto it = std::find(stampIDs.begin(), stampIDs.end(), stampID);
+	auto changed = false;
+	if (it == stampIDs.end())
 	{
-		if((*iterator) == stampID)
-		{
-			stampIDs.erase(iterator);
-			break;
-		}
+		stampIDs.push_back(stampID);
+		it = stampIDs.end() - 1;
+		changed = true;
 	}
-	stampIDs.push_front(stampID);
-	updateStamps();
+	else if (it != stampIDs.begin())
+	{
+		changed = true;
+	}
+	if (changed)
+	{
+		std::rotate(stampIDs.begin(), it, it + 1);
+		WriteStamps();
+	}
 }
 
 SaveFile * Client::GetStamp(ByteString stampID)
@@ -487,32 +508,37 @@ SaveFile * Client::GetStamp(ByteString stampID)
 
 void Client::DeleteStamp(ByteString stampID)
 {
-	for (std::list<ByteString>::iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
+	auto it = std::remove(stampIDs.begin(), stampIDs.end(), stampID);
+	if (it != stampIDs.end())
 	{
-		if ((*iterator) == stampID)
-		{
-			ByteString stampFilename = ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, stampID, ".stm");
-			remove(stampFilename.c_str());
-			stampIDs.erase(iterator);
-			break;
-		}
+		stampIDs.erase(it, stampIDs.end());
+		WriteStamps();
 	}
-
-	updateStamps();
 }
 
 ByteString Client::AddStamp(GameSave * saveData)
 {
-	unsigned t=(unsigned)time(NULL);
-	if (lastStampTime!=t)
+	auto now = (uint64_t)time(NULL);
+	if (lastStampTime != now)
 	{
-		lastStampTime=t;
-		lastStampName=0;
+		lastStampTime = now;
+		lastStampName = 0;
 	}
 	else
-		lastStampName++;
-	ByteString saveID = ByteString::Build(Format::Hex(Format::Width(lastStampTime, 8)), Format::Hex(Format::Width(lastStampName, 2)));
-	ByteString filename = ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, saveID, ".stm");
+	{
+		lastStampName += 1;
+	}
+	ByteString saveID, filename;
+	while (true)
+	{
+		saveID = ByteString::Build(Format::Hex(Format::Width(lastStampTime, 8)), Format::Hex(Format::Width(lastStampName, 2)));
+		filename = ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, saveID, ".stm");
+		if (!Platform::FileExists(filename))
+		{
+			break;
+		}
+		lastStampName += 1;
+	}
 
 	Platform::MakeDirectory(STAMPS_DIR);
 
@@ -520,7 +546,7 @@ ByteString Client::AddStamp(GameSave * saveData)
 	stampInfo["type"] = "stamp";
 	stampInfo["username"] = authUser.Username;
 	stampInfo["name"] = filename;
-	stampInfo["date"] = (Json::Value::UInt64)time(NULL);
+	stampInfo["date"] = Json::Value::UInt64(now);
 	if (authors.size() != 0)
 	{
 		// This is a stamp, always append full authorship info (even if same user)
@@ -534,66 +560,61 @@ ByteString Client::AddStamp(GameSave * saveData)
 		return "";
 
 	Platform::WriteFile(gameData, filename);
-
-	stampIDs.push_front(saveID);
-
-	updateStamps();
-
+	MoveStampToFront(saveID);
 	return saveID;
-}
-
-void Client::updateStamps()
-{
-	Platform::MakeDirectory(STAMPS_DIR);
-
-	std::ofstream stampsStream;
-	stampsStream.open(ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, "stamps.def").c_str(), std::ios::binary);
-	for (std::list<ByteString>::const_iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator)
-	{
-		stampsStream.write((*iterator).c_str(), 10);
-	}
-	stampsStream.write("\0", 1);
-	stampsStream.close();
-	return;
 }
 
 void Client::RescanStamps()
 {
-	stampIDs.clear();
-	for (auto &stamp : Platform::DirectorySearch("stamps", "", { ".stm" }))
+	ByteString extension = ".stm";
+	std::set<ByteString> stampFilesSet;
+	for (auto &stampID : Platform::DirectorySearch("stamps", "", { extension }))
 	{
-		if (stamp.size() == 14)
+		stampFilesSet.insert(stampID.substr(0, stampID.size() - extension.size()));
+	}
+	std::vector<ByteString> newStampIDs;
+	auto changed = false;
+	for (auto &stampID : stampIDs)
+	{
+		if (stampFilesSet.find(stampID) == stampFilesSet.end())
 		{
-			stampIDs.push_front(stamp.Substr(0, 10));
+			changed = true;
+		}
+		else
+		{
+			newStampIDs.push_back(stampID);
 		}
 	}
-	stampIDs.sort(std::greater<ByteString>());
-	updateStamps();
+	auto oldCount = newStampIDs.size();
+	auto stampIDsSet = std::set<ByteString>(stampIDs.begin(), stampIDs.end());
+	for (auto &stampID : stampFilesSet)
+	{
+		if (stampIDsSet.find(stampID) == stampIDsSet.end())
+		{
+			newStampIDs.push_back(stampID);
+			changed = true;
+		}
+	}
+	if (changed)
+	{
+		// Move newly discovered stamps to front.
+		std::rotate(newStampIDs.begin(), newStampIDs.begin() + oldCount, newStampIDs.end());
+		stampIDs = newStampIDs;
+		WriteStamps();
+	}
 }
 
-int Client::GetStampsCount()
+void Client::WriteStamps()
 {
-	return stampIDs.size();
+	if (stampIDs.size())
+	{
+		stamps->Set("MostRecentlyUsedFirst", stampIDs);
+	}
 }
 
-std::vector<ByteString> Client::GetStamps(int start, int count)
+const std::vector<ByteString> &Client::GetStamps() const
 {
-	int size = (int)stampIDs.size();
-	if (start+count > size)
-	{
-		if(start > size)
-			return std::vector<ByteString>();
-		count = size-start;
-	}
-
-	std::vector<ByteString> stampRange;
-	int index = 0;
-	for (std::list<ByteString>::const_iterator iterator = stampIDs.begin(), end = stampIDs.end(); iterator != end; ++iterator, ++index)
-	{
-		if(index>=start && index < start+count)
-			stampRange.push_back(*iterator);
-	}
-	return stampRange;
+	return stampIDs;
 }
 
 RequestStatus Client::ExecVote(int saveID, int direction)
@@ -1209,6 +1230,7 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 
 	// Do actual migration
 	Platform::RemoveFile(fromDir + "stamps/stamps.def");
+	Platform::RemoveFile(fromDir + "stamps/stamps.json");
 	migrateList(stamps, "stamps", "Stamps");
 	migrateList(saves, "Saves", "Saves");
 	if (!scripts.empty())
@@ -1238,8 +1260,7 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 	// chdir into the new directory
 	Platform::ChangeDir(toDir);
 
-	if (scripts.size())
-		RescanStamps();
+	RescanStamps();
 
 	logFile << std::endl << std::endl << "Migration complete. Results: " << result.Build().ToUtf8();
 	logFile.close();

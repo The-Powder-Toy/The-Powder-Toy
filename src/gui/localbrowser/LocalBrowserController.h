@@ -19,7 +19,6 @@ public:
 	void ClearSelection();
 	void Selected(ByteString stampID, bool selected);
 	void RescanStamps();
-	void rescanStampsC();
 	void RefreshSavesList();
 	void OpenSave(SaveFile * stamp);
 	bool GetMoveToFront();
