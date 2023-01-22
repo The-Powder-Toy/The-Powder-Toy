@@ -7,11 +7,8 @@ simulation_files = files(
 	'Particle.cpp',
 	'SaveRenderer.cpp',
 	'Sign.cpp',
-	'SimTool.cpp',
 	'SimulationData.cpp',
-	'ToolClasses.cpp',
 	'Simulation.cpp',
-	'SnapshotDelta.cpp',
 )
 
 subdir('elements')
@@ -22,6 +19,12 @@ render_files += simulation_files
 
 powder_files += files(
 	'Editing.cpp',
+	'SimTool.cpp',
+	'ToolClasses.cpp',
+	'SnapshotDelta.cpp',
+)
+render_files += files(
+	'NoToolClasses.cpp',
 )
 if enable_gravfft
 	powder_files += files('FftGravity.cpp')
