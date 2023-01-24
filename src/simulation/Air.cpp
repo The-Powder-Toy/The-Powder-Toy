@@ -263,7 +263,10 @@ void Air::update_air(void)
 					{
 						tx += stepX;
 						ty += stepY;
-						if (bmap_blockair[(int)(ty+0.5f)][(int)(tx+0.5f)])
+						if (bmap_blockair[(int)(ty+0.5f)][(int)(tx+0.5f)] ||
+							bmap_blockair[(int)(ty+0.5f)][(int)(tx+1.5f)] ||
+							bmap_blockair[(int)(ty+1.5f)][(int)(tx+0.5f)] ||
+							bmap_blockair[(int)(ty+1.5f)][(int)(tx+1.5f)])
 						{
 							tx -= stepX;
 							ty -= stepY;
@@ -281,8 +284,11 @@ void Air::update_air(void)
 				j = (int)ty;
 				tx -= i;
 				ty -= j;
-				if (!bmap_blockair[y][x] && i>=2 && i<=XRES/CELL-3 &&
-				        j>=2 && j<=YRES/CELL-3)
+				if (!bmap_blockair[y][x] &&
+					!bmap_blockair[y][x+1] &&
+					!bmap_blockair[y+1][x] &&
+					!bmap_blockair[y+1][x+1] &&
+					i>=2 && i<=XRES/CELL-3 && j>=2 && j<=YRES/CELL-3)
 				{
 					dx *= 1.0f - AIR_VADV;
 					dy *= 1.0f - AIR_VADV;
