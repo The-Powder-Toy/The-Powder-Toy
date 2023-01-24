@@ -68,11 +68,12 @@ void GravityImpl::grav_fft_init()
 	th_gravybigt = FftwComplexArray(fft_tsize);
 
 	//select best algorithm, could use FFTW_PATIENT or FFTW_EXHAUSTIVE but that increases the time taken to plan, and I don't see much increase in execution speed
-	plan_ptgravx = FftwPlanPtr(fftwf_plan_dft_r2c_2d(yblock2, xblock2, th_ptgravx.get(), reinterpret_cast<fftwf_complex *>(th_ptgravxt.get()), FFTW_MEASURE));
-	plan_ptgravy = FftwPlanPtr(fftwf_plan_dft_r2c_2d(yblock2, xblock2, th_ptgravy.get(), reinterpret_cast<fftwf_complex *>(th_ptgravyt.get()), FFTW_MEASURE));
-	plan_gravmap = FftwPlanPtr(fftwf_plan_dft_r2c_2d(yblock2, xblock2, th_gravmapbig.get(), reinterpret_cast<fftwf_complex *>(th_gravmapbigt.get()), FFTW_MEASURE));
-	plan_gravx_inverse = FftwPlanPtr(fftwf_plan_dft_c2r_2d(yblock2, xblock2, reinterpret_cast<fftwf_complex *>(th_gravxbigt.get()), th_gravxbig.get(), FFTW_MEASURE));
-	plan_gravy_inverse = FftwPlanPtr(fftwf_plan_dft_c2r_2d(yblock2, xblock2, reinterpret_cast<fftwf_complex *>(th_gravybigt.get()), th_gravybig.get(), FFTW_MEASURE));
+	auto fftwPlanFlags = FFTW_PLAN_MEASURE ? FFTW_MEASURE : FFTW_ESTIMATE;
+	plan_ptgravx = FftwPlanPtr(fftwf_plan_dft_r2c_2d(yblock2, xblock2, th_ptgravx.get(), reinterpret_cast<fftwf_complex *>(th_ptgravxt.get()), fftwPlanFlags));
+	plan_ptgravy = FftwPlanPtr(fftwf_plan_dft_r2c_2d(yblock2, xblock2, th_ptgravy.get(), reinterpret_cast<fftwf_complex *>(th_ptgravyt.get()), fftwPlanFlags));
+	plan_gravmap = FftwPlanPtr(fftwf_plan_dft_r2c_2d(yblock2, xblock2, th_gravmapbig.get(), reinterpret_cast<fftwf_complex *>(th_gravmapbigt.get()), fftwPlanFlags));
+	plan_gravx_inverse = FftwPlanPtr(fftwf_plan_dft_c2r_2d(yblock2, xblock2, reinterpret_cast<fftwf_complex *>(th_gravxbigt.get()), th_gravxbig.get(), fftwPlanFlags));
+	plan_gravy_inverse = FftwPlanPtr(fftwf_plan_dft_c2r_2d(yblock2, xblock2, reinterpret_cast<fftwf_complex *>(th_gravybigt.get()), th_gravybig.get(), fftwPlanFlags));
 
 	//calculate velocity map caused by a point mass
 	for (int y = 0; y < yblock2; y++)

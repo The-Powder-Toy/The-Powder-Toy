@@ -11,10 +11,12 @@ constexpr bool LUACONSOLE               = @LUACONSOLE@;
 constexpr bool ALLOW_FAKE_NEWER_VERSION = @ALLOW_FAKE_NEWER_VERSION@;
 constexpr bool USE_UPDATESERVER         = @USE_UPDATESERVER@;
 constexpr bool CAN_INSTALL              = @CAN_INSTALL@;
+constexpr bool USE_BLUESCREEN           = @USE_BLUESCREEN@;
 constexpr bool INSTALL_CHECK            = @INSTALL_CHECK@;
 constexpr bool IGNORE_UPDATES           = @IGNORE_UPDATES@;
 constexpr bool ENFORCE_HTTPS            = @ENFORCE_HTTPS@;
 constexpr bool SECURE_CIPHERS_ONLY      = @SECURE_CIPHERS_ONLY@;
+constexpr bool FFTW_PLAN_MEASURE        = @FFTW_PLAN_MEASURE@;
 constexpr char PATH_SEP_CHAR            = '@PATH_SEP_CHAR@';
 
 constexpr char SERVER[]         = "@SERVER@";

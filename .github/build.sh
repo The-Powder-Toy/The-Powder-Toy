@@ -40,11 +40,18 @@ x86-android-bionic-static) ;;
 x86_64-android-bionic-static) ;;
 arm-android-bionic-static) ;;
 aarch64-android-bionic-static) ;;
+wasm32-emscripten-emscripten-static) ;;
 *) >&2 echo "configuration $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC is not supported" && exit 1;;
 esac
 
 if [[ -z ${BSH_NO_PACKAGES-} ]]; then
-	case $BSH_BUILD_PLATFORM in
+	case $BSH_HOST_PLATFORM in
+	windows)
+		if [[ $BSH_BUILD_PLATFORM == linux ]] && [[ $BSH_HOST_LIBC == mingw ]]; then
+			sudo apt update
+			sudo apt install g++-mingw-w64-x86-64
+		fi
+		;;
 	linux)
 		sudo apt update
 		if [[ $BSH_STATIC_DYNAMIC == static ]]; then
@@ -52,15 +59,20 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 		else
 			sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev libbz2-dev libjsoncpp-dev
 		fi
-		if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
-			sudo apt install g++-mingw-w64-x86-64
-		fi
 		;;
 	darwin)
 		brew install pkg-config binutils
 		if [[ $BSH_STATIC_DYNAMIC != static ]]; then
 			brew install luajit curl fftw zlib sdl2 bzip2 jsoncpp
 		fi
+		;;
+	emscripten)
+		git clone https://github.com/emscripten-core/emsdk.git --branch 3.1.30
+		cd emsdk
+		./emsdk install latest
+		./emsdk activate latest
+		. ./emsdk_env.sh
+		cd ..
 		;;
 	esac
 fi
@@ -284,6 +296,10 @@ fi
 if [[ $BSH_HOST_PLATFORM-$BSH_HOST_ARCH == darwin-aarch64 ]]; then
 	meson_configure+=$'\t'--cross-file=.github/macaa64-ghactions.ini
 fi
+if [[ $BSH_HOST_PLATFORM == emscripten ]]; then
+	meson_configure+=$'\t'-Dhttp=false # TODO: fix
+	meson_configure+=$'\t'--cross-file=.github/emscripten-ghactions.ini
+fi
 if [[ $RELEASE_TYPE == tptlibsdev ]] && ([[ $BSH_HOST_PLATFORM == windows ]] || [[ $BSH_STATIC_DYNAMIC == static ]]); then
 	if [[ -z ${TPTLIBSREMOTE-} ]]; then
 		if [[ -z "${GITHUB_REPOSITORY_OWNER-}" ]]; then
@@ -433,6 +449,8 @@ if [[ $PACKAGE_MODE == dmg ]]; then
 	cp ../LICENSE dmgroot/LICENSE
 	cp ../README.md dmgroot/README.md
 	hdiutil create -format UDZO -volname $APP_NAME -fs HFS+ -srcfolder dmgroot -o $ASSET_PATH
+elif [[ $PACKAGE_MODE == emscripten ]]; then
+	tar cvf $ASSET_PATH $APP_EXE.html $APP_EXE.js $APP_EXE.worker.js $APP_EXE.wasm
 elif [[ $PACKAGE_MODE == appimage ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
 	case $BSH_HOST_ARCH in

@@ -1,6 +1,0 @@
-[wrap-file]
-directory = tpt-libs-prebuilt-x86_64-android-bionic-static-release-v20230205154205
-
-source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20230205154205/tpt-libs-prebuilt-x86_64-android-bionic-static-release-v20230205154205.zip
-source_filename = tpt-libs-prebuilt-x86_64-android-bionic-static-release-v20230205154205.zip
-source_hash = 027bf628aa18454c99622e792aa751c1979c1e564482d59fac4125515767e870

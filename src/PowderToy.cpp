@@ -392,7 +392,7 @@ int main(int argc, char * argv[])
 	engine.Begin();
 	engine.SetFastQuit(prefs.Get("FastQuit", true));
 
-	bool enableBluescreen = !DEBUG && !true_arg(arguments["disable-bluescreen"]);
+	bool enableBluescreen = USE_BLUESCREEN && !true_arg(arguments["disable-bluescreen"]);
 	if (enableBluescreen)
 	{
 		//Get ready to catch any dodgy errors

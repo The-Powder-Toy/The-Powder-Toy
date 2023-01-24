@@ -2,6 +2,7 @@ common_files += files(
 	'Common.cpp',
 )
 
+use_bluescreen = not is_debug
 can_install_enforce_no = false
 set_window_icon = false
 path_sep_char = '/'
@@ -22,6 +23,13 @@ elif host_platform == 'android'
 		'Android.cpp',
 		'Posix.cpp',
 	)
+elif host_platform == 'emscripten'
+	use_bluescreen = false
+	can_install_enforce_no = true
+	common_files += files(
+		'Emscripten.cpp',
+		'Posix.cpp',
+	)
 elif host_platform == 'linux'
 	# TODO: again, this is more like "posix" than "linux"
 	set_window_icon = true
@@ -38,6 +46,7 @@ else
 endif
 conf_data.set('SET_WINDOW_ICON', set_window_icon ? 'true' : 'false')
 conf_data.set('PATH_SEP_CHAR', path_sep_char)
+conf_data.set('USE_BLUESCREEN', use_bluescreen ? 'true' : 'false')
 
 can_install = get_option('can_install')
 if can_install == 'auto'
