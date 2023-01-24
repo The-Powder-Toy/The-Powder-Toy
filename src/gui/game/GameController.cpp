@@ -371,6 +371,11 @@ ui::Point GameController::PointTranslate(ui::Point point)
 	return gameModel->AdjustZoomCoords(point);
 }
 
+ui::Point GameController::PointTranslateNoClamp(ui::Point point)
+{
+	return gameModel->AdjustZoomCoords(point);
+}
+
 ui::Point GameController::NormaliseBlockCoord(ui::Point point)
 {
 	return (point/CELL)*CELL;

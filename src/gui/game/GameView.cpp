@@ -1697,7 +1697,7 @@ void GameView::OnTick(float dt)
 			ui::Point drawPoint2 = currentMouse;
 			if (altBehaviour)
 				drawPoint2 = lineSnapCoords(c->PointTranslate(drawPoint1), currentMouse);
-			c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), drawPoint2);
+			c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), c->PointTranslateNoClamp(drawPoint2));
 		}
 	}
 
@@ -2079,7 +2079,7 @@ void GameView::OnDraw()
 		ren->SetSample(c->PointTranslate(currentMouse).X, c->PointTranslate(currentMouse).Y);
 		if (showBrush && selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
 		{
-			ui::Point finalCurrentMouse = c->PointTranslate(currentMouse);
+			ui::Point finalCurrentMouse = windTool ? c->PointTranslateNoClamp(currentMouse) : c->PointTranslate(currentMouse);
 			ui::Point initialDrawPoint = drawPoint1;
 
 			if (wallBrush)
