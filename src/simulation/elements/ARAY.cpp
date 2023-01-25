@@ -136,6 +136,17 @@ static int update(UPDATE_FUNC_ARGS)
 								isBlackDeco = (parts[r].dcolour==0xFF000000);
 								parts[r].life = 4;
 							}
+							else if (rt == PT_LITH)
+							{
+								parts[r].ctype = colored;
+								if(nostop)
+								{
+									docontinue = 1;
+									colored = (0x3FFFFFFF >> (30 - std::min(std::max(parts[r].ctype / 4, 0), 30))) ^ 2;
+								}
+								else
+									docontinue = 0;
+							}
 							else if (rt == PT_STOR)
 							{
 								if (parts[r].tmp)
