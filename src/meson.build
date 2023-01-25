@@ -39,6 +39,7 @@ conf_data.set('APPVENDOR', get_option('app_vendor'))
 powder_files = files(
 	'SDLCompat.cpp',
 	'PowderToySDL.cpp',
+	'PowderToy.cpp',
 	'lua/CommandInterface.cpp',
 	'lua/TPTScriptInterface.cpp',
 	'lua/TPTSTypes.cpp',
@@ -53,6 +54,7 @@ render_files = files(
 
 font_files = files(
 	'PowderToyFontEditor.cpp',
+	'PowderToySDL.cpp',
 )
 
 common_files = files(

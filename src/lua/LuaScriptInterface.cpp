@@ -17,7 +17,7 @@
 #include "LuaSocket.h"
 #include "LuaHttp.h"
 #include "LuaSDLKeys.h"
-#include "PowderToy.h"
+#include "PowderToySDL.h"
 #include "TPTScriptInterface.h"
 
 #include "client/Client.h"

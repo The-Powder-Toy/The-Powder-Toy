@@ -6,7 +6,7 @@
 #include "gui/interface/Engine.h"
 #include "gui/interface/Label.h"
 
-#include "PowderToy.h"
+#include "PowderToySDL.h"
 
 #include "graphics/Graphics.h"
 

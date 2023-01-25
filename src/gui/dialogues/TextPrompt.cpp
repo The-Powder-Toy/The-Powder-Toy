@@ -6,7 +6,7 @@
 #include "gui/interface/Textbox.h"
 
 #include "gui/Style.h"
-#include "PowderToy.h"
+#include "PowderToySDL.h"
 
 #include "graphics/Graphics.h"
 

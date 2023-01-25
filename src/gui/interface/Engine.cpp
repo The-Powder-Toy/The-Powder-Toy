@@ -1,5 +1,5 @@
 #include "Engine.h"
-#include "PowderToy.h"
+#include "PowderToySDL.h"
 #include "Window.h"
 #include "common/Platform.h"
 #include "graphics/Graphics.h"

@@ -5,7 +5,7 @@
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/SaveButton.h"
-#include "PowderToy.h"
+#include "PowderToySDL.h"
 #include "client/SaveFile.h"
 #include "graphics/Graphics.h"
 #include "SimulationConfig.h"

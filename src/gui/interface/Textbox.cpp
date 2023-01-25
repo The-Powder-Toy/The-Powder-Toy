@@ -1,6 +1,6 @@
 #include "Textbox.h"
 #include "Format.h"
-#include "PowderToy.h"
+#include "PowderToySDL.h"
 #include "common/Platform.h"
 #include "graphics/FontReader.h"
 #include "graphics/Graphics.h"

@@ -9,7 +9,7 @@
 #include "gui/interface/RichLabel.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Spinner.h"
-#include "PowderToy.h"
+#include "PowderToySDL.h"
 #include "graphics/Graphics.h"
 #include "SimulationConfig.h"
 #include <SDL.h>

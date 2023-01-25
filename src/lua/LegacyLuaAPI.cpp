@@ -2,7 +2,7 @@
 #include "LuaScriptHelper.h"
 #include "LuaScriptInterface.h"
 #include "LuaSmartRef.h"
-#include "PowderToy.h"
+#include "PowderToySDL.h"
 #include "prefs/GlobalPrefs.h"
 #include "common/Platform.h"
 #include "graphics/Graphics.h"

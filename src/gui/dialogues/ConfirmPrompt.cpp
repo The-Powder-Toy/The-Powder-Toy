@@ -7,7 +7,7 @@
 #include "gui/interface/Label.h"
 #include "gui/interface/ScrollPanel.h"
 
-#include "PowderToy.h"
+#include "PowderToySDL.h"
 
 #include "graphics/Graphics.h"
 
