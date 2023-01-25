@@ -11,6 +11,7 @@ constexpr bool NOHTTP                   = @NOHTTP@;
 constexpr bool LUACONSOLE               = @LUACONSOLE@;
 constexpr bool ALLOW_FAKE_NEWER_VERSION = @ALLOW_FAKE_NEWER_VERSION@;
 constexpr bool USE_UPDATESERVER         = @USE_UPDATESERVER@;
+constexpr bool CAN_INSTALL              = @CAN_INSTALL@;
 constexpr bool INSTALL_CHECK            = @INSTALL_CHECK@;
 constexpr bool IGNORE_UPDATES           = @IGNORE_UPDATES@;
 constexpr bool ENFORCE_HTTPS            = @ENFORCE_HTTPS@;

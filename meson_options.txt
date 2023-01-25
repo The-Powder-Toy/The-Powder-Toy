@@ -18,10 +18,11 @@ option(
 	description: 'Don\'t show notifications about available updates'
 )
 option(
-	'install_check',
-	type: 'boolean',
-	value: false,
-	description: 'Do install check on startup'
+	'can_install',
+	type: 'combo',
+	choices: [ 'no', 'yes', 'yes_check', 'auto' ],
+	value: 'auto',
+	description: 'Disable (\'no\') or enable (\'yes\') setting up file and URL associations, or even offer to do it at startup (\'yes_check\')'
 )
 option(
 	'http',

@@ -24,9 +24,4 @@ bool CanUpdate()
 {
 	return false;
 }
-
-bool Install()
-{
-	return false;
-}
 }

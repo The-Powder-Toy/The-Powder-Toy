@@ -252,7 +252,7 @@ void GameController::PlaceSave(ui::Point position)
 
 void GameController::Install()
 {
-	if (Platform::CanInstall())
+	if constexpr (CAN_INSTALL)
 	{
 		new ConfirmPrompt("Install " + String(APPNAME), "Do you wish to install " + String(APPNAME) + " on this computer?\nThis allows you to open save files and saves directly from the website.", { [] {
 			if (Platform::Install())

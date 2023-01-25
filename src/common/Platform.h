@@ -46,7 +46,6 @@ namespace Platform
 
 	bool CanUpdate();
 
-	bool CanInstall();
 	bool Install();
 
 	bool ChangeDir(ByteString toDir);

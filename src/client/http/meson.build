@@ -13,3 +13,4 @@ if enable_http
 else
 	client_files += files('RequestManagerNoHttp.cpp')
 endif
+conf_data.set('NOHTTP', not enable_http ? 'true' : 'false')

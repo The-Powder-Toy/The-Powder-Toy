@@ -106,9 +106,4 @@ bool WriteFile(const std::vector<char> &fileData, ByteString filename)
 	}
 	return true;
 }
-
-bool CanInstall()
-{
-	return INSTALL_CHECK;
-}
 }

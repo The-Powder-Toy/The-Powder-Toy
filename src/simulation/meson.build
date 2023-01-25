@@ -31,4 +31,5 @@ if enable_gravfft
 else
 	powder_files += files('PlainGravity.cpp')
 endif
+conf_data.set('GRAVFFT', enable_gravfft ? 'true' : 'false')
 render_files += files('PlainGravity.cpp')

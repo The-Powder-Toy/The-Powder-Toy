@@ -185,7 +185,6 @@ meson_configure+=$'\t'-Dapp_data=$APP_DATA
 meson_configure+=$'\t'-Dapp_vendor=$APP_VENDOR
 meson_configure+=$'\t'-Db_strip=false
 meson_configure+=$'\t'-Db_staticpic=false
-meson_configure+=$'\t'-Dinstall_check=true
 meson_configure+=$'\t'-Dmod_id=$MOD_ID
 case $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_DEBUG_RELEASE in
 x86_64-linux-gnu-debug) ;&
@@ -376,7 +375,7 @@ if [[ $BSH_HOST_PLATFORM == android ]]; then
 fi
 if [[ $PACKAGE_MODE == appimage ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
-	meson configure -Dinstall_check=false -Dignore_updates=true -Dbuild_render=false -Dbuild_font=false
+	meson configure -Dcan_install=no -Dignore_updates=true -Dbuild_render=false -Dbuild_font=false
 	strip_target=$APP_EXE
 fi
 if [[ $BSH_BUILD_PLATFORM == windows ]]; then

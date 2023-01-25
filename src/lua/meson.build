@@ -25,6 +25,7 @@ if enable_http
 else
 	luaconsole_files += files('LuaSocketTCPNoHttp.cpp')
 endif
+conf_data.set('LUACONSOLE', lua_variant != 'none' ? 'true' : 'false')
 
 subdir('luascripts')
 

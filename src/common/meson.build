@@ -4,19 +4,57 @@ common_files += files(
 	'tpt-rand.cpp',
 	'tpt-thread-local.cpp',
 )
+
+can_install_enforce_no = false
+set_window_icon = false
+path_sep_char = '/'
 if host_platform == 'windows'
-	common_files += files('PlatformWindows.cpp')
+	path_sep_char = '\\\\'
+	common_files += files(
+		'PlatformWindows.cpp',
+	)
 elif host_platform == 'darwin'
-	common_files += files('PlatformDarwin.cpp')
-	common_files += files('PlatformPosix.cpp')
+	can_install_enforce_no = true
+	common_files += files(
+		'PlatformDarwin.cpp',
+		'PlatformPosix.cpp',
+	)
 elif host_platform == 'android'
-	common_files += files('PlatformAndroid.cpp')
-	common_files += files('PlatformPosix.cpp')
+	can_install_enforce_no = true
+	common_files += files(
+		'PlatformAndroid.cpp',
+		'PlatformPosix.cpp',
+	)
 elif host_platform == 'linux'
 	# TODO: again, this is more like "posix" than "linux"
-	common_files += files('PlatformLinux.cpp')
-	common_files += files('PlatformPosix.cpp')
+	set_window_icon = true
+	common_files += files(
+		'PlatformLinux.cpp',
+		'PlatformPosix.cpp',
+	)
 else
-	common_files += files('PlatformNull.cpp')
-	common_files += files('PlatformPosix.cpp')
+	can_install_enforce_no = true
+	common_files += files(
+		'PlatformNull.cpp',
+		'PlatformPosix.cpp',
+	)
 endif
+conf_data.set('SET_WINDOW_ICON', set_window_icon ? 'true' : 'false')
+conf_data.set('PATH_SEP_CHAR', path_sep_char)
+
+can_install = get_option('can_install')
+if can_install == 'auto'
+	can_install = 'yes_check'
+	if is_debug
+		can_install = 'yes'
+	endif
+	if can_install_enforce_no
+		can_install = 'no'
+	endif
+endif
+if can_install != 'no' and can_install_enforce_no
+	error('cannot provide install support, configure with -Dcan_install=no to fix this error')
+endif
+conf_data.set('CAN_INSTALL', can_install != 'no' ? 'true' : 'false')
+conf_data.set('INSTALL_CHECK', can_install == 'yes_check' ? 'true' : 'false')
+
