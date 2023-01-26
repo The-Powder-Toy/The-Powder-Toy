@@ -149,7 +149,7 @@ void DoRestart()
 	{
 		fprintf(stderr, "cannot restart: no executable name???\n");
 	}
-	exit(-1);
+	Exit(-1);
 }
 
 bool UpdateStart(const std::vector<char> &data)

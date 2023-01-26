@@ -975,7 +975,7 @@ void bson_fatal_msg( int ok , const char *msg ) {
 	}
 
 	bson_errprintf( "error: %s\n" , msg );
-	exit( -5 );
+	abort();
 }
 
 

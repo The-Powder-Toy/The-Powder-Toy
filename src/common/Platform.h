@@ -55,4 +55,8 @@ namespace Platform
 	void UpdateCleanup();
 
 	void SetupCrt();
+
+	using ExitFunc = void (*)();
+	void Atexit(ExitFunc exitFunc);
+	void Exit(int code);
 }

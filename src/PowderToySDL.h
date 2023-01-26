@@ -37,6 +37,7 @@ unsigned int GetTicks();
 void CalculateMousePosition(int *x, int *y);
 void blit(pixel *vid);
 void SDLOpen();
+void SDLClose();
 void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscreen_, bool forceIntegerScaling_);
 bool RecreateWindow();
 void LoadWindowPosition();

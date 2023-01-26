@@ -36,21 +36,9 @@ static std::unique_ptr<ExplicitSingletons> explicitSingletons;
 int main(int argc, char * argv[])
 {
 	Platform::SetupCrt();
-	atexit([]() {
-		ui::Engine::Ref().CloseWindow();
+	Platform::Atexit([]() {
+		SDLClose();
 		explicitSingletons.reset();
-		if (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_OPENGL)
-		{
-			// * nvidia-460 egl registers callbacks with x11 that end up being called
-			//   after egl is unloaded unless we grab it here and release it after
-			//   sdl closes the display. this is an nvidia driver weirdness but
-			//   technically an sdl bug. glfw has this fixed:
-			//   https://github.com/glfw/glfw/commit/9e6c0c747be838d1f3dc38c2924a47a42416c081
-			SDL_GL_LoadLibrary(NULL);
-			SDL_QuitSubSystem(SDL_INIT_VIDEO);
-			SDL_GL_UnloadLibrary();
-		}
-		SDL_Quit();
 	});
 	explicitSingletons = std::make_unique<ExplicitSingletons>();
 	
@@ -99,9 +87,10 @@ int main(int argc, char * argv[])
 	else
 	{
 		std::cerr << "path to font.cpp not supplied" << std::endl;
-		exit(1);
+		Platform::Exit(1);
 	}
 
 	EngineProcess();
+	Platform::Exit(0);
 	return 0;
 }

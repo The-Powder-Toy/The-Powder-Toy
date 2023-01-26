@@ -212,6 +212,14 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	initHttpAPI();
 	initSocketAPI();
 
+	lua_getglobal(l, "os");
+	lua_pushcfunction(l, [](lua_State *l) -> int {
+		Platform::Exit(luaL_optinteger(l, 1, 0));
+		return 0;
+	});
+	lua_setfield(l, -2, "exit");
+	lua_pop(l, 1);
+
 	initBZ2API(l);
 
 	//Old TPT API

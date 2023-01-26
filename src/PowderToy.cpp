@@ -123,7 +123,7 @@ void BlueScreen(String detailMessage)
 	{
 		while (SDL_PollEvent(&event))
 			if(event.type == SDL_QUIT)
-				exit(-1);
+				exit(-1); // Don't use Platform::Exit, we're practically zombies at this point anyway.
 		blit(engine.g->vid);
 	}
 }
@@ -181,21 +181,9 @@ static std::unique_ptr<ExplicitSingletons> explicitSingletons;
 int main(int argc, char * argv[])
 {
 	Platform::SetupCrt();
-	atexit([]() {
-		ui::Engine::Ref().CloseWindow();
+	Platform::Atexit([]() {
+		SDLClose();
 		explicitSingletons.reset();
-		if (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_OPENGL)
-		{
-			// * nvidia-460 egl registers callbacks with x11 that end up being called
-			//   after egl is unloaded unless we grab it here and release it after
-			//   sdl closes the display. this is an nvidia driver weirdness but
-			//   technically an sdl bug. glfw has this fixed:
-			//   https://github.com/glfw/glfw/commit/9e6c0c747be838d1f3dc38c2924a47a42416c081
-			SDL_GL_LoadLibrary(NULL);
-			SDL_QuitSubSystem(SDL_INIT_VIDEO);
-			SDL_GL_UnloadLibrary();
-		}
-		SDL_Quit();
 	});
 	explicitSingletons = std::make_unique<ExplicitSingletons>();
 
@@ -318,7 +306,7 @@ int main(int argc, char * argv[])
 		FILE *new_stderr = freopen("stderr.log", "w", stderr);
 		if (!new_stdout || !new_stderr)
 		{
-			exit(42);
+			Platform::Exit(42);
 		}
 	}
 
@@ -522,5 +510,6 @@ int main(int argc, char * argv[])
 	{
 		wrapWithBluescreen();
 	}
+	Platform::Exit(0);
 	return 0;
 }

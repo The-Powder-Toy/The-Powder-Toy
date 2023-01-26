@@ -4,6 +4,7 @@
 #include "Config.h"
 #include "gui/interface/Engine.h"
 #include "graphics/Graphics.h"
+#include "common/Platform.h"
 #include <iostream>
 
 int desktopWidth = 1280;
@@ -96,13 +97,13 @@ void SDLOpen()
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
 	{
 		fprintf(stderr, "Initializing SDL (video subsystem): %s\n", SDL_GetError());
-		exit(-1);
+		Platform::Exit(-1);
 	}
 
 	if (!RecreateWindow())
 	{
 		fprintf(stderr, "Creating SDL window: %s\n", SDL_GetError());
-		exit(-1);
+		Platform::Exit(-1);
 	}
 
 	int displayIndex = SDL_GetWindowDisplayIndex(sdl_window);
@@ -120,6 +121,22 @@ void SDLOpen()
 	{
 		WindowIcon(sdl_window);
 	}
+}
+
+void SDLClose()
+{
+	if (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_OPENGL)
+	{
+		// * nvidia-460 egl registers callbacks with x11 that end up being called
+		//   after egl is unloaded unless we grab it here and release it after
+		//   sdl closes the display. this is an nvidia driver weirdness but
+		//   technically an sdl bug. glfw has this fixed:
+		//   https://github.com/glfw/glfw/commit/9e6c0c747be838d1f3dc38c2924a47a42416c081
+		SDL_GL_LoadLibrary(NULL);
+		SDL_QuitSubSystem(SDL_INIT_VIDEO);
+		SDL_GL_UnloadLibrary();
+	}
+	SDL_Quit();
 }
 
 void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscreen_, bool forceIntegerScaling_)

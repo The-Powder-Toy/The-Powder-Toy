@@ -209,14 +209,14 @@ void DoRestart()
 		}
 		else
 		{
-			exit(0);
+			Exit(0);
 		}
 	}
 	else
 	{
 		fprintf(stderr, "cannot restart: no executable name???\n");
 	}
-	exit(-1);
+	Exit(-1);
 }
 
 bool CanUpdate()
