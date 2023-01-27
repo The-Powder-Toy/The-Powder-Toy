@@ -84,4 +84,7 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire,
 
 SaveRenderer::~SaveRenderer()
 {
+	delete ren;
+	delete sim;
+	delete g;
 }
