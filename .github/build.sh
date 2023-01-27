@@ -198,9 +198,6 @@ esac
 if [[ $PACKAGE_MODE == nohttp ]]; then
 	meson_configure+=$'\t'-Dhttp=false
 fi
-if [[ $PACKAGE_MODE == nogravfft ]]; then
-	meson_configure+=$'\t'-Dgravfft=false
-fi
 if [[ $PACKAGE_MODE == nolua ]]; then
 	meson_configure+=$'\t'-Dlua=none
 fi

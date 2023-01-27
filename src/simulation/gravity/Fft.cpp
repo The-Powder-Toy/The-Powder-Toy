@@ -4,7 +4,7 @@
 #include <cmath>
 #include <fftw3.h>
 
-struct FftGravity : public Gravity
+struct GravityImpl : public Gravity
 {
 	bool grav_fft_status = false;
 	float *th_ptgravx = nullptr;
@@ -19,20 +19,20 @@ struct FftGravity : public Gravity
 	void grav_fft_init();
 	void grav_fft_cleanup();
 
-	FftGravity() : Gravity(CtorTag{})
+	GravityImpl() : Gravity(CtorTag{})
 	{
 	}
 
-	~FftGravity();
+	~GravityImpl();
 };
 
-FftGravity::~FftGravity()
+GravityImpl::~GravityImpl()
 {
 	stop_grav_async();
 	grav_fft_cleanup();
 }
 
-void FftGravity::grav_fft_init()
+void GravityImpl::grav_fft_init()
 {
 	int xblock2 = XCELLS*2;
 	int yblock2 = YCELLS*2;
@@ -91,7 +91,7 @@ void FftGravity::grav_fft_init()
 	grav_fft_status = true;
 }
 
-void FftGravity::grav_fft_cleanup()
+void GravityImpl::grav_fft_cleanup()
 {
 	if (!grav_fft_status) return;
 	fftwf_free(th_ptgravxt);
@@ -117,7 +117,7 @@ void Gravity::get_result()
 
 void Gravity::update_grav()
 {
-	auto *fftGravity = static_cast<FftGravity *>(this);
+	auto *fftGravity = static_cast<GravityImpl *>(this);
 	if (!fftGravity->grav_fft_status)
 		fftGravity->grav_fft_init();
 
@@ -193,10 +193,10 @@ void Gravity::update_grav()
 
 GravityPtr Gravity::Create()
 {
-	return GravityPtr(new FftGravity());
+	return GravityPtr(new GravityImpl());
 }
 
 void GravityDeleter::operator ()(Gravity *ptr) const
 {
-	delete static_cast<FftGravity *>(ptr);
+	delete static_cast<GravityImpl *>(ptr);
 }

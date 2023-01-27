@@ -4,7 +4,7 @@
 
 #include "simulation/Simulation.h"
 #include "simulation/Air.h"
-#include "simulation/Gravity.h"
+#include "simulation/gravity/Gravity.h"
 
 #include "prefs/GlobalPrefs.h"
 

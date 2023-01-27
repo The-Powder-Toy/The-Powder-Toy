@@ -6,7 +6,6 @@ constexpr bool X86                      = @X86@;
 constexpr bool BETA                     = @BETA@;
 constexpr bool SNAPSHOT                 = @SNAPSHOT@;
 constexpr bool MOD                      = @MOD@;
-constexpr bool GRAVFFT                  = @GRAVFFT@;
 constexpr bool NOHTTP                   = @NOHTTP@;
 constexpr bool LUACONSOLE               = @LUACONSOLE@;
 constexpr bool ALLOW_FAKE_NEWER_VERSION = @ALLOW_FAKE_NEWER_VERSION@;

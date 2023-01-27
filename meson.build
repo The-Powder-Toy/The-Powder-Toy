@@ -179,9 +179,7 @@ if host_platform == 'android'
 endif
 curl_dep = enable_http ? dependency('libcurl', static: is_static) : []
 
-enable_gravfft = get_option('gravfft')
-fftw_dep = enable_gravfft ? dependency('fftw3f', static: is_static) : []
-
+fftw_dep = dependency('fftw3f', static: is_static)
 threads_dep = dependency('threads')
 zlib_dep = dependency('zlib', static: is_static)
 png_dep = dependency('libpng16', static: is_static)

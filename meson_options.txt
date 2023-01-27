@@ -31,12 +31,6 @@ option(
 	description: 'Enable HTTP via libcurl'
 )
 option(
-	'gravfft',
-	type: 'boolean',
-	value: true,
-	description: 'Enable FFT gravity via libfftw3'
-)
-option(
 	'snapshot',
 	type: 'boolean',
 	value: false,

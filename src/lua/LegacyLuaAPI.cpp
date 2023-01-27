@@ -8,7 +8,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
 #include "simulation/ElementCommon.h"
-#include "simulation/Gravity.h"
+#include "simulation/gravity/Gravity.h"
 #include "simulation/Simulation.h"
 #include "simulation/SimulationData.h"
 #include "gui/dialogues/ConfirmPrompt.h"

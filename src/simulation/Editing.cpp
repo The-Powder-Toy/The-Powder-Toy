@@ -3,7 +3,7 @@
 #include "SimTool.h"
 #include "Snapshot.h"
 #include "Air.h"
-#include "Gravity.h"
+#include "gravity/Gravity.h"
 #include "common/tpt-rand.h"
 #include "common/tpt-compat.h"
 #include "client/GameSave.h"

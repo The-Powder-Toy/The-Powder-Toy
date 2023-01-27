@@ -7,7 +7,7 @@
 #include "BuiltinGOL.h"
 #include "MenuSection.h"
 #include "CoordStack.h"
-#include "GravityPtr.h"
+#include "gravity/GravityPtr.h"
 #include "Element.h"
 #include "SimulationConfig.h"
 #include <cstring>

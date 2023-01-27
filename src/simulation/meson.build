@@ -3,7 +3,6 @@ simulation_files = files(
 	'Element.cpp',
 	'ElementClasses.cpp',
 	'GOLString.cpp',
-	'Gravity.cpp',
 	'Particle.cpp',
 	'SaveRenderer.cpp',
 	'Sign.cpp',
@@ -13,6 +12,7 @@ simulation_files = files(
 
 subdir('elements')
 subdir('simtools')
+subdir('gravity')
 
 powder_files += simulation_files
 render_files += simulation_files
@@ -26,10 +26,3 @@ powder_files += files(
 render_files += files(
 	'NoToolClasses.cpp',
 )
-if enable_gravfft
-	powder_files += files('FftGravity.cpp')
-else
-	powder_files += files('PlainGravity.cpp')
-endif
-conf_data.set('GRAVFFT', enable_gravfft ? 'true' : 'false')
-render_files += files('PlainGravity.cpp')

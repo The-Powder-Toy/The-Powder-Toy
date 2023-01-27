@@ -6,7 +6,7 @@
 #include "simulation/ElementGraphics.h"
 #include "simulation/ElementClasses.h"
 #include "simulation/Air.h"
-#include "simulation/Gravity.h"
+#include "simulation/gravity/Gravity.h"
 #include <cmath>
 
 constexpr auto VIDXRES = WINDOWW;

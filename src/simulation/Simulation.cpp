@@ -1,7 +1,7 @@
 #include "Simulation.h"
 #include "Air.h"
 #include "ElementClasses.h"
-#include "Gravity.h"
+#include "gravity/Gravity.h"
 #include "ToolClasses.h"
 #include "SimulationData.h"
 #include "GOLString.h"

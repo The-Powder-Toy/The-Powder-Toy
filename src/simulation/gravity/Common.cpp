@@ -1,13 +1,11 @@
 #include "Gravity.h"
-
+#include "simulation/CoordStack.h"
+#include "simulation/Simulation.h"
+#include "simulation/SimulationData.h"
+#include "Misc.h"
 #include <cmath>
 #include <iostream>
 #include <sys/types.h>
-
-#include "CoordStack.h"
-#include "Misc.h"
-#include "Simulation.h"
-#include "SimulationData.h"
 
 Gravity::Gravity(CtorTag)
 {

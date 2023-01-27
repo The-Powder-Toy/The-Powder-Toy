@@ -20,7 +20,7 @@
 #include "graphics/Renderer.h"
 #include "simulation/Air.h"
 #include "simulation/GOLString.h"
-#include "simulation/Gravity.h"
+#include "simulation/gravity/Gravity.h"
 #include "simulation/Simulation.h"
 #include "simulation/Snapshot.h"
 #include "simulation/SnapshotDelta.h"
