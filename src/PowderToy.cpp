@@ -6,7 +6,7 @@
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
-#include "client/http/RequestManager.h"
+#include "client/http/requestmanager/RequestManager.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "simulation/SaveRenderer.h"

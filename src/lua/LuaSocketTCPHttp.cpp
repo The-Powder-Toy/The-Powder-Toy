@@ -9,8 +9,8 @@
 #include <algorithm>
 
 #include "LuaScriptInterface.h"
-#include "client/http/RequestManager.h"
-#include "client/http/CurlError.h"
+#include "client/http/requestmanager/RequestManager.h"
+#include "client/http/requestmanager/CurlError.h"
 #include "Misc.h"
 
 namespace LuaSocket

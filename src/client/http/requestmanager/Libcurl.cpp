@@ -1,6 +1,6 @@
 #include <curl/curl.h> // Has to come first because windows(tm).
 #include "RequestManager.h"
-#include "Request.h"
+#include "client/http/Request.h"
 #include "CurlError.h"
 #include "Config.h"
 
@@ -92,7 +92,7 @@ namespace http
 		return std::make_shared<RequestHandleHttp>();
 	}
 
-	struct RequestManagerHttp : public RequestManager
+	struct RequestManagerImpl : public RequestManager
 	{
 		using RequestManager::RequestManager;
 
@@ -102,7 +102,7 @@ namespace http
 
 	void RequestManager::InitWorker()
 	{
-		auto manager = static_cast<RequestManagerHttp *>(this);
+		auto manager = static_cast<RequestManagerImpl *>(this);
 		if (!curl_global_init(CURL_GLOBAL_DEFAULT))
 		{
 			manager->curlGlobalInit = true;
@@ -119,7 +119,7 @@ namespace http
 
 	void RequestManager::ExitWorker()
 	{
-		auto manager = static_cast<RequestManagerHttp *>(this);
+		auto manager = static_cast<RequestManagerImpl *>(this);
 		curl_multi_cleanup(manager->curlMulti);
 		manager->curlMulti = NULL;
 		curl_global_cleanup();
@@ -127,7 +127,7 @@ namespace http
 
 	void RequestManager::RegisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle)
 	{
-		auto manager = static_cast<RequestManagerHttp *>(this);
+		auto manager = static_cast<RequestManagerImpl *>(this);
 		auto handle = static_cast<RequestHandleHttp *>(requestHandle.get());
 		auto failEarly = [&requestHandle](int statusCode, ByteString error) {
 			requestHandle->statusCode = statusCode;
@@ -288,7 +288,7 @@ namespace http
 
 	void RequestManager::UnregisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle)
 	{
-		auto manager = static_cast<RequestManagerHttp *>(this);
+		auto manager = static_cast<RequestManagerImpl *>(this);
 		auto handle = static_cast<RequestHandleHttp *>(requestHandle.get());
 		if (handle->curlAddedToMulti)
 		{
@@ -311,7 +311,7 @@ namespace http
 			std::this_thread::sleep_for(std::chrono::milliseconds(TickMs));
 			return;
 		}
-		auto manager = static_cast<RequestManagerHttp *>(this);
+		auto manager = static_cast<RequestManagerImpl *>(this);
 		int dontcare;
 		HandleCURLMcode(curl_multi_wait(manager->curlMulti, NULL, 0, TickMs, &dontcare));
 		HandleCURLMcode(curl_multi_perform(manager->curlMulti, &dontcare));
@@ -391,12 +391,12 @@ namespace http
 
 	RequestManagerPtr RequestManager::Create(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork)
 	{
-		return RequestManagerPtr(new RequestManagerHttp(newProxy, newCafile, newCapath, newDisableNetwork));
+		return RequestManagerPtr(new RequestManagerImpl(newProxy, newCafile, newCapath, newDisableNetwork));
 	}
 
 	void RequestManagerDeleter::operator ()(RequestManager *ptr) const
 	{
-		delete static_cast<RequestManagerHttp *>(ptr);
+		delete static_cast<RequestManagerImpl *>(ptr);
 	}
 
 	void SetupCurlEasyCiphers(CURL *easy)
