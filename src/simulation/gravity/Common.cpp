@@ -9,44 +9,30 @@
 
 Gravity::Gravity(CtorTag)
 {
-	// Allocate full size Gravmaps
-	unsigned int size = NCELL;
-	th_ogravmap = new float[size];
-	th_gravmap = new float[size];
-	th_gravy = new float[size];
-	th_gravx = new float[size];
-	th_gravp = new float[size];
-	gravmap = new float[size];
-	gravy = new float[size];
-	gravx = new float[size];
-	gravp = new float[size];
-	gravmask = new unsigned[size];
+	th_ogravmap.resize(NCELL);
+	th_gravmap.resize(NCELL);
+	th_gravy.resize(NCELL);
+	th_gravx.resize(NCELL);
+	th_gravp.resize(NCELL);
+	gravmap.resize(NCELL);
+	gravy.resize(NCELL);
+	gravx.resize(NCELL);
+	gravp.resize(NCELL);
+	gravmask.resize(NCELL);
 }
 
 Gravity::~Gravity()
 {
 	stop_grav_async();
-
-	delete[] th_ogravmap;
-	delete[] th_gravmap;
-	delete[] th_gravy;
-	delete[] th_gravx;
-	delete[] th_gravp;
-	delete[] gravmap;
-	delete[] gravy;
-	delete[] gravx;
-	delete[] gravp;
-	delete[] gravmask;
 }
 
 void Gravity::Clear()
 {
-	int size = NCELL;
-	std::fill(gravy, gravy + size, 0.0f);
-	std::fill(gravx, gravx + size, 0.0f);
-	std::fill(gravp, gravp + size, 0.0f);
-	std::fill(gravmap, gravmap + size, 0.0f);
-	std::fill(gravmask, gravmask + size, 0xFFFFFFFF);
+	std::fill(&gravy[0], &gravy[0] + NCELL, 0.0f);
+	std::fill(&gravx[0], &gravx[0] + NCELL, 0.0f);
+	std::fill(&gravp[0], &gravp[0] + NCELL, 0.0f);
+	std::fill(&gravmap[0], &gravmap[0] + NCELL, 0.0f);
+	std::fill(&gravmask[0], &gravmask[0] + NCELL, UINT32_C(0xFFFFFFFF));
 
 	ignoreNextResult = true;
 }
@@ -86,8 +72,8 @@ void Gravity::gravity_update_async()
 		gravcv.notify_one();
 	}
 	unsigned int size = NCELL;
-	membwand(gravy, gravmask, size * sizeof(float), size * sizeof(unsigned));
-	membwand(gravx, gravmask, size * sizeof(float), size * sizeof(unsigned));
+	membwand(&gravy[0], &gravmask[0], size * sizeof(float), size * sizeof(uint32_t));
+	membwand(&gravx[0], &gravmask[0], size * sizeof(float), size * sizeof(uint32_t));
 	std::fill(&gravmap[0], &gravmap[0] + size, 0.0f);
 }
 
@@ -244,8 +230,6 @@ void Gravity::gravity_mask()
 	unsigned maskvalue;
 	mask_el *t_mask_el = nullptr;
 	mask_el *c_mask_el = nullptr;
-	if (!gravmask)
-		return;
 	memset(checkmap, 0, sizeof(checkmap));
 	for (int x = 0; x < XCELLS; x++)
 	{

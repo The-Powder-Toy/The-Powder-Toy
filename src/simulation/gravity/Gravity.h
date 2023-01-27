@@ -6,6 +6,8 @@
 #include <mutex>
 #include <condition_variable>
 #include <memory>
+#include <vector>
+#include <cstdint>
 
 class Simulation;
 
@@ -15,11 +17,11 @@ protected:
 	bool enabled = false;
 
 	// Maps to be processed by the gravity thread
-	float *th_ogravmap = nullptr;
-	float *th_gravmap = nullptr;
-	float *th_gravx = nullptr;
-	float *th_gravy = nullptr;
-	float *th_gravp = nullptr;
+	std::vector<float> th_ogravmap;
+	std::vector<float> th_gravmap;
+	std::vector<float> th_gravx;
+	std::vector<float> th_gravy;
+	std::vector<float> th_gravp;
 
 	int th_gravchanged = 0;
 
@@ -53,11 +55,12 @@ public:
 	~Gravity();
 
 	//Maps to be used by the main thread
-	float *gravmap = nullptr;
-	float *gravp = nullptr;
-	float *gravy = nullptr;
-	float *gravx = nullptr;
-	unsigned *gravmask = nullptr;
+	std::vector<float> gravmap;
+	std::vector<float> gravp;
+	std::vector<float> gravy;
+	std::vector<float> gravx;
+	std::vector<uint32_t> gravmask;
+	static_assert(sizeof(float) == sizeof(uint32_t));
 
 	unsigned char (*bmap)[XCELLS];
 

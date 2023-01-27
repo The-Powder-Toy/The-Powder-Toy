@@ -3806,10 +3806,10 @@ void Simulation::BeforeSim()
 			grav->gravity_update_async();
 
 			//Get updated buffer pointers for gravity
-			gravx = grav->gravx;
-			gravy = grav->gravy;
-			gravp = grav->gravp;
-			gravmap = grav->gravmap;
+			gravx = &grav->gravx[0];
+			gravy = &grav->gravy[0];
+			gravp = &grav->gravp[0];
+			gravmap = &grav->gravmap[0];
 		}
 		if(emp_decor>0)
 			emp_decor -= emp_decor/25+2;
@@ -4045,10 +4045,10 @@ Simulation::Simulation():
 	//Give air sim references to our data
 	grav->bmap = bmap;
 	//Gravity sim gives us maps to use
-	gravx = grav->gravx;
-	gravy = grav->gravy;
-	gravp = grav->gravp;
-	gravmap = grav->gravmap;
+	gravx = &grav->gravx[0];
+	gravy = &grav->gravy[0];
+	gravp = &grav->gravp[0];
+	gravmap = &grav->gravmap[0];
 
 	//Create and attach air simulation
 	air = new Air(*this);

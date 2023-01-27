@@ -6,9 +6,9 @@
 
 void Gravity::get_result()
 {
-	memcpy(gravy, th_gravy, NCELL*sizeof(float));
-	memcpy(gravx, th_gravx, NCELL*sizeof(float));
-	memcpy(gravp, th_gravp, NCELL*sizeof(float));
+	memcpy(&gravy[0], &th_gravy[0], NCELL * sizeof(float));
+	memcpy(&gravx[0], &th_gravx[0], NCELL * sizeof(float));
+	memcpy(&gravp[0], &th_gravp[0], NCELL * sizeof(float));
 }
 
 void Gravity::update_grav(void)

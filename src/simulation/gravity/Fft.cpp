@@ -2,19 +2,37 @@
 #include "Misc.h"
 #include <cstring>
 #include <cmath>
+#include <complex>
 #include <fftw3.h>
+
+constexpr auto xblock2     = XCELLS * 2;
+constexpr auto yblock2     = YCELLS * 2;
+constexpr auto fft_tsize   = (xblock2 / 2 + 1) * yblock2;
+//NCELL*4 is size of data array, scaling needed because FFTW calculates an unnormalized DFT
+constexpr auto scaleFactor = -float(M_GRAV) / (NCELL * 4);
+
+static_assert(sizeof(std::complex<float>) == sizeof(fftwf_complex));
+struct FftwArrayDeleter        { void operator ()(float               ptr[]) const { fftwf_free(ptr);         } };
+struct FftwComplexArrayDeleter { void operator ()(std::complex<float> ptr[]) const { fftwf_free(ptr);         } };
+struct FftwPlanDeleter         { void operator ()(fftwf_plan          ptr  ) const { fftwf_destroy_plan(ptr); } };
+using  FftwArrayPtr        = std::unique_ptr<float                              [], FftwArrayDeleter       >;
+using  FftwComplexArrayPtr = std::unique_ptr<std::complex<float>                [], FftwComplexArrayDeleter>;
+using  FftwPlanPtr         = std::unique_ptr<std::remove_pointer<fftwf_plan>::type, FftwPlanDeleter        >;
+FftwArrayPtr FftwArray(size_t size)
+{
+	return FftwArrayPtr(reinterpret_cast<float *>(fftwf_malloc(size * sizeof(float))));
+}
+FftwComplexArrayPtr FftwComplexArray(size_t size)
+{
+	return FftwComplexArrayPtr(reinterpret_cast<std::complex<float> *>(fftwf_malloc(size * sizeof(std::complex<float>))));
+}
 
 struct GravityImpl : public Gravity
 {
 	bool grav_fft_status = false;
-	float *th_ptgravx = nullptr;
-	float *th_ptgravy = nullptr;
-	float *th_gravmapbig = nullptr;
-	float *th_gravxbig = nullptr;
-	float *th_gravybig = nullptr;
-
-	fftwf_complex *th_ptgravxt, *th_ptgravyt, *th_gravmapbigt, *th_gravxbigt, *th_gravybigt;
-	fftwf_plan plan_gravmap, plan_gravx_inverse, plan_gravy_inverse;
+	FftwArrayPtr                                  th_gravmapbig , th_gravxbig , th_gravybig ;
+	FftwComplexArrayPtr th_ptgravxt, th_ptgravyt, th_gravmapbigt, th_gravxbigt, th_gravybigt;
+	FftwPlanPtr plan_gravmap, plan_gravx_inverse, plan_gravy_inverse;
 
 	void grav_fft_init();
 	void grav_fft_cleanup();
@@ -34,34 +52,28 @@ GravityImpl::~GravityImpl()
 
 void GravityImpl::grav_fft_init()
 {
-	int xblock2 = XCELLS*2;
-	int yblock2 = YCELLS*2;
-	int fft_tsize = (xblock2/2+1)*yblock2;
-	float distance, scaleFactor;
-	fftwf_plan plan_ptgravx, plan_ptgravy;
 	if (grav_fft_status) return;
+	FftwPlanPtr plan_ptgravx, plan_ptgravy;
 
 	//use fftw malloc function to ensure arrays are aligned, to get better performance
-	th_ptgravx = reinterpret_cast<float*>(fftwf_malloc(xblock2 * yblock2 * sizeof(float)));
-	th_ptgravy = reinterpret_cast<float*>(fftwf_malloc(xblock2 * yblock2 * sizeof(float)));
-	th_ptgravxt = reinterpret_cast<fftwf_complex*>(fftwf_malloc(fft_tsize * sizeof(fftwf_complex)));
-	th_ptgravyt = reinterpret_cast<fftwf_complex*>(fftwf_malloc(fft_tsize * sizeof(fftwf_complex)));
-	th_gravmapbig = reinterpret_cast<float*>(fftwf_malloc(xblock2 * yblock2 * sizeof(float)));
-	th_gravmapbigt = reinterpret_cast<fftwf_complex*>(fftwf_malloc(fft_tsize * sizeof(fftwf_complex)));
-	th_gravxbig = reinterpret_cast<float*>(fftwf_malloc(xblock2 * yblock2 * sizeof(float)));
-	th_gravybig = reinterpret_cast<float*>(fftwf_malloc(xblock2 * yblock2 * sizeof(float)));
-	th_gravxbigt = reinterpret_cast<fftwf_complex*>(fftwf_malloc(fft_tsize * sizeof(fftwf_complex)));
-	th_gravybigt = reinterpret_cast<fftwf_complex*>(fftwf_malloc(fft_tsize * sizeof(fftwf_complex)));
+	FftwArrayPtr th_ptgravx = FftwArray(xblock2 * yblock2);
+	FftwArrayPtr th_ptgravy = FftwArray(xblock2 * yblock2);
+	th_ptgravxt = FftwComplexArray(fft_tsize);
+	th_ptgravyt = FftwComplexArray(fft_tsize);
+	th_gravmapbig = FftwArray(xblock2 * yblock2);
+	th_gravmapbigt = FftwComplexArray(fft_tsize);
+	th_gravxbig = FftwArray(xblock2 * yblock2);
+	th_gravybig = FftwArray(xblock2 * yblock2);
+	th_gravxbigt = FftwComplexArray(fft_tsize);
+	th_gravybigt = FftwComplexArray(fft_tsize);
 
 	//select best algorithm, could use FFTW_PATIENT or FFTW_EXHAUSTIVE but that increases the time taken to plan, and I don't see much increase in execution speed
-	plan_ptgravx = fftwf_plan_dft_r2c_2d(yblock2, xblock2, th_ptgravx, th_ptgravxt, FFTW_MEASURE);
-	plan_ptgravy = fftwf_plan_dft_r2c_2d(yblock2, xblock2, th_ptgravy, th_ptgravyt, FFTW_MEASURE);
-	plan_gravmap = fftwf_plan_dft_r2c_2d(yblock2, xblock2, th_gravmapbig, th_gravmapbigt, FFTW_MEASURE);
-	plan_gravx_inverse = fftwf_plan_dft_c2r_2d(yblock2, xblock2, th_gravxbigt, th_gravxbig, FFTW_MEASURE);
-	plan_gravy_inverse = fftwf_plan_dft_c2r_2d(yblock2, xblock2, th_gravybigt, th_gravybig, FFTW_MEASURE);
+	plan_ptgravx = FftwPlanPtr(fftwf_plan_dft_r2c_2d(yblock2, xblock2, th_ptgravx.get(), reinterpret_cast<fftwf_complex *>(th_ptgravxt.get()), FFTW_MEASURE));
+	plan_ptgravy = FftwPlanPtr(fftwf_plan_dft_r2c_2d(yblock2, xblock2, th_ptgravy.get(), reinterpret_cast<fftwf_complex *>(th_ptgravyt.get()), FFTW_MEASURE));
+	plan_gravmap = FftwPlanPtr(fftwf_plan_dft_r2c_2d(yblock2, xblock2, th_gravmapbig.get(), reinterpret_cast<fftwf_complex *>(th_gravmapbigt.get()), FFTW_MEASURE));
+	plan_gravx_inverse = FftwPlanPtr(fftwf_plan_dft_c2r_2d(yblock2, xblock2, reinterpret_cast<fftwf_complex *>(th_gravxbigt.get()), th_gravxbig.get(), FFTW_MEASURE));
+	plan_gravy_inverse = FftwPlanPtr(fftwf_plan_dft_c2r_2d(yblock2, xblock2, reinterpret_cast<fftwf_complex *>(th_gravybigt.get()), th_gravybig.get(), FFTW_MEASURE));
 
-	//NCELL*4 is size of data array, scaling needed because FFTW calculates an unnormalized DFT
-	scaleFactor = -float(M_GRAV)/(NCELL*4);
 	//calculate velocity map caused by a point mass
 	for (int y = 0; y < yblock2; y++)
 	{
@@ -69,7 +81,7 @@ void GravityImpl::grav_fft_init()
 		{
 			if (x == XCELLS && y == YCELLS)
 				continue;
-			distance = hypotf(float(x-XCELLS), float(y-YCELLS));
+			auto distance = hypotf(float(x-XCELLS), float(y-YCELLS));
 			th_ptgravx[y * xblock2 + x] = scaleFactor * (x - XCELLS) / powf(distance, 3);
 			th_ptgravy[y * xblock2 + x] = scaleFactor * (y - YCELLS) / powf(distance, 3);
 		}
@@ -78,15 +90,11 @@ void GravityImpl::grav_fft_init()
 	th_ptgravy[yblock2 * xblock2 / 2 + xblock2 / 2] = 0.0f;
 
 	//transform point mass velocity maps
-	fftwf_execute(plan_ptgravx);
-	fftwf_execute(plan_ptgravy);
-	fftwf_destroy_plan(plan_ptgravx);
-	fftwf_destroy_plan(plan_ptgravy);
-	fftwf_free(th_ptgravx);
-	fftwf_free(th_ptgravy);
+	fftwf_execute(plan_ptgravx.get());
+	fftwf_execute(plan_ptgravy.get());
 
 	//clear padded gravmap
-	memset(th_gravmapbig, 0, xblock2 * yblock2 * sizeof(float));
+	memset(th_gravmapbig.get(), 0, xblock2 * yblock2 * sizeof(float));
 
 	grav_fft_status = true;
 }
@@ -94,17 +102,6 @@ void GravityImpl::grav_fft_init()
 void GravityImpl::grav_fft_cleanup()
 {
 	if (!grav_fft_status) return;
-	fftwf_free(th_ptgravxt);
-	fftwf_free(th_ptgravyt);
-	fftwf_free(th_gravmapbig);
-	fftwf_free(th_gravmapbigt);
-	fftwf_free(th_gravxbig);
-	fftwf_free(th_gravybig);
-	fftwf_free(th_gravxbigt);
-	fftwf_free(th_gravybigt);
-	fftwf_destroy_plan(plan_gravmap);
-	fftwf_destroy_plan(plan_gravx_inverse);
-	fftwf_destroy_plan(plan_gravy_inverse);
 	grav_fft_status = false;
 }
 
@@ -121,26 +118,23 @@ void Gravity::update_grav()
 	if (!fftGravity->grav_fft_status)
 		fftGravity->grav_fft_init();
 
-	auto *th_gravmapbig = fftGravity->th_gravmapbig;
-	auto *th_gravxbig = fftGravity->th_gravxbig;
-	auto *th_gravybig = fftGravity->th_gravybig;
-	auto *th_ptgravxt = fftGravity->th_ptgravxt;
-	auto *th_ptgravyt = fftGravity->th_ptgravyt;
-	auto *th_gravmapbigt = fftGravity->th_gravmapbigt;
-	auto *th_gravxbigt = fftGravity->th_gravxbigt;
-	auto *th_gravybigt = fftGravity->th_gravybigt;
+	auto *th_gravmapbig = fftGravity->th_gravmapbig.get();
+	auto *th_gravxbig = fftGravity->th_gravxbig.get();
+	auto *th_gravybig = fftGravity->th_gravybig.get();
+	auto *th_ptgravxt = fftGravity->th_ptgravxt.get();
+	auto *th_ptgravyt = fftGravity->th_ptgravyt.get();
+	auto *th_gravmapbigt = fftGravity->th_gravmapbigt.get();
+	auto *th_gravxbigt = fftGravity->th_gravxbigt.get();
+	auto *th_gravybigt = fftGravity->th_gravybigt.get();
 	auto &plan_gravmap = fftGravity->plan_gravmap;
 	auto &plan_gravx_inverse = fftGravity->plan_gravx_inverse;
 	auto &plan_gravy_inverse = fftGravity->plan_gravy_inverse;
 
-	int xblock2 = XCELLS*2, yblock2 = YCELLS*2;
-	int fft_tsize = (xblock2/2+1)*yblock2;
-	float mr, mc, pr, pc, gr, gc;
-	if (memcmp(th_ogravmap, th_gravmap, sizeof(float)*NCELL) != 0)
+	if (memcmp(&th_ogravmap[0], &th_gravmap[0], sizeof(float) * NCELL) != 0)
 	{
 		th_gravchanged = 1;
 
-		membwand(th_gravmap, gravmask, NCELL*sizeof(float), NCELL*sizeof(unsigned));
+		membwand(&th_gravmap[0], &gravmask[0], NCELL * sizeof(float), NCELL * sizeof(uint32_t));
 		//copy gravmap into padded gravmap array
 		for (int y = 0; y < YCELLS; y++)
 		{
@@ -150,28 +144,16 @@ void Gravity::update_grav()
 			}
 		}
 		//transform gravmap
-		fftwf_execute(plan_gravmap);
+		fftwf_execute(plan_gravmap.get());
 		//do convolution (multiply the complex numbers)
 		for (int i = 0; i < fft_tsize; i++)
 		{
-			mr = th_gravmapbigt[i][0];
-			mc = th_gravmapbigt[i][1];
-			pr = th_ptgravxt[i][0];
-			pc = th_ptgravxt[i][1];
-			gr = mr*pr-mc*pc;
-			gc = mr*pc+mc*pr;
-			th_gravxbigt[i][0] = gr;
-			th_gravxbigt[i][1] = gc;
-			pr = th_ptgravyt[i][0];
-			pc = th_ptgravyt[i][1];
-			gr = mr*pr-mc*pc;
-			gc = mr*pc+mc*pr;
-			th_gravybigt[i][0] = gr;
-			th_gravybigt[i][1] = gc;
+			th_gravxbigt[i] = th_gravmapbigt[i] * th_ptgravxt[i];
+			th_gravybigt[i] = th_gravmapbigt[i] * th_ptgravyt[i];
 		}
 		//inverse transform, and copy from padded arrays into normal velocity maps
-		fftwf_execute(plan_gravx_inverse);
-		fftwf_execute(plan_gravy_inverse);
+		fftwf_execute(plan_gravx_inverse.get());
+		fftwf_execute(plan_gravy_inverse.get());
 		for (int y = 0; y < YCELLS; y++)
 		{
 			for (int x = 0; x < XCELLS; x++)
