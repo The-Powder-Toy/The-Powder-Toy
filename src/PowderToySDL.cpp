@@ -4,7 +4,7 @@
 #include "Config.h"
 #include "gui/interface/Engine.h"
 #include "graphics/Graphics.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include <iostream>
 
 int desktopWidth = 1280;

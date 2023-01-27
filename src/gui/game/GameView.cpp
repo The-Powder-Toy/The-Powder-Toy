@@ -17,7 +17,7 @@
 #include "client/SaveInfo.h"
 #include "client/SaveFile.h"
 #include "client/Client.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
 #include "gui/Style.h"

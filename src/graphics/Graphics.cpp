@@ -1,5 +1,5 @@
 #include "Graphics.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "FontReader.h"
 #include "resampler/resampler.h"
 #include "SimulationConfig.h"

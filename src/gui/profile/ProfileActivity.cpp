@@ -1,6 +1,6 @@
 #include "ProfileActivity.h"
 #include "client/Client.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "gui/Style.h"
 #include "gui/interface/AvatarButton.h"
 #include "gui/interface/Button.h"

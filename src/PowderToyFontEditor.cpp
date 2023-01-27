@@ -1,6 +1,6 @@
 #include "PowderToySDL.h"
 #include "graphics/Graphics.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "common/tpt-rand.h"
 #include "gui/font/FontEditor.h"
 #include "gui/interface/Engine.h"

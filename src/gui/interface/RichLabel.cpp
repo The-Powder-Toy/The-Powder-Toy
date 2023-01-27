@@ -1,6 +1,6 @@
 #include "RichLabel.h"
 #include "Colour.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "graphics/FontReader.h"
 #include "graphics/Graphics.h"
 #include "gui/interface/Component.h"

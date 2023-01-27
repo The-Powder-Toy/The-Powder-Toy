@@ -8,7 +8,7 @@
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
 #include "client/UserInfo.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "common/String.h"
 #include "graphics/Graphics.h"
 #include "prefs/Prefs.h"

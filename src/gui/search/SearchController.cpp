@@ -5,7 +5,7 @@
 #include "SearchView.h"
 
 #include "client/Client.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "common/tpt-minmax.h"
 #include "graphics/Graphics.h"
 #include "tasks/Task.h"

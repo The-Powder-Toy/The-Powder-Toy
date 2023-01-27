@@ -2,7 +2,7 @@
 #include "Format.h"
 #include "OptionsController.h"
 #include "OptionsModel.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
 #include "gui/Style.h"

@@ -1,5 +1,5 @@
 #include "Prefs.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "common/tpt-rand.h"
 #include <fstream>
 #include <iostream>

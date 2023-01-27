@@ -3,7 +3,7 @@
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "client/ThumbnailRendererTask.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "gui/Style.h"
 

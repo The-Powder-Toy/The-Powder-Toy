@@ -7,7 +7,7 @@
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
 #include "client/http/RequestManager.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "simulation/SaveRenderer.h"
 #include "common/tpt-rand.h"

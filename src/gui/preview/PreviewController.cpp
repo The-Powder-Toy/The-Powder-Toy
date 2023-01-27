@@ -5,7 +5,7 @@
 #include "PreviewView.h"
 #include "client/Client.h"
 #include "client/SaveInfo.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/login/LoginController.h"

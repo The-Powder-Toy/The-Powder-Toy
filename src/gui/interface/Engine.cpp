@@ -1,7 +1,7 @@
 #include "Engine.h"
 #include "PowderToySDL.h"
 #include "Window.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include <cmath>

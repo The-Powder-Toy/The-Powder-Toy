@@ -4,7 +4,7 @@
 #include "LuaSmartRef.h"
 #include "PowderToySDL.h"
 #include "prefs/GlobalPrefs.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
 #include "simulation/ElementCommon.h"

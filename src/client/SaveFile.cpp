@@ -1,6 +1,6 @@
 #include "SaveFile.h"
 #include "GameSave.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 
 SaveFile::SaveFile(SaveFile & save):
 	gameSave(NULL),

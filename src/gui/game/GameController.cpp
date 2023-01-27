@@ -18,7 +18,7 @@
 #include "prefs/GlobalPrefs.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "debug/DebugInfo.h"
 #include "debug/DebugLines.h"
 #include "debug/DebugParts.h"

@@ -2,7 +2,7 @@
 
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "gui/Style.h"
 #include "tasks/Task.h"

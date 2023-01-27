@@ -6,7 +6,7 @@
 #include "gui/interface/Engine.h"
 #include "client/GameSave.h"
 #include "simulation/Simulation.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include <ctime>
 #include <iostream>
 #include <fstream>

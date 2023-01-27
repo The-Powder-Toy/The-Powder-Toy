@@ -2,7 +2,7 @@
 #include "client/http/Request.h"
 #include "prefs/GlobalPrefs.h"
 #include "client/Client.h"
-#include "common/Platform.h"
+#include "common/platform/Platform.h"
 #include "tasks/Task.h"
 #include "tasks/TaskWindow.h"
 #include "gui/dialogues/ConfirmPrompt.h"
