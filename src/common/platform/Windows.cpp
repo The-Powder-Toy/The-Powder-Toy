@@ -304,7 +304,7 @@ bool UpdateStart(const std::vector<char> &data)
 		updName = exeName.substr(0, exeName.length() - 4);
 	updName = updName + "_upd.exe";
 
-	if (!MoveFile(Platform::WinWiden(exeName).c_str(), Platform::WinWiden(updName).c_str()))
+	if (!RenameFile(exeName, updName))
 		return false;
 
 	if (!WriteFile(data, exeName))

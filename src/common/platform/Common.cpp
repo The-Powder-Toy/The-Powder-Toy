@@ -76,19 +76,20 @@ bool WriteFile(const std::vector<char> &fileData, ByteString filename)
 	{
 		while (true)
 		{
-			writeFileName = ByteString::Build(filename, ".temp.", random_gen() % 100000);
+			writeFileName = ByteString::Build(filename, ".temp.", Format::Width(5), Format::Fill('0'), random_gen() % 100000);
 			if (!FileExists(writeFileName))
 			{
 				break;
 			}
 		}
 	}
-	std::ofstream f(writeFileName, std::ios::binary);
-	if (f)
+	bool ok = false;
 	{
-		f.write(&fileData[0], fileData.size());
+		std::ofstream f(writeFileName, std::ios::binary);
+		if (f) f.write(&fileData[0], fileData.size());
+		ok = bool(f);
 	}
-	if (!f)
+	if (!ok)
 	{
 		std::cerr << "WriteFile: " << filename << ": " << strerror(errno) << std::endl;
 		if (replace)
