@@ -282,7 +282,7 @@ void Renderer::render_parts()
 				{
 					if (!elements[t].Graphics || (*(elements[t].Graphics))(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
 					{
-						graphicscache[t].isready = 1;
+						graphicscache[t].isready = t == PT_LIGH ? 0 : 1; // Glow effect depends on deco
 						graphicscache[t].pixel_mode = pixel_mode;
 						graphicscache[t].cola = cola;
 						graphicscache[t].colr = colr;
