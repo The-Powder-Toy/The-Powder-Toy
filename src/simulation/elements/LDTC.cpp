@@ -154,7 +154,10 @@ static int update(UPDATE_FUNC_ARGS)
 							parts[ID(rr)].ctype;
 						while (TYP(r) == PT_FILT)
 						{
-							parts[ID(r)].ctype = photonWl;
+							if (parts[ID(r)].tmp2 == 0)
+								parts[ID(r)].ctype = photonWl;
+							else if (parts[ID(r)].tmp2 != 1)
+								break;
 							nx += rx;
 							ny += ry;
 							if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
