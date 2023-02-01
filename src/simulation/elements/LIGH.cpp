@@ -295,19 +295,10 @@ static void create_line_par(Simulation * sim, int x1, int y1, int x2, int y2, in
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	*firea = 120;
-	if (cpart->dcolour)
-	{
-		*firer = *colr = PIXR(cpart->dcolour);
-		*fireg = *colg = PIXG(cpart->dcolour);
-		*fireb = *colb = PIXB(cpart->dcolour);
-	}
-	else
-	{
-		*firer = *colr = 235;
-		*fireg = *colg = 245;
-		*fireb = *colb = 255;
-	}
-	*pixel_mode |= PMODE_GLOW | FIRE_ADD;
+	*firer = *colr = 235;
+	*fireg = *colg = 245;
+	*fireb = *colb = 255;
+	*pixel_mode |= PMODE_GLOW | FIRE_ADD | DECO_FIRE;
 	return 1;
 }
 
