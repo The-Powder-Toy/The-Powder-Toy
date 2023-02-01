@@ -1176,7 +1176,7 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 			std::string to = toDir + directory + "/" + item;
 			if (!Platform::FileExists(to))
 			{
-				if (rename(from.c_str(), to.c_str()))
+				if (Platform::RenameFile(from, to, false))
 				{
 					failedCount++;
 					logFile << "failed to move " << from << " to " << to << std::endl;
@@ -1206,7 +1206,7 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 		ByteString to = toDir + filename;
 		if (!Platform::FileExists(to))
 		{
-			if (rename(from.c_str(), to.c_str()))
+			if (Platform::RenameFile(from, to, false))
 			{
 				logFile << "failed to move " << from << " to " << to << std::endl;
 				result << "\n\br" << filename.FromUtf8() << " migration failed\x0E";

@@ -21,7 +21,7 @@ namespace Platform
 	 * @return true on success
 	 */
 	bool RemoveFile(ByteString filename);
-	bool RenameFile(ByteString filename, ByteString newFilename, bool replace = false);
+	bool RenameFile(ByteString filename, ByteString newFilename, bool replace);
 
 	/**
 	 * @return true on success

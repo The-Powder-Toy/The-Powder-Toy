@@ -4050,7 +4050,8 @@ int LuaScriptInterface::fileSystem_move(lua_State * l)
 {
 	auto filename = tpt_lua_checkByteString(l, 1);
 	auto newFilename = tpt_lua_checkByteString(l, 2);
-	lua_pushboolean(l, Platform::RenameFile(filename, newFilename));
+	bool replace = lua_toboolean(l, 3);
+	lua_pushboolean(l, Platform::RenameFile(filename, newFilename, replace));
 	return 1;
 }
 

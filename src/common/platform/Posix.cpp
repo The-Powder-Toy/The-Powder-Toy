@@ -89,6 +89,13 @@ bool RemoveFile(ByteString filename)
 
 bool RenameFile(ByteString filename, ByteString newFilename, bool replace)
 {
+	// TODO: Make atomic :( Could use renameat2 with RENAME_NOREPLACE on linux and
+	// renamex_np with RENAME_EXCL on darwin, but both require filesystem support;
+	// I don't think it's worth it for now. -- LBPHacker
+	if (!replace && FileExists(newFilename))
+	{
+		return false;
+	}
 	return rename(filename.c_str(), newFilename.c_str()) == 0;
 }
 
@@ -154,12 +161,12 @@ void DoRestart()
 
 bool UpdateStart(const std::vector<char> &data)
 {
-	ByteString exeName = Platform::ExecutableName(), updName;
+	ByteString exeName = Platform::ExecutableName();
 
 	if (!exeName.length())
 		return false;
 
-	updName = exeName + "-update";
+	auto updName = exeName + "-update";
 
 	if (!WriteFile(data, updName))
 	{
@@ -173,7 +180,7 @@ bool UpdateStart(const std::vector<char> &data)
 		return false;
 	}
 
-	if (!RenameFile(updName, exeName))
+	if (!RenameFile(updName, exeName, true))
 	{
 		RemoveFile(updName);
 		return false;

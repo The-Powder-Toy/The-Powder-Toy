@@ -151,8 +151,7 @@ void FileBrowserActivity::RenameSave(SaveFile * file)
 	if (newName.length())
 	{
 		newName = ByteString::Build(directory, PATH_SEP_CHAR, newName, ".cps");
-		int ret = rename(file->GetName().c_str(), newName.c_str());
-		if (ret)
+		if (!Platform::RenameFile(file->GetName(), newName, false))
 			ErrorMessage::Blocking("Error", "Could not rename file");
 		else
 			loadDirectory(directory, "");

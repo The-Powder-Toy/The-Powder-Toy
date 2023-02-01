@@ -10,7 +10,7 @@
 #include <cmath>
 
 constexpr auto VIDXRES = WINDOWW;
-constexpr auto VIDYRES = WINDOWH;
+// constexpr auto VIDYRES = WINDOWH; // not actually used anywhere
 
 VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 {
