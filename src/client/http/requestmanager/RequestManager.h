@@ -1,6 +1,7 @@
 #pragma once
 #include "common/ExplicitSingleton.h"
 #include "common/String.h"
+#include <atomic>
 #include <thread>
 #include <vector>
 #include <memory>
@@ -36,8 +37,8 @@ namespace http
 		State state = ready;
 		std::mutex stateMx;
 		std::condition_variable stateCv;
-		int bytesTotal = 0;
-		int bytesDone = 0;
+		std::atomic<int> bytesTotal = 0;
+		std::atomic<int> bytesDone = 0;
 		int statusCode = 0;
 		ByteString responseData;
 		std::vector<ByteString> responseHeaders;
