@@ -1004,7 +1004,7 @@ int GameView::Record(bool record)
 			time_t startTime = time(NULL);
 			recordingFolder = startTime;
 			Platform::MakeDirectory("recordings");
-			Platform::MakeDirectory(ByteString::Build("recordings", PATH_SEP_CHAR, recordingFolder).c_str());
+			Platform::MakeDirectory(ByteString::Build("recordings", PATH_SEP_CHAR, recordingFolder));
 			recording = true;
 			recordingIndex = 0;
 		}

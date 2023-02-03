@@ -53,22 +53,8 @@ inline float restrict_flt(float f, float min, float max)
 	return f;
 }
 
-void save_presets(int do_update);
-
-void load_presets(void);
-
-void strcaturl(char *dst, const char *src);
-
-void strappend(char *dst, const char *src);
-
-void *file_load(char *fn, int *size);
-
-extern char *clipboard_text;
-
 void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b);
-
 void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v);
-
 void membwand(void * dest, void * src, size_t destsize, size_t srcsize);
 
 // a b

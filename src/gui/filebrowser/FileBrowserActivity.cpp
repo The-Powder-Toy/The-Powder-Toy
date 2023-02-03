@@ -140,7 +140,7 @@ void FileBrowserActivity::DeleteSave(SaveFile * file)
 	String deleteMessage = "Are you sure you want to delete " + file->GetDisplayName() + ".cps?";
 	if (ConfirmPrompt::Blocking("Delete Save", deleteMessage))
 	{
-		remove(file->GetName().c_str());
+		Platform::RemoveFile(file->GetName());
 		loadDirectory(directory, "");
 	}
 }
