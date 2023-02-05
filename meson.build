@@ -85,7 +85,7 @@ tpt_libs_debug = is_debug ? 'debug' : 'release'
 tpt_libs_variant = '@0@-@1@-@2@-@3@'.format(host_arch, host_platform, host_libc, tpt_libs_static)
 tpt_libs_vtag = get_option('tpt_libs_vtag')
 if tpt_libs_vtag == ''
-	tpt_libs_vtag = 'v20230101182417'
+	tpt_libs_vtag = 'v20230205154205'
 endif
 if tpt_libs_static != 'none'
 	if tpt_libs_variant not in [
@@ -286,12 +286,6 @@ if host_platform == 'windows'
 		foreach input_output_condition : tpt_libs.get_variable('config_dlls')
 			dll_input = input_output_condition[0]
 			dll_output = input_output_condition[1]
-			if tpt_libs_vtag == 'v20230101182417' and host_libc == 'mingw' and dll_output == 'libbz2.dll'
-				# v20230101182417 (and possibly earlier releases but whatever) copies bz2's dll
-				# in as libbz2.dll, when the .lib has the executable link against bz2.dll. I blame
-				# the insanely inconsistent build system configurations these libraries use.
-				dll_output = 'bz2.dll'
-			endif
 			dll_condition = input_output_condition[2]
 			do_copy = false
 			if dll_condition == 'all'

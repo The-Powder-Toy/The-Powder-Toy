@@ -382,6 +382,14 @@ if [[ $BSH_BUILD_PLATFORM == windows ]]; then
 	set -e
 	cat $APP_EXE.exe.rsp
 	[[ $ninja_code == 0 ]];
+	echo # rsps don't usually have a newline at the end
+	if [[ "$BSH_HOST_PLATFORM-$BSH_STATIC_DYNAMIC $BSH_BUILD_PLATFORM" == "windows-dynamic windows" ]]; then
+		# on windows we provide the dynamic dependencies also; makes sense to check for their presence
+		# msys ldd works fine but only on windows build machines
+		if ldd $APP_EXE | grep "not found"; then
+			exit 1 # ldd | grep will have printed missing deps
+		fi
+	fi
 else
 	ninja -v
 fi
