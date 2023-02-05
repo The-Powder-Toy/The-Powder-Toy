@@ -286,6 +286,12 @@ if host_platform == 'windows'
 		foreach input_output_condition : tpt_libs.get_variable('config_dlls')
 			dll_input = input_output_condition[0]
 			dll_output = input_output_condition[1]
+			if tpt_libs_vtag == 'v20230101182417' and host_libc == 'mingw' and dll_output == 'libbz2.dll'
+				# v20230101182417 (and possibly earlier releases but whatever) copies bz2's dll
+				# in as libbz2.dll, when the .lib has the executable link against bz2.dll. I blame
+				# the insanely inconsistent build system configurations these libraries use.
+				dll_output = 'bz2.dll'
+			endif
 			dll_condition = input_output_condition[2]
 			do_copy = false
 			if dll_condition == 'all'
