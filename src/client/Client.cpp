@@ -512,6 +512,7 @@ void Client::DeleteStamp(ByteString stampID)
 	if (it != stampIDs.end())
 	{
 		stampIDs.erase(it, stampIDs.end());
+		Platform::RemoveFile(ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, stampID, ".stm"));
 		WriteStamps();
 	}
 }
