@@ -31,7 +31,6 @@ class LuaScriptInterface: public TPTScriptInterface
 	std::unique_ptr<http::Request> scriptDownload;
 	ByteString scriptDownloadFilename;
 	bool scriptDownloadRunScript;
-	bool scriptDownloadConfirmPrompt;
 
 	int luacon_mousex, luacon_mousey, luacon_mousebutton;
 	ByteString luacon_selectedl, luacon_selectedr, luacon_selectedalt, luacon_selectedreplace;

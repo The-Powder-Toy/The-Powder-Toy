@@ -38,6 +38,10 @@
 #include "simulation/SaveRenderer.h"
 #include "simulation/Snapshot.h"
 
+#include "gui/dialogues/ConfirmPrompt.h"
+#include "gui/dialogues/ErrorMessage.h"
+#include "gui/dialogues/InformationMessage.h"
+#include "gui/dialogues/TextPrompt.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Engine.h"
 #include "gui/game/GameView.h"
@@ -345,9 +349,6 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 		{"textwidth", &luatpt_textwidth},
 		{"get_name", &luatpt_get_name},
 		{"delete", &luatpt_delete},
-		{"input", &luatpt_input},
-		{"message_box", &luatpt_message_box},
-		{"confirm", &luatpt_confirm},
 		{"get_numOfParts", &luatpt_get_numOfParts},
 		{"start_getPartIndex", &luatpt_start_getPartIndex},
 		{"next_getPartIndex", &luatpt_next_getPartIndex},
@@ -360,7 +361,6 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 		{"num_menus", &luatpt_num_menus},
 		{"decorations_enable", &luatpt_decorations_enable},
 		{"display_mode", &luatpt_cmode_set},
-		{"throw_error", &luatpt_error},
 		{"heat", &luatpt_heat},
 		{"setfire", &luatpt_setfire},
 		{"setdebug", &luatpt_setdebug},
@@ -660,7 +660,124 @@ int LuaScriptInterface::tpt_newIndex(lua_State *l)
 	return 0;
 }
 
-//// Begin Interface API
+static int beginMessageBox(lua_State* l)
+{
+	String title = tpt_lua_optString(l, 1, "Title");
+	String message = tpt_lua_optString(l, 2, "Message");
+	int large = lua_toboolean(l, 3);
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+	auto cb = std::make_shared<LuaSmartRef>(luacon_ci->l); // * Bind to main lua state (might be different from l).
+	cb->Assign(l, 4);
+	new InformationMessage(title, message, large, { [cb]() {
+		auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+		auto l = luacon_ci->l;
+		cb->Push(l);
+		if (lua_isfunction(l, -1))
+		{
+			if (lua_pcall(l, 0, 0, 0))
+			{
+				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+			}
+		}
+		else
+		{
+			lua_pop(l, 1);
+		}
+	} });
+	return 0;
+}
+
+static int beginThrowError(lua_State* l)
+{
+	String errorMessage = tpt_lua_optString(l, 1, "Error text");
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+	auto cb = std::make_shared<LuaSmartRef>(luacon_ci->l); // * Bind to main lua state (might be different from l).
+	cb->Assign(l, 2);
+	new ErrorMessage("Error", errorMessage, { [cb]() {
+		auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+		auto l = luacon_ci->l;
+		cb->Push(l);
+		if (lua_isfunction(l, -1))
+		{
+			if (lua_pcall(l, 0, 0, 0))
+			{
+				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+			}
+		}
+		else
+		{
+			lua_pop(l, 1);
+		}
+	} });
+	return 0;
+}
+
+static int beginInput(lua_State* l)
+{
+	String title = tpt_lua_optString(l, 1, "Title");
+	String prompt = tpt_lua_optString(l, 2, "Enter some text:");
+	String text = tpt_lua_optString(l, 3, "");
+	String shadow = tpt_lua_optString(l, 4, "");
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+	auto cb = std::make_shared<LuaSmartRef>(luacon_ci->l); // * Bind to main lua state (might be different from l).
+	cb->Assign(l, 5);
+	auto handle = [cb](const String &input) {
+		auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+		auto l = luacon_ci->l;
+		cb->Push(l);
+		if (lua_isfunction(l, -1))
+		{
+			tpt_lua_pushString(l, input);
+			if (lua_pcall(l, 1, 0, 0))
+			{
+				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+			}
+		}
+		else
+		{
+			lua_pop(l, 1);
+		}
+	};
+	new TextPrompt(title, prompt, text, shadow, false, { [handle](const String &input) {
+		handle(input);
+	}, [handle]() {
+		handle({}); // * Has always returned empty string >_>
+	} });
+	return 0;
+}
+
+static int beginConfirm(lua_State *l)
+{
+	String title = tpt_lua_optString(l, 1, "Title");
+	String message = tpt_lua_optString(l, 2, "Message");
+	String buttonText = tpt_lua_optString(l, 3, "Confirm");
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+	auto cb = std::make_shared<LuaSmartRef>(luacon_ci->l); // * Bind to main lua state (might be different from l).
+	cb->Assign(l, 4);
+	auto handle = [cb](int result) {
+		auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+		auto l = luacon_ci->l;
+		cb->Push(l);
+		if (lua_isfunction(l, -1))
+		{
+			lua_pushboolean(l, result);
+			if (lua_pcall(l, 1, 0, 0))
+			{
+				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+			}
+		}
+		else
+		{
+			lua_pop(l, 1);
+		}
+	};
+	new ConfirmPrompt(title, message, { [handle]() {
+		handle(1);
+	}, [handle]() {
+		handle(0);
+	} }, buttonText);
+	return 0;
+}
 
 void LuaScriptInterface::initInterfaceAPI()
 {
@@ -672,6 +789,10 @@ void LuaScriptInterface::initInterfaceAPI()
 		{"grabTextInput", interface_grabTextInput},
 		{"dropTextInput", interface_dropTextInput},
 		{"textInputRect", interface_textInputRect},
+		{"beginInput", beginInput},
+		{"beginMessageBox", beginMessageBox},
+		{"beginConfirm", beginConfirm},
+		{"beginThrowError", beginThrowError},
 		{NULL, NULL}
 	};
 	luaL_register(l, "interface", interfaceAPIMethods);
@@ -4431,8 +4552,9 @@ void LuaScriptInterface::OnTick()
 				new ErrorMessage("Script download", ByteString(http::StatusText(ret)).FromUtf8());
 				return;
 			}
-			if (Platform::FileExists(scriptDownloadFilename) && scriptDownloadConfirmPrompt && !ConfirmPrompt::Blocking("File already exists, overwrite?", scriptDownloadFilename.FromUtf8(), "Overwrite"))
+			if (Platform::FileExists(scriptDownloadFilename))
 			{
+				new ErrorMessage("Script download", "File already exists");
 				return;
 			}
 			if (!Platform::WriteFile(std::vector<char>(scriptData.begin(), scriptData.end()), scriptDownloadFilename))
@@ -4885,7 +5007,6 @@ int LuaScriptInterface::luatpt_getscript(lua_State* l)
 	int scriptID = luaL_checkinteger(l, 1);
 	auto filename = tpt_lua_checkByteString(l, 2);
 	bool runScript = luaL_optint(l, 3, 0);
-	int confirmPrompt = luaL_optint(l, 4, 1);
 
 	if (luacon_ci->scriptDownload)
 	{
@@ -4894,16 +5015,11 @@ int LuaScriptInterface::luatpt_getscript(lua_State* l)
 	}
 
 	ByteString url = ByteString::Build(SCHEME, "starcatcher.us/scripts/main.lua?get=", scriptID);
-	if (confirmPrompt && !ConfirmPrompt::Blocking("Do you want to install script?", url.FromUtf8(), "Install"))
-	{
-		return 0;
-	}
 
 	luacon_ci->scriptDownload = std::make_unique<http::Request>(url);
 	luacon_ci->scriptDownload->Start();
 	luacon_ci->scriptDownloadFilename = filename;
 	luacon_ci->scriptDownloadRunScript = runScript;
-	luacon_ci->scriptDownloadConfirmPrompt = confirmPrompt;
 
 	luacon_controller->HideConsole();
 	return 0;

@@ -8,8 +8,9 @@
 
 #include "graphics/Graphics.h"
 
-InformationMessage::InformationMessage(String title, String message, bool large):
-	ui::Window(ui::Point(-1, -1), ui::Point(200, 35))
+InformationMessage::InformationMessage(String title, String message, bool large, DismissCallback callback_):
+	ui::Window(ui::Point(-1, -1), ui::Point(200, 35)),
+	callback(callback_)
 {
 	if (large) //Maybe also use this large mode for changelogs eventually, or have it as a customizable size?
 	{
@@ -61,6 +62,8 @@ InformationMessage::InformationMessage(String title, String message, bool large)
 	okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
 	okayButton->SetActionCallback({ [this] {
 		CloseActiveWindow();
+		if (callback.dismiss)
+			callback.dismiss();
 		SelfDestruct(); //TODO: Fix component disposal
 	} });
 	AddComponent(okayButton);

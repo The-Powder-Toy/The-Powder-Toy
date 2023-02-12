@@ -49,7 +49,6 @@ int luacon_transitionwrite(lua_State* l);
 //tpt. api
 int luatpt_getelement(lua_State *l);
 
-int luatpt_error(lua_State* l);
 int luatpt_drawtext(lua_State* l);
 
 int luatpt_create(lua_State* l);
@@ -96,9 +95,6 @@ int luatpt_textwidth(lua_State* l);
 int luatpt_get_name(lua_State* l);
 
 int luatpt_delete(lua_State* l);
-int luatpt_input(lua_State* l);
-int luatpt_message_box(lua_State* l);
-int luatpt_confirm(lua_State* l);
 int luatpt_get_numOfParts(lua_State* l);
 int luatpt_start_getPartIndex(lua_State* l);
 int luatpt_next_getPartIndex(lua_State* l);

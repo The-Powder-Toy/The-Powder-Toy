@@ -11,10 +11,6 @@
 #include "simulation/gravity/Gravity.h"
 #include "simulation/Simulation.h"
 #include "simulation/SimulationData.h"
-#include "gui/dialogues/ConfirmPrompt.h"
-#include "gui/dialogues/ErrorMessage.h"
-#include "gui/dialogues/InformationMessage.h"
-#include "gui/dialogues/TextPrompt.h"
 #include "gui/game/GameController.h"
 #include "gui/game/GameModel.h"
 #include "gui/interface/Engine.h"
@@ -264,8 +260,7 @@ void luacon_hook(lua_State * l, lua_Debug * ar)
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	if (ar->event == LUA_HOOKCOUNT && Platform::GetTime() - luacon_ci->luaExecutionStart > 3000)
 	{
-		if(ConfirmPrompt::Blocking("Script not responding", "The Lua script may have stopped responding. There might be an infinite loop. Press \"Stop\" to stop it", "Stop"))
-			luaL_error(l, "Error: Script not responding");
+		luaL_error(l, "Error: Script not responding");
 		luacon_ci->luaExecutionStart = Platform::GetTime();
 	}
 }
@@ -301,13 +296,6 @@ int luatpt_getelement(lua_State *l)
 		lua_pushinteger(l, t);
 	}
 	return 1;
-}
-
-int luatpt_error(lua_State* l)
-{
-	String errorMessage = tpt_lua_optString(l, 1, "Error text");
-	ErrorMessage::Blocking("Error", errorMessage);
-	return 0;
 }
 
 int luatpt_drawtext(lua_State* l)
@@ -1036,38 +1024,6 @@ int luatpt_delete(lua_State* l)
 		return 0;
 	}
 	return luaL_error(l,"Invalid coordinates or particle ID");
-}
-
-int luatpt_input(lua_State* l)
-{
-	String title = tpt_lua_optString(l, 1, "Title");
-	String prompt = tpt_lua_optString(l, 2, "Enter some text:");
-	String text = tpt_lua_optString(l, 3, "");
-	String shadow = tpt_lua_optString(l, 4, "");
-
-	String result = TextPrompt::Blocking(title, prompt, text, shadow, false);
-
-	tpt_lua_pushString(l, result);
-	return 1;
-}
-
-int luatpt_message_box(lua_State* l)
-{
-	String title = tpt_lua_optString(l, 1, "Title");
-	String message = tpt_lua_optString(l, 2, "Message");
-	int large = lua_toboolean(l, 3);
-	new InformationMessage(title, message, large);
-	return 0;
-}
-
-int luatpt_confirm(lua_State *l)
-{
-	String title = tpt_lua_optString(l, 1, "Title");
-	String message = tpt_lua_optString(l, 2, "Message");
-	String buttonText = tpt_lua_optString(l, 3, "Confirm");
-	bool ret = ConfirmPrompt::Blocking(title, message, buttonText);
-	lua_pushboolean(l, ret ? 1 : 0);
-	return 1;
 }
 
 int luatpt_get_numOfParts(lua_State* l)
