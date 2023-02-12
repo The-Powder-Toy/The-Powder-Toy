@@ -510,10 +510,7 @@ int main(int argc, char * argv[])
 			}
 		}
 
-		while (engine.Running())
-		{
-			EngineProcess();
-		}
+		MainLoop();
 	};
 
 	if (enableBluescreen)

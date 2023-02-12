@@ -26,6 +26,7 @@ extern bool mouseDown;
 extern bool calculatedInitialMouse;
 extern bool hasMouseMoved;
 
+void MainLoop();
 void EngineProcess();
 void StartTextInput();
 void StopTextInput();

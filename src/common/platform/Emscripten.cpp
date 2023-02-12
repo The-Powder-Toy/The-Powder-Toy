@@ -29,4 +29,12 @@ bool Install()
 {
 	return false;
 }
+
+void Atexit(ExitFunc exitFunc)
+{
+}
+
+void Exit(int code)
+{
+}
 }

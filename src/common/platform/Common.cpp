@@ -3,7 +3,6 @@
 #include "common/tpt-rand.h"
 #include "Config.h"
 #include <memory>
-#include <list>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -107,21 +106,5 @@ bool WriteFile(const std::vector<char> &fileData, ByteString filename)
 		}
 	}
 	return true;
-}
-
-std::list<ExitFunc> exitFuncs;
-
-void Atexit(ExitFunc exitFunc)
-{
-	exitFuncs.push_front(exitFunc);
-}
-
-void Exit(int code)
-{
-	for (auto exitFunc : exitFuncs)
-	{
-		exitFunc();
-	}
-	exit(code);
 }
 }
