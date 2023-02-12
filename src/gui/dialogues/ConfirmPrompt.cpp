@@ -67,17 +67,6 @@ ConfirmPrompt::ConfirmPrompt(String title, String message, ResultCallback callba
 	MakeActiveWindow();
 }
 
-bool ConfirmPrompt::Blocking(String title, String message, String buttonText)
-{
-	bool outputResult;
-	new ConfirmPrompt(title, message, {
-		[&outputResult] { outputResult = true; ui::Engine::Ref().Break(); },
-		[&outputResult] { outputResult = false; ui::Engine::Ref().Break(); },
-	}, buttonText);
-	EngineProcess();
-	return outputResult;
-}
-
 void ConfirmPrompt::OnDraw()
 {
 	Graphics * g = GetGraphics();

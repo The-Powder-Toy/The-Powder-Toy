@@ -6,7 +6,6 @@
 #include "gui/interface/Textbox.h"
 
 #include "gui/Style.h"
-#include "PowderToySDL.h"
 
 #include "graphics/Graphics.h"
 
@@ -74,19 +73,6 @@ TextPrompt::TextPrompt(String title, String message, String text, String placeho
 	SetOkayButton(okayButton);
 
 	MakeActiveWindow();
-}
-
-String TextPrompt::Blocking(String title, String message, String text, String placeholder, bool multiline)
-{
-	String outputString;
-	new TextPrompt(title, message, text, placeholder, multiline, { [&outputString](String const &resultText) {
-		outputString = resultText;
-		ui::Engine::Ref().Break();
-	}, [](){
-		ui::Engine::Ref().Break();
-	}});
-	EngineProcess();
-	return outputString;
 }
 
 void TextPrompt::OnDraw()

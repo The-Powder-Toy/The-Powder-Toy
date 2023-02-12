@@ -46,14 +46,6 @@ ErrorMessage::ErrorMessage(String title, String message, DismissCallback callbac
 	MakeActiveWindow();
 }
 
-void ErrorMessage::Blocking(String title, String message)
-{
-	new ErrorMessage(title, message, { [] {
-		ui::Engine::Ref().Break();
-	} });
-	EngineProcess();
-}
-
 void ErrorMessage::OnDraw()
 {
 	Graphics * g = GetGraphics();
