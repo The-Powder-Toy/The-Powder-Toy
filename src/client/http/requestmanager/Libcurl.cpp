@@ -163,9 +163,10 @@ namespace http
 				handle->curlHeaders = newHeaders;
 			}
 			{
-				auto postData = handle->postData;
-				if (postData.size())
+				auto &postData = handle->postData;
+				if (std::holds_alternative<http::FormData>(postData) && std::get<http::FormData>(postData).size())
 				{
+					auto &formData = std::get<http::FormData>(postData);
 #ifdef REQUEST_USE_CURL_MIMEPOST
 					handle->curlPostFields = curl_mime_init(handle->curlEasy);
 					if (!handle->curlPostFields)
@@ -173,7 +174,7 @@ namespace http
 						// Hopefully this is what a NULL from curl_mime_init means.
 						HandleCURLcode(CURLE_OUT_OF_MEMORY);
 					}
-					for (auto &field : postData)
+					for (auto &field : formData)
 					{
 						curl_mimepart *part = curl_mime_addpart(handle->curlPostFields);
 						if (!part)
@@ -194,7 +195,7 @@ namespace http
 					}
 					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_MIMEPOST, handle->curlPostFields));
 #else
-					for (auto &field : postData)
+					for (auto &field : formData)
 					{
 						if (auto split = field.first.SplitBy(':'))
 						{
@@ -216,6 +217,12 @@ namespace http
 					}
 					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_HTTPPOST, handle->curlPostFieldsFirst));
 #endif
+				}
+				else if (std::holds_alternative<http::StringData>(postData) && std::get<http::StringData>(postData).size())
+				{
+					auto &stringData = std::get<http::StringData>(postData);
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDS, &stringData[0]));
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDSIZE_LARGE, curl_off_t(stringData.size())));
 				}
 				else if (handle->isPost)
 				{

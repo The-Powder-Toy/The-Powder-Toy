@@ -1,12 +1,12 @@
 #pragma once
 #include "common/ExplicitSingleton.h"
 #include "common/String.h"
+#include "client/http/PostData.h"
 #include <atomic>
 #include <thread>
 #include <vector>
 #include <memory>
 #include <mutex>
-#include <map>
 #include <condition_variable>
 
 namespace http
@@ -24,7 +24,7 @@ namespace http
 		ByteString uri;
 		ByteString verb;
 		bool isPost = false;
-		std::map<ByteString, ByteString> postData;
+		PostData postData;
 		std::vector<ByteString> headers;
 
 		enum State
