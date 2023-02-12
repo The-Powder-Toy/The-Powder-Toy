@@ -385,8 +385,9 @@ void PreviewView::OnTick(float dt)
 	c->Update();
 	if (doError)
 	{
-		ErrorMessage::Blocking("Error loading save", doErrorMessage);
-		c->Exit();
+		new ErrorMessage("Error loading save", doErrorMessage, { [this]() {
+			c->Exit();
+		} });
 	}
 
 	if (reportSaveRequest && reportSaveRequest->CheckDone())

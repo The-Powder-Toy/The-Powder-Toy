@@ -196,8 +196,9 @@ void ProfileActivity::OnTick(float dt)
 {
 	if (doError)
 	{
-		ErrorMessage::Blocking("Error", doErrorMessage);
-		Exit();
+		new ErrorMessage("Error", doErrorMessage, { [this]() {
+			Exit();
+		} });
 	}
 
 	if (saveUserInfoRequest && saveUserInfoRequest->CheckDone())

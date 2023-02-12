@@ -141,29 +141,36 @@ void FileBrowserActivity::SelectSave(int index)
 
 void FileBrowserActivity::DeleteSave(int index)
 {
-	auto &file = files[index];
-	String deleteMessage = "Are you sure you want to delete " + file->GetDisplayName() + ".cps?";
-	if (ConfirmPrompt::Blocking("Delete Save", deleteMessage))
-	{
+	String deleteMessage = "Are you sure you want to delete " + files[index]->GetDisplayName() + ".cps?";
+	new ConfirmPrompt("Delete Save", deleteMessage, { [this, index]() {
+		auto &file = files[index];
 		Platform::RemoveFile(file->GetName());
 		loadDirectory(directory, "");
-	}
+	} });
 }
 
 void FileBrowserActivity::RenameSave(int index)
 {
-	auto &file = files[index];
-	ByteString newName = TextPrompt::Blocking("Rename", "Change save name", file->GetDisplayName(), "", 0).ToUtf8();
-	if (newName.length())
-	{
-		newName = ByteString::Build(directory, PATH_SEP_CHAR, newName, ".cps");
-		if (!Platform::RenameFile(file->GetName(), newName, false))
-			ErrorMessage::Blocking("Error", "Could not rename file");
+	new TextPrompt("Rename", "Change save name", files[index]->GetDisplayName(), "", 0, { [this, index](const String &input) {
+		auto &file = files[index];
+		auto newName = input.ToUtf8();
+		if (newName.length())
+		{
+			newName = ByteString::Build(directory, PATH_SEP_CHAR, newName, ".cps");
+			if (!Platform::RenameFile(file->GetName(), newName, false))
+			{
+				new ErrorMessage("Error", "Could not rename file");
+			}
+			else
+			{
+				loadDirectory(directory, "");
+			}
+		}
 		else
-			loadDirectory(directory, "");
-	}
-	else
-		ErrorMessage::Blocking("Error", "No save name given");
+		{
+			new ErrorMessage("Error", "No save name given");
+		}
+	} });
 }
 
 void FileBrowserActivity::cleanup()

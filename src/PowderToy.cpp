@@ -83,11 +83,10 @@ void LargeScreenDialog()
 	message << "Switching to " << scale << "x size mode since your screen was determined to be large enough: ";
 	message << desktopWidth << "x" << desktopHeight << " detected, " << WINDOWW*scale << "x" << WINDOWH*scale << " required";
 	message << "\nTo undo this, hit Cancel. You can change this in settings at any time.";
-	if (!ConfirmPrompt::Blocking("Large screen detected", message.Build()))
-	{
+	new ConfirmPrompt("Large screen detected", message.Build(), { nullptr, []() {
 		GlobalPrefs::Ref().Set("Scale", 1);
 		ui::Engine::Ref().SetScale(1);
-	}
+	} });
 }
 
 void TickClient()
