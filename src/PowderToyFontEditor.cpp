@@ -66,14 +66,14 @@ int main(int argc, char * argv[])
 
 	StopTextInput();
 
-	ui::Engine::Ref().g = new Graphics();
-	ui::Engine::Ref().Scale = scale;
-	ui::Engine::Ref().SetResizable(resizable);
-	ui::Engine::Ref().Fullscreen = fullscreen;
-	ui::Engine::Ref().SetAltFullscreen(altFullscreen);
-	ui::Engine::Ref().SetForceIntegerScaling(forceIntegerScaling);
-
 	auto &engine = ui::Engine::Ref();
+	engine.g = new Graphics();
+	engine.Scale = scale;
+	engine.SetResizable(resizable);
+	engine.Fullscreen = fullscreen;
+	engine.SetAltFullscreen(altFullscreen);
+	engine.SetForceIntegerScaling(forceIntegerScaling);
+
 	engine.Begin();
 	engine.SetFastQuit(true);
 
@@ -87,7 +87,10 @@ int main(int argc, char * argv[])
 		Platform::Exit(1);
 	}
 
-	EngineProcess();
+	while (engine.Running())
+	{
+		EngineProcess();
+	}
 	Platform::Exit(0);
 	return 0;
 }

@@ -183,6 +183,7 @@ int main(int argc, char * argv[])
 {
 	Platform::SetupCrt();
 	Platform::Atexit([]() {
+		SaveWindowPosition();
 		// Unregister dodgy error handlers so they don't try to show the blue screen when the window is closed
 		for (auto *msg = signalMessages; msg->message; ++msg)
 		{
@@ -509,8 +510,10 @@ int main(int argc, char * argv[])
 			}
 		}
 
-		EngineProcess();
-		SaveWindowPosition();
+		while (engine.Running())
+		{
+			EngineProcess();
+		}
 	};
 
 	if (enableBluescreen)

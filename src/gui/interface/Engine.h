@@ -40,12 +40,9 @@ namespace ui
 
 		void Begin();
 		inline bool Running() { return running_; }
-		inline bool Broken() { return break_; }
 		inline long unsigned int LastTick() { return lastTick; }
 		void Exit();
 		void ConfirmExit();
-		void Break();
-		void UnBreak();
 
 		void SetDrawingFrequencyLimit(int limit) {drawingFrequencyLimit = limit;}
 		inline int GetDrawingFrequencyLimit() {return drawingFrequencyLimit;}
@@ -115,7 +112,6 @@ namespace ui
 		std::stack<FrozenGraphics> frozenGraphics;
 
 		bool running_;
-		bool break_;
 		bool FastQuit;
 
 		long unsigned int lastTick;

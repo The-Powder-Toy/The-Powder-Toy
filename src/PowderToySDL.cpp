@@ -28,6 +28,10 @@ int mouseButton = 0;
 bool mouseDown = false;
 bool calculatedInitialMouse = false;
 bool hasMouseMoved = false;
+double correctedFrameTimeAvg = 0;
+uint64_t drawingTimer = 0;
+uint64_t frameStart = 0;
+uint64_t oldFrameStart = 0;
 
 void StartTextInput()
 {
@@ -341,75 +345,61 @@ void EventProcess(const SDL_Event &event)
 
 void EngineProcess()
 {
-	double correctedFrameTimeAvg = 0;
-	SDL_Event event;
-
-	uint64_t drawingTimer = 0;
-	auto frameStart = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
-
 	auto &engine = ui::Engine::Ref();
-	while(engine.Running())
+	auto correctedFrameTime = frameStart - oldFrameStart;
+	drawingTimer += correctedFrameTime;
+	correctedFrameTimeAvg = correctedFrameTimeAvg + (correctedFrameTime - correctedFrameTimeAvg) * 0.05;
+	if (correctedFrameTime && frameStart - lastFpsUpdate > UINT64_C(200'000'000))
 	{
-		if(engine.Broken()) { engine.UnBreak(); break; }
-		event.type = 0;
-		while (SDL_PollEvent(&event))
-		{
-			EventProcess(event);
-			event.type = 0; //Clear last event
-		}
-		if(engine.Broken()) { engine.UnBreak(); break; }
-
-		engine.Tick();
-
-		int drawcap = ui::Engine::Ref().GetDrawingFrequencyLimit();
-		if (!drawcap || drawingTimer > 1e9f / drawcap)
-		{
-			engine.Draw();
-			drawingTimer = 0;
-
-			if (scale != engine.Scale || fullscreen != engine.Fullscreen ||
-					altFullscreen != engine.GetAltFullscreen() ||
-					forceIntegerScaling != engine.GetForceIntegerScaling() || resizable != engine.GetResizable())
-			{
-				SDLSetScreen(engine.Scale, engine.GetResizable(), engine.Fullscreen, engine.GetAltFullscreen(),
-							 engine.GetForceIntegerScaling());
-			}
-
-			blit(engine.g->Data());
-		}
-		auto fpsLimit = ui::Engine::Ref().FpsLimit;
-		auto now = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
-		auto oldFrameStart = frameStart;
-		frameStart = now;
-		if (fpsLimit > 2)
-		{
-			auto timeBlockDuration = uint64_t(UINT64_C(1'000'000'000) / fpsLimit);
-			auto oldFrameStartTimeBlock = oldFrameStart / timeBlockDuration;
-			auto frameStartTimeBlock = oldFrameStartTimeBlock + 1U;
-			frameStart = std::max(frameStart, frameStartTimeBlock * timeBlockDuration);
-			SDL_Delay((frameStart - now) / UINT64_C(1'000'000));
-		}
-		auto correctedFrameTime = frameStart - oldFrameStart;
-		drawingTimer += correctedFrameTime;
-		correctedFrameTimeAvg = correctedFrameTimeAvg + (correctedFrameTime - correctedFrameTimeAvg) * 0.05;
-		if (frameStart - lastFpsUpdate > UINT64_C(200'000'000))
-		{
-			engine.SetFps(1e9f / correctedFrameTimeAvg);
-			lastFpsUpdate = frameStart;
-		}
-		if (frameStart - lastTick > UINT64_C(100'000'000))
-		{
-			lastTick = frameStart;
-			TickClient();
-		}
-		if (showLargeScreenDialog)
-		{
-			showLargeScreenDialog = false;
-			LargeScreenDialog();
-		}
+		engine.SetFps(1e9f / correctedFrameTimeAvg);
+		lastFpsUpdate = frameStart;
 	}
-	if constexpr (DEBUG)
+	if (frameStart - lastTick > UINT64_C(100'000'000))
 	{
-		std::cout << "Breaking out of EngineProcess" << std::endl;
+		lastTick = frameStart;
+		TickClient();
+	}
+	if (showLargeScreenDialog)
+	{
+		showLargeScreenDialog = false;
+		LargeScreenDialog();
+	}
+
+	SDL_Event event;
+	while (SDL_PollEvent(&event))
+	{
+		EventProcess(event);
+	}
+
+	engine.Tick();
+
+	int drawcap = ui::Engine::Ref().GetDrawingFrequencyLimit();
+	if (!drawcap || drawingTimer > 1e9f / drawcap)
+	{
+		engine.Draw();
+		drawingTimer = 0;
+
+		if (scale != engine.Scale ||
+	        fullscreen != engine.Fullscreen ||
+		    altFullscreen != engine.GetAltFullscreen() ||
+		    forceIntegerScaling != engine.GetForceIntegerScaling() ||
+		    resizable != engine.GetResizable())
+		{
+			SDLSetScreen(engine.Scale, engine.GetResizable(), engine.Fullscreen, engine.GetAltFullscreen(), engine.GetForceIntegerScaling());
+		}
+
+		blit(engine.g->Data());
+	}
+	auto fpsLimit = ui::Engine::Ref().FpsLimit;
+	auto now = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
+	oldFrameStart = frameStart;
+	frameStart = now;
+	if (fpsLimit > 2)
+	{
+		auto timeBlockDuration = uint64_t(UINT64_C(1'000'000'000) / fpsLimit);
+		auto oldFrameStartTimeBlock = oldFrameStart / timeBlockDuration;
+		auto frameStartTimeBlock = oldFrameStartTimeBlock + 1U;
+		frameStart = std::max(frameStart, frameStartTimeBlock * timeBlockDuration);
+		SDL_Delay((frameStart - now) / UINT64_C(1'000'000));
 	}
 }

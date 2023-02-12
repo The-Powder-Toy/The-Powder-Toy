@@ -19,7 +19,6 @@ Engine::Engine():
 	resizable(false),
 	state_(NULL),
 	windowTargetPosition(0, 0),
-	break_(false),
 	FastQuit(1),
 	lastTick(0),
 	mouseb_(0),
@@ -46,16 +45,6 @@ void Engine::Begin()
 {
 	//engine is now ready
 	running_ = true;
-}
-
-void Engine::Break()
-{
-	break_ = true;
-}
-
-void Engine::UnBreak()
-{
-	break_ = false;
 }
 
 void Engine::Exit()
