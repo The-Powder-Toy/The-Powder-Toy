@@ -8,3 +8,7 @@ void MainLoop()
 		EngineProcess();
 	}
 }
+
+void SetFpsLimit(FpsLimit newFpsLimit)
+{
+}

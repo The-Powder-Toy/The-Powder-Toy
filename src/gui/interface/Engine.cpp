@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include "Config.h"
 #include "PowderToySDL.h"
 #include "Window.h"
 #include "common/platform/Platform.h"
@@ -10,7 +11,6 @@
 using namespace ui;
 
 Engine::Engine():
-	FpsLimit(60.0f),
 	drawingFrequencyLimit(0),
 	Scale(1),
 	Fullscreen(false),
@@ -27,7 +27,15 @@ Engine::Engine():
 	mousexp_(0),
 	mouseyp_(0)
 {
-	SetFps(FpsLimit); // populate dt with whatever that makes any sort of sense
+	SetFpsLimit(fpsLimit); // populate dt with whatever that makes any sort of sense
+	if constexpr (DEFAULT_VSYNC)
+	{
+		SetFpsLimit(FpsLimitVsync{});
+	}
+	else
+	{
+		SetFpsLimit(FpsLimitExplicit{ 60.0f });
+	}
 }
 
 Engine::~Engine()
@@ -39,6 +47,12 @@ Engine::~Engine()
 		delete windows.top();
 		windows.pop();
 	}
+}
+
+void Engine::SetFpsLimit(FpsLimit newFpsLimit)
+{
+	fpsLimit = newFpsLimit;
+	::SetFpsLimit(fpsLimit);
 }
 
 void Engine::Begin()
@@ -194,10 +208,14 @@ void Engine::Draw()
 void Engine::SetFps(float fps)
 {
 	this->fps = fps;
-	if(FpsLimit > 2.0f)
+	if (std::holds_alternative<FpsLimitExplicit>(fpsLimit))
+	{
 		this->dt = 60/fps;
+	}
 	else
+	{
 		this->dt = 1.0f;
+	}
 }
 
 void Engine::onKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)

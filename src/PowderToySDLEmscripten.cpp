@@ -3,35 +3,33 @@
 #include <emscripten.h>
 #include <iostream>
 
-static float lastFpsLimit;
-static void updateFpsLimit()
+void SetFpsLimit(FpsLimit newFpsLimit)
 {
-	lastFpsLimit = ui::Engine::Ref().FpsLimit;
-	if (lastFpsLimit == 60.0f) // TODO: rework FPS cap so 60.0 is not the default
+	static bool mainLoopSet = false;
+	if (!mainLoopSet)
+	{
+		emscripten_set_main_loop(EngineProcess, 0, 0);
+		mainLoopSet = true;
+	}
+	if (auto *fpsLimitVsync = std::get_if<FpsLimitVsync>(&newFpsLimit))
 	{
 		emscripten_set_main_loop_timing(EM_TIMING_RAF, 1);
 		std::cerr << "implicit fps limit via vsync" << std::endl;
 	}
 	else
 	{
-		auto delay = int(1000.f / lastFpsLimit);
+		auto delay = 0;
+		if (auto *fpsLimitExplicit = std::get_if<FpsLimitExplicit>(&newFpsLimit))
+		{
+			delay = int(1000.f / fpsLimitExplicit->value);
+		}
 		emscripten_set_main_loop_timing(EM_TIMING_SETTIMEOUT, delay);
 		std::cerr << "explicit fps limit: " << delay << "ms delays" << std::endl;
 	}
 }
 
-static void mainLoopBody()
-{
-	EngineProcess();
-	if (lastFpsLimit != ui::Engine::Ref().FpsLimit)
-	{
-		updateFpsLimit();
-	}
-}
-
 void MainLoop()
 {
-	emscripten_set_main_loop(mainLoopBody, 0, 0);
-	updateFpsLimit();
-	mainLoopBody();
+	SetFpsLimit(ui::Engine::Ref().GetFpsLimit());
+	EngineProcess();
 }

@@ -1222,13 +1222,37 @@ int luatpt_setfpscap(lua_State* l)
 	int acount = lua_gettop(l);
 	if (acount == 0)
 	{
-		lua_pushnumber(l, ui::Engine::Ref().FpsLimit);
+		auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
+		if (std::holds_alternative<FpsLimitVsync>(fpsLimit))
+		{
+			lua_pushliteral(l, "vsync");
+		}
+		else if (std::holds_alternative<FpsLimitNone>(fpsLimit))
+		{
+			lua_pushnumber(l, 2);
+		}
+		else
+		{
+			lua_pushnumber(l, std::get<FpsLimitExplicit>(fpsLimit).value);
+		}
 		return 1;
+	}
+	if (lua_isstring(l, 1) && byteStringEqualsLiteral(tpt_lua_toByteString(l, 1), "vsync"))
+	{
+		ui::Engine::Ref().SetFpsLimit(FpsLimitVsync{});
+		return 0;
 	}
 	float fpscap = luaL_checknumber(l, 1);
 	if (fpscap < 2)
+	{
 		return luaL_error(l, "fps cap too small");
-	ui::Engine::Ref().FpsLimit = fpscap;
+	}
+	if (fpscap == 2)
+	{
+		ui::Engine::Ref().SetFpsLimit(FpsLimitNone{});
+		return 0;
+	}
+	ui::Engine::Ref().SetFpsLimit(FpsLimitExplicit{ fpscap });
 	return 0;
 }
 

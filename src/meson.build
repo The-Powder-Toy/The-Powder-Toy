@@ -50,10 +50,12 @@ if host_platform == 'emscripten'
 	powder_files += files(
 		'PowderToySDLEmscripten.cpp',
 	)
+	conf_data.set('DEFAULT_VSYNC', 'true')
 else
 	powder_files += files(
 		'PowderToySDLCommon.cpp',
 	)
+	conf_data.set('DEFAULT_VSYNC', 'false')
 endif
 if is_x86
 	powder_files += files('X86KillDenormals.cpp')
@@ -66,6 +68,7 @@ render_files = files(
 font_files = files(
 	'PowderToyFontEditor.cpp',
 	'PowderToySDL.cpp',
+	'PowderToySDLCommon.cpp',
 )
 
 common_files = files(

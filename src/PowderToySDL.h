@@ -1,8 +1,10 @@
 #pragma once
 #include "common/String.h"
 #include "graphics/Pixel.h"
+#include "FpsLimit.h"
 #include <cstdint>
 #include <SDL.h>
+#include <variant>
 
 extern int desktopWidth;
 extern int desktopHeight;
@@ -40,6 +42,7 @@ void blit(pixel *vid);
 void SDLOpen();
 void SDLClose();
 void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscreen_, bool forceIntegerScaling_);
+void SetFpsLimit(FpsLimit newFpsLimit);
 bool RecreateWindow();
 void LoadWindowPosition();
 void SaveWindowPosition();

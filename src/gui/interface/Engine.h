@@ -6,6 +6,7 @@
 #include "graphics/Pixel.h"
 #include "gui/interface/Point.h"
 #include <climits>
+#include "FpsLimit.h"
 
 class Graphics;
 namespace ui
@@ -76,7 +77,13 @@ namespace ui
 		//void SetState(Window* state);
 		//inline State* GetState() { return state_; }
 		inline Window* GetWindow() { return state_; }
-		float FpsLimit;
+
+		void SetFpsLimit(FpsLimit newFpsLimit);
+		FpsLimit GetFpsLimit() const
+		{
+			return fpsLimit;
+		}
+
 		int drawingFrequencyLimit;
 		Graphics * g;
 		int Scale;
@@ -85,6 +92,7 @@ namespace ui
 
 		unsigned int FrameIndex;
 	private:
+		FpsLimit fpsLimit;
 		bool altFullscreen;
 		bool forceIntegerScaling = true;
 		bool resizable;

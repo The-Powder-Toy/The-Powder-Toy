@@ -390,16 +390,17 @@ void EngineProcess()
 
 		blit(engine.g->Data());
 	}
-	auto fpsLimit = ui::Engine::Ref().FpsLimit;
+	auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
 	auto now = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
 	oldFrameStart = frameStart;
 	frameStart = now;
-	if (fpsLimit > 2)
+	if (auto *fpsLimitExplicit = std::get_if<FpsLimitExplicit>(&fpsLimit))
 	{
-		auto timeBlockDuration = uint64_t(UINT64_C(1'000'000'000) / fpsLimit);
+		auto timeBlockDuration = uint64_t(UINT64_C(1'000'000'000) / fpsLimitExplicit->value);
 		auto oldFrameStartTimeBlock = oldFrameStart / timeBlockDuration;
 		auto frameStartTimeBlock = oldFrameStartTimeBlock + 1U;
 		frameStart = std::max(frameStart, frameStartTimeBlock * timeBlockDuration);
 		SDL_Delay((frameStart - now) / UINT64_C(1'000'000));
 	}
+	// TODO: else if (auto *fpsLimitExplicit = std::get_if<FpsLimitVsync>(&fpsLimit))
 }
