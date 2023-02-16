@@ -8,6 +8,15 @@ namespace http
 		return std::make_shared<RequestHandle>(CtorTag{});
 	}
 
+	void RequestManager::Run()
+	{
+		while (true)
+		{
+			bool shouldWait = requestHandles.empty();
+			if (!ProcessEvents(shouldWait)) break;
+		}
+	}
+
 	void RequestManager::InitWorker()
 	{
 	}
@@ -20,6 +29,7 @@ namespace http
 	{
 		requestHandle->statusCode = 604;
 		requestHandle->error = "network support not compiled in";
+		RequestDone(requestHandle);
 	}
 
 	void RequestManager::UnregisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle)
@@ -28,7 +38,6 @@ namespace http
 
 	void RequestManager::Tick()
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(TickMs));
 	}
 
 	RequestManagerPtr RequestManager::Create(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork)

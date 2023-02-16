@@ -69,8 +69,9 @@ namespace http
 		bool disableNetwork;
 
 		std::thread worker;
+		void Run();
 		void InitWorker();
-		void Worker();
+		bool ProcessEvents(bool shouldWait);
 		void ExitWorker();
 
 		std::vector<std::shared_ptr<RequestHandle>> requestHandles;
@@ -83,6 +84,13 @@ namespace http
 		std::vector<std::shared_ptr<RequestHandle>> requestHandlesToUnregister;
 		bool running = true;
 		std::mutex sharedStateMx;
+		std::condition_variable sharedStateCv;
+
+		void RequestDone(std::shared_ptr<RequestHandle> &requestHandle);
+		void RequestDone(RequestHandle *handle);
+
+		// Removes one request
+		void RemoveRequest(std::vector<std::shared_ptr<RequestHandle>>::iterator toRemove);
 
 	protected:
 		RequestManager(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork);
@@ -96,7 +104,8 @@ namespace http
 		bool DisableNetwork() const;
 
 		static RequestManagerPtr Create(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork);
+
 	};
 
-	constexpr int TickMs = 100;
+	constexpr int TickMs = 25;
 }

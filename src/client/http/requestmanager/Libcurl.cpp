@@ -71,7 +71,7 @@ namespace http
 			{
 				if (bytes > 2) // Don't include header list terminator (but include the status line).
 				{
-					handle->responseHeaders.push_back(ByteString(ptr, ptr + bytes - 2));
+					handle->responseHeaders.emplace_back(ptr, ptr + bytes - 2);
 				}
 				return bytes;
 			}
@@ -99,6 +99,19 @@ namespace http
 		bool curlGlobalInit = false;
 		CURLM *curlMulti = NULL;
 	};
+
+	void RequestManager::Run()
+	{
+		InitWorker();
+		while (true)
+		{
+			bool shouldWait = requestHandles.empty();
+			if (!ProcessEvents(shouldWait)) break;
+			Tick();
+		}
+		assert(requestHandles.empty());
+		ExitWorker();
+	}
 
 	void RequestManager::InitWorker()
 	{
@@ -306,11 +319,6 @@ namespace http
 
 	void RequestManager::Tick()
 	{
-		if (!requestHandles.size())
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(TickMs));
-			return;
-		}
 		auto manager = static_cast<RequestManagerImpl *>(this);
 		int dontcare;
 		HandleCURLMcode(curl_multi_wait(manager->curlMulti, NULL, 0, TickMs, &dontcare));
@@ -362,6 +370,8 @@ namespace http
 				{
 					handle->error = handle->curlErrorBuffer;
 				}
+
+				manager->RequestDone(handle);
 			}
 		}
 		for (auto &requestHandle : requestHandles)

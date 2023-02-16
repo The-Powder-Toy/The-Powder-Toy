@@ -20,7 +20,7 @@ namespace http
 			") TPTPP/", SAVE_VERSION, ".", MINOR_VERSION, ".", BUILD_NUM, IDENT_RELTYPE, ".", SNAPSHOT_ID
 		);
 		worker = std::thread([this]() {
-			Worker();
+			Run();
 		});
 	}
 
@@ -30,58 +30,64 @@ namespace http
 			std::lock_guard lk(sharedStateMx);
 			running = false;
 		}
+		sharedStateCv.notify_all();
 		worker.join();
 	}
 
-	void RequestManager::Worker()
+	bool RequestManager::ProcessEvents(bool shouldWait)
 	{
-		InitWorker();
-		while (true)
+		std::unique_lock lk(sharedStateMx);
+		if (shouldWait)
 		{
-			{
-				std::lock_guard lk(sharedStateMx);
-				for (auto &requestHandle : requestHandles)
-				{
-					if (requestHandle->statusCode)
-					{
-						requestHandlesToUnregister.push_back(requestHandle);
-					}
-				}
-				for (auto &requestHandle : requestHandlesToRegister)
-				{
-					requestHandles.push_back(requestHandle);
-					RegisterRequestHandle(requestHandle);
-				}
-				requestHandlesToRegister.clear();
-				for (auto &requestHandle : requestHandlesToUnregister)
-				{
-					auto eraseFrom = std::remove(requestHandles.begin(), requestHandles.end(), requestHandle);
-					if (eraseFrom != requestHandles.end())
-					{
-						assert(eraseFrom + 1 == requestHandles.end());
-						UnregisterRequestHandle(requestHandle);
-						requestHandles.erase(eraseFrom, requestHandles.end());
-						if (requestHandle->error.size())
-						{
-							std::cerr << requestHandle->error << std::endl;
-						}
-						{
-							std::lock_guard lk(requestHandle->stateMx);
-							requestHandle->state = RequestHandle::done;
-						}
-						requestHandle->stateCv.notify_one();
-					}
-				}
-				requestHandlesToUnregister.clear();
-				if (!running)
-				{
-					break;
-				}
-			}
-			Tick();
+			sharedStateCv.wait(lk);
 		}
-		assert(!requestHandles.size());
-		ExitWorker();
+
+		for (auto &requestHandle : requestHandlesToRegister)
+		{
+			requestHandles.push_back(requestHandle);
+			RegisterRequestHandle(requestHandle);
+		}
+		requestHandlesToRegister.clear();
+		for (auto &requestHandle : requestHandlesToUnregister)
+		{
+			RequestDone(requestHandle);
+		}
+		requestHandlesToUnregister.clear();
+
+		return running;
+	}
+
+	void RequestManager::RequestDone(std::shared_ptr<RequestHandle> &requestHandle)
+	{
+		auto toRemove = std::find(requestHandles.begin(), requestHandles.end(), requestHandle);
+		if (toRemove != requestHandles.end()) RemoveRequest(toRemove);
+	}
+
+	void RequestManager::RequestDone(RequestHandle *handle)
+	{
+		auto toRemove = std::find_if(requestHandles.begin(), requestHandles.end(), [handle] (const std::shared_ptr<RequestHandle> &sptr) {
+			return handle == sptr.get();
+		});
+		RemoveRequest(toRemove);
+	}
+
+	void RequestManager::RemoveRequest(std::vector<std::shared_ptr<RequestHandle>>::iterator toRemove) {
+		assert(toRemove != requestHandles.end());
+		// swap removed request to end before removing
+		auto swapTo = requestHandles.end() - 1;
+		std::swap(*toRemove, *swapTo);
+		auto requestHandle = *swapTo;
+		UnregisterRequestHandle(requestHandle);
+		requestHandles.erase(swapTo, requestHandles.end());
+		if (!requestHandle->error.empty())
+		{
+			std::cerr << requestHandle->error << std::endl;
+		}
+		{
+			std::lock_guard handle_lock(requestHandle->stateMx);
+			requestHandle->state = RequestHandle::done;
+		}
+		requestHandle->stateCv.notify_one();
 	}
 
 	bool RequestManager::DisableNetwork() const
@@ -91,13 +97,19 @@ namespace http
 
 	void RequestManager::RegisterRequest(Request &request)
 	{
-		std::lock_guard lk(sharedStateMx);
-		requestHandlesToRegister.push_back(request.handle);
+		{
+			std::lock_guard lk(sharedStateMx);
+			requestHandlesToRegister.push_back(request.handle);
+		}
+		sharedStateCv.notify_one();
 	}
 
 	void RequestManager::UnregisterRequest(Request &request)
 	{
-		std::lock_guard lk(sharedStateMx);
-		requestHandlesToUnregister.push_back(request.handle);
+		{
+			std::lock_guard lk(sharedStateMx);
+			requestHandlesToUnregister.push_back(request.handle);
+		}
+		sharedStateCv.notify_one();
 	}
 }
