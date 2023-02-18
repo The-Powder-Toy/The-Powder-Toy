@@ -73,7 +73,7 @@ void LuaButton::triggerAction()
 	{
 		lua_rawgeti(l, LUA_REGISTRYINDEX, actionFunction);
 		lua_rawgeti(l, LUA_REGISTRYINDEX, owner_ref);
-		if (lua_pcall(l, 1, 0, 0))
+		if (tpt_lua_pcall(l, 1, 0, 0))
 		{
 			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
 		}

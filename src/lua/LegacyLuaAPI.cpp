@@ -260,11 +260,12 @@ int luacon_elementwrite(lua_State* l)
 
 void luacon_hook(lua_State * l, lua_Debug * ar)
 {
-	if(ar->event == LUA_HOOKCOUNT && Platform::GetTime()-ui::Engine::Ref().LastTick() > 3000)
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+	if (ar->event == LUA_HOOKCOUNT && Platform::GetTime() - luacon_ci->luaExecutionStart > 3000)
 	{
 		if(ConfirmPrompt::Blocking("Script not responding", "The Lua script may have stopped responding. There might be an infinite loop. Press \"Stop\" to stop it", "Stop"))
 			luaL_error(l, "Error: Script not responding");
-		ui::Engine::Ref().LastTick(Platform::GetTime());
+		luacon_ci->luaExecutionStart = Platform::GetTime();
 	}
 }
 

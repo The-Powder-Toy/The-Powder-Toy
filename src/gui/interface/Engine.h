@@ -41,7 +41,6 @@ namespace ui
 		inline bool Running() { return running_; }
 		inline bool Broken() { return break_; }
 		inline long unsigned int LastTick() { return lastTick; }
-		inline void LastTick(long unsigned int tick) { lastTick = tick; }
 		void Exit();
 		void ConfirmExit();
 		void Break();
