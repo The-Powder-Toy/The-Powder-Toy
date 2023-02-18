@@ -86,11 +86,8 @@ namespace http
 		std::mutex sharedStateMx;
 		std::condition_variable sharedStateCv;
 
-		void RequestDone(std::shared_ptr<RequestHandle> &requestHandle);
+		// Removes a request from the manager, marking it as done and cancelling if necessary.
 		void RequestDone(RequestHandle *handle);
-
-		// Removes one request
-		void RemoveRequest(std::vector<std::shared_ptr<RequestHandle>>::iterator toRemove);
 
 	protected:
 		RequestManager(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork);

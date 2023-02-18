@@ -50,17 +50,11 @@ namespace http
 		requestHandlesToRegister.clear();
 		for (auto &requestHandle : requestHandlesToUnregister)
 		{
-			RequestDone(requestHandle);
+			RequestDone(requestHandle.get());
 		}
 		requestHandlesToUnregister.clear();
 
 		return running;
-	}
-
-	void RequestManager::RequestDone(std::shared_ptr<RequestHandle> &requestHandle)
-	{
-		auto toRemove = std::find(requestHandles.begin(), requestHandles.end(), requestHandle);
-		if (toRemove != requestHandles.end()) RemoveRequest(toRemove);
 	}
 
 	void RequestManager::RequestDone(RequestHandle *handle)
@@ -68,11 +62,8 @@ namespace http
 		auto toRemove = std::find_if(requestHandles.begin(), requestHandles.end(), [handle] (const std::shared_ptr<RequestHandle> &sptr) {
 			return handle == sptr.get();
 		});
-		RemoveRequest(toRemove);
-	}
+		if (toRemove == requestHandles.end()) return;
 
-	void RequestManager::RemoveRequest(std::vector<std::shared_ptr<RequestHandle>>::iterator toRemove) {
-		assert(toRemove != requestHandles.end());
 		// swap removed request to end before removing
 		auto swapTo = requestHandles.end() - 1;
 		std::swap(*toRemove, *swapTo);

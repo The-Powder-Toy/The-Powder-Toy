@@ -29,7 +29,7 @@ namespace http
 	{
 		requestHandle->statusCode = 604;
 		requestHandle->error = "network support not compiled in";
-		RequestDone(requestHandle);
+		RequestDone(requestHandle.get());
 	}
 
 	void RequestManager::UnregisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle)
