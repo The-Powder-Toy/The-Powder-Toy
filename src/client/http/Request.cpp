@@ -12,7 +12,7 @@ namespace http
 
 	Request::~Request()
 	{
-		if (handle->state != RequestHandle::ready)
+		if (handle->state == RequestHandle::running)
 		{
 			RequestManager::Ref().UnregisterRequest(*this);
 		}
