@@ -288,24 +288,21 @@ void PropertyTool::SetProperty(Simulation *sim, ui::Point position)
 	}
 }
 
-void PropertyTool::Draw(Simulation *sim, Brush *cBrush, ui::Point position)
+void PropertyTool::Draw(Simulation *sim, Brush const &cBrush, ui::Point position)
 {
-	if(cBrush)
+	for (ui::Point off : cBrush)
 	{
-		int radiusX = cBrush->GetRadius().X, radiusY = cBrush->GetRadius().Y, sizeX = cBrush->GetSize().X, sizeY = cBrush->GetSize().Y;
-		unsigned char *bitmap = cBrush->GetBitmap();
-		for(int y = 0; y < sizeY; y++)
-			for(int x = 0; x < sizeX; x++)
-				if(bitmap[(y*sizeX)+x] && (position.X+(x-radiusX) >= 0 && position.Y+(y-radiusY) >= 0 && position.X+(x-radiusX) < XRES && position.Y+(y-radiusY) < YRES))
-					SetProperty(sim, ui::Point(position.X+(x-radiusX), position.Y+(y-radiusY)));
+		ui::Point coords = position + off;
+		if (coords.X >= 0 && coords.Y >= 0 && coords.X < XRES && coords.Y < YRES)
+			SetProperty(sim, coords);
 	}
 }
 
-void PropertyTool::DrawLine(Simulation *sim, Brush *cBrush, ui::Point position, ui::Point position2, bool dragging)
+void PropertyTool::DrawLine(Simulation *sim, Brush const &cBrush, ui::Point position, ui::Point position2, bool dragging)
 {
 	int x1 = position.X, y1 = position.Y, x2 = position2.X, y2 = position2.Y;
 	bool reverseXY = abs(y2-y1) > abs(x2-x1);
-	int x, y, dx, dy, sy, rx = cBrush->GetRadius().X, ry = cBrush->GetRadius().Y;
+	int x, y, dx, dy, sy, rx = cBrush.GetRadius().X, ry = cBrush.GetRadius().Y;
 	float e = 0.0f, de;
 	if (reverseXY)
 	{
@@ -355,7 +352,7 @@ void PropertyTool::DrawLine(Simulation *sim, Brush *cBrush, ui::Point position, 
 	}
 }
 
-void PropertyTool::DrawRect(Simulation *sim, Brush *cBrush, ui::Point position, ui::Point position2)
+void PropertyTool::DrawRect(Simulation *sim, Brush const &cBrush, ui::Point position, ui::Point position2)
 {
 	int x1 = position.X, y1 = position.Y, x2 = position2.X, y2 = position2.Y;
 	int i, j;
@@ -376,7 +373,7 @@ void PropertyTool::DrawRect(Simulation *sim, Brush *cBrush, ui::Point position, 
 			SetProperty(sim, ui::Point(i, j));
 }
 
-void PropertyTool::DrawFill(Simulation *sim, Brush *cBrush, ui::Point position)
+void PropertyTool::DrawFill(Simulation *sim, Brush const &cBrush, ui::Point position)
 {
 	if (validProperty)
 		sim->flood_prop(position.X, position.Y, propOffset, propValue, propType);

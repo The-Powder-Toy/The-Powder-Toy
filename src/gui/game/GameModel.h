@@ -61,7 +61,7 @@ private:
 	std::vector<QuickOption*> quickOptions;
 	int activeMenu;
 	int currentBrush;
-	std::vector<Brush *> brushList;
+	std::vector<std::unique_ptr<Brush>> brushList;
 	SaveInfo * currentSave;
 	SaveFile * currentFile;
 	Tool * lastTool;
@@ -175,8 +175,8 @@ public:
 	std::vector<Tool*> GetToolList();
 	std::vector<Tool*> GetUnlistedTools();
 
-	Brush * GetBrush();
-	std::vector<Brush*> GetBrushList();
+	Brush &GetBrush();
+	std::vector<std::unique_ptr<Brush>> const &GetBrushList();
 	int GetBrushID();
 	void SetBrushID(int i);
 

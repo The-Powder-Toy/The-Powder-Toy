@@ -78,7 +78,7 @@ private:
 	ui::Point currentPoint, lastPoint;
 	GameController * c;
 	Renderer * ren;
-	Brush * activeBrush;
+	Brush const *activeBrush;
 	//UI Elements
 	std::vector<ui::Button*> quickOptionButtons;
 

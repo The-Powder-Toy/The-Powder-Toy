@@ -8,6 +8,7 @@
 #include "GameView.h"
 #include "Menu.h"
 #include "Notification.h"
+#include "RectangleBrush.h"
 #include "TriangleBrush.h"
 #include "QuickOptions.h"
 #include "lua/CommandInterface.h"
@@ -31,6 +32,7 @@
 #include "gui/interface/Engine.h"
 #include <iostream>
 #include <algorithm>
+#include <optional>
 
 HistoryEntry::~HistoryEntry()
 {
@@ -182,10 +184,6 @@ GameModel::~GameModel()
 	for (std::vector<Tool*>::iterator iter = extraElementTools.begin(), end = extraElementTools.end(); iter != end; ++iter)
 	{
 		delete *iter;
-	}
-	for (size_t i = 0; i < brushList.size(); i++)
-	{
-		delete brushList[i];
 	}
 	delete sim;
 	delete ren;
@@ -464,18 +462,14 @@ void GameModel::BuildFavoritesMenu()
 
 void GameModel::BuildBrushList()
 {
-	bool hasStoredRadius = false;
-	ui::Point radius = ui::Point(0, 0);
+	std::optional<ui::Point> radius;
 	if (brushList.size())
-	{
 		radius = brushList[currentBrush]->GetRadius();
-		hasStoredRadius = true;
-	}
 	brushList.clear();
 
-	brushList.push_back(new EllipseBrush(ui::Point(4, 4), perfectCircle));
-	brushList.push_back(new Brush(ui::Point(4, 4)));
-	brushList.push_back(new TriangleBrush(ui::Point(4, 4)));
+	brushList.push_back(std::make_unique<EllipseBrush>(ui::Point(4, 4), perfectCircle));
+	brushList.push_back(std::make_unique<RectangleBrush>(ui::Point(4, 4)));
+	brushList.push_back(std::make_unique<TriangleBrush>(ui::Point(4, 4)));
 
 	//Load more from brushes folder
 	std::vector<ByteString> brushFiles = Platform::DirectorySearch(BRUSH_DIR, "", { ".ptb" });
@@ -493,11 +487,11 @@ void GameModel::BuildBrushList()
 			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Invalid bitmap size" << std::endl;
 			continue;
 		}
-		brushList.push_back(new BitmapBrush(reinterpret_cast<unsigned char *>(&brushData[0]), ui::Point(dimension, dimension)));
+		brushList.push_back(std::make_unique<BitmapBrush>(ui::Point(dimension, dimension), reinterpret_cast<unsigned char const *>(brushData.data())));
 	}
 
-	if (hasStoredRadius && (size_t)currentBrush < brushList.size())
-		brushList[currentBrush]->SetRadius(radius);
+	if (radius && (size_t)currentBrush < brushList.size())
+		brushList[currentBrush]->SetRadius(*radius);
 	notifyBrushChanged();
 }
 
@@ -813,12 +807,12 @@ void GameModel::SetVote(int direction)
 	}
 }
 
-Brush * GameModel::GetBrush()
+Brush &GameModel::GetBrush()
 {
-	return brushList[currentBrush];
+	return *brushList[currentBrush];
 }
 
-std::vector<Brush*> GameModel::GetBrushList()
+std::vector<std::unique_ptr<Brush>> const &GameModel::GetBrushList()
 {
 	return brushList;
 }

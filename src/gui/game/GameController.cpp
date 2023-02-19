@@ -285,37 +285,14 @@ void GameController::InvertAirSim()
 }
 
 
-void GameController::AdjustBrushSize(int delta, bool logarithmic, bool xAxis, bool yAxis)
+void GameController::AdjustBrushSize(int delta, bool logarithmic, bool keepX, bool keepY)
 {
-	if(xAxis && yAxis)
-		return;
-
-	ui::Point newSize(0, 0);
-	ui::Point oldSize = gameModel->GetBrush()->GetRadius();
-	if(logarithmic)
-		newSize = gameModel->GetBrush()->GetRadius() + ui::Point(delta * std::max(gameModel->GetBrush()->GetRadius().X / 5, 1), delta * std::max(gameModel->GetBrush()->GetRadius().Y / 5, 1));
-	else
-		newSize = gameModel->GetBrush()->GetRadius() + ui::Point(delta, delta);
-	if(newSize.X < 0)
-		newSize.X = 0;
-	if(newSize.Y < 0)
-		newSize.Y = 0;
-	if(newSize.X > 200)
-		newSize.X = 200;
-	if(newSize.Y > 200)
-		newSize.Y = 200;
-
-	if(xAxis)
-		SetBrushSize(ui::Point(newSize.X, oldSize.Y));
-	else if(yAxis)
-		SetBrushSize(ui::Point(oldSize.X, newSize.Y));
-	else
-		SetBrushSize(newSize);
+	gameModel->GetBrush().AdjustSize(delta, logarithmic, keepX, keepY);
 }
 
 void GameController::SetBrushSize(ui::Point newSize)
 {
-	gameModel->GetBrush()->SetRadius(newSize);
+	gameModel->GetBrush().SetRadius(newSize);
 }
 
 void GameController::AdjustZoomSize(int delta, bool logarithmic)
@@ -380,8 +357,8 @@ void GameController::DrawRect(int toolSelection, ui::Point point1, ui::Point poi
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
 	gameModel->SetLastTool(activeTool);
-	Brush * cBrush = gameModel->GetBrush();
-	if(!activeTool || !cBrush)
+	Brush &cBrush = gameModel->GetBrush();
+	if (!activeTool)
 		return;
 	activeTool->SetStrength(1.0f);
 	activeTool->DrawRect(sim, cBrush, point1, point2);
@@ -392,8 +369,8 @@ void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point poi
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
 	gameModel->SetLastTool(activeTool);
-	Brush * cBrush = gameModel->GetBrush();
-	if(!activeTool || !cBrush)
+	Brush &cBrush = gameModel->GetBrush();
+	if (!activeTool)
 		return;
 	activeTool->SetStrength(1.0f);
 	activeTool->DrawLine(sim, cBrush, point1, point2);
@@ -404,8 +381,8 @@ void GameController::DrawFill(int toolSelection, ui::Point point)
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
 	gameModel->SetLastTool(activeTool);
-	Brush * cBrush = gameModel->GetBrush();
-	if(!activeTool || !cBrush)
+	Brush &cBrush = gameModel->GetBrush();
+	if (!activeTool)
 		return;
 	activeTool->SetStrength(1.0f);
 	activeTool->DrawFill(sim, cBrush, point);
@@ -416,8 +393,8 @@ void GameController::DrawPoints(int toolSelection, ui::Point oldPos, ui::Point n
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
 	gameModel->SetLastTool(activeTool);
-	Brush * cBrush = gameModel->GetBrush();
-	if (!activeTool || !cBrush)
+	Brush &cBrush = gameModel->GetBrush();
+	if (!activeTool)
 	{
 		return;
 	}
@@ -464,8 +441,8 @@ void GameController::ToolClick(int toolSelection, ui::Point point)
 {
 	Simulation * sim = gameModel->GetSimulation();
 	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
-	Brush * cBrush = gameModel->GetBrush();
-	if(!activeTool || !cBrush)
+	Brush &cBrush = gameModel->GetBrush();
+	if (!activeTool)
 		return;
 	activeTool->Click(sim, cBrush, point);
 }
@@ -1481,9 +1458,9 @@ void GameController::Vote(int direction)
 
 void GameController::ChangeBrush()
 {
-	auto prev_size = gameModel->GetBrush()->GetRadius();
+	auto prev_size = gameModel->GetBrush().GetRadius();
 	gameModel->SetBrushID(gameModel->GetBrushID()+1);
-	gameModel->GetBrush()->SetRadius(prev_size);
+	gameModel->GetBrush().SetRadius(prev_size);
 }
 
 void GameController::ClearSim()

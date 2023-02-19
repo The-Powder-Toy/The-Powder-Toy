@@ -11,16 +11,22 @@
 
 class TriangleBrush: public Brush
 {
+	ui::Point radius;
+
 public:
-	TriangleBrush(ui::Point size_):
-		Brush(size_)
+	TriangleBrush(ui::Point radius):
+		Brush(),
+		radius(radius)
 	{
-		SetRadius(size_);
-	};
-	void GenerateBitmap() override
+	}
+
+	virtual ~TriangleBrush() override = default;
+
+	std::pair<ui::Point, std::unique_ptr<unsigned char []>> GenerateBitmap() const override
 	{
-		delete[] bitmap;
-		bitmap = new unsigned char[size.X*size.Y];
+		ui::Point size = radius * 2 + 1;
+		auto bitmap = std::make_unique<unsigned char []>(size.X * size.Y);
+
 		int rx = radius.X;
 		int ry = radius.Y;
 		for(int x = -rx; x <= rx; x++)
@@ -37,5 +43,17 @@ public:
 				}
 			}
 		}
+		return std::make_pair(radius, std::move(bitmap));
+	}
+
+	ui::Point GetRadius() const override
+	{
+		return radius;
+	}
+
+	void SetRadius(ui::Point radius) override
+	{
+		this->radius = radius;
+		InvalidateCache();
 	}
 };
