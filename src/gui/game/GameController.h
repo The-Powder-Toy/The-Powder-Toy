@@ -153,7 +153,7 @@ public:
 	void HideConsole();
 	void FrameStep();
 	void TranslateSave(ui::Point point);
-	void TransformSave(Mat2<float> transform);
+	void TransformSave(Mat2<int> transform);
 	bool MouseInZoom(ui::Point position);
 	ui::Point PointTranslate(ui::Point point);
 	ui::Point PointTranslateNoClamp(ui::Point point);

@@ -133,9 +133,9 @@ public:
 	void setSize(Vec2<int> dimen);
 	// return value is [ fakeFromNewerVersion, gameData ]
 	std::pair<bool, std::vector<char>> Serialise() const;
-	Vec2<float> Translate(Vec2<float> translate);
-	void Transform(Mat2<float> transform, Vec2<float> translate);
-	void Transform(Mat2<float> transform, Vec2<float> translate, Vec2<float> translateReal, Vec2<int> newDimen);
+	Vec2<int> Translate(Vec2<int> translate);
+	void Transform(Mat2<int> transform, Vec2<int> translate);
+	void Transform(Mat2<int> transform, Vec2<int> translate, Vec2<int> translateReal, Vec2<int> newDimen);
 
 	void Expand(const std::vector<char> &data);
 

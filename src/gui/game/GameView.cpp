@@ -1364,17 +1364,17 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 				if (ctrl && shift)
 				{
 					//Vertical flip
-					c->TransformSave(Mat2<float>::MirrorY);
+					c->TransformSave(Mat2<int>::MirrorY);
 				}
 				else if (!ctrl && shift)
 				{
 					//Horizontal flip
-					c->TransformSave(Mat2<float>::MirrorX);
+					c->TransformSave(Mat2<int>::MirrorX);
 				}
 				else
 				{
 					//Rotate 90deg
-					c->TransformSave(Mat2<float>::CW);
+					c->TransformSave(Mat2<int>::CCW);
 				}
 				return;
 			}

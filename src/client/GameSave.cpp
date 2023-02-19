@@ -120,9 +120,8 @@ inline Vec2<int> lroundNegInf(Vec2<float> v)
 	return Vec2<int>(roundNegInf(v));
 }
 
-Vec2<float> GameSave::Translate(Vec2<float> translate)
+Vec2<int> GameSave::Translate(Vec2<int> translate)
 {
-	Vec2<float> translateReal = translate;
 	auto bounds = Rect<float>(Vec2<float>::Zero);
 
 	// determine minimum and maximum position of all particles / signs
@@ -135,18 +134,18 @@ Vec2<float> GameSave::Translate(Vec2<float> translate)
 		bounds |= Rect<float>(roundNegInf(Vec2<float>(particles[i].x, particles[i].y) + translate));
 	}
 	// determine whether corrections are needed. If moving in this direction would delete stuff, expand the save
-	auto backCorrection = Vec2<float>(
-		std::max(0.0f, -std::floor(bounds.TopLeft.X / CELL)),
-		std::max(0.0f, -std::floor(bounds.TopLeft.Y / CELL))
+	auto backCorrection = Vec2<int>(
+		std::max(0, -int(std::floor(bounds.TopLeft.X / CELL))),
+		std::max(0, -int(std::floor(bounds.TopLeft.Y / CELL)))
 	);
-	auto frontCorrection = Vec2<float>(
-		std::max(0, int(bounds.BottomRight.X / CELL) + 1 - blockDimen.X), // TODO: sus. std::floor?
-		std::max(0, int(bounds.BottomRight.Y / CELL) + 1 - blockDimen.Y)
+	auto frontCorrection = Vec2<int>(
+		std::max(0, int(std::floor(bounds.BottomRight.X / CELL)) + 1 - blockDimen.X),
+		std::max(0, int(std::floor(bounds.BottomRight.Y / CELL)) + 1 - blockDimen.Y)
 	);
 
 	// get new width based on corrections
 	auto newDimen = [=]() {
-		return Vec2<int>((Vec2<float>(blockDimen) + backCorrection + frontCorrection) * CELL);
+		return (blockDimen + backCorrection + frontCorrection) * CELL;
 	};
 	if (newDimen().X > XRES)
 		frontCorrection.X = backCorrection.X = 0;
@@ -154,38 +153,37 @@ Vec2<float> GameSave::Translate(Vec2<float> translate)
 		frontCorrection.Y = backCorrection.Y = 0;
 
 	// call Transform to do the transformation we wanted when calling this function
+	Vec2<int> translateReal = translate;
 	translate += backCorrection * CELL;
-	Transform(Mat2<float>::Identity, translate + backCorrection * CELL, translateReal, newDimen());
+	Transform(Mat2<int>::Identity, translate, translateReal, newDimen());
 
 	// return how much we corrected. This is used to offset the position of the current stamp
 	// otherwise it would attempt to recenter it with the current size
-	return backCorrection * (-CELL) + frontCorrection * CELL;
+	return backCorrection * -CELL + frontCorrection * CELL;
 }
 
-
-
-void GameSave::Transform(Mat2<float> transform, Vec2<float> translate)
+void GameSave::Transform(Mat2<int> transform, Vec2<int> translate)
 {
-	Vec2<float> cornerso[4] = {
-		Vec2<float>(0, 0),
-		Vec2<float>(blockDimen.X * CELL - 1, 0),
-		Vec2<float>(0, blockDimen.Y * CELL - 1),
-		Vec2<float>(blockDimen.X * CELL - 1, blockDimen.Y * CELL - 1),
+	Vec2<int> cornerso[4] = {
+		Vec2<int>(0, 0),
+		Vec2<int>(blockDimen.X * CELL - 1, 0),
+		Vec2<int>(0, blockDimen.Y * CELL - 1),
+		Vec2<int>(blockDimen.X * CELL - 1, blockDimen.Y * CELL - 1),
 	};
 	// undo any translation caused by rotation
-	auto bounds = Rect<float>(transform * cornerso[0]);
+	auto bounds = Rect<int>(transform * cornerso[0]);
 	for (int i = 1; i < 4; i++)
-		bounds |= Rect<float>(transform * cornerso[i]);
-	// casting as int doesn't quite do what we want with negative numbers, so use floor()
-	Vec2<float> translateReal = translate - roundNegInf(bounds.TopLeft);
-	auto newBounds = lroundNegInf(bounds.BottomRight) - lroundNegInf(bounds.TopLeft) + Vec2<int>(1, 1);
+		bounds |= Rect<int>(transform * cornerso[i]);
+	Vec2<int> translateReal = translate;
+	translate -= bounds.TopLeft;
+	auto newBounds = bounds.BottomRight - bounds.TopLeft + Vec2<int>(1, 1);
 	Transform(transform, translate, translateReal, newBounds);
 }
 
 // transform is a matrix describing how we want to rotate this save
 // translate can vary depending on whether the save is bring rotated, or if a normal translate caused it to expand
 // translateReal is the original amount we tried to translate, used to calculate wall shifting
-void GameSave::Transform(Mat2<float> transform, Vec2<float> translate, Vec2<float> translateReal, Vec2<int> newDimen)
+void GameSave::Transform(Mat2<int> transform, Vec2<int> translate, Vec2<int> translateReal, Vec2<int> newDimen)
 {
 	newDimen.X = std::min(newDimen.X, XRES);
 	newDimen.Y = std::min(newDimen.Y, YRES);
@@ -201,15 +199,15 @@ void GameSave::Transform(Mat2<float> transform, Vec2<float> translate, Vec2<floa
 	Plane<float> ambientHeatNew(newBlockDimen.X, newBlockDimen.Y, 0.0f);
 
 	// Match these up with the matrices provided in GameView::OnKeyPress.
-	bool patchPipeR = transform == Mat2<float>::CW;
-	bool patchPipeH = transform == Mat2<float>::MirrorX;
-	bool patchPipeV = transform == Mat2<float>::MirrorY;
+	bool patchPipeR = transform == Mat2<int>::CCW;
+	bool patchPipeH = transform == Mat2<int>::MirrorX;
+	bool patchPipeV = transform == Mat2<int>::MirrorY;
 
 	// rotate and translate signs, parts, walls
 	auto bounds = Rect<int>(Vec2<int>::Zero, newDimen - Vec2<int>(1, 1));
 	for (auto &sign : signs)
 	{
-		auto pos = lroundNegInf(transform * Vec2<float>(sign.x, sign.y) + translate);
+		auto pos = transform * Vec2<int>(sign.x, sign.y) + translate;
 		if (!bounds.Contains(pos))
 		{
 			sign.text[0] = 0;
@@ -221,6 +219,7 @@ void GameSave::Transform(Mat2<float> transform, Vec2<float> translate, Vec2<floa
 	for (int i = 0; i < particlesCount; i++)
 	{
 		if (!particles[i].type) continue;
+		// TODO: should this round?
 		auto pos = lroundNegInf(transform * Vec2<float>(particles[i].x, particles[i].y) + translate);
 		if (!bounds.Contains(pos))
 		{

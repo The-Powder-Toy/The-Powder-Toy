@@ -422,17 +422,16 @@ void GameController::LoadStamp(GameSave *stamp)
 
 void GameController::TranslateSave(ui::Point point)
 {
-	auto translate = Vec2<float>(point);
-	auto translated = gameModel->GetPlaceSave()->Translate(translate);
+	auto translated = gameModel->GetPlaceSave()->Translate(point);
 	ui::Point currentPlaceSaveOffset = gameView->GetPlaceSaveOffset();
 	// resets placeSaveOffset to 0, which is why we back it up first
 	gameModel->SetPlaceSave(gameModel->GetPlaceSave());
-	gameView->SetPlaceSaveOffset(ui::Point(translated) + currentPlaceSaveOffset);
+	gameView->SetPlaceSaveOffset(translated + currentPlaceSaveOffset);
 }
 
-void GameController::TransformSave(Mat2<float> transform)
+void GameController::TransformSave(Mat2<int> transform)
 {
-	gameModel->GetPlaceSave()->Transform(transform, Vec2<float>::Zero);
+	gameModel->GetPlaceSave()->Transform(transform, Vec2<int>::Zero);
 	gameModel->SetPlaceSave(gameModel->GetPlaceSave());
 }
 
