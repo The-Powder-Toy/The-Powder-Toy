@@ -242,7 +242,7 @@ VideoBuffer * SignTool::GetIcon(int toolID, int width, int height)
 	return newTexture;
 }
 
-void SignTool::Click(Simulation * sim, Brush * brush, ui::Point position)
+void SignTool::Click(Simulation * sim, Brush const &brush, ui::Point position)
 {
 	int signX, signY, signW, signH, signIndex = -1;
 	for (size_t i = 0; i < sim->signs.size(); i++)

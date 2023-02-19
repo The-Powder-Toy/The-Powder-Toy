@@ -62,22 +62,22 @@ DecorationTool::~DecorationTool()
 {
 }
 
-void DecorationTool::Draw(Simulation * sim, Brush * brush, ui::Point position)
+void DecorationTool::Draw(Simulation * sim, Brush const &brush, ui::Point position)
 {
 	sim->ApplyDecorationPoint(position.X, position.Y, Red, Green, Blue, Alpha, toolID, brush);
 }
 
-void DecorationTool::DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging)
+void DecorationTool::DrawLine(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2, bool dragging)
 {
 	sim->ApplyDecorationLine(position1.X, position1.Y, position2.X, position2.Y, Red, Green, Blue, Alpha, toolID, brush);
 }
 
-void DecorationTool::DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2)
+void DecorationTool::DrawRect(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2)
 {
 	sim->ApplyDecorationBox(position1.X, position1.Y, position2.X, position2.Y, Red, Green, Blue, Alpha, toolID);
 }
 
-void DecorationTool::DrawFill(Simulation * sim, Brush * brush, ui::Point position)
+void DecorationTool::DrawFill(Simulation * sim, Brush const &brush, ui::Point position)
 {
 	pixel loc = ren->vid[position.X+position.Y*WINDOWW];
 	if (toolID == DECO_CLEAR)

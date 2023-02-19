@@ -4,20 +4,23 @@
 
 class EllipseBrush: public Brush
 {
+	ui::Point radius;
 	bool perfectCircle;
 
 public:
-	EllipseBrush(ui::Point size, bool perfectCircle = true):
-		Brush(size)
+	EllipseBrush(ui::Point radius, bool perfectCircle = true):
+		Brush(),
+		radius(radius),
+		perfectCircle(perfectCircle)
 	{
-		this->perfectCircle = perfectCircle;
-		SetRadius(size);
 	}
+	virtual ~EllipseBrush() override = default;
 
-	void GenerateBitmap() override
+	std::pair<ui::Point, std::unique_ptr<unsigned char []>> GenerateBitmap() const override
 	{
-		delete[] bitmap;
-		bitmap = new unsigned char[size.X*size.Y];
+		ui::Point size = radius * 2 + 1;
+		auto bitmap = std::make_unique<unsigned char []>(size.X * size.Y);
+
 		int rx = radius.X;
 		int ry = radius.Y;
 
@@ -61,5 +64,17 @@ public:
 			bitmap[size.X/2] = 255;
 			bitmap[size.X*size.Y-size.X/2-1] = 255;
 		}
+		return std::make_pair(radius, std::move(bitmap));
+	}
+
+	ui::Point GetRadius() const override
+	{
+		return radius;
+	}
+
+	void SetRadius(ui::Point radius) override
+	{
+		this->radius = radius;
+		InvalidateCache();
 	}
 };

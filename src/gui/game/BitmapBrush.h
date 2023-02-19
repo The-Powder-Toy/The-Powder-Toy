@@ -11,11 +11,24 @@
 
 class BitmapBrush: public Brush
 {
-protected:
+	ui::Point radius;
 	ui::Point origSize;
-	unsigned char * origBitmap;
+	// 2D array with coords [0, origSize.X) by [0, origSize.Y)
+	std::unique_ptr<unsigned char []> origBitmap;
+
 public:
-	BitmapBrush(unsigned char *newBitmap, ui::Point rectSize);
-	void GenerateBitmap() override;
-	virtual ~BitmapBrush();
+	BitmapBrush(ui::Point size, unsigned char const *bitmap);
+	virtual ~BitmapBrush() override = default;
+	std::pair<ui::Point, std::unique_ptr<unsigned char []>> GenerateBitmap() const override;
+
+	ui::Point GetRadius() const override
+	{
+		return radius;
+	}
+
+	void SetRadius(ui::Point radius) override
+	{
+		this->radius = radius;
+		InvalidateCache();
+	}
 };

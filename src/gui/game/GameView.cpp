@@ -918,7 +918,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 
 void GameView::NotifyBrushChanged(GameModel * sender)
 {
-	activeBrush = sender->GetBrush();
+	activeBrush = &sender->GetBrush();
 }
 
 ByteString GameView::TakeScreenshot(int captureUI, int fileType)
@@ -1320,7 +1320,7 @@ void GameView::OnMouseWheel(int x, int y, int d)
 	}
 	else
 	{
-		c->AdjustBrushSize(d, false, shiftBehaviour, ctrlBehaviour);
+		c->AdjustBrushSize(d, false, ctrlBehaviour, shiftBehaviour);
 	}
 }
 
@@ -1575,13 +1575,13 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		if(zoomEnabled && !zoomCursorFixed)
 			c->AdjustZoomSize(1, !alt);
 		else
-			c->AdjustBrushSize(1, !alt, shiftBehaviour, ctrlBehaviour);
+			c->AdjustBrushSize(1, !alt, ctrlBehaviour, shiftBehaviour);
 		break;
 	case SDL_SCANCODE_LEFTBRACKET:
 		if(zoomEnabled && !zoomCursorFixed)
 			c->AdjustZoomSize(-1, !alt);
 		else
-			c->AdjustBrushSize(-1, !alt, shiftBehaviour, ctrlBehaviour);
+			c->AdjustBrushSize(-1, !alt, ctrlBehaviour, shiftBehaviour);
 		break;
 	case SDL_SCANCODE_I:
 		if(ctrl)

@@ -29,7 +29,7 @@ VideoBuffer * SampleTool::GetIcon(int toolID, int width, int height)
 	return newTexture;
 }
 
-void SampleTool::Draw(Simulation * sim, Brush * brush, ui::Point position)
+void SampleTool::Draw(Simulation * sim, Brush const &brush, ui::Point position)
 {
 	if(gameModel->GetColourSelectorVisibility())
 	{

@@ -1,39 +1,90 @@
 #pragma once
 #include "gui/interface/Point.h"
+#include <memory>
 
 class Renderer;
 class Brush
 {
-protected:
-	unsigned char * outline;
-	unsigned char * bitmap;
-	ui::Point size;
-	ui::Point radius;
-	void updateOutline();
-public:
-	Brush(ui::Point size);
+private:
+	ui::Point mutable size;
+	// 2D arrays indexed by coordinates from [-size.X, size.X] by [-size.Y, size.Y]
+	std::unique_ptr<unsigned char []> mutable bitmap;
+	std::unique_ptr<unsigned char []> mutable outline;
 
-	//Radius of the brush 0x0 - infxinf (Radius of 0x0 would be 1x1, radius of 1x1 would be 3x3)
-	ui::Point GetRadius()
+	void ensureBitmap() const;
+	void ensureOutline() const;
+
+	struct iterator
 	{
-		return radius;
+		Brush const &parent;
+		int x, y;
+
+		iterator &operator++()
+		{
+			do
+			{
+				if (++x > parent.size.X)
+				{
+					--y;
+					x = -parent.size.X;
+				}
+			} while (y >= -parent.size.Y && !parent.bitmap[x + parent.size.X + (y + parent.size.Y) * (2 * parent.size.X + 1)]);
+			return *this;
+		}
+
+		ui::Point operator*() const
+		{
+			return ui::Point(x, y);
+		}
+
+		bool operator!=(iterator other) const
+		{
+			return x != other.x || y != other.y;
+		}
+
+	public:
+		using difference_type = void;
+		using value_type = ui::Point;
+		using pointer = void;
+		using reference = void;
+		using iterator_category = std::forward_iterator_tag;
+	};
+
+protected:
+	Brush():
+		size(0, 0),
+		bitmap(),
+		outline()
+	{
 	}
 
-	//Size of the brush bitmap mask, 1x1 - infxinf
-	ui::Point GetSize()
+	void InvalidateCache();
+	virtual std::pair<ui::Point, std::unique_ptr<unsigned char []>> GenerateBitmap() const = 0;
+
+public:
+	virtual ~Brush() = default;
+	virtual ui::Point GetRadius() const = 0;
+	virtual void SetRadius(ui::Point radius) = 0;
+	virtual void AdjustSize(int delta, bool logarithmic, bool keepX, bool keepY);
+
+	ui::Point GetSize() const
 	{
 		return size;
 	}
-	virtual void SetRadius(ui::Point radius);
-	virtual ~Brush();
-	virtual void RenderRect(Renderer * ren, ui::Point position1, ui::Point position2);
-	virtual void RenderLine(Renderer * ren, ui::Point position1, ui::Point position2);
-	virtual void RenderPoint(Renderer * ren, ui::Point position);
-	virtual void RenderFill(Renderer * ren, ui::Point position);
-	virtual void GenerateBitmap();
-	//Get a bitmap for drawing particles
-	unsigned char * GetBitmap();
 
-	unsigned char * GetOutline();
+	iterator begin() const
+	{
+		// bottom to top is the preferred order for Simulation::CreateParts
+		return ++iterator{*this, size.X, size.Y + 1};
+	}
+
+	iterator end() const
+	{
+		return iterator{*this, -size.X, -size.Y - 1};
+	}
+
+	void RenderRect(Renderer * ren, ui::Point position1, ui::Point position2) const;
+	void RenderLine(Renderer * ren, ui::Point position1, ui::Point position2) const;
+	void RenderPoint(Renderer * ren, ui::Point position) const;
+	void RenderFill(Renderer * ren, ui::Point position) const;
 };
-

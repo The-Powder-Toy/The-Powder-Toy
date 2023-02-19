@@ -16,8 +16,8 @@ public:
 
 	DecorationTool(Renderer *ren_, int decoMode, String name, String description, int r, int g, int b, ByteString identifier);
 	virtual ~DecorationTool();
-	void Draw(Simulation * sim, Brush * brush, ui::Point position) override;
-	void DrawLine(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2, bool dragging) override;
-	void DrawRect(Simulation * sim, Brush * brush, ui::Point position1, ui::Point position2) override;
-	void DrawFill(Simulation * sim, Brush * brush, ui::Point position) override;
+	void Draw(Simulation * sim, Brush const &brush, ui::Point position) override;
+	void DrawLine(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2, bool dragging) override;
+	void DrawRect(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2) override;
+	void DrawFill(Simulation * sim, Brush const &brush, ui::Point position) override;
 };
