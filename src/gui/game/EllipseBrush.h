@@ -77,4 +77,11 @@ public:
 		this->radius = radius;
 		InvalidateCache();
 	}
+
+	std::unique_ptr<Brush> Clone() const override
+	{
+		auto into = std::make_unique<EllipseBrush>(radius, perfectCircle);
+		copyBitmaps(*into);
+		return into;
+	}
 };

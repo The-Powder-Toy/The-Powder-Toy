@@ -42,7 +42,6 @@ private:
 			return x != other.x || y != other.y;
 		}
 
-	public:
 		using difference_type = void;
 		using value_type = ui::Point;
 		using pointer = void;
@@ -60,12 +59,14 @@ protected:
 
 	void InvalidateCache();
 	virtual std::pair<ui::Point, std::unique_ptr<unsigned char []>> GenerateBitmap() const = 0;
+	void copyBitmaps(Brush &into) const;
 
 public:
 	virtual ~Brush() = default;
 	virtual ui::Point GetRadius() const = 0;
 	virtual void SetRadius(ui::Point radius) = 0;
 	virtual void AdjustSize(int delta, bool logarithmic, bool keepX, bool keepY);
+	virtual std::unique_ptr<Brush> Clone() const = 0;
 
 	ui::Point GetSize() const
 	{

@@ -1469,17 +1469,16 @@ int LuaScriptInterface::simulation_createParts(lua_State * l)
 	int rx = luaL_optint(l,3,5);
 	int ry = luaL_optint(l,4,5);
 	int c = luaL_optint(l,5,luacon_model->GetActiveTool(0)->GetToolID());
-	int brush = luaL_optint(l,6,CIRCLE_BRUSH);
+	int brushID = luaL_optint(l,6,CIRCLE_BRUSH);
 	int flags = luaL_optint(l,7,luacon_sim->replaceModeFlags);
 
-	auto &brushList = luacon_model->GetBrushList();
-	if (brush < 0 || brush >= (int)brushList.size())
-		return luaL_error(l, "Invalid brush id '%d'", brush);
-	ui::Point tempRadius = brushList[brush]->GetRadius();
-	brushList[brush]->SetRadius(ui::Point(rx, ry));
+	Brush *brush = luacon_model->GetBrushByID(brushID);
+	if (!brush)
+		return luaL_error(l, "Invalid brush id '%d'", brushID);
+	auto newBrush = brush->Clone();
+	newBrush->SetRadius(ui::Point(rx, ry));
 
-	int ret = luacon_sim->CreateParts(x, y, c, *brushList[brush], flags);
-	brushList[brush]->SetRadius(tempRadius);
+	int ret = luacon_sim->CreateParts(x, y, c, *newBrush, flags);
 	lua_pushinteger(l, ret);
 	return 1;
 }
@@ -1493,17 +1492,16 @@ int LuaScriptInterface::simulation_createLine(lua_State * l)
 	int rx = luaL_optint(l,5,5);
 	int ry = luaL_optint(l,6,5);
 	int c = luaL_optint(l,7,luacon_model->GetActiveTool(0)->GetToolID());
-	int brush = luaL_optint(l,8,CIRCLE_BRUSH);
+	int brushID = luaL_optint(l,8,CIRCLE_BRUSH);
 	int flags = luaL_optint(l,9,luacon_sim->replaceModeFlags);
 
-	auto &brushList = luacon_model->GetBrushList();
-	if (brush < 0 || brush >= (int)brushList.size())
-		return luaL_error(l, "Invalid brush id '%d'", brush);
-	ui::Point tempRadius = brushList[brush]->GetRadius();
-	brushList[brush]->SetRadius(ui::Point(rx, ry));
+	Brush *brush = luacon_model->GetBrushByID(brushID);
+	if (!brush)
+		return luaL_error(l, "Invalid brush id '%d'", brushID);
+	auto newBrush = brush->Clone();
+	newBrush->SetRadius(ui::Point(rx, ry));
 
-	luacon_sim->CreateLine(x1, y1, x2, y2, c, *brushList[brush], flags);
-	brushList[brush]->SetRadius(tempRadius);
+	luacon_sim->CreateLine(x1, y1, x2, y2, c, *newBrush, flags);
 	return 0;
 }
 
@@ -1527,10 +1525,10 @@ int LuaScriptInterface::simulation_floodParts(lua_State * l)
 	int c = luaL_optint(l,3,luacon_model->GetActiveTool(0)->GetToolID());
 	int cm = luaL_optint(l,4,-1);
 	int flags = luaL_optint(l,5,luacon_sim->replaceModeFlags);
-	
+
 	if (x < 0 || x >= XRES || y < 0 || y >= YRES)
 		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
-	
+
 	int ret = luacon_sim->FloodParts(x, y, c, cm, flags);
 	lua_pushinteger(l, ret);
 	return 1;
@@ -1617,7 +1615,7 @@ int LuaScriptInterface::simulation_toolBrush(lua_State * l)
 	int rx = luaL_optint(l,3,5);
 	int ry = luaL_optint(l,4,5);
 	int tool = luaL_optint(l,5,0);
-	int brush = luaL_optint(l,6,CIRCLE_BRUSH);
+	int brushID = luaL_optint(l,6,CIRCLE_BRUSH);
 	float strength = luaL_optnumber(l,7,1.0f);
 	if (tool == (int)luacon_sim->tools.size())
 	{
@@ -1627,14 +1625,13 @@ int LuaScriptInterface::simulation_toolBrush(lua_State * l)
 	else if (tool < 0 || tool > (int)luacon_sim->tools.size())
 		return luaL_error(l, "Invalid tool id '%d'", tool);
 
-	auto &brushList = luacon_model->GetBrushList();
-	if (brush < 0 || brush >= (int)brushList.size())
-		return luaL_error(l, "Invalid brush id '%d'", brush);
-	ui::Point tempRadius = brushList[brush]->GetRadius();
-	brushList[brush]->SetRadius(ui::Point(rx, ry));
+	Brush *brush = luacon_model->GetBrushByID(brushID);
+	if (!brush)
+		return luaL_error(l, "Invalid brush id '%d'", brushID);
+	auto newBrush = brush->Clone();
+	newBrush->SetRadius(ui::Point(rx, ry));
 
-	int ret = luacon_sim->ToolBrush(x, y, tool, *brushList[brush], strength);
-	brushList[brush]->SetRadius(tempRadius);
+	int ret = luacon_sim->ToolBrush(x, y, tool, *newBrush, strength);
 	lua_pushinteger(l, ret);
 	return 1;
 }
@@ -1648,31 +1645,30 @@ int LuaScriptInterface::simulation_toolLine(lua_State * l)
 	int rx = luaL_optint(l,5,5);
 	int ry = luaL_optint(l,6,5);
 	int tool = luaL_optint(l,7,0);
-	int brush = luaL_optint(l,8,CIRCLE_BRUSH);
+	int brushID = luaL_optint(l,8,CIRCLE_BRUSH);
 	float strength = luaL_optnumber(l,9,1.0f);
-	
+
 	if (x1 < 0 || x2 < 0 || x1 >= XRES || x2 >= XRES || y1 < 0 || y2 < 0 || y1 >= YRES || y2 >= YRES)
 		return luaL_error(l, "coordinates out of range (%d,%d),(%d,%d)", x1, y1, x2, y2);
 	if (tool < 0 || tool >= (int)luacon_sim->tools.size()+1)
 		return luaL_error(l, "Invalid tool id '%d'", tool);
 
-	auto &brushList = luacon_model->GetBrushList();
-	if (brush < 0 || brush >= (int)brushList.size())
-		return luaL_error(l, "Invalid brush id '%d'", brush);
-	ui::Point tempRadius = brushList[brush]->GetRadius();
-	brushList[brush]->SetRadius(ui::Point(rx, ry));
+	Brush *brush = luacon_model->GetBrushByID(brushID);
+	if (!brush)
+		return luaL_error(l, "Invalid brush id '%d'", brushID);
+	auto newBrush = brush->Clone();
+	newBrush->SetRadius(ui::Point(rx, ry));
 
 	if (tool == (int)luacon_sim->tools.size())
 	{
 		Tool *windTool = luacon_model->GetToolFromIdentifier("DEFAULT_UI_WIND");
 		float oldStrength = windTool->GetStrength();
 		windTool->SetStrength(strength);
-		windTool->DrawLine(luacon_sim, *brushList[brush], ui::Point(x1, y1), ui::Point(x2, y2));
+		windTool->DrawLine(luacon_sim, *newBrush, ui::Point(x1, y1), ui::Point(x2, y2));
 		windTool->SetStrength(oldStrength);
 	}
 	else
-		luacon_sim->ToolLine(x1, y1, x2, y2, tool, *brushList[brush], strength);
-	brushList[brush]->SetRadius(tempRadius);
+		luacon_sim->ToolLine(x1, y1, x2, y2, tool, *newBrush, strength);
 	return 0;
 }
 
@@ -1709,16 +1705,15 @@ int LuaScriptInterface::simulation_decoBrush(lua_State * l)
 	int b = luaL_optint(l,7,255);
 	int a = luaL_optint(l,8,255);
 	int tool = luaL_optint(l,9,DECO_DRAW);
-	int brush = luaL_optint(l,10,CIRCLE_BRUSH);
+	int brushID = luaL_optint(l,10,CIRCLE_BRUSH);
 
-	auto &brushList = luacon_model->GetBrushList();
-	if (brush < 0 || brush >= (int)brushList.size())
-		return luaL_error(l, "Invalid brush id '%d'", brush);
-	ui::Point tempRadius = brushList[brush]->GetRadius();
-	brushList[brush]->SetRadius(ui::Point(rx, ry));
+	Brush *brush = luacon_model->GetBrushByID(brushID);
+	if (!brush)
+		return luaL_error(l, "Invalid brush id '%d'", brushID);
+	auto newBrush = brush->Clone();
+	newBrush->SetRadius(ui::Point(rx, ry));
 
-	luacon_sim->ApplyDecorationPoint(x, y, r, g, b, a, tool, *brushList[brush]);
-	brushList[brush]->SetRadius(tempRadius);
+	luacon_sim->ApplyDecorationPoint(x, y, r, g, b, a, tool, *newBrush);
 	return 0;
 }
 
@@ -1735,19 +1730,18 @@ int LuaScriptInterface::simulation_decoLine(lua_State * l)
 	int b = luaL_optint(l,9,255);
 	int a = luaL_optint(l,10,255);
 	int tool = luaL_optint(l,11,DECO_DRAW);
-	int brush = luaL_optint(l,12,CIRCLE_BRUSH);
+	int brushID = luaL_optint(l,12,CIRCLE_BRUSH);
 
 	if (x1 < 0 || x2 < 0 || x1 >= XRES || x2 >= XRES || y1 < 0 || y2 < 0 || y1 >= YRES || y2 >= YRES)
 		return luaL_error(l, "coordinates out of range (%d,%d),(%d,%d)", x1, y1, x2, y2);
 
-	auto &brushList = luacon_model->GetBrushList();
-	if (brush < 0 || brush >= (int)brushList.size())
-		return luaL_error(l, "Invalid brush id '%d'", brush);
-	ui::Point tempRadius = brushList[brush]->GetRadius();
-	brushList[brush]->SetRadius(ui::Point(rx, ry));
+	Brush *brush = luacon_model->GetBrushByID(brushID);
+	if (!brush)
+		return luaL_error(l, "Invalid brush id '%d'", brushID);
+	auto newBrush = brush->Clone();
+	newBrush->SetRadius(ui::Point(rx, ry));
 
-	luacon_sim->ApplyDecorationLine(x1, y1, x2, y2, r, g, b, a, tool, *brushList[brush]);
-	brushList[brush]->SetRadius(tempRadius);
+	luacon_sim->ApplyDecorationLine(x1, y1, x2, y2, r, g, b, a, tool, *newBrush);
 	return 0;
 }
 
@@ -2200,22 +2194,19 @@ int LuaScriptInterface::simulation_brush(lua_State * l)
 	}
 	int brushID = luaL_optint(l, 5, luacon_model->GetBrushID());
 
-	auto &brushList = luacon_model->GetBrushList();
-	if (brushID < 0 || brushID >= (int)brushList.size())
+	Brush *brush = luacon_model->GetBrushByID(brushID);
+	if (!brush)
 		return luaL_error(l, "Invalid brush id '%d'", brushID);
-
-	Brush &brush = *brushList[brushID];
-	ui::Point tempRadius = brush.GetRadius();
-	brush.SetRadius(ui::Point(brushradiusX, brushradiusY));
+	auto newBrush = brush->Clone();
+	newBrush->SetRadius(ui::Point(brushradiusX, brushradiusY));
 	lua_pushnumber(l, positionX);
 	lua_pushnumber(l, positionY);
 	std::vector<ui::Point> points;
-	std::copy(brush.begin(), brush.end(), std::back_inserter(points));
+	std::copy(brush->begin(), brush->end(), std::back_inserter(points));
 	lua_pushnumber(l, 0); // index
 	lua_pushnumber(l, points.size());
 	auto points_ud = reinterpret_cast<ui::Point *>(lua_newuserdata(l, points.size() * sizeof(ui::Point)));
 	std::copy(points.begin(), points.end(), points_ud);
-	brush.SetRadius(tempRadius);
 
 	lua_pushcclosure(l, BrushClosure, 5);
 	return 1;

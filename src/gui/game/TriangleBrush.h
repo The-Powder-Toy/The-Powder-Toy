@@ -56,4 +56,11 @@ public:
 		this->radius = radius;
 		InvalidateCache();
 	}
+
+	std::unique_ptr<Brush> Clone() const override
+	{
+		auto into = std::make_unique<RectangleBrush>(radius);
+		copyBitmaps(*into);
+		return into;
+	}
 };

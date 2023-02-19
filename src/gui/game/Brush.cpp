@@ -73,6 +73,22 @@ void Brush::AdjustSize(int delta, bool logarithmic, bool keepX, bool keepY)
 		SetRadius(newSize);
 }
 
+void Brush::copyBitmaps(Brush &into) const
+{
+	into.size = size;
+	size_t bounds = (2 * size.X + 1) * (2 * size.Y + 1);
+	if (bitmap)
+	{
+		into.bitmap = std::make_unique<unsigned char []>(bounds);
+		std::copy(&bitmap[0], &bitmap[bounds], &into.bitmap[0]);
+	}
+	if (outline)
+	{
+		into.outline = std::make_unique<unsigned char []>(bounds);
+		std::copy(&outline[0], &outline[bounds], &into.outline[0]);
+	}
+}
+
 void Brush::RenderRect(Renderer * ren, ui::Point position1, ui::Point position2) const
 {
 	int width, height;

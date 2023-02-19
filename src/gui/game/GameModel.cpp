@@ -472,19 +472,18 @@ void GameModel::BuildBrushList()
 	brushList.push_back(std::make_unique<TriangleBrush>(ui::Point(4, 4)));
 
 	//Load more from brushes folder
-	std::vector<ByteString> brushFiles = Platform::DirectorySearch(BRUSH_DIR, "", { ".ptb" });
-	for (size_t i = 0; i < brushFiles.size(); i++)
+	for (ByteString brushFile : Platform::DirectorySearch(BRUSH_DIR, "", { ".ptb" }))
 	{
 		std::vector<char> brushData;
-		if (!Platform::ReadFile(brushData, ByteString::Build(BRUSH_DIR, PATH_SEP_CHAR, brushFiles[i])))
+		if (!Platform::ReadFile(brushData, ByteString::Build(BRUSH_DIR, PATH_SEP_CHAR, brushFile)))
 		{
-			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Could not open" << std::endl;
+			std::cout << "Brushes: Skipping " << brushFile << ". Could not open" << std::endl;
 			continue;
 		}
-		auto dimension = size_t(std::sqrt(float(brushData.size())));
+		auto dimension = size_t(std::sqrt(brushData.size()));
 		if (dimension * dimension != brushData.size())
 		{
-			std::cout << "Brushes: Skipping " << brushFiles[i] << ". Invalid bitmap size" << std::endl;
+			std::cout << "Brushes: Skipping " << brushFile << ". Invalid bitmap size" << std::endl;
 			continue;
 		}
 		brushList.push_back(std::make_unique<BitmapBrush>(ui::Point(dimension, dimension), reinterpret_cast<unsigned char const *>(brushData.data())));
@@ -812,9 +811,12 @@ Brush &GameModel::GetBrush()
 	return *brushList[currentBrush];
 }
 
-std::vector<std::unique_ptr<Brush>> const &GameModel::GetBrushList()
+Brush *GameModel::GetBrushByID(int i)
 {
-	return brushList;
+	if (i >= 0 && i < (int)brushList.size())
+		return brushList[i].get();
+	else
+		return nullptr;
 }
 
 int GameModel::GetBrushID()
