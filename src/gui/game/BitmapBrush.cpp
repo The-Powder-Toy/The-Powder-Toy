@@ -22,7 +22,7 @@ BitmapBrush::BitmapBrush(ui::Point inputSize, unsigned char const *inputBitmap):
 	for (int y = 0; y < inputSize.Y; y++)
 		for (int x = 0; x < inputSize.X; x++)
 			origBitmap[x + y * newSize.X] = inputBitmap[x + y * inputSize.X];
-};
+}
 
 std::pair<ui::Point, std::unique_ptr<unsigned char []>> BitmapBrush::GenerateBitmap() const
 {
@@ -59,4 +59,12 @@ std::pair<ui::Point, std::unique_ptr<unsigned char []>> BitmapBrush::GenerateBit
 		}
 	}
 	return std::make_pair(radius, std::move(bitmap));
+}
+
+std::unique_ptr<Brush> BitmapBrush::Clone() const
+{
+	auto into = std::make_unique<BitmapBrush>(origSize, &origBitmap[0]);
+	into->radius = radius;
+	copyBitmaps(*into);
+	return into;
 }

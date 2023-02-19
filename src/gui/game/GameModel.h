@@ -176,7 +176,7 @@ public:
 	std::vector<Tool*> GetUnlistedTools();
 
 	Brush &GetBrush();
-	std::vector<std::unique_ptr<Brush>> const &GetBrushList();
+	Brush *GetBrushByID(int i);
 	int GetBrushID();
 	void SetBrushID(int i);
 

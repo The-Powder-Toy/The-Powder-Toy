@@ -31,4 +31,6 @@ public:
 		this->radius = radius;
 		InvalidateCache();
 	}
+
+	std::unique_ptr<Brush> Clone() const override;
 };
