@@ -422,18 +422,17 @@ void GameController::LoadStamp(GameSave *stamp)
 
 void GameController::TranslateSave(ui::Point point)
 {
-	vector2d translate = v2d_new(float(point.X), float(point.Y));
-	vector2d translated = gameModel->GetPlaceSave()->Translate(translate);
+	auto translate = Vec2<float>(point);
+	auto translated = gameModel->GetPlaceSave()->Translate(translate);
 	ui::Point currentPlaceSaveOffset = gameView->GetPlaceSaveOffset();
 	// resets placeSaveOffset to 0, which is why we back it up first
 	gameModel->SetPlaceSave(gameModel->GetPlaceSave());
-	gameView->SetPlaceSaveOffset(ui::Point(int(translated.x), int(translated.y)) + currentPlaceSaveOffset);
+	gameView->SetPlaceSaveOffset(ui::Point(translated) + currentPlaceSaveOffset);
 }
 
-void GameController::TransformSave(matrix2d transform)
+void GameController::TransformSave(Mat2<float> transform)
 {
-	vector2d translate = v2d_zero;
-	gameModel->GetPlaceSave()->Transform(transform, translate);
+	gameModel->GetPlaceSave()->Transform(transform, Vec2<float>::Zero);
 	gameModel->SetPlaceSave(gameModel->GetPlaceSave());
 }
 
@@ -928,7 +927,7 @@ void GameController::SetToolStrength(float value)
 
 void GameController::SetZoomPosition(ui::Point position)
 {
-	ui::Point zoomPosition = position-(gameModel->GetZoomSize()/2);
+	ui::Point zoomPosition = position - ui::Point(1, 1) * gameModel->GetZoomSize() / 2;
 	if(zoomPosition.X < 0)
 			zoomPosition.X = 0;
 	if(zoomPosition.Y < 0)

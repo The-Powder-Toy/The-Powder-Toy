@@ -2,7 +2,6 @@
 #include "common/String.h"
 #include "simulation/Sign.h"
 #include "simulation/Particle.h"
-#include "Misc.h"
 #include "SimulationConfig.h"
 #include <vector>
 #include <json/json.h>
@@ -78,14 +77,13 @@ struct Plane
 class GameSave
 {
 	// number of pixels translated. When translating CELL pixels, shift all CELL grids
-	vector2d translated = { 0, 0 };
+	Vec2<float> translated = Vec2<float>::Zero;
 	void readOPS(const std::vector<char> &data);
 	void readPSv(const std::vector<char> &data);
 	std::pair<bool, std::vector<char>> serialiseOPS() const;
 
 public:
-	int blockWidth = 0;
-	int blockHeight = 0;
+	Vec2<int> blockDimen = Vec2<int>::Zero;
 	bool fromNewerVersion = false;
 	int majorVersion = 0;
 	int minorVersion = 0;
@@ -130,14 +128,14 @@ public:
 
 	int pmapbits = 8; // default to 8 bits for older saves
 
-	GameSave(int width, int height);
+	GameSave(Vec2<int> blockDimen);
 	GameSave(const std::vector<char> &data, bool newWantAuthors = true);
-	void setSize(int width, int height);
+	void setSize(Vec2<int> dimen);
 	// return value is [ fakeFromNewerVersion, gameData ]
 	std::pair<bool, std::vector<char>> Serialise() const;
-	vector2d Translate(vector2d translate);
-	void Transform(matrix2d transform, vector2d translate);
-	void Transform(matrix2d transform, vector2d translate, vector2d translateReal, int newWidth, int newHeight);
+	Vec2<float> Translate(Vec2<float> translate);
+	void Transform(Mat2<float> transform, Vec2<float> translate);
+	void Transform(Mat2<float> transform, Vec2<float> translate, Vec2<float> translateReal, Vec2<int> newDimen);
 
 	void Expand(const std::vector<char> &data);
 

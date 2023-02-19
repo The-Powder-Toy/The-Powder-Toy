@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Geometry.h"
 #include <cstdint>
 
 constexpr int MENUSIZE = 40;
@@ -11,15 +12,18 @@ constexpr int CELL   =   4;
 constexpr int XCELLS = 153;
 constexpr int YCELLS =  96;
 constexpr int NCELL  = XCELLS * YCELLS;
+constexpr Rect<int> CELLS = Rect<int>(Vec2<int>(0, 0), Vec2<int>(XCELLS - 1, YCELLS - 1));
 constexpr int XRES   = XCELLS * CELL;
 constexpr int YRES   = YCELLS * CELL;
 constexpr int NPART  = XRES * YRES;
+constexpr Rect<int> RES = Rect<int>(Vec2<int>(0, 0), Vec2<int>(XRES - 1, YRES - 1));
 
 constexpr int XCNTR = XRES / 2;
 constexpr int YCNTR = YRES / 2;
 
 constexpr int WINDOWW = XRES + BARSIZE;
 constexpr int WINDOWH = YRES + MENUSIZE;
+constexpr Rect<int> WINDOW = Rect<int>(Vec2<int>(0, 0), Vec2<int>(WINDOWW - 1, WINDOWH - 1));
 
 constexpr int MAXSIGNS = 16;
 

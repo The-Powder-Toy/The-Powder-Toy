@@ -10,6 +10,7 @@
 #include "common/tpt-rand.h"
 #include "common/tpt-thread-local.h"
 #include "gui/game/Brush.h"
+#include "Misc.h"
 #include <iostream>
 #include <set>
 
@@ -305,9 +306,9 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 			signs.push_back(tempSign);
 		}
 	}
-	for(int saveBlockX = 0; saveBlockX < save->blockWidth; saveBlockX++)
+	for(int saveBlockX = 0; saveBlockX < save->blockDimen.X; saveBlockX++)
 	{
-		for(int saveBlockY = 0; saveBlockY < save->blockHeight; saveBlockY++)
+		for(int saveBlockY = 0; saveBlockY < save->blockDimen.Y; saveBlockY++)
 		{
 			if(save->blockMap[saveBlockY][saveBlockX])
 			{
@@ -368,7 +369,7 @@ GameSave * Simulation::Save(bool includePressure, int fullX, int fullY, int full
 	blockW = blockX2-blockX;
 	blockH = blockY2-blockY;
 
-	GameSave * newSave = new GameSave(blockW, blockH);
+	GameSave * newSave = new GameSave(Vec2<int>(blockW, blockH));
 	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
 	auto &properties = Particle::GetProperties();
 
@@ -457,9 +458,9 @@ GameSave * Simulation::Save(bool includePressure, int fullX, int fullY, int full
 		}
 	}
 
-	for(int saveBlockX = 0; saveBlockX < newSave->blockWidth; saveBlockX++)
+	for(int saveBlockX = 0; saveBlockX < newSave->blockDimen.X; saveBlockX++)
 	{
-		for(int saveBlockY = 0; saveBlockY < newSave->blockHeight; saveBlockY++)
+		for(int saveBlockY = 0; saveBlockY < newSave->blockDimen.Y; saveBlockY++)
 		{
 			if(bmap[saveBlockY+blockY][saveBlockX+blockX])
 			{

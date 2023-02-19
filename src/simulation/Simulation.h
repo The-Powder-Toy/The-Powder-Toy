@@ -23,8 +23,6 @@ class Snapshot;
 class SimTool;
 class Brush;
 class SimulationSample;
-struct matrix2d;
-struct vector2d;
 
 class Simulation;
 class Renderer;

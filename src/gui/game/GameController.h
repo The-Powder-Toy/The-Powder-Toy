@@ -1,10 +1,10 @@
 #pragma once
 #include "client/ClientListener.h"
+#include "common/Geometry.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Colour.h"
 #include "simulation/Sign.h"
 #include "simulation/Particle.h"
-#include "Misc.h"
 #include <vector>
 #include <utility>
 #include <memory>
@@ -153,7 +153,7 @@ public:
 	void HideConsole();
 	void FrameStep();
 	void TranslateSave(ui::Point point);
-	void TransformSave(matrix2d transform);
+	void TransformSave(Mat2<float> transform);
 	bool MouseInZoom(ui::Point position);
 	ui::Point PointTranslate(ui::Point point);
 	ui::Point PointTranslateNoClamp(ui::Point point);
