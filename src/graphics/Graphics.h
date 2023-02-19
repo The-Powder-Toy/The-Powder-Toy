@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Geometry.h"
 #include "common/String.h"
 #include "common/tpt-inline.h"
 #include "Pixel.h"
@@ -68,10 +69,7 @@ public:
 
 class Graphics
 {
-	int clipx1;
-	int clipy1;
-	int clipx2;
-	int clipy2;
+	Rect<int> clip;
 
 public:
 	pixel *vid;
@@ -131,7 +129,7 @@ public:
 	Graphics();
 	~Graphics();
 
-	void SetClipRect(int &x, int &y, int &w, int &h);
+	void SetClipRect(Rect<int> &);
 };
 
 bool PngDataToPixels(std::vector<pixel> &imageData, int &imgw, int &imgh, const char *pngData, size_t pngDataSize, bool addBackground);

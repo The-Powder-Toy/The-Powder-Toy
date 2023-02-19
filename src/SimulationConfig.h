@@ -9,21 +9,23 @@ constexpr float M_GRAV = 6.67300e-1f;
 
 //CELL, the size of the pressure, gravity, and wall maps. Larger than 1 to prevent extreme lag
 constexpr int CELL   =   4;
-constexpr int XCELLS = 153;
-constexpr int YCELLS =  96;
+
+constexpr auto CELLS = Vec2<int>(153, 96);
+constexpr int XCELLS = CELLS.X;
+constexpr int YCELLS = CELLS.Y;
 constexpr int NCELL  = XCELLS * YCELLS;
-constexpr Rect<int> CELLS = Rect<int>(Vec2<int>(0, 0), Vec2<int>(XCELLS - 1, YCELLS - 1));
-constexpr int XRES   = XCELLS * CELL;
-constexpr int YRES   = YCELLS * CELL;
+
+constexpr auto RES   = CELLS * CELL;
+constexpr int XRES   = RES.X;
+constexpr int YRES   = RES.Y;
 constexpr int NPART  = XRES * YRES;
-constexpr Rect<int> RES = Rect<int>(Vec2<int>(0, 0), Vec2<int>(XRES - 1, YRES - 1));
 
 constexpr int XCNTR = XRES / 2;
 constexpr int YCNTR = YRES / 2;
 
-constexpr int WINDOWW = XRES + BARSIZE;
-constexpr int WINDOWH = YRES + MENUSIZE;
-constexpr Rect<int> WINDOW = Rect<int>(Vec2<int>(0, 0), Vec2<int>(WINDOWW - 1, WINDOWH - 1));
+constexpr auto WINDOW = RES + Vec2<int>(BARSIZE, MENUSIZE);
+constexpr int WINDOWW = WINDOW.X;
+constexpr int WINDOWH = WINDOW.Y;
 
 constexpr int MAXSIGNS = 16;
 

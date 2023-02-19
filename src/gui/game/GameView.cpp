@@ -575,10 +575,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 		else
 			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), tool->GetName(), tool->GetIdentifier(), tool->GetDescription());
 
-		tempButton->clipRectX = 1;
-		tempButton->clipRectY = YRES + 1;
-		tempButton->clipRectW = XRES - 1;
-		tempButton->clipRectH = 18;
+		tempButton->clip = RectBetween(Vec2<int>(1, YRES + 1), Vec2<int>(XRES - 1, YRES + 18));
 
 		//currentY -= 17;
 		currentX -= 31;
@@ -1859,11 +1856,8 @@ void GameView::DoDraw()
 
 	c->Tick();
 	{
-		int x = 0;
-		int y = 0;
-		int w = WINDOWW;
-		int h = WINDOWH;
-		g->SetClipRect(x, y, w, h); // reset any nonsense cliprect Lua left configured
+		auto rect = WINDOW.OriginRect();
+		g->SetClipRect(rect); // reset any nonsense cliprect Lua left configured
 	}
 }
 

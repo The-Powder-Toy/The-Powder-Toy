@@ -67,11 +67,8 @@ void Panel::Draw(const Point& screenPos)
 	// draw ourself first
 	XDraw(screenPos);
 
-	int x = screenPos.X;
-	int y = screenPos.Y;
-	int w = Size.X;
-	int h = Size.Y;
-	ui::Engine::Ref().g->SetClipRect(x, y, w, h); // old cliprect is now in x, y, w, h
+	auto rect = RectSized(screenPos, Size);
+	ui::Engine::Ref().g->SetClipRect(rect); // old cliprect is now in rect
 
 	// attempt to draw all children
 	for (size_t i = 0; i < children.size(); ++i)
@@ -91,7 +88,7 @@ void Panel::Draw(const Point& screenPos)
 		}
 	}
 
-	ui::Engine::Ref().g->SetClipRect(x, y, w, h); // apply old cliprect
+	ui::Engine::Ref().g->SetClipRect(rect); // apply old cliprect
 }
 
 void Panel::Tick(float dt)

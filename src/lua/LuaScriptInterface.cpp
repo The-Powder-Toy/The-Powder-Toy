@@ -3901,11 +3901,12 @@ int LuaScriptInterface::graphics_setClipRect(lua_State * l)
 	int y = luaL_optinteger(l, 2, 0);
 	int w = luaL_optinteger(l, 3, WINDOWW);
 	int h = luaL_optinteger(l, 4, WINDOWH);
-	luacon_g->SetClipRect(x, y, w, h);
-	lua_pushinteger(l, x);
-	lua_pushinteger(l, y);
-	lua_pushinteger(l, w);
-	lua_pushinteger(l, h);
+	auto rect = RectSized(Vec2<int>(x, y), Vec2<int>(w, h));
+	luacon_g->SetClipRect(rect);
+	lua_pushinteger(l, rect.TopLeft.X);
+	lua_pushinteger(l, rect.TopLeft.Y);
+	lua_pushinteger(l, rect.Size().X);
+	lua_pushinteger(l, rect.Size().Y);
 	return 4;
 }
 

@@ -743,24 +743,11 @@ VideoBuffer Graphics::DumpFrame()
 	return newBuffer;
 }
 
-void Graphics::SetClipRect(int &x, int &y, int &w, int &h)
+void Graphics::SetClipRect(Rect<int> &rect)
 {
-	int newX = x;
-	int newY = y;
-	int newW = w;
-	int newH = h;
-	if (newX < 0) newX = 0;
-	if (newY < 0) newY = 0;
-	if (newW > WINDOWW - newX) newW = WINDOWW - newX;
-	if (newH > WINDOWH - newY) newH = WINDOWH - newY;
-	x = clipx1;
-	y = clipy1;
-	w = clipx2 - clipx1;
-	h = clipy2 - clipy1;
-	clipx1 = newX;
-	clipy1 = newY;
-	clipx2 = newX + newW;
-	clipy2 = newY + newH;
+	auto newRect = RectBetween(WINDOW.OriginRect().Clamp(rect.TopLeft), WINDOW.OriginRect().Clamp(rect.BottomRight));
+	rect = clip;
+	clip = newRect;
 }
 
 bool VideoBuffer::WritePNG(const ByteString &path) const

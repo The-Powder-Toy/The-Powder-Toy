@@ -117,9 +117,9 @@ TPT_INLINE void PIXELMETHODS_CLASS::xor_pixel(int x, int y)
 {
 	int c;
 #ifdef DO_CLIPCHECK
-	if (x<clipx1 || y<clipy1 || x>=clipx2 || y>=clipy2)
+	if (!clip.Contains(Vec2<int>(x, y)))
 #else
-	if (x<0 || y<0 || x>=VIDXRES || y>=VIDYRES)
+	if (!VIDRES.OriginRect().Contains(Vec2<int>(x, y)))
 #endif
 		return;
 	c = vid[y*(VIDXRES)+x];
@@ -134,9 +134,9 @@ void PIXELMETHODS_CLASS::blendpixel(int x, int y, int r, int g, int b, int a)
 {
 	pixel t;
 #ifdef DO_CLIPCHECK
-	if (x<clipx1 || y<clipy1 || x>=clipx2 || y>=clipy2)
+	if (!clip.Contains(Vec2<int>(x, y)))
 #else
-	if (x<0 || y<0 || x>=VIDXRES || y>=VIDYRES)
+	if (!VIDRES.OriginRect().Contains(Vec2<int>(x, y)))
 #endif
 		return;
 	if (a!=255)
@@ -153,9 +153,9 @@ void PIXELMETHODS_CLASS::addpixel(int x, int y, int r, int g, int b, int a)
 {
 	pixel t;
 #ifdef DO_CLIPCHECK
-	if (x<clipx1 || y<clipy1 || x>=clipx2 || y>=clipy2)
+	if (!clip.Contains(Vec2<int>(x, y)))
 #else
-	if (x<0 || y<0 || x>=VIDXRES || y>=VIDYRES)
+	if (!VIDRES.OriginRect().Contains(Vec2<int>(x, y)))
 #endif
 		return;
 	t = vid[y*(VIDXRES)+x];
@@ -401,32 +401,15 @@ void PIXELMETHODS_CLASS::clearrect(int x, int y, int w, int h)
 	h -= 1;
 
 #ifdef DO_CLIPCHECK
-	if (x+w > clipx2) w = clipx2-x;
-	if (y+h > clipy2) h = clipy2-y;
-	if (x<clipx1)
-	{
-		w += x - clipx1;
-		x = clipx1;
-	}
-	if (y<clipy1)
-	{
-		h += y - clipy1;
-		y = clipy1;
-	}
+	auto rect = clip.Clamp(RectSized(Vec2<int>(x, y), Vec2<int>(w, h)));
 #else
-	if (x+w > VIDXRES) w = VIDXRES-x;
-	if (y+h > VIDYRES) h = VIDYRES-y;
-	if (x<0)
-	{
-		w += x;
-		x = 0;
-	}
-	if (y<0)
-	{
-		h += y;
-		y = 0;
-	}
+	auto rect = VIDRES.OriginRect().Clamp(RectSized(Vec2<int>(x, y), Vec2<int>(w, h)));
 #endif
+	x = rect.TopLeft.X;
+	y = rect.TopLeft.Y;
+	w = rect.Size().X;
+	h = rect.Size().Y;
+
 	if (w<0 || h<0)
 		return;
 
@@ -468,9 +451,9 @@ void PIXELMETHODS_CLASS::draw_image(const pixel *img, int x, int y, int w, int h
 			for (int i = startX; i < w; i++)
 			{
 #ifdef DO_CLIPCHECK
-				if (!(x+i<clipx1 || y+j<clipy1 || x+i>=clipx2 || y+j>=clipy2))
+				if (clip.Contains(Vec2<int>(x + i, y + j)))
 #endif
-				vid[(y+j)*(VIDXRES)+(x+i)] = *img;
+					vid[(y+j)*(VIDXRES)+(x+i)] = *img;
 				img++;
 			}
 		}

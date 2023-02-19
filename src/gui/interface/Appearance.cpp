@@ -23,6 +23,7 @@ namespace ui
 		BorderHover(255, 255, 255),
 		BorderInactive(200, 200, 200),
 		BorderActive(235, 235, 235),
+		BorderFavorite(255, 255, 0),
 		BorderDisabled(100, 100, 100),
 
 		Margin(1, 4),

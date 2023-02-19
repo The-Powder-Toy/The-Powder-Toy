@@ -5,8 +5,9 @@
 #include "simulation/ElementClasses.h"
 #include <cmath>
 
-constexpr auto VIDXRES = WINDOWW;
-constexpr auto VIDYRES = WINDOWH;
+constexpr auto VIDRES = WINDOW;
+constexpr auto VIDXRES = VIDRES.X;
+constexpr auto VIDYRES = VIDRES.Y;
 
 void Renderer::RenderBegin()
 {

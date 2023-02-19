@@ -36,10 +36,12 @@ public:
 };
 
 GOLWindow::GOLWindow(GameModel * gameModel_, Simulation *sim_, int toolSelection, int rule, int colour1, int colour2):
-ui::Window(ui::Point(-1, -1), ui::Point(200, 108)),
-gameModel(gameModel_),
-sim(sim_),
-toolSelection(toolSelection)
+	ui::Window(ui::Point(-1, -1), ui::Point(200, 108)),
+	highColour(0, 0, 0, 0),
+	lowColour(0, 0, 0, 0),
+	gameModel(gameModel_),
+	sim(sim_),
+	toolSelection(toolSelection)
 {
 	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "Edit custom GOL type");
 	messageLabel->SetTextColour(style::Colour::InformationTitle);

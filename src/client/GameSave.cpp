@@ -122,16 +122,16 @@ inline Vec2<int> lroundNegInf(Vec2<float> v)
 
 Vec2<int> GameSave::Translate(Vec2<int> translate)
 {
-	auto bounds = Rect<float>(Vec2<float>::Zero);
+	auto bounds = RectAt(Vec2<float>::Zero);
 
 	// determine minimum and maximum position of all particles / signs
 	for (auto &sign : signs)
-		bounds |= Rect<float>(roundNegInf(Vec2<float>(sign.x, sign.y) + translate));
+		bounds |= RectAt(roundNegInf(Vec2<float>(sign.x, sign.y) + translate));
 
 	for (int i = 0; i < particlesCount; i++)
 	{
 		if (!particles[i].type) continue;
-		bounds |= Rect<float>(roundNegInf(Vec2<float>(particles[i].x, particles[i].y) + translate));
+		bounds |= RectAt(roundNegInf(Vec2<float>(particles[i].x, particles[i].y) + translate));
 	}
 	// determine whether corrections are needed. If moving in this direction would delete stuff, expand the save
 	auto backCorrection = Vec2<int>(
@@ -171,12 +171,12 @@ void GameSave::Transform(Mat2<int> transform, Vec2<int> translate)
 		Vec2<int>(blockDimen.X * CELL - 1, blockDimen.Y * CELL - 1),
 	};
 	// undo any translation caused by rotation
-	auto bounds = Rect<int>(transform * cornerso[0]);
+	auto bounds = RectAt(transform * cornerso[0]);
 	for (int i = 1; i < 4; i++)
-		bounds |= Rect<int>(transform * cornerso[i]);
+		bounds |= RectAt(transform * cornerso[i]);
 	Vec2<int> translateReal = translate;
 	translate -= bounds.TopLeft;
-	auto newBounds = bounds.BottomRight - bounds.TopLeft + Vec2<int>(1, 1);
+	auto newBounds = bounds.Size();
 	Transform(transform, translate, translateReal, newBounds);
 }
 
@@ -204,7 +204,7 @@ void GameSave::Transform(Mat2<int> transform, Vec2<int> translate, Vec2<int> tra
 	bool patchPipeV = transform == Mat2<int>::MirrorY;
 
 	// rotate and translate signs, parts, walls
-	auto bounds = Rect<int>(Vec2<int>::Zero, newDimen - Vec2<int>(1, 1));
+	auto bounds = newDimen.OriginRect();
 	for (auto &sign : signs)
 	{
 		auto pos = transform * Vec2<int>(sign.x, sign.y) + translate;
@@ -266,7 +266,7 @@ void GameSave::Transform(Mat2<int> transform, Vec2<int> translate, Vec2<int> tra
 	                             || (translated.Y > 0 && (int)translated.Y%CELL == 0)))
 		blockTranslate.Y = -CELL;
 
-	auto blockBounds = Rect<int>(Vec2<int>::Zero, newBlockDimen - Vec2<int>(1, 1));
+	auto blockBounds = newBlockDimen.OriginRect();
 	for (int y=0; y<blockDimen.Y; y++)
 		for (int x=0; x<blockDimen.X; x++)
 		{
