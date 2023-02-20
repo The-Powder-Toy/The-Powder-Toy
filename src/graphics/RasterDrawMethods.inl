@@ -1,5 +1,6 @@
-#include <cmath>
 #include "FontReader.h"
+#include "common/RasterGeometry.h"
+#include <cmath>
 
 int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, const String &s, int r, int g, int b, int a)
 {
@@ -173,48 +174,8 @@ void PIXELMETHODS_CLASS::addpixel(int x, int y, int r, int g, int b, int a)
 
 void PIXELMETHODS_CLASS::xor_line(int x1, int y1, int x2, int y2)
 {
-	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
-	float e, de;
-	if (cp)
-	{
-		y = x1;
-		x1 = y1;
-		y1 = y;
-		y = x2;
-		x2 = y2;
-		y2 = y;
-	}
-	if (x1 > x2)
-	{
-		y = x1;
-		x1 = x2;
-		x2 = y;
-		y = y1;
-		y1 = y2;
-		y2 = y;
-	}
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
-	e = 0.0f;
-	if (dx)
-		de = dy/(float)dx;
-	else
-		de = 0.0f;
-	y = y1;
-	sy = (y1<y2) ? 1 : -1;
-	for (x=x1; x<=x2; x++)
-	{
-		if (cp)
-			xor_pixel(y, x);
-		else
-			xor_pixel(x, y);
-		e += de;
-		if (e >= 0.5f)
-		{
-			y += sy;
-			e -= 1.0f;
-		}
-	}
+	RasterizeLine<false>(Vec2<int>(x1, y1), Vec2<int>(x2, y2),
+		[this](Vec2<int> p) { xor_pixel(p.X, p.Y); });
 }
 
 void PIXELMETHODS_CLASS::xor_rect(int x, int y, int w, int h)
@@ -263,48 +224,8 @@ void PIXELMETHODS_CLASS::xor_bitmap(unsigned char * bitmap, int x, int y, int w,
 
 void PIXELMETHODS_CLASS::draw_line(int x1, int y1, int x2, int y2, int r, int g, int b, int a)
 {
-	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
-	float e, de;
-	if (cp)
-	{
-		y = x1;
-		x1 = y1;
-		y1 = y;
-		y = x2;
-		x2 = y2;
-		y2 = y;
-	}
-	if (x1 > x2)
-	{
-		y = x1;
-		x1 = x2;
-		x2 = y;
-		y = y1;
-		y1 = y2;
-		y2 = y;
-	}
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
-	e = 0.0f;
-	if (dx)
-		de = dy/(float)dx;
-	else
-		de = 0.0f;
-	y = y1;
-	sy = (y1<y2) ? 1 : -1;
-	for (x=x1; x<=x2; x++)
-	{
-		if (cp)
-			blendpixel(y, x, r, g, b, a);
-		else
-			blendpixel(x, y, r, g, b, a);
-		e += de;
-		if (e >= 0.5f)
-		{
-			y += sy;
-			e -= 1.0f;
-		}
-	}
+	RasterizeLine<false>(Vec2<int>(x1, y1), Vec2<int>(x2, y2),
+		[this, r, g, b, a](Vec2<int> p) { blendpixel(p.X, p.Y, r, g, b, a); });
 }
 
 void PIXELMETHODS_CLASS::drawrect(int x, int y, int w, int h, int r, int g, int b, int a)
@@ -334,55 +255,17 @@ void PIXELMETHODS_CLASS::fillrect(int x, int y, int w, int h, int r, int g, int 
 
 void PIXELMETHODS_CLASS::drawcircle(int x, int y, int rx, int ry, int r, int g, int b, int a)
 {
-	int yTop = ry, yBottom, i, j;
-	if (!rx)
-	{
-		for (j = -ry; j <= ry; j++)
-			blendpixel(x, y+j, r, g, b, a);
-		return;
-	}
-	for (i = 0; i <= rx; i++) {
-		yBottom = yTop;
-		while (pow(i-rx,2.0)*pow(ry,2.0) + pow(yTop-ry,2.0)*pow(rx,2.0) <= pow(rx,2.0)*pow(ry,2.0))
-			yTop++;
-		if (yBottom != yTop)
-			yTop--;
-		for (int j = yBottom; j <= yTop; j++)
-		{
-			blendpixel(x+i-rx, y+j-ry, r, g, b, a);
-			if (i != rx)
-				blendpixel(x-i+rx, y+j-ry, r, g, b, a);
-			if (j != ry)
-			{
-				blendpixel(x+i-rx, y-j+ry, r, g, b, a);
-				if (i != rx)
-					blendpixel(x-i+rx, y-j+ry, r, g, b, a);
-			}
-		}
-	}
+	RasterizeEllipsePoints(Vec2<float>(rx * rx, ry * ry),
+		[=](Vec2<int> p) { blendpixel(x + p.X, y + p.Y, r, g, b, a); });
 }
 
 void PIXELMETHODS_CLASS::fillcircle(int x, int y, int rx, int ry, int r, int g, int b, int a)
 {
-	int yTop = ry+1, yBottom, i, j;
-	if (!rx)
-	{
-		for (j = -ry; j <= ry; j++)
-			blendpixel(x, y+j, r, g, b, a);
-		return;
-	}
-	for (i = 0; i <= rx; i++)
-	{
-		while (pow(i-rx,2.0)*pow(ry,2.0) + pow(yTop-ry,2.0)*pow(rx,2.0) <= pow(rx,2.0)*pow(ry,2.0))
-			yTop++;
-		yBottom = 2*ry - yTop;
-		for (int j = yBottom+1; j < yTop; j++)
+	RasterizeEllipseRows(Vec2<float>(rx * rx, ry * ry), [=](int xLim, int dy)
 		{
-			blendpixel(x+i-rx, y+j-ry, r, g, b, a);
-			if (i != rx)
-				blendpixel(x-i+rx, y+j-ry, r, g, b, a);
-		}
-	}
+			for (int dx = -xLim; dx <= xLim; dx++)
+				blendpixel(x + dx, y + dy, r, g, b, a);
+		});
 }
 
 void PIXELMETHODS_CLASS::gradientrect(int x, int y, int width, int height, int r, int g, int b, int a, int r2, int g2, int b2, int a2)

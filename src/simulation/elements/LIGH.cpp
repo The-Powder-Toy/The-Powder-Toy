@@ -1,3 +1,4 @@
+#include "common/RasterGeometry.h"
 #include "simulation/ElementCommon.h"
 
 static int update(UPDATE_FUNC_ARGS);
@@ -225,68 +226,23 @@ static bool create_LIGH(Simulation * sim, int x, int y, int c, float temp, int l
 
 static void create_line_par(Simulation * sim, int x1, int y1, int x2, int y2, int c, float temp, int life, int tmp, int tmp2, int i)
 {
-	bool reverseXY = abs(y2-y1) > abs(x2-x1), back = false;
-	int x, y, dx, dy, Ystep;
-	float e = 0.0f, de;
-	if (reverseXY)
-	{
-		y = x1;
-		x1 = y1;
-		y1 = y;
-		y = x2;
-		x2 = y2;
-		y2 = y;
-	}
-	if (x1 > x2)
-		back = 1;
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
-	if (dx)
-		de = dy/(float)dx;
-	else
-		de = 0.0f;
-	y = y1;
-	Ystep = (y1<y2) ? 1 : -1;
-	if (!back)
-	{
-		for (x = x1; x <= x2; x++)
-		{
-			bool ret;
-			if (reverseXY)
-				ret = create_LIGH(sim, y, x, c, temp, life, tmp, tmp2,x==x2, i);
-			else
-				ret = create_LIGH(sim, x, y, c, temp, life, tmp, tmp2,x==x2, i);
-			if (ret)
-				return;
-
-			e += de;
-			if (e >= 0.5f)
+	// force particles to be created in order from (x1,y1) to (x2,y2)
+	bool back = std::abs(x1 - x2) >= std::abs(y2 - y1) ? x1 >= x2 : y1 >= y2;
+	bool done = false;
+	if (back)
+		RasterizeLine<false>(Vec2<int>(x1, y1), Vec2<int>(x2, y2),
+			[&done, sim, c, temp, life, tmp, tmp2, x2, y2, i] (Vec2<int> p)
 			{
-				y += Ystep;
-				e -= 1.0f;
-			}
-		}
-	}
+				if (!done)
+					done = create_LIGH(sim, p.X, p.Y, c, temp, life, tmp, tmp2, p == Vec2<int>(x2, y2), i);
+			});
 	else
-	{
-		for (x = x1; x >= x2; x--)
-		{
-			bool ret;
-			if (reverseXY)
-				ret = create_LIGH(sim, y, x, c, temp, life, tmp, tmp2,x==x2, i);
-			else
-				ret = create_LIGH(sim, x, y, c, temp, life, tmp, tmp2,x==x2, i);
-			if (ret)
-				return;
-
-			e += de;
-			if (e <= -0.5f)
+		RasterizeLine<false>(-Vec2<int>(x1, y1), -Vec2<int>(x2, y2),
+			[&done, sim, c, temp, life, tmp, tmp2, x2, y2, i] (Vec2<int> p)
 			{
-				y += Ystep;
-				e += 1.0f;
-			}
-		}
-	}
+				if (!done)
+					done = create_LIGH(sim, -p.X, -p.Y, c, temp, life, tmp, tmp2, -p == Vec2<int>(x2, y2), i);
+			});
 }
 
 static int graphics(GRAPHICS_FUNC_ARGS)

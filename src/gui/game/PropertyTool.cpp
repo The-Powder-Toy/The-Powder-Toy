@@ -1,5 +1,6 @@
 #include "Tool.h"
 
+#include "common/RasterGeometry.h"
 #include "prefs/GlobalPrefs.h"
 #include "Menu.h"
 #include "Format.h"
@@ -255,7 +256,7 @@ void PropertyTool::OpenWindow(Simulation *sim)
 	new PropertyWindow(this, sim);
 }
 
-void PropertyTool::SetProperty(Simulation *sim, ui::Point position)
+void PropertyTool::SetProperty(Simulation *sim, Pos position)
 {
 	if(position.X<0 || position.X>XRES || position.Y<0 || position.Y>YRES || !validProperty)
 		return;
@@ -288,7 +289,7 @@ void PropertyTool::SetProperty(Simulation *sim, ui::Point position)
 	}
 }
 
-void PropertyTool::Draw(Simulation *sim, Brush const &cBrush, ui::Point position)
+void PropertyTool::Draw(Simulation *sim, Brush const &cBrush, Pos position)
 {
 	for (ui::Point off : cBrush)
 	{
@@ -298,61 +299,15 @@ void PropertyTool::Draw(Simulation *sim, Brush const &cBrush, ui::Point position
 	}
 }
 
-void PropertyTool::DrawLine(Simulation *sim, Brush const &cBrush, ui::Point position, ui::Point position2, bool dragging)
+void PropertyTool::DrawLine(Simulation *sim, Brush const &cBrush, Pos position1, Pos position2, bool dragging)
 {
-	int x1 = position.X, y1 = position.Y, x2 = position2.X, y2 = position2.Y;
-	bool reverseXY = abs(y2-y1) > abs(x2-x1);
-	int x, y, dx, dy, sy, rx = cBrush.GetRadius().X, ry = cBrush.GetRadius().Y;
-	float e = 0.0f, de;
-	if (reverseXY)
-	{
-		y = x1;
-		x1 = y1;
-		y1 = y;
-		y = x2;
-		x2 = y2;
-		y2 = y;
-	}
-	if (x1 > x2)
-	{
-		y = x1;
-		x1 = x2;
-		x2 = y;
-		y = y1;
-		y1 = y2;
-		y2 = y;
-	}
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
-	if (dx)
-		de = dy/(float)dx;
+	if (cBrush.GetRadius() == Pos::Zero)
+		RasterizeLine<true>(position1, position2, [this, sim, &cBrush](Pos p) { Draw(sim, cBrush, p); });
 	else
-		de = 0.0f;
-	y = y1;
-	sy = (y1<y2) ? 1 : -1;
-	for (x=x1; x<=x2; x++)
-	{
-		if (reverseXY)
-			Draw(sim, cBrush, ui::Point(y, x));
-		else
-			Draw(sim, cBrush, ui::Point(x, y));
-		e += de;
-		if (e >= 0.5f)
-		{
-			y += sy;
-			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
-			{
-				if (reverseXY)
-					Draw(sim, cBrush, ui::Point(y, x));
-				else
-					Draw(sim, cBrush, ui::Point(x, y));
-			}
-			e -= 1.0f;
-		}
-	}
+		RasterizeLine<false>(position1, position2, [this, sim, &cBrush](Pos p) { Draw(sim, cBrush, p); });
 }
 
-void PropertyTool::DrawRect(Simulation *sim, Brush const &cBrush, ui::Point position, ui::Point position2)
+void PropertyTool::DrawRect(Simulation *sim, Brush const &cBrush, Pos position, Pos position2)
 {
 	int x1 = position.X, y1 = position.Y, x2 = position2.X, y2 = position2.Y;
 	int i, j;
@@ -370,10 +325,10 @@ void PropertyTool::DrawRect(Simulation *sim, Brush const &cBrush, ui::Point posi
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			SetProperty(sim, ui::Point(i, j));
+			SetProperty(sim, Pos(i, j));
 }
 
-void PropertyTool::DrawFill(Simulation *sim, Brush const &cBrush, ui::Point position)
+void PropertyTool::DrawFill(Simulation *sim, Brush const &cBrush, Pos position)
 {
 	if (validProperty)
 		sim->flood_prop(position.X, position.Y, propOffset, propValue, propType);

@@ -63,7 +63,7 @@ public:
 
 	ui::Point GetSize() const
 	{
-		return radius * 2 + 1;
+		return radius * 2 + ui::Point(1, 1);
 	}
 
 	ui::Point GetRadius() const

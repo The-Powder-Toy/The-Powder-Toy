@@ -6,6 +6,7 @@
 #include "SimulationData.h"
 #include "GOLString.h"
 #include "client/GameSave.h"
+#include "common/RasterGeometry.h"
 #include "common/tpt-compat.h"
 #include "common/tpt-rand.h"
 #include "common/tpt-thread-local.h"
@@ -837,55 +838,10 @@ void Simulation::SetEdgeMode(int newEdgeMode)
 // Would make sense to move to Editing.cpp but SPRK needs it.
 void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c)
 {
-	bool reverseXY = abs(y2-y1) > abs(x2-x1);
-	int x, y, dx, dy, sy;
-	float e, de;
 	int v = ID(c);
 	c = TYP(c);
-	if (reverseXY)
-	{
-		y = x1;
-		x1 = y1;
-		y1 = y;
-		y = x2;
-		x2 = y2;
-		y2 = y;
-	}
-	if (x1 > x2)
-	{
-		y = x1;
-		x1 = x2;
-		x2 = y;
-		y = y1;
-		y1 = y2;
-		y2 = y;
-	}
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
-	e = 0.0f;
-	de = dx ? dy/(float)dx : 0.0f;
-	y = y1;
-	sy = (y1<y2) ? 1 : -1;
-	for (x=x1; x<=x2; x++)
-	{
-		if (reverseXY)
-			create_part(-1, y, x, c, v);
-		else
-			create_part(-1, x, y, c, v);
-		e += de;
-		if (e >= 0.5f)
-		{
-			y += sy;
-			if ((y1<y2) ? (y<=y2) : (y>=y2))
-			{
-				if (reverseXY)
-					create_part(-1, y, x, c, v);
-				else
-					create_part(-1, x, y, c, v);
-			}
-			e -= 1.0f;
-		}
-	}
+	RasterizeLine<true>(Vec2<int>(x1, y1), Vec2<int>(x2, y2),
+		[=](Vec2<int> p) { create_part(-1, p.X, p.Y, c, v); });
 }
 
 void Simulation::orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[])

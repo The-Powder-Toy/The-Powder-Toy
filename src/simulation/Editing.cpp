@@ -5,6 +5,7 @@
 #include "Snapshot.h"
 #include "Air.h"
 #include "gravity/Gravity.h"
+#include "common/RasterGeometry.h"
 #include "common/tpt-rand.h"
 #include "common/tpt-compat.h"
 #include "client/GameSave.h"
@@ -242,52 +243,8 @@ int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush const 
 
 void Simulation::CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int wall, Brush const *cBrush)
 {
-	int x, y, dx, dy, sy;
-	bool reverseXY = abs(y2-y1) > abs(x2-x1);
-	float e = 0.0f, de;
-	if (reverseXY)
-	{
-		y = x1;
-		x1 = y1;
-		y1 = y;
-		y = x2;
-		x2 = y2;
-		y2 = y;
-	}
-	if (x1 > x2)
-	{
-		y = x1;
-		x1 = x2;
-		x2 = y;
-		y = y1;
-		y1 = y2;
-		y2 = y;
-	}
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
-	de = dx ? dy/(float)dx : 0.0f;
-	y = y1;
-	sy = (y1<y2) ? 1 : -1;
-	for (x=x1; x<=x2; x++)
-	{
-		if (reverseXY)
-			CreateWalls(y, x, rx, ry, wall, cBrush);
-		else
-			CreateWalls(x, y, rx, ry, wall, cBrush);
-		e += de;
-		if (e >= 0.5f)
-		{
-			y += sy;
-			if ((y1<y2) ? (y<=y2) : (y>=y2))
-			{
-				if (reverseXY)
-					CreateWalls(y, x, rx, ry, wall, cBrush);
-				else
-					CreateWalls(x, y, rx, ry, wall, cBrush);
-			}
-			e -= 1.0f;
-		}
-	}
+	RasterizeLine<true>(Vec2<int>(x1, y1), Vec2<int>(x2, y2),
+		[=](Vec2<int> p) { CreateWalls(p.X, p.Y, rx, ry, wall, cBrush); });
 }
 
 void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int wall)
@@ -621,56 +578,12 @@ void Simulation::ApplyDecorationPoint(int positionX, int positionY, int colR, in
 
 void Simulation::ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode, Brush const &cBrush)
 {
-	bool reverseXY = abs(y2-y1) > abs(x2-x1);
-	int x, y, dx, dy, sy, rx = 0, ry = 0;
-	float e = 0.0f, de;
-
-	rx = cBrush.GetRadius().X;
-	ry = cBrush.GetRadius().Y;
-
-	if (reverseXY)
-	{
-		y = x1;
-		x1 = y1;
-		y1 = y;
-		y = x2;
-		x2 = y2;
-		y2 = y;
-	}
-	if (x1 > x2)
-	{
-		y = x1;
-		x1 = x2;
-		x2 = y;
-		y = y1;
-		y1 = y2;
-		y2 = y;
-	}
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
-	de = dx ? dy/(float)dx : 0.0f;
-	y = y1;
-	sy = (y1<y2) ? 1 : -1;
-	for (x=x1; x<=x2; x++)
-	{
-		if (reverseXY)
-			ApplyDecorationPoint(y, x, colR, colG, colB, colA, mode, cBrush);
-		else
-			ApplyDecorationPoint(x, y, colR, colG, colB, colA, mode, cBrush);
-		e += de;
-		if (e >= 0.5f)
-		{
-			y += sy;
-			if (!(rx+ry))
-			{
-				if (reverseXY)
-					ApplyDecorationPoint(y, x, colR, colG, colB, colA, mode, cBrush);
-				else
-					ApplyDecorationPoint(x, y, colR, colG, colB, colA, mode, cBrush);
-			}
-			e -= 1.0f;
-		}
-	}
+	if (cBrush.GetRadius() == Vec2<int>::Zero)
+		RasterizeLine<true>(Vec2<int>(x1, y1), Vec2<int>(x2, y2),
+			[this, colR, colG, colB, colA, mode, &cBrush](Vec2<int> p) { ApplyDecorationPoint(p.X, p.Y, colR, colG, colB, colA, mode, cBrush); });
+	else
+		RasterizeLine<false>(Vec2<int>(x1, y1), Vec2<int>(x2, y2),
+			[this, colR, colG, colB, colA, mode, &cBrush](Vec2<int> p) { ApplyDecorationPoint(p.X, p.Y, colR, colG, colB, colA, mode, cBrush); });
 }
 
 void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode)
@@ -785,52 +698,12 @@ int Simulation::ToolBrush(int positionX, int positionY, int tool, Brush const &c
 
 void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush const &cBrush, float strength)
 {
-	bool reverseXY = abs(y2-y1) > abs(x2-x1);
-	int x, y, dx, dy, sy, rx = cBrush.GetRadius().X, ry = cBrush.GetRadius().Y;
-	float e = 0.0f, de;
-	if (reverseXY)
-	{
-		y = x1;
-		x1 = y1;
-		y1 = y;
-		y = x2;
-		x2 = y2;
-		y2 = y;
-	}
-	if (x1 > x2)
-	{
-		y = x1;
-		x1 = x2;
-		x2 = y;
-		y = y1;
-		y1 = y2;
-		y2 = y;
-	}
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
-	de = dx ? dy/(float)dx : 0.0f;
-	y = y1;
-	sy = (y1<y2) ? 1 : -1;
-	for (x=x1; x<=x2; x++)
-	{
-		if (reverseXY)
-			ToolBrush(y, x, tool, cBrush, strength);
-		else
-			ToolBrush(x, y, tool, cBrush, strength);
-		e += de;
-		if (e >= 0.5f)
-		{
-			y += sy;
-			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
-			{
-				if (reverseXY)
-					ToolBrush(y, x, tool, cBrush, strength);
-				else
-					ToolBrush(x, y, tool, cBrush, strength);
-			}
-			e -= 1.0f;
-		}
-	}
+	if (cBrush.GetRadius() == Vec2<int>::Zero)
+		RasterizeLine<true>(Vec2<int>(x1, y1), Vec2<int>(x2, y2),
+			[this, tool, strength, &cBrush](Vec2<int> p) { ToolBrush(p.X, p.Y, tool, cBrush, strength); });
+	else
+		RasterizeLine<false>(Vec2<int>(x1, y1), Vec2<int>(x2, y2),
+			[this, tool, strength, &cBrush](Vec2<int> p) { ToolBrush(p.X, p.Y, tool, cBrush, strength); });
 }
 
 void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, float strength)
@@ -927,52 +800,12 @@ int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags)
 
 void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush const &cBrush, int flags)
 {
-	int x, y, dx, dy, sy, rx = cBrush.GetRadius().X, ry = cBrush.GetRadius().Y;
-	bool reverseXY = abs(y2-y1) > abs(x2-x1);
-	float e = 0.0f, de;
-	if (reverseXY)
-	{
-		y = x1;
-		x1 = y1;
-		y1 = y;
-		y = x2;
-		x2 = y2;
-		y2 = y;
-	}
-	if (x1 > x2)
-	{
-		y = x1;
-		x1 = x2;
-		x2 = y;
-		y = y1;
-		y1 = y2;
-		y2 = y;
-	}
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
-	de = dx ? dy/(float)dx : 0.0f;
-	y = y1;
-	sy = (y1<y2) ? 1 : -1;
-	for (x=x1; x<=x2; x++)
-	{
-		if (reverseXY)
-			CreateParts(y, x, c, cBrush, flags);
-		else
-			CreateParts(x, y, c, cBrush, flags);
-		e += de;
-		if (e >= 0.5f)
-		{
-			y += sy;
-			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
-			{
-				if (reverseXY)
-					CreateParts(y, x, c, cBrush, flags);
-				else
-					CreateParts(x, y, c, cBrush, flags);
-			}
-			e -= 1.0f;
-		}
-	}
+	if (cBrush.GetRadius() == Vec2<int>::Zero)
+		RasterizeLine<true>(Vec2<int>(x1, y1), Vec2<int>(x2, y2),
+			[this, c, flags, &cBrush](Vec2<int> p) { CreateParts(p.X, p.Y, c, cBrush, flags); });
+	else
+		RasterizeLine<false>(Vec2<int>(x1, y1), Vec2<int>(x2, y2),
+			[this, c, flags, &cBrush](Vec2<int> p) { CreateParts(p.X, p.Y, c, cBrush, flags); });
 }
 
 void Simulation::CreateBox(int x1, int y1, int x2, int y2, int c, int flags)
