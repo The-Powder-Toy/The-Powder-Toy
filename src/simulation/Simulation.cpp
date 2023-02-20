@@ -805,29 +805,10 @@ void Simulation::SetEdgeMode(int newEdgeMode)
 	{
 	case 0:
 	case 2:
-		for(int i = 0; i<XCELLS; i++)
-		{
-			bmap[0][i] = 0;
-			bmap[YCELLS-1][i] = 0;
-		}
-		for(int i = 1; i<(YCELLS-1); i++)
-		{
-			bmap[i][0] = 0;
-			bmap[i][XCELLS-1] = 0;
-		}
+		RasterizeRect(CELLS.OriginRect(), [this](Vec2<int> p) { bmap[p.Y][p.X] = 0; });
 		break;
 	case 1:
-		int i;
-		for(i=0; i<XCELLS; i++)
-		{
-			bmap[0][i] = WL_WALL;
-			bmap[YCELLS-1][i] = WL_WALL;
-		}
-		for(i=1; i<(YCELLS-1); i++)
-		{
-			bmap[i][0] = WL_WALL;
-			bmap[i][XCELLS-1] = WL_WALL;
-		}
+		RasterizeRect(CELLS.OriginRect(), [this](Vec2<int> p) { bmap[p.Y][p.X] = WL_WALL; });
 		break;
 	default:
 		SetEdgeMode(0);

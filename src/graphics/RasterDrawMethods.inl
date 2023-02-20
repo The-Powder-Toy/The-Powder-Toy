@@ -180,34 +180,8 @@ void PIXELMETHODS_CLASS::xor_line(int x1, int y1, int x2, int y2)
 
 void PIXELMETHODS_CLASS::xor_rect(int x, int y, int w, int h)
 {
-	int i;
-	for (i=0; i<w; i+=2)
-	{
-		xor_pixel(x+i, y);
-	}
-	if (h != 1)
-	{
-		if (h%2 == 1) i = 2;
-		else i = 1;
-		for (; i<w; i+=2)
-		{
-			xor_pixel(x+i, y+h-1);
-		}
-	}
-
-	for (i=2; i<h; i+=2)
-	{
-		xor_pixel(x, y+i);
-	}
-	if (w != 1)
-	{
-		if (w%2 == 1) i = 2;
-		else i = 1;
-		for (; i<h-1; i+=2)
-		{
-			xor_pixel(x+w-1, y+i);
-		}
-	}
+	RasterizeDottedRect(RectSized(Vec2<int>(x, y), Vec2<int>(w, h)),
+		[this](Vec2<int> p) { xor_pixel(p.X, p.Y); });
 }
 
 void PIXELMETHODS_CLASS::xor_bitmap(unsigned char * bitmap, int x, int y, int w, int h)
@@ -230,19 +204,8 @@ void PIXELMETHODS_CLASS::draw_line(int x1, int y1, int x2, int y2, int r, int g,
 
 void PIXELMETHODS_CLASS::drawrect(int x, int y, int w, int h, int r, int g, int b, int a)
 {
-	int i;
-	w--;
-	h--;
-	for (i=0; i<=w; i++)
-	{
-		blendpixel(x+i, y, r, g, b, a);
-		blendpixel(x+i, y+h, r, g, b, a);
-	}
-	for (i=1; i<h; i++)
-	{
-		blendpixel(x, y+i, r, g, b, a);
-		blendpixel(x+w, y+i, r, g, b, a);
-	}
+	RasterizeRect(RectSized(Vec2<int>(x, y), Vec2<int>(w, h)),
+		[this, r, g, b, a](Vec2<int> p) { blendpixel(p.X, p.Y, r, g, b, a); });
 }
 
 void PIXELMETHODS_CLASS::fillrect(int x, int y, int w, int h, int r, int g, int b, int a)

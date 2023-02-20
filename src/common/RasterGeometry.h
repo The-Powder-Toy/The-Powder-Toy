@@ -119,3 +119,46 @@ void RasterizeEllipseRows(Vec2<float> radiusSquared, F f)
 			if (y) f(xLim, -y);
 		});
 }
+
+// Call f for every point on the boundary of the indicated rectangle (so that
+// TopLeft and BottomRight are both corners).
+template<typename F>
+void RasterizeRect(Rect<int> rect, F f)
+{
+	for (int x = rect.TopLeft.X; x <= rect.BottomRight.X; x++)
+		f(Vec2<int>(x, rect.TopLeft.Y));
+
+	if (rect.TopLeft.Y != rect.BottomRight.Y)
+		for (int x = rect.TopLeft.X; x <= rect.BottomRight.X; x++)
+			f(Vec2<int>(x, rect.BottomRight.Y));
+
+	// corners already drawn
+	for (int y = rect.TopLeft.Y + 1; y <= rect.BottomRight.Y - 1; y++)
+		f(Vec2<int>(rect.TopLeft.X, y));
+
+	if (rect.TopLeft.X != rect.BottomRight.X)
+		for (int y = rect.TopLeft.Y + 1; y <= rect.BottomRight.Y - 1; y++)
+			f(Vec2<int>(rect.BottomRight.X, y));
+}
+
+// Call f for every point on the dotted boundary of the indicated rectangle.
+template<typename F>
+void RasterizeDottedRect(Rect<int> rect, F f)
+{
+	for (int x = rect.TopLeft.X; x <= rect.BottomRight.X; x += 2)
+		f(Vec2<int>(x, rect.TopLeft.Y));
+
+	int bottomOff = (rect.BottomRight.Y - rect.TopLeft.Y) % 2;
+	if (rect.TopLeft.Y != rect.BottomRight.Y)
+		for (int x = rect.TopLeft.X + bottomOff; x <= rect.BottomRight.X; x += 2)
+			f(Vec2<int>(x, rect.BottomRight.Y));
+
+	// corners already drawn
+	for (int y = rect.TopLeft.Y + 1 + 1; y <= rect.BottomRight.Y - 1; y += 2)
+		f(Vec2<int>(rect.TopLeft.X, y));
+
+	int leftOff = (rect.BottomRight.X - rect.TopLeft.X + 1) % 2;
+	if (rect.TopLeft.X != rect.BottomRight.X)
+		for (int y = rect.TopLeft.Y + 1 + leftOff; y <= rect.BottomRight.Y - 1; y += 2)
+			f(Vec2<int>(rect.BottomRight.X, y));
+}
