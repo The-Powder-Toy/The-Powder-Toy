@@ -100,8 +100,11 @@ struct Vec2
 		return RectSized(Vec2<T>::Zero, *this);
 	}
 
-	constexpr static Vec2<T> Zero = Vec2<T>(0, 0);
+	static Vec2<T> Zero;
 };
+
+template<typename T, typename V>
+Vec2<T> Vec2<T, V>::Zero = Vec2<T>(0, 0);
 
 template<typename T, typename = std::enable_if<std::is_arithmetic_v<T>, void>>
 struct Mat2
@@ -134,11 +137,17 @@ struct Mat2
 		return Vec2<decltype(std::declval<T>() * std::declval<S>())>(A * vec.X + B * vec.Y, C * vec.X + D * vec.Y);
 	}
 
-	constexpr static Mat2<T> Identity = Mat2(1, 0, 0, 1);
-	constexpr static Mat2<T> MirrorX = Mat2(-1, 0, 0, 1);
-	constexpr static Mat2<T> MirrorY = Mat2(1, 0, 0, -1);
-	constexpr static Mat2<T> CCW = Mat2(0, 1, -1, 0); // reminder: the Y axis points down
+	static Mat2<T> Identity, MirrorX, MirrorY, CCW;
 };
+
+template<typename T, typename V>
+Mat2<T> Mat2<T, V>::Identity = Mat2<T>(1, 0, 0, 1);
+template<typename T, typename V>
+Mat2<T> Mat2<T, V>::MirrorX = Mat2<T>(-1, 0, 0, 1);
+template<typename T, typename V>
+Mat2<T> Mat2<T, V>::MirrorY = Mat2<T>(1, 0, 0, -1);
+template<typename T, typename V>
+Mat2<T> Mat2<T, V>::CCW = Mat2<T>(0, 1, -1, 0); // reminder: the Y axis points down
 
 template<typename T, typename = std::enable_if<std::is_arithmetic_v<T>, void>>
 static inline Rect<T> RectBetween(Vec2<T>, Vec2<T>);
