@@ -1,4 +1,5 @@
 #include "Graphics.h"
+#include "RasterDrawMethodsImpl.h"
 #include "SimulationConfig.h"
 #include <cstdlib>
 #include <cstring>
@@ -26,9 +27,4 @@ void Graphics::Finalise()
 
 }
 
-constexpr auto VIDXRES = WINDOWW;
-constexpr auto VIDYRES = WINDOWH;
-#define PIXELMETHODS_CLASS Graphics
-#define DO_CLIPCHECK
-#include "RasterDrawMethods.inl"
-#undef PIXELMETHODS_CLASS
+template class RasterDrawMethods<Graphics>;

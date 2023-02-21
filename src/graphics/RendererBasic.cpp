@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "RasterDrawMethodsImpl.h"
 #include "gui/game/RenderPreset.h"
 #include "simulation/Simulation.h"
 #include "simulation/ElementGraphics.h"
@@ -528,6 +529,4 @@ Renderer::~Renderer()
 	delete[] graphicscache;
 }
 
-#define PIXELMETHODS_CLASS Renderer
-#include "RasterDrawMethods.inl"
-#undef PIXELMETHODS_CLASS
+template class RasterDrawMethods<Renderer>;
