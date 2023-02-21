@@ -38,30 +38,30 @@ struct Vec2
 	template<typename S>
 	constexpr inline Vec2<decltype(std::declval<T>() + std::declval<S>())> operator+(Vec2<S> other) const
 	{
-		return Vec2(X + other.X, Y + other.Y);
+		return Vec2<decltype(std::declval<T>() + std::declval<S>())>(X + other.X, Y + other.Y);
 	}
 
 	inline Vec2<T> operator-() const
 	{
-		return Vec2(-X, -Y);
+		return Vec2<T>(-X, -Y);
 	}
 
 	template<typename S>
 	inline Vec2<decltype(std::declval<T>() - std::declval<S>())> operator-(Vec2<S> other) const
 	{
-		return Vec2(X - other.X, Y - other.Y);
+		return Vec2<decltype(std::declval<T>() - std::declval<S>())>(X - other.X, Y - other.Y);
 	}
 
 	template<typename S, typename = std::enable_if<std::is_arithmetic_v<S>, void>>
 	constexpr inline Vec2<decltype(std::declval<T>() * std::declval<S>())> operator*(S other) const
 	{
-		return Vec2(X * other, Y * other);
+		return Vec2<decltype(std::declval<T>() * std::declval<S>())>(X * other, Y * other);
 	}
 
 	template<typename S, typename = std::enable_if<std::is_arithmetic_v<S>, void>>
 	inline Vec2<decltype(std::declval<T>() / std::declval<S>())> operator/(S other) const
 	{
-		return Vec2(X / other, Y / other);
+		return Vec2<decltype(std::declval<T>() / std::declval<S>())>(X / other, Y / other);
 	}
 
 	template<typename S>
@@ -166,6 +166,41 @@ private:
 	}
 	friend Rect<T> RectBetween<T>(Vec2<T>, Vec2<T>);
 
+	struct iterator
+	{
+		int x, y, minX, maxX;
+
+		iterator &operator++()
+		{
+			if (x == maxX)
+			{
+				x = minX;
+				y++;
+			}
+			else
+			{
+				x++;
+			}
+			return *this;
+		}
+
+		Vec2<T> operator*() const
+		{
+			return Vec2<T>(x, y);
+		}
+
+		bool operator!=(iterator other) const
+		{
+			return x != other.x || y != other.y || minX != other.minX || maxX != other.maxX;
+		}
+
+		using difference_type = void;
+		using value_type = Vec2<T>;
+		using pointer = void;
+		using reference = void;
+		using iterator_category = std::forward_iterator_tag;
+	};
+
 public:
 	inline Rect<T> operator|(Rect<T> other) const
 	{
@@ -199,6 +234,16 @@ public:
 	inline Vec2<T> Size() const
 	{
 		return BottomRight - TopLeft + Vec2<T>(1, 1);
+	}
+
+	iterator begin() const
+	{
+		return iterator{TopLeft.X, TopLeft.Y, TopLeft.X, BottomRight.X};
+	}
+
+	iterator end() const
+	{
+		return iterator{TopLeft.X, BottomRight.Y + 1, TopLeft.X, BottomRight.X};
 	}
 };
 

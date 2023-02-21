@@ -50,29 +50,43 @@ public:
 	}
 };
 
-template<class Item>
-struct Plane
+template<typename T>
+class PlaneAdapter
 {
-	int width = 0;
-	int height = 0;
-	std::vector<Item> items;
-	// invariant: items.size() == width * height
+	int width;
+public:
+	T Base;
 
-	Item *operator [](int y)
-	{
-		return &items[y * width];
-	}
+	// ideally, value_type = std::indirectly_readable_traits<T>::value_type
+	using value_type = std::remove_reference_t<decltype(std::declval<T>()[0])>;
 
-	const Item *operator [](int y) const
-	{
-		return &items[y * width];
-	}
+	PlaneAdapter() = default;
 
-	Plane() = default;
-	Plane(int newWidth, int newHeight, Item defaultVal) : width(newWidth), height(newHeight), items(width * height, defaultVal)
+	PlaneAdapter(int width, T Base):
+		width(width),
+		Base(Base)
 	{
 	}
+
+	PlaneAdapter(Vec2<int> size, value_type defaultVal):
+		width(size.X),
+		Base(size.X * size.Y, defaultVal)
+	{
+	}
+
+	value_type &operator[](Vec2<int> p)
+	{
+		return Base[p.X + p.Y * width];
+	};
+
+	value_type const &operator[](Vec2<int> p) const
+	{
+		return Base[p.X + p.Y * width];
+	};
 };
+
+template<typename T>
+using Plane = PlaneAdapter<std::vector<T>>;
 
 class GameSave
 {

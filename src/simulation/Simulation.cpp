@@ -307,27 +307,24 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 			signs.push_back(tempSign);
 		}
 	}
-	for(int saveBlockX = 0; saveBlockX < save->blockDimen.X; saveBlockX++)
+	for(auto pos : save->blockDimen.OriginRect())
 	{
-		for(int saveBlockY = 0; saveBlockY < save->blockDimen.Y; saveBlockY++)
+		if(save->blockMap[pos])
 		{
-			if(save->blockMap[saveBlockY][saveBlockX])
+			bmap[pos.Y+blockY][pos.X+blockX] = save->blockMap[pos];
+			fvx[pos.Y+blockY][pos.X+blockX] = save->fanVelX[pos];
+			fvy[pos.Y+blockY][pos.X+blockX] = save->fanVelY[pos];
+		}
+		if (includePressure)
+		{
+			if (save->hasPressure)
 			{
-				bmap[saveBlockY+blockY][saveBlockX+blockX] = save->blockMap[saveBlockY][saveBlockX];
-				fvx[saveBlockY+blockY][saveBlockX+blockX] = save->fanVelX[saveBlockY][saveBlockX];
-				fvy[saveBlockY+blockY][saveBlockX+blockX] = save->fanVelY[saveBlockY][saveBlockX];
+				pv[pos.Y+blockY][pos.X+blockX] = save->pressure[pos];
+				vx[pos.Y+blockY][pos.X+blockX] = save->velocityX[pos];
+				vy[pos.Y+blockY][pos.X+blockX] = save->velocityY[pos];
 			}
-			if (includePressure)
-			{
-				if (save->hasPressure)
-				{
-					pv[saveBlockY+blockY][saveBlockX+blockX] = save->pressure[saveBlockY][saveBlockX];
-					vx[saveBlockY+blockY][saveBlockX+blockX] = save->velocityX[saveBlockY][saveBlockX];
-					vy[saveBlockY+blockY][saveBlockX+blockX] = save->velocityY[saveBlockY][saveBlockX];
-				}
-				if (save->hasAmbientHeat)
-					hv[saveBlockY+blockY][saveBlockX+blockX] = save->ambientHeat[saveBlockY][saveBlockX];
-			}
+			if (save->hasAmbientHeat)
+				hv[pos.Y+blockY][pos.X+blockX] = save->ambientHeat[pos];
 		}
 	}
 
@@ -459,23 +456,20 @@ GameSave * Simulation::Save(bool includePressure, int fullX, int fullY, int full
 		}
 	}
 
-	for(int saveBlockX = 0; saveBlockX < newSave->blockDimen.X; saveBlockX++)
+	for(auto pos : newSave->blockDimen.OriginRect())
 	{
-		for(int saveBlockY = 0; saveBlockY < newSave->blockDimen.Y; saveBlockY++)
+		if(bmap[pos.Y+blockY][pos.X+blockX])
 		{
-			if(bmap[saveBlockY+blockY][saveBlockX+blockX])
-			{
-				newSave->blockMap[saveBlockY][saveBlockX] = bmap[saveBlockY+blockY][saveBlockX+blockX];
-				newSave->fanVelX[saveBlockY][saveBlockX] = fvx[saveBlockY+blockY][saveBlockX+blockX];
-				newSave->fanVelY[saveBlockY][saveBlockX] = fvy[saveBlockY+blockY][saveBlockX+blockX];
-			}
-			if (includePressure)
-			{
-				newSave->pressure[saveBlockY][saveBlockX] = pv[saveBlockY+blockY][saveBlockX+blockX];
-				newSave->velocityX[saveBlockY][saveBlockX] = vx[saveBlockY+blockY][saveBlockX+blockX];
-				newSave->velocityY[saveBlockY][saveBlockX] = vy[saveBlockY+blockY][saveBlockX+blockX];
-				newSave->ambientHeat[saveBlockY][saveBlockX] = hv[saveBlockY+blockY][saveBlockX+blockX];
-			}
+			newSave->blockMap[pos] = bmap[pos.Y+blockY][pos.X+blockX];
+			newSave->fanVelX[pos] = fvx[pos.Y+blockY][pos.X+blockX];
+			newSave->fanVelY[pos] = fvy[pos.Y+blockY][pos.X+blockX];
+		}
+		if (includePressure)
+		{
+			newSave->pressure[pos] = pv[pos.Y+blockY][pos.X+blockX];
+			newSave->velocityX[pos] = vx[pos.Y+blockY][pos.X+blockX];
+			newSave->velocityY[pos] = vy[pos.Y+blockY][pos.X+blockX];
+			newSave->ambientHeat[pos] = hv[pos.Y+blockY][pos.X+blockX];
 		}
 	}
 	if (includePressure)
