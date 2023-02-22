@@ -78,13 +78,13 @@ build_matrix = []
 publish_matrix = []
 # consider disabling line wrapping to edit this monstrosity
 for        arch,  platform,     libc,   statdyn, bplatform,         runson, suffix, publish, artifact, dbgsuffix,       mode,             starcatcher,    dbgrel in [
-	(  'x86_64',   'linux',    'gnu',  'static',   'linux', 'ubuntu-18.04',     '',   False,    False,      None,       None,                    None,   'debug' ),
-	(  'x86_64',   'linux',    'gnu',  'static',   'linux', 'ubuntu-18.04',     '',    True,     True,    '.dbg',       None, 'x86_64-lin-gcc-static', 'release' ),
-	(  'x86_64',   'linux',    'gnu',  'static',   'linux', 'ubuntu-18.04',     '',   False,     True,    '.dbg', 'appimage',                    None, 'release' ),
-	(  'x86_64',   'linux',    'gnu', 'dynamic',   'linux', 'ubuntu-18.04',     '',   False,    False,      None,       None,                    None,   'debug' ),
-	(  'x86_64',   'linux',    'gnu', 'dynamic',   'linux', 'ubuntu-18.04',     '',   False,    False,      None,   'nohttp',                    None,   'debug' ),
-	(  'x86_64',   'linux',    'gnu', 'dynamic',   'linux', 'ubuntu-18.04',     '',   False,    False,      None,    'nolua',                    None,   'debug' ),
-	(  'x86_64',   'linux',    'gnu', 'dynamic',   'linux', 'ubuntu-18.04',     '',   False,    False,      None,       None,                    None, 'release' ),
+	(  'x86_64',   'linux',    'gnu',  'static',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,       None,                    None,   'debug' ),
+	(  'x86_64',   'linux',    'gnu',  'static',   'linux', 'ubuntu-20.04',     '',    True,     True,    '.dbg',       None, 'x86_64-lin-gcc-static', 'release' ),
+	(  'x86_64',   'linux',    'gnu',  'static',   'linux', 'ubuntu-20.04',     '',   False,     True,    '.dbg', 'appimage',                    None, 'release' ),
+	(  'x86_64',   'linux',    'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,       None,                    None,   'debug' ),
+	(  'x86_64',   'linux',    'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,   'nohttp',                    None,   'debug' ),
+	(  'x86_64',   'linux',    'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,    'nolua',                    None,   'debug' ),
+	(  'x86_64',   'linux',    'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,       None,                    None, 'release' ),
 #	(  'x86_64', 'windows',  'mingw',  'static',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,       None,                    None,   'debug' ), # ubuntu-20.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them
 #	(  'x86_64', 'windows',  'mingw',  'static',   'linux', 'ubuntu-20.04',     '',   False,     True,    '.dbg',       None,                    None, 'release' ), # ubuntu-20.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them
 	(  'x86_64', 'windows',  'mingw', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,       None,                    None,   'debug' ),
@@ -109,14 +109,14 @@ for        arch,  platform,     libc,   statdyn, bplatform,         runson, suff
 	( 'aarch64',  'darwin',  'macos',  'static',  'darwin',   'macos-11.0', '.dmg',    True,     True,      None,      'dmg',  'arm64-mac-gcc-static', 'release' ),
 #	( 'aarch64',  'darwin',  'macos', 'dynamic',  'darwin',   'macos-11.0', '.dmg',   False,    False,      None,      'dmg',                    None,   'debug' ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
 #	( 'aarch64',  'darwin',  'macos', 'dynamic',  'darwin',   'macos-11.0', '.dmg',   False,    False,      None,      'dmg',                    None, 'release' ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
-	(     'x86', 'android', 'bionic',  'static',   'linux', 'ubuntu-18.04', '.apk',   False,    False,      None,       None,                    None,   'debug' ),
-	(     'x86', 'android', 'bionic',  'static',   'linux', 'ubuntu-18.04', '.apk',    True,     True,    '.dbg',       None,   'i686-and-gcc-static', 'release' ),
-	(  'x86_64', 'android', 'bionic',  'static',   'linux', 'ubuntu-18.04', '.apk',   False,    False,      None,       None,                    None,   'debug' ),
-	(  'x86_64', 'android', 'bionic',  'static',   'linux', 'ubuntu-18.04', '.apk',    True,     True,    '.dbg',       None, 'x86_64-and-gcc-static', 'release' ),
-	(     'arm', 'android', 'bionic',  'static',   'linux', 'ubuntu-18.04', '.apk',   False,    False,      None,       None,                    None,   'debug' ),
-	(     'arm', 'android', 'bionic',  'static',   'linux', 'ubuntu-18.04', '.apk',    True,     True,    '.dbg',       None,    'arm-and-gcc-static', 'release' ),
-	( 'aarch64', 'android', 'bionic',  'static',   'linux', 'ubuntu-18.04', '.apk',   False,    False,      None,       None,                    None,   'debug' ),
-	( 'aarch64', 'android', 'bionic',  'static',   'linux', 'ubuntu-18.04', '.apk',    True,     True,    '.dbg',       None,  'arm64-and-gcc-static', 'release' ),
+	(     'x86', 'android', 'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,       None,                    None,   'debug' ),
+	(     'x86', 'android', 'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',       None,   'i686-and-gcc-static', 'release' ),
+	(  'x86_64', 'android', 'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,       None,                    None,   'debug' ),
+	(  'x86_64', 'android', 'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',       None, 'x86_64-and-gcc-static', 'release' ),
+	(     'arm', 'android', 'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,       None,                    None,   'debug' ),
+	(     'arm', 'android', 'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',       None,    'arm-and-gcc-static', 'release' ),
+	( 'aarch64', 'android', 'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,       None,                    None,   'debug' ),
+	( 'aarch64', 'android', 'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',       None,  'arm64-and-gcc-static', 'release' ),
 ]:
 	if not mode:
 		mode = 'default'
