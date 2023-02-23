@@ -73,10 +73,7 @@ class Graphics: public RasterDrawMethods<Graphics>
 {
 public:
 	Rect<int> clip;
-	constexpr static bool DoClipCheck = true;
 	constexpr static int VIDXRES = WINDOWW;
-	constexpr static int VIDYRES = WINDOWH;
-	constexpr static auto VIDRES = WINDOW;
 
 	pixel *vid;
 	int sdl_scale;

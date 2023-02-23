@@ -3,10 +3,15 @@
 
 class VideoBuffer;
 
-// The "Curiously Recurring Template Trick"
+// The "Curiously Recurring Template Pattern" trick
 template<typename Derived>
-struct RasterDrawMethods
+class RasterDrawMethods
 {
+private:
+	pixel &pixelAt(Vec2<int>);
+	Rect<int> clipRect();
+
+public:
 	int drawtext_outline(int x, int y, const String &s, int r, int g, int b, int a);
 	int drawtext(int x, int y, const String &str, int r, int g, int b, int a);
 	int drawchar(int x, int y, String::value_type c, int r, int g, int b, int a);

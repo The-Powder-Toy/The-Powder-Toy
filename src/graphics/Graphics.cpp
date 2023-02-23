@@ -745,7 +745,7 @@ VideoBuffer Graphics::DumpFrame()
 
 void Graphics::SetClipRect(Rect<int> &rect)
 {
-	auto newRect = RectBetween(WINDOW.OriginRect().Clamp(rect.TopLeft), WINDOW.OriginRect().Clamp(rect.BottomRight));
+	auto newRect = WINDOW.OriginRect() & rect;
 	rect = clip;
 	clip = newRect;
 }

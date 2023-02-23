@@ -35,10 +35,8 @@ int HeatToColour(float temp);
 class Renderer: public RasterDrawMethods<Renderer>
 {
 public:
-	constexpr static bool DoClipCheck = false;
-	constexpr static auto VIDRES = WINDOW;
-	constexpr static auto VIDXRES = VIDRES.X;
-	constexpr static auto VIDYRES = VIDRES.Y;
+	constexpr static auto clip = WINDOW.OriginRect();
+	constexpr static auto VIDXRES = WINDOW.X;
 
 	Simulation * sim;
 	Graphics * g;

@@ -25,12 +25,12 @@ struct Vec2
 	{
 	}
 
-	inline bool operator==(Vec2<T> other) const
+	constexpr inline bool operator==(Vec2<T> other) const
 	{
 		return X == other.X && Y == other.Y;
 	}
 
-	inline bool operator!=(Vec2<T> other) const
+	constexpr inline bool operator!=(Vec2<T> other) const
 	{
 		return X != other.X || Y != other.Y;
 	}
@@ -41,13 +41,13 @@ struct Vec2
 		return Vec2<decltype(std::declval<T>() + std::declval<S>())>(X + other.X, Y + other.Y);
 	}
 
-	inline Vec2<T> operator-() const
+	constexpr inline Vec2<T> operator-() const
 	{
 		return Vec2<T>(-X, -Y);
 	}
 
 	template<typename S>
-	inline Vec2<decltype(std::declval<T>() - std::declval<S>())> operator-(Vec2<S> other) const
+	constexpr inline Vec2<decltype(std::declval<T>() - std::declval<S>())> operator-(Vec2<S> other) const
 	{
 		return Vec2<decltype(std::declval<T>() - std::declval<S>())>(X - other.X, Y - other.Y);
 	}
@@ -59,45 +59,45 @@ struct Vec2
 	}
 
 	template<typename S, typename = std::enable_if<std::is_arithmetic_v<S>, void>>
-	inline Vec2<decltype(std::declval<T>() / std::declval<S>())> operator/(S other) const
+	constexpr inline Vec2<decltype(std::declval<T>() / std::declval<S>())> operator/(S other) const
 	{
 		return Vec2<decltype(std::declval<T>() / std::declval<S>())>(X / other, Y / other);
 	}
 
 	template<typename S>
-	inline Vec2<T> &operator+=(Vec2<S> other)
+	constexpr inline Vec2<T> &operator+=(Vec2<S> other)
 	{
 		return *this = *this + other;
 	}
 
 	template<typename S>
-	inline Vec2<T> &operator-=(Vec2<S> other)
+	constexpr inline Vec2<T> &operator-=(Vec2<S> other)
 	{
 		return *this = *this - other;
 	}
 
 	template<typename S>
-	inline Vec2<T> &operator*=(Vec2<S> other)
+	constexpr inline Vec2<T> &operator*=(Vec2<S> other)
 	{
 		return *this = *this * other;
 	}
 
 	template<typename S>
-	inline Vec2<T> &operator/=(Vec2<S> other)
+	constexpr inline Vec2<T> &operator/=(Vec2<S> other)
 	{
 		return *this = *this / other;
 	}
 
-	inline Vec2<T> Floor() const
+	constexpr inline Vec2<T> Floor() const
 	{
 		return Vec2<T>(std::floor(X), std::floor(Y));
 	}
 
 	// Return a rectangle starting at origin, whose dimensions match this vector
 	template<typename = std::enable_if<std::is_integral_v<T>, void>>
-	inline Rect<T> OriginRect() const
+	constexpr inline Rect<T> OriginRect() const
 	{
-		return RectSized(Vec2<T>::Zero, *this);
+		return RectSized(Vec2<T>(0, 0), *this);
 	}
 
 	static Vec2<T> Zero;
@@ -150,7 +150,7 @@ template<typename T, typename V>
 Mat2<T> Mat2<T, V>::CCW = Mat2<T>(0, 1, -1, 0); // reminder: the Y axis points down
 
 template<typename T, typename = std::enable_if<std::is_arithmetic_v<T>, void>>
-static inline Rect<T> RectBetween(Vec2<T>, Vec2<T>);
+constexpr static inline Rect<T> RectBetween(Vec2<T>, Vec2<T>);
 
 template<typename T, typename>
 struct Rect
@@ -164,7 +164,7 @@ private:
 		BottomRight(bottomRight)
 	{
 	}
-	friend Rect<T> RectBetween<T>(Vec2<T>, Vec2<T>);
+	friend constexpr Rect<T> RectBetween<T>(Vec2<T>, Vec2<T>);
 
 	struct iterator
 	{
@@ -202,11 +202,27 @@ private:
 	};
 
 public:
+	inline operator bool() const
+	{
+		return BottomRight.X >= TopLeft.X || BottomRight.Y >= TopLeft.Y;
+	}
+
+	// Return the smallest rectangle that contains both input rectangles,
+	// **assuming neither are empty**
 	inline Rect<T> operator|(Rect<T> other) const
 	{
 		return Rect<T>(
 			Vec2<T>(std::min(TopLeft.X, other.TopLeft.X), std::min(TopLeft.Y, other.TopLeft.Y)),
 			Vec2<T>(std::max(BottomRight.X, other.BottomRight.X), std::max(BottomRight.Y, other.BottomRight.Y))
+		);
+	}
+
+	// Return the intersection of two rectangles (possibly empty)
+	inline Rect<T> operator&(Rect<T> other) const
+	{
+		return Rect<T>(
+			Vec2<T>(std::max(TopLeft.X, other.TopLeft.X), std::max(TopLeft.Y, other.TopLeft.Y)),
+			Vec2<T>(std::min(BottomRight.X, other.BottomRight.X), std::min(BottomRight.Y, other.BottomRight.Y))
 		);
 	}
 
@@ -218,16 +234,6 @@ public:
 	inline bool Contains(Vec2<T> point) const
 	{
 		return point.X >= TopLeft.X && point.X <= BottomRight.X && point.Y >= TopLeft.Y && point.Y <= BottomRight.Y;
-	}
-
-	inline Vec2<T> Clamp(Vec2<T> point) const
-	{
-		return Vec2<T>(std::clamp(point.X, TopLeft.X, BottomRight.X), std::clamp(point.Y, TopLeft.Y, BottomRight.Y));
-	}
-
-	inline Rect<T> Clamp(Rect<T> other) const
-	{
-		return Rect<T>(Clamp(other.TopLeft), Clamp(other.BottomRight));
 	}
 
 	template<typename = std::enable_if<std::is_integral_v<T>, void>>
@@ -248,7 +254,7 @@ public:
 };
 
 template<typename T, typename>
-static inline Rect<T> RectBetween(Vec2<T> topLeft, Vec2<T> bottomRight)
+constexpr static inline Rect<T> RectBetween(Vec2<T> topLeft, Vec2<T> bottomRight)
 {
 	return Rect<T>(topLeft, bottomRight);
 }
@@ -260,7 +266,7 @@ static inline Rect<T> RectAt(Vec2<T> pos)
 }
 
 template<typename T, typename = std::enable_if<std::is_integral_v<T>, void>>
-static inline Rect<T> RectSized(Vec2<T> topLeft, Vec2<T> dimen)
+constexpr static inline Rect<T> RectSized(Vec2<T> topLeft, Vec2<T> dimen)
 {
 	return RectBetween<T>(topLeft, topLeft + dimen - Vec2<T>(1, 1));
 }

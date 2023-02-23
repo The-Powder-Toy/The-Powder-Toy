@@ -5,6 +5,18 @@
 #include <cstring>
 
 template<typename Derived>
+pixel &RasterDrawMethods<Derived>::pixelAt(Vec2<int> pos)
+{
+	return static_cast<Derived *>(this)->vid[pos.X + Derived::VIDXRES * pos.Y];
+}
+
+template<typename Derived>
+Rect<int> RasterDrawMethods<Derived>::clipRect()
+{
+	return static_cast<Derived *>(this)->clip;
+}
+
+template<typename Derived>
 int RasterDrawMethods<Derived>::drawtext_outline(int x, int y, const String &s, int r, int g, int b, int a)
 {
 	drawtext(x-1, y-1, s, 0, 0, 0, 120);
@@ -123,74 +135,40 @@ int RasterDrawMethods<Derived>::addchar(int x, int y, String::value_type c, int 
 template<typename Derived>
 void RasterDrawMethods<Derived>::xor_pixel(int x, int y)
 {
-	int c;
-	if constexpr (Derived::DoClipCheck)
-	{
-		if (!(static_cast<Derived *>(this))->clip.Contains(Vec2<int>(x, y)))
-			return;
-	}
+	if (!clipRect().Contains(Vec2<int>(x, y)))
+		return;
+	pixel &c = pixelAt(Vec2<int>(x, y));
+	if (PIXB(c) + 2 * PIXR(c) + 3 * PIXG(c) < 512)
+		c = PIXPACK(0xC0C0C0);
 	else
-	{
-		if (!Derived::VIDRES.OriginRect().Contains(Vec2<int>(x, y)))
-			return;
-	}
-	c = (static_cast<Derived *>(this))->vid[y*(Derived::VIDXRES)+x];
-	c = PIXB(c) + 3*PIXG(c) + 2*PIXR(c);
-	if (c<512)
-		(static_cast<Derived *>(this))->vid[y*(Derived::VIDXRES)+x] = PIXPACK(0xC0C0C0);
-	else
-		(static_cast<Derived *>(this))->vid[y*(Derived::VIDXRES)+x] = PIXPACK(0x404040);
+		c = PIXPACK(0x404040);
 }
 
 template<typename Derived>
 void RasterDrawMethods<Derived>::blendpixel(int x, int y, int r, int g, int b, int a)
 {
-	pixel t;
-	if constexpr (Derived::DoClipCheck)
+	if (!clipRect().Contains(Vec2<int>(x, y)))
+		return;
+	pixel &t = pixelAt(Vec2<int>(x, y));
+	if (a != 255)
 	{
-		if (!(static_cast<Derived *>(this))->clip.Contains(Vec2<int>(x, y)))
-			return;
+		r = (a * r + (255 - a) * PIXR(t)) >> 8;
+		g = (a * g + (255 - a) * PIXG(t)) >> 8;
+		b = (a * b + (255 - a) * PIXB(t)) >> 8;
 	}
-	else
-	{
-		if (!Derived::VIDRES.OriginRect().Contains(Vec2<int>(x, y)))
-			return;
-	}
-	if (a!=255)
-	{
-		t = (static_cast<Derived *>(this))->vid[y*(Derived::VIDXRES)+x];
-		r = (a*r + (255-a)*PIXR(t)) >> 8;
-		g = (a*g + (255-a)*PIXG(t)) >> 8;
-		b = (a*b + (255-a)*PIXB(t)) >> 8;
-	}
-	(static_cast<Derived *>(this))->vid[y*(Derived::VIDXRES)+x] = PIXRGB(r,g,b);
+	t = PIXRGB(r, g, b);
 }
 
 template<typename Derived>
 void RasterDrawMethods<Derived>::addpixel(int x, int y, int r, int g, int b, int a)
 {
-	pixel t;
-	if constexpr (Derived::DoClipCheck)
-	{
-		if (!(static_cast<Derived *>(this))->clip.Contains(Vec2<int>(x, y)))
-			return;
-	}
-	else
-	{
-		if (!Derived::VIDRES.OriginRect().Contains(Vec2<int>(x, y)))
-			return;
-	}
-	t = (static_cast<Derived *>(this))->vid[y*(Derived::VIDXRES)+x];
-	r = (a*r + 255*PIXR(t)) >> 8;
-	g = (a*g + 255*PIXG(t)) >> 8;
-	b = (a*b + 255*PIXB(t)) >> 8;
-	if (r>255)
-		r = 255;
-	if (g>255)
-		g = 255;
-	if (b>255)
-		b = 255;
-	(static_cast<Derived *>(this))->vid[y*(Derived::VIDXRES)+x] = PIXRGB(r,g,b);
+	if (!clipRect().Contains(Vec2<int>(x, y)))
+		return;
+	pixel &t = pixelAt(Vec2<int>(x, y));
+	r = std::min(255, (a * r + 255 * PIXR(t)) >> 8);
+	g = std::min(255, (a * g + 255 * PIXG(t)) >> 8);
+	b = std::min(255, (a * b + 255 * PIXB(t)) >> 8);
+	t = PIXRGB(r, g, b);
 }
 
 template<typename Derived>
@@ -269,94 +247,37 @@ void RasterDrawMethods<Derived>::gradientrect(int x, int y, int width, int heigh
 template<typename Derived>
 void RasterDrawMethods<Derived>::clearrect(int x, int y, int w, int h)
 {
-	int i;
-
 	// TODO: change calls to clearrect to use sensible meanings of x, y, w, h then remove these 4 lines
 	x += 1;
 	y += 1;
 	w -= 1;
 	h -= 1;
 
-	Rect<int> rect = RectSized(Vec2<int>(x, y), Vec2<int>(w, h));
-	if constexpr (Derived::DoClipCheck)
-		rect = (static_cast<Derived *>(this))->clip.Clamp(rect);
-	else
-		rect = Derived::VIDRES.OriginRect().Clamp(rect);
-
-	x = rect.TopLeft.X;
-	y = rect.TopLeft.Y;
-	w = rect.Size().X;
-	h = rect.Size().Y;
-
-	if (w<0 || h<0)
+	Rect<int> rect = clipRect() & RectSized(Vec2<int>(x, y), Vec2<int>(w, h));
+	if (rect.Size().X <= 0 || rect.Size().Y <= 0)
 		return;
-
-	for (i=0; i<h; i++)
-		memset((static_cast<Derived *>(this))->vid+(x+(Derived::VIDXRES)*(y+i)), 0, PIXELSIZE*w);
+	for (int y = rect.TopLeft.Y; y <= rect.BottomRight.Y; y++)
+		std::fill_n(&pixelAt(Vec2<int>(rect.TopLeft.X, y)), rect.Size().X, PIXPACK(0x000000));
 }
 
 template<typename Derived>
 void RasterDrawMethods<Derived>::draw_image(const pixel *img, int x, int y, int w, int h, int a)
 {
-	int startX = 0;
 	if (!img)
 		return;
-	// Adjust height to prevent drawing off the bottom
-	if (y + h > Derived::VIDYRES)
-		h = ((Derived::VIDYRES)-y)-1;
-	// Too big
-	if (x + w > Derived::VIDXRES)
+	Rect<int> rect = clipRect() & RectSized(Vec2<int>(x, y), Vec2<int>(w, h));
+	if (rect.Size().X <= 0 || rect.Size().Y <= 0)
 		return;
-
-	// Starts off the top of the screen, adjust
-	if (y < 0 && -y < h)
-	{
-		img += -y*w;
-		h += y;
-		y = 0;
-	}
-	// Starts off the left side of the screen, adjust
-	if (x < 0 && -x < w)
-	{
-		startX = -x;
-	}
-
-	if (!h || y < 0 || !w)
-		return;
-	if (a >= 255)
-		for (int j = 0; j < h; j++)
-		{
-			img += startX;
-			for (int i = startX; i < w; i++)
-			{
-				if constexpr (Derived::DoClipCheck)
-				{
-					if ((static_cast<Derived *>(this))->clip.Contains(Vec2<int>(x + i, y + j)))
-						(static_cast<Derived *>(this))->vid[(y+j)*(Derived::VIDXRES)+(x+i)] = *img;
-				}
-				else
-				{
-					(static_cast<Derived *>(this))->vid[(y+j)*(Derived::VIDXRES)+(x+i)] = *img;
-				}
-				img++;
-			}
-		}
+	if (a == 255)
+		for (int outY = rect.TopLeft.Y; outY <= rect.BottomRight.Y; outY++)
+			std::copy_n(&img[(rect.TopLeft.X - x) + (outY - y) * w], rect.Size().X, &pixelAt(Vec2<int>(rect.TopLeft.X, outY)));
 	else
-	{
-		int r, g, b;
-		for (int j = 0; j < h; j++)
+		for (auto pos : rect)
 		{
-			img += startX;
-			for (int i = startX; i < w; i++)
-			{
-				r = PIXR(*img);
-				g = PIXG(*img);
-				b = PIXB(*img);
-				blendpixel(x+i, y+j, r, g, b, a);
-				img++;
-			}
+			pixel px = img[(pos.X - x) + (pos.Y - y) * w];
+			// TODO: ensure this doesn't redo a bounds check
+			blendpixel(pos.X, pos.Y, PIXR(px), PIXG(px), PIXB(px), a);
 		}
-	}
 }
 
 template<typename Derived>
