@@ -3,6 +3,7 @@
 #include "gui/interface/Point.h"
 #include "SimulationConfig.h"
 #include <vector>
+#include <memory>
 #include <mutex>
 
 class RenderPreset;
@@ -36,7 +37,6 @@ class Renderer: public RasterDrawMethods<Renderer>
 {
 public:
 	constexpr static auto clip = WINDOW.OriginRect();
-	constexpr static auto VIDXRES = WINDOW.X;
 
 	Simulation * sim;
 	Graphics * g;
@@ -95,9 +95,9 @@ public:
 	void clearScreen(float alpha);
 	void SetSample(int x, int y);
 
-	pixel * vid;
-	pixel * persistentVid;
-	pixel * warpVid;
+	StaticPlaneAdapter<WINDOW.X, pixel *> vid;
+	StaticPlaneAdapter<WINDOW.X, std::unique_ptr<pixel []>> persistentVid;
+	StaticPlaneAdapter<WINDOW.X, std::unique_ptr<pixel []>> warpVid;
 
 	void draw_icon(int x, int y, Icon icon);
 

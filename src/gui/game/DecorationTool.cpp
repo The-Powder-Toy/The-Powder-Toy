@@ -79,7 +79,7 @@ void DecorationTool::DrawRect(Simulation * sim, Brush const &brush, Pos position
 
 void DecorationTool::DrawFill(Simulation * sim, Brush const &brush, Pos position)
 {
-	pixel loc = ren->vid[position.X+position.Y*WINDOWW];
+	pixel loc = ren->vid[position];
 	if (toolID == DECO_CLEAR)
 		sim->ApplyDecorationFill(ren, position.X, position.Y, 0, 0, 0, 0, PIXR(loc), PIXG(loc), PIXB(loc));
 	else

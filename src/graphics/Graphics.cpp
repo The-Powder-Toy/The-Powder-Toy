@@ -739,7 +739,7 @@ void Graphics::draw_rgba_image(const pixel *data, int w, int h, int x, int y, fl
 VideoBuffer Graphics::DumpFrame()
 {
 	VideoBuffer newBuffer(WINDOWW, WINDOWH);
-	std::copy(vid, vid+(WINDOWW*WINDOWH), newBuffer.Buffer);
+	std::copy_n(vid.Base.get(), WINDOWW * WINDOWH, newBuffer.Buffer);
 	return newBuffer;
 }
 

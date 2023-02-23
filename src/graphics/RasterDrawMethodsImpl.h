@@ -7,7 +7,7 @@
 template<typename Derived>
 pixel &RasterDrawMethods<Derived>::pixelAt(Vec2<int> pos)
 {
-	return static_cast<Derived *>(this)->vid[pos.X + static_cast<Derived *>(this)->VIDXRES * pos.Y];
+	return static_cast<Derived *>(this)->vid[pos];
 }
 
 template<typename Derived>

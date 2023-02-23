@@ -50,44 +50,6 @@ public:
 	}
 };
 
-template<typename T>
-class PlaneAdapter
-{
-	int width;
-public:
-	T Base;
-
-	// ideally, value_type = std::indirectly_readable_traits<T>::value_type
-	using value_type = std::remove_reference_t<decltype(std::declval<T>()[0])>;
-
-	PlaneAdapter() = default;
-
-	PlaneAdapter(int width, T Base):
-		width(width),
-		Base(Base)
-	{
-	}
-
-	PlaneAdapter(Vec2<int> size, value_type defaultVal):
-		width(size.X),
-		Base(size.X * size.Y, defaultVal)
-	{
-	}
-
-	value_type &operator[](Vec2<int> p)
-	{
-		return Base[p.X + p.Y * width];
-	};
-
-	value_type const &operator[](Vec2<int> p) const
-	{
-		return Base[p.X + p.Y * width];
-	};
-};
-
-template<typename T>
-using Plane = PlaneAdapter<std::vector<T>>;
-
 class GameSave
 {
 	// number of pixels translated. When translating CELL pixels, shift all CELL grids
@@ -103,6 +65,9 @@ public:
 	int minorVersion = 0;
 	bool hasPressure = false;
 	bool hasAmbientHeat = false;
+
+	template<typename T>
+	using Plane = PlaneAdapter<std::vector<T>>;
 
 	//Simulation data
 	int particlesCount = 0;

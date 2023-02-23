@@ -1813,7 +1813,7 @@ int LuaScriptInterface::simulation_floodDeco(lua_State * l)
 		return luaL_error(l, "coordinates out of range (%d,%d)", x, y);
 
 	// hilariously broken, intersects with console and all Lua graphics
-	pixel loc = luacon_ren->vid[x + y * WINDOWW];
+	pixel loc = luacon_ren->vid[Vec2<int>(x, y)];
 	luacon_sim->ApplyDecorationFill(luacon_ren, x, y, r, g, b, a, PIXR(loc), PIXG(loc), PIXB(loc));
 	return 0;
 }

@@ -2473,7 +2473,7 @@ void GameView::OnDraw()
 	}
 
 	// Clear menu areas, to ensure particle graphics don't overlap
-	memset(g->vid+((XRES+BARSIZE)*YRES), 0, (PIXELSIZE*(XRES+BARSIZE))*MENUSIZE);
+	std::fill(&g->vid[Vec2<int>(0, YRES)], &g->vid[Vec2<int>(0, YRES + MENUSIZE)], 0);
 	g->clearrect(XRES, 1, BARSIZE, YRES-1);
 }
 

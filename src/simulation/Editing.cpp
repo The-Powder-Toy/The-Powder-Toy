@@ -609,7 +609,7 @@ void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, in
 
 bool Simulation::ColorCompare(Renderer *ren, int x, int y, int replaceR, int replaceG, int replaceB)
 {
-	pixel pix = ren->vid[x+y*WINDOWW];
+	pixel pix = ren->vid[Vec2<int>(x, y)];
 	int r = PIXR(pix);
 	int g = PIXG(pix);
 	int b = PIXB(pix);

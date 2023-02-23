@@ -559,7 +559,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_FLAT)
 				{
-					vid[ny*(VIDXRES)+nx] = PIXRGB(colr,colg,colb);
+					vid[Vec2<int>(nx, ny)] = PIXRGB(colr,colg,colb);
 				}
 				if(pixel_mode & PMODE_BLEND)
 				{
@@ -571,7 +571,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_BLOB)
 				{
-					vid[ny*(VIDXRES)+nx] = PIXRGB(colr,colg,colb);
+					vid[Vec2<int>(nx, ny)] = PIXRGB(colr,colg,colb);
 
 					blendpixel(nx+1, ny, colr, colg, colb, 223);
 					blendpixel(nx-1, ny, colr, colg, colb, 223);
@@ -918,7 +918,7 @@ void Renderer::draw_air()
 				c = PIXRGB(PIXR(c)/10,PIXG(c)/10,PIXB(c)/10);
 			for (j=0; j<CELL; j++)//draws the colors
 				for (i=0; i<CELL; i++)
-					vid[(x*CELL+i) + (y*CELL+j)*(VIDXRES)] = c;
+					vid[Vec2<int>(x * CELL + i, y * CELL + j)] = c;
 		}
 }
 
@@ -952,14 +952,14 @@ void Renderer::DrawWalls()
 							for (int j = 0; j < CELL; j++)
 								for (int i =0; i < CELL; i++)
 									if (i&j&1)
-										vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+										vid[Vec2<int>(x * CELL + i, y * CELL + j)] = pc;
 						}
 						else
 						{
 							for (int j = 0; j < CELL; j++)
 								for (int i = 0; i < CELL; i++)
 									if (!(i&j&1))
-										vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+										vid[Vec2<int>(x * CELL + i, y * CELL + j)] = pc;
 						}
 					}
 					else if (wt == WL_WALLELEC)
@@ -968,9 +968,9 @@ void Renderer::DrawWalls()
 							for (int i = 0; i < CELL; i++)
 							{
 								if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+									vid[Vec2<int>(x * CELL + i, y * CELL + j)] = pc;
 								else
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x808080);
+									vid[Vec2<int>(x * CELL + i, y * CELL + j)] = PIXPACK(0x808080);
 							}
 					}
 					else if (wt == WL_EHOLE)
@@ -979,16 +979,16 @@ void Renderer::DrawWalls()
 						{
 							for (int j = 0; j < CELL; j++)
 								for (int i = 0; i < CELL; i++)
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x242424);
+									vid[Vec2<int>(x * CELL + i, y * CELL + j)] = PIXPACK(0x242424);
 							for (int j = 0; j < CELL; j += 2)
 								for (int i = 0; i < CELL; i += 2)
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x000000);
+									vid[Vec2<int>(x * CELL + i, y * CELL + j)] = PIXPACK(0x000000);
 						}
 						else
 						{
 							for (int j = 0; j < CELL; j += 2)
 								for (int i =0; i < CELL; i += 2)
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x242424);
+									vid[Vec2<int>(x * CELL + i, y * CELL + j)] = PIXPACK(0x242424);
 						}
 					}
 					else if (wt == WL_STREAM)
@@ -1038,27 +1038,27 @@ void Renderer::DrawWalls()
 				case 1:
 					for (int j = 0; j < CELL; j += 2)
 						for (int i = (j>>1)&1; i < CELL; i += 2)
-							vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+							vid[Vec2<int>((x*CELL+i), (y*CELL+j))] = pc;
 					break;
 				case 2:
 					for (int j = 0; j < CELL; j += 2)
 						for (int i = 0; i < CELL; i += 2)
-							vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+							vid[Vec2<int>((x*CELL+i), (y*CELL+j))] = pc;
 					break;
 				case 3:
 					for (int j = 0; j < CELL; j++)
 						for (int i = 0; i < CELL; i++)
-							vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+							vid[Vec2<int>((x*CELL+i), (y*CELL+j))] = pc;
 					break;
 				case 4:
 					for (int j = 0; j < CELL; j++)
 						for (int i = 0; i < CELL; i++)
 							if (i == j)
-								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+								vid[Vec2<int>(x * CELL + i, y * CELL + j)] = pc;
 							else if (i == j+1 || (i == 0 && j == CELL-1))
-								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = gc;
+								vid[Vec2<int>(x * CELL + i, y * CELL + j)] = gc;
 							else
-								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x202020);
+								vid[Vec2<int>(x * CELL + i, y * CELL + j)] = PIXPACK(0x202020);
 					break;
 				}
 
@@ -1107,7 +1107,7 @@ void Renderer::DrawWalls()
 								for (int j = 0; j < CELL; j += 2)
 									for (int i = 0; i < CELL; i += 2)
 										// looks bad if drawing black blobs
-										vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x000000);
+										vid[Vec2<int>(x * CELL + i, y * CELL + j)] = PIXPACK(0x000000);
 							}
 							else
 							{
@@ -1138,10 +1138,10 @@ void Renderer::DrawWalls()
 								if (i == j)
 									drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
 								else if (i == j+1 || (i == 0 && j == CELL-1))
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = gc;
+									vid[Vec2<int>(x * CELL + i, y * CELL + j)] = gc;
 								else
 									// looks bad if drawing black blobs
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x202020);
+									vid[Vec2<int>(x * CELL + i, y * CELL + j)] = PIXPACK(0x202020);
 						break;
 					}
 				}

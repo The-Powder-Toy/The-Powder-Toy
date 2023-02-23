@@ -270,3 +270,69 @@ constexpr static inline Rect<T> RectSized(Vec2<T> topLeft, Vec2<T> dimen)
 {
 	return RectBetween<T>(topLeft, topLeft + dimen - Vec2<T>(1, 1));
 }
+
+template<typename T>
+class PlaneAdapter
+{
+	int width;
+public:
+	T Base;
+
+	// ideally, value_type = std::indirectly_readable_traits<T>::value_type
+	using value_type = std::remove_reference_t<decltype(std::declval<T>()[0])>;
+
+	PlaneAdapter() = default;
+
+	PlaneAdapter(int width, T &&Base):
+		width(width),
+		Base(std::move(Base))
+	{
+	}
+
+	PlaneAdapter(Vec2<int> size, value_type defaultVal):
+		width(size.X),
+		Base(size.X * size.Y, defaultVal)
+	{
+	}
+
+	value_type &operator[](Vec2<int> p)
+	{
+		return Base[p.X + p.Y * width];
+	};
+
+	value_type const &operator[](Vec2<int> p) const
+	{
+		return Base[p.X + p.Y * width];
+	};
+};
+
+template<int width, typename T>
+class StaticPlaneAdapter
+{
+public:
+	T Base;
+
+	using value_type = std::remove_reference_t<decltype(std::declval<T>()[0])>;
+
+	StaticPlaneAdapter() = default;
+
+	StaticPlaneAdapter(T &&Base):
+		Base(std::move(Base))
+	{
+	}
+
+	StaticPlaneAdapter(int height, value_type defaultVal):
+		Base(width * height, defaultVal)
+	{
+	}
+
+	value_type &operator[](Vec2<int> p)
+	{
+		return Base[p.X + p.Y * width];
+	};
+
+	value_type const &operator[](Vec2<int> p) const
+	{
+		return Base[p.X + p.Y * width];
+	};
+};

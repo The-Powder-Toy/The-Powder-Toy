@@ -6,20 +6,13 @@
 
 Graphics::Graphics():
 	clip(WINDOW.OriginRect()),
-	sdl_scale(1)
+	vid(std::make_unique<pixel []>(WINDOWW * WINDOWH))
 {
-	vid = (pixel *)malloc(PIXELSIZE * (WINDOWW * WINDOWH));
-
-}
-
-Graphics::~Graphics()
-{
-	free(vid);
 }
 
 void Graphics::Clear()
 {
-	memset(vid, 0, PIXELSIZE * (WINDOWW * WINDOWH));
+	std::fill_n(vid.Base.get(), WINDOWW * WINDOWH, 0);
 }
 
 void Graphics::Finalise()

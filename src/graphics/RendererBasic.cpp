@@ -5,6 +5,7 @@
 #include "simulation/ElementGraphics.h"
 #include "simulation/ElementClasses.h"
 #include <cmath>
+#include <memory>
 
 constexpr auto VIDRES = WINDOW;
 constexpr auto VIDXRES = VIDRES.X;
@@ -14,36 +15,35 @@ void Renderer::RenderBegin()
 {
 	if(display_mode & DISPLAY_PERS)
 	{
-		std::copy(persistentVid, persistentVid+(VIDXRES*YRES), vid);
+		std::copy_n(persistentVid.Base.get(), VIDXRES * YRES, vid.Base);
 	}
-	pixel * oldVid = NULL;
+	pixel *oldVid = NULL;
 	if(display_mode & DISPLAY_WARP)
 	{
-		oldVid = vid;
-		vid = warpVid;
-		std::fill(warpVid, warpVid+(VIDXRES*VIDYRES), 0);
+		oldVid = vid.Base;
+		vid.Base = warpVid.Base.get();
+		std::fill_n(warpVid.Base.get(), VIDXRES * VIDYRES, 0);
 	}
 
 	draw_air();
 	draw_grav();
 	DrawWalls();
 	render_parts();
-	
+
 	if(display_mode & DISPLAY_PERS)
 	{
-		int i,r,g,b;
-		for (i = 0; i < VIDXRES*YRES; i++)
+		for (auto pos : VIDRES.OriginRect())
 		{
-			r = PIXR(vid[i]);
-			g = PIXG(vid[i]);
-			b = PIXB(vid[i]);
+			int r = PIXR(vid[pos]);
+			int g = PIXG(vid[pos]);
+			int b = PIXB(vid[pos]);
 			if (r>0)
 				r--;
 			if (g>0)
 				g--;
 			if (b>0)
 				b--;
-			persistentVid[i] = PIXRGB(r,g,b);
+			persistentVid[pos] = PIXRGB(r,g,b);
 		}
 	}
 
@@ -54,7 +54,7 @@ void Renderer::RenderBegin()
 
 	if(display_mode & DISPLAY_WARP)
 	{
-		vid = oldVid;
+		vid.Base = oldVid;
 	}
 
 	FinaliseParts();
@@ -79,7 +79,7 @@ void Renderer::FinaliseParts()
 {
 	if(display_mode & DISPLAY_WARP)
 	{
-		render_gravlensing(warpVid);
+		render_gravlensing(warpVid.Base.get());
 	}
 }
 
@@ -90,7 +90,7 @@ void Renderer::RenderZoom()
 	{
 		int x, y, i, j;
 		pixel pix;
-		pixel * img = vid;
+		pixel * img = vid.Base;
 		clearrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1);
 		drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+3, zoomScopeSize*ZFACTOR+3, 192, 192, 192, 255);
 		drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1, 0, 0, 0, 255);
@@ -138,7 +138,7 @@ void Renderer::render_gravlensing(pixel * source)
 	int r, g, b;
 	pixel t;
 	pixel *src = source;
-	pixel *dst = vid;
+	pixel *dst = vid.Base;
 	if (!dst)
 		return;
 	for(nx = 0; nx < XRES; nx++)
@@ -207,9 +207,9 @@ void Renderer::drawblob(int x, int y, unsigned char cr, unsigned char cg, unsign
 
 pixel Renderer::GetPixel(int x, int y)
 {
-	if (x<0 || y<0 || x>=VIDXRES || y>=VIDYRES)
+	if (!VIDRES.OriginRect().Contains(Vec2<int>(x, y)))
 		return 0;
-	return vid[(y*VIDXRES)+x];
+	return vid[Vec2<int>(x, y)];
 }
 
 std::vector<pixel> Renderer::flameTable;
@@ -272,8 +272,8 @@ void Renderer::PopulateTables()
 }
 
 Renderer::Renderer(Graphics * g, Simulation * sim):
-	sim(NULL),
-	g(NULL),
+	sim(sim),
+	g(g),
 	render_mode(0),
 	colour_mode(0),
 	display_mode(0),
@@ -291,15 +291,12 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	zoomScopeSize(32),
 	zoomEnabled(false),
 	ZFACTOR(8),
+	vid(g->vid.Base.get()),
+	persistentVid(std::make_unique<pixel []>(WINDOW.X * WINDOW.Y)),
+	warpVid(std::make_unique<pixel []>(WINDOW.X * WINDOW.Y)),
 	gridSize(0)
 {
 	PopulateTables();
-
-	this->g = g;
-	this->sim = sim;
-	vid = g->vid;
-	persistentVid = new pixel[VIDXRES*YRES];
-	warpVid = new pixel[VIDXRES*VIDYRES];
 
 	memset(fire_r, 0, sizeof(fire_r));
 	memset(fire_g, 0, sizeof(fire_g));
@@ -402,7 +399,7 @@ void Renderer::ClearAccumulation()
 	std::fill(&fire_r[0][0], &fire_r[0][0] + NCELL, 0);
 	std::fill(&fire_g[0][0], &fire_g[0][0] + NCELL, 0);
 	std::fill(&fire_b[0][0], &fire_b[0][0] + NCELL, 0);
-	std::fill(persistentVid, persistentVid+(VIDXRES*YRES), 0);
+	std::fill_n(persistentVid.Base.get(), VIDXRES * YRES, 0);
 }
 
 void Renderer::AddRenderMode(unsigned int mode)
@@ -516,16 +513,12 @@ VideoBuffer Renderer::DumpFrame()
 {
 	VideoBuffer newBuffer(XRES, YRES);
 	for(int y = 0; y < YRES; y++)
-	{
-		std::copy(vid+(y*WINDOWW), vid+(y*WINDOWW)+XRES, newBuffer.Buffer+(y*XRES));
-	}
+		std::copy_n(&vid[Vec2<int>(0, y)], XRES, newBuffer.Buffer+(y*XRES));
 	return newBuffer;
 }
 
 Renderer::~Renderer()
 {
-	delete[] persistentVid;
-	delete[] warpVid;
 	delete[] graphicscache;
 }
 

@@ -6,6 +6,7 @@
 #include "Pixel.h"
 #include "RasterDrawMethods.h"
 #include "SimulationConfig.h"
+#include <memory>
 
 //"Graphics lite" - slightly lower performance due to variable size,
 class VideoBuffer
@@ -72,12 +73,9 @@ public:
 class Graphics: public RasterDrawMethods<Graphics>
 {
 public:
-	constexpr static auto VIDXRES = WINDOW.X;
-
 	Rect<int> clip;
 
-	pixel *vid;
-	int sdl_scale;
+	StaticPlaneAdapter<WINDOW.X, std::unique_ptr<pixel []>> vid;
 
 	struct GradientStop
 	{
@@ -108,7 +106,6 @@ public:
 	void draw_rgba_image(const pixel *data, int w, int h, int x, int y, float alpha);
 
 	Graphics();
-	~Graphics();
 
 	void SetClipRect(Rect<int> &);
 };
