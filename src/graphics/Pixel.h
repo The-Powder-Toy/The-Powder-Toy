@@ -32,11 +32,11 @@ constexpr int PIXB(pixel x)
 	return x & 0xFF;
 }
 
-template<typename T, typename = std::enable_if<std::is_arithmetic_v<T>, void>>
+template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 class RGBA;
 
-template<typename T, typename = std::enable_if<std::is_arithmetic_v<T>, void>>
-struct alignas(std::min(alignof(uint32_t), alignof(T))) RGB
+template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
+struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) RGB
 {
 	T Blue, Green, Red;
 
@@ -50,7 +50,7 @@ struct alignas(std::min(alignof(uint32_t), alignof(T))) RGB
 	template<typename S> // Avoid referring to the non-intuitive order of components
 	RGB(std::initializer_list<S>) = delete;
 
-	template<typename = std::enable_if<std::is_same_v<T, uint8_t>, void>>
+	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
 	inline RGB<T> Blend(RGBA<T> other) const
 	{
 		if (other.Alpha == 0xFF)
@@ -63,7 +63,7 @@ struct alignas(std::min(alignof(uint32_t), alignof(T))) RGB
 		);
 	}
 
-	template<typename = std::enable_if<std::is_same_v<T, uint8_t>, void>>
+	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
 	inline RGB<T> Add(RGBA<T> other) const
 	{
 		return RGB<T>(
@@ -73,7 +73,7 @@ struct alignas(std::min(alignof(uint32_t), alignof(T))) RGB
 		);
 	}
 
-	template<typename = std::enable_if<std::is_same_v<T, uint8_t>, void>>
+	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
 	inline RGB<T> Inverse() const
 	{
 		return RGB<T>(0xFF - Red, 0xFF - Green, 0xFF - Blue);
@@ -84,13 +84,13 @@ struct alignas(std::min(alignof(uint32_t), alignof(T))) RGB
 		return RGBA<T>(Red, Green, Blue, a);
 	}
 
-	template<typename = std::enable_if<std::is_same_v<T, uint8_t>, void>>
+	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
 	inline pixel Pack() const
 	{
 		return PIXRGB(Red, Green, Blue);
 	}
 
-	template<typename = std::enable_if<std::is_same_v<T, uint8_t>, void>>
+	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
 	static inline RGB<T> Unpack(pixel px)
 	{
 		return RGB<T>(PIXR(px), PIXG(px), PIXB(px));
@@ -98,7 +98,7 @@ struct alignas(std::min(alignof(uint32_t), alignof(T))) RGB
 };
 
 template<typename T, typename>
-struct alignas(std::min(alignof(uint32_t), alignof(T))) RGBA
+struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) RGBA
 {
 	T Blue, Green, Red, Alpha;
 
@@ -110,7 +110,7 @@ struct alignas(std::min(alignof(uint32_t), alignof(T))) RGBA
 	{
 	}
 
-	template<typename = std::enable_if<std::is_same_v<T, uint8_t>, void>>
+	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
 	RGBA(T r, T g, T b):
 		Blue(b),
 		Green(g),

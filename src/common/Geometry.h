@@ -4,10 +4,10 @@
 #include <utility>
 #include <type_traits>
 
-template<typename T, typename = std::enable_if<std::is_arithmetic_v<T>, void>>
+template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 struct Rect;
 
-template<typename T, typename = std::enable_if<std::is_arithmetic_v<T>, void>>
+template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 struct Vec2
 {
 	T X, Y;
@@ -18,7 +18,7 @@ struct Vec2
 	{
 	}
 
-	template<typename S, typename = std::enable_if<std::is_constructible_v<T, S>, void>>
+	template<typename S, typename = std::enable_if_t<std::is_constructible_v<T, S>>>
 	constexpr explicit Vec2(Vec2<S> other):
 		X(other.X),
 		Y(other.Y)
@@ -52,13 +52,13 @@ struct Vec2
 		return Vec2<decltype(std::declval<T>() - std::declval<S>())>(X - other.X, Y - other.Y);
 	}
 
-	template<typename S, typename = std::enable_if<std::is_arithmetic_v<S>, void>>
+	template<typename S, typename = std::enable_if_t<std::is_arithmetic_v<S>>>
 	constexpr inline Vec2<decltype(std::declval<T>() * std::declval<S>())> operator*(S other) const
 	{
 		return Vec2<decltype(std::declval<T>() * std::declval<S>())>(X * other, Y * other);
 	}
 
-	template<typename S, typename = std::enable_if<std::is_arithmetic_v<S>, void>>
+	template<typename S, typename = std::enable_if_t<std::is_arithmetic_v<S>>>
 	constexpr inline Vec2<decltype(std::declval<T>() / std::declval<S>())> operator/(S other) const
 	{
 		return Vec2<decltype(std::declval<T>() / std::declval<S>())>(X / other, Y / other);
@@ -94,7 +94,7 @@ struct Vec2
 	}
 
 	// Return a rectangle starting at origin, whose dimensions match this vector
-	template<typename = std::enable_if<std::is_integral_v<T>, void>>
+	template<typename S = T, typename = std::enable_if_t<std::is_integral_v<S>>>
 	constexpr inline Rect<T> OriginRect() const
 	{
 		return RectSized(Vec2<T>(0, 0), *this);
@@ -106,7 +106,7 @@ struct Vec2
 template<typename T, typename V>
 Vec2<T> Vec2<T, V>::Zero = Vec2<T>(0, 0);
 
-template<typename T, typename = std::enable_if<std::is_arithmetic_v<T>, void>>
+template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 struct Mat2
 {
 	// ⎛A B⎞
@@ -149,7 +149,7 @@ Mat2<T> Mat2<T, V>::MirrorY = Mat2<T>(1, 0, 0, -1);
 template<typename T, typename V>
 Mat2<T> Mat2<T, V>::CCW = Mat2<T>(0, 1, -1, 0); // reminder: the Y axis points down
 
-template<typename T, typename = std::enable_if<std::is_arithmetic_v<T>, void>>
+template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 constexpr static inline Rect<T> RectBetween(Vec2<T>, Vec2<T>);
 
 template<typename T, typename>
@@ -236,7 +236,7 @@ public:
 		return point.X >= TopLeft.X && point.X <= BottomRight.X && point.Y >= TopLeft.Y && point.Y <= BottomRight.Y;
 	}
 
-	template<typename = std::enable_if<std::is_integral_v<T>, void>>
+	template<typename S = T, typename = std::enable_if_t<std::is_integral_v<S>>>
 	inline Vec2<T> Size() const
 	{
 		return BottomRight - TopLeft + Vec2<T>(1, 1);
@@ -259,13 +259,13 @@ constexpr static inline Rect<T> RectBetween(Vec2<T> topLeft, Vec2<T> bottomRight
 	return Rect<T>(topLeft, bottomRight);
 }
 
-template<typename T, typename = std::enable_if<std::is_arithmetic_v<T>, void>>
+template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 static inline Rect<T> RectAt(Vec2<T> pos)
 {
 	return RectBetween<T>(pos, pos);
 }
 
-template<typename T, typename = std::enable_if<std::is_integral_v<T>, void>>
+template<typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
 constexpr static inline Rect<T> RectSized(Vec2<T> topLeft, Vec2<T> dimen)
 {
 	return RectBetween<T>(topLeft, topLeft + dimen - Vec2<T>(1, 1));
