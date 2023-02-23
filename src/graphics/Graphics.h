@@ -72,8 +72,9 @@ public:
 class Graphics: public RasterDrawMethods<Graphics>
 {
 public:
+	constexpr static auto VIDXRES = WINDOW.X;
+
 	Rect<int> clip;
-	constexpr static int VIDXRES = WINDOWW;
 
 	pixel *vid;
 	int sdl_scale;

@@ -1,8 +1,12 @@
 #pragma once
+#include <algorithm>
 #include <cstdint>
 #include <limits>
 #include <type_traits>
+#include <utility>
 
+// This is always packed with the least significant byte being blue,
+// then green, then red, then 0.
 typedef uint32_t pixel;
 
 constexpr int PIXELCHANNELS = 3;
@@ -29,28 +33,97 @@ constexpr int PIXB(pixel x)
 }
 
 template<typename T, typename = std::enable_if<std::is_arithmetic_v<T>, void>>
-struct RGB
+class RGBA;
+
+template<typename T, typename = std::enable_if<std::is_arithmetic_v<T>, void>>
+struct alignas(std::min(alignof(uint32_t), alignof(T))) RGB
 {
-	T Red, Green, Blue;
+	T Blue, Green, Red;
 
 	constexpr RGB(T r, T g, T b):
-		Red(r),
+		Blue(b),
 		Green(g),
-		Blue(b)
+		Red(r)
 	{
+	}
+
+	template<typename S> // Avoid referring to the non-intuitive order of components
+	RGB(std::initializer_list<S>) = delete;
+
+	template<typename = std::enable_if<std::is_same_v<T, uint8_t>, void>>
+	inline RGB<T> Blend(RGBA<T> other) const
+	{
+		if (other.Alpha == 0xFF)
+			return other.NoAlpha();
+		return RGB<T>(
+			// Technically should divide by 0xFF, but >> 8 is close enough
+			(other.Alpha * other.Red   + (0xFF - other.Alpha) * Red  ) >> 8,
+			(other.Alpha * other.Green + (0xFF - other.Alpha) * Green) >> 8,
+			(other.Alpha * other.Blue  + (0xFF - other.Alpha) * Blue ) >> 8
+		);
+	}
+
+	template<typename = std::enable_if<std::is_same_v<T, uint8_t>, void>>
+	inline RGB<T> Add(RGBA<T> other) const
+	{
+		return RGB<T>(
+			std::min(0xFF, (other.Alpha * other.Red   + 0xFF * Red  ) >> 8),
+			std::min(0xFF, (other.Alpha * other.Green + 0xFF * Green) >> 8),
+			std::min(0xFF, (other.Alpha * other.Blue  + 0xFF * Blue ) >> 8)
+		);
+	}
+
+	template<typename = std::enable_if<std::is_same_v<T, uint8_t>, void>>
+	inline RGB<T> Inverse() const
+	{
+		return RGB<T>(0xFF - Red, 0xFF - Green, 0xFF - Blue);
+	}
+
+	inline RGBA<T> WithAlpha(T a) const
+	{
+		return RGBA<T>(Red, Green, Blue, a);
+	}
+
+	template<typename = std::enable_if<std::is_same_v<T, uint8_t>, void>>
+	inline pixel Pack() const
+	{
+		return PIXRGB(Red, Green, Blue);
+	}
+
+	template<typename = std::enable_if<std::is_same_v<T, uint8_t>, void>>
+	static inline RGB<T> Unpack(pixel px)
+	{
+		return RGB<T>(PIXR(px), PIXG(px), PIXB(px));
 	}
 };
 
-template<typename T, typename = std::enable_if<std::is_arithmetic_v<T>, void>>
-struct RGBA
+template<typename T, typename>
+struct alignas(std::min(alignof(uint32_t), alignof(T))) RGBA
 {
-	T Red, Green, Blue, Alpha;
+	T Blue, Green, Red, Alpha;
 
-	constexpr RGBA(T r, T g, T b, T a = std::numeric_limits<T>::max()):
-		Red(r),
-		Green(g),
+	constexpr RGBA(T r, T g, T b, T a):
 		Blue(b),
+		Green(g),
+		Red(r),
 		Alpha(a)
 	{
+	}
+
+	template<typename = std::enable_if<std::is_same_v<T, uint8_t>, void>>
+	RGBA(T r, T g, T b):
+		Blue(b),
+		Green(g),
+		Red(r),
+		Alpha(0xFF)
+	{
+	}
+
+	template<typename S> // Avoid referring to the non-intuitive order of components
+	RGBA(std::initializer_list<S>) = delete;
+
+	RGB<T> NoAlpha() const
+	{
+		return RGB<T>(Red, Green, Blue);
 	}
 };

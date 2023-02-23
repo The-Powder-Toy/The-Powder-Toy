@@ -7,7 +7,7 @@
 template<typename Derived>
 pixel &RasterDrawMethods<Derived>::pixelAt(Vec2<int> pos)
 {
-	return static_cast<Derived *>(this)->vid[pos.X + Derived::VIDXRES * pos.Y];
+	return static_cast<Derived *>(this)->vid[pos.X + static_cast<Derived *>(this)->VIDXRES * pos.Y];
 }
 
 template<typename Derived>
@@ -29,14 +29,16 @@ int RasterDrawMethods<Derived>::drawtext_outline(int x, int y, const String &s, 
 }
 
 template<typename Derived>
-int RasterDrawMethods<Derived>::drawtext(int x, int y, const String &str, int r, int g, int b, int a)
+int RasterDrawMethods<Derived>::drawtext(int x, int y, const String &str, int r, int g, int b, int alpha)
 {
 	if(!str.size())
 		return 0;
 
+	auto colour = RGB<uint8_t>(r, g, b);
+
 	bool underline = false;
-	int invert = 0;
-	int oR = r, oG = g, oB = b;
+	bool invert = false;
+	auto origColour = colour;
 	int characterX = x, characterY = y;
 	int startX = characterX;
 	for (size_t i = 0; i < str.length(); i++)
@@ -50,62 +52,48 @@ int RasterDrawMethods<Derived>::drawtext(int x, int y, const String &str, int r,
 		{
 			if (str.length() <= i+3)
 				break;
-			oR = r;
-			oG = g;
-			oB = b;
-			r = (unsigned char)str[i + 1];
-			g = (unsigned char)str[i + 2];
-			b = (unsigned char)str[i + 3];
+			origColour = colour; // ???
+			colour.Red = str[i + 1];
+			colour.Green = str[i + 2];
+			colour.Blue = str[i + 3];
 			i += 3;
 		}
 		else if (str[i] == '\x0E')
 		{
-			r = oR;
-			g = oG;
-			b = oB;
+			colour = origColour;
 		}
 		else if (str[i] == '\x01')
 		{
 			invert = !invert;
-			r = 255-r;
-			g = 255-g;
-			b = 255-b;
+			colour = colour.Inverse();
 		}
 		else if (str[i] == '\b')
 		{
 			if (str.length() <= i + 1)
 				break;
-			auto colorCode = false;
+			bool colourCode = true;
 			switch (str[i + 1])
 			{
-			case 'U':                    underline = !underline; break;
-			case 'w': r = 255; g = 255; b = 255; colorCode = true; break;
-			case 'g': r = 192; g = 192; b = 192; colorCode = true; break;
-			case 'o': r = 255; g = 216; b =  32; colorCode = true; break;
-			case 'r': r = 255; g =   0; b =   0; colorCode = true; break;
-			case 'l': r = 255; g =  75; b =  75; colorCode = true; break;
-			case 'b': r =   0; g =   0; b = 255; colorCode = true; break;
-			case 't': b = 255; g = 170; r =  32; colorCode = true; break;
-			case 'u': r = 147; g =  83; b = 211; colorCode = true; break;
+			case 'U': underline = !underline; colourCode = false; break;
+			case 'w': colour = RGB<uint8_t>(0xFF, 0xFF, 0xFF); break;
+			case 'g': colour = RGB<uint8_t>(0xC0, 0xC0, 0xC0); break;
+			case 'o': colour = RGB<uint8_t>(0xFF, 0xD8, 0x20); break;
+			case 'r': colour = RGB<uint8_t>(0xFF, 0x00, 0x00); break;
+			case 'l': colour = RGB<uint8_t>(0xFF, 0x4B, 0x4B); break;
+			case 'b': colour = RGB<uint8_t>(0x00, 0x00, 0xFF); break;
+			case 't': colour = RGB<uint8_t>(0xFF, 0xAA, 0x20); break;
+			case 'u': colour = RGB<uint8_t>(0x93, 0x53, 0xD3); break;
 			}
-			if (colorCode && invert)
-			{
-				r = 255-r;
-				g = 255-g;
-				b = 255-b;
-			}
+			if (colourCode && invert)
+				colour = colour.Inverse();
 			i++;
 		}
 		else
 		{
-			auto newCharacterX = drawchar(characterX, characterY, str[i], r, g, b, a);
+			auto newCharacterX = drawchar(characterX, characterY, str[i], colour.Red, colour.Green, colour.Blue, alpha);
 			if (underline)
-			{
 				for (int i = characterX; i < newCharacterX; ++i)
-				{
-					blendpixel(i, y + FONT_H, r, g, b, a);
-				}
-			}
+					blendpixel(i, y + FONT_H, colour.Red, colour.Green, colour.Blue, alpha);
 			characterX = newCharacterX;
 		}
 	}
@@ -150,13 +138,7 @@ void RasterDrawMethods<Derived>::blendpixel(int x, int y, int r, int g, int b, i
 	if (!clipRect().Contains(Vec2<int>(x, y)))
 		return;
 	pixel &t = pixelAt(Vec2<int>(x, y));
-	if (a != 255)
-	{
-		r = (a * r + (255 - a) * PIXR(t)) >> 8;
-		g = (a * g + (255 - a) * PIXG(t)) >> 8;
-		b = (a * b + (255 - a) * PIXB(t)) >> 8;
-	}
-	t = PIXRGB(r, g, b);
+	t = RGB<uint8_t>::Unpack(t).Blend(RGBA<uint8_t>(r, g, b, a)).Pack();
 }
 
 template<typename Derived>
@@ -165,10 +147,7 @@ void RasterDrawMethods<Derived>::addpixel(int x, int y, int r, int g, int b, int
 	if (!clipRect().Contains(Vec2<int>(x, y)))
 		return;
 	pixel &t = pixelAt(Vec2<int>(x, y));
-	r = std::min(255, (a * r + 255 * PIXR(t)) >> 8);
-	g = std::min(255, (a * g + 255 * PIXG(t)) >> 8);
-	b = std::min(255, (a * b + 255 * PIXB(t)) >> 8);
-	t = PIXRGB(r, g, b);
+	t = RGB<uint8_t>::Unpack(t).Add(RGBA<uint8_t>(r, g, b, a)).Pack();
 }
 
 template<typename Derived>
