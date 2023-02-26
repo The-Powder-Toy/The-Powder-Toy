@@ -32,6 +32,7 @@ void Element::Element_CONV()
 	Description = "Converter. Converts everything into whatever it first touches.";
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
+	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

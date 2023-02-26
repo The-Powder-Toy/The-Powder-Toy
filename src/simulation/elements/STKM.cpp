@@ -42,6 +42,7 @@ void Element::Element_STKM()
 	Description = "Stickman. Don't kill him! Control with the arrow keys.";
 
 	Properties = PROP_NOCTYPEDRAW;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

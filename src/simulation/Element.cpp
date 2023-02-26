@@ -32,6 +32,7 @@ Element::Element():
 	Description("No description"),
 
 	Properties(TYPE_SOLID),
+	CarriesTypeIn(0),
 
 	LowPressure(IPL),
 	LowPressureTransition(NT),
@@ -75,6 +76,7 @@ std::vector<StructProperty> const &Element::GetProperties()
 		{ "Meltable",                  StructProperty::Integer,  offsetof(Element, Meltable                 ) },
 		{ "Hardness",                  StructProperty::Integer,  offsetof(Element, Hardness                 ) },
 		{ "PhotonReflectWavelengths",  StructProperty::UInteger, offsetof(Element, PhotonReflectWavelengths ) },
+		{ "CarriesTypeIn",             StructProperty::UInteger, offsetof(Element, CarriesTypeIn            ) },
 		{ "Weight",                    StructProperty::Integer,  offsetof(Element, Weight                   ) },
 		{ "Temperature",               StructProperty::Float,    offsetof(Element, DefaultProperties.temp   ) },
 		{ "HeatConduct",               StructProperty::UChar,    offsetof(Element, HeatConduct              ) },

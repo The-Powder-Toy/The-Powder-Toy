@@ -32,6 +32,7 @@ void Element::Element_DRAY()
 	Description = "Duplicator ray. Replicates a line of particles in front of it.";
 
 	Properties = TYPE_SOLID;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

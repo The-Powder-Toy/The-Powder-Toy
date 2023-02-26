@@ -34,6 +34,7 @@ void Element::Element_VRSS()
 	Description = "Solid Virus. Turns everything it touches into virus.";
 
 	Properties = TYPE_SOLID|PROP_DEADLY;
+	CarriesTypeIn = 1U << FIELD_TMP2;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

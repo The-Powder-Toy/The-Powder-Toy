@@ -141,9 +141,6 @@ public:
 
 	void Expand(const std::vector<char> &data);
 
-	static bool TypeInCtype(int type, int ctype);
-	static bool TypeInTmp(int type);
-	static bool TypeInTmp2(int type, int tmp2);
 	static bool PressureInTmp3(int type);
 
 	GameSave& operator << (Particle &v);

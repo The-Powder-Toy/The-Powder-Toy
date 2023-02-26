@@ -35,6 +35,8 @@ void initLegacyProps()
 			legacyPropNames.insert(std::pair<ByteString, StructProperty>("menu", prop));
 		else if (prop.Name == "PhotonReflectWavelengths")
 			continue;
+		else if (prop.Name == "CarriesTypeIn")
+			continue;
 		else if (prop.Name == "Temperature")
 			legacyPropNames.insert(std::pair<ByteString, StructProperty>("heat", prop));
 		else if (prop.Name == "HeatConduct")

@@ -35,6 +35,7 @@ void Element::Element_SPRK()
 	Description = "Electricity. The basis of all electronics in TPT, travels along wires and other conductive elements.";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

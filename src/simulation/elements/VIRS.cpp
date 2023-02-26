@@ -34,6 +34,7 @@ void Element::Element_VIRS()
 	Description = "Virus. Turns everything it touches into virus.";
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
+	CarriesTypeIn = 1U << FIELD_TMP2;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

@@ -34,6 +34,7 @@ void Element::Element_PCLN()
 	Description = "Powered clone. When activated, duplicates any particles it touches.";
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

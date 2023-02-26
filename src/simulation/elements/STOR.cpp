@@ -35,6 +35,7 @@ void Element::Element_STOR()
 	Description = "Storage. Captures and stores a single particle. Releases when charged with PSCN, also passes to PIPE.";
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
+	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

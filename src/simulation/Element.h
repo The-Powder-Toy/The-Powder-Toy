@@ -38,6 +38,7 @@ public:
 	unsigned char HeatConduct;
 	String Description;
 	unsigned int Properties;
+	unsigned int CarriesTypeIn;
 
 	float LowPressure;
 	int LowPressureTransition;

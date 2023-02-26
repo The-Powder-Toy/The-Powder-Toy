@@ -32,6 +32,7 @@ void Element::Element_DTEC()
 	Description = "Detector, creates a spark when something with its ctype is nearby.";
 
 	Properties = TYPE_SOLID;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

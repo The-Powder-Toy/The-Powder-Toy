@@ -1250,7 +1250,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	char tempSignText[255];
 	sign tempSign("", 0, 0, sign::Left);
 
-	std::vector<Element> elements = GetElements();
+	auto &elements = GetElements();
 
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
@@ -2046,6 +2046,9 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	 That way, if we ever need a 25th bit, we won't have to change the save format
 	 */
 
+	auto &elements = GetElements();
+	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
+	auto &properties = Particle::GetProperties();
 	// Allocate enough space to store all Particles and 3 bytes on top of that per Particle, for the field descriptors.
 	// In practice, a Particle will never need as much space in the save as in memory; this is just an upper bound to simplify allocation.
 	std::vector<unsigned char> partsData(NPART * (sizeof(Particle)+3));
@@ -2273,17 +2276,16 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 				}
 				if (PMAPBITS > 8)
 				{
-					if (TypeInCtype(particles[i].type, particles[i].ctype) && particles[i].ctype > 0xFF)
+					for (auto index : possiblyCarriesType)
 					{
-						RESTRICTVERSION(93, 0);
-					}
-					else if (TypeInTmp(particles[i].type) && particles[i].tmp > 0xFF)
-					{
-						RESTRICTVERSION(93, 0);
-					}
-					else if (TypeInTmp2(particles[i].type, particles[i].tmp2) && particles[i].tmp2 > 0xFF)
-					{
-						RESTRICTVERSION(93, 0);
+						if (elements[particles[i].type].CarriesTypeIn & (1U << index))
+						{
+							auto *prop = reinterpret_cast<const int *>(reinterpret_cast<const char *>(&particles[i]) + properties[index].Offset);
+							if (TYP(*prop) > 0xFF)
+							{
+								RESTRICTVERSION(93, 0);
+							}
+						}
 					}
 				}
 				if (particles[i].type == PT_LDTC)
@@ -2682,26 +2684,6 @@ static void ConvertJsonToBson(bson *b, Json::Value j, int depth)
 			bson_append_finish_array(b);
 		}
 	}
-}
-
-bool GameSave::TypeInCtype(int type, int ctype)
-{
-	return ctype >= 0 && ctype < PT_NUM &&
-	        (type == PT_CLNE || type == PT_PCLN || type == PT_BCLN || type == PT_PBCN ||
-	        type == PT_STOR || type == PT_CONV || type == PT_STKM || type == PT_STKM2 ||
-	        type == PT_FIGH || type == PT_LAVA || type == PT_SPRK || type == PT_PSTN ||
-	        type == PT_CRAY || type == PT_DTEC || type == PT_DRAY || type == PT_PIPE ||
-	        type == PT_PPIP || type == PT_LDTC);
-}
-
-bool GameSave::TypeInTmp(int type)
-{
-	return type == PT_STOR;
-}
-
-bool GameSave::TypeInTmp2(int type, int tmp2)
-{
-	return (type == PT_VIRS || type == PT_VRSG || type == PT_VRSS) && (tmp2 >= 0 && tmp2 < PT_NUM);
 }
 
 bool GameSave::PressureInTmp3(int type)

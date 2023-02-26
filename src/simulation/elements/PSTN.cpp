@@ -39,6 +39,7 @@ void Element::Element_PSTN()
 	Description = "Piston, extends and pushes particles.";
 
 	Properties = TYPE_SOLID;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

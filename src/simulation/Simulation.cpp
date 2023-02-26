@@ -65,6 +65,9 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 
 	RecalcFreeParticles(false);
 
+	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
+	auto &properties = Particle::GetProperties();
+
 	bool doFullScan = false;
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
@@ -89,30 +92,19 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 			continue;
 		}
 		type = partMap[type];
-		// These store type in ctype, but are special because they store extra information in the bits after type
-		if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
+		for (auto index : possiblyCarriesType)
 		{
-			int ctype = tempPart->ctype & pmapmask;
-			int extra = tempPart->ctype >> save->pmapbits;
-			if (ctype >= 0 && ctype < PT_NUM)
-				ctype = partMap[ctype];
-			tempPart->ctype = PMAP(extra, ctype);
-		}
-		else if (GameSave::TypeInCtype(type, tempPart->ctype))
-		{
-			tempPart->ctype = partMap[tempPart->ctype];
-		}
-		// also stores extra bits past type (only STOR right now)
-		if (GameSave::TypeInTmp(type))
-		{
-			int tmp = tempPart->tmp & pmapmask;
-			int extra = tempPart->tmp >> save->pmapbits;
-			tmp = partMap[TYP(tmp)];
-			tempPart->tmp = PMAP(extra, tmp);
-		}
-		if (GameSave::TypeInTmp2(type, tempPart->tmp2))
-		{
-			tempPart->tmp2 = partMap[tempPart->tmp2];
+			if (elements[type].CarriesTypeIn & (1U << index))
+			{
+				auto *prop = reinterpret_cast<int *>(reinterpret_cast<char *>(tempPart) + properties[index].Offset);
+				auto carriedType = *prop & int(pmapmask);
+				auto extra = *prop >> save->pmapbits;
+				if (carriedType >= 0 && carriedType < PT_NUM)
+				{
+					carriedType = partMap[carriedType];
+				}
+				*prop = PMAP(extra, carriedType);
+			}
 		}
 
 		// Ensure we can spawn this element
@@ -377,6 +369,8 @@ GameSave * Simulation::Save(bool includePressure, int fullX, int fullY, int full
 	blockH = blockY2-blockY;
 
 	GameSave * newSave = new GameSave(blockW, blockH);
+	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
+	auto &properties = Particle::GetProperties();
 
 	int storedParts = 0;
 	int elementCount[PT_NUM];
@@ -403,12 +397,14 @@ GameSave * Simulation::Save(bool includePressure, int fullX, int fullY, int full
 				elementCount[tempPart.type]++;
 
 				paletteSet.insert(tempPart.type);
-				if (GameSave::TypeInCtype(tempPart.type, tempPart.ctype))
-					paletteSet.insert(tempPart.ctype);
-				if (GameSave::TypeInTmp(tempPart.type))
-					paletteSet.insert(TYP(tempPart.tmp));
-				if (GameSave::TypeInTmp2(tempPart.type, tempPart.tmp2))
-					paletteSet.insert(tempPart.tmp2);
+				for (auto index : possiblyCarriesType)
+				{
+					if (elements[tempPart.type].CarriesTypeIn & (1U << index))
+					{
+						auto *prop = reinterpret_cast<const int *>(reinterpret_cast<const char *>(&tempPart) + properties[index].Offset);
+						paletteSet.insert(TYP(*prop));
+					}
+				}
 			}
 		}
 	}

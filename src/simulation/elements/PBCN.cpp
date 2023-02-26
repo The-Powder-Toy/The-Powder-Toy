@@ -34,6 +34,7 @@ void Element::Element_PBCN()
 	Description = "Powered breakable clone.";
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

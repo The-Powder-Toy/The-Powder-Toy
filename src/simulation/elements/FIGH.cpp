@@ -43,6 +43,7 @@ void Element::Element_FIGH()
 	Description = "Fighter. Tries to kill stickmen. You must first give it an element to kill him with.";
 
 	Properties = PROP_NOCTYPEDRAW;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

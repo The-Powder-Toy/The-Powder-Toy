@@ -40,6 +40,7 @@ void Element::Element_STKM2()
 	Description = "Second stickman. Don't kill him! Control with wasd.";
 
 	Properties = PROP_NOCTYPEDRAW;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
