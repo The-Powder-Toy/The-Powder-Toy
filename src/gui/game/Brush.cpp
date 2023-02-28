@@ -1,30 +1,34 @@
 #include "Brush.h"
 #include "graphics/Renderer.h"
 
-void Brush::InvalidateCache()
+Brush::Brush(const Brush &other)
 {
-	size = ui::Point(0, 0);
-	bitmap.reset();
-	outline.reset();
+	radius = other.radius;
+	auto size = GetSize();
+	if (other.bitmap)
+	{
+		bitmap = std::make_unique<unsigned char []>(size.X * size.Y);
+		std::copy(&other.bitmap[0], &other.bitmap[0] + size.X * size.Y, &bitmap[0]);
+	}
+	if (other.outline)
+	{
+		outline = std::make_unique<unsigned char []>(size.X * size.Y);
+		std::copy(&other.outline[0], &other.outline[0] + size.X * size.Y, &outline[0]);
+	}
 }
 
-void Brush::ensureBitmap() const
+void Brush::InitBitmap()
 {
-	if (bitmap)
-		return;
-	auto pair = GenerateBitmap();
-	size = pair.first;
-	bitmap = std::move(pair.second);
+	bitmap = GenerateBitmap();
 }
 
-void Brush::ensureOutline() const
+void Brush::InitOutline()
 {
-	if (outline)
-		return;
-	ensureBitmap();
-	ui::Point bounds = size * 2 + 1;
+	InitBitmap();
+	ui::Point bounds = GetSize();
 	outline = std::make_unique<unsigned char []>(bounds.X * bounds.Y);
 	for (int j = 0; j < bounds.Y; j++)
+	{
 		for (int i = 0; i < bounds.X; i++)
 		{
 			bool value = false;
@@ -43,6 +47,13 @@ void Brush::ensureOutline() const
 			}
 			outline[i + j * bounds.X] = value ? 0xFF : 0;
 		}
+	}
+}
+
+void Brush::SetRadius(ui::Point newRadius)
+{
+	radius = newRadius;
+	InitOutline();
 }
 
 void Brush::AdjustSize(int delta, bool logarithmic, bool keepX, bool keepY)
@@ -71,22 +82,6 @@ void Brush::AdjustSize(int delta, bool logarithmic, bool keepX, bool keepY)
 		SetRadius(ui::Point(oldSize.X, newSize.Y));
 	else
 		SetRadius(newSize);
-}
-
-void Brush::copyBitmaps(Brush &into) const
-{
-	into.size = size;
-	size_t bounds = (2 * size.X + 1) * (2 * size.Y + 1);
-	if (bitmap)
-	{
-		into.bitmap = std::make_unique<unsigned char []>(bounds);
-		std::copy(&bitmap[0], &bitmap[bounds], &into.bitmap[0]);
-	}
-	if (outline)
-	{
-		into.outline = std::make_unique<unsigned char []>(bounds);
-		std::copy(&outline[0], &outline[bounds], &into.outline[0]);
-	}
 }
 
 void Brush::RenderRect(Renderer * ren, ui::Point position1, ui::Point position2) const
@@ -123,8 +118,7 @@ void Brush::RenderLine(Renderer * ren, ui::Point position1, ui::Point position2)
 
 void Brush::RenderPoint(Renderer * ren, ui::Point position) const
 {
-	ensureOutline();
-	ren->xor_bitmap(&outline[0], position.X - size.X, position.Y - size.Y, 2 * size.X + 1, 2 * size.Y + 1);
+	ren->xor_bitmap(&outline[0], position.X - radius.X, position.Y - radius.Y, 2 * radius.X + 1, 2 * radius.Y + 1);
 }
 
 void Brush::RenderFill(Renderer * ren, ui::Point position) const

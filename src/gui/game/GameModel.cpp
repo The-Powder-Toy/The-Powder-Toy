@@ -462,14 +462,14 @@ void GameModel::BuildFavoritesMenu()
 
 void GameModel::BuildBrushList()
 {
-	std::optional<ui::Point> radius;
+	ui::Point radius{ 4, 4 };
 	if (brushList.size())
 		radius = brushList[currentBrush]->GetRadius();
 	brushList.clear();
 
-	brushList.push_back(std::make_unique<EllipseBrush>(ui::Point(4, 4), perfectCircle));
-	brushList.push_back(std::make_unique<RectangleBrush>(ui::Point(4, 4)));
-	brushList.push_back(std::make_unique<TriangleBrush>(ui::Point(4, 4)));
+	brushList.push_back(std::make_unique<EllipseBrush>(perfectCircle));
+	brushList.push_back(std::make_unique<RectangleBrush>());
+	brushList.push_back(std::make_unique<TriangleBrush>());
 
 	//Load more from brushes folder
 	for (ByteString brushFile : Platform::DirectorySearch(BRUSH_DIR, "", { ".ptb" }))
@@ -489,8 +489,7 @@ void GameModel::BuildBrushList()
 		brushList.push_back(std::make_unique<BitmapBrush>(ui::Point(dimension, dimension), reinterpret_cast<unsigned char const *>(brushData.data())));
 	}
 
-	if (radius && (size_t)currentBrush < brushList.size())
-		brushList[currentBrush]->SetRadius(*radius);
+	brushList[currentBrush]->SetRadius(radius);
 	notifyBrushChanged();
 }
 

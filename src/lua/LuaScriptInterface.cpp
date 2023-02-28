@@ -2202,7 +2202,7 @@ int LuaScriptInterface::simulation_brush(lua_State * l)
 	lua_pushnumber(l, positionX);
 	lua_pushnumber(l, positionY);
 	std::vector<ui::Point> points;
-	std::copy(brush->begin(), brush->end(), std::back_inserter(points));
+	std::copy(newBrush->begin(), newBrush->end(), std::back_inserter(points));
 	lua_pushnumber(l, 0); // index
 	lua_pushnumber(l, points.size());
 	auto points_ud = reinterpret_cast<ui::Point *>(lua_newuserdata(l, points.size() * sizeof(ui::Point)));

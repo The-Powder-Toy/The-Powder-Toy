@@ -6,13 +6,12 @@ class Renderer;
 class Brush
 {
 private:
-	ui::Point mutable size;
-	// 2D arrays indexed by coordinates from [-size.X, size.X] by [-size.Y, size.Y]
-	std::unique_ptr<unsigned char []> mutable bitmap;
-	std::unique_ptr<unsigned char []> mutable outline;
+	// 2D arrays indexed by coordinates from [-radius.X, radius.X] by [-radius.Y, radius.Y]
+	std::unique_ptr<unsigned char []> bitmap;
+	std::unique_ptr<unsigned char []> outline;
 
-	void ensureBitmap() const;
-	void ensureOutline() const;
+	void InitBitmap();
+	void InitOutline();
 
 	struct iterator
 	{
@@ -21,14 +20,15 @@ private:
 
 		iterator &operator++()
 		{
+			auto radius = parent.GetRadius();
 			do
 			{
-				if (++x > parent.size.X)
+				if (++x > radius.X)
 				{
 					--y;
-					x = -parent.size.X;
+					x = -radius.X;
 				}
-			} while (y >= -parent.size.Y && !parent.bitmap[x + parent.size.X + (y + parent.size.Y) * (2 * parent.size.X + 1)]);
+			} while (y >= -radius.Y && !parent.bitmap[x + radius.X + (y + radius.Y) * (2 * radius.X + 1)]);
 			return *this;
 		}
 
@@ -50,42 +50,42 @@ private:
 	};
 
 protected:
-	Brush():
-		size(0, 0),
-		bitmap(),
-		outline()
-	{
-	}
+	ui::Point radius{ 0, 0 };
 
-	void InvalidateCache();
-	virtual std::pair<ui::Point, std::unique_ptr<unsigned char []>> GenerateBitmap() const = 0;
-	void copyBitmaps(Brush &into) const;
+	virtual std::unique_ptr<unsigned char []> GenerateBitmap() const = 0;
 
 public:
+	Brush() = default;
+	Brush(const Brush &other);
 	virtual ~Brush() = default;
-	virtual ui::Point GetRadius() const = 0;
-	virtual void SetRadius(ui::Point radius) = 0;
 	virtual void AdjustSize(int delta, bool logarithmic, bool keepX, bool keepY);
 	virtual std::unique_ptr<Brush> Clone() const = 0;
 
 	ui::Point GetSize() const
 	{
-		return size;
+		return radius * 2 + 1;
+	}
+
+	ui::Point GetRadius() const
+	{
+		return radius;
 	}
 
 	iterator begin() const
 	{
 		// bottom to top is the preferred order for Simulation::CreateParts
-		return ++iterator{*this, size.X, size.Y + 1};
+		return ++iterator{*this, radius.X, radius.Y + 1};
 	}
 
 	iterator end() const
 	{
-		return iterator{*this, -size.X, -size.Y - 1};
+		return iterator{*this, -radius.X, -radius.Y - 1};
 	}
 
 	void RenderRect(Renderer * ren, ui::Point position1, ui::Point position2) const;
 	void RenderLine(Renderer * ren, ui::Point position1, ui::Point position2) const;
 	void RenderPoint(Renderer * ren, ui::Point position) const;
 	void RenderFill(Renderer * ren, ui::Point position) const;
+
+	void SetRadius(ui::Point newRadius);
 };

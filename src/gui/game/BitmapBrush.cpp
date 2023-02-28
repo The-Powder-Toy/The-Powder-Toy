@@ -3,10 +3,7 @@
 #include "Misc.h"
 #include <cmath>
 
-BitmapBrush::BitmapBrush(ui::Point inputSize, unsigned char const *inputBitmap):
-	Brush(),
-	radius(inputSize / 2),
-	origSize(0, 0)
+BitmapBrush::BitmapBrush(ui::Point inputSize, unsigned char const *inputBitmap)
 {
 	ui::Point newSize = inputSize;
 
@@ -24,7 +21,11 @@ BitmapBrush::BitmapBrush(ui::Point inputSize, unsigned char const *inputBitmap):
 			origBitmap[x + y * newSize.X] = inputBitmap[x + y * inputSize.X];
 }
 
-std::pair<ui::Point, std::unique_ptr<unsigned char []>> BitmapBrush::GenerateBitmap() const
+BitmapBrush::BitmapBrush(const BitmapBrush &other) : BitmapBrush(other.origSize, &other.origBitmap[0])
+{
+}
+
+std::unique_ptr<unsigned char []> BitmapBrush::GenerateBitmap() const
 {
 	ui::Point size = radius * 2 + 1;
 	auto bitmap = std::make_unique<unsigned char []>(size.X * size.Y);
@@ -58,13 +59,10 @@ std::pair<ui::Point, std::unique_ptr<unsigned char []>> BitmapBrush::GenerateBit
 			}
 		}
 	}
-	return std::make_pair(radius, std::move(bitmap));
+	return bitmap;
 }
 
 std::unique_ptr<Brush> BitmapBrush::Clone() const
 {
-	auto into = std::make_unique<BitmapBrush>(origSize, &origBitmap[0]);
-	into->radius = radius;
-	copyBitmaps(*into);
-	return into;
+	return std::make_unique<BitmapBrush>(*this);
 }
