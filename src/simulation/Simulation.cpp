@@ -74,39 +74,67 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 		int x = int(tempPart->x + 0.5f);
 		int y = int(tempPart->y + 0.5f);
 
+		auto &type = tempPart->type;
+
 		// Check various scenarios where we are unable to spawn the element, and set type to 0 to block spawning later
 		if (!InBounds(x, y))
 		{
-			tempPart->type = 0;
+			type = 0;
 			continue;
 		}
 
-		int type = tempPart->type;
 		if (type < 0 || type >= PT_NUM)
 		{
-			tempPart->type = 0;
+			type = 0;
 			continue;
 		}
+		type = partMap[type];
+		// These store type in ctype, but are special because they store extra information in the bits after type
+		if (type == PT_CRAY || type == PT_DRAY || type == PT_CONV)
+		{
+			int ctype = tempPart->ctype & pmapmask;
+			int extra = tempPart->ctype >> save->pmapbits;
+			if (ctype >= 0 && ctype < PT_NUM)
+				ctype = partMap[ctype];
+			tempPart->ctype = PMAP(extra, ctype);
+		}
+		else if (GameSave::TypeInCtype(type, tempPart->ctype))
+		{
+			tempPart->ctype = partMap[tempPart->ctype];
+		}
+		// also stores extra bits past type (only STOR right now)
+		if (GameSave::TypeInTmp(type))
+		{
+			int tmp = tempPart->tmp & pmapmask;
+			int extra = tempPart->tmp >> save->pmapbits;
+			tmp = partMap[TYP(tmp)];
+			tempPart->tmp = PMAP(extra, tmp);
+		}
+		if (GameSave::TypeInTmp2(type, tempPart->tmp2))
+		{
+			tempPart->tmp2 = partMap[tempPart->tmp2];
+		}
+
 		// Ensure we can spawn this element
-		if ((player.spwn == 1 && tempPart->type==PT_STKM) || (player2.spwn == 1 && tempPart->type==PT_STKM2))
+		if ((player.spwn == 1 && type==PT_STKM) || (player2.spwn == 1 && type==PT_STKM2))
 		{
-			tempPart->type = 0;
+			type = 0;
 			continue;
 		}
-		if ((tempPart->type == PT_SPAWN || tempPart->type == PT_SPAWN2) && elementCount[type])
+		if ((type == PT_SPAWN || type == PT_SPAWN2) && elementCount[type])
 		{
-			tempPart->type = 0;
+			type = 0;
 			continue;
 		}
 		bool Element_FIGH_CanAlloc(Simulation *sim);
-		if (tempPart->type == PT_FIGH && !Element_FIGH_CanAlloc(this))
+		if (type == PT_FIGH && !Element_FIGH_CanAlloc(this))
 		{
-			tempPart->type = 0;
+			type = 0;
 			continue;
 		}
 		if (!elements[type].Enabled)
 		{
-			tempPart->type = 0;
+			type = 0;
 			continue;
 		}
 
@@ -151,36 +179,6 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
 		Particle tempPart = save->particles[n];
-		if (tempPart.type > 0 && tempPart.type < PT_NUM)
-			tempPart.type = partMap[tempPart.type];
-		else
-			continue;
-
-		// These store type in ctype, but are special because they store extra information in the bits after type
-		if (tempPart.type == PT_CRAY || tempPart.type == PT_DRAY || tempPart.type == PT_CONV)
-		{
-			int ctype = tempPart.ctype & pmapmask;
-			int extra = tempPart.ctype >> save->pmapbits;
-			if (ctype >= 0 && ctype < PT_NUM)
-				ctype = partMap[ctype];
-			tempPart.ctype = PMAP(extra, ctype);
-		}
-		else if (GameSave::TypeInCtype(tempPart.type, tempPart.ctype))
-		{
-			tempPart.ctype = partMap[tempPart.ctype];
-		}
-		// also stores extra bits past type (only STOR right now)
-		if (GameSave::TypeInTmp(tempPart.type))
-		{
-			int tmp = tempPart.tmp & pmapmask;
-			int extra = tempPart.tmp >> save->pmapbits;
-			tmp = partMap[TYP(tmp)];
-			tempPart.tmp = PMAP(extra, tmp);
-		}
-		if (GameSave::TypeInTmp2(tempPart.type, tempPart.tmp2))
-		{
-			tempPart.tmp2 = partMap[tempPart.tmp2];
-		}
 
 		// Allocate particle (this location is guaranteed to be empty due to "full scan" logic above)
 		if (pfree == -1)
