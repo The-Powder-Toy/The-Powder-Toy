@@ -33,11 +33,11 @@ std::vector<StructPropertyAlias> const &Particle::GetPropertyAliases()
 	return aliases;
 }
 
-std::vector<int> const &Particle::PossiblyCarriesType()
+std::vector<unsigned int> const &Particle::PossiblyCarriesType()
 {
 	struct DoOnce
 	{
-		std::vector<int> indices = {
+		std::vector<unsigned int> indices = {
 			FIELD_LIFE,
 			FIELD_CTYPE,
 			FIELD_TMP,
