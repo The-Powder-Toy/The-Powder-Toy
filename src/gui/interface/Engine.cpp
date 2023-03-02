@@ -31,6 +31,7 @@ Engine::Engine():
 	maxWidth(0),
 	maxHeight(0)
 {
+	SetFps(FpsLimit); // populate dt with whatever that makes any sort of sense
 }
 
 Engine::~Engine()
