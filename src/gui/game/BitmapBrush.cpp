@@ -15,7 +15,7 @@ BitmapBrush::BitmapBrush(ui::Point inputSize, unsigned char const *inputBitmap)
 
 	origSize = newSize;
 	origBitmap = std::make_unique<unsigned char []>(newSize.X * newSize.Y);
-	std::fill(&origBitmap[0], &origBitmap[newSize.X * newSize.Y], 0);
+	std::fill_n(origBitmap.get(), newSize.X * newSize.Y, 0);
 	for (int y = 0; y < inputSize.Y; y++)
 		for (int x = 0; x < inputSize.X; x++)
 			origBitmap[x + y * newSize.X] = inputBitmap[x + y * inputSize.X];
@@ -30,7 +30,7 @@ std::unique_ptr<unsigned char []> BitmapBrush::GenerateBitmap() const
 	ui::Point size = radius * 2 + ui::Point(1, 1);
 	auto bitmap = std::make_unique<unsigned char []>(size.X * size.Y);
 	if (size == origSize)
-		std::copy(&origBitmap[0], &origBitmap[origSize.X * origSize.Y], &bitmap[0]);
+		std::copy_n(origBitmap.get(), origSize.X * origSize.Y, bitmap.get());
 	else
 	{
 		//Bilinear interpolation

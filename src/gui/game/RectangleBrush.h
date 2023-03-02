@@ -10,7 +10,7 @@ public:
 	{
 		auto size = GetSize();
 		auto bitmap = std::make_unique<unsigned char []>(size.X * size.Y);
-		std::fill(&bitmap[0], &bitmap[0] + size.X * size.Y, 0xFF);
+		std::fill_n(bitmap.get(), size.X * size.Y, 0xFF);
 		return bitmap;
 	}
 

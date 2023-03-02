@@ -1,8 +1,9 @@
 #pragma once
 #include <algorithm>
 #include <cmath>
-#include <utility>
+#include <iterator>
 #include <type_traits>
+#include <utility>
 
 template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 struct Rect;
@@ -280,6 +281,8 @@ public:
 
 	// ideally, value_type = std::indirectly_readable_traits<T>::value_type
 	using value_type = std::remove_reference_t<decltype(std::declval<T>()[0])>;
+	using iterator = decltype(std::begin(std::declval<T &>()));
+	using const_iterator = decltype(std::begin(std::declval<T const &>()));
 
 	PlaneAdapter() = default;
 
@@ -295,15 +298,60 @@ public:
 	{
 	}
 
+	iterator begin()
+	{
+		return std::begin(Base);
+	}
+
+	const_iterator begin() const
+	{
+		return std::begin(Base);
+	}
+
+	iterator end()
+	{
+		return std::end(Base);
+	}
+
+	const_iterator end() const
+	{
+		return std::end(Base);
+	}
+
+	iterator At(Vec2<int> p)
+	{
+		return std::begin(Base) + (p.X + p.Y * width);
+	}
+
+	const_iterator At(Vec2<int> p) const
+	{
+		return std::begin(Base) + (p.X + p.Y * width);
+	}
+
+	value_type *data()
+	{
+		return std::data(Base);
+	}
+
+	value_type const *data() const
+	{
+		return std::data(Base);
+	}
+
 	value_type &operator[](Vec2<int> p)
 	{
 		return Base[p.X + p.Y * width];
-	};
+	}
 
 	value_type const &operator[](Vec2<int> p) const
 	{
 		return Base[p.X + p.Y * width];
-	};
+	}
+
+	void SetWidth(int width)
+	{
+		this->width = width;
+	}
 };
 
 template<int width, typename T>
@@ -313,6 +361,8 @@ public:
 	T Base;
 
 	using value_type = std::remove_reference_t<decltype(std::declval<T>()[0])>;
+	using iterator = decltype(std::begin(std::declval<T &>()));
+	using const_iterator = decltype(std::begin(std::declval<T const &>()));
 
 	StaticPlaneAdapter() = default;
 
@@ -324,6 +374,46 @@ public:
 	StaticPlaneAdapter(int height, value_type defaultVal):
 		Base(width * height, defaultVal)
 	{
+	}
+
+	iterator begin()
+	{
+		return std::begin(Base);
+	}
+
+	const_iterator begin() const
+	{
+		return std::begin(Base);
+	}
+
+	iterator end()
+	{
+		return std::end(Base);
+	}
+
+	const_iterator end() const
+	{
+		return std::end(Base);
+	}
+
+	iterator At(Vec2<int> p)
+	{
+		return std::begin(Base) + (p.X + p.Y * width);
+	}
+
+	const_iterator At(Vec2<int> p) const
+	{
+		return std::begin(Base) + (p.X + p.Y * width);
+	}
+
+	value_type *data()
+	{
+		return std::data(Base);
+	}
+
+	value_type const *data() const
+	{
+		return std::data(Base);
 	}
 
 	value_type &operator[](Vec2<int> p)

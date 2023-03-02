@@ -33,7 +33,7 @@ constexpr int PIXB(pixel x)
 }
 
 template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
-class RGBA;
+struct RGBA;
 
 template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) RGB

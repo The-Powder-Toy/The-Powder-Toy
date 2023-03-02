@@ -19,7 +19,7 @@ public:
 		ui::Point size = radius * 2 + ui::Point(1, 1);
 		auto bitmap = std::make_unique<unsigned char []>(size.X * size.Y);
 
-		std::fill(&bitmap[0], &bitmap[size.X * size.Y], 0);
+		std::fill_n(bitmap.get(), size.X * size.Y, 0);
 		float rx = radius.X, ry = radius.Y;
 		if (perfectCircle)
 		{

@@ -5,15 +5,15 @@
 #include <cstring>
 
 template<typename Derived>
-pixel &RasterDrawMethods<Derived>::pixelAt(Vec2<int> pos)
+static typename decltype(std::declval<Derived>().vid)::iterator pixelAt(RasterDrawMethods<Derived> &self, Vec2<int> pos)
 {
-	return static_cast<Derived *>(this)->vid[pos];
+	return static_cast<Derived &>(self).vid.At(pos);
 }
 
 template<typename Derived>
-Rect<int> RasterDrawMethods<Derived>::clipRect()
+static Rect<int> clipRect(RasterDrawMethods<Derived> &self)
 {
-	return static_cast<Derived *>(this)->clip;
+	return static_cast<Derived &>(self).clip;
 }
 
 template<typename Derived>
@@ -123,9 +123,9 @@ int RasterDrawMethods<Derived>::addchar(int x, int y, String::value_type c, int 
 template<typename Derived>
 void RasterDrawMethods<Derived>::xor_pixel(int x, int y)
 {
-	if (!clipRect().Contains(Vec2<int>(x, y)))
+	if (!clipRect(*this).Contains(Vec2<int>(x, y)))
 		return;
-	pixel &c = pixelAt(Vec2<int>(x, y));
+	pixel &c = *pixelAt(*this, Vec2<int>(x, y));
 	if (PIXB(c) + 2 * PIXR(c) + 3 * PIXG(c) < 512)
 		c = PIXPACK(0xC0C0C0);
 	else
@@ -135,18 +135,18 @@ void RasterDrawMethods<Derived>::xor_pixel(int x, int y)
 template<typename Derived>
 void RasterDrawMethods<Derived>::blendpixel(int x, int y, int r, int g, int b, int a)
 {
-	if (!clipRect().Contains(Vec2<int>(x, y)))
+	if (!clipRect(*this).Contains(Vec2<int>(x, y)))
 		return;
-	pixel &t = pixelAt(Vec2<int>(x, y));
+	pixel &t = *pixelAt(*this, Vec2<int>(x, y));
 	t = RGB<uint8_t>::Unpack(t).Blend(RGBA<uint8_t>(r, g, b, a)).Pack();
 }
 
 template<typename Derived>
 void RasterDrawMethods<Derived>::addpixel(int x, int y, int r, int g, int b, int a)
 {
-	if (!clipRect().Contains(Vec2<int>(x, y)))
+	if (!clipRect(*this).Contains(Vec2<int>(x, y)))
 		return;
-	pixel &t = pixelAt(Vec2<int>(x, y));
+	pixel &t = *pixelAt(*this, Vec2<int>(x, y));
 	t = RGB<uint8_t>::Unpack(t).Add(RGBA<uint8_t>(r, g, b, a)).Pack();
 }
 
@@ -232,11 +232,11 @@ void RasterDrawMethods<Derived>::clearrect(int x, int y, int w, int h)
 	w -= 1;
 	h -= 1;
 
-	Rect<int> rect = clipRect() & RectSized(Vec2<int>(x, y), Vec2<int>(w, h));
+	Rect<int> rect = clipRect(*this) & RectSized(Vec2<int>(x, y), Vec2<int>(w, h));
 	if (rect.Size().X <= 0 || rect.Size().Y <= 0)
 		return;
 	for (int y = rect.TopLeft.Y; y <= rect.BottomRight.Y; y++)
-		std::fill_n(&pixelAt(Vec2<int>(rect.TopLeft.X, y)), rect.Size().X, PIXPACK(0x000000));
+		std::fill_n(pixelAt(*this, Vec2<int>(rect.TopLeft.X, y)), rect.Size().X, PIXPACK(0x000000));
 }
 
 template<typename Derived>
@@ -244,12 +244,12 @@ void RasterDrawMethods<Derived>::draw_image(const pixel *img, int x, int y, int 
 {
 	if (!img)
 		return;
-	Rect<int> rect = clipRect() & RectSized(Vec2<int>(x, y), Vec2<int>(w, h));
+	Rect<int> rect = clipRect(*this) & RectSized(Vec2<int>(x, y), Vec2<int>(w, h));
 	if (rect.Size().X <= 0 || rect.Size().Y <= 0)
 		return;
 	if (a == 255)
 		for (int outY = rect.TopLeft.Y; outY <= rect.BottomRight.Y; outY++)
-			std::copy_n(&img[(rect.TopLeft.X - x) + (outY - y) * w], rect.Size().X, &pixelAt(Vec2<int>(rect.TopLeft.X, outY)));
+			std::copy_n(img + (rect.TopLeft.X - x) + (outY - y) * w, rect.Size().X, pixelAt(*this, Vec2<int>(rect.TopLeft.X, outY)));
 	else
 		for (auto pos : rect)
 		{

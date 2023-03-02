@@ -47,7 +47,7 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire,
 		ren->blackDecorations = !decorations;
 		pixel * pData = NULL;
 		pixel * dst;
-		pixel * src = g->vid.Base.get();
+		pixel * src = std::data(g->vid);
 
 		ren->ClearAccumulation();
 

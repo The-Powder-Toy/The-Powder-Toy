@@ -6,6 +6,7 @@
 #include "Pixel.h"
 #include "RasterDrawMethods.h"
 #include "SimulationConfig.h"
+#include <array>
 #include <memory>
 
 //"Graphics lite" - slightly lower performance due to variable size,
@@ -75,7 +76,7 @@ class Graphics: public RasterDrawMethods<Graphics>
 public:
 	Rect<int> clip;
 
-	StaticPlaneAdapter<WINDOW.X, std::unique_ptr<pixel []>> vid;
+	StaticPlaneAdapter<WINDOW.X, std::array<pixel, WINDOW.X * WINDOW.Y>> vid;
 
 	struct GradientStop
 	{

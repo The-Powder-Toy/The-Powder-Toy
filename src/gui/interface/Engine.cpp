@@ -103,7 +103,7 @@ void Engine::ShowWindow(Window * window)
 		}
 		lastBuffer = (pixel*)malloc((width_ * height_) * PIXELSIZE);
 
-		std::copy_n(lastBuffer, width_ * height_, g->vid.Base.get());
+		std::copy_n(std::begin(g->vid), width_ * height_, lastBuffer);
 
 		windows.push(state_);
 		mousePositions.push(ui::Point(mousex_, mousey_));
@@ -209,7 +209,7 @@ void Engine::Draw()
 	if(lastBuffer && !(state_ && state_->Position.X == 0 && state_->Position.Y == 0 && state_->Size.X == width_ && state_->Size.Y == height_))
 	{
 		g->Clear();
-		std::copy_n(g->vid.Base.get(), width_ * height_, lastBuffer);
+		std::copy_n(lastBuffer, width_ * height_, std::begin(g->vid));
 		if(windowOpenState < 20)
 			windowOpenState++;
 		g->fillrect(0, 0, width_, height_, 0, 0, 0, int(255-std::pow(.98, windowOpenState)*255));

@@ -7,23 +7,16 @@
 #include <cmath>
 #include <memory>
 
-constexpr auto VIDRES = WINDOW;
+constexpr auto VIDRES = RES;
 constexpr auto VIDXRES = VIDRES.X;
-constexpr auto VIDYRES = VIDRES.Y;
 
 void Renderer::RenderBegin()
 {
 	if(display_mode & DISPLAY_PERS)
-	{
-		std::copy_n(persistentVid.Base.get(), VIDXRES * YRES, vid.Base);
-	}
-	pixel *oldVid = NULL;
-	if(display_mode & DISPLAY_WARP)
-	{
-		oldVid = vid.Base;
-		vid.Base = warpVid.Base.get();
-		std::fill_n(warpVid.Base.get(), VIDXRES * VIDYRES, 0);
-	}
+		std::copy(std::begin(persistentVid), std::end(persistentVid), std::begin(vid));
+	else
+		std::fill(std::begin(vid), std::end(vid), 0);
+
 
 	draw_air();
 	draw_grav();
@@ -54,7 +47,8 @@ void Renderer::RenderBegin()
 
 	if(display_mode & DISPLAY_WARP)
 	{
-		vid.Base = oldVid;
+		std::copy(std::begin(vid), std::end(vid), std::begin(warpVid));
+		std::fill(std::begin(vid), std::end(vid), 0);
 	}
 
 	FinaliseParts();
@@ -63,6 +57,9 @@ void Renderer::RenderBegin()
 void Renderer::RenderEnd()
 {
 	RenderZoom();
+
+	for(int y = 0; y < YRES; y++)
+		std::copy_n(vid.At(Vec2<int>(0, y)), XRES, g->vid.At(Vec2<int>(0, y)));
 }
 
 void Renderer::SetSample(int x, int y)
@@ -79,7 +76,7 @@ void Renderer::FinaliseParts()
 {
 	if(display_mode & DISPLAY_WARP)
 	{
-		render_gravlensing(warpVid.Base.get());
+		render_gravlensing(std::data(warpVid));
 	}
 }
 
@@ -90,7 +87,7 @@ void Renderer::RenderZoom()
 	{
 		int x, y, i, j;
 		pixel pix;
-		pixel * img = vid.Base;
+		pixel * img = std::data(vid);
 		clearrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1);
 		drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+3, zoomScopeSize*ZFACTOR+3, 192, 192, 192, 255);
 		drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1, 0, 0, 0, 255);
@@ -138,7 +135,7 @@ void Renderer::render_gravlensing(pixel * source)
 	int r, g, b;
 	pixel t;
 	pixel *src = source;
-	pixel *dst = vid.Base;
+	pixel *dst = std::data(vid);
 	if (!dst)
 		return;
 	for(nx = 0; nx < XRES; nx++)
@@ -291,9 +288,6 @@ Renderer::Renderer(Graphics * g, Simulation * sim):
 	zoomScopeSize(32),
 	zoomEnabled(false),
 	ZFACTOR(8),
-	vid(g->vid.Base.get()),
-	persistentVid(std::make_unique<pixel []>(WINDOW.X * WINDOW.Y)),
-	warpVid(std::make_unique<pixel []>(WINDOW.X * WINDOW.Y)),
 	gridSize(0)
 {
 	PopulateTables();
@@ -399,7 +393,7 @@ void Renderer::ClearAccumulation()
 	std::fill(&fire_r[0][0], &fire_r[0][0] + NCELL, 0);
 	std::fill(&fire_g[0][0], &fire_g[0][0] + NCELL, 0);
 	std::fill(&fire_b[0][0], &fire_b[0][0] + NCELL, 0);
-	std::fill_n(persistentVid.Base.get(), VIDXRES * YRES, 0);
+	std::fill(std::begin(persistentVid), std::end(persistentVid), 0);
 }
 
 void Renderer::AddRenderMode(unsigned int mode)

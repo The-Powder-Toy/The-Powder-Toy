@@ -436,14 +436,14 @@ void GameSave::readOPS(const std::vector<char> &data)
 	size_t partsDataLen, partsPosDataLen, fanDataLen, soapLinkDataLen;
 	uint8_t const *pressData = nullptr, *vxData = nullptr, *vyData = nullptr, *ambientData = nullptr;
 	size_t pressDataLen, vxDataLen, vyDataLen, ambientDataLen;
-	PlaneAdapter<uint8_t const *> wallData(blockSize.X, nullptr);
+	uint8_t const *wallData = nullptr;
 	size_t wallDataLen;
 
 	while (bson_iterator_next(&iter))
 	{
 		CheckBsonFieldUser(iter, "parts", partsData, partsDataLen);
 		CheckBsonFieldUser(iter, "partsPos", partsPosData, partsPosDataLen);
-		CheckBsonFieldUser(iter, "wallMap", wallData.Base, wallDataLen);
+		CheckBsonFieldUser(iter, "wallMap", wallData, wallDataLen);
 		CheckBsonFieldUser(iter, "pressMap", pressData, pressDataLen);
 		CheckBsonFieldUser(iter, "vxMap", vxData, vxDataLen);
 		CheckBsonFieldUser(iter, "vyMap", vyData, vyDataLen);
@@ -656,17 +656,18 @@ void GameSave::readOPS(const std::vector<char> &data)
 	}
 
 	//Read wall and fan data
-	if (wallData.Base)
+	if (wallData)
 	{
 		if (size_t(blockSize.X * blockSize.Y) > wallDataLen)
 			throw ParseException(ParseException::Corrupt, "Not enough wall data");
+		PlaneAdapter<std::basic_string_view<uint8_t>> wallPlane(blockSize.X, std::basic_string_view<uint8_t>(wallData, wallDataLen));
 		size_t fanDataIndex = 0;
 		for (int x = 0; x < blockSize.X; x++)
 		{
 			for (int y = 0; y < blockSize.Y; y++)
 			{
 				auto pos = Vec2<int>(x, y);
-				auto wall = wallData[pos];
+				auto wall = wallPlane[pos];
 				if (wall == O_WL_WALLELEC)
 					wall = WL_WALLELEC;
 				if (wall == O_WL_EWALL)

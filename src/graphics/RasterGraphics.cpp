@@ -5,14 +5,13 @@
 #include <cstring>
 
 Graphics::Graphics():
-	clip(WINDOW.OriginRect()),
-	vid(std::make_unique<pixel []>(WINDOWW * WINDOWH))
+	clip(WINDOW.OriginRect())
 {
 }
 
 void Graphics::Clear()
 {
-	std::fill_n(vid.Base.get(), WINDOWW * WINDOWH, 0);
+	std::fill(std::begin(vid), std::end(vid), 0);
 }
 
 void Graphics::Finalise()

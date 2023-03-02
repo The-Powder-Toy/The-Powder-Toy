@@ -124,7 +124,7 @@ void BlueScreen(String detailMessage)
 		while (SDL_PollEvent(&event))
 			if(event.type == SDL_QUIT)
 				exit(-1); // Don't use Platform::Exit, we're practically zombies at this point anyway.
-		blit(engine.g->vid.Base.get());
+		blit(std::data(engine.g->vid));
 	}
 }
 
@@ -452,7 +452,7 @@ int main(int argc, char * argv[])
 			engine.g->drawrect((engine.GetWidth()/2)-100, (engine.GetHeight()/2)-25, 200, 50, 255, 255, 255, 180);
 			engine.g->drawtext((engine.GetWidth()/2)-(Graphics::textwidth("Loading save...")/2), (engine.GetHeight()/2)-5, "Loading save...", style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255);
 
-			blit(engine.g->vid.Base.get());
+			blit(std::data(engine.g->vid));
 			try
 			{
 				ByteString saveIdPart;
