@@ -1735,35 +1735,6 @@ void Simulation::photoelectric_effect(int nx, int ny)//create sparks from PHOT w
 	}
 }
 
-unsigned Simulation::direction_to_map(float dx, float dy, int t)
-{
-	// TODO:
-	// Adding extra directions causes some inaccuracies.
-	// Not adding them causes problems with some diagonal surfaces (photons absorbed instead of reflected).
-	// For now, don't add them.
-	// Solution may involve more intelligent setting of initial i0 value in find_next_boundary?
-	// or rewriting normal/boundary finding code
-
-	return (dx >= 0) |
-	       (((dx + dy) >= 0) << 1) |     /*  567  */
-	       ((dy >= 0) << 2) |            /*  4+0  */
-	       (((dy - dx) >= 0) << 3) |     /*  321  */
-	       ((dx <= 0) << 4) |
-	       (((dx + dy) <= 0) << 5) |
-	       ((dy <= 0) << 6) |
-	       (((dy - dx) <= 0) << 7);
-	/*
-	return (dx >= -0.001) |
-	       (((dx + dy) >= -0.001) << 1) |     //  567
-	       ((dy >= -0.001) << 2) |            //  4+0
-	       (((dy - dx) >= -0.001) << 3) |     //  321
-	       ((dx <= 0.001) << 4) |
-	       (((dx + dy) <= 0.001) << 5) |
-	       ((dy <= 0.001) << 6) |
-	       (((dy - dx) <= 0.001) << 7);
-	}*/
-}
-
 int Simulation::is_blocking(int t, int x, int y)
 {
 	if (t & REFRACT) {
@@ -1805,7 +1776,7 @@ int Simulation::find_next_boundary(int pt, int *x, int *y, int dm, int *em, bool
 	unsigned int mask = 0;
 	for (int i = 0; i < 8; ++i)
 	{
-		if ((dm & (1U << i)) && is_blocking(pt, *x + dx[i], *y + dy[i]))
+		if (is_blocking(pt, *x + dx[i], *y + dy[i]))
 		{
 			mask |= (1U << i);
 		}
@@ -1813,7 +1784,7 @@ int Simulation::find_next_boundary(int pt, int *x, int *y, int dm, int *em, bool
 	for (int i = 0; i < 8; ++i)
 	{
 		int n = (i + (reverse ? 1 : -1)) & 7;
-		if (((mask & (1U << i))) && !(mask & (1U << n)))
+		if (((dm & mask & (1U << i))) && !(mask & (1U << n)))
 		{
 			*x += dx[i];
 			*y += dy[i];
@@ -1838,8 +1809,8 @@ int Simulation::get_normal(int pt, int x, int y, float dx, float dy, float *nx, 
 	if (!is_boundary(pt, x, y))
 		return 0;
 
-	ldm = direction_to_map(-dy, dx, pt);
-	rdm = direction_to_map(dy, -dx, pt);
+	ldm = 0xFF;
+	rdm = 0xFF;
 	lx = rx = x;
 	ly = ry = y;
 	lv = rv = 1;
@@ -3076,10 +3047,10 @@ killed:
 							}
 							nn = GLASS_IOR - GLASS_DISP*(r-30)/30.0f;
 							nn *= nn;
-							nrx = -nrx;
-							nry = -nry;
-							if (rt_glas && !lt_glas)
-								nn = 1.0f/nn;
+							auto enter = rt_glas && !lt_glas;
+							nrx = enter ? -nrx : nrx;
+							nry = enter ? -nry : nry;
+							nn = enter ? 1.0f/nn : nn;
 							ct1 = parts[i].vx*nrx + parts[i].vy*nry;
 							ct2 = 1.0f - (nn*nn)*(1.0f-(ct1*ct1));
 							if (ct2 < 0.0f) {

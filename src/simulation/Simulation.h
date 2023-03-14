@@ -133,7 +133,6 @@ public:
 	int is_boundary(int pt, int x, int y);
 	int find_next_boundary(int pt, int *x, int *y, int dm, int *em, bool reverse);
 	void photoelectric_effect(int nx, int ny);
-	unsigned direction_to_map(float dx, float dy, int t);
 	int do_move(int i, int x, int y, float nxf, float nyf);
 	bool move(int i, int x, int y, float nxf, float nyf);
 	int try_move(int i, int x, int y, int nx, int ny);
