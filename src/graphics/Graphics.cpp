@@ -1,15 +1,16 @@
 #include <algorithm>
-#include <bzlib.h>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <memory>
 #include <png.h>
 #include "common/platform/Platform.h"
 #include "FontReader.h"
 #include "Graphics.h"
 #include "resampler/resampler.h"
 #include "SimulationConfig.h"
+#include "RasterDrawMethodsImpl.h"
 
 VideoBuffer::VideoBuffer(Vec2<int> size):
 	video(size)
@@ -127,6 +128,8 @@ int VideoBuffer::AddCharacter(int x, int y, String::value_type c, int r, int g, 
 			AddPixel(x + i, y + j, r, g, b, reader.NextPixel() * a / 3);
 	return x + reader.GetWidth();
 }
+
+template class RasterDrawMethods<VideoBuffer>;
 
 pixel *Graphics::resample_img_nn(pixel * src, int sw, int sh, int rw, int rh)
 {
