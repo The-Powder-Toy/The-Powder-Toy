@@ -61,6 +61,8 @@ public:
 	[[deprecated("Use Crop(Rect<int>)")]]
 	void Crop(int width, int height, int x, int y);
 
+	using RasterDrawMethods<VideoBuffer>::BlendPixel;
+	[[deprecated("Use BlendPixel(Vec2<int>, RGBA<uint8_t>)")]]
 	TPT_INLINE void BlendPixel(int x, int y, int r, int g, int b, int a)
 	{
 		pixel t;
@@ -76,6 +78,7 @@ public:
 		Buffer[y*(Width)+x] = PIXRGB(r,g,b);
 	}
 
+	[[deprecated("Use DrawPixel")]]
 	TPT_INLINE void SetPixel(int x, int y, int r, int g, int b, int a)
 	{
 		if (x<0 || y<0 || x>=Width || y>=Height)
@@ -83,6 +86,8 @@ public:
 		Buffer[y*(Width)+x] = PIXRGB((r*a)>>8, (g*a)>>8, (b*a)>>8);
 	}
 
+	using RasterDrawMethods<VideoBuffer>::AddPixel;
+	[[deprecated("Use AddPixel(Vec2<int>, RGBA<uint8_t>)")]]
 	TPT_INLINE void AddPixel(int x, int y, int r, int g, int b, int a)
 	{
 		pixel t;
@@ -100,8 +105,11 @@ public:
 			b = 255;
 		Buffer[y*(Width)+x] = PIXRGB(r,g,b);
 	}
+	[[deprecated("Use BlendChar")]]
 	int SetCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
+	[[deprecated("Use BlendChar")]]
 	int BlendCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
+	[[deprecated("Use AddChar")]]
 	int AddCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
 
 	bool WritePNG(const ByteString &path) const;

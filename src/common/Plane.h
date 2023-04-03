@@ -88,10 +88,12 @@ public:
 
 	PlaneAdapter(PlaneAdapter &&) = default;
 
+	// PlaneAdapter<T> can be constructed from (Vec2, T &&)
+	// PlaneAdapter<T &> can be constructed from (Vec2, T &)
 	PlaneAdapter(Vec2<int> size, T &&base):
 		xExtent<Width>(size.X),
 		yExtent<Height>(size.Y),
-		Base(std::move(base))
+		Base(std::forward<T>(base))
 	{}
 
 	template<typename... Args>

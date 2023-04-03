@@ -6,9 +6,6 @@
 #include "simulation/ElementGraphics.h"
 #include "simulation/Simulation.h"
 
-#undef VIDXRES
-#undef VIDYRES
-
 constexpr auto VIDXRES = WINDOWW;
 constexpr auto VIDYRES = WINDOWH;
 
