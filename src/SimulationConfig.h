@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <common/Vec2.h>
 
 constexpr int MENUSIZE = 40;
 constexpr int BARSIZE  = 17;
@@ -7,19 +8,24 @@ constexpr int BARSIZE  = 17;
 constexpr float M_GRAV = 6.67300e-1f;
 
 //CELL, the size of the pressure, gravity, and wall maps. Larger than 1 to prevent extreme lag
-constexpr int CELL   =   4;
-constexpr int XCELLS = 153;
-constexpr int YCELLS =  96;
+constexpr int CELL = 4;
+constexpr Vec2<int> CELLS = Vec2(153, 96);
+constexpr Vec2<int> RES = CELLS * CELL;
+
+constexpr int XCELLS = CELLS.X;
+constexpr int YCELLS = CELLS.Y;
 constexpr int NCELL  = XCELLS * YCELLS;
-constexpr int XRES   = XCELLS * CELL;
-constexpr int YRES   = YCELLS * CELL;
+constexpr int XRES   = RES.X;
+constexpr int YRES   = RES.Y;
 constexpr int NPART  = XRES * YRES;
 
 constexpr int XCNTR = XRES / 2;
 constexpr int YCNTR = YRES / 2;
 
-constexpr int WINDOWW = XRES + BARSIZE;
-constexpr int WINDOWH = YRES + MENUSIZE;
+constexpr Vec2<int> WINDOW = RES + Vec2(BARSIZE, MENUSIZE);
+
+constexpr int WINDOWW = WINDOW.X;
+constexpr int WINDOWH = WINDOW.Y;
 
 constexpr int MAXSIGNS = 16;
 
