@@ -1,60 +1,62 @@
-#include "Graphics.h"
-#include "common/platform/Platform.h"
-#include "FontReader.h"
-#include "resampler/resampler.h"
-#include "SimulationConfig.h"
+#include <algorithm>
+#include <bzlib.h>
 #include <cmath>
-#include <iostream>
 #include <cstdlib>
 #include <cstring>
-#include <bzlib.h>
+#include <iostream>
 #include <png.h>
+#include "common/platform/Platform.h"
+#include "FontReader.h"
+#include "Graphics.h"
+#include "resampler/resampler.h"
+#include "SimulationConfig.h"
+
+VideoBuffer::VideoBuffer(Vec2<int> size):
+	video(size)
+{}
+
+VideoBuffer::VideoBuffer(pixel const *data, Vec2<int> size):
+	VideoBuffer(size)
+{
+	std::copy_n(data, size.X * size.Y, video.data());
+}
+
+VideoBuffer::VideoBuffer(pixel const *data, Vec2<int> size, size_t rowStride):
+	VideoBuffer(size)
+{
+	for(int y = 0; y < size.Y; y++)
+		std::copy_n(data + rowStride * y, size.X, video.RowIterator(Vec2(0, y)));
+}
 
 VideoBuffer::VideoBuffer(int width, int height):
-	Width(width),
-	Height(height)
-{
-	Buffer = new pixel[width*height];
-	std::fill(Buffer, Buffer+(width*height), 0);
-};
-
-VideoBuffer::VideoBuffer(const VideoBuffer & old):
-	Width(old.Width),
-	Height(old.Height)
-{
-	Buffer = new pixel[old.Width*old.Height];
-	std::copy(old.Buffer, old.Buffer+(old.Width*old.Height), Buffer);
-};
+	VideoBuffer(Vec2(width, height))
+{}
 
 VideoBuffer::VideoBuffer(VideoBuffer * old):
-	Width(old->Width),
-	Height(old->Height)
-{
-	Buffer = new pixel[old->Width*old->Height];
-	std::copy(old->Buffer, old->Buffer+(old->Width*old->Height), Buffer);
-};
+	VideoBuffer(*old)
+{}
 
-VideoBuffer::VideoBuffer(pixel * buffer, int width, int height, int pitch):
-	Width(width),
-	Height(height)
-{
-	Buffer = new pixel[width*height];
-	CopyData(buffer, width, height, pitch ? pitch : width);
-}
+VideoBuffer::VideoBuffer(pixel const *buffer, int width, int height, int pitch):
+	VideoBuffer(buffer, Vec2(width, height), pitch == 0 ? width : pitch)
+{}
 
 void VideoBuffer::CopyData(pixel * buffer, int width, int height, int pitch)
 {
 	for (auto y = 0; y < height; ++y)
 	{
-		std::copy(buffer + y * pitch, buffer + y * pitch + width, Buffer + y * width);
+		std::copy(buffer + y * pitch, buffer + y * pitch + width, Buffer.data() + y * width);
 	}
+}
+
+void VideoBuffer::Crop(Rect<int> rect)
+{
+	Crop(rect.Size().X, rect.Size().Y, rect.TopLeft.X, rect.TopLeft.Y);
 }
 
 void VideoBuffer::Crop(int width, int height, int x, int y)
 {
-	CopyData(Buffer + y * Width + x, width, height, Width);
-	Width = width;
-	Height = height;
+	CopyData(Buffer.data() + y * Width + x, width, height, Width);
+	video.SetSize(Vec2(width, height));
 }
 
 void VideoBuffer::Resize(float factor, bool resample)
@@ -87,16 +89,15 @@ void VideoBuffer::Resize(int width, int height, bool resample, bool fixedRatio)
 			newHeight = (int)(Height * (newWidth/(float)Width));
 	}
 	if(resample)
-		newBuffer = Graphics::resample_img(Buffer, Width, Height, newWidth, newHeight);
+		newBuffer = Graphics::resample_img(Buffer.data(), Width, Height, newWidth, newHeight);
 	else
-		newBuffer = Graphics::resample_img_nn(Buffer, Width, Height, newWidth, newHeight);
+		newBuffer = Graphics::resample_img_nn(Buffer.data(), Width, Height, newWidth, newHeight);
 
 	if(newBuffer)
 	{
-		delete[] Buffer;
-		Buffer = newBuffer;
-		Width = newWidth;
-		Height = newHeight;
+		Buffer.assign(newBuffer, newBuffer + newWidth * newHeight);
+		delete[] newBuffer;
+		video.SetSize(Vec2(newWidth, newHeight));
 	}
 }
 
@@ -125,11 +126,6 @@ int VideoBuffer::AddCharacter(int x, int y, String::value_type c, int r, int g, 
 		for (int i = 0; i < reader.GetWidth(); i++)
 			AddPixel(x + i, y + j, r, g, b, reader.NextPixel() * a / 3);
 	return x + reader.GetWidth();
-}
-
-VideoBuffer::~VideoBuffer()
-{
-	delete[] Buffer;
 }
 
 pixel *Graphics::resample_img_nn(pixel * src, int sw, int sh, int rw, int rh)
@@ -739,7 +735,7 @@ void Graphics::draw_rgba_image(const pixel *data, int w, int h, int x, int y, fl
 VideoBuffer Graphics::DumpFrame()
 {
 	VideoBuffer newBuffer(WINDOWW, WINDOWH);
-	std::copy(vid, vid+(WINDOWW*WINDOWH), newBuffer.Buffer);
+	std::copy(vid, vid+(WINDOWW*WINDOWH), newBuffer.Buffer.data());
 	return newBuffer;
 }
 

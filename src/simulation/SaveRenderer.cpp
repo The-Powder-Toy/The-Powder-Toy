@@ -8,9 +8,8 @@
 #include "Simulation.h"
 
 SaveRenderer::SaveRenderer(){
-	g = new Graphics();
 	sim = new Simulation();
-	ren = new Renderer(g, sim);
+	ren = new Renderer(sim);
 	ren->decorations_enable = true;
 	ren->blackDecorations = true;
 }
@@ -38,7 +37,6 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire,
 	width = save->blockWidth;
 	height = save->blockHeight;
 
-	g->Clear();
 	sim->clear_sim();
 
 	if(!sim->Load(save, true))
@@ -47,7 +45,7 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire,
 		ren->blackDecorations = !decorations;
 		pixel * pData = NULL;
 		pixel * dst;
-		pixel * src = g->vid;
+		pixel * src = ren->vid;
 
 		ren->ClearAccumulation();
 
@@ -59,7 +57,7 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire,
 				frame--;
 				ren->render_parts();
 				ren->render_fire();
-				ren->clearScreen(1.0f);
+				ren->clearScreen();
 			}
 		}
 
@@ -86,5 +84,4 @@ SaveRenderer::~SaveRenderer()
 {
 	delete ren;
 	delete sim;
-	delete g;
 }

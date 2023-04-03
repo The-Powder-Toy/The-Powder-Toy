@@ -58,7 +58,7 @@ GameModel::GameModel():
 	decoSpace(0)
 {
 	sim = new Simulation();
-	ren = new Renderer(ui::Engine::Ref().g, sim);
+	ren = new Renderer(sim);
 
 	activeTools = regularToolset;
 
