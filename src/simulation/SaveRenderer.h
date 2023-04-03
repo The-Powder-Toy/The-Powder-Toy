@@ -9,7 +9,6 @@ class Simulation;
 class Renderer;
 
 class SaveRenderer: public ExplicitSingleton<SaveRenderer> {
-	Graphics * g;
 	Simulation * sim;
 	Renderer * ren;
 	std::mutex renderMutex;

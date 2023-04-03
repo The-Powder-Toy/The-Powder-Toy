@@ -1,23 +1,66 @@
 #pragma once
+#include <array>
+#include <vector>
+#include "common/Plane.h"
 #include "common/String.h"
 #include "common/tpt-inline.h"
-#include "Pixel.h"
 #include "Icons.h"
+#include "Pixel.h"
+#include "RasterDrawMethods.h"
+#include "SimulationConfig.h"
 
-//"Graphics lite" - slightly lower performance due to variable size,
-class VideoBuffer
+class VideoBuffer: public RasterDrawMethods<VideoBuffer>
 {
-public:
-	pixel * Buffer;
-	int Width, Height;
+	PlaneAdapter<std::vector<pixel>> video;
 
-	VideoBuffer(const VideoBuffer & old);
-	VideoBuffer(VideoBuffer * old);
-	VideoBuffer(pixel * buffer, int width, int height, int pitch = 0);
-	VideoBuffer(int width, int height);
+	Rect<int> getClipRect() const
+	{
+		return video.Size().OriginRect();
+	}
+
+	friend struct RasterDrawMethods<VideoBuffer>;
+
+	void CopyData(pixel * buffer, int width, int height, int pitch);
+
+public:
+	[[deprecated("Use video")]]
+	std::vector<pixel> &Buffer = video.Base;
+	[[deprecated("Use Size()")]]
+	size_t &Width = video.xExtent<DynamicExtent>::extent; // See TODO in common/Plane.h
+	[[deprecated("Use Size()")]]
+	size_t &Height = video.yExtent<DynamicExtent>::extent;
+
+	VideoBuffer(VideoBuffer const &) = default;
+	VideoBuffer(pixel const *data, Vec2<int> size);
+	VideoBuffer(pixel const *data, Vec2<int> size, size_t rowStride);
+	VideoBuffer(Vec2<int> size);
+
+	Vec2<int> Size() const
+	{
+		return video.Size();
+	}
+
+	pixel const *Data() const
+	{
+		return video.data();
+	}
+
+	void Crop(Rect<int>);
+
 	void Resize(float factor, bool resample = false);
+	void Resize(Vec2<int> size, bool resamble = false, bool fixedRatio = true);
+
+	[[deprecated("Use VideoBuffer(VideoBuffer const &)")]]
+	VideoBuffer(VideoBuffer * old);
+	[[deprecated("Use VideoBuffer(pixel const *, Vec2<int>)")]]
+	VideoBuffer(pixel const *buffer, int width, int height, int pitch = 0);
+	[[deprecated("Use VideoBuffer(Vec2<int>)")]]
+	VideoBuffer(int width, int height);
+	[[deprecated("Use Resize(Vec2<int>, bool, bool)")]]
 	void Resize(int width, int height, bool resample = false, bool fixedRatio = true);
+	[[deprecated("Use Crop(Rect<int>)")]]
 	void Crop(int width, int height, int x, int y);
+
 	TPT_INLINE void BlendPixel(int x, int y, int r, int g, int b, int a)
 	{
 		pixel t;
@@ -60,22 +103,39 @@ public:
 	int SetCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
 	int BlendCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
 	int AddCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
-	~VideoBuffer();
 
-	void CopyData(pixel * buffer, int width, int height, int pitch);
 	bool WritePNG(const ByteString &path) const;
 };
 
-class Graphics
+class Graphics: public RasterDrawMethods<Graphics>
 {
-	int clipx1;
-	int clipy1;
-	int clipx2;
-	int clipy2;
+	PlaneAdapter<std::array<pixel, WINDOW.X * WINDOW.Y>, WINDOW.X, WINDOW.Y> video;
+	Rect<int> clipRect = video.Size().OriginRect();
+
+	Rect<int> getClipRect() const
+	{
+		return clipRect;
+	}
+
+	friend struct RasterDrawMethods<Graphics>;
+
+	[[deprecated("Use clipRect")]]
+	int &clipx1 = clipRect.TopLeft.X;
+	[[deprecated("Use clipRect")]]
+	int &clipy1 = clipRect.TopLeft.Y;
+	[[deprecated("Use clipRect")]]
+	int &clipx2 = clipRect.BottomRight.X;
+	[[deprecated("Use clipRect")]]
+	int &clipy2 = clipRect.BottomRight.Y;
 
 public:
-	pixel *vid;
-	int sdl_scale;
+	pixel const *Data() const
+	{
+		return video.data();
+	}
+
+	[[deprecated("Use Data()")]]
+	pixel *vid = video.data();
 
 	struct GradientStop
 	{
@@ -98,38 +158,15 @@ public:
 
 	VideoBuffer DumpFrame();
 
-	void blendpixel(int x, int y, int r, int g, int b, int a);
-	void addpixel(int x, int y, int r, int g, int b, int a);
-
 	void draw_icon(int x, int y, Icon icon, unsigned char alpha = 255, bool invert = false);
 
 	void Clear();
 	void Finalise();
-	//
-	int drawtext_outline(int x, int y, const String &s, int r, int g, int b, int a);
-	int drawtext(int x, int y, const String &s, int r, int g, int b, int a);
-	int drawchar(int x, int y, String::value_type c, int r, int g, int b, int a);
-	int addchar(int x, int y, String::value_type c, int r, int g, int b, int a);
 
-	void xor_pixel(int x, int y);
-	void xor_line(int x, int y, int x2, int y2);
-	void xor_rect(int x, int y, int width, int height);
-	void xor_bitmap(unsigned char * bitmap, int x, int y, int w, int h);
-
-	void draw_line(int x, int y, int x2, int y2, int r, int g, int b, int a);
-	void drawrect(int x, int y, int width, int height, int r, int g, int b, int a);
-	void fillrect(int x, int y, int width, int height, int r, int g, int b, int a);
-	void drawcircle(int x, int y, int rx, int ry, int r, int g, int b, int a);
-	void fillcircle(int x, int y, int rx, int ry, int r, int g, int b, int a);
-	void clearrect(int x, int y, int width, int height);
-	void gradientrect(int x, int y, int width, int height, int r, int g, int b, int a, int r2, int g2, int b2, int a2);
-
-	void draw_image(const pixel *img, int x, int y, int w, int h, int a);
-	void draw_image(const VideoBuffer * vidBuf, int x, int y, int a);
 	void draw_rgba_image(const pixel *data, int w, int h, int x, int y, float alpha);
 
-	Graphics();
-	~Graphics();
+	Graphics()
+	{}
 
 	void SetClipRect(int &x, int &y, int &w, int &h);
 };

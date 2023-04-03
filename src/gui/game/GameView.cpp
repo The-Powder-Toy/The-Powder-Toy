@@ -958,7 +958,7 @@ ByteString GameView::TakeScreenshot(int captureUI, int fileType)
 		// We should be able to simply use SDL_PIXELFORMAT_XRGB8888 here with a bit depth of 32 to convert RGBA data to RGB data,
 		// and save the resulting surface directly. However, ubuntu-18.04 ships SDL2 so old that it doesn't have
 		// SDL_PIXELFORMAT_XRGB8888, so we first create an RGBA surface and then convert it.
-		auto *rgbaSurface = SDL_CreateRGBSurfaceWithFormatFrom(screenshot->Buffer, screenshot->Width, screenshot->Height, 32, screenshot->Width * sizeof(pixel), SDL_PIXELFORMAT_ARGB8888);
+		auto *rgbaSurface = SDL_CreateRGBSurfaceWithFormatFrom(screenshot->Buffer.data(), screenshot->Width, screenshot->Height, 32, screenshot->Width * sizeof(pixel), SDL_PIXELFORMAT_ARGB8888);
 		auto *rgbSurface = SDL_ConvertSurfaceFormat(rgbaSurface, SDL_PIXELFORMAT_RGB888, 0);
 		if (!rgbSurface || SDL_SaveBMP(rgbSurface, filename.c_str()))
 		{
@@ -2074,7 +2074,7 @@ void GameView::OnDraw()
 	Graphics * g = GetGraphics();
 	if (ren)
 	{
-		ren->clearScreen(1.0f);
+		ren->clearScreen();
 		ren->RenderBegin();
 		ren->SetSample(c->PointTranslate(currentMouse).X, c->PointTranslate(currentMouse).Y);
 		if (showBrush && selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
@@ -2195,6 +2195,9 @@ void GameView::OnDraw()
 		}
 
 		ren->RenderEnd();
+
+		std::copy_n(ren->Data(), WINDOWW * YRES, g->vid);
+
 
 		if (doScreenshot)
 		{

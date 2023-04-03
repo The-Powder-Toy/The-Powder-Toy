@@ -158,7 +158,7 @@ void RenderView::OnDraw()
 	g->clearrect(-1, -1, WINDOWW+1, WINDOWH+1);
 	if(ren)
 	{
-		ren->clearScreen(1.0f);
+		ren->clearScreen();
 		ren->RenderBegin();
 		ren->RenderEnd();
 	}

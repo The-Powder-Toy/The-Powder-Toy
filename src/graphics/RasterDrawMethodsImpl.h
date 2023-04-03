@@ -1,7 +1,16 @@
 #include <cmath>
+#include <cstring>
+#include "RasterDrawMethods.h"
+#include "Graphics.h"
 #include "FontReader.h"
 
-int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, const String &s, int r, int g, int b, int a)
+#define vid() (static_cast<Derived &>(*this).video.RowIterator(Vec2(0, 0)))
+#define clipRect() (static_cast<Derived const &>(*this).getClipRect())
+#define VIDXRES (static_cast<Derived const &>(*this).video.Size().X)
+#define VIDYRES (static_cast<Derived const &>(*this).video.Size().Y)
+
+template<typename Derived>
+int RasterDrawMethods<Derived>::drawtext_outline(int x, int y, const String &s, int r, int g, int b, int a)
 {
 	drawtext(x-1, y-1, s, 0, 0, 0, 120);
 	drawtext(x+1, y+1, s, 0, 0, 0, 120);
@@ -12,7 +21,8 @@ int PIXELMETHODS_CLASS::drawtext_outline(int x, int y, const String &s, int r, i
 	return drawtext(x, y, s, r, g, b, a);
 }
 
-int PIXELMETHODS_CLASS::drawtext(int x, int y, const String &str, int r, int g, int b, int a)
+template<typename Derived>
+int RasterDrawMethods<Derived>::drawtext(int x, int y, const String &str, int r, int g, int b, int a)
 {
 	if(!str.size())
 		return 0;
@@ -95,7 +105,8 @@ int PIXELMETHODS_CLASS::drawtext(int x, int y, const String &str, int r, int g, 
 	return x;
 }
 
-int PIXELMETHODS_CLASS::drawchar(int x, int y, String::value_type c, int r, int g, int b, int a)
+template<typename Derived>
+int RasterDrawMethods<Derived>::drawchar(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
 	FontReader reader(c);
 	for (int j = -2; j < FONT_H - 2; j++)
@@ -104,7 +115,8 @@ int PIXELMETHODS_CLASS::drawchar(int x, int y, String::value_type c, int r, int 
 	return x + reader.GetWidth();
 }
 
-int PIXELMETHODS_CLASS::addchar(int x, int y, String::value_type c, int r, int g, int b, int a)
+template<typename Derived>
+int RasterDrawMethods<Derived>::addchar(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
 	FontReader reader(c);
 	for (int j = -2; j < FONT_H - 2; j++)
@@ -113,52 +125,43 @@ int PIXELMETHODS_CLASS::addchar(int x, int y, String::value_type c, int r, int g
 	return x + reader.GetWidth();
 }
 
-TPT_INLINE void PIXELMETHODS_CLASS::xor_pixel(int x, int y)
+template<typename Derived>
+void RasterDrawMethods<Derived>::xor_pixel(int x, int y)
 {
 	int c;
-#ifdef DO_CLIPCHECK
-	if (x<clipx1 || y<clipy1 || x>=clipx2 || y>=clipy2)
-#else
-	if (x<0 || y<0 || x>=VIDXRES || y>=VIDYRES)
-#endif
+	if (!clipRect().Contains(Vec2(x, y)))
 		return;
-	c = vid[y*(VIDXRES)+x];
+	c = vid()[y*(VIDXRES)+x];
 	c = PIXB(c) + 3*PIXG(c) + 2*PIXR(c);
 	if (c<512)
-		vid[y*(VIDXRES)+x] = PIXPACK(0xC0C0C0);
+		vid()[y*(VIDXRES)+x] = PIXPACK(0xC0C0C0);
 	else
-		vid[y*(VIDXRES)+x] = PIXPACK(0x404040);
+		vid()[y*(VIDXRES)+x] = PIXPACK(0x404040);
 }
 
-void PIXELMETHODS_CLASS::blendpixel(int x, int y, int r, int g, int b, int a)
+template<typename Derived>
+void RasterDrawMethods<Derived>::blendpixel(int x, int y, int r, int g, int b, int a)
 {
 	pixel t;
-#ifdef DO_CLIPCHECK
-	if (x<clipx1 || y<clipy1 || x>=clipx2 || y>=clipy2)
-#else
-	if (x<0 || y<0 || x>=VIDXRES || y>=VIDYRES)
-#endif
+	if (!clipRect().Contains(Vec2(x, y)))
 		return;
 	if (a!=255)
 	{
-		t = vid[y*(VIDXRES)+x];
+		t = vid()[y*(VIDXRES)+x];
 		r = (a*r + (255-a)*PIXR(t)) >> 8;
 		g = (a*g + (255-a)*PIXG(t)) >> 8;
 		b = (a*b + (255-a)*PIXB(t)) >> 8;
 	}
-	vid[y*(VIDXRES)+x] = PIXRGB(r,g,b);
+	vid()[y*(VIDXRES)+x] = PIXRGB(r,g,b);
 }
 
-void PIXELMETHODS_CLASS::addpixel(int x, int y, int r, int g, int b, int a)
+template<typename Derived>
+void RasterDrawMethods<Derived>::addpixel(int x, int y, int r, int g, int b, int a)
 {
 	pixel t;
-#ifdef DO_CLIPCHECK
-	if (x<clipx1 || y<clipy1 || x>=clipx2 || y>=clipy2)
-#else
-	if (x<0 || y<0 || x>=VIDXRES || y>=VIDYRES)
-#endif
+	if (!clipRect().Contains(Vec2(x, y)))
 		return;
-	t = vid[y*(VIDXRES)+x];
+	t = vid()[y*(VIDXRES)+x];
 	r = (a*r + 255*PIXR(t)) >> 8;
 	g = (a*g + 255*PIXG(t)) >> 8;
 	b = (a*b + 255*PIXB(t)) >> 8;
@@ -168,10 +171,11 @@ void PIXELMETHODS_CLASS::addpixel(int x, int y, int r, int g, int b, int a)
 		g = 255;
 	if (b>255)
 		b = 255;
-	vid[y*(VIDXRES)+x] = PIXRGB(r,g,b);
+	vid()[y*(VIDXRES)+x] = PIXRGB(r,g,b);
 }
 
-void PIXELMETHODS_CLASS::xor_line(int x1, int y1, int x2, int y2)
+template<typename Derived>
+void RasterDrawMethods<Derived>::xor_line(int x1, int y1, int x2, int y2)
 {
 	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
 	float e, de;
@@ -217,7 +221,8 @@ void PIXELMETHODS_CLASS::xor_line(int x1, int y1, int x2, int y2)
 	}
 }
 
-void PIXELMETHODS_CLASS::xor_rect(int x, int y, int w, int h)
+template<typename Derived>
+void RasterDrawMethods<Derived>::xor_rect(int x, int y, int w, int h)
 {
 	int i;
 	for (i=0; i<w; i+=2)
@@ -249,7 +254,8 @@ void PIXELMETHODS_CLASS::xor_rect(int x, int y, int w, int h)
 	}
 }
 
-void PIXELMETHODS_CLASS::xor_bitmap(unsigned char * bitmap, int x, int y, int w, int h)
+template<typename Derived>
+void RasterDrawMethods<Derived>::xor_bitmap(unsigned char * bitmap, int x, int y, int w, int h)
 {
 	for(int x1 = 0; x1 < w; x1++)
 	{
@@ -261,7 +267,8 @@ void PIXELMETHODS_CLASS::xor_bitmap(unsigned char * bitmap, int x, int y, int w,
 	}
 }
 
-void PIXELMETHODS_CLASS::draw_line(int x1, int y1, int x2, int y2, int r, int g, int b, int a)
+template<typename Derived>
+void RasterDrawMethods<Derived>::draw_line(int x1, int y1, int x2, int y2, int r, int g, int b, int a)
 {
 	int cp=abs(y2-y1)>abs(x2-x1), x, y, dx, dy, sy;
 	float e, de;
@@ -307,7 +314,8 @@ void PIXELMETHODS_CLASS::draw_line(int x1, int y1, int x2, int y2, int r, int g,
 	}
 }
 
-void PIXELMETHODS_CLASS::drawrect(int x, int y, int w, int h, int r, int g, int b, int a)
+template<typename Derived>
+void RasterDrawMethods<Derived>::drawrect(int x, int y, int w, int h, int r, int g, int b, int a)
 {
 	int i;
 	w--;
@@ -324,7 +332,8 @@ void PIXELMETHODS_CLASS::drawrect(int x, int y, int w, int h, int r, int g, int 
 	}
 }
 
-void PIXELMETHODS_CLASS::fillrect(int x, int y, int w, int h, int r, int g, int b, int a)
+template<typename Derived>
+void RasterDrawMethods<Derived>::fillrect(int x, int y, int w, int h, int r, int g, int b, int a)
 {
 	int i,j;
 	for (j=0; j<h; j++)
@@ -332,7 +341,8 @@ void PIXELMETHODS_CLASS::fillrect(int x, int y, int w, int h, int r, int g, int 
 			blendpixel(x+i, y+j, r, g, b, a);
 }
 
-void PIXELMETHODS_CLASS::drawcircle(int x, int y, int rx, int ry, int r, int g, int b, int a)
+template<typename Derived>
+void RasterDrawMethods<Derived>::drawcircle(int x, int y, int rx, int ry, int r, int g, int b, int a)
 {
 	int yTop = ry, yBottom, i, j;
 	if (!rx)
@@ -362,7 +372,8 @@ void PIXELMETHODS_CLASS::drawcircle(int x, int y, int rx, int ry, int r, int g, 
 	}
 }
 
-void PIXELMETHODS_CLASS::fillcircle(int x, int y, int rx, int ry, int r, int g, int b, int a)
+template<typename Derived>
+void RasterDrawMethods<Derived>::fillcircle(int x, int y, int rx, int ry, int r, int g, int b, int a)
 {
 	int yTop = ry+1, yBottom, i, j;
 	if (!rx)
@@ -385,12 +396,14 @@ void PIXELMETHODS_CLASS::fillcircle(int x, int y, int rx, int ry, int r, int g, 
 	}
 }
 
-void PIXELMETHODS_CLASS::gradientrect(int x, int y, int width, int height, int r, int g, int b, int a, int r2, int g2, int b2, int a2)
+template<typename Derived>
+void RasterDrawMethods<Derived>::gradientrect(int x, int y, int width, int height, int r, int g, int b, int a, int r2, int g2, int b2, int a2)
 {
 
 }
 
-void PIXELMETHODS_CLASS::clearrect(int x, int y, int w, int h)
+template<typename Derived>
+void RasterDrawMethods<Derived>::clearrect(int x, int y, int w, int h)
 {
 	int i;
 
@@ -400,41 +413,21 @@ void PIXELMETHODS_CLASS::clearrect(int x, int y, int w, int h)
 	w -= 1;
 	h -= 1;
 
-#ifdef DO_CLIPCHECK
-	if (x+w > clipx2) w = clipx2-x;
-	if (y+h > clipy2) h = clipy2-y;
-	if (x<clipx1)
-	{
-		w += x - clipx1;
-		x = clipx1;
-	}
-	if (y<clipy1)
-	{
-		h += y - clipy1;
-		y = clipy1;
-	}
-#else
-	if (x+w > VIDXRES) w = VIDXRES-x;
-	if (y+h > VIDYRES) h = VIDYRES-y;
-	if (x<0)
-	{
-		w += x;
-		x = 0;
-	}
-	if (y<0)
-	{
-		h += y;
-		y = 0;
-	}
-#endif
+	Rect rect = clipRect() & RectSized(Vec2(x, y), Vec2(w, h));
+	x = rect.TopLeft.X;
+	y = rect.TopLeft.Y;
+	w = rect.Size().X;
+	h = rect.Size().Y;
+
 	if (w<0 || h<0)
 		return;
 
 	for (i=0; i<h; i++)
-		memset(vid+(x+(VIDXRES)*(y+i)), 0, PIXELSIZE*w);
+		memset(vid()+(x+(VIDXRES)*(y+i)), 0, PIXELSIZE*w);
 }
 
-void PIXELMETHODS_CLASS::draw_image(const pixel *img, int x, int y, int w, int h, int a)
+template<typename Derived>
+void RasterDrawMethods<Derived>::draw_image(const pixel *img, int x, int y, int w, int h, int a)
 {
 	int startX = 0;
 	if (!img)
@@ -467,10 +460,8 @@ void PIXELMETHODS_CLASS::draw_image(const pixel *img, int x, int y, int w, int h
 			img += startX;
 			for (int i = startX; i < w; i++)
 			{
-#ifdef DO_CLIPCHECK
-				if (!(x+i<clipx1 || y+j<clipy1 || x+i>=clipx2 || y+j>=clipy2))
-#endif
-				vid[(y+j)*(VIDXRES)+(x+i)] = *img;
+				if (clipRect().Contains(Vec2(x + i, y + j)))
+					vid()[(y+j)*(VIDXRES)+(x+i)] = *img;
 				img++;
 			}
 		}
@@ -492,7 +483,8 @@ void PIXELMETHODS_CLASS::draw_image(const pixel *img, int x, int y, int w, int h
 	}
 }
 
-void PIXELMETHODS_CLASS::draw_image(const VideoBuffer * vidBuf, int x, int y, int a)
+template<typename Derived>
+void RasterDrawMethods<Derived>::draw_image(const VideoBuffer * vidBuf, int x, int y, int a)
 {
-	draw_image(vidBuf->Buffer, x, y, vidBuf->Width, vidBuf->Height, a);
+	draw_image(vidBuf->Buffer.data(), x, y, vidBuf->Width, vidBuf->Height, a);
 }

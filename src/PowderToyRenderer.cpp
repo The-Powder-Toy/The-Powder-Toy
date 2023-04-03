@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
 	auto rng = std::make_unique<RNG>();
 	Simulation * sim = new Simulation();
-	Renderer * ren = new Renderer(new Graphics(), sim);
+	Renderer * ren = new Renderer(sim);
 
 	if (gameSave)
 	{
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 			frame--;
 			ren->render_parts();
 			ren->render_fire();
-			ren->clearScreen(1.0f);
+			ren->clearScreen();
 		}
 	}
 	else
