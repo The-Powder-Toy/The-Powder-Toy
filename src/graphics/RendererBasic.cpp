@@ -52,8 +52,7 @@ void Renderer::SetSample(int x, int y)
 	sampleColor = GetPixel(x, y);
 }
 
-void Renderer::clearScreen()
-{
+void Renderer::clearScreen() {
 	if(display_mode & DISPLAY_PERS)
 	{
 		std::copy(persistentVid, persistentVid+(VIDXRES*YRES), vid);

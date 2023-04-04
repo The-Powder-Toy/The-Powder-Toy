@@ -1,6 +1,7 @@
 #pragma once
-#include "Request.h"
 #include "common/String.h"
+#include "common/Vec2.h"
+#include "Request.h"
 
 #include <memory>
 
@@ -10,9 +11,11 @@ namespace http
 {
 	class ImageRequest : public Request
 	{
-		int Width, Height;
-		
+		Vec2<int> size;
+
 	public:
+		ImageRequest(ByteString url, Vec2<int> size);
+		[[deprecated("Use ImageRequest(ByteString, Vec<int>)")]]
 		ImageRequest(ByteString url, int width, int height);
 		virtual ~ImageRequest();
 

@@ -464,18 +464,8 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		if(save->GetGameSave())
 		{
 			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
-
-			if(savePreview && !(savePreview->Width == XRES/2 && savePreview->Height == YRES/2))
-			{
-				float factorX = ((float)XRES/2)/((float)savePreview->Width);
-				float factorY = ((float)YRES/2)/((float)savePreview->Height);
-				float scaleFactor = factorY < factorX ? factorY : factorX;
-				pixel *data = Graphics::resample_img(savePreview->Buffer.data(), savePreview->Width, savePreview->Height, int(savePreview->Width*scaleFactor), int(savePreview->Height*scaleFactor));
-				savePreview->Width = int(savePreview->Width * scaleFactor);
-				savePreview->Height = int(savePreview->Height * scaleFactor);
-				savePreview->Buffer.assign(data, data + savePreview->Width * savePreview->Height);
-				delete[] data;
-			}
+			if (savePreview)
+				savePreview->ResizeToFit(RES / 2, true);
 		}
 		else if (!sender->GetCanOpen())
 			openButton->Enabled = false;
