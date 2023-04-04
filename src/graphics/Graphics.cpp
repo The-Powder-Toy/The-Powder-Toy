@@ -153,17 +153,17 @@ void VideoBuffer::ResizeToFit(Vec2<int> bound, bool resample)
 int VideoBuffer::SetCharacter(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
 	// Technically inaccurate but oh well
-	BlendChar(Vec2(x, y), c, RGBA<uint8_t>(r, g, b, a));
+	return x + BlendChar(Vec2(x, y), c, RGBA<uint8_t>(r, g, b, a));
 }
 
 int VideoBuffer::BlendCharacter(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
-	BlendChar(Vec2(x, y), c, RGBA<uint8_t>(r, g, b, a));
+	return x + BlendChar(Vec2(x, y), c, RGBA<uint8_t>(r, g, b, a));
 }
 
 int VideoBuffer::AddCharacter(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
-	AddChar(Vec2(x, y), c, RGBA<uint8_t>(r, g, b, a));
+	return x + AddChar(Vec2(x, y), c, RGBA<uint8_t>(r, g, b, a));
 }
 
 template class RasterDrawMethods<VideoBuffer>;
