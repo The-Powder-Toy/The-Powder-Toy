@@ -58,7 +58,7 @@ LocalSaveActivity::LocalSaveActivity(SaveFile save, OnSaved onSaved_) :
 
 	if(save.GetGameSave())
 	{
-		thumbnailRenderer = new ThumbnailRendererTask(save.GetGameSave(), Size.X-16, -1, false, true, false);
+		thumbnailRenderer = new ThumbnailRendererTask(*save.GetGameSave(), Size - Vec2(16, 16), true, false);
 		thumbnailRenderer->Start();
 	}
 }
@@ -135,13 +135,14 @@ void LocalSaveActivity::OnDraw()
 {
 	Graphics * g = GetGraphics();
 	g->draw_rgba_image(&save_to_disk_image[0], save_to_disk_imageW, save_to_disk_imageH, 0, 0, 0.7f);
-	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
-	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
+	g->DrawFilledRect(RectSized(Position, Size).Inset(-1), 0x000000_rgb);
+	g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 
-	if(thumbnail)
+	if (thumbnail)
 	{
-		g->draw_image(thumbnail.get(), Position.X+(Size.X-thumbnail->Width)/2, Position.Y+45, 255);
-		g->drawrect(Position.X+(Size.X-thumbnail->Width)/2, Position.Y+45, thumbnail->Width, thumbnail->Height, 180, 180, 180, 255);
+		auto rect = RectSized(Position + Vec2((Size.X - thumbnail->Size().X) / 2, 45), thumbnail->Size());
+		g->BlendImage(thumbnail->Data(), 0xFF, rect);
+		g->DrawRect(rect, 0xB4B4B4_rgb);
 	}
 }
 

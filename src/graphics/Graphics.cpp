@@ -555,8 +555,8 @@ void Graphics::draw_rgba_image(const pixel *data, int w, int h, int x, int y, fl
 
 VideoBuffer Graphics::DumpFrame()
 {
-	VideoBuffer newBuffer(WINDOW);
-	std::copy_n(video.data(), WINDOW.X * WINDOW.Y, newBuffer.Data());
+	VideoBuffer newBuffer(video.Size());
+	std::copy_n(video.data(), video.Size().X * video.Size().Y, newBuffer.Data());
 	return newBuffer;
 }
 
@@ -578,10 +578,10 @@ void Graphics::SetClipRect(int &x, int &y, int &w, int &h)
 
 bool VideoBuffer::WritePNG(const ByteString &path) const
 {
-	std::vector<png_const_bytep> rowPointers(Height);
-	for (auto y = 0; y < Height; ++y)
+	std::vector<png_const_bytep> rowPointers(Size().Y);
+	for (auto y = 0; y < Size().Y; ++y)
 	{
-		rowPointers[y] = (png_const_bytep)&Buffer[y * Width];
+		rowPointers[y] = (png_const_bytep)&*video.RowIterator(Vec2(0, y));
 	}
 	png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!png)
@@ -612,7 +612,7 @@ bool VideoBuffer::WritePNG(const ByteString &path) const
 		auto &imf = *(InMemoryFile *)ud;
 		imf.data.insert(imf.data.end(), data, data + length);
 	}, NULL);
-	png_set_IHDR(png, info, Width, Height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+	png_set_IHDR(png, info, Size().X, Size().Y, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 	png_write_info(png, info);
 	png_set_filler(png, 0, PNG_FILLER_AFTER);
 	png_set_bgr(png);

@@ -94,26 +94,22 @@ String format::CleanString(String dirtyString, bool ascii, bool color, bool newl
 	return dirtyString;
 }
 
-std::vector<char> format::VideoBufferToPPM(const VideoBuffer & vidBuf)
+std::vector<char> format::VideoBufferToPPM(VideoBuffer const &vidBuf)
 {
 	std::vector<char> data;
 	char buffer[256];
-	sprintf(buffer, "P6\n%d %d\n255\n", vidBuf.Width, vidBuf.Height);
-	data.insert(data.end(), buffer, buffer+strlen(buffer));
+	sprintf(buffer, "P6\n%d %d\n255\n", vidBuf.Size().X, vidBuf.Size().Y);
+	data.insert(data.end(), buffer, buffer + strlen(buffer));
 
-	unsigned char * currentRow = new unsigned char[vidBuf.Width*3];
-	for(int y = 0; y < vidBuf.Height; y++)
+	data.reserve(data.size() + vidBuf.Size().X * vidBuf.Size().Y * 3);
+
+	for (int i = 0; i < vidBuf.Size().X * vidBuf.Size().Y; i++)
 	{
-		int rowPos = 0;
-		for(int x = 0; x < vidBuf.Width; x++)
-		{
-			currentRow[rowPos++] = PIXR(vidBuf.Buffer[(y*vidBuf.Width)+x]);
-			currentRow[rowPos++] = PIXG(vidBuf.Buffer[(y*vidBuf.Width)+x]);
-			currentRow[rowPos++] = PIXB(vidBuf.Buffer[(y*vidBuf.Width)+x]);
-		}
-		data.insert(data.end(), currentRow, currentRow+(vidBuf.Width*3));
+		auto colour = RGB<uint8_t>::Unpack(vidBuf.Data()[i]);
+		data.push_back(colour.Red);
+		data.push_back(colour.Green);
+		data.push_back(colour.Blue);
 	}
-	delete [] currentRow;
 
 	return data;
 }

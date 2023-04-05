@@ -958,7 +958,7 @@ ByteString GameView::TakeScreenshot(int captureUI, int fileType)
 		// We should be able to simply use SDL_PIXELFORMAT_XRGB8888 here with a bit depth of 32 to convert RGBA data to RGB data,
 		// and save the resulting surface directly. However, ubuntu-18.04 ships SDL2 so old that it doesn't have
 		// SDL_PIXELFORMAT_XRGB8888, so we first create an RGBA surface and then convert it.
-		auto *rgbaSurface = SDL_CreateRGBSurfaceWithFormatFrom(screenshot->Buffer.data(), screenshot->Width, screenshot->Height, 32, screenshot->Width * sizeof(pixel), SDL_PIXELFORMAT_ARGB8888);
+		auto *rgbaSurface = SDL_CreateRGBSurfaceWithFormatFrom(screenshot->Data(), screenshot->Size().X, screenshot->Size().Y, 32, screenshot->Size().X * sizeof(pixel), SDL_PIXELFORMAT_ARGB8888);
 		auto *rgbSurface = SDL_ConvertSurfaceFormat(rgbaSurface, SDL_PIXELFORMAT_RGB888, 0);
 		if (!rgbSurface || SDL_SaveBMP(rgbSurface, filename.c_str()))
 		{
@@ -1200,20 +1200,9 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 				{
 					if (placeSaveThumb && y <= WINDOWH-BARSIZE)
 					{
-						int thumbX = selectPoint2.X - ((placeSaveThumb->Width-placeSaveOffset.X)/2);
-						int thumbY = selectPoint2.Y - ((placeSaveThumb->Height-placeSaveOffset.Y)/2);
-
-						if (thumbX < 0)
-							thumbX = 0;
-						if (thumbX+(placeSaveThumb->Width) >= XRES)
-							thumbX = XRES-placeSaveThumb->Width;
-
-						if (thumbY < 0)
-							thumbY = 0;
-						if (thumbY+(placeSaveThumb->Height) >= YRES)
-							thumbY = YRES-placeSaveThumb->Height;
-
-						c->PlaceSave(ui::Point(thumbX, thumbY));
+						auto thumb = selectPoint2 - (placeSaveThumb->Size() - placeSaveOffset) / 2;
+						thumb = thumb.Clamp(RectBetween(Vec2<int>::Zero, RES - placeSaveThumb->Size()));
+						c->PlaceSave(thumb);
 					}
 				}
 				else
@@ -2145,24 +2134,11 @@ void GameView::OnDraw()
 			{
 				if(placeSaveThumb && selectPoint2.X!=-1)
 				{
-					int thumbX = selectPoint2.X - ((placeSaveThumb->Width-placeSaveOffset.X)/2) + CELL/2;
-					int thumbY = selectPoint2.Y - ((placeSaveThumb->Height-placeSaveOffset.Y)/2) + CELL/2;
-
-					ui::Point thumbPos = c->NormaliseBlockCoord(ui::Point(thumbX, thumbY));
-
-					if(thumbPos.X<0)
-						thumbPos.X = 0;
-					if(thumbPos.X+(placeSaveThumb->Width)>=XRES)
-						thumbPos.X = XRES-placeSaveThumb->Width;
-
-					if(thumbPos.Y<0)
-						thumbPos.Y = 0;
-					if(thumbPos.Y+(placeSaveThumb->Height)>=YRES)
-						thumbPos.Y = YRES-placeSaveThumb->Height;
-
-					ren->draw_image(placeSaveThumb, thumbPos.X, thumbPos.Y, 128);
-
-					ren->xor_rect(thumbPos.X, thumbPos.Y, placeSaveThumb->Width, placeSaveThumb->Height);
+					auto thumb = selectPoint2 - (placeSaveThumb->Size() - placeSaveOffset) / 2 + Vec2(1, 1) * CELL / 2;
+					thumb = c->NormaliseBlockCoord(thumb).Clamp(RectBetween(Vec2<int>::Zero, RES - placeSaveThumb->Size()));
+					auto rect = RectSized(thumb, placeSaveThumb->Size());
+					ren->BlendImage(placeSaveThumb->Data(), 0x80, rect);
+					ren->XorDottedRect(rect);
 				}
 			}
 			else

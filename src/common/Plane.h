@@ -59,8 +59,6 @@ struct yExtent: extentStorage<Extent>
 template<typename T, size_t Width = DynamicExtent, size_t Height = DynamicExtent>
 class PlaneAdapter: xExtent<Width>, yExtent<Height>
 {
-	friend class VideoBuffer; // TODO: remove
-
 	using value_type = std::remove_reference_t<decltype(std::declval<T>()[0])>;
 	using iterator = decltype(std::begin(std::declval<T &>()));
 	using const_iterator = decltype(std::begin(std::declval<T const &>()));

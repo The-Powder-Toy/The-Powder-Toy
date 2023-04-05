@@ -118,6 +118,14 @@ struct Vec2
 		return (*this + Vec2<T>(0.5, 0.5)).Floor();
 	}
 
+	Vec2<T> Clamp(Rect<T> rect) const
+	{
+		return Vec2<T>(
+			std::clamp(X, rect.TopLeft.X, rect.BottomRight.X),
+			std::clamp(Y, rect.TopLeft.Y, rect.BottomRight.Y)
+		);
+	}
+
 	// Return a rectangle starting at origin, whose dimensions match this vector
 	template<typename S = T, typename = std::enable_if_t<std::is_integral_v<S>>>
 	constexpr inline Rect<T> OriginRect() const
@@ -380,6 +388,12 @@ public:
 	inline Vec2<T> Size() const
 	{
 		return BottomRight - TopLeft + Vec2<T>(1, 1);
+	}
+
+	template<typename S>
+	Rect<decltype(std::declval<T>() + std::declval<S>())> Inset(S delta) const
+	{
+		return Rect<decltype(std::declval<T>() + std::declval<S>())>(TopLeft + Vec2(delta, delta), BottomRight - Vec2(delta, delta));
 	}
 
 	template<IterationDirection D1, IterationDirection D2, typename S = T, typename = std::enable_if_t<std::is_integral_v<T>>>

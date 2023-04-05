@@ -21,13 +21,6 @@ class VideoBuffer: public RasterDrawMethods<VideoBuffer>
 	friend struct RasterDrawMethods<VideoBuffer>;
 
 public:
-	[[deprecated("Use video")]]
-	std::vector<pixel> &Buffer = video.Base;
-	[[deprecated("Use Size()")]]
-	size_t &Width = video.xExtent<DynamicExtent>::extent; // See TODO in common/Plane.h
-	[[deprecated("Use Size()")]]
-	size_t &Height = video.yExtent<DynamicExtent>::extent;
-
 	VideoBuffer(VideoBuffer const &) = default;
 	VideoBuffer(pixel const *data, Vec2<int> size);
 	VideoBuffer(pixel const *data, Vec2<int> size, size_t rowStride);

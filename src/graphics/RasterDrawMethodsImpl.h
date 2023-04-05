@@ -427,7 +427,7 @@ void RasterDrawMethods<Derived>::draw_image(const pixel *img, int x, int y, int 
 template<typename Derived>
 void RasterDrawMethods<Derived>::draw_image(const VideoBuffer * vidBuf, int x, int y, int a)
 {
-	draw_image(vidBuf->Buffer.data(), x, y, vidBuf->Width, vidBuf->Height, a);
+	BlendImage(vidBuf->Data(), a, RectSized(Vec2(x, y), vidBuf->Size()));
 }
 
 #undef video

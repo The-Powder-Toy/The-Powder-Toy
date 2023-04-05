@@ -502,7 +502,7 @@ VideoBuffer Renderer::DumpFrame()
 	VideoBuffer newBuffer(XRES, YRES);
 	for(int y = 0; y < YRES; y++)
 	{
-		std::copy(vid+(y*WINDOWW), vid+(y*WINDOWW)+XRES, newBuffer.Buffer.data()+(y*XRES));
+		std::copy(vid+(y*WINDOWW), vid+(y*WINDOWW)+XRES, newBuffer.Data()+(y*XRES));
 	}
 	return newBuffer;
 }
