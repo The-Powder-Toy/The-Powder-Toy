@@ -48,13 +48,6 @@ public:
 	// Automatically choose a size to fit within the given box, keeping aspect ratio
 	void ResizeToFit(Vec2<int> bound, bool resample = false);
 
-	[[deprecated("Use VideoBuffer(VideoBuffer const &)")]]
-	VideoBuffer(VideoBuffer * old);
-	[[deprecated("Use VideoBuffer(pixel const *, Vec2<int>)")]]
-	VideoBuffer(pixel const *buffer, int width, int height, int pitch = 0);
-	[[deprecated("Use VideoBuffer(Vec2<int>)")]]
-	VideoBuffer(int width, int height);
-
 	bool WritePNG(const ByteString &path) const;
 };
 

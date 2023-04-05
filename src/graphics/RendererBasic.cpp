@@ -499,11 +499,8 @@ void Renderer::ResetModes()
 
 VideoBuffer Renderer::DumpFrame()
 {
-	VideoBuffer newBuffer(XRES, YRES);
-	for(int y = 0; y < YRES; y++)
-	{
-		std::copy(vid+(y*WINDOWW), vid+(y*WINDOWW)+XRES, newBuffer.Data()+(y*XRES));
-	}
+	VideoBuffer newBuffer(RES);
+	newBuffer.BlendImage(video.data(), 0xFF, Size().OriginRect());
 	return newBuffer;
 }
 

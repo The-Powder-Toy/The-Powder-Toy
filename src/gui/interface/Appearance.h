@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "Border.h"
 #include "Colour.h"
 #include "graphics/Icons.h"
@@ -9,7 +10,8 @@ namespace ui
 	class Appearance
 	{
 	private:
-			VideoBuffer * texture;
+		std::shared_ptr<VideoBuffer> texture;
+
 	public:
 		enum HorizontalAlignment
 		{
@@ -46,10 +48,9 @@ namespace ui
 
 		Icon icon;
 
-		VideoBuffer * GetTexture();
-		void SetTexture(VideoBuffer * texture);
+		VideoBuffer const *GetTexture();
+		void SetTexture(std::unique_ptr<VideoBuffer> texture);
 
 		Appearance();
-		~Appearance();
 	};
 }

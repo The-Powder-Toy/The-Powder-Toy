@@ -20,7 +20,7 @@ void SaveRenderer::Flush(int begin, int end)
 	std::fill(ren->graphicscache + begin, ren->graphicscache + end, gcache_item());
 }
 
-VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire, Renderer *renderModeSource)
+std::unique_ptr<VideoBuffer> SaveRenderer::Render(GameSave * save, bool decorations, bool fire, Renderer *renderModeSource)
 {
 	std::lock_guard<std::mutex> gx(renderMutex);
 
@@ -32,10 +32,7 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire,
 		ren->SetColourMode(renderModeSource->GetColourMode());
 	}
 
-	int width, height;
-	VideoBuffer * tempThumb = NULL;
-	width = save->blockWidth;
-	height = save->blockHeight;
+	std::unique_ptr<VideoBuffer> tempThumb;
 
 	sim->clear_sim();
 
@@ -43,11 +40,8 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire,
 	{
 		ren->decorations_enable = true;
 		ren->blackDecorations = !decorations;
-		pixel * pData = NULL;
-		pixel * dst;
-		pixel * src = ren->vid;
-
 		ren->ClearAccumulation();
+		ren->clearScreen();
 
 		if (fire)
 		{
@@ -64,17 +58,8 @@ VideoBuffer * SaveRenderer::Render(GameSave * save, bool decorations, bool fire,
 		ren->RenderBegin();
 		ren->RenderEnd();
 
-
-		pData = (pixel *)malloc(PIXELSIZE * ((width*CELL)*(height*CELL)));
-		dst = pData;
-		for(int i = 0; i < height*CELL; i++)
-		{
-			memcpy(dst, src, (width*CELL)*PIXELSIZE);
-			dst+=(width*CELL);///PIXELSIZE;
-			src+=WINDOWW;
-		}
-		tempThumb = new VideoBuffer(pData, width*CELL, height*CELL);
-		free(pData);
+		tempThumb = std::make_unique<VideoBuffer>(Vec2(save->blockWidth, save->blockHeight) * CELL);
+		tempThumb->BlendImage(ren->Data(), 0xFF, ren->Size().OriginRect());
 	}
 
 	return tempThumb;

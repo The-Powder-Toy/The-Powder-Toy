@@ -29,18 +29,6 @@ VideoBuffer::VideoBuffer(pixel const *data, Vec2<int> size, size_t rowStride):
 		std::copy_n(data + rowStride * y, size.X, video.RowIterator(Vec2(0, y)));
 }
 
-VideoBuffer::VideoBuffer(int width, int height):
-	VideoBuffer(Vec2(width, height))
-{}
-
-VideoBuffer::VideoBuffer(VideoBuffer * old):
-	VideoBuffer(*old)
-{}
-
-VideoBuffer::VideoBuffer(pixel const *buffer, int width, int height, int pitch):
-	VideoBuffer(buffer, Vec2(width, height), pitch == 0 ? width : pitch)
-{}
-
 void VideoBuffer::Crop(Rect<int> rect)
 {
 	rect &= Size().OriginRect();

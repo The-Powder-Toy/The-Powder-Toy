@@ -1,10 +1,11 @@
 #pragma once
+#include <ctime>
+#include <deque>
+#include <memory>
+#include <vector>
 #include "common/String.h"
 #include "gui/interface/Window.h"
 #include "simulation/Sample.h"
-#include <ctime>
-#include <vector>
-#include <deque>
 
 enum DrawMode
 {
@@ -116,7 +117,7 @@ private:
 	ui::Point currentMouse;
 	ui::Point mousePosition;
 
-	VideoBuffer * placeSaveThumb;
+	std::unique_ptr<VideoBuffer> placeSaveThumb;
 	ui::Point placeSaveOffset;
 
 	SimulationSample sample;

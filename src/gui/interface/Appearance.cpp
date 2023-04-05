@@ -5,7 +5,7 @@
 namespace ui
 {
 	Appearance::Appearance():
-		texture(NULL),
+		texture(nullptr),
 
 		VerticalAlign(AlignMiddle),
 		HorizontalAlign(AlignCentre),
@@ -32,23 +32,13 @@ namespace ui
 		icon(NoIcon)
 	{}
 
-	VideoBuffer * Appearance::GetTexture()
+	VideoBuffer const *Appearance::GetTexture()
 	{
-		return texture;
+		return texture.get();
 	}
 
-	void Appearance::SetTexture(VideoBuffer * texture)
+	void Appearance::SetTexture(std::unique_ptr<VideoBuffer> texture)
 	{
-		delete this->texture;
-		if(texture)
-			this->texture = new VideoBuffer(texture);
-		else
-			this->texture = NULL;
+		this->texture = std::move(texture);
 	}
-
-	Appearance::~Appearance()
-	{
-		delete texture;
-	}
-
 }

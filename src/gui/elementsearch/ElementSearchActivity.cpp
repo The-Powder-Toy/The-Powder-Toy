@@ -157,7 +157,7 @@ void ElementSearchActivity::searchTools(String query)
 		else
 			tempButton = new ToolButton(current+viewPosition, ui::Point(30, 18), tool->Name, tool->Identifier, tool->Description);
 
-		tempButton->Appearance.SetTexture(tempTexture.get());
+		tempButton->Appearance.SetTexture(std::move(tempTexture));
 		tempButton->Appearance.BackgroundInactive = tool->Colour.WithAlpha(0xFF);
 		tempButton->SetActionCallback({ [this, tempButton, tool] {
 			if (tempButton->GetSelectionState() >= 0 && tempButton->GetSelectionState() <= 2)

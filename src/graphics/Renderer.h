@@ -48,6 +48,11 @@ class Renderer: public RasterDrawMethods<Renderer>
 	friend struct RasterDrawMethods<Renderer>;
 
 public:
+	Vec2<int> Size() const
+	{
+		return video.Size();
+	}
+
 	pixel const *Data() const
 	{
 		return video.data();

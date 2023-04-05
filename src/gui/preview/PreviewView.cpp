@@ -35,7 +35,7 @@
 
 PreviewView::PreviewView():
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+210, (YRES/2)+150)),
-	savePreview(NULL),
+	savePreview(nullptr),
 	submitCommentButton(NULL),
 	addCommentBox(NULL),
 	commentWarningLabel(NULL),
@@ -418,8 +418,7 @@ void PreviewView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ct
 void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
 	SaveInfo * save = sender->GetSaveInfo();
-	delete savePreview;
-	savePreview = NULL;
+	savePreview = nullptr;
 	if(save)
 	{
 		votesUp = save->votesUp;
@@ -657,5 +656,4 @@ PreviewView::~PreviewView()
 		RemoveComponent(submitCommentButton);
 		delete submitCommentButton;
 	}
-	delete savePreview;
 }

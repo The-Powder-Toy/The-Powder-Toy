@@ -213,7 +213,7 @@ GameView::GameView():
 	selectPoint2(0, 0),
 	currentMouse(0, 0),
 	mousePosition(0, 0),
-	placeSaveThumb(NULL),
+	placeSaveThumb(nullptr),
 	placeSaveOffset(0, 0)
 {
 
@@ -344,8 +344,6 @@ GameView::~GameView()
 		}
 
 	}
-
-	delete placeSaveThumb;
 }
 
 class GameView::OptionListener: public QuickOptionListener
@@ -631,7 +629,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 			}
 		} });
 
-		tempButton->Appearance.SetTexture(tempTexture.get());
+		tempButton->Appearance.SetTexture(std::move(tempTexture));
 
 		tempButton->Appearance.BackgroundInactive = toolList[i]->Colour.WithAlpha(0xFF);
 
@@ -1914,7 +1912,6 @@ void GameView::NotifyLogChanged(GameModel * sender, String entry)
 
 void GameView::NotifyPlaceSaveChanged(GameModel * sender)
 {
-	delete placeSaveThumb;
 	placeSaveOffset = ui::Point(0, 0);
 	if(sender->GetPlaceSave())
 	{
@@ -1924,7 +1921,7 @@ void GameView::NotifyPlaceSaveChanged(GameModel * sender)
 	}
 	else
 	{
-		placeSaveThumb = NULL;
+		placeSaveThumb = nullptr;
 		selectMode = SelectNone;
 	}
 }
