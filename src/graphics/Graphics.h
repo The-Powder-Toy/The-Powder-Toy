@@ -55,32 +55,6 @@ public:
 	[[deprecated("Use VideoBuffer(Vec2<int>)")]]
 	VideoBuffer(int width, int height);
 
-	using RasterDrawMethods<VideoBuffer>::BlendPixel;
-	[[deprecated("Use BlendPixel(Vec2<int>, RGBA<uint8_t>)")]]
-	TPT_INLINE void BlendPixel(int x, int y, int r, int g, int b, int a)
-	{
-		BlendPixel(Vec2(x, y), RGBA<uint8_t>(r, g, b, a));
-	}
-
-	[[deprecated("Use DrawPixel")]]
-	TPT_INLINE void SetPixel(int x, int y, int r, int g, int b, int a)
-	{
-		DrawPixel(Vec2(x, y), 0x000000_rgb .Blend(RGBA<uint8_t>(r, g, b, a)));
-	}
-
-	using RasterDrawMethods<VideoBuffer>::AddPixel;
-	[[deprecated("Use AddPixel(Vec2<int>, RGBA<uint8_t>)")]]
-	TPT_INLINE void AddPixel(int x, int y, int r, int g, int b, int a)
-	{
-		AddPixel(Vec2(x, y), RGBA<uint8_t>(r, g, b, a));
-	}
-	[[deprecated("Use BlendChar")]]
-	int SetCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
-	[[deprecated("Use BlendChar")]]
-	int BlendCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
-	[[deprecated("Use AddChar")]]
-	int AddCharacter(int x, int y, String::value_type c, int r, int g, int b, int a);
-
 	bool WritePNG(const ByteString &path) const;
 };
 
