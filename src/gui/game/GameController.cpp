@@ -360,7 +360,7 @@ void GameController::DrawRect(int toolSelection, ui::Point point1, ui::Point poi
 	Brush &cBrush = gameModel->GetBrush();
 	if (!activeTool)
 		return;
-	activeTool->SetStrength(1.0f);
+	activeTool->Strength = 1.0f;
 	activeTool->DrawRect(sim, cBrush, point1, point2);
 }
 
@@ -372,7 +372,7 @@ void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point poi
 	Brush &cBrush = gameModel->GetBrush();
 	if (!activeTool)
 		return;
-	activeTool->SetStrength(1.0f);
+	activeTool->Strength = 1.0f;
 	activeTool->DrawLine(sim, cBrush, point1, point2);
 }
 
@@ -384,7 +384,7 @@ void GameController::DrawFill(int toolSelection, ui::Point point)
 	Brush &cBrush = gameModel->GetBrush();
 	if (!activeTool)
 		return;
-	activeTool->SetStrength(1.0f);
+	activeTool->Strength = 1.0f;
 	activeTool->DrawFill(sim, cBrush, point);
 }
 
@@ -399,7 +399,7 @@ void GameController::DrawPoints(int toolSelection, ui::Point oldPos, ui::Point n
 		return;
 	}
 
-	activeTool->SetStrength(gameModel->GetToolStrength());
+	activeTool->Strength = gameModel->GetToolStrength();
 	if (!held)
 		activeTool->Draw(sim, cBrush, newPos);
 	else
@@ -503,7 +503,7 @@ bool GameController::MouseDown(int x, int y, unsigned button)
 		ui::Point point = gameModel->AdjustZoomCoords(ui::Point(x, y));
 		x = point.X;
 		y = point.Y;
-		if (!gameModel->GetActiveTool(0) || gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != SDL_BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
+		if (!gameModel->GetActiveTool(0) || gameModel->GetActiveTool(0)->Identifier != "DEFAULT_UI_SIGN" || button != SDL_BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
 			foundSignID = GetSignAt(x, y);
 			if (foundSignID != -1)
@@ -528,7 +528,7 @@ bool GameController::MouseUp(int x, int y, unsigned button, MouseupReason reason
 		ui::Point point = gameModel->AdjustZoomCoords(ui::Point(x, y));
 		x = point.X;
 		y = point.Y;
-		if (!gameModel->GetActiveTool(0) || gameModel->GetActiveTool(0)->GetIdentifier() != "DEFAULT_UI_SIGN" || button != SDL_BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
+		if (!gameModel->GetActiveTool(0) || gameModel->GetActiveTool(0)->Identifier != "DEFAULT_UI_SIGN" || button != SDL_BUTTON_LEFT) //If it's not a sign tool or you are right/middle clicking
 		{
 			int foundSignID = GetSignAt(x, y);
 			if (foundSignID != -1)
@@ -872,9 +872,9 @@ void GameController::Update()
 	{
 		int rightSelected = PT_DUST;
 		Tool * activeTool = gameModel->GetActiveTool(1);
-		if (activeTool->GetIdentifier().BeginsWith("DEFAULT_PT_"))
+		if (activeTool->Identifier.BeginsWith("DEFAULT_PT_"))
 		{
-			int sr = activeTool->GetToolID();
+			int sr = activeTool->ToolID;
 			if (sr && sim->IsElementOrNone(sr))
 				rightSelected = sr;
 		}
@@ -1069,16 +1069,16 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 	gameModel->SetActiveTool(toolSelection, tool);
 	gameModel->GetRenderer()->gravityZonesEnabled = false;
 	if (toolSelection == 3)
-		gameModel->GetSimulation()->replaceModeSelected = tool->GetToolID();
+		gameModel->GetSimulation()->replaceModeSelected = tool->ToolID;
 	gameModel->SetLastTool(tool);
 	for(int i = 0; i < 3; i++)
 	{
 		if(gameModel->GetActiveTool(i) == gameModel->GetMenuList().at(SC_WALL)->GetToolList().at(WL_GRAV))
 			gameModel->GetRenderer()->gravityZonesEnabled = true;
 	}
-	if(tool->GetIdentifier() == "DEFAULT_UI_PROPERTY")
+	if(tool->Identifier == "DEFAULT_UI_PROPERTY")
 		((PropertyTool *)tool)->OpenWindow(gameModel->GetSimulation());
-	if(tool->GetIdentifier() == "DEFAULT_UI_ADDLIFE")
+	if(tool->Identifier == "DEFAULT_UI_ADDLIFE")
 	{
 		((GOLTool *)tool)->OpenWindow(gameModel->GetSimulation(), toolSelection);
 	}

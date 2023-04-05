@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+#include "common/Vec2.h"
 #include "graphics/Pixel.h"
 #include "ElementDefs.h"
 #include "Particle.h"
@@ -58,7 +60,7 @@ public:
 
 	bool (*CtypeDraw) (CTYPEDRAW_FUNC_ARGS);
 
-	VideoBuffer * (*IconGenerator)(int, int, int);
+	std::unique_ptr<VideoBuffer> (*IconGenerator)(int, Vec2<int>);
 
 	Particle DefaultProperties;
 

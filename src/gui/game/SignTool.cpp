@@ -197,7 +197,7 @@ void SignWindow::DoMouseMove(int x, int y, int dx, int dy) {
 		ui::Window::DoMouseMove(x, y, dx, dy);
 	else
 	{
-		ui::Point pos = tool->gameModel->AdjustZoomCoords(ui::Point(x, y));
+		ui::Point pos = tool->gameModel.AdjustZoomCoords(ui::Point(x, y));
 		if(pos.X < XRES && pos.Y < YRES)
 		{
 			movingSign->x = pos.X;
@@ -226,20 +226,13 @@ void SignWindow::OnDraw()
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);
 }
 
-VideoBuffer * SignTool::GetIcon(int toolID, int width, int height)
+std::unique_ptr<VideoBuffer> SignTool::GetIcon(int toolID, Vec2<int> size)
 {
-	VideoBuffer * newTexture = new VideoBuffer(width, height);
-	for (int y=0; y<height; y++)
-	{
-		for (int x=0; x<width; x++)
-		{
-			pixel pc =  x==0||x==width-1||y==0||y==height-1 ? PIXPACK(0xA0A0A0) : PIXPACK(0x000000);
-			newTexture->SetPixel(x, y, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-		}
-	}
-	newTexture->AddCharacter((width/2)-5, (height/2)-5, 0xE021, 32, 64, 128, 255);
-	newTexture->BlendCharacter((width/2)-5, (height/2)-5, 0xE020, 255, 255, 255, 255);
-	return newTexture;
+	auto texture = std::make_unique<VideoBuffer>(size);
+	texture->DrawRect(size.OriginRect(), 0xA0A0A0_rgb);
+	texture->BlendChar((size / 2) - Vec2(5, 5), 0xE021, 0x204080_rgb .WithAlpha(0xFF));
+	texture->BlendChar((size / 2) - Vec2(5, 5), 0xE020, 0xFFFFFF_rgb .WithAlpha(0xFF));
+	return texture;
 }
 
 void SignTool::Click(Simulation * sim, Brush const &brush, ui::Point position)

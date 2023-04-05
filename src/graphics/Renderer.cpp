@@ -12,126 +12,111 @@
 constexpr auto VIDXRES = WINDOWW;
 // constexpr auto VIDYRES = WINDOWH; // not actually used anywhere
 
-VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
+std::unique_ptr<VideoBuffer> Renderer::WallIcon(int wallID, Vec2<int> size)
 {
-	static std::vector<wall_type> Renderer_wtypes = LoadWalls();
-	int i, j;
-	int wt = wallID;
-	if (wt<0 || wt>=(int)Renderer_wtypes.size())
-		return 0;
-	wall_type *wtypes = Renderer_wtypes.data();
-	pixel pc = wtypes[wt].colour;
-	pixel gc = wtypes[wt].eglow;
-	VideoBuffer * newTexture = new VideoBuffer(width, height);
-	if (wtypes[wt].drawstyle==1)
+	auto wtypes = LoadWalls();
+	if (wallID < 0 || wallID >= int(wtypes.size()))
+		return nullptr;
+	wall_type const &wtype = wtypes[wallID];
+
+	RGB<uint8_t> primary = RGB<uint8_t>::Unpack(wtype.colour);
+	RGB<uint8_t> secondary = RGB<uint8_t>::Unpack(wtype.eglow);
+
+	auto texture = std::make_unique<VideoBuffer>(size);
+	switch (wtype.drawstyle)
 	{
-		for (j=0; j<height; j+=2)
-			for (i=(j>>1)&1; i<width; i+=2)
-				newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-	}
-	else if (wtypes[wt].drawstyle==2)
-	{
-		for (j=0; j<height; j+=2)
-			for (i=0; i<width; i+=2)
-				newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-	}
-	else if (wtypes[wt].drawstyle==3)
-	{
-		for (j=0; j<height; j++)
-			for (i=0; i<width; i++)
-				newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-	}
-	else if (wtypes[wt].drawstyle==4)
-	{
-		for (j=0; j<height; j++)
-			for (i=0; i<width; i++)
-				if(i%CELL == j%CELL)
-					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-				else if  (i%CELL == (j%CELL)+1 || (i%CELL == 0 && j%CELL == CELL-1))
-					newTexture->SetPixel(i, j, PIXR(gc), PIXG(gc), PIXB(gc), 255);
-				else
-					newTexture->SetPixel(i, j, 0x20, 0x20, 0x20, 255);
+	case 1:
+		// #.#.
+		// ....
+		// .#.#
+		// ....
+		for (auto pos : size.OriginRect())
+			if (~pos.Y & ~(pos.X ^ (pos.Y >> 1)) & 1)
+				texture->DrawPixel(pos, primary);
+		break;
+	case 2:
+		// #.#.
+		// ....
+		// #.#.
+		// ....
+		for (auto pos : size.OriginRect())
+			if (~pos.Y & ~pos.X & 1)
+				texture->DrawPixel(pos, primary);
+		break;
+	case 3:
+		// ####
+		// ####
+		// ####
+		// ####
+		for (auto pos : size.OriginRect())
+			texture->DrawPixel(pos, primary);
+		break;
+	case 4:
+		// #+.#
+		// .#+.
+		// +.#+
+		// #+.#
+		for (auto pos : size.OriginRect())
+			if (((pos.X - pos.Y) % CELL + CELL) % CELL == 0)
+				texture->DrawPixel(pos, primary);
+			else if (((pos.X - pos.Y) % CELL + CELL) % CELL == 1)
+				texture->DrawPixel(pos, secondary);
+			else
+				texture->DrawPixel(pos, 0x202020_rgb);
+		break;
 	}
 
-	// special rendering for some walls
-	if (wt==WL_EWALL)
+	switch (wallID)
 	{
-		for (j=0; j<height; j++)
-		{
-			for (i=0; i<(width/4)+j; i++)
-			{
-				if (!(i&j&1))
-					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-			}
-			for (; i<width; i++)
-			{
-				if (i&j&1)
-					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-			}
-		}
-	}
-	else if (wt==WL_WALLELEC)
-	{
-		for (j=0; j<height; j++)
-			for (i=0; i<width; i++)
-			{
-				if (!(j%2) && !(i%2))
-					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-				else
-					newTexture->SetPixel(i, j, 0x80, 0x80, 0x80, 255);
-			}
-	}
-	else if (wt==WL_EHOLE || wt==WL_STASIS)
-	{
-		for (j=0; j<height; j++)
-		{
-			for (i=0; i<(width/4)+j; i++)
-			{
-				if (i&j&1)
-					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-			}
-			for (; i<width; i++)
-			{
-				if (!(i&j&1))
-					newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-			}
-		}
-	}
-	else if (wt == WL_ERASE)
-	{
-		for (j=0; j<height; j+=2)
-		{
-			for (i=1+(1&(j>>1)); i<width/2; i+=2)
-			{
-				newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-			}
-		}
-		for (j=0; j<height; j++)
-		{
-			for (i=width/2; i<width; i++)
-			{
-				newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-			}
-		}
-		for (j=3; j<(width-4)/2; j++)
-		{
-			newTexture->SetPixel(j+6, j, 0xFF, 0, 0, 255);
-			newTexture->SetPixel(j+7, j, 0xFF, 0, 0, 255);
-			newTexture->SetPixel(-j+19, j, 0xFF, 0, 0, 255);
-			newTexture->SetPixel(-j+20, j, 0xFF, 0, 0, 255);
-		}
-	}
-	else if (wt == WL_ERASEALL)
-	{
-		for (int j = 0; j < height; j++)
+	case WL_EWALL:
+		// #####  .......
+		// #.#.#.  ...#.#
+		// #######  .....
+		// #.#.#.#.  .#.#
+		for (auto pos : size.OriginRect())
+			if ((pos.X < size.X / 4 + pos.Y) != (pos.X & pos.Y & 1))
+				texture->DrawPixel(pos, primary);
+		break;
+	case WL_WALLELEC:
+		// #+#+
+		// ++++
+		// #+#+
+		// ++++
+		for (auto pos : size.OriginRect())
+			if (~pos.Y & ~pos.X & 1)
+				texture->DrawPixel(pos, primary);
+			else
+				texture->DrawPixel(pos, 0x808080_rgb);
+		break;
+	case WL_EHOLE:
+	case WL_STASIS:
+		// .....  #######
+		// .#.#.#  ###.#.
+		// .......  #####
+		// .#.#.#.#  #.#.
+		for (auto pos : size.OriginRect())
+			if ((pos.X < size.X / 4 + pos.Y) == (pos.X & pos.Y & 1))
+				texture->DrawPixel(pos, primary);
+		break;
+	case WL_ERASE:
+		// #.#.#.  ######
+		// ......  ######
+		// .#.#.#  ######
+		// ......  ######
+		for (auto pos : size.OriginRect())
+			if ((pos.X < size.X / 2) ? ~pos.Y & ~(pos.X ^ (pos.Y >> 1)) & 1 : true)
+				texture->DrawPixel(pos, primary);
+		texture->BlendChar(size / 2 - Vec2(4, 2), 0xE06C, 0xFF0000_rgb .WithAlpha(0xFF));
+		break;
+	case WL_ERASEALL:
 		{
 			int r = 100, g = 150, b = 50;
 			int rd = 1, gd = -1, bd = -1;
-			for (int i = 0; i < width; i++)
+			for (int x = 0; x < size.X; x++)
 			{
-				r += 15*rd;
-				g += 15*gd;
-				b += 15*bd;
+				r += 15 * rd;
+				g += 15 * gd;
+				b += 15 * bd;
 				if (r > 200) rd = -1;
 				if (g > 200) gd = -1;
 				if (b > 200) bd = -1;
@@ -141,39 +126,19 @@ VideoBuffer * Renderer::WallIcon(int wallID, int width, int height)
 				int rc = std::min(150, std::max(0, r));
 				int gc = std::min(200, std::max(0, g));
 				int bc = std::min(200, std::max(0, b));
-				newTexture->SetPixel(i, j, rc, gc, bc, 255);
+				texture->DrawLine(Vec2(x, 0), Vec2(x, size.Y - 1), RGB<uint8_t>(rc, gc, bc));
 			}
+			texture->BlendChar(size / 2 - Vec2(10, 2), 0xE06C, 0xFF0000_rgb .WithAlpha(0xFF));
+			texture->BlendChar(size / 2 - Vec2(-1, 2), 0xE06C, 0xFF0000_rgb .WithAlpha(0xFF));
 		}
-		for (int j = 3; j < (width-4)/2; j++)
-		{
-			newTexture->SetPixel(j+0, j, 0xFF, 0, 0, 255);
-			newTexture->SetPixel(j+1, j, 0xFF, 0, 0, 255);
-			newTexture->SetPixel(-j+13, j, 0xFF, 0, 0, 255);
-			newTexture->SetPixel(-j+14, j, 0xFF, 0, 0, 255);
-
-			newTexture->SetPixel(j+11, j, 0xFF, 0, 0, 255);
-			newTexture->SetPixel(j+12, j, 0xFF, 0, 0, 255);
-			newTexture->SetPixel(-j+24, j, 0xFF, 0, 0, 255);
-			newTexture->SetPixel(-j+25, j, 0xFF, 0, 0, 255);
-		}
+		break;
+	case WL_STREAM:
+		texture->DrawRect(size.OriginRect(), 0xA0A0A0_rgb);
+		texture->AddChar(Vec2(4, 2), 0xE00D, 0xFFFFFF_rgb .WithAlpha(0xFF));
+		texture->AddChar(Vec2(8, 2), 0xE06D, 0xFFFFFF_rgb .WithAlpha(0xFF));
+		break;
 	}
-	else if(wt == WL_STREAM)
-	{
-		for (j=0; j<height; j++)
-		{
-			for (i=0; i<width; i++)
-			{
-				pc =  i==0||i==width-1||j==0||j==height-1 ? PIXPACK(0xA0A0A0) : PIXPACK(0x000000);
-				newTexture->SetPixel(i, j, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-			}
-		}
-		newTexture->AddCharacter(4, 2, 0xE00D, 255, 255, 255, 255);
-		for (i=width/3; i<width; i++)
-		{
-			newTexture->SetPixel(i, 7+(int)(3.9f*cos(i*0.3f)), 255, 255, 255, 255);
-		}
-	}
-	return newTexture;
+	return texture;
 }
 
 void Renderer::DrawSigns()

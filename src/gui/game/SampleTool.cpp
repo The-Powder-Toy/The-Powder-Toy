@@ -11,30 +11,21 @@
 
 #include "Menu.h"
 
-VideoBuffer * SampleTool::GetIcon(int toolID, int width, int height)
+std::unique_ptr<VideoBuffer> SampleTool::GetIcon(int toolID, Vec2<int> size)
 {
-	VideoBuffer * newTexture = new VideoBuffer(width, height);
-	for (int y=0; y<height; y++)
-	{
-		for (int x=0; x<width; x++)
-		{
-			pixel pc =  x==0||x==width-1||y==0||y==height-1 ? PIXPACK(0xA0A0A0) : PIXPACK(0x000000);
-			newTexture->SetPixel(x, y, PIXR(pc), PIXG(pc), PIXB(pc), 255);
-		}
-	}
-	newTexture->AddCharacter((width/2)-5, (height/2)-5, 0xE066, 255, 255, 255, 255);
-	newTexture->BlendPixel(10, 9, 100, 180, 255, 255);
-	newTexture->BlendPixel(11, 8, 100, 180, 255, 255);
-	newTexture->BlendPixel(12, 7, 100, 180, 255, 255);
-	return newTexture;
+	auto texture = std::make_unique<VideoBuffer>(size);
+	texture->DrawRect(size.OriginRect(), 0xA0A0A0_rgb);
+	texture->BlendChar((size / 2) - Vec2(5, 5), 0xE066, 0xFFFFFF_rgb .WithAlpha(0xFF));
+	texture->BlendChar((size / 2) - Vec2(5, 5), 0xE06B, 0x64B4FF_rgb .WithAlpha(0xFF));
+	return texture;
 }
 
 void SampleTool::Draw(Simulation * sim, Brush const &brush, ui::Point position)
 {
-	if(gameModel->GetColourSelectorVisibility())
+	if(gameModel.GetColourSelectorVisibility())
 	{
-		pixel colour = gameModel->GetRenderer()->sampleColor;
-		gameModel->SetColourSelectorColour(ui::Colour(PIXR(colour), PIXG(colour), PIXB(colour), 255));
+		pixel colour = gameModel.GetRenderer()->sampleColor;
+		gameModel.SetColourSelectorColour(RGB<uint8_t>::Unpack(colour).WithAlpha(0xFF));
 	}
 	else
 	{
@@ -52,25 +43,24 @@ void SampleTool::Draw(Simulation * sim, Brush const &brush, ui::Point position)
 			if (part->type == PT_LIFE)
 			{
 				bool found = false;
-				for (auto *elementTool : gameModel->GetMenuList()[SC_LIFE]->GetToolList())
+				for (auto *elementTool : gameModel.GetMenuList()[SC_LIFE]->GetToolList())
 				{
-					if (elementTool && ID(elementTool->GetToolID()) == part->ctype)
+					if (elementTool && ID(elementTool->ToolID) == part->ctype)
 					{
-						gameModel->SetActiveTool(0, elementTool);
+						gameModel.SetActiveTool(0, elementTool);
 						found = true;
 						break;
 					}
 				}
 				if (!found)
 				{
-					((GOLTool *)(gameModel->GetToolFromIdentifier("DEFAULT_UI_ADDLIFE")))->OpenWindow(gameModel->GetSimulation(), 0, part->ctype, part->dcolour, part->tmp);
+					static_cast<GOLTool *>(gameModel.GetToolFromIdentifier("DEFAULT_UI_ADDLIFE"))->OpenWindow(gameModel.GetSimulation(), 0, part->ctype, RGB<uint8_t>::Unpack(part->dcolour & 0xFFFFFF), RGB<uint8_t>::Unpack(part->tmp & 0xFFFFFF));
 				}
 			}
 			else
 			{
-				Tool * elementTool = gameModel->GetElementTool(part->type);
-				if(elementTool)
-					gameModel->SetActiveTool(0, elementTool);
+				if (auto elementTool = gameModel.GetElementTool(part->type))
+					gameModel.SetActiveTool(0, elementTool);
 			}
 		}
 	}

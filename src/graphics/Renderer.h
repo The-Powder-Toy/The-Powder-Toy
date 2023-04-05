@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <memory>
 #include <mutex>
 #include <vector>
 #include "Graphics.h"
@@ -142,7 +143,7 @@ public:
 	int GetGridSize() { return gridSize; }
 	void SetGridSize(int value) { gridSize = value; }
 
-	static VideoBuffer * WallIcon(int wallID, int width, int height);
+	static std::unique_ptr<VideoBuffer> WallIcon(int wallID, Vec2<int> size);
 
 	Renderer(Simulation * sim);
 	~Renderer();

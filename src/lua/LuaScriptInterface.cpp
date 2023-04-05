@@ -481,13 +481,13 @@ int LuaScriptInterface::tpt_index(lua_State *l)
 	else if (byteStringEqualsLiteral(key, "mousey"))
 		return lua_pushnumber(l, c->GetView()->GetMousePosition().Y), 1;
 	else if (byteStringEqualsLiteral(key, "selectedl"))
-		return tpt_lua_pushByteString(l, m->GetActiveTool(0)->GetIdentifier()), 1;
+		return tpt_lua_pushByteString(l, m->GetActiveTool(0)->Identifier), 1;
 	else if (byteStringEqualsLiteral(key, "selectedr"))
-		return tpt_lua_pushByteString(l, m->GetActiveTool(1)->GetIdentifier()), 1;
+		return tpt_lua_pushByteString(l, m->GetActiveTool(1)->Identifier), 1;
 	else if (byteStringEqualsLiteral(key, "selecteda"))
-		return tpt_lua_pushByteString(l, m->GetActiveTool(2)->GetIdentifier()), 1;
+		return tpt_lua_pushByteString(l, m->GetActiveTool(2)->Identifier), 1;
 	else if (byteStringEqualsLiteral(key, "selectedreplace"))
-		return tpt_lua_pushByteString(l, m->GetActiveTool(3)->GetIdentifier()), 1;
+		return tpt_lua_pushByteString(l, m->GetActiveTool(3)->Identifier), 1;
 	else if (byteStringEqualsLiteral(key, "brushx"))
 		return lua_pushnumber(l, m->GetBrush().GetRadius().X), 1;
 	else if (byteStringEqualsLiteral(key, "brushy"))
@@ -1468,7 +1468,7 @@ int LuaScriptInterface::simulation_createParts(lua_State * l)
 	int y = luaL_optint(l,2,-1);
 	int rx = luaL_optint(l,3,5);
 	int ry = luaL_optint(l,4,5);
-	int c = luaL_optint(l,5,luacon_model->GetActiveTool(0)->GetToolID());
+	int c = luaL_optint(l,5,luacon_model->GetActiveTool(0)->ToolID);
 	int brushID = luaL_optint(l,6,CIRCLE_BRUSH);
 	int flags = luaL_optint(l,7,luacon_sim->replaceModeFlags);
 
@@ -1491,7 +1491,7 @@ int LuaScriptInterface::simulation_createLine(lua_State * l)
 	int y2 = luaL_optint(l,4,-1);
 	int rx = luaL_optint(l,5,5);
 	int ry = luaL_optint(l,6,5);
-	int c = luaL_optint(l,7,luacon_model->GetActiveTool(0)->GetToolID());
+	int c = luaL_optint(l,7,luacon_model->GetActiveTool(0)->ToolID);
 	int brushID = luaL_optint(l,8,CIRCLE_BRUSH);
 	int flags = luaL_optint(l,9,luacon_sim->replaceModeFlags);
 
@@ -1511,7 +1511,7 @@ int LuaScriptInterface::simulation_createBox(lua_State * l)
 	int y1 = luaL_optint(l,2,-1);
 	int x2 = luaL_optint(l,3,-1);
 	int y2 = luaL_optint(l,4,-1);
-	int c = luaL_optint(l,5,luacon_model->GetActiveTool(0)->GetToolID());
+	int c = luaL_optint(l,5,luacon_model->GetActiveTool(0)->ToolID);
 	int flags = luaL_optint(l,6,luacon_sim->replaceModeFlags);
 
 	luacon_sim->CreateBox(x1, y1, x2, y2, c, flags);
@@ -1522,7 +1522,7 @@ int LuaScriptInterface::simulation_floodParts(lua_State * l)
 {
 	int x = luaL_optint(l,1,-1);
 	int y = luaL_optint(l,2,-1);
-	int c = luaL_optint(l,3,luacon_model->GetActiveTool(0)->GetToolID());
+	int c = luaL_optint(l,3,luacon_model->GetActiveTool(0)->ToolID);
 	int cm = luaL_optint(l,4,-1);
 	int flags = luaL_optint(l,5,luacon_sim->replaceModeFlags);
 
@@ -1662,10 +1662,10 @@ int LuaScriptInterface::simulation_toolLine(lua_State * l)
 	if (tool == (int)luacon_sim->tools.size())
 	{
 		Tool *windTool = luacon_model->GetToolFromIdentifier("DEFAULT_UI_WIND");
-		float oldStrength = windTool->GetStrength();
-		windTool->SetStrength(strength);
+		float oldStrength = windTool->Strength;
+		windTool->Strength = strength;
 		windTool->DrawLine(luacon_sim, *newBrush, ui::Point(x1, y1), ui::Point(x2, y2));
-		windTool->SetStrength(oldStrength);
+		windTool->Strength = oldStrength;
 	}
 	else
 		luacon_sim->ToolLine(x1, y1, x2, y2, tool, *newBrush, strength);

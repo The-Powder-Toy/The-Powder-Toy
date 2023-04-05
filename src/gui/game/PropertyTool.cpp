@@ -139,11 +139,11 @@ void PropertyWindow::SetProperty(bool warn)
 								v = sim->GetParticleType(value.ToUtf8());
 								if (v == -1)
 								{
-									for (auto *elementTool : tool->gameModel->GetMenuList()[SC_LIFE]->GetToolList())
+									for (auto *elementTool : tool->gameModel.GetMenuList()[SC_LIFE]->GetToolList())
 									{
-										if (elementTool && elementTool->GetName() == value)
+										if (elementTool && elementTool->Name == value)
 										{
-											v = ID(elementTool->GetToolID());
+											v = ID(elementTool->ToolID);
 											break;
 										}
 									}
@@ -199,7 +199,7 @@ void PropertyWindow::SetProperty(bool warn)
 				case StructProperty::Float:
 				{
 					if (properties[property->GetOption().second].Name == "temp")
-						tool->propValue.Float = format::StringToTemperature(value, tool->gameModel->GetTemperatureScale());
+						tool->propValue.Float = format::StringToTemperature(value, tool->gameModel.GetTemperatureScale());
 					else
 						tool->propValue.Float = value.ToNumber<float>();
 				}

@@ -518,15 +518,15 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 			toolButtons[i]->SetSelectionState(-1);
 	}
 
-	decoBrush = sender->GetActiveTool(0)->GetIdentifier().BeginsWith("DEFAULT_DECOR_");
+	decoBrush = sender->GetActiveTool(0)->Identifier.BeginsWith("DEFAULT_DECOR_");
 
 	if (sender->GetRenderer()->findingElement)
 	{
 		Tool *active = sender->GetActiveTool(0);
-		if (!active->GetIdentifier().Contains("_PT_"))
+		if (!active->Identifier.Contains("_PT_"))
 			ren->findingElement = 0;
 		else
-			ren->findingElement = sender->GetActiveTool(0)->GetToolID();
+			ren->findingElement = sender->GetActiveTool(0)->ToolID;
 	}
 }
 
@@ -534,8 +534,8 @@ void GameView::NotifyLastToolChanged(GameModel * sender)
 {
 	if (sender->GetLastTool())
 	{
-		wallBrush = sender->GetLastTool()->GetBlocky();
-		toolBrush = sender->GetLastTool()->GetIdentifier().BeginsWith("DEFAULT_TOOL_");
+		wallBrush = sender->GetLastTool()->Blocky;
+		toolBrush = sender->GetLastTool()->Identifier.BeginsWith("DEFAULT_TOOL_");
 	}
 }
 
@@ -563,17 +563,17 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 	for (size_t i = 0; i < toolList.size(); i++)
 	{
 		auto *tool = toolList[i];
-		VideoBuffer * tempTexture = tool->GetTexture(26, 14);
+		auto tempTexture = tool->GetTexture(Vec2(26, 14));
 		ToolButton * tempButton;
 
 		//get decotool texture manually, since it changes depending on it's own color
 		if (sender->GetActiveMenu() == SC_DECO)
-			tempTexture = ((DecorationTool*)tool)->GetIcon(tool->GetToolID(), 26, 14);
+			tempTexture = ((DecorationTool*)tool)->GetIcon(tool->ToolID, Vec2(26, 14));
 
-		if(tempTexture)
-			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", tool->GetIdentifier(), tool->GetDescription());
+		if (tempTexture)
+			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", tool->Identifier, tool->Description);
 		else
-			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), tool->GetName(), tool->GetIdentifier(), tool->GetDescription());
+			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), tool->Name, tool->Identifier, tool->Description);
 
 		tempButton->clipRectX = 1;
 		tempButton->clipRectY = YRES + 1;
@@ -589,19 +589,19 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 			{
 				if (tempButton->GetSelectionState() == 0)
 				{
-					if (Favorite::Ref().IsFavorite(tool->GetIdentifier()))
+					if (Favorite::Ref().IsFavorite(tool->Identifier))
 					{
-						Favorite::Ref().RemoveFavorite(tool->GetIdentifier());
+						Favorite::Ref().RemoveFavorite(tool->Identifier);
 					}
 					else
 					{
-						Favorite::Ref().AddFavorite(tool->GetIdentifier());
+						Favorite::Ref().AddFavorite(tool->Identifier);
 					}
 					c->RebuildFavoritesMenu();
 				}
 				else if (tempButton->GetSelectionState() == 1)
 				{
-					auto identifier = tool->GetIdentifier();
+					auto identifier = tool->Identifier;
 					if (Favorite::Ref().IsFavorite(identifier))
 					{
 						Favorite::Ref().RemoveFavorite(identifier);
@@ -620,7 +620,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 			{
 				if (CtrlBehaviour() && AltBehaviour() && !ShiftBehaviour())
 				{
-					if (tool->GetIdentifier().Contains("_PT_"))
+					if (tool->Identifier.Contains("_PT_"))
 					{
 						tempButton->SetSelectionState(3);
 					}
@@ -631,10 +631,9 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 			}
 		} });
 
-		tempButton->Appearance.SetTexture(tempTexture);
-		delete tempTexture;
+		tempButton->Appearance.SetTexture(tempTexture.get());
 
-		tempButton->Appearance.BackgroundInactive = ui::Colour(toolList[i]->colRed, toolList[i]->colGreen, toolList[i]->colBlue);
+		tempButton->Appearance.BackgroundInactive = toolList[i]->Colour.WithAlpha(0xFF);
 
 		if(sender->GetActiveTool(0) == toolList[i])
 		{
@@ -1156,8 +1155,8 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 				return;
 			Tool *lastTool = c->GetActiveTool(toolIndex);
 			c->SetLastTool(lastTool);
-			windTool = lastTool->GetIdentifier() == "DEFAULT_UI_WIND";
-			decoBrush = lastTool->GetIdentifier().BeginsWith("DEFAULT_DECOR_");
+			windTool = lastTool->Identifier == "DEFAULT_UI_WIND";
+			decoBrush = lastTool->Identifier.BeginsWith("DEFAULT_DECOR_");
 
 			UpdateDrawMode();
 
@@ -1435,10 +1434,10 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		if (ctrl)
 		{
 			Tool *active = c->GetActiveTool(0);
-			if (!active->GetIdentifier().Contains("_PT_") || (ren->findingElement == active->GetToolID()))
+			if (!active->Identifier.Contains("_PT_") || (ren->findingElement == active->ToolID))
 				ren->findingElement = 0;
 			else
-				ren->findingElement = active->GetToolID();
+				ren->findingElement = active->ToolID;
 		}
 		else
 			c->FrameStep();
