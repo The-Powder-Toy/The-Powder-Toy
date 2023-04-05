@@ -968,7 +968,7 @@ ByteString GameView::TakeScreenshot(int captureUI, int fileType)
 	else if (fileType == 2)
 	{
 		filename += ".ppm";
-		if (!Platform::WriteFile(format::VideoBufferToPPM(*screenshot), filename))
+		if (!Platform::WriteFile(screenshot->ToPPM(), filename))
 		{
 			filename = "";
 		}
@@ -976,10 +976,13 @@ ByteString GameView::TakeScreenshot(int captureUI, int fileType)
 	else
 	{
 		filename += ".png";
-		if (!screenshot->WritePNG(filename))
+		if (auto data = screenshot->ToPNG())
 		{
-			filename = "";
+			if (!Platform::WriteFile(*data, filename))
+				filename = "";
 		}
+		else
+			filename = "";
 	}
 
 	return filename;
@@ -2179,8 +2182,7 @@ void GameView::OnDraw()
 
 		if(recording)
 		{
-			VideoBuffer screenshot(ren->DumpFrame());
-			std::vector<char> data = format::VideoBufferToPPM(screenshot);
+			std::vector<char> data = ren->DumpFrame().ToPPM();
 
 			ByteString filename = ByteString::Build("recordings", PATH_SEP_CHAR, recordingFolder, PATH_SEP_CHAR, "frame_", Format::Width(recordingIndex++, 6), ".ppm");
 

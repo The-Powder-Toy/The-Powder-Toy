@@ -37,6 +37,9 @@ struct RasterDrawMethods
 	void XorImage(unsigned char const *, Rect<int>);
 	void XorImage(unsigned char const *, Rect<int>, size_t rowStride);
 
+	void BlendRGBAImage(pixel_rgba const *, Rect<int>);
+	void BlendRGBAImage(pixel_rgba const *, Rect<int>, size_t rowStride);
+
 	// Returns width of character
 	int BlendChar(Vec2<int>, String::value_type, RGBA<uint8_t>);
 	int AddChar(Vec2<int>, String::value_type, RGBA<uint8_t>);

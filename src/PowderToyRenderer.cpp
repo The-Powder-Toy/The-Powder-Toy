@@ -70,6 +70,6 @@ int main(int argc, char *argv[])
 	ren->RenderBegin();
 	ren->RenderEnd();
 
-	VideoBuffer screenBuffer = ren->DumpFrame();
-	screenBuffer.WritePNG(outputFilename);
+	if (auto data = ren->DumpFrame().ToPNG())
+		Platform::WriteFile(*data, outputFilename);
 }

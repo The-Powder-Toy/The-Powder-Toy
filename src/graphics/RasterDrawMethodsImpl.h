@@ -202,6 +202,24 @@ void RasterDrawMethods<Derived>::XorImage(unsigned char const *data, Rect<int> r
 }
 
 template<typename Derived>
+void RasterDrawMethods<Derived>::BlendRGBAImage(pixel_rgba const *data, Rect<int> rect)
+{
+	BlendRGBAImage(data, rect, rect.Size().X);
+}
+
+template<typename Derived>
+void RasterDrawMethods<Derived>::BlendRGBAImage(pixel_rgba const *data, Rect<int> rect, size_t rowStride)
+{
+	auto origin = rect.TopLeft;
+	rect &= clipRect();
+	for (auto pos : rect)
+	{
+		pixel const px = data[(pos.X - origin.X) + (pos.Y - origin.Y) * rowStride];
+		blendPixelUnchecked(*this, &Derived::video, pos, RGBA<uint8_t>::Unpack(px));
+	}
+}
+
+template<typename Derived>
 int RasterDrawMethods<Derived>::BlendChar(Vec2<int> pos, String::value_type ch, RGBA<uint8_t> colour)
 {
 	FontReader reader(ch);

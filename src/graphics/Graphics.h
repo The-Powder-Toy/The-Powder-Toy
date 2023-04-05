@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <memory>
 #include <vector>
 #include "common/Plane.h"
 #include "common/String.h"
@@ -48,7 +49,9 @@ public:
 	// Automatically choose a size to fit within the given box, keeping aspect ratio
 	void ResizeToFit(Vec2<int> bound, bool resample = false);
 
-	bool WritePNG(const ByteString &path) const;
+	static std::unique_ptr<VideoBuffer> FromPNG(std::vector<char> const &);
+	std::unique_ptr<std::vector<char>> ToPNG() const;
+	std::vector<char> ToPPM() const;
 };
 
 class Graphics: public RasterDrawMethods<Graphics>
@@ -93,14 +96,9 @@ public:
 
 	void Finalise();
 
-	void draw_rgba_image(const pixel *data, int w, int h, int x, int y, float alpha);
-
-	Graphics()
-	{}
+	Graphics();
 
 	void SwapClipRect(Rect<int> &);
 	[[deprecated("Use SwapClipRect")]]
 	void SetClipRect(int &x, int &y, int &w, int &h);
 };
-
-bool PngDataToPixels(std::vector<pixel> &imageData, int &imgw, int &imgh, const char *pngData, size_t pngDataSize, bool addBackground);

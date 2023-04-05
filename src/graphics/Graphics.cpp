@@ -7,6 +7,7 @@
 #include <png.h>
 #include "common/platform/Platform.h"
 #include "FontReader.h"
+#include "Format.h"
 #include "Graphics.h"
 #include "resampler/resampler.h"
 #include "SimulationConfig.h"
@@ -138,7 +139,33 @@ void VideoBuffer::ResizeToFit(Vec2<int> bound, bool resample)
 	Resize(size, resample);
 }
 
+std::unique_ptr<VideoBuffer> VideoBuffer::FromPNG(std::vector<char> const &data)
+{
+	auto video = format::PixelsFromPNG(data, 0x000000_rgb);
+	if (video)
+	{
+		auto buf = std::make_unique<VideoBuffer>(Vec2<int>::Zero);
+		buf->video = std::move(*video);
+		return buf;
+	}
+	else
+		return nullptr;
+}
+
+std::unique_ptr<std::vector<char>> VideoBuffer::ToPNG() const
+{
+	return format::PixelsToPNG(video);
+}
+
+std::vector<char> VideoBuffer::ToPPM() const
+{
+	return format::PixelsToPPM(video);
+}
+
 template class RasterDrawMethods<VideoBuffer>;
+
+Graphics::Graphics()
+{}
 
 int Graphics::textwidth(const String &str)
 {
@@ -509,22 +536,6 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 	}
 }
 
-void Graphics::draw_rgba_image(const pixel *data, int w, int h, int x, int y, float alpha)
-{
-	for (int j = 0; j < h; j++)
-	{
-		for (int i = 0; i < w; i++)
-		{
-			auto rgba = *(data++);
-			auto a = (rgba >> 24) & 0xFF;
-			auto r = (rgba >> 16) & 0xFF;
-			auto g = (rgba >>  8) & 0xFF;
-			auto b = (rgba      ) & 0xFF;
-			addpixel(x+i, y+j, r, g, b, (int)(a*alpha));
-		}
-	}
-}
-
 VideoBuffer Graphics::DumpFrame()
 {
 	VideoBuffer newBuffer(video.Size());
@@ -546,148 +557,6 @@ void Graphics::SetClipRect(int &x, int &y, int &w, int &h)
 	y = rect.TopLeft.Y;
 	w = rect.Size().X;
 	h = rect.Size().Y;
-}
-
-bool VideoBuffer::WritePNG(const ByteString &path) const
-{
-	std::vector<png_const_bytep> rowPointers(Size().Y);
-	for (auto y = 0; y < Size().Y; ++y)
-	{
-		rowPointers[y] = (png_const_bytep)&*video.RowIterator(Vec2(0, y));
-	}
-	png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	if (!png)
-	{
-		std::cerr << "WritePNG: png_create_write_struct failed" << std::endl;
-		return false;
-	}
-	png_infop info = png_create_info_struct(png);
-	if (!info)
-	{
-		std::cerr << "WritePNG: png_create_info_struct failed" << std::endl;
-		png_destroy_write_struct(&png, (png_infopp)NULL);
-		return false;
-	}
-	if (setjmp(png_jmpbuf(png)))
-	{
-		// libpng longjmp'd here in its infinite widsom, clean up and return
-		std::cerr << "WritePNG: longjmp from within libpng" << std::endl;
-		png_destroy_write_struct(&png, &info);
-		return false;
-	}
-	struct InMemoryFile
-	{
-		std::vector<char> data;
-	} imf;
-	png_set_write_fn(png, (png_voidp)&imf, [](png_structp png, png_bytep data, size_t length) -> void {
-		auto ud = png_get_io_ptr(png);
-		auto &imf = *(InMemoryFile *)ud;
-		imf.data.insert(imf.data.end(), data, data + length);
-	}, NULL);
-	png_set_IHDR(png, info, Size().X, Size().Y, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-	png_write_info(png, info);
-	png_set_filler(png, 0, PNG_FILLER_AFTER);
-	png_set_bgr(png);
-	png_write_image(png, (png_bytepp)&rowPointers[0]);
-	png_write_end(png, NULL);
-	png_destroy_write_struct(&png, &info);
-	return Platform::WriteFile(imf.data, path);
-}
-
-bool PngDataToPixels(std::vector<pixel> &imageData, int &imgw, int &imgh, const char *pngData, size_t pngDataSize, bool addBackground)
-{
-	std::vector<png_const_bytep> rowPointers;
-	struct InMemoryFile
-	{
-		png_const_bytep data;
-		size_t size;
-		size_t cursor;
-	} imf{ (png_const_bytep)pngData, pngDataSize, 0 };
-	png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	if (!png)
-	{
-		std::cerr << "pngDataToPixels: png_create_read_struct failed" << std::endl;
-		return false;
-	}
-	png_infop info = png_create_info_struct(png);
-	if (!info)
-	{
-		std::cerr << "pngDataToPixels: png_create_info_struct failed" << std::endl;
-		png_destroy_read_struct(&png, (png_infopp)NULL, (png_infopp)NULL);
-		return false;
-	}
-	if (setjmp(png_jmpbuf(png)))
-	{
-		// libpng longjmp'd here in its infinite widsom, clean up and return
-		std::cerr << "pngDataToPixels: longjmp from within libpng" << std::endl;
-		png_destroy_read_struct(&png, &info, (png_infopp)NULL);
-		return false;
-	}
-	png_set_read_fn(png, (png_voidp)&imf, [](png_structp png, png_bytep data, size_t length) -> void {
-		auto ud = png_get_io_ptr(png);
-		auto &imf = *(InMemoryFile *)ud;
-		if (length + imf.cursor > imf.size)
-		{
-			png_error(png, "pngDataToPixels: libpng tried to read beyond the buffer");
-		}
-		std::copy(imf.data + imf.cursor, imf.data + imf.cursor + length, data);
-		imf.cursor += length;
-	});
-	png_set_user_limits(png, 1000, 1000);
-	png_read_info(png, info);
-	imgw = png_get_image_width(png, info);
-	imgh = png_get_image_height(png, info);
-	int bitDepth = png_get_bit_depth(png, info);
-	int colorType = png_get_color_type(png, info);
-	imageData.resize(imgw * imgh);
-	rowPointers.resize(imgh);
-	for (auto y = 0; y < imgh; ++y)
-	{
-		rowPointers[y] = (png_const_bytep)&imageData[y * imgw];
-	}
-	if (setjmp(png_jmpbuf(png)))
-	{
-		// libpng longjmp'd here in its infinite widsom, clean up and return
-		std::cerr << "pngDataToPixels: longjmp from within libpng" << std::endl;
-		png_destroy_read_struct(&png, &info, (png_infopp)NULL);
-		return false;
-	}
-	if (addBackground)
-	{
-		png_set_filler(png, 0, PNG_FILLER_AFTER);
-	}
-	png_set_bgr(png);
-	if (colorType == PNG_COLOR_TYPE_PALETTE)
-	{
-		png_set_palette_to_rgb(png);
-	}
-	if (colorType == PNG_COLOR_TYPE_GRAY && bitDepth < 8)
-	{
-		png_set_expand_gray_1_2_4_to_8(png);
-	}
-	if (png_get_valid(png, info, PNG_INFO_tRNS))
-	{
-		png_set_tRNS_to_alpha(png);
-	}
-	if (bitDepth == 16)
-	{
-		png_set_scale_16(png);
-	}
-	if (colorType == PNG_COLOR_TYPE_GRAY || colorType == PNG_COLOR_TYPE_GRAY_ALPHA)
-	{
-		png_set_gray_to_rgb(png);
-	}
-	if (addBackground)
-	{
-		png_color_16 defaultBackground;
-		defaultBackground.red = 0;
-		defaultBackground.green = 0;
-		defaultBackground.blue = 0;
-		png_set_background(png, &defaultBackground, PNG_BACKGROUND_GAMMA_SCREEN, 0, 1.0);
-	}
-	png_read_image(png, (png_bytepp)&rowPointers[0]);
-	png_destroy_read_struct(&png, &info, (png_infopp)NULL);
-	return true;
 }
 
 bool Graphics::GradientStop::operator <(const GradientStop &other) const

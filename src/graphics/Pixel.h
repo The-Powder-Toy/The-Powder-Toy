@@ -11,7 +11,13 @@
 typedef uint32_t pixel;
 
 constexpr int PIXELCHANNELS = 3;
+[[deprecated("Avoid manipulating pixel* as char*")]]
 constexpr int PIXELSIZE = 4;
+
+// Least significant byte is blue, then green, then red, then alpha.
+// Use sparingly, e.g. when passing packed data to a third party library.
+typedef uint32_t pixel_rgba;
+
 [[deprecated("Use 0x######_rgb .Pack()")]]
 constexpr pixel PIXPACK(int x)
 {
@@ -22,14 +28,17 @@ constexpr pixel PIXRGB(int r, int g, int b)
 {
 	return (r << 16) | (g << 8) | b;
 }
+[[deprecated("Use RGB<uint8_t>::Unpack(...).Red")]]
 constexpr int PIXR(pixel x)
 {
 	return (x >> 16) & 0xFF;
 }
+[[deprecated("Use RGB<uint8_t>::Unpack(...).Green")]]
 constexpr int PIXG(pixel x)
 {
 	return (x >> 8) & 0xFF;
 }
+[[deprecated("Use RGB<uint8_t>::Unpack(...).Blue")]]
 constexpr int PIXB(pixel x)
 {
 	return x & 0xFF;
@@ -50,30 +59,50 @@ struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) 
 	{
 	}
 
-	template<typename S> // Avoid referring to the non-intuitive order of components
+	template<typename S> // Disallow brace initialization
 	RGB(std::initializer_list<S>) = delete;
 
+	// Blend and Add get called in tight loops so it's important that they
+	// vectorize well.
 	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
-	RGB<T> Blend(RGBA<T> other) const
+	constexpr RGB<T> Blend(RGBA<T> other) const
 	{
 		if (other.Alpha == 0xFF)
 			return other.NoAlpha();
+		// Dividing by 0xFF means the two branches return the same value in the
+		// case that other.Alpha == 0xFF, and the division happens via
+		// multiplication and bitshift anyway, so it vectorizes better than code
+		// that branches in a meaningful way.
 		return RGB<T>(
-			// Technically should divide by 0xFF, but >> 8 is close enough
-			(other.Alpha * other.Red   + (0xFF - other.Alpha) * Red  ) >> 8,
-			(other.Alpha * other.Green + (0xFF - other.Alpha) * Green) >> 8,
-			(other.Alpha * other.Blue  + (0xFF - other.Alpha) * Blue ) >> 8
+			// the intermediate is guaranteed to fit in 16 bits, and a 16 bit
+			// multiplication vectorizes better than a longer one.
+			uint16_t(other.Alpha * other.Red   + (0xFF - other.Alpha) * Red  ) / 0xFF,
+			uint16_t(other.Alpha * other.Green + (0xFF - other.Alpha) * Green) / 0xFF,
+			uint16_t(other.Alpha * other.Blue  + (0xFF - other.Alpha) * Blue ) / 0xFF
 		);
 	}
 
 	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
-	RGB<T> Add(RGBA<T> other) const
+	constexpr RGB<T> Add(RGBA<T> other) const
 	{
 		return RGB<T>(
-			std::min(0xFF, (other.Alpha * other.Red   + 0xFF * Red  ) >> 8),
-			std::min(0xFF, (other.Alpha * other.Green + 0xFF * Green) >> 8),
-			std::min(0xFF, (other.Alpha * other.Blue  + 0xFF * Blue ) >> 8)
+			std::min(0xFF, Red + uint16_t(other.Alpha * other.Red) / 0xFF),
+			std::min(0xFF, Green + uint16_t(other.Alpha * other.Green) / 0xFF),
+			std::min(0xFF, Blue + uint16_t(other.Alpha * other.Blue) / 0xFF)
 		);
+	}
+
+	// Decrement each component that is nonzero.
+	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
+	constexpr RGB<T> Decay() const
+	{
+		// This vectorizes really well.
+		pixel colour = Pack(), mask = colour;
+		mask |= mask >> 4;
+		mask |= mask >> 2;
+		mask |= mask >> 1;
+		mask &= 0x00010101;
+		return Unpack(colour - mask);
 	}
 
 	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
@@ -88,7 +117,7 @@ struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) 
 	}
 
 	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
-	pixel Pack() const
+	constexpr pixel Pack() const
 	{
 		return Red << 16 | Green << 8 | Blue;
 	}
@@ -127,11 +156,17 @@ struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) 
 	{
 	}
 
-	template<typename S> // Avoid referring to the non-intuitive order of components
+	template<typename S> // Disallow brace initialization
 	RGBA(std::initializer_list<S>) = delete;
 
-	RGB<T> NoAlpha() const
+	constexpr RGB<T> NoAlpha() const
 	{
 		return RGB<T>(Red, Green, Blue);
+	}
+
+	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
+	constexpr static RGBA<T> Unpack(pixel_rgba px)
+	{
+		return RGBA<T>(px >> 16, px >> 8, px, px >> 24);
 	}
 };

@@ -23,18 +23,14 @@ namespace http
 		std::unique_ptr<VideoBuffer> vb;
 		if (data.size())
 		{
-			int imgw, imgh;
-			std::vector<pixel> imageData;
-			if (PngDataToPixels(imageData, imgw, imgh, data.data(), data.size(), true))
-			{
-				vb = std::make_unique<VideoBuffer>(imageData.data(), Vec2(imgw, imgh));
-			}
+			vb = VideoBuffer::FromPNG(std::vector<char>(data.begin(), data.end()));
+			if (vb)
+				vb->Resize(size, true);
 			else
 			{
-				vb = std::make_unique<VideoBuffer>(Vec2(32, 32));
-				vb->BlendChar(Vec2(14, 14), 'x', 0xFFFFFF_rgb .WithAlpha(0xFF));
+				vb = std::make_unique<VideoBuffer>(Vec2(15, 16));
+				vb->BlendChar(Vec2(2, 4), 0xE06E, 0xFFFFFF_rgb .WithAlpha(0xFF));
 			}
-			vb->Resize(size, true);
 		}
 		return vb;
 	}
