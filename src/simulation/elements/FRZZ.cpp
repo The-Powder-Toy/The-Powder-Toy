@@ -56,7 +56,7 @@ static int update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (TYP(r)==PT_WATR && RNG::Ref().chance(1, 20))
+				if (TYP(r)==PT_WATR && sim->rng.chance(1, 20))
 				{
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_FRZW);
 					parts[ID(r)].life = 100;

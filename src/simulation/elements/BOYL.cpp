@@ -71,12 +71,12 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if (TYP(r)==PT_WATR)
 				{
-					if (RNG::Ref().chance(1, 30))
+					if (sim->rng.chance(1, 30))
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_FOG);
 				}
 				else if (TYP(r)==PT_O2)
 				{
-					if (RNG::Ref().chance(1, 9))
+					if (sim->rng.chance(1, 9))
 					{
 						sim->kill_part(ID(r));
 						sim->part_change_type(i,x,y,PT_WATR);

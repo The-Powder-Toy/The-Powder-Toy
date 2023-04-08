@@ -76,7 +76,7 @@ bool WriteFile(const std::vector<char> &fileData, ByteString filename)
 	{
 		while (true)
 		{
-			writeFileName = ByteString::Build(filename, ".temp.", Format::Width(5), Format::Fill('0'), random_gen() % 100000);
+			writeFileName = ByteString::Build(filename, ".temp.", Format::Width(5), Format::Fill('0'), interfaceRng() % 100000);
 			if (!FileExists(writeFileName))
 			{
 				break;

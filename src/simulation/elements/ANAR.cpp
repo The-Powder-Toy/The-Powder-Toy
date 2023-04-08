@@ -59,10 +59,10 @@ static int update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (TYP(r)==PT_CFLM && RNG::Ref().chance(1, 4))
+				if (TYP(r)==PT_CFLM && sim->rng.chance(1, 4))
 				{
 					sim->part_change_type(i,x,y,PT_CFLM);
-					parts[i].life = RNG::Ref().between(50, 199);
+					parts[i].life = sim->rng.between(50, 199);
 					parts[ID(r)].temp = parts[i].temp = 0;
 					sim->pv[y/CELL][x/CELL] -= 0.5;
 				}

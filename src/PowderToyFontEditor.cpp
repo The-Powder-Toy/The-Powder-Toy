@@ -28,7 +28,6 @@ void TickClient()
 struct ExplicitSingletons
 {
 	// These need to be listed in the order they are populated in main.
-	std::unique_ptr<RNG> rng;
 	std::unique_ptr<ui::Engine> engine;
 };
 static std::unique_ptr<ExplicitSingletons> explicitSingletons;
@@ -61,7 +60,6 @@ int main(int argc, char * argv[])
 	if(scale < 1 || scale > 10)
 		scale = 1;
 
-	explicitSingletons->rng = std::make_unique<RNG>();
 	explicitSingletons->engine = std::make_unique<ui::Engine>();
 
 	SDLOpen();

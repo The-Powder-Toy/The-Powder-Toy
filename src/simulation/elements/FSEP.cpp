@@ -58,8 +58,8 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	else if (parts[i].life < 40) {
 		parts[i].life--;
-		if (RNG::Ref().chance(1, 10)) {
-			r = sim->create_part(-1, x + RNG::Ref().between(-1, 1), y + RNG::Ref().between(-1, 1), PT_PLSM);
+		if (sim->rng.chance(1, 10)) {
+			r = sim->create_part(-1, x + sim->rng.between(-1, 1), y + sim->rng.between(-1, 1), PT_PLSM);
 			if (r>-1)
 				parts[r].life = 50;
 		}
@@ -72,7 +72,7 @@ static int update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((TYP(r)==PT_SPRK || (parts[i].temp>=(273.15+400.0f))) && parts[i].life>40 && RNG::Ref().chance(1, 15))
+					if ((TYP(r)==PT_SPRK || (parts[i].temp>=(273.15+400.0f))) && parts[i].life>40 && sim->rng.chance(1, 15))
 					{
 						parts[i].life = 39;
 					}

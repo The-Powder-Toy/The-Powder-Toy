@@ -66,7 +66,7 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 				else if (TYP(r) != PT_ACID && TYP(r) != PT_CAUS && TYP(r) != PT_RFRG && TYP(r) != PT_RFGL)
 				{
-					if ((TYP(r) != PT_CLNE && TYP(r) != PT_PCLN && RNG::Ref().chance(sim->elements[TYP(r)].Hardness, 1000)) && parts[i].life >= 50)
+					if ((TYP(r) != PT_CLNE && TYP(r) != PT_PCLN && sim->rng.chance(sim->elements[TYP(r)].Hardness, 1000)) && parts[i].life >= 50)
 					{
 						// GLAS protects stuff from acid
 						if (sim->parts_avg(i, ID(r),PT_GLAS) != PT_GLAS)

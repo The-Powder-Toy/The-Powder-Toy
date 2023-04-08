@@ -59,11 +59,11 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if ((TYP(r)!=PT_C5 && parts[ID(r)].temp<100 && sim->elements[TYP(r)].HeatConduct && (TYP(r)!=PT_HSWC||parts[ID(r)].life==10)) || TYP(r)==PT_CFLM)
 				{
-					if (RNG::Ref().chance(1, 6))
+					if (sim->rng.chance(1, 6))
 					{
 						sim->part_change_type(i,x,y,PT_CFLM);
 						parts[ID(r)].temp = parts[i].temp = 0;
-						parts[i].life = RNG::Ref().between(50, 199);
+						parts[i].life = sim->rng.between(50, 199);
 						sim->pv[y/CELL][x/CELL] += 1.5;
 					}
 				}

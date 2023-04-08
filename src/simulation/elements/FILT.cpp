@@ -2,7 +2,7 @@
 
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
-int Element_FILT_interactWavelengths(Particle* cpart, int origWl);
+int Element_FILT_interactWavelengths(Simulation *sim, Particle* cpart, int origWl);
 int Element_FILT_getWavelengths(Particle* cpart);
 
 void Element::Element_FILT()
@@ -81,7 +81,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS)
 
 // Returns the wavelengths in a particle after FILT interacts with it (e.g. a photon)
 // cpart is the FILT particle, origWl the original wavelengths in the interacting particle
-int Element_FILT_interactWavelengths(Particle* cpart, int origWl)
+int Element_FILT_interactWavelengths(Simulation *sim, Particle* cpart, int origWl)
 {
 	const int mask = 0x3FFFFFFF;
 	int filtWl = Element_FILT_getWavelengths(cpart);
@@ -115,9 +115,9 @@ int Element_FILT_interactWavelengths(Particle* cpart, int origWl)
 			return (~origWl) & mask; // Invert colours
 		case 9:
 		{
-			int t1 = (origWl & 0x0000FF) + RNG::Ref().between(-2, 2);
-			int t2 = ((origWl & 0x00FF00)>>8) + RNG::Ref().between(-2, 2);
-			int t3 = ((origWl & 0xFF0000)>>16) + RNG::Ref().between(-2, 2);
+			int t1 = (origWl & 0x0000FF) + sim->rng.between(-2, 2);
+			int t2 = ((origWl & 0x00FF00)>>8) + sim->rng.between(-2, 2);
+			int t3 = ((origWl & 0xFF0000)>>16) + sim->rng.between(-2, 2);
 			return (origWl & 0xFF000000) | (t3<<16) | (t2<<8) | t1;
 		}
 		case 10:

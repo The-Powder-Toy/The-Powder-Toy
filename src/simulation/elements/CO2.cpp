@@ -55,7 +55,7 @@ static int update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 				{
-					if (parts[i].ctype==5 && RNG::Ref().chance(1, 2000))
+					if (parts[i].ctype==5 && sim->rng.chance(1, 2000))
 					{
 						if (sim->create_part(-1, x+rx, y+ry, PT_WATR)>=0)
 							parts[i].ctype = 0;
@@ -65,13 +65,13 @@ static int update(UPDATE_FUNC_ARGS)
 				if (TYP(r)==PT_FIRE)
 				{
 					sim->kill_part(ID(r));
-					if (RNG::Ref().chance(1, 30))
+					if (sim->rng.chance(1, 30))
 					{
 						sim->kill_part(i);
 						return 1;
 					}
 				}
-				else if ((TYP(r)==PT_WATR || TYP(r)==PT_DSTW) && RNG::Ref().chance(1, 50))
+				else if ((TYP(r)==PT_WATR || TYP(r)==PT_DSTW) && sim->rng.chance(1, 50))
 				{
 					sim->part_change_type(ID(r), x+rx, y+ry, PT_CBNW);
 					if (parts[i].ctype==5) //conserve number of water particles - ctype=5 means this CO2 hasn't released the water particle from BUBW yet
@@ -88,14 +88,14 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 	if (parts[i].temp > 9773.15 && sim->pv[y/CELL][x/CELL] > 200.0f)
 	{
-		if (RNG::Ref().chance(1, 5))
+		if (sim->rng.chance(1, 5))
 		{
 			int j;
 			sim->create_part(i,x,y,PT_O2);
 			j = sim->create_part(-3,x,y,PT_NEUT);
 			if (j != -1)
 				parts[j].temp = MAX_TEMP;
-			if (RNG::Ref().chance(1, 50))
+			if (sim->rng.chance(1, 50))
 			{
 				j = sim->create_part(-3,x,y,PT_ELEC);
 				if (j != -1)

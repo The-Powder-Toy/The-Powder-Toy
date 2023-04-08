@@ -58,7 +58,7 @@ static int update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (TYP(r)==PT_WATR && RNG::Ref().chance(1, 400))
+				if (TYP(r)==PT_WATR && sim->rng.chance(1, 400))
 				{
 					sim->kill_part(i);
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_DEUT);
@@ -87,7 +87,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	*colg = int(restrict_flt(64.0f+cpart->ctype, 0, 255));
 	*colb = int(restrict_flt(64.0f+cpart->tmp, 0, 255));
 
-	int rng = RNG::Ref().between(1, 32); //
+	int rng = ren->rng.between(1, 32); //
 	if(((*colr) + (*colg) + (*colb)) > (256 + rng)) {
 		*colr -= 54;
 		*colg -= 54;

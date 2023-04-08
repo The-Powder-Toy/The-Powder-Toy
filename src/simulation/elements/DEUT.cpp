@@ -58,7 +58,7 @@ static int update(UPDATE_FUNC_ARGS)
 	// Prevent division by 0
 	float temp = std::max(1.0f, (parts[i].temp + 1));
 	auto maxlife = int(((10000/(temp + 1))-1));
-	if (RNG::Ref().chance(10000 % static_cast<int>(temp + 1), static_cast<int>(temp + 1)))
+	if (sim->rng.chance(10000 % static_cast<int>(temp + 1), static_cast<int>(temp + 1)))
 		maxlife++;
 	// Compress when Newtonian gravity is applied
 	// multiplier=1 when gravtot=0, multiplier -> 5 as gravtot -> inf
@@ -72,7 +72,7 @@ static int update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r || (parts[i].life >=maxlife))
 						continue;
-					if (TYP(r)==PT_DEUT&& RNG::Ref().chance(1, 3))
+					if (TYP(r)==PT_DEUT&& sim->rng.chance(1, 3))
 					{
 						// If neighbour life+1 fits in the free capacity for this particle, absorb neighbour
 						// Condition is written in this way so that large neighbour life values don't cause integer overflow
@@ -105,8 +105,8 @@ static int update(UPDATE_FUNC_ARGS)
 trade:
 	for ( trade = 0; trade<4; trade ++)
 	{
-		rx = RNG::Ref().between(-2, 2);
-		ry = RNG::Ref().between(-2, 2);
+		rx = sim->rng.between(-2, 2);
+		ry = sim->rng.between(-2, 2);
 		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];

@@ -58,7 +58,7 @@ int Element_COAL_update(UPDATE_FUNC_ARGS)
 		return 1;
 	} else if (parts[i].life < 100) {
 		parts[i].life--;
-		sim->create_part(-1, x + RNG::Ref().between(-1, 1), y + RNG::Ref().between(-1, 1), PT_FIRE);
+		sim->create_part(-1, x + sim->rng.between(-1, 1), y + sim->rng.between(-1, 1), PT_FIRE);
 	}
 	if (parts[i].type == PT_COAL)
 	{

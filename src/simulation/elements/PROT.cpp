@@ -74,7 +74,7 @@ static int update(UPDATE_FUNC_ARGS)
 		break;
 	}
 	case PT_DEUT:
-		if (RNG::Ref().chance(-((int)sim->pv[y / CELL][x / CELL] - 4) + (parts[uID].life / 100), 200))
+		if (sim->rng.chance(-((int)sim->pv[y / CELL][x / CELL] - 4) + (parts[uID].life / 100), 200))
 		{
 			DeutImplosion(sim, parts[uID].life, x, y, restrict_flt(parts[uID].temp + parts[uID].life * 500, MIN_TEMP, MAX_TEMP), PT_PROT);
 			sim->kill_part(uID);
@@ -82,7 +82,7 @@ static int update(UPDATE_FUNC_ARGS)
 		break;
 	case PT_LCRY:
 		//Powered LCRY reaction: PROT->PHOT
-		if (parts[uID].life > 5 && RNG::Ref().chance(1, 10))
+		if (parts[uID].life > 5 && sim->rng.chance(1, 10))
 		{
 			sim->part_change_type(i, x, y, PT_PHOT);
 			parts[i].life *= 2;
@@ -149,7 +149,7 @@ static int update(UPDATE_FUNC_ARGS)
 			element = PT_CO2;
 		else
 			element = PT_NBLE;
-		newID = sim->create_part(-1, x + RNG::Ref().between(-1, 1), y + RNG::Ref().between(-1, 1), element);
+		newID = sim->create_part(-1, x + sim->rng.between(-1, 1), y + sim->rng.between(-1, 1), element);
 		if (newID >= 0)
 			parts[newID].temp = restrict_flt(100.0f*parts[i].tmp, MIN_TEMP, MAX_TEMP);
 		sim->kill_part(i);
@@ -209,7 +209,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
-	float a = RNG::Ref().between(0, 35) * 0.17453f;
+	float a = sim->rng.between(0, 35) * 0.17453f;
 	sim->parts[i].life = 680;
 	sim->parts[i].vx = 2.0f * cosf(a);
 	sim->parts[i].vy = 2.0f * sinf(a);

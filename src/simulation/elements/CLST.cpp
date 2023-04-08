@@ -62,7 +62,7 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if (TYP(r)==PT_WATR)
 				{
-					if (RNG::Ref().chance(1, 1500))
+					if (sim->rng.chance(1, 1500))
 					{
 						sim->create_part(i, x, y, PT_PSTS);
 						sim->kill_part(ID(r));
@@ -101,5 +101,5 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
-	sim->parts[i].tmp = RNG::Ref().between(0, 6);
+	sim->parts[i].tmp = sim->rng.between(0, 6);
 }

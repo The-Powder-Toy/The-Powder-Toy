@@ -56,13 +56,13 @@ static int update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((sim->elements[TYP(r)].Properties&TYPE_SOLID) && RNG::Ref().chance(1, 10) && parts[i].life==0 && !(TYP(r)==PT_CLNE || TYP(r)==PT_PCLN)) // TODO: should this also exclude BCLN?
+				if ((sim->elements[TYP(r)].Properties&TYPE_SOLID) && sim->rng.chance(1, 10) && parts[i].life==0 && !(TYP(r)==PT_CLNE || TYP(r)==PT_PCLN)) // TODO: should this also exclude BCLN?
 				{
 					sim->part_change_type(i,x,y,PT_RIME);
 				}
 				if (TYP(r)==PT_SPRK)
 				{
-					parts[i].life += RNG::Ref().between(0, 19);
+					parts[i].life += sim->rng.between(0, 19);
 				}
 			}
 	return 0;

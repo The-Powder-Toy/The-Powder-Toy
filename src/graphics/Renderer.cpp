@@ -589,7 +589,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_SPARK)
 				{
-					flicker = float(random_gen()%20);
+					flicker = float(rng()%20);
 					gradv = 4*sim->parts[i].life + flicker;
 					for (x = 0; gradv>0.5; x++) {
 						addpixel(nx+x, ny, colr, colg, colb, int(gradv));
@@ -602,7 +602,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_FLARE)
 				{
-					flicker = float(random_gen()%20);
+					flicker = float(rng()%20);
 					gradv = flicker + fabs(parts[i].vx)*17 + fabs(sim->parts[i].vy)*17;
 					blendpixel(nx, ny, colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) );
 					blendpixel(nx+1, ny, colr, colg, colb,int( (gradv*2)>255?255:(gradv*2)) );
@@ -624,7 +624,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_LFLARE)
 				{
-					flicker = float(random_gen()%20);
+					flicker = float(rng()%20);
 					gradv = flicker + fabs(parts[i].vx)*17 + fabs(parts[i].vy)*17;
 					blendpixel(nx, ny, colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) );
 					blendpixel(nx+1, ny, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );

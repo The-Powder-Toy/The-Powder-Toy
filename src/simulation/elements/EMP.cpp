@@ -66,7 +66,7 @@ public:
 	}
 	void apply(Simulation *sim, Particle &p)
 	{
-		p.temp = restrict_flt(p.temp+getDelta(RNG::Ref().uniform01()), MIN_TEMP, MAX_TEMP);
+		p.temp = restrict_flt(p.temp+getDelta(sim->rng.uniform01()), MIN_TEMP, MAX_TEMP);
 	}
 };
 
@@ -118,9 +118,9 @@ void Element_EMP_Trigger(Simulation *sim, int triggerCount)
 			{
 				is_elec = true;
 				temp_center.apply(sim, parts[r]);
-				if (RNG::Ref().uniform01() < prob_changeCenter)
+				if (sim->rng.uniform01() < prob_changeCenter)
 				{
-					if (RNG::Ref().chance(2, 5))
+					if (sim->rng.chance(2, 5))
 						sim->part_change_type(r, rx, ry, PT_BREC);
 					else
 						sim->part_change_type(r, rx, ry, PT_NTCT);
@@ -143,10 +143,10 @@ void Element_EMP_Trigger(Simulation *sim, int triggerCount)
 							{
 							case PT_METL:
 								temp_metal.apply(sim, parts[n]);
-								if (RNG::Ref().uniform01() < prob_breakMETL)
+								if (sim->rng.uniform01() < prob_breakMETL)
 								{
 									sim->part_change_type(n, rx+nx, ry+ny, PT_BMTL);
-									if (RNG::Ref().uniform01() < prob_breakMETLMore)
+									if (sim->rng.uniform01() < prob_breakMETLMore)
 									{
 										sim->part_change_type(n, rx+nx, ry+ny, PT_BRMT);
 										parts[n].temp = restrict_flt(parts[n].temp+1000.0f, MIN_TEMP, MAX_TEMP);
@@ -155,19 +155,19 @@ void Element_EMP_Trigger(Simulation *sim, int triggerCount)
 								break;
 							case PT_BMTL:
 								temp_metal.apply(sim, parts[n]);
-								if (RNG::Ref().uniform01() < prob_breakBMTL)
+								if (sim->rng.uniform01() < prob_breakBMTL)
 								{
 									sim->part_change_type(n, rx+nx, ry+ny, PT_BRMT);
 									parts[n].temp = restrict_flt(parts[n].temp+1000.0f, MIN_TEMP, MAX_TEMP);
 								}
 								break;
 							case PT_WIFI:
-								if (RNG::Ref().uniform01() < prob_randWIFI)
+								if (sim->rng.uniform01() < prob_randWIFI)
 								{
 									// Randomize channel
-									parts[n].temp = float(RNG::Ref().between(0, int(MAX_TEMP)-1));
+									parts[n].temp = float(sim->rng.between(0, int(MAX_TEMP)-1));
 								}
-								if (RNG::Ref().uniform01() < prob_breakWIFI)
+								if (sim->rng.uniform01() < prob_breakWIFI)
 								{
 									sim->create_part(n, rx+nx, ry+ny, PT_BREC);
 									parts[n].temp = restrict_flt(parts[n].temp+1000.0f, MIN_TEMP, MAX_TEMP);
@@ -180,22 +180,22 @@ void Element_EMP_Trigger(Simulation *sim, int triggerCount)
 						switch (ntype)
 						{
 						case PT_SWCH:
-							if (RNG::Ref().uniform01() < prob_breakSWCH)
+							if (sim->rng.uniform01() < prob_breakSWCH)
 								sim->part_change_type(n, rx+nx, ry+ny, PT_BREC);
 							temp_SWCH.apply(sim, parts[n]);
 							break;
 						case PT_ARAY:
-							if (RNG::Ref().uniform01() < prob_breakARAY)
+							if (sim->rng.uniform01() < prob_breakARAY)
 							{
 								sim->create_part(n, rx+nx, ry+ny, PT_BREC);
 								parts[n].temp = restrict_flt(parts[n].temp+1000.0f, MIN_TEMP, MAX_TEMP);
 							}
 							break;
 						case PT_DLAY:
-							if (RNG::Ref().uniform01() < prob_randDLAY)
+							if (sim->rng.uniform01() < prob_randDLAY)
 							{
 								// Randomize delay
-								parts[n].temp = RNG::Ref().between(0, 255) + 273.15f;
+								parts[n].temp = sim->rng.between(0, 255) + 273.15f;
 							}
 							break;
 						default:

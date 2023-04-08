@@ -58,14 +58,14 @@ static int update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if ((TYP(r)==PT_METL || TYP(r)==PT_IRON) && RNG::Ref().chance(1, 100))
+					if ((TYP(r)==PT_METL || TYP(r)==PT_IRON) && sim->rng.chance(1, 100))
 					{
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_BMTL);
-						parts[ID(r)].tmp = (parts[i].tmp<=7) ? parts[i].tmp=1 : parts[i].tmp - RNG::Ref().between(0, 4);
+						parts[ID(r)].tmp = (parts[i].tmp<=7) ? parts[i].tmp=1 : parts[i].tmp - sim->rng.between(0, 4);
 					}
 				}
 	}
-	else if (parts[i].tmp==1 && RNG::Ref().chance(1, 1000))
+	else if (parts[i].tmp==1 && sim->rng.chance(1, 1000))
 	{
 		parts[i].tmp = 0;
 		sim->part_change_type(i,x,y,PT_BRMT);

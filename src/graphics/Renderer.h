@@ -5,6 +5,7 @@
 #include <vector>
 #include "Graphics.h"
 #include "gui/interface/Point.h"
+#include "common/tpt-rand.h"
 #include "SimulationConfig.h"
 
 class RenderPreset;
@@ -57,6 +58,8 @@ public:
 	{
 		return video.data();
 	}
+
+	RNG rng;
 
 	Simulation * sim;
 	gcache_item *graphicscache;

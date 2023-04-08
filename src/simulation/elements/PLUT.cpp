@@ -49,7 +49,7 @@ void Element::Element_PLUT()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	if (RNG::Ref().chance(1, 100) && RNG::Ref().chance(int(5.0f*sim->pv[y/CELL][x/CELL]), 1000))
+	if (sim->rng.chance(1, 100) && sim->rng.chance(int(5.0f*sim->pv[y/CELL][x/CELL]), 1000))
 	{
 		sim->create_part(i, x, y, PT_NEUT);
 	}

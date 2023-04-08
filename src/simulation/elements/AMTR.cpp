@@ -66,7 +66,7 @@ static int update(UPDATE_FUNC_ARGS)
 						sim->kill_part(i);
 						return 1;
 					}
-					if (RNG::Ref().chance(1, 10))
+					if (sim->rng.chance(1, 10))
 						sim->create_part(ID(r), x+rx, y+ry, PT_PHOT);
 					else
 						sim->kill_part(ID(r));

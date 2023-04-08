@@ -52,7 +52,7 @@ void Element::Element_VINE()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, np, rx, ry, rndstore = RNG::Ref().gen();
+	int r, np, rx, ry, rndstore = sim->rng.gen();
 	rx = (rndstore % 3) - 1;
 	rndstore >>= 2;
 	ry = (rndstore % 3) - 1;

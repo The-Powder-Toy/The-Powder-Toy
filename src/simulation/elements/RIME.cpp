@@ -59,7 +59,7 @@ static int update(UPDATE_FUNC_ARGS)
 				if (TYP(r)==PT_SPRK)
 				{
 					sim->part_change_type(i,x,y,PT_FOG);
-					parts[i].life = RNG::Ref().between(60, 119);
+					parts[i].life = sim->rng.between(60, 119);
 				}
 				else if (TYP(r)==PT_FOG&&parts[ID(r)].life>0)
 				{

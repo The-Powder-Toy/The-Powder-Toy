@@ -56,7 +56,7 @@ static int update(UPDATE_FUNC_ARGS)
 	if (parts[i].temp + 1 == 0)
 		parts[i].temp = 0;
 	int maxtmp = int(absorbScale/(parts[i].temp + 1))-1;
-	if (RNG::Ref().chance(absorbScale%(int(parts[i].temp)+1), int(parts[i].temp)+1))
+	if (sim->rng.chance(absorbScale%(int(parts[i].temp)+1), int(parts[i].temp)+1))
 		maxtmp ++;
 
 	if (parts[i].tmp < 0)
@@ -77,7 +77,7 @@ static int update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 					if (!r || (parts[i].tmp >=maxtmp))
 						continue;
-					if (TYP(r)==PT_MERC&& RNG::Ref().chance(1, 3))
+					if (TYP(r)==PT_MERC&& sim->rng.chance(1, 3))
 					{
 						if ((parts[i].tmp + parts[ID(r)].tmp + 1) <= maxtmp)
 						{
@@ -107,8 +107,8 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 	for ( trade = 0; trade<4; trade ++)
 	{
-		rx = RNG::Ref().between(-2, 2);
-		ry = RNG::Ref().between(-2, 2);
+		rx = sim->rng.between(-2, 2);
+		ry = sim->rng.between(-2, 2);
 		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];

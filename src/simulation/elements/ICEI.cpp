@@ -64,14 +64,14 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if (TYP(r)==PT_SALT || TYP(r)==PT_SLTW)
 				{
-					if (parts[i].temp > sim->elements[PT_SLTW].LowTemperature && RNG::Ref().chance(1, 200))
+					if (parts[i].temp > sim->elements[PT_SLTW].LowTemperature && sim->rng.chance(1, 200))
 					{
 						sim->part_change_type(i,x,y,PT_SLTW);
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_SLTW);
 						return 0;
 					}
 				}
-				else if ((TYP(r)==PT_FRZZ) && RNG::Ref().chance(1, 200))
+				else if ((TYP(r)==PT_FRZZ) && sim->rng.chance(1, 200))
 				{
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_ICEI);
 					parts[ID(r)].ctype = PT_FRZW;

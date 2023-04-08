@@ -61,7 +61,7 @@ static int update(UPDATE_FUNC_ARGS)
 				r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((TYP(r)==PT_SALT || TYP(r)==PT_SLTW) && RNG::Ref().chance(1, 333))
+				if ((TYP(r)==PT_SALT || TYP(r)==PT_SLTW) && sim->rng.chance(1, 333))
 				{
 					sim->part_change_type(i,x,y,PT_SLTW);
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_SLTW);

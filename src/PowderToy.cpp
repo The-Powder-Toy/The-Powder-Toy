@@ -164,7 +164,6 @@ struct ExplicitSingletons
 	http::RequestManagerPtr requestManager;
 	std::unique_ptr<Client> client;
 	std::unique_ptr<SaveRenderer> saveRenderer;
-	std::unique_ptr<RNG> rng;
 	std::unique_ptr<Favorite> favorite;
 	std::unique_ptr<ui::Engine> engine;
 	std::unique_ptr<GameController> gameController;
@@ -344,7 +343,6 @@ int main(int argc, char * argv[])
 	Client::Ref().Initialize();
 
 	explicitSingletons->saveRenderer = std::make_unique<SaveRenderer>();
-	explicitSingletons->rng = std::make_unique<RNG>();
 	explicitSingletons->favorite = std::make_unique<Favorite>();
 	explicitSingletons->engine = std::make_unique<ui::Engine>();
 

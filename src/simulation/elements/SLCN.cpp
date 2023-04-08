@@ -56,26 +56,26 @@ static const int SLCN_COLOUR[16] = {
 	PIXPACK(0x8594AD), PIXPACK(0x262F47), PIXPACK(0xA9AEBC), PIXPACK(0xC2E1F7),
 };
 
-static void initSparkles(Particle &part)
+static void initSparkles(Simulation *sim, Particle &part)
 {
 	// bits 31-20: phase increment (randomised to a value between 1 and 9)
 	// bits 19-16: next colour index
 	// bits 15-12: current colour index
 	// bits 11-00: phase
-	part.tmp = RNG::Ref().between(0x100000, 0x9FFFFF);
+	part.tmp = sim->rng.between(0x100000, 0x9FFFFF);
 }
 
 static int update(UPDATE_FUNC_ARGS)
 {
 	if (!parts[i].tmp)
 	{
-		initSparkles(parts[i]);
+		initSparkles(sim, parts[i]);
 	}
 	int phase = (parts[i].tmp & 0xFFF) + ((parts[i].tmp >> 20) & 0xFFF);
 	if (phase & 0x1000)
 	{
 		// discard current, current <- next, next <- random, wrap phase
-		parts[i].tmp = (parts[i].tmp & 0xFFF00000) | (phase & 0xFFF) | (RNG::Ref().between(0, 15) << 16) | ((parts[i].tmp >> 4) & 0xF000);
+		parts[i].tmp = (parts[i].tmp & 0xFFF00000) | (phase & 0xFFF) | (sim->rng.between(0, 15) << 16) | ((parts[i].tmp >> 4) & 0xF000);
 	}
 	else
 	{
@@ -137,5 +137,5 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
-	initSparkles(sim->parts[i]);
+	initSparkles(sim, sim->parts[i]);
 }

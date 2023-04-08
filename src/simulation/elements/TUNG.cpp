@@ -69,16 +69,16 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 				}
 	}
-	if((parts[i].temp > MELTING_POINT && RNG::Ref().chance(1, 20)) || splode)
+	if((parts[i].temp > MELTING_POINT && sim->rng.chance(1, 20)) || splode)
 	{
-		if (RNG::Ref().chance(1, 50))
+		if (sim->rng.chance(1, 50))
 		{
 			sim->pv[y/CELL][x/CELL] += 50.0f;
 		}
-		else if (RNG::Ref().chance(1, 100))
+		else if (sim->rng.chance(1, 100))
 		{
 			sim->part_change_type(i, x, y, PT_FIRE);
-			parts[i].life = RNG::Ref().between(0, 499);
+			parts[i].life = sim->rng.between(0, 499);
 			return 1;
 		}
 		else
@@ -89,10 +89,10 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 		if(splode)
 		{
-			parts[i].temp = restrict_flt(MELTING_POINT + RNG::Ref().between(200, 799), MIN_TEMP, MAX_TEMP);
+			parts[i].temp = restrict_flt(MELTING_POINT + sim->rng.between(200, 799), MIN_TEMP, MAX_TEMP);
 		}
-		parts[i].vx += RNG::Ref().between(-50, 50);
-		parts[i].vy += RNG::Ref().between(-50, 50);
+		parts[i].vx += sim->rng.between(-50, 50);
+		parts[i].vy += sim->rng.between(-50, 50);
 		return 1;
 	}
 	auto press = int(sim->pv[y/CELL][x/CELL] * 64);

@@ -39,7 +39,6 @@ int main(int argc, char *argv[])
 			throw e;
 	}
 
-	auto rng = std::make_unique<RNG>();
 	Simulation * sim = new Simulation();
 	Renderer * ren = new Renderer(sim);
 

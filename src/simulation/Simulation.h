@@ -8,6 +8,7 @@
 #include "MenuSection.h"
 #include "CoordStack.h"
 #include "gravity/GravityPtr.h"
+#include "common/tpt-rand.h"
 #include "Element.h"
 #include "SimulationConfig.h"
 #include <cstring>
@@ -38,6 +39,7 @@ public:
 
 	GravityPtr grav;
 	Air * air;
+	RNG rng;
 
 	std::vector<sign> signs;
 	std::array<Element, PT_NUM> elements;

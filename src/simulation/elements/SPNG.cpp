@@ -64,31 +64,31 @@ static int update(UPDATE_FUNC_ARGS)
 					case PT_WATR:
 					case PT_DSTW:
 					case PT_FRZW:
-						if (parts[i].life<limit && RNG::Ref().chance(500, absorbChanceDenom))
+						if (parts[i].life<limit && sim->rng.chance(500, absorbChanceDenom))
 						{
 							parts[i].life++;
 							sim->kill_part(ID(r));
 						}
 						break;
 					case PT_SLTW:
-						if (parts[i].life<limit && RNG::Ref().chance(50, absorbChanceDenom))
+						if (parts[i].life<limit && sim->rng.chance(50, absorbChanceDenom))
 						{
 							parts[i].life++;
-							if (RNG::Ref().chance(3, 4))
+							if (sim->rng.chance(3, 4))
 								sim->kill_part(ID(r));
 							else
 								sim->part_change_type(ID(r), x+rx, y+ry, PT_SALT);
 						}
 						break;
 					case PT_CBNW:
-						if (parts[i].life<limit && RNG::Ref().chance(100, absorbChanceDenom))
+						if (parts[i].life<limit && sim->rng.chance(100, absorbChanceDenom))
 						{
 							parts[i].life++;
 							sim->part_change_type(ID(r), x+rx, y+ry, PT_CO2);
 						}
 						break;
 					case PT_PSTE:
-						if (parts[i].life<limit && RNG::Ref().chance(20, absorbChanceDenom))
+						if (parts[i].life<limit && sim->rng.chance(20, absorbChanceDenom))
 						{
 							parts[i].life++;
 							sim->create_part(ID(r), x+rx, y+ry, PT_CLST);
@@ -113,8 +113,8 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 	for ( trade = 0; trade<9; trade ++)
 	{
-		rx = RNG::Ref().between(-2, 2);
-		ry = RNG::Ref().between(-2, 2);
+		rx = sim->rng.between(-2, 2);
+		ry = sim->rng.between(-2, 2);
 		if (BOUNDS_CHECK && (rx || ry))
 		{
 			r = pmap[y+ry][x+rx];

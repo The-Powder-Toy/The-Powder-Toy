@@ -222,7 +222,7 @@ void PreviewView::CheckComment()
 	{
 		if (!commentHelpText)
 		{
-			if (random_gen()%2)
+			if (interfaceRng()%2)
 				commentWarningLabel->SetText("Stolen? Report the save instead");
 			else
 				commentWarningLabel->SetText("Please report stolen saves");
@@ -238,7 +238,7 @@ void PreviewView::CheckComment()
 	{
 		if (!commentHelpText)
 		{
-			if (random_gen()%2)
+			if (interfaceRng()%2)
 				commentWarningLabel->SetText("Please do not swear");
 			else
 				commentWarningLabel->SetText("Bad language may be deleted");

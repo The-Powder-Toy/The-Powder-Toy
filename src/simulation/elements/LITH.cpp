@@ -85,7 +85,7 @@ static int update(UPDATE_FUNC_ARGS)
 				int neighborData = pmap[y + ry][x + rx];
 				if (!neighborData)
 				{
-					if (burnTimer > 1012 && RNG::Ref().chance(1, 10))
+					if (burnTimer > 1012 && sim->rng.chance(1, 10))
 					{
 						sim->create_part(-1, x + rx, y + ry, PT_FIRE);
 					}
@@ -163,7 +163,7 @@ static int update(UPDATE_FUNC_ARGS)
 					break;
 
 				case PT_FIRE:
-					if (self.temp > 440.f && RNG::Ref().chance(1, 40) && hydrogenationFactor < 6)
+					if (self.temp > 440.f && sim->rng.chance(1, 40) && hydrogenationFactor < 6)
 					{
 						burnTimer = 1013;
 						hydrogenationFactor += 1;
@@ -171,7 +171,7 @@ static int update(UPDATE_FUNC_ARGS)
 					break;
 
 				case PT_O2:
-					if (burnTimer > 1000 && RNG::Ref().chance(1, 10))
+					if (burnTimer > 1000 && sim->rng.chance(1, 10))
 					{
 						sim->part_change_type(i, x, y, PT_PLSM);
 						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_PLSM);
@@ -196,8 +196,8 @@ static int update(UPDATE_FUNC_ARGS)
 
 	for (int trade = 0; trade < 9; ++trade)
 	{
-		int rx = RNG::Ref().between(-3, 3);
-		int ry = RNG::Ref().between(-3, 3);
+		int rx = sim->rng.between(-3, 3);
+		int ry = sim->rng.between(-3, 3);
 		if (BOUNDS_CHECK && (rx || ry))
 		{
 			int neighborData = pmap[y + ry][x + rx];
@@ -257,7 +257,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	// Charged lith
 	else if (cpart->ctype > 0)
 	{
-		int mult = RNG::Ref().between(cpart->ctype / 3, cpart->ctype) / 15;
+		int mult = ren->rng.between(cpart->ctype / 3, cpart->ctype) / 15;
 		mult = std::min(6, mult);
 		*colr -= 30 * mult;
 		*colb += 20 * mult;

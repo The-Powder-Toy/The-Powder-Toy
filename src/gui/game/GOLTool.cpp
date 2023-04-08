@@ -111,13 +111,13 @@ GOLWindow::GOLWindow(GameModel &gameModel_, Simulation *sim_, int toolSelection,
 		auto &prefs = GlobalPrefs::Ref();
 		ruleField->SetText(prefs.Get("CustomGOL.Rule", String("B3/S23")));
 		nameField->SetText(prefs.Get("CustomGOL.Name", String("CGOL")));
-		highColour.Red = RNG::Ref().between(0x80, 0xFF);
-		highColour.Green = RNG::Ref().between(0x80, 0xFF);
-		highColour.Blue = RNG::Ref().between(0x80, 0xFF);
+		highColour.Red = interfaceRng.between(0x80, 0xFF);
+		highColour.Green = interfaceRng.between(0x80, 0xFF);
+		highColour.Blue = interfaceRng.between(0x80, 0xFF);
 		highColour.Alpha = 0xFF;
-		lowColour.Red = RNG::Ref().between(0x00, 0x7F);
-		lowColour.Green = RNG::Ref().between(0x00, 0x7F);
-		lowColour.Blue = RNG::Ref().between(0x00, 0x7F);
+		lowColour.Red = interfaceRng.between(0x00, 0x7F);
+		lowColour.Green = interfaceRng.between(0x00, 0x7F);
+		lowColour.Blue = interfaceRng.between(0x00, 0x7F);
 		lowColour.Alpha = 0xFF;
 	}
 	updateGradient();

@@ -91,11 +91,11 @@ static int update(UPDATE_FUNC_ARGS)
 				rt = TYP(r);
 				if ((surround_space || sim->elements[rt].Explosive) &&
 				    (rt!=PT_SPNG || parts[ID(r)].life==0) &&
-					sim->elements[rt].Flammable && RNG::Ref().chance(sim->elements[rt].Flammable + int(sim->pv[(y+ry)/CELL][(x+rx)/CELL] * 10.0f), 1000))
+					sim->elements[rt].Flammable && sim->rng.chance(sim->elements[rt].Flammable + int(sim->pv[(y+ry)/CELL][(x+rx)/CELL] * 10.0f), 1000))
 				{
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_FIRE);
 					parts[ID(r)].temp = restrict_flt(sim->elements[PT_FIRE].DefaultProperties.temp + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
-					parts[ID(r)].life = RNG::Ref().between(180, 259);
+					parts[ID(r)].life = sim->rng.between(180, 259);
 					parts[ID(r)].tmp = parts[ID(r)].ctype = 0;
 					if (sim->elements[rt].Explosive)
 						sim->pv[y/CELL][x/CELL] += 0.25f * CFDS;
@@ -115,12 +115,12 @@ static int update(UPDATE_FUNC_ARGS)
 				case PT_PLUT:
 					parts[ID(r)].temp = restrict_flt(parts[ID(r)].temp+powderful, MIN_TEMP, MAX_TEMP);
 					sim->pv[y/CELL][x/CELL] +=powderful/35;
-					if (RNG::Ref().chance(1, 3))
+					if (sim->rng.chance(1, 3))
 					{
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_NEUT);
-						parts[ID(r)].life = RNG::Ref().between(480, 959);
-						parts[ID(r)].vx = float(RNG::Ref().between(-5, 5));
-						parts[ID(r)].vy = float(RNG::Ref().between(-5, 5));
+						parts[ID(r)].life = sim->rng.between(480, 959);
+						parts[ID(r)].vx = float(sim->rng.between(-5, 5));
+						parts[ID(r)].vy = float(sim->rng.between(-5, 5));
 					}
 					break;
 				case PT_COAL:
@@ -167,14 +167,14 @@ static int update(UPDATE_FUNC_ARGS)
 		sim->kill_part(i);
 		return 1;
 	}
-	angle = float((parts[i].tmp + RNG::Ref().between(-30, 30)) % 360);
-	multipler = int(parts[i].life * 1.5) + RNG::Ref().between(0, parts[i].life);
+	angle = float((parts[i].tmp + sim->rng.between(-30, 30)) % 360);
+	multipler = int(parts[i].life * 1.5) + sim->rng.between(0, parts[i].life);
 	rx=int(cos(angle*TPT_PI_FLT/180)*multipler);
 	ry=int(-sin(angle*TPT_PI_FLT/180)*multipler);
 	create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, int(angle), parts[i].tmp2, i);
 	if (parts[i].tmp2 == 2)// && pNear == -1)
 	{
-		angle2 = float(((int)angle + RNG::Ref().between(-100, 100)) % 360);
+		angle2 = float(((int)angle + sim->rng.between(-100, 100)) % 360);
 		rx=int(cos(angle2*TPT_PI_FLT/180)*multipler);
 		ry=int(-sin(angle2*TPT_PI_FLT/180)*multipler);
 		create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, int(angle2), parts[i].tmp2, i);
@@ -193,12 +193,12 @@ static bool create_LIGH(Simulation * sim, int x, int y, int c, float temp, int l
 		sim->parts[p].tmp = tmp;
 		if (last)
 		{
-			int nextSegmentLife = (int)(life/1.5 - RNG::Ref().between(0, 1));
+			int nextSegmentLife = (int)(life/1.5 - sim->rng.between(0, 1));
 			sim->parts[p].life = nextSegmentLife;
 			if (nextSegmentLife > 1)
 			{
 				// Decide whether to branch or to bend
-				bool doBranch = RNG::Ref().chance(7, 10);
+				bool doBranch = sim->rng.chance(7, 10);
 				sim->parts[p].tmp2 = (doBranch ? 2 : 0) + (p > i && tmp2 != 4 ? 1 : 0);
 			}
 			// Not enough energy to continue
@@ -315,12 +315,12 @@ static void create(ELEMENT_CREATE_FUNC_ARGS)
 	gsize = gx * gx + gy * gy;
 	if (gsize < 0.0016f)
 	{
-		float angle = RNG::Ref().between(0, 6283) * 0.001f; //(in radians, between 0 and 2*pi)
+		float angle = sim->rng.between(0, 6283) * 0.001f; //(in radians, between 0 and 2*pi)
 		gsize = sqrtf(gsize);
 		// randomness in weak gravity fields (more randomness with weaker fields)
 		gx += cosf(angle) * (0.04f - gsize);
 		gy += sinf(angle) * (0.04f - gsize);
 	}
-	sim->parts[i].tmp = (static_cast<int>(atan2f(-gy, gx) * (180.0f / TPT_PI_FLT)) + RNG::Ref().between(-20, 20) + 360) % 360;
+	sim->parts[i].tmp = (static_cast<int>(atan2f(-gy, gx) * (180.0f / TPT_PI_FLT)) + sim->rng.between(-20, 20) + 360) % 360;
 	sim->parts[i].tmp2 = 4;
 }
