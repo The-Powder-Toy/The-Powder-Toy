@@ -17,7 +17,6 @@ Engine::Engine():
 	FrameIndex(0),
 	altFullscreen(false),
 	resizable(false),
-	lastBuffer(NULL),
 	state_(NULL),
 	windowTargetPosition(0, 0),
 	break_(false),
@@ -27,9 +26,7 @@ Engine::Engine():
 	mousex_(0),
 	mousey_(0),
 	mousexp_(0),
-	mouseyp_(0),
-	maxWidth(0),
-	maxHeight(0)
+	mouseyp_(0)
 {
 	SetFps(FpsLimit); // populate dt with whatever that makes any sort of sense
 }
@@ -38,21 +35,17 @@ Engine::~Engine()
 {
 	delete state_;
 	//Dispose of any Windows.
-	while(!windows.empty())
+	while (!windows.empty())
 	{
 		delete windows.top();
 		windows.pop();
 	}
-	free(lastBuffer);
 }
 
-void Engine::Begin(int width, int height)
+void Engine::Begin()
 {
 	//engine is now ready
 	running_ = true;
-
-	width_ = width;
-	height_ = height;
 }
 
 void Engine::Break()
@@ -80,16 +73,15 @@ void Engine::ConfirmExit()
 
 void Engine::ShowWindow(Window * window)
 {
-	windowOpenState = 0;
 	if (state_)
 		ignoreEvents = true;
 	if(window->Position.X==-1)
 	{
-		window->Position.X = (width_-window->Size.X)/2;
+		window->Position.X = (g->Size().X - window->Size.X) / 2;
 	}
 	if(window->Position.Y==-1)
 	{
-		window->Position.Y = (height_-window->Size.Y)/2;
+		window->Position.Y = (g->Size().Y - window->Size.Y) / 2;
 	}
 	/*if(window->Position.Y > 0)
 	{
@@ -98,13 +90,8 @@ void Engine::ShowWindow(Window * window)
 	}*/
 	if(state_)
 	{
-		if(lastBuffer)
-		{
-			prevBuffers.push(lastBuffer);
-		}
-		lastBuffer = (pixel*)malloc((width_ * height_) * PIXELSIZE);
-
-		memcpy(lastBuffer, g->vid, (width_ * height_) * PIXELSIZE);
+		frozenGraphics.emplace(FrozenGraphics{0, std::make_unique<pixel []>(g->Size().X * g->Size().Y)});
+		std::copy_n(g->Data(), g->Size().X * g->Size().Y, frozenGraphics.top().screen.get());
 
 		windows.push(state_);
 		mousePositions.push(ui::Point(mousex_, mousey_));
@@ -120,16 +107,7 @@ int Engine::CloseWindow()
 {
 	if(!windows.empty())
 	{
-		if (lastBuffer)
-		{
-			free(lastBuffer);
-			lastBuffer = NULL;
-		}
-		if(!prevBuffers.empty())
-		{
-			lastBuffer = prevBuffers.top();
-			prevBuffers.pop();
-		}
+		frozenGraphics.pop();
 		state_ = windows.top();
 		windows.pop();
 
@@ -168,17 +146,6 @@ int Engine::CloseWindow()
 	}
 }*/
 
-void Engine::SetSize(int width, int height)
-{
-	width_ = width;
-	height_ = height;
-}
-
-void Engine::SetMaxSize(int width, int height)
-{
-	maxWidth = width;
-	maxHeight = height;
-}
 
 void Engine::Tick()
 {
@@ -207,13 +174,21 @@ void Engine::Tick()
 
 void Engine::Draw()
 {
-	if(lastBuffer && !(state_ && state_->Position.X == 0 && state_->Position.Y == 0 && state_->Size.X == width_ && state_->Size.Y == height_))
+	if (!frozenGraphics.empty() && !(state_ && RectSized(state_->Position, state_->Size) == g->Size().OriginRect()))
 	{
-		g->Clear();
-		memcpy(g->vid, lastBuffer, (width_ * height_) * PIXELSIZE);
-		if(windowOpenState < 20)
-			windowOpenState++;
-		g->fillrect(0, 0, width_, height_, 0, 0, 0, int(255-std::pow(.98, windowOpenState)*255));
+		auto &frozen = frozenGraphics.top();
+		std::copy_n(frozen.screen.get(), g->Size().X * g->Size().Y, g->Data());
+		if (frozen.fadeTicks <= maxFadeTicks)
+		{
+			// from 0x00 at 0 to about 0x54 at 20
+			uint8_t alpha = (1 - std::pow(0.98, frozen.fadeTicks)) * 0xFF;
+			g->BlendFilledRect(g->Size().OriginRect(), 0x000000_rgb .WithAlpha(alpha));
+		}
+		// If this is the last frame in the fade, save what the faded image looks like
+		if (frozen.fadeTicks == maxFadeTicks)
+			std::copy_n(g->Data(), g->Size().X * g->Size().Y, frozen.screen.get());
+		if (frozen.fadeTicks <= maxFadeTicks)
+			frozen.fadeTicks++;
 	}
 	else
 	{
@@ -320,11 +295,6 @@ void Engine::onMouseWheel(int x, int y, int delta)
 {
 	if (state_ && !ignoreEvents)
 		state_->DoMouseWheel(x, y, delta);
-}
-
-void Engine::onResize(int newWidth, int newHeight)
-{
-	SetSize(newWidth, newHeight);
 }
 
 void Engine::onClose()

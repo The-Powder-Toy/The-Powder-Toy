@@ -179,85 +179,53 @@ void Window::DoFileDrop(ByteString filename)
 void Window::DoDraw()
 {
 	OnDraw();
-	for (int i = 0, sz = Components.size(); i < sz; ++i)
-		if (Components[i]->Visible && ((Components[i] != focusedComponent_ && Components[i] != hoverComponent) || Components[i]->GetParent()))
+	auto drawChild = [this](Component *child) {
+		if (child->Visible)
 		{
-			Point scrpos(Components[i]->Position.X + Position.X, Components[i]->Position.Y + Position.Y);
-			if (AllowExclusiveDrawing)
-			{
-				Components[i]->Draw(scrpos);
-			}
-			else
-			{
-				if (scrpos.X + Components[i]->Size.X >= 0 &&
-				    scrpos.Y + Components[i]->Size.Y >= 0 &&
-				    scrpos.X < ui::Engine::Ref().GetWidth() &&
-				    scrpos.Y < ui::Engine::Ref().GetHeight())
-				{
-					Components[i]->Draw(scrpos);
-				}
-			}
+			auto rect = RectSized(Position + child->Position, child->Size);
+			if (AllowExclusiveDrawing || bool(rect & GetGraphics()->Size().OriginRect()))
+				child->Draw(rect.TopLeft);
+		}
+	};
+	for (auto child : Components)
+		if ((child != focusedComponent_ && child != hoverComponent) || child->GetParent())
+		{
+			drawChild(child);
+
 			if (debugMode)
-			{
-				if (focusedComponent_==Components[i])
-				{
-					ui::Engine::Ref().g->fillrect(Components[i]->Position.X+Position.X, Components[i]->Position.Y+Position.Y, Components[i]->Size.X, Components[i]->Size.Y, 0, 255, 0, 90);
-				}
-				else
-				{
-					ui::Engine::Ref().g->fillrect(Components[i]->Position.X+Position.X, Components[i]->Position.Y+Position.Y, Components[i]->Size.X, Components[i]->Size.Y, 255, 0, 0, 90);
-				}
-			}
+				GetGraphics()->BlendFilledRect(RectSized(Position + child->Position, child->Size),
+					(focusedComponent_ == child ? 0x00FF00_rgb : 0xFF0000_rgb).WithAlpha(0x5A));
 		}
 	// the component the mouse is hovering over and the focused component are always drawn last
-	if (hoverComponent && hoverComponent->Visible && hoverComponent->GetParent() == NULL)
+	if (hoverComponent && hoverComponent->GetParent() == NULL)
+		drawChild(hoverComponent);
+	if (focusedComponent_ && focusedComponent_ != hoverComponent && focusedComponent_->GetParent() == NULL)
+		drawChild(focusedComponent_);
+	if (debugMode && focusedComponent_)
 	{
-		Point scrpos(hoverComponent->Position.X + Position.X, hoverComponent->Position.Y + Position.Y);
-		if ((scrpos.X + hoverComponent->Size.X >= 0 &&
-		     scrpos.Y + hoverComponent->Size.Y >= 0 &&
-		     scrpos.X < ui::Engine::Ref().GetWidth() &&
-		     scrpos.Y < ui::Engine::Ref().GetHeight()
-		    ) || AllowExclusiveDrawing)
-		{
-			hoverComponent->Draw(scrpos);
-		}
+		Graphics *g = ui::Engine::Ref().g;
+
+		auto invPos = Size - (focusedComponent_->Position + focusedComponent_->Size);
+		String posText = String::Build(
+			"Position: L ", focusedComponent_->Position.X,
+			", R ", invPos.X,
+			", T: ", focusedComponent_->Position.Y,
+			", B: ", invPos.Y
+		);
+		String sizeText = String::Build(
+			"Size: ", focusedComponent_->Size.X,
+			", ", focusedComponent_->Size.Y
+		);
+
+		auto pos = focusedComponent_->Position + Position + Vec2(focusedComponent_->Size.X + 5, 0);
+		pos.X = std::min(pos.X, g->Size().X - Graphics::textwidth(posText) - 5);
+		pos.X = std::min(pos.X, g->Size().X - Graphics::textwidth(sizeText) - 5);
+
+		g->BlendText(pos + Vec2(0, 1), posText, 0x000000_rgb .WithAlpha(0xC8));
+		g->BlendText(pos + Vec2(0, 0), posText, 0xFFFFFF_rgb .WithAlpha(0xFF));
+		g->BlendText(pos + Vec2(0, 13), sizeText, 0x000000_rgb .WithAlpha(0xC8));
+		g->BlendText(pos + Vec2(0, 12), sizeText, 0xFFFFFF_rgb .WithAlpha(0xFF));
 	}
-	if (focusedComponent_ && focusedComponent_ != hoverComponent && focusedComponent_->Visible && focusedComponent_->GetParent() == NULL)
-	{
-		Point scrpos(focusedComponent_->Position.X + Position.X, focusedComponent_->Position.Y + Position.Y);
-		if ((scrpos.X + focusedComponent_->Size.X >= 0 &&
-		     scrpos.Y + focusedComponent_->Size.Y >= 0 &&
-		     scrpos.X < ui::Engine::Ref().GetWidth() &&
-		     scrpos.Y < ui::Engine::Ref().GetHeight()
-		    ) || AllowExclusiveDrawing)
-		{
-			focusedComponent_->Draw(scrpos);
-		}
-	}
-	if (debugMode)
-	{
-		if (focusedComponent_)
-		{
-			int xPos = focusedComponent_->Position.X+focusedComponent_->Size.X+5+Position.X;
-			Graphics * g = ui::Engine::Ref().g;
-			String tempString, tempString2;
-
-			tempString = String::Build("Position: L ", focusedComponent_->Position.X, ", R ", Size.X-(focusedComponent_->Position.X+focusedComponent_->Size.X), ", T: ", focusedComponent_->Position.Y, ", B: ", Size.Y-(focusedComponent_->Position.Y+focusedComponent_->Size.Y));
-			tempString2 = String::Build("Size: ", focusedComponent_->Size.X, ", ", focusedComponent_->Size.Y);
-
-			if (Graphics::textwidth(tempString)+xPos > WINDOWW)
-				xPos = WINDOWW-(Graphics::textwidth(tempString)+5);
-			if (Graphics::textwidth(tempString2)+xPos > WINDOWW)
-				xPos = WINDOWW-(Graphics::textwidth(tempString2)+5);
-
-			g->drawtext(xPos, focusedComponent_->Position.Y+Position.Y+1, tempString, 0, 0, 0, 200);
-			g->drawtext(xPos, focusedComponent_->Position.Y+Position.Y, tempString, 255, 255, 255, 255);
-			g->drawtext(xPos, focusedComponent_->Position.Y+Position.Y+13, tempString2, 0, 0, 0, 200);
-			g->drawtext(xPos, focusedComponent_->Position.Y+Position.Y+12, tempString2, 255, 255, 255, 255);
-		}
-		return;
-	}
-
 }
 
 void Window::DoTick(float dt)

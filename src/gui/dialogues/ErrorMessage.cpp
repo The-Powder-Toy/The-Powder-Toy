@@ -27,7 +27,7 @@ ErrorMessage::ErrorMessage(String title, String message, DismissCallback callbac
 	AddComponent(messageLabel);
 
 	Size.Y += messageLabel->Size.Y+12;
-	Position.Y = (ui::Engine::Ref().GetHeight()-Size.Y)/2;
+	Position.Y = (GetGraphics()->Size().Y - Size.Y)/2;
 
 	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "Dismiss");
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;

@@ -67,31 +67,21 @@ void Panel::Draw(const Point& screenPos)
 	// draw ourself first
 	XDraw(screenPos);
 
-	int x = screenPos.X;
-	int y = screenPos.Y;
-	int w = Size.X;
-	int h = Size.Y;
-	ui::Engine::Ref().g->SetClipRect(x, y, w, h); // old cliprect is now in x, y, w, h
+	auto clip = RectSized(screenPos, Size);
+	GetGraphics()->SwapClipRect(clip);
 
 	// attempt to draw all children
-	for (size_t i = 0; i < children.size(); ++i)
-	{
+	for (auto const child : children)
 		// the component must be visible
-		if (children[i]->Visible)
+		if (child->Visible)
 		{
+			auto rect = RectSized(child->Position + ViewportPosition, child->Size);
 			//check if the component is in the screen, draw if it is
-			if (children[i]->Position.X + ViewportPosition.X + children[i]->Size.X >= 0 &&
-				children[i]->Position.Y + ViewportPosition.Y + children[i]->Size.Y >= 0 &&
-				children[i]->Position.X + ViewportPosition.X < ui::Engine::Ref().GetWidth() &&
-				children[i]->Position.Y + ViewportPosition.Y < ui::Engine::Ref().GetHeight() )
-			{
-				Point scrpos = screenPos + children[i]->Position + ViewportPosition;
-				children[i]->Draw(scrpos);
-			}
+			if (rect & Size.OriginRect())
+				child->Draw(screenPos + rect.TopLeft);
 		}
-	}
 
-	ui::Engine::Ref().g->SetClipRect(x, y, w, h); // apply old cliprect
+	GetGraphics()->SwapClipRect(clip); // apply old cliprect
 }
 
 void Panel::Tick(float dt)

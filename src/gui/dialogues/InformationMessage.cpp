@@ -46,7 +46,7 @@ InformationMessage::InformationMessage(String title, String message, bool large)
 		if (messageLabel->Size.Y < messagePanel->Size.Y)
 			messagePanel->Size.Y = messageLabel->Size.Y+4;
 		Size.Y += messagePanel->Size.Y+12;
-		Position.Y = (ui::Engine::Ref().GetHeight()-Size.Y)/2;
+		Position.Y = (GetGraphics()->Size().Y - Size.Y) / 2;
 	}
 
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), title);

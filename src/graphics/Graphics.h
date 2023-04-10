@@ -67,7 +67,17 @@ class Graphics: public RasterDrawMethods<Graphics>
 	friend struct RasterDrawMethods<Graphics>;
 
 public:
+	Vec2<int> Size() const
+	{
+		return video.Size();
+	}
+
 	pixel const *Data() const
+	{
+		return video.data();
+	}
+
+	pixel *Data()
 	{
 		return video.data();
 	}

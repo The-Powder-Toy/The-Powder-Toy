@@ -345,7 +345,17 @@ private:
 	};
 
 public:
-	constexpr operator bool() const
+	constexpr bool operator==(Rect other) const
+	{
+		return TopLeft == other.TopLeft && BottomRight == other.BottomRight;
+	}
+
+	constexpr bool operator!=(Rect other) const
+	{
+		return TopLeft != other.TopLeft || BottomRight != other.BottomRight;
+	}
+
+	constexpr explicit operator bool() const
 	{
 		return BottomRight.X >= TopLeft.X || BottomRight.Y >= TopLeft.Y;
 	}

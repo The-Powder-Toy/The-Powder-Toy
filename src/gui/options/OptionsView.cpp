@@ -17,6 +17,7 @@
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/DirectionSelector.h"
+#include "PowderToySDL.h"
 #include <cstdio>
 #include <cstring>
 #include <cmath>
@@ -264,7 +265,7 @@ OptionsView::OptionsView():
 			scale->AddOption(std::pair<String, int>(String::Build(ix_scale), ix_scale));
 			ix_scale += 1;
 		}
-		while (ui::Engine::Ref().GetMaxWidth() >= ui::Engine::Ref().GetWidth() * ix_scale && ui::Engine::Ref().GetMaxHeight() >= ui::Engine::Ref().GetHeight() * ix_scale);
+		while (desktopWidth >= GetGraphics()->Size().X * ix_scale && desktopHeight >= GetGraphics()->Size().Y * ix_scale);
 		if (!current_scale_valid)
 			scale->AddOption(std::pair<String, int>("current", current_scale));
 	}
