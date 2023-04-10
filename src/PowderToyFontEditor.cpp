@@ -76,8 +76,7 @@ int main(int argc, char * argv[])
 	ui::Engine::Ref().SetForceIntegerScaling(forceIntegerScaling);
 
 	auto &engine = ui::Engine::Ref();
-	engine.SetMaxSize(desktopWidth, desktopHeight);
-	engine.Begin(WINDOWW, WINDOWH);
+	engine.Begin();
 	engine.SetFastQuit(true);
 
 	if (argc >= 2)
