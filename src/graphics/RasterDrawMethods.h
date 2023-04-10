@@ -50,6 +50,14 @@ struct RasterDrawMethods
 
 	Vec2<int> BlendTextOutline(Vec2<int>, String const &, RGBA<uint8_t>);
 
+	static int CharWidth(String::value_type);
+	// Considers the first line to be FONT_H-2 tall with successive lines adding
+	// FONT_H each
+	static Vec2<int> TextSize(String const &);
+	// Return iterator to the end of an initial portion of text that fits in
+	// the given width
+	static String::const_iterator TextFit(String const &, int width);
+
 	void Clear();
 
 	[[deprecated("Use BlendTextOutline")]]

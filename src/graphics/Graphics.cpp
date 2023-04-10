@@ -169,97 +169,19 @@ Graphics::Graphics()
 
 int Graphics::textwidth(const String &str)
 {
-	int x = 0;
-	for (size_t i = 0; i < str.length(); i++)
-	{
-		if (str[i] == '\b')
-		{
-			if (str.length() <= i+1)
-				break;
-			i++;
-			continue;
-		}
-		else if (str[i] == '\x0F')
-		{
-			if (str.length() <= i+3)
-				break;
-			i += 3;
-			continue;
-		}
-		x += FontReader(str[i]).GetWidth();
-	}
-	return x-1;
-}
-
-int Graphics::CharWidth(String::value_type c)
-{
-	return FontReader(c).GetWidth();
+	return TextSize(str).X;
 }
 
 int Graphics::textwidthx(const String &str, int w)
 {
-	int x = 0,n = 0,cw = 0;
-	for (size_t i = 0; i < str.length(); i++)
-	{
-		if (str[i] == '\b')
-		{
-			if (str.length() <= i+1)
-				break;
-			i++;
-			continue;
-		} else if (str[i] == '\x0F') {
-			if (str.length() <= i+3)
-				break;
-			i += 3;
-			continue;
-		}
-		cw = FontReader(str[i]).GetWidth();
-		if (x+(cw/2) >= w)
-			break;
-		x += cw;
-		n++;
-	}
-	return n;
+	return TextFit(str, w) - str.begin();
 }
 
 void Graphics::textsize(const String &str, int & width, int & height)
 {
-	if(!str.size())
-	{
-		width = 0;
-		height = FONT_H-2;
-		return;
-	}
-
-	int cHeight = FONT_H-2, cWidth = 0, lWidth = 0;
-	for (size_t i = 0; i < str.length(); i++)
-	{
-		if (str[i] == '\n')
-		{
-			cWidth = 0;
-			cHeight += FONT_H;
-		}
-		else if (str[i] == '\x0F')
-		{
-			if (str.length() <= i+3)
-				break;
-			i += 3;
-		}
-		else if (str[i] == '\b')
-		{
-			if (str.length() <= i+1)
-				break;
-			i++;
-		}
-		else
-		{
-			cWidth += FontReader(str[i]).GetWidth();
-			if(cWidth>lWidth)
-				lWidth = cWidth;
-		}
-	}
-	width = lWidth;
-	height = cHeight;
+	auto size = TextSize(str);
+	width = size.X;
+	height = size.Y;
 }
 
 void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool invert)

@@ -95,9 +95,11 @@ public:
 	static std::vector<pixel> Gradient(std::vector<GradientStop> stops, int resolution);
 
 	//Font/text metrics
-	static int CharWidth(String::value_type c);
+	[[deprecated("Use TextFit()")]]
 	static int textwidthx(const String &s, int w);
+	[[deprecated("Use TextSize().X")]]
 	static int textwidth(const String &s);
+	[[deprecated("Use TextSize()")]]
 	static void textsize(const String &s, int & width, int & height);
 
 	VideoBuffer DumpFrame();

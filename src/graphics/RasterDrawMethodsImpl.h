@@ -325,6 +325,83 @@ void RasterDrawMethods<Derived>::Clear()
 }
 
 template<typename Derived>
+int RasterDrawMethods<Derived>::CharWidth(String::value_type ch)
+{
+	return FontReader(ch).GetWidth();
+}
+
+template<typename Derived>
+Vec2<int> RasterDrawMethods<Derived>::TextSize(String const &str)
+{
+	Vec2<int> size = Vec2(0, FONT_H - 2);
+	int curX = -1; // characters have 1px of spacing between them
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		if (str[i] == '\n')
+		{
+			size.X = std::max(curX, size.X);
+			size.Y += FONT_H;
+			curX = 0;
+		}
+		else if (str[i] == '\x0F')
+		{
+			if (str.length() <= i + 3)
+				break;
+			i += 3;
+		}
+		else if (str[i] == '\x0E')
+			continue;
+		else if (str[i] == '\x01')
+			continue;
+		else if (str[i] == '\b')
+		{
+			if (str.length() <= i + 1)
+				break;
+			i++;
+		}
+		else
+			curX += CharWidth(str[i]);
+	}
+	size.X = std::max(curX, size.X);
+	return size;
+}
+
+template<typename Derived>
+String::const_iterator RasterDrawMethods<Derived>::TextFit(String const &str, int width)
+{
+	int curX = 0;
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		if (str[i] == '\n')
+			curX = 0;
+		else if (str[i] == '\x0F')
+		{
+			if (str.length() <= i + 3)
+				break;
+			i += 3;
+		}
+		else if (str[i] == '\x0E')
+			continue;
+		else if (str[i] == '\x01')
+			continue;
+		else if (str[i] == '\b')
+		{
+			if (str.length() <= i + 1)
+				break;
+			i++;
+		}
+		else
+		{
+			int dx = CharWidth(str[i]);
+			if (curX + dx / 2 >= width)
+				return str.begin() + i;
+			curX += dx;
+		}
+	}
+	return str.end();
+}
+
+template<typename Derived>
 int RasterDrawMethods<Derived>::drawtext_outline(int x, int y, const String &s, int r, int g, int b, int a)
 {
 	return x + BlendTextOutline(Vec2(x, y), s, RGBA<uint8_t>(r, g, b, a)).X;

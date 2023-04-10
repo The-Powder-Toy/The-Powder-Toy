@@ -101,16 +101,14 @@ void BlueScreen(String detailMessage)
 	String errorTitle = "ERROR";
 	String errorDetails = "Details: " + detailMessage;
 	String errorHelp = String("An unrecoverable fault has occurred, please report the error by visiting the website below\n") + SCHEME + SERVER;
-	int currentY = 0, width, height;
-	int errorWidth = 0;
-	Graphics::textsize(errorTitle, errorWidth, height);
-	engine.g->BlendText(engine.g->Size() / 2 - Vec2(errorWidth / 2, 100 - currentY), errorTitle, 0xFFFFFF_rgb .WithAlpha(0xFF));
-	currentY += height + 4;
-	Graphics::textsize(errorDetails, width, height);
-	engine.g->BlendText(engine.g->Size() / 2 - Vec2(errorWidth / 2, 100 - currentY), errorDetails, 0xFFFFFF_rgb .WithAlpha(0xFF));
-	currentY += height + 4;
-	Graphics::textsize(errorHelp, width, height);
-	engine.g->BlendText(engine.g->Size() / 2 - Vec2(errorWidth / 2, 100 - currentY), errorHelp, 0xFFFFFF_rgb .WithAlpha(0xFF));
+
+	// We use the width of errorHelp to center, but heights of the individual texts for vertical spacing
+	auto pos = engine.g->Size() / 2 - Vec2(Graphics::TextSize(errorHelp).X / 2, 100);
+	engine.g->BlendText(pos, errorTitle, 0xFFFFFF_rgb .WithAlpha(0xFF));
+	pos.Y += 4 + Graphics::TextSize(errorTitle).Y;
+	engine.g->BlendText(pos, errorDetails, 0xFFFFFF_rgb .WithAlpha(0xFF));
+	pos.Y += 4 + Graphics::TextSize(errorDetails).Y;
+	engine.g->BlendText(pos, errorHelp, 0xFFFFFF_rgb .WithAlpha(0xFF));
 
 	//Death loop
 	SDL_Event event;
