@@ -64,6 +64,8 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 	}
 
 	RecalcFreeParticles(false);
+	frameCount = save->frameCount;
+	rng.state(save->rngState);
 
 	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
 	auto &properties = Particle::GetProperties();
@@ -325,12 +327,20 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 				}
 				if (save->hasAmbientHeat)
 					hv[saveBlockY+blockY][saveBlockX+blockX] = save->ambientHeat[saveBlockY][saveBlockX];
+				if (save->hasBlockAirMaps)
+				{
+					air->bmap_blockair[saveBlockY+blockY][saveBlockX+blockX] = save->blockAir[saveBlockY][saveBlockX];
+					air->bmap_blockairh[saveBlockY+blockY][saveBlockX+blockX] = save->blockAirh[saveBlockY][saveBlockX];
+				}
 			}
 		}
 	}
 
 	gravWallChanged = true;
-	air->RecalculateBlockAirMaps();
+	if (!save->hasBlockAirMaps)
+	{
+		air->ApproximateBlockAirMaps();
+	}
 
 	return 0;
 }
@@ -371,6 +381,8 @@ GameSave * Simulation::Save(bool includePressure, int fullX, int fullY, int full
 	GameSave * newSave = new GameSave(blockW, blockH);
 	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
 	auto &properties = Particle::GetProperties();
+	newSave->frameCount = frameCount;
+	newSave->rngState = rng.state();
 
 	int storedParts = 0;
 	int elementCount[PT_NUM];
@@ -473,6 +485,8 @@ GameSave * Simulation::Save(bool includePressure, int fullX, int fullY, int full
 				newSave->velocityX[saveBlockY][saveBlockX] = vx[saveBlockY+blockY][saveBlockX+blockX];
 				newSave->velocityY[saveBlockY][saveBlockX] = vy[saveBlockY+blockY][saveBlockX+blockX];
 				newSave->ambientHeat[saveBlockY][saveBlockX] = hv[saveBlockY+blockY][saveBlockX+blockX];
+				newSave->blockAir[saveBlockY][saveBlockX] = air->bmap_blockair[saveBlockY+blockY][saveBlockX+blockX];
+				newSave->blockAirh[saveBlockY][saveBlockX] = air->bmap_blockairh[saveBlockY+blockY][saveBlockX+blockX];
 			}
 		}
 	}
@@ -480,6 +494,10 @@ GameSave * Simulation::Save(bool includePressure, int fullX, int fullY, int full
 	{
 		newSave->hasPressure = true;
 		newSave->hasAmbientHeat = true;
+	}
+	if (true) // TODO: tie to an option maybe?
+	{
+		newSave->ensureDeterminism = true;
 	}
 
 	newSave->stkm.rocketBoots1 = player.rocketBoots;
@@ -1074,6 +1092,7 @@ int Simulation::parts_avg(int ci, int ni,int t)
 
 void Simulation::clear_sim(void)
 {
+	frameCount = 0;
 	debug_nextToUpdate = 0;
 	debug_mostRecentlyUpdated = -1;
 	emp_decor = 0;
@@ -2124,9 +2143,10 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	if((elements[t].Properties & TYPE_PART) && pretty_powder)
 	{
 		int colr, colg, colb;
-		colr = PIXR(elements[t].Colour) + int(sandcolour * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
-		colg = PIXG(elements[t].Colour) + int(sandcolour * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
-		colb = PIXB(elements[t].Colour) + int(sandcolour * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
+		auto sandcolourToUse = p == -2 ? sandcolour_interface : sandcolour;
+		colr = PIXR(elements[t].Colour) + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
+		colg = PIXG(elements[t].Colour) + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
+		colb = PIXB(elements[t].Colour) + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
 		colr = colr>255 ? 255 : (colr<0 ? 0 : colr);
 		colg = colg>255 ? 255 : (colg<0 ? 0 : colg);
 		colb = colb>255 ? 255 : (colb<0 ? 0 : colb);
@@ -3818,8 +3838,9 @@ void Simulation::BeforeSim()
 		if (elementRecount)
 			std::fill(elementCount, elementCount+PT_NUM, 0);
 	}
-	sandcolour = (int)(20.0f*sin((float)sandcolour_frame*(TPT_PI_FLT/180.0f)));
+	sandcolour_interface = (int)(20.0f*sin((float)sandcolour_frame*(TPT_PI_FLT/180.0f)));
 	sandcolour_frame = (sandcolour_frame+1)%360;
+	sandcolour = (int)(20.0f*sin((float)(frameCount)*(TPT_PI_FLT/180.0f)));
 
 	if (gravWallChanged)
 	{
@@ -3990,6 +4011,8 @@ void Simulation::AfterSim()
 		Element_EMP_Trigger(this, emp_trigger_count);
 		emp_trigger_count = 0;
 	}
+
+	frameCount += 1;
 }
 
 Simulation::~Simulation()

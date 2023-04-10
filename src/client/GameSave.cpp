@@ -20,15 +20,18 @@ static void ConvertBsonToJson(bson_iterator *b, Json::Value *j, int depth = 0);
 static void CheckBsonFieldUser(bson_iterator iter, const char *field, unsigned char **data, unsigned int *fieldLen);
 static void CheckBsonFieldBool(bson_iterator iter, const char *field, bool *flag);
 static void CheckBsonFieldInt(bson_iterator iter, const char *field, int *setting);
+static void CheckBsonFieldLong(bson_iterator iter, const char *field, int64_t *setting);
 static void CheckBsonFieldFloat(bson_iterator iter, const char *field, float *setting);
 
 GameSave::GameSave(int width, int height)
 {
+	rngState = RNG().state(); // initialize it with something sane
 	setSize(width, height);
 }
 
 GameSave::GameSave(const std::vector<char> &data, bool newWantAuthors)
 {
+	rngState = RNG().state(); // initialize it with something sane
 	wantAuthors = newWantAuthors;
 	blockWidth = 0;
 	blockHeight = 0;
@@ -92,6 +95,8 @@ void GameSave::setSize(int newWidth, int newHeight)
 	velocityX = Plane<float>(blockWidth, blockHeight, 0.0f);
 	velocityY = Plane<float>(blockWidth, blockHeight, 0.0f);
 	ambientHeat = Plane<float>(blockWidth, blockHeight, 0.0f);
+	blockAir = Plane<unsigned char>(blockWidth, blockHeight, 0);
+	blockAirh = Plane<unsigned char>(blockWidth, blockHeight, 0);
 }
 
 std::pair<bool, std::vector<char>> GameSave::Serialise() const
@@ -226,6 +231,8 @@ void GameSave::Transform(matrix2d transform, vector2d translate, vector2d transl
 	Plane<float> velocityXNew(newBlockWidth, newBlockHeight, 0.0f);
 	Plane<float> velocityYNew(newBlockWidth, newBlockHeight, 0.0f);
 	Plane<float> ambientHeatNew(newBlockWidth, newBlockHeight, 0.0f);
+	Plane<unsigned char> blockAirNew(newBlockWidth, newBlockHeight, 0);
+	Plane<unsigned char> blockAirhNew(newBlockWidth, newBlockHeight, 0);
 
 	// Match these up with the matrices provided in GameView::OnKeyPress.
 	bool patchPipeR = transform.a ==  0 && transform.b ==  1 && transform.c == -1 && transform.d ==  0;
@@ -324,6 +331,8 @@ void GameSave::Transform(matrix2d transform, vector2d translate, vector2d transl
 			velocityXNew[ny][nx] = velocityX[y][x];
 			velocityYNew[ny][nx] = velocityY[y][x];
 			ambientHeatNew[ny][nx] = ambientHeat[y][x];
+			blockAirNew[ny][nx] = blockAir[y][x];
+			blockAirhNew[ny][nx] = blockAirh[y][x];
 		}
 	translated = v2d_add(m2d_multiply_v2d(transform, translated), translateReal);
 
@@ -337,6 +346,8 @@ void GameSave::Transform(matrix2d transform, vector2d translate, vector2d transl
 	velocityX = velocityXNew;
 	velocityY = velocityYNew;
 	ambientHeat = ambientHeatNew;
+	blockAir = blockAirNew;
+	blockAirh = blockAirhNew;
 }
 
 static void CheckBsonFieldUser(bson_iterator iter, const char *field, unsigned char **data, unsigned int *fieldLen)
@@ -384,6 +395,21 @@ static void CheckBsonFieldInt(bson_iterator iter, const char *field, int *settin
 	}
 }
 
+static void CheckBsonFieldLong(bson_iterator iter, const char *field, int64_t *setting)
+{
+	if (!strcmp(bson_iterator_key(&iter), field))
+	{
+		if (bson_iterator_type(&iter) == BSON_LONG)
+		{
+			*setting = bson_iterator_long(&iter);
+		}
+		else
+		{
+			fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+		}
+	}
+}
+
 static void CheckBsonFieldFloat(bson_iterator iter, const char *field, float *setting)
 {
 	if (!strcmp(bson_iterator_key(&iter), field))
@@ -404,9 +430,9 @@ void GameSave::readOPS(const std::vector<char> &data)
 	Renderer::PopulateTables();
 
 	unsigned char *inputData = (unsigned char*)&data[0], *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
-	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL, *ambientData = NULL;
+	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL, *ambientData = NULL, *blockAirData = nullptr;
 	unsigned int inputDataLen = data.size(), bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, soapLinkDataLen;
-	unsigned int pressDataLen, vxDataLen, vyDataLen, ambientDataLen;
+	unsigned int pressDataLen, vxDataLen, vyDataLen, ambientDataLen, blockAirDataLen;
 	unsigned partsCount = 0;
 	unsigned int blockX, blockY, blockW, blockH, fullX, fullY, fullW, fullH;
 	int savedVersion = inputData[4];
@@ -498,6 +524,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 		CheckBsonFieldUser(iter, "vxMap", &vxData, &vxDataLen);
 		CheckBsonFieldUser(iter, "vyMap", &vyData, &vyDataLen);
 		CheckBsonFieldUser(iter, "ambientMap", &ambientData, &ambientDataLen);
+		CheckBsonFieldUser(iter, "blockAir", &blockAirData, &blockAirDataLen);
 		CheckBsonFieldUser(iter, "fanMap", &fanData, &fanDataLen);
 		CheckBsonFieldUser(iter, "soapLinks", &soapLinkData, &soapLinkDataLen);
 		CheckBsonFieldBool(iter, "legacyEnable", &legacyEnable);
@@ -512,6 +539,9 @@ void GameSave::readOPS(const std::vector<char> &data)
 		CheckBsonFieldFloat(iter, "ambientAirTemp", &ambientAirTemp);
 		CheckBsonFieldInt(iter, "edgeMode", &edgeMode);
 		CheckBsonFieldInt(iter, "pmapbits", &pmapbits);
+		CheckBsonFieldLong(iter, "frameCount", reinterpret_cast<int64_t *>(&frameCount));
+		CheckBsonFieldLong(iter, "rngState0", reinterpret_cast<int64_t *>(&rngState[0]));
+		CheckBsonFieldLong(iter, "rngState1", reinterpret_cast<int64_t *>(&rngState[1]));
 		if (!strcmp(bson_iterator_key(&iter), "signs"))
 		{
 			if (bson_iterator_type(&iter)==BSON_ARRAY)
@@ -838,6 +868,22 @@ void GameSave::readOPS(const std::vector<char> &data)
 			}
 		}
 		hasAmbientHeat = true;
+	}
+
+	if (blockAirData)
+	{
+		if (blockW * blockH * 2 > blockAirDataLen)
+			throw ParseException(ParseException::Corrupt, "Not enough block air data");
+		auto blockAirhData = blockAirData + blockW * blockH;
+		for (unsigned int x = 0; x < blockW; x++)
+		{
+			for (unsigned int y = 0; y < blockH; y++)
+			{
+				blockAir[blockY + y][blockX + x] = blockAirData[y * blockW + x];
+				blockAirh[blockY + y][blockX + x] = blockAirhData[y * blockW + x];
+			}
+		}
+		hasBlockAirMaps = true;
 	}
 
 	//Read particle data
@@ -1933,13 +1979,16 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	std::vector<unsigned char> vxData(blockWidth*blockHeight*2);
 	std::vector<unsigned char> vyData(blockWidth*blockHeight*2);
 	std::vector<unsigned char> ambientData(blockWidth*blockHeight*2, 0);
+	std::vector<unsigned char> blockAirData(blockWidth * blockHeight * 2);
+	auto *blockAirhData = &blockAirData[blockWidth * blockHeight];
 	unsigned int wallDataLen = blockWidth*blockHeight, fanDataLen = 0, pressDataLen = 0, vxDataLen = 0, vyDataLen = 0, ambientDataLen = 0;
 
 	for (x = blockX; x < blockX+blockW; x++)
 	{
 		for (y = blockY; y < blockY+blockH; y++)
 		{
-			wallData[(y-blockY)*blockW+(x-blockX)] = blockMap[y][x];
+			auto rowMajorIndex = (y - blockY) * blockW + (x - blockX);
+			wallData[rowMajorIndex] = blockMap[y][x];
 			if (blockMap[y][x])
 				hasWallData = true;
 
@@ -1957,6 +2006,9 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 
 				vyData[vyDataLen++] = (unsigned char)((int)(velY*128)&0xFF);
 				vyData[vyDataLen++] = (unsigned char)((int)(velY*128)>>8);
+
+				blockAirData[rowMajorIndex] = blockAir[y][x];
+				blockAirhData[rowMajorIndex] = blockAirh[y][x];
 			}
 
 			if (hasAmbientHeat)
@@ -1983,6 +2035,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			}
 		}
 	}
+	auto blockAirDataLen = blockAirData.size();
 
 	//Index positions of all particles, using linked lists
 	//partsPosFirstMap is pmap for the first particle in each position
@@ -2491,6 +2544,14 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 		bson_append_binary(&b, "ambientMap", (char)BSON_BIN_USER, (const char*)&ambientData[0], ambientDataLen);
 	if (soapLinkDataLen)
 		bson_append_binary(&b, "soapLinks", (char)BSON_BIN_USER, (const char *)&soapLinkData[0], soapLinkDataLen);
+	if (ensureDeterminism)
+	{
+		bson_append_binary(&b, "blockAir", (char)BSON_BIN_USER, (const char *)&blockAirData[0], blockAirDataLen);
+		bson_append_long(&b, "frameCount", int64_t(frameCount));
+		bson_append_long(&b, "rngState0", int64_t(rngState[0]));
+		bson_append_long(&b, "rngState1", int64_t(rngState[1]));
+		RESTRICTVERSION(98, 0);
+	}
 	unsigned int signsCount = 0;
 	for (size_t i = 0; i < signs.size(); i++)
 	{

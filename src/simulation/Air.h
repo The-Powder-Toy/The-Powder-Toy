@@ -32,6 +32,6 @@ public:
 	void Clear();
 	void ClearAirH();
 	void Invert();
-	void RecalculateBlockAirMaps();
+	void ApproximateBlockAirMaps();
 	Air(Simulation & sim);
 };

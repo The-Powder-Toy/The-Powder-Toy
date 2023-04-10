@@ -1,9 +1,7 @@
 #pragma once
-
-#include "Snapshot.h"
-
 #include <memory>
 #include <cstdint>
+#include "Snapshot.h"
 
 struct SnapshotDelta
 {
@@ -58,6 +56,8 @@ struct SnapshotDelta
 
 	HunkVector<unsigned char> BlockMap;
 	HunkVector<unsigned char> ElecMap;
+	HunkVector<unsigned char> BlockAir;
+	HunkVector<unsigned char> BlockAirH;
 
 	HunkVector<float> FanVelocityX;
 	HunkVector<float> FanVelocityY;
@@ -67,6 +67,8 @@ struct SnapshotDelta
 	HunkVector<int> WirelessData;
 	HunkVector<uint32_t> stickmen;
 	SingleDiff<std::vector<sign>> signs;
+	SingleDiff<uint64_t> FrameCount;
+	SingleDiff<std::array<uint64_t, 2>> RngState;
 
 	SingleDiff<Json::Value> Authors;
 

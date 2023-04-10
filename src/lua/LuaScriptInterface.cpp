@@ -35,6 +35,7 @@
 #include "simulation/Simulation.h"
 #include "simulation/ToolClasses.h"
 #include "simulation/SaveRenderer.h"
+#include "simulation/Snapshot.h"
 
 #include "gui/interface/Window.h"
 #include "gui/interface/Engine.h"

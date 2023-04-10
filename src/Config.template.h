@@ -33,7 +33,7 @@ constexpr int MINOR_VERSION        = 0;
 constexpr int BUILD_NUM            = 352;
 constexpr int SNAPSHOT_ID          = @SNAPSHOT_ID@;
 constexpr int MOD_ID               = @MOD_ID@;
-constexpr int FUTURE_SAVE_VERSION  = 97;
+constexpr int FUTURE_SAVE_VERSION  = 98;
 constexpr int FUTURE_MINOR_VERSION = 0;
 
 constexpr char IDENT_RELTYPE    = SNAPSHOT ? 'S' : (BETA ? 'B' : 'R');

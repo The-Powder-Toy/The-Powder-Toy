@@ -6,6 +6,7 @@
 #include "Misc.h"
 #include "SimulationConfig.h"
 #include <vector>
+#include <array>
 #include <json/json.h>
 
 struct sign;
@@ -93,6 +94,10 @@ public:
 	int minorVersion = 0;
 	bool hasPressure = false;
 	bool hasAmbientHeat = false;
+	bool hasBlockAirMaps = false; // only written by readOPS, never read
+	bool ensureDeterminism = false; // only read by serializeOPS, never written
+	std::array<uint64_t, 2> rngState;
+	uint64_t frameCount = 0;
 
 	//Simulation data
 	int particlesCount = 0;
@@ -104,6 +109,8 @@ public:
 	Plane<float> velocityX;
 	Plane<float> velocityY;
 	Plane<float> ambientHeat;
+	Plane<unsigned char> blockAir;
+	Plane<unsigned char> blockAirh;
 
 	//Simulation Options
 	bool waterEEnabled = false;

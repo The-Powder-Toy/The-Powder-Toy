@@ -356,7 +356,7 @@ void Air::Invert()
 }
 
 // called when loading saves / stamps to ensure nothing "leaks" the first frame
-void Air::RecalculateBlockAirMaps()
+void Air::ApproximateBlockAirMaps()
 {
 	for (int i = 0; i <= sim.parts_lastActiveIndex; i++)
 	{

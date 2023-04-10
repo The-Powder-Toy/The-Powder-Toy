@@ -14,7 +14,7 @@
 //     size" even if their sizes weren't derived from compile-time constants, as they'd still
 //     be the same size throughout the life of a Simulation, and thus any Snapshot created from it.
 //   * Fields of dynamic size, whose sizes may be different between Snapshots. These are, fortunately,
-//     the minority: Particles, signs and Authors.
+//     the minority: Particles, signs, etc.
 // * Each field in Snapshot has a mirror set of fields in SnapshotDelta. Fields of static size
 //   have mirror fields whose type is HunkVector, templated by the item type of the
 //   corresponding field; these fields are handled in a uniform manner. Fields of dynamic size are
@@ -34,7 +34,7 @@
 //   * ApplyHunkVector<false> is the B = A + d operation, which takes a field of a SnapshotDelta and
 //     the corresponding field of an "older" Snapshot, and fills the latter with the "new" values.
 //   * This difference type is intended for fields of static size. This covers all fields in Snapshot
-//     except for Particles, signs, and Authors.
+//     except for Particles, signs, Authors, FrameCount, and RngState.
 // * A SingleDiff is, unsurprisingly enough, a single Diff, with an accompanying bool that signifies
 //   whether the Diff does in fact hold the "old" value of a field in the "old" Snapshot and the "new"
 //   value of the same field in the "new" Snapshot. If this bool is false, the data in the fields
@@ -43,7 +43,8 @@
 //   * FillSingleDiff is the d = B - A operation, while ApplySingleDiff<false> and ApplySingleDiff<true>
 //     are the A = B - d and B = A + d operations. These are self-explanatory.
 //   * This difference type is intended for fields of dynamic size whose data doesn't change often and
-//     doesn't consume too much memory. This covers the Snapshot fields signs and Authors.
+//     doesn't consume too much memory. This covers the Snapshot fields signs and Authors, FrameCount,
+//     and RngState.
 // * This leaves Snapshot::Particles. This field mirrors Simulation::parts, which is actually also
 //   a field of static size, but since most of the time most of this array is empty, it doesn't make
 //   sense to store all of it in a Snapshot (unlike Air::hv, which can be fairly chaotic (i.e. may have
@@ -212,11 +213,15 @@ std::unique_ptr<SnapshotDelta> SnapshotDelta::FromSnapshots(const Snapshot &oldS
 	FillHunkVector(oldSnap.GravMap        , newSnap.GravMap        , delta.GravMap        );
 	FillHunkVector(oldSnap.BlockMap       , newSnap.BlockMap       , delta.BlockMap       );
 	FillHunkVector(oldSnap.ElecMap        , newSnap.ElecMap        , delta.ElecMap        );
+	FillHunkVector(oldSnap.BlockAir       , newSnap.BlockAir       , delta.BlockAir       );
+	FillHunkVector(oldSnap.BlockAirH      , newSnap.BlockAirH      , delta.BlockAirH      );
 	FillHunkVector(oldSnap.FanVelocityX   , newSnap.FanVelocityX   , delta.FanVelocityX   );
 	FillHunkVector(oldSnap.FanVelocityY   , newSnap.FanVelocityY   , delta.FanVelocityY   );
 	FillHunkVector(oldSnap.WirelessData   , newSnap.WirelessData   , delta.WirelessData   );
 	FillSingleDiff(oldSnap.signs          , newSnap.signs          , delta.signs          );
 	FillSingleDiff(oldSnap.Authors        , newSnap.Authors        , delta.Authors        );
+	FillSingleDiff(oldSnap.FrameCount     , newSnap.FrameCount     , delta.FrameCount     );
+	FillSingleDiff(oldSnap.RngState       , newSnap.RngState       , delta.RngState       );
 	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(&oldSnap.PortalParticles[0]), reinterpret_cast<const uint32_t *>(&newSnap.PortalParticles[0]), delta.PortalParticles, newSnap.PortalParticles.size() * ParticleUint32Count);
 	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(&oldSnap.stickmen[0])       , reinterpret_cast<const uint32_t *>(&newSnap.stickmen[0]       ), delta.stickmen       , newSnap.stickmen       .size() * playerstUint32Count);
 
@@ -245,11 +250,15 @@ std::unique_ptr<Snapshot> SnapshotDelta::Forward(const Snapshot &oldSnap)
 	ApplyHunkVector<false>(GravMap        , newSnap.GravMap        );
 	ApplyHunkVector<false>(BlockMap       , newSnap.BlockMap       );
 	ApplyHunkVector<false>(ElecMap        , newSnap.ElecMap        );
+	ApplyHunkVector<false>(BlockAir       , newSnap.BlockAir       );
+	ApplyHunkVector<false>(BlockAirH      , newSnap.BlockAirH      );
 	ApplyHunkVector<false>(FanVelocityX   , newSnap.FanVelocityX   );
 	ApplyHunkVector<false>(FanVelocityY   , newSnap.FanVelocityY   );
 	ApplyHunkVector<false>(WirelessData   , newSnap.WirelessData   );
 	ApplySingleDiff<false>(signs          , newSnap.signs          );
 	ApplySingleDiff<false>(Authors        , newSnap.Authors        );
+	ApplySingleDiff<false>(FrameCount     , newSnap.FrameCount     );
+	ApplySingleDiff<false>(RngState       , newSnap.RngState       );
 	ApplyHunkVectorPtr<false>(PortalParticles, reinterpret_cast<uint32_t *>(&newSnap.PortalParticles[0]));
 	ApplyHunkVectorPtr<false>(stickmen       , reinterpret_cast<uint32_t *>(&newSnap.stickmen[0]       ));
 
@@ -276,11 +285,15 @@ std::unique_ptr<Snapshot> SnapshotDelta::Restore(const Snapshot &newSnap)
 	ApplyHunkVector<true>(GravMap        , oldSnap.GravMap        );
 	ApplyHunkVector<true>(BlockMap       , oldSnap.BlockMap       );
 	ApplyHunkVector<true>(ElecMap        , oldSnap.ElecMap        );
+	ApplyHunkVector<true>(BlockAir       , oldSnap.BlockAir       );
+	ApplyHunkVector<true>(BlockAirH      , oldSnap.BlockAirH      );
 	ApplyHunkVector<true>(FanVelocityX   , oldSnap.FanVelocityX   );
 	ApplyHunkVector<true>(FanVelocityY   , oldSnap.FanVelocityY   );
 	ApplyHunkVector<true>(WirelessData   , oldSnap.WirelessData   );
 	ApplySingleDiff<true>(signs          , oldSnap.signs          );
 	ApplySingleDiff<true>(Authors        , oldSnap.Authors        );
+	ApplySingleDiff<true>(FrameCount     , oldSnap.FrameCount     );
+	ApplySingleDiff<true>(RngState       , oldSnap.RngState       );
 	ApplyHunkVectorPtr<true>(PortalParticles, reinterpret_cast<uint32_t *>(&oldSnap.PortalParticles[0]));
 	ApplyHunkVectorPtr<true>(stickmen       , reinterpret_cast<uint32_t *>(&oldSnap.stickmen[0]       ));
 

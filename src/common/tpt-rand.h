@@ -17,6 +17,16 @@ public:
 
 	RNG();
 	void seed(unsigned int sd);
+
+	void state(std::array<uint64_t, 2> ns)
+	{
+		s = ns;
+	}
+
+	std::array<uint64_t, 2> state() const
+	{
+		return s;
+	}
 };
 
 // Please only use this on the main thread and never for simulation stuff.

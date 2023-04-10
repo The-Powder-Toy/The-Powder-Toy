@@ -21,6 +21,7 @@ powder_files += files(
 	'Editing.cpp',
 	'SimTool.cpp',
 	'ToolClasses.cpp',
+	'Snapshot.cpp',
 	'SnapshotDelta.cpp',
 )
 render_files += files(
