@@ -6,7 +6,7 @@ void Element::Element_WTRV()
 {
 	Identifier = "DEFAULT_PT_WTRV";
 	Name = "WTRV";
-	Colour = PIXPACK(0xA0A0FF);
+	Colour = 0xA0A0FF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;

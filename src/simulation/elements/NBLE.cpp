@@ -6,7 +6,7 @@ void Element::Element_NBLE()
 {
 	Identifier = "DEFAULT_PT_NBLE";
 	Name = "NBLE";
-	Colour = PIXPACK(0xEB4917);
+	Colour = 0xEB4917_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;

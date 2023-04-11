@@ -6,7 +6,7 @@ void Element::Element_BMTL()
 {
 	Identifier = "DEFAULT_PT_BMTL";
 	Name = "BMTL";
-	Colour = PIXPACK(0x505070);
+	Colour = 0x505070_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

@@ -4,7 +4,7 @@ void Element::Element_DYST()
 {
 	Identifier = "DEFAULT_PT_DYST";
 	Name = "DYST";
-	Colour = PIXPACK(0xBBB0A0);
+	Colour = 0xBBB0A0_rgb .Pack();
 	MenuVisible = 0;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

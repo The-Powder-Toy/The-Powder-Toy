@@ -6,7 +6,7 @@ void Element::Element_O2()
 {
 	Identifier = "DEFAULT_PT_O2";
 	Name = "OXYG";
-	Colour = PIXPACK(0x80A0FF);
+	Colour = 0x80A0FF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;

@@ -6,7 +6,7 @@ void Element::Element_IGNT()
 {
 	Identifier = "DEFAULT_PT_IGNT";
 	Name = "IGNC";
-	Colour = PIXPACK(0xC0B050);
+	Colour = 0xC0B050_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

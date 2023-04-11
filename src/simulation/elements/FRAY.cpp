@@ -6,7 +6,7 @@ void Element::Element_FRAY()
 {
 	Identifier = "DEFAULT_PT_FRAY";
 	Name = "FRAY";
-	Colour = PIXPACK(0x00BBFF);
+	Colour = 0x00BBFF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
 	Enabled = 1;

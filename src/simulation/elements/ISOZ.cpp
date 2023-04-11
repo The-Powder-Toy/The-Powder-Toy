@@ -6,7 +6,7 @@ void Element::Element_ISOZ()
 {
 	Identifier = "DEFAULT_PT_ISOZ";
 	Name = "ISOZ";
-	Colour = PIXPACK(0xAA30D0);
+	Colour = 0xAA30D0_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

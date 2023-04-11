@@ -6,7 +6,7 @@ void Element::Element_ISZS()
 {
 	Identifier = "DEFAULT_PT_ISZS";
 	Name = "ISZS";
-	Colour = PIXPACK(0x662089);
+	Colour = 0x662089_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

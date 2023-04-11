@@ -6,7 +6,7 @@ void Element::Element_NTCT()
 {
 	Identifier = "DEFAULT_PT_NTCT";
 	Name = "NTCT";
-	Colour = PIXPACK(0x505040);
+	Colour = 0x505040_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

@@ -4,7 +4,7 @@ void Element::Element_DMND()
 {
 	Identifier = "DEFAULT_PT_DMND";
 	Name = "DMND";
-	Colour = PIXPACK(0xCCFFFF);
+	Colour = 0xCCFFFF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

@@ -6,7 +6,7 @@ void Element::Element_FRZZ()
 {
 	Identifier = "DEFAULT_PT_FRZZ";
 	Name = "FRZZ";
-	Colour = PIXPACK(0xC0E0FF);
+	Colour = 0xC0E0FF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

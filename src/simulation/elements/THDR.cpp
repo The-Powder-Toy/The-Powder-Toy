@@ -7,7 +7,7 @@ void Element::Element_THDR()
 {
 	Identifier = "DEFAULT_PT_THDR";
 	Name = "THDR";
-	Colour = PIXPACK(0xFFFFA0);
+	Colour = 0xFFFFA0_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

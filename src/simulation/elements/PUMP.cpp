@@ -7,7 +7,7 @@ void Element::Element_PUMP()
 {
 	Identifier = "DEFAULT_PT_PUMP";
 	Name = "PUMP";
-	Colour = PIXPACK(0x0A0A3B);
+	Colour = 0x0A0A3B_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;

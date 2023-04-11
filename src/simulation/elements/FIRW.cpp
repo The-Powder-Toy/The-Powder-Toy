@@ -7,7 +7,7 @@ void Element::Element_FIRW()
 {
 	Identifier = "DEFAULT_PT_FIRW";
 	Name = "FIRW";
-	Colour = PIXPACK(0xFFA040);
+	Colour = 0xFFA040_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

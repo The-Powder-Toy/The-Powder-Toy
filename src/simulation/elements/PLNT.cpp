@@ -8,7 +8,7 @@ void Element::Element_PLNT()
 {
 	Identifier = "DEFAULT_PT_PLNT";
 	Name = "PLNT";
-	Colour = PIXPACK(0x0CAC00);
+	Colour = 0x0CAC00_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

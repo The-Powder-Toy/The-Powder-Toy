@@ -7,7 +7,7 @@ void Element::Element_SPAWN()
 {
 	Identifier = "DEFAULT_PT_SPAWN";
 	Name = "SPWN";
-	Colour = PIXPACK(0xAAAAAA);
+	Colour = 0xAAAAAA_rgb .Pack();
 	MenuVisible = 0;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

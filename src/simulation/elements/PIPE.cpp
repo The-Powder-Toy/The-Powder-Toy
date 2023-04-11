@@ -12,7 +12,7 @@ void Element::Element_PIPE()
 {
 	Identifier = "DEFAULT_PT_PIPE";
 	Name = "PIPE";
-	Colour = PIXPACK(0x444444);
+	Colour = 0x444444_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
 	Enabled = 1;
@@ -382,9 +382,10 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 			cpart->tmp = tpart.tmp3;
 			cpart->ctype = tpart.tmp4;
 
-			*colr = PIXR(ren->sim->elements[t].Colour);
-			*colg = PIXG(ren->sim->elements[t].Colour);
-			*colb = PIXB(ren->sim->elements[t].Colour);
+			auto colour = RGB<uint8_t>::Unpack(ren->sim->elements[t].Colour);
+			*colr = colour.Red;
+			*colg = colour.Green;
+			*colb = colour.Blue;
 			if (ren->sim->elements[t].Graphics)
 			{
 				(*(ren->sim->elements[t].Graphics))(ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
@@ -397,9 +398,6 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 			// Restore original particle data.
 			*cpart = tpart;
 		}
-		//*colr = PIXR(elements[t].pcolors);
-		//*colg = PIXG(elements[t].pcolors);
-		//*colb = PIXB(elements[t].pcolors);
 	}
 	else
 	{

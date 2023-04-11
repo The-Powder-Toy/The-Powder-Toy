@@ -4,7 +4,7 @@ void Element::Element_THRM()
 {
 	Identifier = "DEFAULT_PT_THRM";
 	Name = "THRM";
-	Colour = PIXPACK(0xA08090);
+	Colour = 0xA08090_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

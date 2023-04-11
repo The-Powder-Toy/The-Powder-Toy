@@ -6,7 +6,7 @@ void Element::Element_FOG()
 {
 	Identifier = "DEFAULT_PT_FOG";
 	Name = "FOG";
-	Colour = PIXPACK(0xAAAAAA);
+	Colour = 0xAAAAAA_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;

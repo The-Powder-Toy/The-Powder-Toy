@@ -55,20 +55,22 @@ void ElementPopulationDebug::Draw()
 			auto barSize = int(count * scale - 0.5f);
 			int barX = bars;//*2;
 
-			g->draw_line(xStart+barX, yBottom+3, xStart+barX, yBottom+2, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), 255);
+			auto colour = RGB<uint8_t>::Unpack(sim->elements[i].Colour);
+
+			g->draw_line(xStart+barX, yBottom+3, xStart+barX, yBottom+2, colour.Red, colour.Green, colour.Blue, 255);
 			if(sim->elementCount[i])
 			{
 				if(barSize > 256)
 				{
 					barSize = 256;
-					g->blendpixel(xStart+barX, yBottom-barSize-3, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), 255);
-					g->blendpixel(xStart+barX, yBottom-barSize-5, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), 255);
-					g->blendpixel(xStart+barX, yBottom-barSize-7, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), 255);
+					g->blendpixel(xStart+barX, yBottom-barSize-3, colour.Red, colour.Green, colour.Blue, 255);
+					g->blendpixel(xStart+barX, yBottom-barSize-5, colour.Red, colour.Green, colour.Blue, 255);
+					g->blendpixel(xStart+barX, yBottom-barSize-7, colour.Red, colour.Green, colour.Blue, 255);
 				} else {
 
 					g->draw_line(xStart+barX, yBottom-barSize-3, xStart+barX, yBottom-barSize-2, 255, 255, 255, 180);
 				}
-				g->draw_line(xStart+barX, yBottom-barSize, xStart+barX, yBottom, PIXR(sim->elements[i].Colour), PIXG(sim->elements[i].Colour), PIXB(sim->elements[i].Colour), 255);
+				g->draw_line(xStart+barX, yBottom-barSize, xStart+barX, yBottom, colour.Red, colour.Green, colour.Blue, 255);
 			}
 			bars++;
 		}

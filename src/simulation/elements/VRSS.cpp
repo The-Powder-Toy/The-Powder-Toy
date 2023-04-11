@@ -7,7 +7,7 @@ void Element::Element_VRSS()
 {
 	Identifier = "DEFAULT_PT_VRSS";
 	Name = "VRSS";
-	Colour = PIXPACK(0xD408CD);
+	Colour = 0xD408CD_rgb .Pack();
 	MenuVisible = 0;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

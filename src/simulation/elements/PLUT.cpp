@@ -6,7 +6,7 @@ void Element::Element_PLUT()
 {
 	Identifier = "DEFAULT_PT_PLUT";
 	Name = "PLUT";
-	Colour = PIXPACK(0x407020);
+	Colour = 0x407020_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

@@ -4,7 +4,7 @@ void Element::Element_WAX()
 {
 	Identifier = "DEFAULT_PT_WAX";
 	Name = "WAX";
-	Colour = PIXPACK(0xF0F0BB);
+	Colour = 0xF0F0BB_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

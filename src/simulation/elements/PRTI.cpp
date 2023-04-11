@@ -9,7 +9,7 @@ void Element::Element_PRTI()
 {
 	Identifier = "DEFAULT_PT_PRTI";
 	Name = "PRTI";
-	Colour = PIXPACK(0xEB5917);
+	Colour = 0xEB5917_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

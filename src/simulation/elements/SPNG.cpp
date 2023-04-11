@@ -7,7 +7,7 @@ void Element::Element_SPNG()
 {
 	Identifier = "DEFAULT_PT_SPNG";
 	Name = "SPNG";
-	Colour = PIXPACK(0xFFBE30);
+	Colour = 0xFFBE30_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

@@ -6,7 +6,7 @@ void Element::Element_SHLD2()
 {
 	Identifier = "DEFAULT_PT_SHLD2";
 	Name = "SHD2";
-	Colour = PIXPACK(0x777777);
+	Colour = 0x777777_rgb .Pack();
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER2;
 	Enabled = 1;

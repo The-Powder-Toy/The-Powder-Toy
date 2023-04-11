@@ -6,7 +6,7 @@ void Element::Element_SLTW()
 {
 	Identifier = "DEFAULT_PT_SLTW";
 	Name = "SLTW";
-	Colour = PIXPACK(0x4050F0);
+	Colour = 0x4050F0_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

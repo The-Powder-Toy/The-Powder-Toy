@@ -7,7 +7,7 @@ void Element::Element_VRSG()
 {
 	Identifier = "DEFAULT_PT_VRSG";
 	Name = "VRSG";
-	Colour = PIXPACK(0xFE68FE);
+	Colour = 0xFE68FE_rgb .Pack();
 	MenuVisible = 0;
 	MenuSection = SC_GAS;
 	Enabled = 1;

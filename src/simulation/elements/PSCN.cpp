@@ -4,7 +4,7 @@ void Element::Element_PSCN()
 {
 	Identifier = "DEFAULT_PT_PSCN";
 	Name = "PSCN";
-	Colour = PIXPACK(0x805050);
+	Colour = 0x805050_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

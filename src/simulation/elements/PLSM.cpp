@@ -8,7 +8,7 @@ void Element::Element_PLSM()
 {
 	Identifier = "DEFAULT_PT_PLSM";
 	Name = "PLSM";
-	Colour = PIXPACK(0xBB99FF);
+	Colour = 0xBB99FF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
@@ -52,10 +52,10 @@ void Element::Element_PLSM()
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	auto color = Renderer::plasmaTableAt(cpart->life);
-	*colr = PIXR(color);
-	*colg = PIXG(color);
-	*colb = PIXB(color);
+	auto color = RGB<uint8_t>::Unpack(Renderer::plasmaTableAt(cpart->life));
+	*colr = color.Red;
+	*colg = color.Green;
+	*colb = color.Blue;
 
 	*firea = 255;
 	*firer = *colr;

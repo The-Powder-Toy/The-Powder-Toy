@@ -7,7 +7,7 @@ void Element::Element_CFLM()
 {
 	Identifier = "DEFAULT_PT_HFLM";
 	Name = "CFLM";
-	Colour = PIXPACK(0x8080FF);
+	Colour = 0x8080FF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
@@ -50,10 +50,10 @@ void Element::Element_CFLM()
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	auto color = Renderer::clfmTableAt(cpart->life / 2);
-	*colr = PIXR(color);
-	*colg = PIXG(color);
-	*colb = PIXB(color);
+	auto color = RGB<uint8_t>::Unpack(Renderer::clfmTableAt(cpart->life / 2));
+	*colr = color.Red;
+	*colg = color.Green;
+	*colb = color.Blue;
 
 	*firea = 255;
 	*firer = *colr;

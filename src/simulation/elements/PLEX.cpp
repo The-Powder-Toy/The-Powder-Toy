@@ -4,7 +4,7 @@ void Element::Element_PLEX()
 {
 	Identifier = "DEFAULT_PT_PLEX";
 	Name = "C-4";
-	Colour = PIXPACK(0xD080E0);
+	Colour = 0xD080E0_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

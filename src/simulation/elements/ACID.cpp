@@ -7,7 +7,7 @@ void Element::Element_ACID()
 {
 	Identifier = "DEFAULT_PT_ACID";
 	Name = "ACID";
-	Colour = PIXPACK(0xED55FF);
+	Colour = 0xED55FF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

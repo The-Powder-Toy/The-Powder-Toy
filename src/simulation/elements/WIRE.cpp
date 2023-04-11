@@ -7,7 +7,7 @@ void Element::Element_WIRE()
 {
 	Identifier = "DEFAULT_PT_WIRE";
 	Name = "WWLD";
-	Colour = PIXPACK(0xFFCC00);
+	Colour = 0xFFCC00_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

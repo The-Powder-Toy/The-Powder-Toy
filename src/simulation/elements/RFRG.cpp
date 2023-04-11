@@ -6,7 +6,7 @@ void Element::Element_RFRG()
 {
 	Identifier = "DEFAULT_PT_RFRG";
 	Name = "RFRG";
-	Colour = PIXPACK(0x72D2D4);
+	Colour = 0x72D2D4_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;

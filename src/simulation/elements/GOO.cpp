@@ -6,7 +6,7 @@ void Element::Element_GOO()
 {
 	Identifier = "DEFAULT_PT_GOO";
 	Name = "GOO";
-	Colour = PIXPACK(0x804000);
+	Colour = 0x804000_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

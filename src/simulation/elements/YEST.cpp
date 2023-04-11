@@ -6,7 +6,7 @@ void Element::Element_YEST()
 {
 	Identifier = "DEFAULT_PT_YEST";
 	Name = "YEST";
-	Colour = PIXPACK(0xEEE0C0);
+	Colour = 0xEEE0C0_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

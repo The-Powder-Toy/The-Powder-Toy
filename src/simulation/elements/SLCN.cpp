@@ -8,7 +8,7 @@ void Element::Element_SLCN()
 {
 	Identifier = "DEFAULT_PT_SLCN";
 	Name = "SLCN";
-	Colour = PIXPACK(0xBCCDDF);
+	Colour = 0xBCCDDF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;
@@ -50,10 +50,10 @@ void Element::Element_SLCN()
 }
 
 static const int SLCN_COLOUR[16] = {
-	PIXPACK(0x5A6679), PIXPACK(0x6878A1), PIXPACK(0xABBFDD), PIXPACK(0x838490),
-	PIXPACK(0xBCCDDF), PIXPACK(0x82A0D2), PIXPACK(0x5B6680), PIXPACK(0x232C3B),
-	PIXPACK(0x485067), PIXPACK(0x8B9AB6), PIXPACK(0xADB1C1), PIXPACK(0xC3C6D1),
-	PIXPACK(0x8594AD), PIXPACK(0x262F47), PIXPACK(0xA9AEBC), PIXPACK(0xC2E1F7),
+	0x5A6679_rgb .Pack(), 0x6878A1_rgb .Pack(), 0xABBFDD_rgb .Pack(), 0x838490_rgb .Pack(),
+	0xBCCDDF_rgb .Pack(), 0x82A0D2_rgb .Pack(), 0x5B6680_rgb .Pack(), 0x232C3B_rgb .Pack(),
+	0x485067_rgb .Pack(), 0x8B9AB6_rgb .Pack(), 0xADB1C1_rgb .Pack(), 0xC3C6D1_rgb .Pack(),
+	0x8594AD_rgb .Pack(), 0x262F47_rgb .Pack(), 0xA9AEBC_rgb .Pack(), 0xC2E1F7_rgb .Pack(),
 };
 
 static void initSparkles(Simulation *sim, Particle &part)
@@ -108,19 +108,19 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	int curr_colour = SLCN_COLOUR[(cpart->tmp >> 12) & 15];
+	auto curr_colour = RGB<uint8_t>::Unpack(SLCN_COLOUR[(cpart->tmp >> 12) & 15]);
 	if (cpart->tmp & 0x800) // mix with next colour if phase is at least halfway there
 	{
-		int next_colour = SLCN_COLOUR[(cpart->tmp >> 16) & 15];
-		curr_colour = PIXRGB(
-			(PIXR(curr_colour) + PIXR(next_colour)) / 2,
-			(PIXG(curr_colour) + PIXG(next_colour)) / 2,
-			(PIXB(curr_colour) + PIXB(next_colour)) / 2
+		auto next_colour = RGB<uint8_t>::Unpack(SLCN_COLOUR[(cpart->tmp >> 16) & 15]);
+		curr_colour = RGB<uint8_t>(
+			(curr_colour.Red   + next_colour.Red) / 2,
+			(curr_colour.Green + next_colour.Green) / 2,
+			(curr_colour.Blue  + next_colour.Blue) / 2
 		);
 	}
-	*colr = PIXR(curr_colour);
-	*colg = PIXG(curr_colour);
-	*colb = PIXB(curr_colour);
+	*colr = curr_colour.Red;
+	*colg = curr_colour.Green;
+	*colb = curr_colour.Blue;
 
 	int rnd = (cpart->tmp & 0xFFFF) * ((cpart->tmp >> 16) & 0xFFFF);
 	if (!(rnd % 887))

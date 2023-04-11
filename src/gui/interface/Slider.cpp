@@ -68,8 +68,8 @@ void Slider::SetColour(Colour col1, Colour col2)
 	this->col1 = col1;
 	this->col2 = col2;
 	bgGradient = Graphics::Gradient({
-		{ pixel(PIXRGB(col1.Red, col1.Green, col1.Blue)), 0.f },
-		{ pixel(PIXRGB(col2.Red, col2.Green, col2.Blue)), 1.f },
+		{ RGB<uint8_t>(col1.Red, col1.Green, col1.Blue).Pack(), 0.f },
+		{ RGB<uint8_t>(col2.Red, col2.Green, col2.Blue).Pack(), 1.f },
 	}, Size.X-7);
 }
 
@@ -112,8 +112,8 @@ void Slider::Draw(const Point& screenPos)
 		{
 			for (int i = 3; i < Size.X-7; i++)
 			{
-				auto color = bgGradient[i - 3];
-				g->blendpixel(screenPos.X+i+2, screenPos.Y+j+2, PIXR(color), PIXG(color), PIXB(color), 255);
+				auto color = RGB<uint8_t>::Unpack(bgGradient[i - 3]);
+				g->blendpixel(screenPos.X+i+2, screenPos.Y+j+2, color.Red, color.Green, color.Blue, 255);
 			}
 		}
 	}

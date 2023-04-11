@@ -9,7 +9,7 @@ void Element::Element_TUNG()
 {
 	Identifier = "DEFAULT_PT_TUNG";
 	Name = "TUNG";
-	Colour = PIXPACK(0x505050);
+	Colour = 0x505050_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

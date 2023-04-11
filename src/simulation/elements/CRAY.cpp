@@ -8,7 +8,7 @@ void Element::Element_CRAY()
 {
 	Identifier = "DEFAULT_PT_CRAY";
 	Name = "CRAY";
-	Colour = PIXPACK(0xBBFF00);
+	Colour = 0xBBFF00_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

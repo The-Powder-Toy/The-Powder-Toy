@@ -7,7 +7,7 @@ void Element::Element_GLOW()
 {
 	Identifier = "DEFAULT_PT_GLOW";
 	Name = "GLOW";
-	Colour = PIXPACK(0x445464);
+	Colour = 0x445464_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

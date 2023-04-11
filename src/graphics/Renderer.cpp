@@ -209,9 +209,10 @@ void Renderer::render_parts()
 			//Defaults
 			pixel_mode = 0 | PMODE_FLAT;
 			cola = 255;
-			colr = PIXR(elements[t].Colour);
-			colg = PIXG(elements[t].Colour);
-			colb = PIXB(elements[t].Colour);
+			auto colour = RGB<uint8_t>::Unpack(elements[t].Colour);
+			colr = colour.Red;
+			colg = colour.Green;
+			colb = colour.Blue;
 			firer = fireg = fireb = firea = 0;
 
 			deca = (sim->parts[i].dcolour>>24)&0xFF;
@@ -287,10 +288,10 @@ void Renderer::render_parts()
 					constexpr float min_temp = MIN_TEMP;
 					constexpr float max_temp = MAX_TEMP;
 					firea = 255;
-					auto color = heatTableAt(int((sim->parts[i].temp - min_temp) / (max_temp - min_temp) * 1024));
-					firer = colr = PIXR(color);
-					fireg = colg = PIXG(color);
-					fireb = colb = PIXB(color);
+					auto color = RGB<uint8_t>::Unpack(heatTableAt(int((sim->parts[i].temp - min_temp) / (max_temp - min_temp) * 1024)));
+					firer = colr = color.Red;
+					fireg = colg = color.Green;
+					fireb = colb = color.Blue;
 					cola = 255;
 					if(pixel_mode & (FIREMODE | PMODE_GLOW))
 						pixel_mode = (pixel_mode & ~(FIREMODE|PMODE_GLOW)) | PMODE_BLUR;
@@ -317,9 +318,9 @@ void Renderer::render_parts()
 				}
 				else if(colour_mode & COLOUR_BASC)
 				{
-					colr = PIXR(elements[t].Colour);
-					colg = PIXG(elements[t].Colour);
-					colb = PIXB(elements[t].Colour);
+					colr = colour.Red;
+					colg = colour.Green;
+					colb = colour.Blue;
 					pixel_mode = PMODE_FLAT;
 				}
 
@@ -428,15 +429,17 @@ void Renderer::render_parts()
 					{
 						if (cplayer->fan)
 						{
-							colr = PIXR(0x8080FF);
-							colg = PIXG(0x8080FF);
-							colb = PIXB(0x8080FF);
+							auto fanColor = 0x8080FF_rgb;
+							colr = fanColor.Red;
+							colg = fanColor.Green;
+							colb = fanColor.Blue;
 						}
 						else if (cplayer->elem < PT_NUM && cplayer->elem > 0)
 						{
-							colr = PIXR(elements[cplayer->elem].Colour);
-							colg = PIXG(elements[cplayer->elem].Colour);
-							colb = PIXB(elements[cplayer->elem].Colour);
+							auto elemColour = RGB<uint8_t>::Unpack(elements[cplayer->elem].Colour);
+							colr = elemColour.Red;
+							colg = elemColour.Green;
+							colb = elemColour.Blue;
 						}
 						else
 						{
@@ -524,7 +527,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_FLAT)
 				{
-					vid[ny*(VIDXRES)+nx] = PIXRGB(colr,colg,colb);
+					vid[ny*(VIDXRES)+nx] = RGB<uint8_t>(colr, colg, colb).Pack();
 				}
 				if(pixel_mode & PMODE_BLEND)
 				{
@@ -536,7 +539,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_BLOB)
 				{
-					vid[ny*(VIDXRES)+nx] = PIXRGB(colr,colg,colb);
+					vid[ny*(VIDXRES)+nx] = RGB<uint8_t>(colr, colg, colb).Pack();
 
 					blendpixel(nx+1, ny, colr, colg, colb, 223);
 					blendpixel(nx-1, ny, colr, colg, colb, 223);
@@ -823,29 +826,29 @@ void Renderer::draw_air()
 	float (*hv)[XCELLS] = sim->air->hv;
 	float (*vx)[XCELLS] = sim->air->vx;
 	float (*vy)[XCELLS] = sim->air->vy;
-	pixel c = 0;
+	auto c = RGB<uint8_t>(0, 0, 0);
 	for (y=0; y<YCELLS; y++)
 		for (x=0; x<XCELLS; x++)
 		{
 			if (display_mode & DISPLAY_AIRP)
 			{
 				if (pv[y][x] > 0.0f)
-					c  = PIXRGB(clamp_flt(pv[y][x], 0.0f, 8.0f), 0, 0);//positive pressure is red!
+					c = RGB<uint8_t>(clamp_flt(pv[y][x], 0.0f, 8.0f), 0, 0);//positive pressure is red!
 				else
-					c  = PIXRGB(0, 0, clamp_flt(-pv[y][x], 0.0f, 8.0f));//negative pressure is blue!
+					c = RGB<uint8_t>(0, 0, clamp_flt(-pv[y][x], 0.0f, 8.0f));//negative pressure is blue!
 			}
 			else if (display_mode & DISPLAY_AIRV)
 			{
-				c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
+				c = RGB<uint8_t>(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 					clamp_flt(pv[y][x], 0.0f, 8.0f),//pressure adds green
 					clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
 			}
 			else if (display_mode & DISPLAY_AIRH)
 			{
-				c = HeatToColour(hv[y][x]);
-				//c  = PIXRGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
+				c = RGB<uint8_t>::Unpack(HeatToColour(hv[y][x]));
+				//c = RGB<uint8_t>(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 				//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
-				//	clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
+				//	clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f)).Pack();//vy adds blue
 			}
 			else if (display_mode & DISPLAY_AIRC)
 			{
@@ -865,7 +868,7 @@ void Renderer::draw_air()
 						g=255;
 					if (b>255)
 						b=255;
-					c  = PIXRGB(r, g, b);
+					c = RGB<uint8_t>(r, g, b);
 				}
 				else
 				{
@@ -876,14 +879,18 @@ void Renderer::draw_air()
 						g=255;
 					if (b>255)
 						b=255;
-					c  = PIXRGB(r, g, b);
+					c = RGB<uint8_t>(r, g, b);
 				}
 			}
 			if (findingElement)
-				c = PIXRGB(PIXR(c)/10,PIXG(c)/10,PIXB(c)/10);
+			{
+				c.Red   /= 10;
+				c.Green /= 10;
+				c.Blue  /= 10;
+			}
 			for (j=0; j<CELL; j++)//draws the colors
 				for (i=0; i<CELL; i++)
-					vid[(x*CELL+i) + (y*CELL+j)*(VIDXRES)] = c;
+					vid[(x*CELL+i) + (y*CELL+j)*(VIDXRES)] = c.Pack();
 		}
 }
 
@@ -897,14 +904,21 @@ void Renderer::DrawWalls()
 				if (wt >= UI_WALLCOUNT)
 					continue;
 				unsigned char powered = sim->emap[y][x];
-				pixel pc = PIXPACK(sim->wtypes[wt].colour);
-				pixel gc = PIXPACK(sim->wtypes[wt].eglow);
+				auto prgb = RGB<uint8_t>::Unpack(sim->wtypes[wt].colour);
+				auto grgb = RGB<uint8_t>::Unpack(sim->wtypes[wt].eglow);
 
 				if (findingElement)
 				{
-					pc = PIXRGB(PIXR(pc)/10,PIXG(pc)/10,PIXB(pc)/10);
-					gc = PIXRGB(PIXR(gc)/10,PIXG(gc)/10,PIXB(gc)/10);
+					prgb.Red   /= 10;
+					prgb.Green /= 10;
+					prgb.Blue  /= 10;
+					grgb.Red   /= 10;
+					grgb.Green /= 10;
+					grgb.Blue  /= 10;
 				}
+
+				pixel pc = prgb.Pack();
+				pixel gc = grgb.Pack();
 
 				switch (sim->wtypes[wt].drawstyle)
 				{
@@ -935,7 +949,7 @@ void Renderer::DrawWalls()
 								if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
 									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
 								else
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x808080);
+									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = 0x808080_rgb .Pack();
 							}
 					}
 					else if (wt == WL_EHOLE)
@@ -944,16 +958,16 @@ void Renderer::DrawWalls()
 						{
 							for (int j = 0; j < CELL; j++)
 								for (int i = 0; i < CELL; i++)
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x242424);
+									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = 0x242424_rgb .Pack();
 							for (int j = 0; j < CELL; j += 2)
 								for (int i = 0; i < CELL; i += 2)
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x000000);
+									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = 0x000000_rgb .Pack();
 						}
 						else
 						{
 							for (int j = 0; j < CELL; j += 2)
 								for (int i =0; i < CELL; i += 2)
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x242424);
+									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = 0x242424_rgb .Pack();
 						}
 					}
 					else if (wt == WL_STREAM)
@@ -1023,7 +1037,7 @@ void Renderer::DrawWalls()
 							else if (i == j+1 || (i == 0 && j == CELL-1))
 								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = gc;
 							else
-								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x202020);
+								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = 0x202020_rgb .Pack();
 					break;
 				}
 
@@ -1041,14 +1055,14 @@ void Renderer::DrawWalls()
 								for (int j = 0; j < CELL; j++)
 									for (int i =0; i < CELL; i++)
 										if (i&j&1)
-											drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+											drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
 							}
 							else
 							{
 								for (int j = 0; j < CELL; j++)
 									for (int i = 0; i < CELL; i++)
 										if (!(i&j&1))
-											drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+											drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
 							}
 						}
 						else if (wt == WL_WALLELEC)
@@ -1057,7 +1071,7 @@ void Renderer::DrawWalls()
 								for (int i =0; i < CELL; i++)
 								{
 									if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
-										drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+										drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
 									else
 										drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
 								}
@@ -1072,7 +1086,7 @@ void Renderer::DrawWalls()
 								for (int j = 0; j < CELL; j += 2)
 									for (int i = 0; i < CELL; i += 2)
 										// looks bad if drawing black blobs
-										vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x000000);
+										vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = 0x000000_rgb .Pack();
 							}
 							else
 							{
@@ -1085,28 +1099,28 @@ void Renderer::DrawWalls()
 					case 1:
 						for (int j = 0; j < CELL; j += 2)
 							for (int i = (j>>1)&1; i < CELL; i += 2)
-								drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+								drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
 						break;
 					case 2:
 						for (int j = 0; j < CELL; j += 2)
 							for (int i = 0; i < CELL; i+=2)
-								drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+								drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
 						break;
 					case 3:
 						for (int j = 0; j < CELL; j++)
 							for (int i = 0; i < CELL; i++)
-								drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+								drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
 						break;
 					case 4:
 						for (int j = 0; j < CELL; j++)
 							for (int i = 0; i < CELL; i++)
 								if (i == j)
-									drawblob((x*CELL+i), (y*CELL+j), PIXR(pc), PIXG(pc), PIXB(pc));
+									drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
 								else if (i == j+1 || (i == 0 && j == CELL-1))
 									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = gc;
 								else
 									// looks bad if drawing black blobs
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = PIXPACK(0x202020);
+									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = 0x202020_rgb .Pack();
 						break;
 					}
 				}
@@ -1114,11 +1128,11 @@ void Renderer::DrawWalls()
 				if (sim->wtypes[wt].eglow && powered)
 				{
 					// glow if electrified
-					pixel glow = sim->wtypes[wt].eglow;
+					auto glow = RGB<uint8_t>::Unpack(sim->wtypes[wt].eglow);
 					int alpha = 255;
-					int cr = (alpha*PIXR(glow) + (255-alpha)*fire_r[y/CELL][x/CELL]) >> 8;
-					int cg = (alpha*PIXG(glow) + (255-alpha)*fire_g[y/CELL][x/CELL]) >> 8;
-					int cb = (alpha*PIXB(glow) + (255-alpha)*fire_b[y/CELL][x/CELL]) >> 8;
+					int cr = (alpha*glow.Red   + (255-alpha)*fire_r[y/CELL][x/CELL]) >> 8;
+					int cg = (alpha*glow.Green + (255-alpha)*fire_g[y/CELL][x/CELL]) >> 8;
+					int cb = (alpha*glow.Blue  + (255-alpha)*fire_b[y/CELL][x/CELL]) >> 8;
 
 					if (cr > 255)
 						cr = 255;
@@ -1177,6 +1191,9 @@ int HeatToColour(float temp)
 {
 	constexpr float min_temp = MIN_TEMP;
 	constexpr float max_temp = MAX_TEMP;
-	auto color = Renderer::heatTableAt(int((temp - min_temp) / (max_temp - min_temp) * 1024));
-	return PIXRGB((int)(PIXR(color)*0.7f), (int)(PIXG(color)*0.7f), (int)(PIXB(color)*0.7f));
+	auto color = RGB<uint8_t>::Unpack(Renderer::heatTableAt(int((temp - min_temp) / (max_temp - min_temp) * 1024)));
+	color.Red   *= 0.7f;
+	color.Green *= 0.7f;
+	color.Blue  *= 0.7f;
+	return color.Pack();
 }

@@ -54,11 +54,11 @@ void DecorationTool::DrawRect(Simulation * sim, Brush const &brush, ui::Point po
 
 void DecorationTool::DrawFill(Simulation * sim, Brush const &brush, ui::Point position)
 {
-	pixel loc = ren.vid[position.X+position.Y*WINDOWW];
+	auto loc = RGB<uint8_t>::Unpack(ren.vid[position.X+position.Y*WINDOWW]);
 	if (ToolID == DECO_CLEAR)
 		// TODO: this is actually const-correct
-		sim->ApplyDecorationFill(const_cast<Renderer *>(&ren), position.X, position.Y, 0, 0, 0, 0, PIXR(loc), PIXG(loc), PIXB(loc));
+		sim->ApplyDecorationFill(const_cast<Renderer *>(&ren), position.X, position.Y, 0, 0, 0, 0, loc.Red, loc.Green, loc.Blue);
 	else
-		sim->ApplyDecorationFill(const_cast<Renderer *>(&ren), position.X, position.Y, Colour.Red, Colour.Green, Colour.Blue, Colour.Alpha, PIXR(loc), PIXG(loc), PIXB(loc));
+		sim->ApplyDecorationFill(const_cast<Renderer *>(&ren), position.X, position.Y, Colour.Red, Colour.Green, Colour.Blue, Colour.Alpha, loc.Red, loc.Green, loc.Blue);
 }
 

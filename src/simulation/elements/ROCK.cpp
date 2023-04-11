@@ -7,7 +7,7 @@ void Element::Element_ROCK()
 {
 	Identifier = "DEFAULT_PT_ROCK";
 	Name = "ROCK";
-	Colour = PIXPACK(0x727272);
+	Colour = 0x727272_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

@@ -7,7 +7,7 @@ void Element::Element_SWCH()
 {
 	Identifier = "DEFAULT_PT_SWCH";
 	Name = "SWCH";
-	Colour = PIXPACK(0x103B11);
+	Colour = 0x103B11_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

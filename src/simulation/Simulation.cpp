@@ -2139,10 +2139,11 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	if((elements[t].Properties & TYPE_PART) && pretty_powder)
 	{
 		int colr, colg, colb;
-		auto sandcolourToUse = p == -2 ? sandcolour_interface : sandcolour;
-		colr = PIXR(elements[t].Colour) + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
-		colg = PIXG(elements[t].Colour) + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
-		colb = PIXB(elements[t].Colour) + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
+		int sandcolourToUse = p == -2 ? sandcolour_interface : sandcolour;
+		auto colour = RGB<uint8_t>::Unpack(elements[t].Colour);
+		colr = colour.Red   + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
+		colg = colour.Green + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
+		colb = colour.Blue  + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
 		colr = colr>255 ? 255 : (colr<0 ? 0 : colr);
 		colg = colg>255 ? 255 : (colg<0 ? 0 : colg);
 		colb = colb>255 ? 255 : (colb<0 ? 0 : colb);

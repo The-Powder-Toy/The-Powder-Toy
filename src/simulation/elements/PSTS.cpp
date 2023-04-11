@@ -4,7 +4,7 @@ void Element::Element_PSTS()
 {
 	Identifier = "DEFAULT_PT_PSTS";
 	Name = "PSTS";
-	Colour = PIXPACK(0x776677);
+	Colour = 0x776677_rgb .Pack();
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER;
 	Enabled = 1;

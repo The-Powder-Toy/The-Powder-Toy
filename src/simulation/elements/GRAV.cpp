@@ -8,7 +8,7 @@ void Element::Element_GRAV()
 {
 	Identifier = "DEFAULT_PT_GRAV";
 	Name = "GRAV";
-	Colour = PIXPACK(0x202020);
+	Colour = 0x202020_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

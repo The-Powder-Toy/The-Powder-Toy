@@ -7,7 +7,7 @@ void Element::Element_FWRK()
 {
 	Identifier = "DEFAULT_PT_FWRK";
 	Name = "FWRK";
-	Colour = PIXPACK(0x666666);
+	Colour = 0x666666_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

@@ -7,7 +7,7 @@ void SimTool::Tool_AIR()
 {
 	Identifier = "DEFAULT_TOOL_AIR";
 	Name = "AIR";
-	Colour = PIXPACK(0xFFFFFF);
+	Colour = 0xFFFFFF_rgb .Pack();
 	Description = "Air, creates airflow and pressure.";
 	Perform = &perform;
 }

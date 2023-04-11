@@ -6,7 +6,7 @@ void Element::Element_FRZW()
 {
 	Identifier = "DEFAULT_PT_FRZW";
 	Name = "FRZW";
-	Colour = PIXPACK(0x1020C0);
+	Colour = 0x1020C0_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;
 	Enabled = 1;

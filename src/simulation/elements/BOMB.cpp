@@ -7,7 +7,7 @@ void Element::Element_BOMB()
 {
 	Identifier = "DEFAULT_PT_BOMB";
 	Name = "BOMB";
-	Colour = PIXPACK(0xFFF288);
+	Colour = 0xFFF288_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

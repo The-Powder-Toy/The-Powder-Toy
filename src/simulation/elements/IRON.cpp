@@ -6,7 +6,7 @@ void Element::Element_IRON()
 {
 	Identifier = "DEFAULT_PT_IRON";
 	Name = "IRON";
-	Colour = PIXPACK(0x707070);
+	Colour = 0x707070_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

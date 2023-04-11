@@ -6,7 +6,7 @@ void Element::Element_FUSE()
 {
 	Identifier = "DEFAULT_PT_FUSE";
 	Name = "FUSE";
-	Colour = PIXPACK(0x0A5706);
+	Colour = 0x0A5706_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

@@ -6,7 +6,7 @@ void Element::Element_ICEI()
 {
 	Identifier = "DEFAULT_PT_ICEI";
 	Name = "ICE";
-	Colour = PIXPACK(0xA0C0FF);
+	Colour = 0xA0C0FF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

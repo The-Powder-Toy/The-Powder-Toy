@@ -8,7 +8,7 @@ void Element::Element_GOLD()
 {
 	Identifier = "DEFAULT_PT_GOLD";
 	Name = "GOLD";
-	Colour = PIXPACK(0xDCAD2C);
+	Colour = 0xDCAD2C_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

@@ -18,19 +18,16 @@ void Renderer::RenderBegin()
 	
 	if(display_mode & DISPLAY_PERS)
 	{
-		int i,r,g,b;
-		for (i = 0; i < VIDXRES*YRES; i++)
+		for (int i = 0; i < VIDXRES*YRES; i++)
 		{
-			r = PIXR(vid[i]);
-			g = PIXG(vid[i]);
-			b = PIXB(vid[i]);
-			if (r>0)
-				r--;
-			if (g>0)
-				g--;
-			if (b>0)
-				b--;
-			persistentVid[i] = PIXRGB(r,g,b);
+			auto rgb = RGB<uint8_t>::Unpack(vid[i]);
+			if (rgb.Red > 0)
+				rgb.Red--;
+			if (rgb.Green > 0)
+				rgb.Green--;
+			if (rgb.Blue > 0)
+				rgb.Blue--;
+			persistentVid[i] = rgb.Pack();
 		}
 	}
 
@@ -126,7 +123,6 @@ void Renderer::render_gravlensing(pixel * source)
 {
 	int nx, ny, rx, ry, gx, gy, bx, by, co;
 	int r, g, b;
-	pixel t;
 	pixel *src = source;
 	pixel *dst = vid;
 	if (!dst)
@@ -144,17 +140,17 @@ void Renderer::render_gravlensing(pixel * source)
 			by = (int)(ny-sim->gravy[co]+0.5f);
 			if(rx >= 0 && rx < XRES && ry >= 0 && ry < YRES && gx >= 0 && gx < XRES && gy >= 0 && gy < YRES && bx >= 0 && bx < XRES && by >= 0 && by < YRES)
 			{
-				t = dst[ny*(VIDXRES)+nx];
-				r = PIXR(src[ry*(VIDXRES)+rx]) + PIXR(t);
-				g = PIXG(src[gy*(VIDXRES)+gx]) + PIXG(t);
-				b = PIXB(src[by*(VIDXRES)+bx]) + PIXB(t);
-				if (r>255)
-					r = 255;
-				if (g>255)
-					g = 255;
-				if (b>255)
-					b = 255;
-				dst[ny*(VIDXRES)+nx] = PIXRGB(r,g,b);
+				auto t = RGB<uint8_t>::Unpack(dst[ny*(VIDXRES)+nx]);
+				t.Red   += RGB<uint8_t>::Unpack(src[ry*(VIDXRES)+rx]).Red;
+				t.Green += RGB<uint8_t>::Unpack(src[gy*(VIDXRES)+gx]).Green;
+				t.Blue  += RGB<uint8_t>::Unpack(src[by*(VIDXRES)+bx]).Blue;
+				if (t.Red > 255)
+					t.Red = 255;
+				if (t.Green > 255)
+					t.Green = 255;
+				if (t.Blue > 255)
+					t.Blue = 255;
+				dst[ny*(VIDXRES)+nx] = t.Pack();
 			}
 		}
 	}

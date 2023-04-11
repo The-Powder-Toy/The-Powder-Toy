@@ -4,7 +4,7 @@ void Element::Element_DRIC()
 {
 	Identifier = "DEFAULT_PT_DRIC";
 	Name = "DRIC";
-	Colour = PIXPACK(0xE0E0E0);
+	Colour = 0xE0E0E0_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;
