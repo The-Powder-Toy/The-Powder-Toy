@@ -6,7 +6,7 @@ void Element::Element_BREC()
 {
 	Identifier = "DEFAULT_PT_BREC";
 	Name = "BREL";
-	Colour = PIXPACK(0x707060);
+	Colour = 0x707060_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

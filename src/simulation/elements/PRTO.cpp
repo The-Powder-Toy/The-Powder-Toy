@@ -7,7 +7,7 @@ void Element::Element_PRTO()
 {
 	Identifier = "DEFAULT_PT_PRTO";
 	Name = "PRTO";
-	Colour = PIXPACK(0x0020EB);
+	Colour = 0x0020EB_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

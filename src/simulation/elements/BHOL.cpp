@@ -4,7 +4,7 @@ void Element::Element_BHOL()
 {
 	Identifier = "DEFAULT_PT_BHOL";
 	Name = "VACU";
-	Colour = PIXPACK(0x303030);
+	Colour = 0x303030_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

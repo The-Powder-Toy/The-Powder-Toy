@@ -4,7 +4,7 @@ void Element::Element_MWAX()
 {
 	Identifier = "DEFAULT_PT_MWAX";
 	Name = "MWAX";
-	Colour = PIXPACK(0xE0E0AA);
+	Colour = 0xE0E0AA_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

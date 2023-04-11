@@ -7,7 +7,7 @@ void Element::Element_LITH()
 {
 	Identifier = "DEFAULT_PT_LITH";
 	Name = "LITH";
-	Colour = PIXPACK(0xB6AABF);
+	Colour = 0xB6AABF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
@@ -248,10 +248,10 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	// Exploding lith
 	if (cpart->life >= 1000)
 	{
-		int colour = 0xFFA040;
-		*colr = PIXR(colour);
-		*colg = PIXG(colour);
-		*colb = PIXB(colour);
+		auto colour = 0xFFA040_rgb;
+		*colr = colour.Red;
+		*colg = colour.Green;
+		*colb = colour.Blue;
 		*pixel_mode |= PMODE_FLARE | PMODE_GLOW;
 	}
 	// Charged lith

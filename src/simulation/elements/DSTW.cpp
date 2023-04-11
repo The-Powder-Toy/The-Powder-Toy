@@ -6,7 +6,7 @@ void Element::Element_DSTW()
 {
 	Identifier = "DEFAULT_PT_DSTW";
 	Name = "DSTW";
-	Colour = PIXPACK(0x1020C0);
+	Colour = 0x1020C0_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

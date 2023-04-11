@@ -8,7 +8,7 @@ void Element::Element_SOAP()
 {
 	Identifier = "DEFAULT_PT_SOAP";
 	Name = "SOAP";
-	Colour = PIXPACK(0xF5F5DC);
+	Colour = 0xF5F5DC_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

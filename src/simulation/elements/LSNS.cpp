@@ -6,7 +6,7 @@ void Element::Element_LSNS()
 {
 	Identifier = "DEFAULT_PT_LSNS";
 	Name = "LSNS";
-	Colour = PIXPACK(0x336699);
+	Colour = 0x336699_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
 	Enabled = 1;

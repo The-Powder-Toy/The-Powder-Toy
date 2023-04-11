@@ -7,7 +7,7 @@ void Element::Element_DLAY()
 {
 	Identifier = "DEFAULT_PT_DLAY";
 	Name = "DLAY";
-	Colour = PIXPACK(0x753590);
+	Colour = 0x753590_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;

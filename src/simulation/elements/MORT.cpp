@@ -6,7 +6,7 @@ void Element::Element_MORT()
 {
 	Identifier = "DEFAULT_PT_MORT";
 	Name = "MORT";
-	Colour = PIXPACK(0xE0E0E0);
+	Colour = 0xE0E0E0_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;
 	Enabled = 1;

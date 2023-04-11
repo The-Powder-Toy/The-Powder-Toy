@@ -8,7 +8,7 @@ void Element::Element_GRVT()
 {
 	Identifier = "DEFAULT_PT_GRVT";
 	Name = "GRVT";
-	Colour = PIXPACK(0x00EE76);
+	Colour = 0x00EE76_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

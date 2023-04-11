@@ -7,7 +7,7 @@ void Element::Element_BIZRS()
 {
 	Identifier = "DEFAULT_PT_BIZRS";
 	Name = "BIZS";
-	Colour = PIXPACK(0x00E455);
+	Colour = 0x00E455_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;
 	Enabled = 1;

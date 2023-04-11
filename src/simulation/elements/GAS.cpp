@@ -4,7 +4,7 @@ void Element::Element_GAS()
 {
 	Identifier = "DEFAULT_PT_GAS";
 	Name = "GAS";
-	Colour = PIXPACK(0xE0FF20);
+	Colour = 0xE0FF20_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;

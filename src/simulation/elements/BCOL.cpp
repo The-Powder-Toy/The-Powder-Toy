@@ -7,7 +7,7 @@ void Element::Element_BCOL()
 {
 	Identifier = "DEFAULT_PT_BCOL";
 	Name = "BCOL";
-	Colour = PIXPACK(0x333333);
+	Colour = 0x333333_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

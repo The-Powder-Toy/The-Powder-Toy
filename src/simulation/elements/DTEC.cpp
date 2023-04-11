@@ -6,7 +6,7 @@ void Element::Element_DTEC()
 {
 	Identifier = "DEFAULT_PT_DTEC";
 	Name = "DTEC";
-	Colour = PIXPACK(0xFD9D18);
+	Colour = 0xFD9D18_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
 	Enabled = 1;

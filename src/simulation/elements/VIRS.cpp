@@ -7,7 +7,7 @@ void Element::Element_VIRS()
 {
 	Identifier = "DEFAULT_PT_VIRS";
 	Name = "VIRS";
-	Colour = PIXPACK(0xFE11F6);
+	Colour = 0xFE11F6_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

@@ -9,7 +9,7 @@ void SimTool::Tool_MIX()
 {
 	Identifier = "DEFAULT_TOOL_MIX";
 	Name = "MIX";
-	Colour = PIXPACK(0xFFD090);
+	Colour = 0xFFD090_rgb .Pack();
 	Description = "Mixes particles.";
 	Perform = &perform;
 }

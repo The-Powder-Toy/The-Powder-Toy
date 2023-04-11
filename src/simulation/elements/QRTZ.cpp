@@ -8,7 +8,7 @@ void Element::Element_QRTZ()
 {
 	Identifier = "DEFAULT_PT_QRTZ";
 	Name = "QRTZ";
-	Colour = PIXPACK(0xAADDDD);
+	Colour = 0xAADDDD_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

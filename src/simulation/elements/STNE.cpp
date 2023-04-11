@@ -4,7 +4,7 @@ void Element::Element_STNE()
 {
 	Identifier = "DEFAULT_PT_STNE";
 	Name = "STNE";
-	Colour = PIXPACK(0xA0A0A0);
+	Colour = 0xA0A0A0_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

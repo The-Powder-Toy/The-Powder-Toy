@@ -8,7 +8,7 @@ void Element::Element_PCLN()
 {
 	Identifier = "DEFAULT_PT_PCLN";
 	Name = "PCLN";
-	Colour = PIXPACK(0x3B3B0A);
+	Colour = 0x3B3B0A_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;

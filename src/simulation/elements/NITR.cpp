@@ -4,7 +4,7 @@ void Element::Element_NITR()
 {
 	Identifier = "DEFAULT_PT_NITR";
 	Name = "NITR";
-	Colour = PIXPACK(0x20E010);
+	Colour = 0x20E010_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

@@ -6,7 +6,7 @@ void SimTool::Tool_PGRV()
 {
 	Identifier = "DEFAULT_TOOL_PGRV";
 	Name = "PGRV";
-	Colour = PIXPACK(0xCCCCFF);
+	Colour = 0xCCCCFF_rgb .Pack();
 	Description = "Creates a short-lasting gravity well.";
 	Perform = &perform;
 }

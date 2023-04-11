@@ -4,7 +4,7 @@ void Element::Element_SAWD()
 {
 	Identifier = "DEFAULT_PT_SAWD";
 	Name = "SAWD";
-	Colour = PIXPACK(0xF0F0A0);
+	Colour = 0xF0F0A0_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

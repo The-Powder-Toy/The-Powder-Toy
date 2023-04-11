@@ -6,7 +6,7 @@ void Element::Element_PTCT()
 {
 	Identifier = "DEFAULT_PT_PTCT";
 	Name = "PTCT";
-	Colour = PIXPACK(0x405050);
+	Colour = 0x405050_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

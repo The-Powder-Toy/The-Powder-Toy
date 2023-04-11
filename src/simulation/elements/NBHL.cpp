@@ -6,7 +6,7 @@ void Element::Element_NBHL()
 {
 	Identifier = "DEFAULT_PT_NBHL";
 	Name = "BHOL";
-	Colour = PIXPACK(0x202020);
+	Colour = 0x202020_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

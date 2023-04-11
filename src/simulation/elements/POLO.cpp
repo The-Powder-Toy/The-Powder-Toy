@@ -7,7 +7,7 @@ void Element::Element_POLO()
 {
 	Identifier = "DEFAULT_PT_POLO";
 	Name = "POLO";
-	Colour = PIXPACK(0x506030);
+	Colour = 0x506030_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

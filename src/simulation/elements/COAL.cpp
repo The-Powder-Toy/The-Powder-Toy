@@ -7,7 +7,7 @@ void Element::Element_COAL()
 {
 	Identifier = "DEFAULT_PT_COAL";
 	Name = "COAL";
-	Colour = PIXPACK(0x222222);
+	Colour = 0x222222_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

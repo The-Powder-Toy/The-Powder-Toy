@@ -7,7 +7,7 @@ void Element::Element_PPIP()
 {
 	Identifier = "DEFAULT_PT_PPIP";
 	Name = "PPIP";
-	Colour = PIXPACK(0x444466);
+	Colour = 0x444466_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;

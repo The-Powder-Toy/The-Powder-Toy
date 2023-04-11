@@ -6,7 +6,7 @@ void Element::Element_TSNS()
 {
 	Identifier = "DEFAULT_PT_TSNS";
 	Name = "TSNS";
-	Colour = PIXPACK(0xFD00D5);
+	Colour = 0xFD00D5_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
 	Enabled = 1;

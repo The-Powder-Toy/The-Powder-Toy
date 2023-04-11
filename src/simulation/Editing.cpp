@@ -702,10 +702,10 @@ void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, in
 
 bool Simulation::ColorCompare(Renderer *ren, int x, int y, int replaceR, int replaceG, int replaceB)
 {
-	pixel pix = ren->vid[x+y*WINDOWW];
-	int r = PIXR(pix);
-	int g = PIXG(pix);
-	int b = PIXB(pix);
+	auto pix = RGB<uint8_t>::Unpack(ren->vid[x+y*WINDOWW]);
+	int r = pix.Red;
+	int g = pix.Green;
+	int b = pix.Blue;
 	int diff = std::abs(replaceR-r) + std::abs(replaceG-g) + std::abs(replaceB-b);
 	return diff < 15;
 }

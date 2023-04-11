@@ -6,7 +6,7 @@ void Element::Element_NWHL()
 {
 	Identifier = "DEFAULT_PT_NWHL";
 	Name = "WHOL";
-	Colour = PIXPACK(0xFFFFFF);
+	Colour = 0xFFFFFF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

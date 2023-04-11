@@ -4,7 +4,7 @@ void Element::Element_LNTG()
 {
 	Identifier = "DEFAULT_PT_LNTG";
 	Name = "LN2";
-	Colour = PIXPACK(0x80A0DF);
+	Colour = 0x80A0DF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

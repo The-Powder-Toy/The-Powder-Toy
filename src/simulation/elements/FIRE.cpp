@@ -10,7 +10,7 @@ void Element::Element_FIRE()
 {
 	Identifier = "DEFAULT_PT_FIRE";
 	Name = "FIRE";
-	Colour = PIXPACK(0xFF1000);
+	Colour = 0xFF1000_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
@@ -353,10 +353,10 @@ static int updateLegacy(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	auto color = Renderer::flameTableAt(cpart->life);
-	*colr = PIXR(color);
-	*colg = PIXG(color);
-	*colb = PIXB(color);
+	auto color = RGB<uint8_t>::Unpack(Renderer::flameTableAt(cpart->life));
+	*colr = color.Red;
+	*colg = color.Green;
+	*colb = color.Blue;
 
 	*firea = 255;
 	*firer = *colr;

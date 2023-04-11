@@ -8,7 +8,7 @@ void Element::Element_CLST()
 {
 	Identifier = "DEFAULT_PT_CLST";
 	Name = "CLST";
-	Colour = PIXPACK(0xE4A4A4);
+	Colour = 0xE4A4A4_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

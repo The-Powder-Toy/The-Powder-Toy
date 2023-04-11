@@ -8,7 +8,7 @@ void Element::Element_WARP()
 {
 	Identifier = "DEFAULT_PT_WARP";
 	Name = "WARP";
-	Colour = PIXPACK(0x101010);
+	Colour = 0x101010_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

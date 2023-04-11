@@ -4,7 +4,7 @@ void Element::Element_CNCT()
 {
 	Identifier = "DEFAULT_PT_CNCT";
 	Name = "CNCT";
-	Colour = PIXPACK(0xC0C0C0);
+	Colour = 0xC0C0C0_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

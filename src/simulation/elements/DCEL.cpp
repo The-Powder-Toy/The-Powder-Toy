@@ -7,7 +7,7 @@ void Element::Element_DCEL()
 {
 	Identifier = "DEFAULT_PT_DCEL";
 	Name = "DCEL";
-	Colour = PIXPACK(0x99CC00);
+	Colour = 0x99CC00_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
 	Enabled = 1;

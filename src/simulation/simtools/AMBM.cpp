@@ -6,7 +6,7 @@ void SimTool::Tool_AMBM()
 {
 	Identifier = "DEFAULT_TOOL_AMBM";
 	Name = "AMBM";
-	Colour = PIXPACK(0x00DDFF);
+	Colour = 0x00DDFF_rgb .Pack();
 	Description = "Decreases ambient air temperature.";
 	Perform = &perform;
 }

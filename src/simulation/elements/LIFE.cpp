@@ -7,7 +7,7 @@ void Element::Element_LIFE()
 {
 	Identifier = "DEFAULT_PT_LIFE";
 	Name = "LIFE";
-	Colour = PIXPACK(0x0CAC00);
+	Colour = 0x0CAC00_rgb .Pack();
 	MenuVisible = 0;
 	MenuSection = SC_LIFE;
 	Enabled = 1;
@@ -50,11 +50,11 @@ void Element::Element_LIFE()
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	auto colour1 = cpart->dcolour;
-	auto colour2 = cpart->tmp;
-	if (!colour1)
+	auto colour1 = RGB<uint8_t>::Unpack(cpart->dcolour);
+	auto colour2 = RGB<uint8_t>::Unpack(cpart->tmp);
+	if (!cpart->dcolour)
 	{
-		colour1 = PIXPACK(0xFFFFFF);
+		colour1 = 0xFFFFFF_rgb;
 	}
 	auto ruleset = cpart->ctype;
 	bool renderDeco = !ren->blackDecorations;
@@ -62,8 +62,8 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	{
 		if (!renderDeco || !ren->decorations_enable)
 		{
-			colour1 = builtinGol[ruleset].colour;
-			colour2 = builtinGol[ruleset].colour2;
+			colour1 = RGB<uint8_t>::Unpack(builtinGol[ruleset].colour);
+			colour2 = RGB<uint8_t>::Unpack(builtinGol[ruleset].colour2);
 			renderDeco = true;
 		}
 		ruleset = builtinGol[ruleset].ruleset;
@@ -73,16 +73,16 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		auto states = ((ruleset >> 17) & 0xF) + 2;
 		if (states == 2)
 		{
-			*colr = PIXR(colour1);
-			*colg = PIXG(colour1);
-			*colb = PIXB(colour1);
+			*colr = colour1.Red;
+			*colg = colour1.Green;
+			*colb = colour1.Blue;
 		}
 		else
 		{
 			auto mul = (cpart->tmp2 - 1) / float(states - 2);
-			*colr = int(PIXR(colour1) * mul + PIXR(colour2) * (1.f - mul));
-			*colg = int(PIXG(colour1) * mul + PIXG(colour2) * (1.f - mul));
-			*colb = int(PIXB(colour1) * mul + PIXB(colour2) * (1.f - mul));
+			*colr = int(colour1.Red   * mul + colour2.Red   * (1.f - mul));
+			*colg = int(colour1.Green * mul + colour2.Green * (1.f - mul));
+			*colb = int(colour1.Blue  * mul + colour2.Blue  * (1.f - mul));
 		}
 	}
 	*pixel_mode |= NO_DECO;

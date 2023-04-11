@@ -6,7 +6,7 @@ void Element::Element_RIME()
 {
 	Identifier = "DEFAULT_PT_RIME";
 	Name = "RIME";
-	Colour = PIXPACK(0xCCCCCC);
+	Colour = 0xCCCCCC_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

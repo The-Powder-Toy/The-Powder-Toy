@@ -7,7 +7,7 @@ void Element::Element_SING()
 {
 	Identifier = "DEFAULT_PT_SING";
 	Name = "SING";
-	Colour = PIXPACK(0x242424);
+	Colour = 0x242424_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

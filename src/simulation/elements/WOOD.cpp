@@ -8,7 +8,7 @@ void Element::Element_WOOD()
 {
 	Identifier = "DEFAULT_PT_WOOD";
 	Name = "WOOD";
-	Colour = PIXPACK(0xC0A040);
+	Colour = 0xC0A040_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

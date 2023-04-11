@@ -7,7 +7,7 @@ void SimTool::Tool_VAC()
 {
 	Identifier = "DEFAULT_TOOL_VAC";
 	Name = "VAC";
-	Colour = PIXPACK(0x303030);
+	Colour = 0x303030_rgb .Pack();
 	Description = "Vacuum, reduces air pressure.";
 	Perform = &perform;
 }

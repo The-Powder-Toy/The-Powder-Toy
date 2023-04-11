@@ -4,7 +4,7 @@ void Element::Element_PSTE()
 {
 	Identifier = "DEFAULT_PT_PSTE";
 	Name = "PSTE";
-	Colour = PIXPACK(0xAA99AA);
+	Colour = 0xAA99AA_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

@@ -6,7 +6,7 @@ void Element::Element_VSNS()
 {
 	Identifier = "DEFAULT_PT_VSNS";
 	Name = "VSNS";
-	Colour = PIXPACK(0x7C9C00);
+	Colour = 0x7C9C00_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
 	Enabled = 1;

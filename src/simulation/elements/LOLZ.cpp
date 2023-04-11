@@ -4,7 +4,7 @@ void Element::Element_LOLZ()
 {
 	Identifier = "DEFAULT_PT_LOLZ";
 	Name = "LOLZ";
-	Colour = PIXPACK(0x569212);
+	Colour = 0x569212_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;
 	Enabled = 1;

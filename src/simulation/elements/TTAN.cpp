@@ -7,7 +7,7 @@ void Element::Element_TTAN()
 {
 	Identifier = "DEFAULT_PT_TTAN";
 	Name = "TTAN";
-	Colour = PIXPACK(0x909090);
+	Colour = 0x909090_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

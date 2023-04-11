@@ -6,7 +6,7 @@ void Element::Element_SNOW()
 {
 	Identifier = "DEFAULT_PT_SNOW";
 	Name = "SNOW";
-	Colour = PIXPACK(0xC0E0FF);
+	Colour = 0xC0E0FF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

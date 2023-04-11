@@ -8,7 +8,7 @@ void Element::Element_DEUT()
 {
 	Identifier = "DEFAULT_PT_DEUT";
 	Name = "DEUT";
-	Colour = PIXPACK(0x00153F);
+	Colour = 0x00153F_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

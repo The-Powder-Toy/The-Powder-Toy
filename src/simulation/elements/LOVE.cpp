@@ -4,7 +4,7 @@ void Element::Element_LOVE()
 {
 	Identifier = "DEFAULT_PT_LOVE";
 	Name = "LOVE";
-	Colour = PIXPACK(0xFF30FF);
+	Colour = 0xFF30FF_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;
 	Enabled = 1;

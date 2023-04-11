@@ -7,7 +7,7 @@ void Element::Element_BVBR()
 {
 	Identifier = "DEFAULT_PT_BVBR";
 	Name = "BVBR";
-	Colour = PIXPACK(0x005000);
+	Colour = 0x005000_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

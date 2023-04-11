@@ -8,7 +8,7 @@ void Element::Element_PQRT()
 {
 	Identifier = "DEFAULT_PT_PQRT";
 	Name = "PQRT";
-	Colour = PIXPACK(0x88BBBB);
+	Colour = 0x88BBBB_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

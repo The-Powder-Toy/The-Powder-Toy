@@ -7,7 +7,7 @@ void Element::Element_BIZR()
 {
 	Identifier = "DEFAULT_PT_BIZR";
 	Name = "BIZR";
-	Colour = PIXPACK(0x00FF77);
+	Colour = 0x00FF77_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

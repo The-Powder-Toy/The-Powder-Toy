@@ -7,7 +7,7 @@ void Element::Element_VIBR()
 {
 	Identifier = "DEFAULT_PT_VIBR";
 	Name = "VIBR";
-	Colour = PIXPACK(0x005000);
+	Colour = 0x005000_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

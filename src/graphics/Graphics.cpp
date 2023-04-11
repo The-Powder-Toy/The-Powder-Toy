@@ -485,11 +485,13 @@ std::vector<pixel> Graphics::Gradient(std::vector<GradientStop> stops, int resol
 			auto &left = stops[stop];
 			auto &right = stops[stop + 1];
 			auto f = (point - left.point) / (right.point - left.point);
-			table[i] = PIXRGB(
-				int(int(PIXR(left.color)) + (int(PIXR(right.color)) - int(PIXR(left.color))) * f),
-				int(int(PIXG(left.color)) + (int(PIXG(right.color)) - int(PIXG(left.color))) * f),
-				int(int(PIXB(left.color)) + (int(PIXB(right.color)) - int(PIXB(left.color))) * f)
-			);
+			auto leftColor = RGB<uint8_t>::Unpack(left.color);
+			auto rightColor = RGB<uint8_t>::Unpack(right.color);
+			table[i] = RGB<uint8_t>(
+				int(int(leftColor.Red  ) + (int(rightColor.Red  ) - int(leftColor.Red  )) * f),
+				int(int(leftColor.Green) + (int(rightColor.Green) - int(leftColor.Green)) * f),
+				int(int(leftColor.Blue ) + (int(rightColor.Blue ) - int(leftColor.Blue )) * f)
+			).Pack();
 		}
 	}
 	return table;

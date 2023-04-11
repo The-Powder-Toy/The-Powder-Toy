@@ -6,7 +6,7 @@ void Element::Element_BANG()
 {
 	Identifier = "DEFAULT_PT_BANG";
 	Name = "TNT";
-	Colour = PIXPACK(0xC05050);
+	Colour = 0xC05050_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

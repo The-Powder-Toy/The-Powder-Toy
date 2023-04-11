@@ -9,7 +9,7 @@ void Element::Element_PROT()
 {
 	Identifier = "DEFAULT_PT_PROT";
 	Name = "PROT";
-	Colour = PIXPACK(0x990000);
+	Colour = 0x990000_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

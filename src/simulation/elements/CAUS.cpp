@@ -6,7 +6,7 @@ void Element::Element_CAUS()
 {
 	Identifier = "DEFAULT_PT_CAUS";
 	Name = "CAUS";
-	Colour = PIXPACK(0x80FFA0);
+	Colour = 0x80FFA0_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;

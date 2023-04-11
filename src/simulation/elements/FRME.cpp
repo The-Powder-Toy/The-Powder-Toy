@@ -6,7 +6,7 @@ void Element::Element_FRME()
 {
 	Identifier = "DEFAULT_PT_FRME";
 	Name = "FRME";
-	Colour = PIXPACK(0x999988);
+	Colour = 0x999988_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
 	Enabled = 1;

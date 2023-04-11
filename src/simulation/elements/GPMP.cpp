@@ -7,7 +7,7 @@ void Element::Element_GPMP()
 {
 	Identifier = "DEFAULT_PT_GPMP";
 	Name = "GPMP";
-	Colour = PIXPACK(0x0A3B3B);
+	Colour = 0x0A3B3B_rgb .Pack();
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;
