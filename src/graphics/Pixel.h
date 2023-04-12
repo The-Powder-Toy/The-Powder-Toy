@@ -11,8 +11,6 @@
 typedef uint32_t pixel;
 
 constexpr int PIXELCHANNELS = 3;
-[[deprecated("Avoid manipulating pixel* as char*")]]
-constexpr int PIXELSIZE = 4;
 
 // Least significant byte is blue, then green, then red, then alpha.
 // Use sparingly, e.g. when passing packed data to a third party library.

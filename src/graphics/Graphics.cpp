@@ -459,16 +459,6 @@ void Graphics::SwapClipRect(Rect<int> &rect)
 	clipRect &= video.Size().OriginRect();
 }
 
-void Graphics::SetClipRect(int &x, int &y, int &w, int &h)
-{
-	Rect<int> rect = RectSized(Vec2(x, y), Vec2(w, h));
-	SwapClipRect(rect);
-	x = rect.TopLeft.X;
-	y = rect.TopLeft.Y;
-	w = rect.Size().X;
-	h = rect.Size().Y;
-}
-
 bool Graphics::GradientStop::operator <(const GradientStop &other) const
 {
 	return point < other.point;

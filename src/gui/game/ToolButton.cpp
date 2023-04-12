@@ -45,14 +45,10 @@ void ToolButton::OnMouseUp(int x, int y, unsigned int button)
 void ToolButton::Draw(const ui::Point& screenPos)
 {
 	Graphics * g = GetGraphics();
-	int x = clipRectX;
-	int y = clipRectY;
-	int w = clipRectW;
-	int h = clipRectH;
-	if (clipRectW && clipRectH)
-	{
-		g->SetClipRect(x, y, w, h); // old cliprect is now in x, y, w, h
-	}
+	auto rect = ClipRect;
+	if (ClipRect.Size().X && ClipRect.Size().Y)
+		g->SwapClipRect(rect); // old cliprect is now in rect
+
 	int totalColour = Appearance.BackgroundInactive.Blue + (3*Appearance.BackgroundInactive.Green) + (2*Appearance.BackgroundInactive.Red);
 
 	if (Appearance.GetTexture())
@@ -85,10 +81,9 @@ void ToolButton::Draw(const ui::Point& screenPos)
 	{
 		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, buttonDisplayText, 0, 0, 0, 255);
 	}
-	if (clipRectW && clipRectH)
-	{
-		g->SetClipRect(x, y, w, h); // apply old clip rect
-	}
+
+	if (ClipRect.Size().X && ClipRect.Size().Y)
+		g->SwapClipRect(rect); // apply old clip rect
 }
 
 void ToolButton::SetSelectionState(int state)

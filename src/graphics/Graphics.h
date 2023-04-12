@@ -104,6 +104,4 @@ public:
 	Graphics();
 
 	void SwapClipRect(Rect<int> &);
-	[[deprecated("Use SwapClipRect")]]
-	void SetClipRect(int &x, int &y, int &w, int &h);
 };
