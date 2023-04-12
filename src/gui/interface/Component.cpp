@@ -69,9 +69,8 @@ void Component::TextPosition(String displayText)
 
 	textPosition = ui::Point(0, 0);
 
-	int textWidth, textHeight = 10;
-	Graphics::textsize(displayText, textWidth, textHeight);
-	textSize.X = textWidth; textSize.Y = textHeight;
+	textSize = Graphics::TextSize(displayText);
+	int textWidth = textSize.X, textHeight = textSize.Y;
 	textHeight-=3;
 	textWidth-=1;
 	if(Appearance.icon)

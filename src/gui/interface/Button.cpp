@@ -25,10 +25,10 @@ void Button::TextPosition(String ButtonText)
 	buttonDisplayText = ButtonText;
 	if(buttonDisplayText.length())
 	{
-		if(Graphics::textwidth(buttonDisplayText) > Size.X - (Appearance.icon? 22 : 0))
+		if (Graphics::TextSize(buttonDisplayText).X > Size.X - (Appearance.icon ? 22 : 0))
 		{
-			int position = Graphics::textwidthx(buttonDisplayText, Size.X - (Appearance.icon? 38 : 22));
-			buttonDisplayText = buttonDisplayText.erase(position, buttonDisplayText.length()-position);
+			auto it = Graphics::TextFit(buttonDisplayText, Size.X - (Appearance.icon ? 38 : 22));
+			buttonDisplayText.erase(it, buttonDisplayText.end());
 			buttonDisplayText += "...";
 		}
 	}

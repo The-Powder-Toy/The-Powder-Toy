@@ -2171,8 +2171,7 @@ void GameView::OnDraw()
 
 		ren->RenderEnd();
 
-		std::copy_n(ren->Data(), WINDOWW * YRES, g->vid);
-
+		std::copy_n(ren->Data(), ren->Size().X * ren->Size().Y, g->Data());
 
 		if (doScreenshot)
 		{
@@ -2454,10 +2453,6 @@ void GameView::OnDraw()
 		g->fillrect(0, 0, WINDOWW, WINDOWH, 0, 0, 0, introText>51?102:introText*2);
 		g->drawtext(16, 16, introTextMessage, 255, 255, 255, introText>51?255:introText*5);
 	}
-
-	// Clear menu areas, to ensure particle graphics don't overlap
-	memset(g->vid+((XRES+BARSIZE)*YRES), 0, (PIXELSIZE*(XRES+BARSIZE))*MENUSIZE);
-	g->clearrect(XRES, 1, BARSIZE, YRES-1);
 }
 
 ui::Point GameView::lineSnapCoords(ui::Point point1, ui::Point point2)

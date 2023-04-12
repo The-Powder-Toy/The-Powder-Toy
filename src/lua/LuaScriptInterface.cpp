@@ -3715,10 +3715,10 @@ int LuaScriptInterface::graphics_textSize(lua_State * l)
 {
 	int width, height;
 	auto text = tpt_lua_optString(l, 1, "");
-	Graphics::textsize(text, width, height);
+	auto size = Graphics::TextSize(text);
 
-	lua_pushinteger(l, width);
-	lua_pushinteger(l, height);
+	lua_pushinteger(l, size.X);
+	lua_pushinteger(l, size.Y);
 	return 2;
 }
 

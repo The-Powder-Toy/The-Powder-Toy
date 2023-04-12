@@ -117,7 +117,7 @@ void BlueScreen(String detailMessage)
 		while (SDL_PollEvent(&event))
 			if(event.type == SDL_QUIT)
 				exit(-1); // Don't use Platform::Exit, we're practically zombies at this point anyway.
-		blit(engine.g->vid);
+		blit(engine.g->Data());
 	}
 }
 
@@ -444,7 +444,7 @@ int main(int argc, char * argv[])
 			String loadingText = "Loading save...";
 			engine.g->BlendText(engine.g->Size() / 2 - Vec2(Graphics::textwidth(loadingText) / 2, 5), loadingText, style::Colour::InformationTitle);
 
-			blit(engine.g->vid);
+			blit(engine.g->Data());
 			try
 			{
 				ByteString saveIdPart;

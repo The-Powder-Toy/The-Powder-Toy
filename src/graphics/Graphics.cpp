@@ -172,18 +172,6 @@ int Graphics::textwidth(const String &str)
 	return TextSize(str).X;
 }
 
-int Graphics::textwidthx(const String &str, int w)
-{
-	return TextFit(str, w) - str.begin();
-}
-
-void Graphics::textsize(const String &str, int & width, int & height)
-{
-	auto size = TextSize(str);
-	width = size.X;
-	height = size.Y;
-}
-
 void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool invert)
 {
 	y--;

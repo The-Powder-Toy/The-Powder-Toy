@@ -375,7 +375,7 @@ void EngineProcess()
 							 engine.GetForceIntegerScaling());
 			}
 
-			blit(engine.g->vid);
+			blit(engine.g->Data());
 		}
 		auto fpsLimit = ui::Engine::Ref().FpsLimit;
 		auto now = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
