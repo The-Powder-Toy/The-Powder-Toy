@@ -3,12 +3,12 @@
 
 namespace http
 {
-	ThumbnailRequest::ThumbnailRequest(int saveID, int saveDate, int width, int height) :
+	ThumbnailRequest::ThumbnailRequest(int saveID, int saveDate, Vec2<int> size) :
 		ImageRequest((
 			saveDate
 			? ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, "_", saveDate, "_small.png")
 			: ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, "_small.png")
-		), width, height)
+		), size)
 	{
 	}
 

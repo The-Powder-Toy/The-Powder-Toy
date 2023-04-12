@@ -6,7 +6,7 @@ namespace http
 	class ThumbnailRequest : public ImageRequest
 	{
 	public:
-		ThumbnailRequest(int saveID, int saveDate, int width, int height);
+		ThumbnailRequest(int saveID, int saveDate, Vec2<int> size);
 		virtual ~ThumbnailRequest();
 	};
 }

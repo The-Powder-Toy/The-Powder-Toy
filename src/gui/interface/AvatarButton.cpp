@@ -22,7 +22,7 @@ void AvatarButton::Tick(float dt)
 	if (!avatar && !tried && name.size() > 0)
 	{
 		tried = true;
-		imageRequest = std::make_unique<http::ImageRequest>(ByteString::Build(SCHEME, STATICSERVER, "/avatars/", name, ".png"), Size.X, Size.Y);
+		imageRequest = std::make_unique<http::ImageRequest>(ByteString::Build(SCHEME, STATICSERVER, "/avatars/", name, ".png"), Size);
 		imageRequest->Start();
 	}
 

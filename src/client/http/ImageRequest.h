@@ -15,8 +15,6 @@ namespace http
 
 	public:
 		ImageRequest(ByteString url, Vec2<int> size);
-		[[deprecated("Use ImageRequest(ByteString, Vec<int>)")]]
-		ImageRequest(ByteString url, int width, int height);
 		virtual ~ImageRequest();
 
 		std::unique_ptr<VideoBuffer> Finish();

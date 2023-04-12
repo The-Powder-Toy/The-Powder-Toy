@@ -9,10 +9,6 @@ namespace http
 		size(size)
 	{}
 
-	ImageRequest::ImageRequest(ByteString url, int width, int height):
-		ImageRequest(url, Vec2(width, height))
-	{}
-
 	ImageRequest::~ImageRequest()
 	{}
 

@@ -137,7 +137,7 @@ void SaveButton::Tick(float dt)
 				}
 				else if (save->GetID())
 				{
-					thumbnailRequest = std::make_unique<http::ThumbnailRequest>(save->GetID(), save->GetVersion(), thumbBoxSize.X, thumbBoxSize.Y);
+					thumbnailRequest = std::make_unique<http::ThumbnailRequest>(save->GetID(), save->GetVersion(), thumbBoxSize);
 					thumbnailRequest->Start();
 					triedThumbnail = true;
 				}
