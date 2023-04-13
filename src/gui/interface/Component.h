@@ -29,9 +29,7 @@ namespace ui
 		Graphics * GetGraphics();
 
 	public:
-		Component(Window* parent_state);
 		Component(Point position, Point size);
-		Component();
 		virtual ~Component();
 
 		void* UserData;

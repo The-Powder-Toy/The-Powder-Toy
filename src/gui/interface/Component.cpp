@@ -8,23 +8,6 @@
 
 using namespace ui;
 
-Component::Component(Window* parent_state):
-	parentstate_(parent_state),
-	_parent(NULL),
-	drawn(false),
-	textPosition(0, 0),
-	textSize(0, 0),
-	iconPosition(0, 0),
-	menu(NULL),
-	Position(Point(0,0)),
-	Size(Point(0,0)),
-	Enabled(true),
-	Visible(true),
-	DoesTextInput(false)
-{
-
-}
-
 Component::Component(Point position, Point size):
 	parentstate_(0),
 	_parent(NULL),
@@ -35,23 +18,6 @@ Component::Component(Point position, Point size):
 	menu(NULL),
 	Position(position),
 	Size(size),
-	Enabled(true),
-	Visible(true),
-	DoesTextInput(false)
-{
-
-}
-
-Component::Component():
-	parentstate_(NULL),
-	_parent(NULL),
-	drawn(false),
-	textPosition(0, 0),
-	textSize(0, 0),
-	iconPosition(0, 0),
-	menu(NULL),
-	Position(Point(0,0)),
-	Size(Point(0,0)),
 	Enabled(true),
 	Visible(true),
 	DoesTextInput(false)

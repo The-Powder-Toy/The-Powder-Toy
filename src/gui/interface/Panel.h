@@ -15,7 +15,8 @@ namespace ui
 	 * See sys::Component
 	 */
 
-class Component;
+	class Component;
+
 	class Panel : public Component
 	{
 	public:
