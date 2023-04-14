@@ -2,6 +2,7 @@
 #include <array>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <vector>
 #include "Graphics.h"
 #include "gui/interface/Point.h"
@@ -47,6 +48,8 @@ class Renderer: public RasterDrawMethods<Renderer>
 
 	friend struct RasterDrawMethods<Renderer>;
 
+	void renderZoom();
+
 public:
 	Vec2<int> Size() const
 	{
@@ -86,17 +89,24 @@ public:
 	ui::Point mousePos;
 
 	//Zoom window
-	ui::Point zoomWindowPosition;
-	ui::Point zoomScopePosition;
-	int zoomScopeSize;
-	bool zoomEnabled;
-	int ZFACTOR;
+	struct ZoomSettings
+	{
+		Vec2<int> ScopePosition;
+		int ScopeSize;
+		int Factor;
+		Vec2<int> WindowPosition;
+
+		static int WindowSize(int scopeSize, int factor)
+		{
+			return scopeSize * factor - 1;
+		}
+	};
+	std::optional<ZoomSettings> Zoom;
 
 	//Renderers
 	void RenderBegin();
 	void RenderEnd();
 
-	void RenderZoom();
 	void DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb);
 	void DrawWalls();
 	void DrawSigns();

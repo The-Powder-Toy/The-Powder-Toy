@@ -1,10 +1,11 @@
 #pragma once
-#include "gui/interface/Colour.h"
-#include "client/User.h"
-#include "gui/interface/Point.h"
-#include <vector>
 #include <deque>
 #include <memory>
+#include <vector>
+#include "client/User.h"
+#include "graphics/Renderer.h"
+#include "gui/interface/Colour.h"
+#include "gui/interface/Point.h"
 
 class Menu;
 class Tool;
@@ -16,7 +17,6 @@ class GameController;
 class SaveInfo;
 class SaveFile;
 class Simulation;
-class Renderer;
 class Snapshot;
 struct SnapshotDelta;
 class GameSave;
@@ -90,7 +90,14 @@ private:
 
 	String infoTip;
 	String toolTip;
-	//bool zoomEnabled;
+	
+	Renderer::ZoomSettings zoomSettings = {
+		Vec2<int>::Zero,
+		32,
+		8,
+		Vec2<int>::Zero,
+	};
+
 	void notifyRendererChanged();
 	void notifySimulationChanged();
 	void notifyPausedChanged();
@@ -208,18 +215,18 @@ public:
 	void SetUser(User user);
 	Simulation * GetSimulation();
 	Renderer * GetRenderer();
-	void SetZoomEnabled(bool enabled);
-	bool GetZoomEnabled();
-	void SetZoomSize(int size);
-	int GetZoomSize();
-	void SetZoomFactor(int factor);
-	int GetZoomFactor();
-	void SetZoomPosition(ui::Point position);
-	ui::Point GetZoomPosition();
-	bool MouseInZoom(ui::Point position);
-	ui::Point AdjustZoomCoords(ui::Point position);
-	void SetZoomWindowPosition(ui::Point position);
-	ui::Point GetZoomWindowPosition();
+	void SetZoomEnabled(bool);
+	bool GetZoomEnabled() const;
+	void SetZoomScopeSize(int);
+	int GetZoomScopeSize() const;
+	void SetZoomFactor(int);
+	int GetZoomFactor() const;
+	void SetZoomScopePosition(Vec2<int>);
+	Vec2<int> GetZoomScopePosition() const;
+	void SetZoomWindowPosition(Vec2<int>);
+	Vec2<int> GetZoomWindowPosition() const;
+	bool MouseInZoom(Vec2<int>) const;
+	Vec2<int> AdjustZoomCoords(Vec2<int>) const;
 	void SetClipboard(GameSave * save);
 	void SetPlaceSave(GameSave * save);
 	void Log(String message, bool printToFile);

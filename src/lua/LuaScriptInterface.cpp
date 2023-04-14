@@ -2724,13 +2724,13 @@ int LuaScriptInterface::renderer_zoomEnabled(lua_State * l)
 {
 	if (lua_gettop(l) == 0)
 	{
-		lua_pushboolean(l, luacon_ren->zoomEnabled);
+		lua_pushboolean(l, luacon_model->GetZoomEnabled());
 		return 1;
 	}
 	else
 	{
 		luaL_checktype(l, -1, LUA_TBOOLEAN);
-		luacon_ren->zoomEnabled = lua_toboolean(l, -1);
+		luacon_model->SetZoomEnabled(lua_toboolean(l, -1));
 		return 0;
 	}
 }
@@ -2738,53 +2738,60 @@ int LuaScriptInterface::renderer_zoomWindowInfo(lua_State * l)
 {
 	if (lua_gettop(l) == 0)
 	{
-		ui::Point location = luacon_ren->zoomWindowPosition;
-		lua_pushnumber(l, location.X);
-		lua_pushnumber(l, location.Y);
-		lua_pushnumber(l, luacon_ren->ZFACTOR);
-		lua_pushnumber(l, luacon_ren->zoomScopeSize * luacon_ren->ZFACTOR);
+		Vec2<int> const windowPos = luacon_model->GetZoomWindowPosition();
+		lua_pushnumber(l, windowPos.X);
+		lua_pushnumber(l, windowPos.Y);
+		lua_pushnumber(l, luacon_model->GetZoomFactor());
+		lua_pushnumber(l, luacon_model->GetZoomScopeSize() * luacon_model->GetZoomFactor());
 		return 4;
 	}
-	int x = luaL_optint(l, 1, 0);
-	int y = luaL_optint(l, 2, 0);
-	int f = luaL_optint(l, 3, 0);
-	if (f <= 0)
+	int const x = luaL_optint(l, 1, 0);
+	int const y = luaL_optint(l, 2, 0);
+	int const factor = luaL_optint(l, 3, 0);
+	if (factor <= 0)
 		return luaL_error(l, "Zoom factor must be greater than 0");
 
+	auto const window = RectSized(
+		Vec2(x, y),
+		Vec2(1, 1) * Renderer::ZoomSettings::WindowSize(luacon_model->GetZoomScopeSize(), factor)
+	);
 	// To prevent crash when zoom window is outside screen
-	if (x < 0 || y < 0 || luacon_ren->zoomScopeSize * f + x > XRES || luacon_ren->zoomScopeSize * f + y > YRES)
+	if (!RES.OriginRect().Contains(window))
 		return luaL_error(l, "Zoom window outside of bounds");
 
-	luacon_ren->zoomWindowPosition = ui::Point(x, y);
-	luacon_ren->ZFACTOR = f;
+	luacon_model->SetZoomWindowPosition(Vec2(x, y));
+	luacon_model->SetZoomFactor(factor);
 	return 0;
 }
 int LuaScriptInterface::renderer_zoomScopeInfo(lua_State * l)
 {
 	if (lua_gettop(l) == 0)
 	{
-		ui::Point location = luacon_ren->zoomScopePosition;
-		lua_pushnumber(l, location.X);
-		lua_pushnumber(l, location.Y);
-		lua_pushnumber(l, luacon_ren->zoomScopeSize);
+		Vec2<int> const scopePos = luacon_model->GetZoomScopePosition();
+		lua_pushnumber(l, scopePos.X);
+		lua_pushnumber(l, scopePos.Y);
+		lua_pushnumber(l, luacon_model->GetZoomScopeSize());
 		return 3;
 	}
-	int x = luaL_optint(l, 1, 0);
-	int y = luaL_optint(l, 2, 0);
-	int s = luaL_optint(l, 3, 0);
-	if (s <= 0)
+	int const x = luaL_optint(l, 1, 0);
+	int const y = luaL_optint(l, 2, 0);
+	int const size = luaL_optint(l, 3, 0);
+	if (size <= 0)
 		return luaL_error(l, "Zoom scope size must be greater than 0");
 
+	auto const scope = RectSized(Vec2(x, y), Vec2(1, 1) * size);
+	auto const window = RectSized(
+		luacon_model->GetZoomWindowPosition(),
+		Vec2(1, 1) * Renderer::ZoomSettings::WindowSize(size, luacon_model->GetZoomFactor())
+	);
 	// To prevent crash when zoom or scope window is outside screen
-	int windowEdgeRight = luacon_ren->ZFACTOR * s + luacon_ren->zoomWindowPosition.X;
-	int windowEdgeBottom = luacon_ren->ZFACTOR * s + luacon_ren->zoomWindowPosition.Y;
-	if (x < 0 || y < 0 || x + s > XRES || y + s > YRES)
+	if (!RES.OriginRect().Contains(scope))
 		return luaL_error(l, "Zoom scope outside of bounds");
-	if (windowEdgeRight > XRES || windowEdgeBottom > YRES)
+	if (!RES.OriginRect().Contains(window))
 		return luaL_error(l, "Zoom window outside of bounds");
 
-	luacon_ren->zoomScopePosition = ui::Point(x, y);
-	luacon_ren->zoomScopeSize = s;
+	luacon_model->SetZoomScopePosition(Vec2(x, y));
+	luacon_model->SetZoomScopeSize(size);
 	return 0;
 }
 

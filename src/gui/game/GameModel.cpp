@@ -1075,85 +1075,96 @@ void GameModel::SetLastTool(Tool * newTool)
 
 void GameModel::SetZoomEnabled(bool enabled)
 {
-	ren->zoomEnabled = enabled;
+	if (enabled)
+		ren->Zoom = zoomSettings;
+	else
+		ren->Zoom = std::nullopt;
 	notifyZoomChanged();
 }
 
-bool GameModel::GetZoomEnabled()
+bool GameModel::GetZoomEnabled() const
 {
-	return ren->zoomEnabled;
+	return bool(ren->Zoom);
 }
 
-void GameModel::SetZoomPosition(ui::Point position)
+void GameModel::SetZoomScopePosition(Vec2<int> position)
 {
-	ren->zoomScopePosition = position;
+	zoomSettings.ScopePosition = position;
+	if (ren->Zoom)
+		ren->Zoom->ScopePosition = position;
 	notifyZoomChanged();
 }
 
-ui::Point GameModel::GetZoomPosition()
+Vec2<int> GameModel::GetZoomScopePosition() const
 {
-	return ren->zoomScopePosition;
+	return zoomSettings.ScopePosition;
 }
 
-bool GameModel::MouseInZoom(ui::Point position)
+void GameModel::SetZoomWindowPosition(Vec2<int> position)
 {
-	if (!GetZoomEnabled())
-		return false;
-
-	int zoomFactor = GetZoomFactor();
-	ui::Point zoomWindowPosition = GetZoomWindowPosition();
-	ui::Point zoomWindowSize = ui::Point(GetZoomSize()*zoomFactor, GetZoomSize()*zoomFactor);
-
-	if (position.X >= zoomWindowPosition.X && position.Y >= zoomWindowPosition.Y && position.X < zoomWindowPosition.X+zoomWindowSize.X && position.Y < zoomWindowPosition.Y+zoomWindowSize.Y)
-		return true;
-	return false;
-}
-
-ui::Point GameModel::AdjustZoomCoords(ui::Point position)
-{
-	if (!GetZoomEnabled())
-		return position;
-
-	int zoomFactor = GetZoomFactor();
-	ui::Point zoomWindowPosition = GetZoomWindowPosition();
-	ui::Point zoomWindowSize = ui::Point(GetZoomSize()*zoomFactor, GetZoomSize()*zoomFactor);
-
-	if (position.X >= zoomWindowPosition.X && position.Y >= zoomWindowPosition.Y && position.X < zoomWindowPosition.X+zoomWindowSize.X && position.Y < zoomWindowPosition.Y+zoomWindowSize.Y)
-		return ((position-zoomWindowPosition)/GetZoomFactor())+GetZoomPosition();
-	return position;
-}
-
-void GameModel::SetZoomWindowPosition(ui::Point position)
-{
-	ren->zoomWindowPosition = position;
+	zoomSettings.WindowPosition = position;
+	if (ren->Zoom)
+		ren->Zoom->WindowPosition = position;
 	notifyZoomChanged();
 }
 
-ui::Point GameModel::GetZoomWindowPosition()
+Vec2<int> GameModel::GetZoomWindowPosition() const
 {
-	return ren->zoomWindowPosition;
+	return zoomSettings.WindowPosition;
 }
 
-void GameModel::SetZoomSize(int size)
+void GameModel::SetZoomScopeSize(int size)
 {
-	ren->zoomScopeSize = size;
+	zoomSettings.ScopeSize = size;
+	if (ren->Zoom)
+		ren->Zoom->ScopeSize = size;
 	notifyZoomChanged();
 }
 
-int GameModel::GetZoomSize()
+int GameModel::GetZoomScopeSize() const
 {
-	return ren->zoomScopeSize;
+	return zoomSettings.ScopeSize;
 }
 
 void GameModel::SetZoomFactor(int factor)
 {
-	ren->ZFACTOR = factor;
+	zoomSettings.Factor = factor;
+	if (ren->Zoom)
+		ren->Zoom->Factor = factor;
 	notifyZoomChanged();
 }
 
-int GameModel::GetZoomFactor()
+int GameModel::GetZoomFactor() const
 {
-	return ren->ZFACTOR;
+	return zoomSettings.Factor;
+}
+
+bool GameModel::MouseInZoom(Vec2<int> position) const
+{
+	if (!GetZoomEnabled())
+		return false;
+
+	auto const window = RectSized(
+		GetZoomWindowPosition(),
+		Vec2(1, 1) * Renderer::ZoomSettings::WindowSize(GetZoomScopeSize(), GetZoomFactor())
+	);
+	return window.Contains(position);
+}
+
+Vec2<int> GameModel::AdjustZoomCoords(Vec2<int> position) const
+{
+	if (!GetZoomEnabled())
+		return position;
+
+	auto const factor = GetZoomFactor();
+	auto const window = RectSized(
+		GetZoomWindowPosition(),
+		Vec2(1, 1) * Renderer::ZoomSettings::WindowSize(GetZoomScopeSize(), factor)
+	);
+	if (window.Contains(position))
+		return (position - window.TopLeft) / factor + GetZoomScopePosition();
+	else
+		return position;
 }
 
 void GameModel::SetActiveColourPreset(size_t preset)

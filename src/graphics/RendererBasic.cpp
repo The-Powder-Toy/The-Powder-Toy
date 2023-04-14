@@ -44,7 +44,7 @@ void Renderer::RenderBegin()
 
 void Renderer::RenderEnd()
 {
-	RenderZoom();
+	renderZoom();
 }
 
 void Renderer::SetSample(int x, int y)
@@ -73,39 +73,24 @@ void Renderer::FinaliseParts()
 	}
 }
 
-void Renderer::RenderZoom()
+void Renderer::renderZoom()
 {
-	if(!zoomEnabled)
+	if (!Zoom)
 		return;
+	
+	auto const factor = Zoom->Factor;
+	auto const size = Zoom->ScopeSize;
+	auto const scope = RectSized(Zoom->ScopePosition, Vec2(1, 1) * size);
+	auto const window = RectSized(Zoom->WindowPosition, Vec2(1, 1) * ZoomSettings::WindowSize(Zoom->ScopeSize, factor));
+	DrawFilledRect(window.Inset(-1), 0x000000_rgb);
+	DrawRect(window.Inset(-2), 0xC0C0C0_rgb);
+	for (auto offset : (Vec2(1, 1) * size).OriginRect())
 	{
-		int x, y, i, j;
-		pixel pix;
-		pixel * img = vid;
-		clearrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1);
-		drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+3, zoomScopeSize*ZFACTOR+3, 192, 192, 192, 255);
-		drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1, 0, 0, 0, 255);
-		for (j=0; j<zoomScopeSize; j++)
-			for (i=0; i<zoomScopeSize; i++)
-			{
-				pix = img[(j+zoomScopePosition.Y)*(VIDXRES)+(i+zoomScopePosition.X)];
-				for (y=0; y<ZFACTOR-1; y++)
-					for (x=0; x<ZFACTOR-1; x++)
-						img[(j*ZFACTOR+y+zoomWindowPosition.Y)*(VIDXRES)+(i*ZFACTOR+x+zoomWindowPosition.X)] = pix;
-			}
-		if (zoomEnabled)
-		{
-			for (j=-1; j<=zoomScopeSize; j++)
-			{
-				xor_pixel(zoomScopePosition.X+j, zoomScopePosition.Y-1);
-				xor_pixel(zoomScopePosition.X+j, zoomScopePosition.Y+zoomScopeSize);
-			}
-			for (j=0; j<zoomScopeSize; j++)
-			{
-				xor_pixel(zoomScopePosition.X-1, zoomScopePosition.Y+j);
-				xor_pixel(zoomScopePosition.X+zoomScopeSize, zoomScopePosition.Y+j);
-			}
-		}
+		pixel px = video[Zoom->ScopePosition + offset];
+		for (auto pxOffset : Vec2(factor - 1, factor - 1).OriginRect())
+			video[Zoom->WindowPosition + offset * factor + pxOffset] = px;
 	}
+	XorRect(scope.Inset(-1));
 }
 
 void Renderer::DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb)
@@ -275,11 +260,6 @@ Renderer::Renderer(Simulation * sim):
 	findingElement(0),
     foundElements(0),
 	mousePos(0, 0),
-	zoomWindowPosition(0, 0),
-	zoomScopePosition(0, 0),
-	zoomScopeSize(32),
-	zoomEnabled(false),
-	ZFACTOR(8),
 	gridSize(0)
 {
 	PopulateTables();

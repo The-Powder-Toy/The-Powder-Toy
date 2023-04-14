@@ -22,6 +22,7 @@ struct RasterDrawMethods
 
 	void DrawRect(Rect<int>, RGB<uint8_t>);
 	void BlendRect(Rect<int>, RGBA<uint8_t>);
+	void XorRect(Rect<int>);
 
 	void XorDottedRect(Rect<int>);
 

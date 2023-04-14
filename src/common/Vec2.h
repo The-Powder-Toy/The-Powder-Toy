@@ -128,7 +128,7 @@ struct Vec2
 
 	// Return a rectangle starting at origin, whose dimensions match this vector
 	template<typename S = T, typename = std::enable_if_t<std::is_integral_v<S>>>
-	constexpr inline Rect<T> OriginRect() const
+	constexpr Rect<T> OriginRect() const
 	{
 		return RectSized(Vec2<T>(0, 0), *this);
 	}
@@ -379,23 +379,29 @@ public:
 		);
 	}
 
-	inline Rect<T> &operator|=(Rect<T> other)
+	Rect<T> &operator|=(Rect<T> other)
 	{
 		return *this = *this | other;
 	}
 
-	inline Rect<T> &operator&=(Rect<T> other)
+	Rect<T> &operator&=(Rect<T> other)
 	{
 		return *this = *this & other;
 	}
 
-	inline bool Contains(Vec2<T> point) const
+	bool Contains(Vec2<T> point) const
 	{
 		return point.X >= TopLeft.X && point.X <= BottomRight.X && point.Y >= TopLeft.Y && point.Y <= BottomRight.Y;
 	}
 
+	// Whether rect fits inside this, assuming **rect is not empty**
+	bool Contains(Rect<T> rect) const
+	{
+		return rect.TopLeft.X >= TopLeft.X && rect.BottomRight.X <= BottomRight.X && rect.TopLeft.Y >= TopLeft.Y && rect.BottomRight.Y <= BottomRight.Y;
+	}
+
 	template<typename S = T, typename = std::enable_if_t<std::is_integral_v<S>>>
-	inline Vec2<T> Size() const
+	Vec2<T> Size() const
 	{
 		return BottomRight - TopLeft + Vec2<T>(1, 1);
 	}

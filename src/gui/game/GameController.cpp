@@ -299,14 +299,14 @@ void GameController::AdjustZoomSize(int delta, bool logarithmic)
 {
 	int newSize;
 	if(logarithmic)
-		newSize = gameModel->GetZoomSize() + std::max(gameModel->GetZoomSize() / 10, 1) * delta;
+		newSize = gameModel->GetZoomScopeSize() + std::max(gameModel->GetZoomScopeSize() / 10, 1) * delta;
 	else
-		newSize = gameModel->GetZoomSize() + delta;
+		newSize = gameModel->GetZoomScopeSize() + delta;
 	if(newSize<5)
 			newSize = 5;
 	if(newSize>64)
 			newSize = 64;
-	gameModel->SetZoomSize(newSize);
+	gameModel->SetZoomScopeSize(newSize);
 
 	int newZoomFactor = 256/newSize;
 	if(newZoomFactor<3)
@@ -928,21 +928,21 @@ void GameController::SetToolStrength(float value)
 
 void GameController::SetZoomPosition(ui::Point position)
 {
-	ui::Point zoomPosition = position-(gameModel->GetZoomSize()/2);
+	ui::Point zoomPosition = position-(gameModel->GetZoomScopeSize()/2);
 	if(zoomPosition.X < 0)
 			zoomPosition.X = 0;
 	if(zoomPosition.Y < 0)
 			zoomPosition.Y = 0;
-	if(zoomPosition.X >= XRES-gameModel->GetZoomSize())
-			zoomPosition.X = XRES-gameModel->GetZoomSize();
-	if(zoomPosition.Y >= YRES-gameModel->GetZoomSize())
-			zoomPosition.Y = YRES-gameModel->GetZoomSize();
+	if(zoomPosition.X >= XRES-gameModel->GetZoomScopeSize())
+			zoomPosition.X = XRES-gameModel->GetZoomScopeSize();
+	if(zoomPosition.Y >= YRES-gameModel->GetZoomScopeSize())
+			zoomPosition.Y = YRES-gameModel->GetZoomScopeSize();
 
 	ui::Point zoomWindowPosition = ui::Point(0, 0);
 	if(position.X < XRES/2)
-		zoomWindowPosition.X = XRES-(gameModel->GetZoomSize()*gameModel->GetZoomFactor());
+		zoomWindowPosition.X = XRES-(gameModel->GetZoomScopeSize()*gameModel->GetZoomFactor());
 
-	gameModel->SetZoomPosition(zoomPosition);
+	gameModel->SetZoomScopePosition(zoomPosition);
 	gameModel->SetZoomWindowPosition(zoomWindowPosition);
 }
 
