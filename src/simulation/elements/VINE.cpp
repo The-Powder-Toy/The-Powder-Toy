@@ -8,7 +8,7 @@ void Element::Element_VINE()
 {
 	Identifier = "DEFAULT_PT_VINE";
 	Name = "VINE";
-	Colour = 0x079A00_rgb .Pack();
+	Colour = 0x079A00_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

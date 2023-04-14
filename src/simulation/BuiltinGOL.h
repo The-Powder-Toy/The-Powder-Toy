@@ -8,7 +8,7 @@ struct BuiltinGOL
 	String name;
 	int oldtype;
 	int ruleset;
-	pixel colour, colour2;
+	RGB<uint8_t> colour, colour2;
 	int goltype;
 	String description;
 };

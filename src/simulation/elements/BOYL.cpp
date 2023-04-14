@@ -6,7 +6,7 @@ void Element::Element_BOYL()
 {
 	Identifier = "DEFAULT_PT_BOYL";
 	Name = "BOYL";
-	Colour = 0x0A3200_rgb .Pack();
+	Colour = 0x0A3200_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;

@@ -84,12 +84,12 @@ public:
 
 	struct GradientStop
 	{
-		pixel color;
+		RGB<uint8_t> color;
 		float point;
 
 		bool operator <(const GradientStop &other) const;
 	};
-	static std::vector<pixel> Gradient(std::vector<GradientStop> stops, int resolution);
+	static std::vector<RGB<uint8_t>> Gradient(std::vector<GradientStop> stops, int resolution);
 
 	//Font/text metrics
 	[[deprecated("Use TextSize().X")]]

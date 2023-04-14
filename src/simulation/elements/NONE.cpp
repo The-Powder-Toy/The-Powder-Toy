@@ -6,7 +6,7 @@ void Element::Element_NONE()
 {
 	Identifier = "DEFAULT_PT_NONE";
 	Name = "NONE";
-	Colour = 0x000000_rgb .Pack();
+	Colour = 0x000000_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

@@ -4,7 +4,7 @@ void Element::Element_LO2()
 {
 	Identifier = "DEFAULT_PT_LO2";
 	Name = "LOXY";
-	Colour = 0x80A0EF_rgb .Pack();
+	Colour = 0x80A0EF_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

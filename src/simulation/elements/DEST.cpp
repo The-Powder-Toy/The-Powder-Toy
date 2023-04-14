@@ -7,7 +7,7 @@ void Element::Element_DEST()
 {
 	Identifier = "DEFAULT_PT_DEST";
 	Name = "DEST";
-	Colour = 0xFF3311_rgb .Pack();
+	Colour = 0xFF3311_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

@@ -7,7 +7,7 @@ void Element::Element_C5()
 {
 	Identifier = "DEFAULT_PT_C5";
 	Name = "C-5";
-	Colour = 0x2050E0_rgb .Pack();
+	Colour = 0x2050E0_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

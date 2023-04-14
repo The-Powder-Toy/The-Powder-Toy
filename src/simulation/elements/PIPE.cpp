@@ -12,7 +12,7 @@ void Element::Element_PIPE()
 {
 	Identifier = "DEFAULT_PT_PIPE";
 	Name = "PIPE";
-	Colour = 0x444444_rgb .Pack();
+	Colour = 0x444444_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
 	Enabled = 1;
@@ -382,7 +382,7 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 			cpart->tmp = tpart.tmp3;
 			cpart->ctype = tpart.tmp4;
 
-			auto colour = RGB<uint8_t>::Unpack(ren->sim->elements[t].Colour);
+			RGB<uint8_t> colour = ren->sim->elements[t].Colour;
 			*colr = colour.Red;
 			*colg = colour.Green;
 			*colb = colour.Blue;

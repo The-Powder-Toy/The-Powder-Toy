@@ -4,7 +4,7 @@ void Element::Element_GUNP()
 {
 	Identifier = "DEFAULT_PT_GUNP";
 	Name = "GUN";
-	Colour = 0xC0C0D0_rgb .Pack();
+	Colour = 0xC0C0D0_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

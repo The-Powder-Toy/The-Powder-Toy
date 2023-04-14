@@ -7,7 +7,7 @@ void Element::Element_PVOD()
 {
 	Identifier = "DEFAULT_PT_PVOD";
 	Name = "PVOD";
-	Colour = 0x792020_rgb .Pack();
+	Colour = 0x792020_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;

@@ -6,7 +6,7 @@ void Element::Element_MERC()
 {
 	Identifier = "DEFAULT_PT_MERC";
 	Name = "MERC";
-	Colour = 0x736B6D_rgb .Pack();
+	Colour = 0x736B6D_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

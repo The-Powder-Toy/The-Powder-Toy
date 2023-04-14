@@ -7,7 +7,7 @@ void Element::Element_ACEL()
 {
 	Identifier = "DEFAULT_PT_ACEL";
 	Name = "ACEL";
-	Colour = 0x0099CC_rgb .Pack();
+	Colour = 0x0099CC_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
 	Enabled = 1;

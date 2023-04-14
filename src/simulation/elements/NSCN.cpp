@@ -4,7 +4,7 @@ void Element::Element_NSCN()
 {
 	Identifier = "DEFAULT_PT_NSCN";
 	Name = "NSCN";
-	Colour = 0x505080_rgb .Pack();
+	Colour = 0x505080_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

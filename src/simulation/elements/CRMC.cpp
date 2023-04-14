@@ -8,7 +8,7 @@ void Element::Element_CRMC()
 {
 	Identifier = "DEFAULT_PT_CRMC";
 	Name = "CRMC";
-	Colour = 0xD6D1D4_rgb .Pack();
+	Colour = 0xD6D1D4_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

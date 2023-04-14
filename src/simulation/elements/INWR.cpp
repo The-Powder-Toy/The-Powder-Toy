@@ -4,7 +4,7 @@ void Element::Element_INWR()
 {
 	Identifier = "DEFAULT_PT_INWR";
 	Name = "INWR";
-	Colour = 0x544141_rgb .Pack();
+	Colour = 0x544141_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

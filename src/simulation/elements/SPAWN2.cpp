@@ -7,7 +7,7 @@ void Element::Element_SPAWN2()
 {
 	Identifier = "DEFAULT_PT_SPAWN2";
 	Name = "SPWN2";
-	Colour = 0xAAAAAA_rgb .Pack();
+	Colour = 0xAAAAAA_rgb;
 	MenuVisible = 0;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

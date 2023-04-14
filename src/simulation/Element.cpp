@@ -4,7 +4,7 @@
 Element::Element():
 	Identifier("DEFAULT_INVALID"),
 	Name(""),
-	Colour(0xFF00FF_rgb .Pack()),
+	Colour(0xFF00FF_rgb),
 	MenuVisible(0),
 	MenuSection(0),
 	Enabled(0),

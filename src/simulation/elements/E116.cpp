@@ -4,7 +4,7 @@ void Element::Element_E116()
 {
 	Identifier = "DEFAULT_PT_116";
 	Name = "EQVE";
-	Colour = 0xFFE0A0_rgb .Pack();
+	Colour = 0xFFE0A0_rgb;
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER2;
 	Enabled = 1;

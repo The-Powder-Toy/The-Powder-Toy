@@ -7,7 +7,7 @@ void Element::Element_EXOT()
 {
 	Identifier = "DEFAULT_PT_EXOT";
 	Name = "EXOT";
-	Colour = 0x247BFE_rgb .Pack();
+	Colour = 0x247BFE_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

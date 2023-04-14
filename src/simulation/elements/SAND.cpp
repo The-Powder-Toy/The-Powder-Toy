@@ -4,7 +4,7 @@ void Element::Element_SAND()
 {
 	Identifier = "DEFAULT_PT_SAND";
 	Name = "SAND";
-	Colour = 0xFFD090_rgb .Pack();
+	Colour = 0xFFD090_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

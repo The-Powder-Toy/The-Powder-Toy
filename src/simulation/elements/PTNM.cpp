@@ -8,7 +8,7 @@ void Element::Element_PTNM()
 {
 	Identifier = "DEFAULT_PT_PTNM";
 	Name = "PTNM";
-	Colour = 0xD5E0EB_rgb .Pack();
+	Colour = 0xD5E0EB_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

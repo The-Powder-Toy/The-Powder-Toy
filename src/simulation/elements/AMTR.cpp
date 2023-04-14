@@ -7,7 +7,7 @@ void Element::Element_AMTR()
 {
 	Identifier = "DEFAULT_PT_AMTR";
 	Name = "AMTR";
-	Colour = 0x808080_rgb .Pack();
+	Colour = 0x808080_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

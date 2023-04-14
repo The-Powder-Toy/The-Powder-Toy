@@ -6,7 +6,7 @@ void Element::Element_BRMT()
 {
 	Identifier = "DEFAULT_PT_BRMT";
 	Name = "BRMT";
-	Colour = 0x705060_rgb .Pack();
+	Colour = 0x705060_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

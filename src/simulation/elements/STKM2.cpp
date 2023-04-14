@@ -12,7 +12,7 @@ void Element::Element_STKM2()
 {
 	Identifier = "DEFAULT_PT_STKM2";
 	Name = "STK2";
-	Colour = 0x6464FF_rgb .Pack();
+	Colour = 0x6464FF_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

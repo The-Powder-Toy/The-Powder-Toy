@@ -7,7 +7,7 @@ void Element::Element_HEAC()
 {
 	Identifier = "DEFAULT_PT_HEAC";
 	Name = "HEAC";
-	Colour = 0xCB6351_rgb .Pack();
+	Colour = 0xCB6351_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

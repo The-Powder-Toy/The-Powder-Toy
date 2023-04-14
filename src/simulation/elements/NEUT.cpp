@@ -10,7 +10,7 @@ void Element::Element_NEUT()
 {
 	Identifier = "DEFAULT_PT_NEUT";
 	Name = "NEUT";
-	Colour = 0x20E0FF_rgb .Pack();
+	Colour = 0x20E0FF_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

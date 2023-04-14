@@ -7,7 +7,7 @@ void Element::Element_FIRW()
 {
 	Identifier = "DEFAULT_PT_FIRW";
 	Name = "FIRW";
-	Colour = 0xFFA040_rgb .Pack();
+	Colour = 0xFFA040_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;
@@ -87,7 +87,7 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	else //if (parts[i].tmp>=2)
 	{
-		unsigned col = Renderer::firwTableAt(sim->rng.between(0, 199));
+		unsigned col = Renderer::firwTableAt(sim->rng.between(0, 199)).Pack();
 		for (int n=0; n<40; n++)
 		{
 			np = sim->create_part(-3, x, y, PT_EMBR);

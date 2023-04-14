@@ -7,7 +7,7 @@ void Element::Element_BIZRG()
 {
 	Identifier = "DEFAULT_PT_BIZRG";
 	Name = "BIZG";
-	Colour = 0x00FFBB_rgb .Pack();
+	Colour = 0x00FFBB_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_CRACKER2;
 	Enabled = 1;

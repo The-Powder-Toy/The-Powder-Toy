@@ -7,7 +7,7 @@ void Element::Element_LDTC()
 {
 	Identifier = "DEFAULT_PT_LDTC";
 	Name = "LDTC";
-	Colour = 0x66ff66_rgb .Pack();
+	Colour = 0x66ff66_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
 	Enabled = 1;

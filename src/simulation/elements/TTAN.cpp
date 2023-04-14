@@ -7,7 +7,7 @@ void Element::Element_TTAN()
 {
 	Identifier = "DEFAULT_PT_TTAN";
 	Name = "TTAN";
-	Colour = 0x909090_rgb .Pack();
+	Colour = 0x909090_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

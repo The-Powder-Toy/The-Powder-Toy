@@ -4,7 +4,7 @@ void Element::Element_NICE()
 {
 	Identifier = "DEFAULT_PT_NICE";
 	Name = "NICE";
-	Colour = 0xC0E0FF_rgb .Pack();
+	Colour = 0xC0E0FF_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

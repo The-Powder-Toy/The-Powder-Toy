@@ -7,7 +7,7 @@ void Element::Element_HSWC()
 {
 	Identifier = "DEFAULT_PT_HSWC";
 	Name = "HSWC";
-	Colour = 0x3B0A0A_rgb .Pack();
+	Colour = 0x3B0A0A_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;

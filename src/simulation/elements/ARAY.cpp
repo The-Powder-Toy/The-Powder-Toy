@@ -6,7 +6,7 @@ void Element::Element_ARAY()
 {
 	Identifier = "DEFAULT_PT_ARAY";
 	Name = "ARAY";
-	Colour = 0xFFBB00_rgb .Pack();
+	Colour = 0xFFBB00_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

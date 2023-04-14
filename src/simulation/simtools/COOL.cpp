@@ -6,7 +6,7 @@ void SimTool::Tool_COOL()
 {
 	Identifier = "DEFAULT_TOOL_COOL";
 	Name = "COOL";
-	Colour = 0x00DDFF_rgb .Pack();
+	Colour = 0x00DDFF_rgb;
 	Description = "Cools the targeted element.";
 	Perform = &perform;
 }

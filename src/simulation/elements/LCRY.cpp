@@ -7,7 +7,7 @@ void Element::Element_LCRY()
 {
 	Identifier = "DEFAULT_PT_LCRY";
 	Name = "LCRY";
-	Colour = 0x505050_rgb .Pack();
+	Colour = 0x505050_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;

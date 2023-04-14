@@ -6,7 +6,7 @@ void Element::Element_SHLD4()
 {
 	Identifier = "DEFAULT_PT_SHLD4";
 	Name = "SHD4";
-	Colour = 0x212121_rgb .Pack();
+	Colour = 0x212121_rgb;
 	MenuVisible = 0;
 	MenuSection = SC_CRACKER2;
 	Enabled = 1;

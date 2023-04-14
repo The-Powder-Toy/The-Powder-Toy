@@ -10,7 +10,7 @@ class Slider : public ui::Component
 	int sliderSteps;
 	int sliderPosition;
 	bool isMouseDown;
-	std::vector<pixel> bgGradient;
+	std::vector<RGB<uint8_t>> bgGradient;
 
 	struct SliderAction
 	{

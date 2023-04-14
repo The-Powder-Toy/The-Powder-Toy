@@ -7,7 +7,7 @@ void Element::Element_CBNW()
 {
 	Identifier = "DEFAULT_PT_CBNW";
 	Name = "BUBW";
-	Colour = 0x2030D0_rgb .Pack();
+	Colour = 0x2030D0_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

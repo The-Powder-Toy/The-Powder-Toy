@@ -6,7 +6,7 @@ void Element::Element_RFGL()
 {
 	Identifier = "DEFAULT_PT_RFGL";
 	Name = "RFGL";
-	Colour = 0x84C2CF_rgb .Pack();
+	Colour = 0x84C2CF_rgb;
 	MenuVisible = 0;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

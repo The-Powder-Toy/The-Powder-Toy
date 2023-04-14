@@ -7,7 +7,7 @@ void Element::Element_WIFI()
 {
 	Identifier = "DEFAULT_PT_WIFI";
 	Name = "WIFI";
-	Colour = 0x40A060_rgb .Pack();
+	Colour = 0x40A060_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

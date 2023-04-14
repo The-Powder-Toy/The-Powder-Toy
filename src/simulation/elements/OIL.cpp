@@ -4,7 +4,7 @@ void Element::Element_OIL()
 {
 	Identifier = "DEFAULT_PT_OIL";
 	Name = "OIL";
-	Colour = 0x404010_rgb .Pack();
+	Colour = 0x404010_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

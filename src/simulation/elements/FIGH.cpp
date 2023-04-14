@@ -15,7 +15,7 @@ void Element::Element_FIGH()
 {
 	Identifier = "DEFAULT_PT_FIGH";
 	Name = "FIGH";
-	Colour = 0xFFE0A0_rgb .Pack();
+	Colour = 0xFFE0A0_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

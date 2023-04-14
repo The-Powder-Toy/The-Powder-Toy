@@ -464,9 +464,9 @@ bool Graphics::GradientStop::operator <(const GradientStop &other) const
 	return point < other.point;
 }
 
-std::vector<pixel> Graphics::Gradient(std::vector<GradientStop> stops, int resolution)
+std::vector<RGB<uint8_t>> Graphics::Gradient(std::vector<GradientStop> stops, int resolution)
 {
-	std::vector<pixel> table(resolution, 0);
+	std::vector<RGB<uint8_t>> table(resolution, 0x000000_rgb);
 	if (stops.size() >= 2)
 	{
 		std::sort(stops.begin(), stops.end());
@@ -485,13 +485,7 @@ std::vector<pixel> Graphics::Gradient(std::vector<GradientStop> stops, int resol
 			auto &left = stops[stop];
 			auto &right = stops[stop + 1];
 			auto f = (point - left.point) / (right.point - left.point);
-			auto leftColor = RGB<uint8_t>::Unpack(left.color);
-			auto rightColor = RGB<uint8_t>::Unpack(right.color);
-			table[i] = RGB<uint8_t>(
-				int(int(leftColor.Red  ) + (int(rightColor.Red  ) - int(leftColor.Red  )) * f),
-				int(int(leftColor.Green) + (int(rightColor.Green) - int(leftColor.Green)) * f),
-				int(int(leftColor.Blue ) + (int(rightColor.Blue ) - int(leftColor.Blue )) * f)
-			).Pack();
+			table[i] = left.color.Blend(right.color.WithAlpha(f * 0xFF));
 		}
 	}
 	return table;

@@ -4,7 +4,7 @@ void Element::Element_DUST()
 {
 	Identifier = "DEFAULT_PT_DUST";
 	Name = "DUST";
-	Colour = 0xFFE0A0_rgb .Pack();
+	Colour = 0xFFE0A0_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

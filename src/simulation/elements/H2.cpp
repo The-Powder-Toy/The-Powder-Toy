@@ -6,7 +6,7 @@ void Element::Element_H2()
 {
 	Identifier = "DEFAULT_PT_H2";
 	Name = "HYGN";
-	Colour = 0x5070FF_rgb .Pack();
+	Colour = 0x5070FF_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;

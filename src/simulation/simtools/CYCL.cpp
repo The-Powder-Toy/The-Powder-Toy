@@ -9,7 +9,7 @@ void SimTool::Tool_CYCL()
 {
 	Identifier = "DEFAULT_TOOL_CYCL";
 	Name = "CYCL";
-	Colour = 0x132f5b_rgb .Pack();
+	Colour = 0x132f5b_rgb;
 	Description = "Cyclone, produces swirling air currents";
 	Perform = &perform;
 }

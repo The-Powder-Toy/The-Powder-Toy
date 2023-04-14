@@ -9,7 +9,7 @@ void Element::Element_PHOT()
 {
 	Identifier = "DEFAULT_PT_PHOT";
 	Name = "PHOT";
-	Colour = 0xFFFFFF_rgb .Pack();
+	Colour = 0xFFFFFF_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;
