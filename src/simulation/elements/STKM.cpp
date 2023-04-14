@@ -14,7 +14,7 @@ void Element::Element_STKM()
 {
 	Identifier = "DEFAULT_PT_STKM";
 	Name = "STKM";
-	Colour = 0xFFE0A0_rgb .Pack();
+	Colour = 0xFFE0A0_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

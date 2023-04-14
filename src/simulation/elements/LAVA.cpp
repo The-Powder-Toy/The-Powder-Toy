@@ -8,7 +8,7 @@ void Element::Element_LAVA()
 {
 	Identifier = "DEFAULT_PT_LAVA";
 	Name = "LAVA";
-	Colour = 0xE05010_rgb .Pack();
+	Colour = 0xE05010_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

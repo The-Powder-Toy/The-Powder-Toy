@@ -10,7 +10,7 @@
 SimTool::SimTool():
 Identifier("DEFAULT_TOOL_INVALID"),
 Name(""),
-Colour(0xFFFFFF_rgb .Pack()),
+Colour(0xFFFFFF_rgb),
 Description("NULL Tool, does NOTHING")
 {
 }

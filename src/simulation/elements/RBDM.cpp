@@ -4,7 +4,7 @@ void Element::Element_RBDM()
 {
 	Identifier = "DEFAULT_PT_RBDM";
 	Name = "RBDM";
-	Colour = 0xCCCCCC_rgb .Pack();
+	Colour = 0xCCCCCC_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

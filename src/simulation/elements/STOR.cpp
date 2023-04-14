@@ -9,7 +9,7 @@ void Element::Element_STOR()
 {
 	Identifier = "DEFAULT_PT_STOR";
 	Name = "STOR";
-	Colour = 0x50DFDF_rgb .Pack();
+	Colour = 0x50DFDF_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;

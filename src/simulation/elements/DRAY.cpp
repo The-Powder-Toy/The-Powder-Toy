@@ -6,7 +6,7 @@ void Element::Element_DRAY()
 {
 	Identifier = "DEFAULT_PT_DRAY";
 	Name = "DRAY";
-	Colour = 0xFFAA22_rgb .Pack();
+	Colour = 0xFFAA22_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

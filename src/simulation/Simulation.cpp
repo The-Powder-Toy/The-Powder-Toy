@@ -2140,13 +2140,13 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	{
 		int colr, colg, colb;
 		int sandcolourToUse = p == -2 ? sandcolour_interface : sandcolour;
-		auto colour = RGB<uint8_t>::Unpack(elements[t].Colour);
+		RGB<uint8_t> colour = elements[t].Colour;
 		colr = colour.Red   + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
 		colg = colour.Green + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
 		colb = colour.Blue  + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
-		colr = colr>255 ? 255 : (colr<0 ? 0 : colr);
-		colg = colg>255 ? 255 : (colg<0 ? 0 : colg);
-		colb = colb>255 ? 255 : (colb<0 ? 0 : colb);
+		colr = std::clamp(colr, 0, 255);
+		colg = std::clamp(colg, 0, 255);
+		colb = std::clamp(colb, 0, 255);
 		parts[i].dcolour = (rng.between(0, 149)<<24) | (colr<<16) | (colg<<8) | colb;
 	}
 

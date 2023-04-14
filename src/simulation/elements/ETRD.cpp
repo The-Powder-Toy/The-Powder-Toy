@@ -8,7 +8,7 @@ void Element::Element_ETRD()
 {
 	Identifier = "DEFAULT_PT_ETRD";
 	Name = "ETRD";
-	Colour = 0x404040_rgb .Pack();
+	Colour = 0x404040_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

@@ -7,7 +7,7 @@ void Element::Element_EMP()
 {
 	Identifier = "DEFAULT_PT_EMP";
 	Name = "EMP";
-	Colour = 0x66AAFF_rgb .Pack();
+	Colour = 0x66AAFF_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

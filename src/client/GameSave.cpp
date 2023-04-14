@@ -1130,7 +1130,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 						if (particles[newIndex].tmp>=2 && savedVersion < 81)
 						{
 							particles[newIndex].type = PT_EMBR;
-							particles[newIndex].ctype = Renderer::firwTableAt(particles[newIndex].tmp - 4);
+							particles[newIndex].ctype = Renderer::firwTableAt(particles[newIndex].tmp - 4).Pack();
 							particles[newIndex].tmp = 1;
 						}
 						break;
@@ -1224,8 +1224,8 @@ void GameSave::readOPS(const std::vector<char> &data)
 							{
 								particles[newIndex].tmp2 = particles[newIndex].tmp;
 								if (!particles[newIndex].dcolour)
-									particles[newIndex].dcolour = builtinGol[particles[newIndex].ctype].colour;
-								particles[newIndex].tmp = builtinGol[particles[newIndex].ctype].colour2;
+									particles[newIndex].dcolour = builtinGol[particles[newIndex].ctype].colour.Pack();
+								particles[newIndex].tmp = builtinGol[particles[newIndex].ctype].colour2.Pack();
 							}
 						}
 					}
@@ -1807,8 +1807,8 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 				if (particles[i-1].ctype >= 0 && particles[i-1].ctype < NGOL)
 				{
 					if (!particles[i-1].dcolour)
-						particles[i-1].dcolour = builtinGol[particles[i-1].ctype].colour;
-					particles[i-1].tmp = builtinGol[particles[i-1].ctype].colour2;
+						particles[i-1].dcolour = builtinGol[particles[i-1].ctype].colour.Pack();
+					particles[i-1].tmp = builtinGol[particles[i-1].ctype].colour2.Pack();
 				}
 			}
 			if(ty==PT_LCRY){
@@ -1856,7 +1856,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 				if (particles[i-1].type==PT_FIRW && particles[i-1].tmp>=2)
 				{
 					particles[i-1].type = PT_EMBR;
-					particles[i-1].ctype = Renderer::firwTableAt(particles[i-1].tmp-4);
+					particles[i-1].ctype = Renderer::firwTableAt(particles[i-1].tmp-4).Pack();
 					particles[i-1].tmp = 1;
 				}
 			}

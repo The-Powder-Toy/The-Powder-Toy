@@ -19,8 +19,8 @@ std::unique_ptr<VideoBuffer> Renderer::WallIcon(int wallID, Vec2<int> size)
 		return nullptr;
 	wall_type const &wtype = wtypes[wallID];
 
-	RGB<uint8_t> primary = RGB<uint8_t>::Unpack(wtype.colour);
-	RGB<uint8_t> secondary = RGB<uint8_t>::Unpack(wtype.eglow);
+	RGB<uint8_t> primary = wtype.colour;
+	RGB<uint8_t> secondary = wtype.eglow;
 
 	auto texture = std::make_unique<VideoBuffer>(size);
 	switch (wtype.drawstyle)
@@ -209,7 +209,7 @@ void Renderer::render_parts()
 			//Defaults
 			pixel_mode = 0 | PMODE_FLAT;
 			cola = 255;
-			auto colour = RGB<uint8_t>::Unpack(elements[t].Colour);
+			RGB<uint8_t> colour = elements[t].Colour;
 			colr = colour.Red;
 			colg = colour.Green;
 			colb = colour.Blue;
@@ -288,7 +288,7 @@ void Renderer::render_parts()
 					constexpr float min_temp = MIN_TEMP;
 					constexpr float max_temp = MAX_TEMP;
 					firea = 255;
-					auto color = RGB<uint8_t>::Unpack(heatTableAt(int((sim->parts[i].temp - min_temp) / (max_temp - min_temp) * 1024)));
+					RGB<uint8_t> color = heatTableAt(int((sim->parts[i].temp - min_temp) / (max_temp - min_temp) * 1024));
 					firer = colr = color.Red;
 					fireg = colg = color.Green;
 					fireb = colb = color.Blue;
@@ -436,7 +436,7 @@ void Renderer::render_parts()
 						}
 						else if (cplayer->elem < PT_NUM && cplayer->elem > 0)
 						{
-							auto elemColour = RGB<uint8_t>::Unpack(elements[cplayer->elem].Colour);
+							RGB<uint8_t> elemColour = elements[cplayer->elem].Colour;
 							colr = elemColour.Red;
 							colg = elemColour.Green;
 							colb = elemColour.Blue;
@@ -826,7 +826,7 @@ void Renderer::draw_air()
 	float (*hv)[XCELLS] = sim->air->hv;
 	float (*vx)[XCELLS] = sim->air->vx;
 	float (*vy)[XCELLS] = sim->air->vy;
-	auto c = RGB<uint8_t>(0, 0, 0);
+	auto c = 0x000000_rgb;
 	for (y=0; y<YCELLS; y++)
 		for (x=0; x<XCELLS; x++)
 		{
@@ -904,8 +904,8 @@ void Renderer::DrawWalls()
 				if (wt >= UI_WALLCOUNT)
 					continue;
 				unsigned char powered = sim->emap[y][x];
-				auto prgb = RGB<uint8_t>::Unpack(sim->wtypes[wt].colour);
-				auto grgb = RGB<uint8_t>::Unpack(sim->wtypes[wt].eglow);
+				RGB<uint8_t> prgb = sim->wtypes[wt].colour;
+				RGB<uint8_t> grgb = sim->wtypes[wt].eglow;
 
 				if (findingElement)
 				{
@@ -1125,10 +1125,10 @@ void Renderer::DrawWalls()
 					}
 				}
 
-				if (sim->wtypes[wt].eglow && powered)
+				if (sim->wtypes[wt].eglow.Pack() && powered)
 				{
 					// glow if electrified
-					auto glow = RGB<uint8_t>::Unpack(sim->wtypes[wt].eglow);
+					RGB<uint8_t> glow = sim->wtypes[wt].eglow;
 					int alpha = 255;
 					int cr = (alpha*glow.Red   + (255-alpha)*fire_r[y/CELL][x/CELL]) >> 8;
 					int cg = (alpha*glow.Green + (255-alpha)*fire_g[y/CELL][x/CELL]) >> 8;
@@ -1191,7 +1191,7 @@ int HeatToColour(float temp)
 {
 	constexpr float min_temp = MIN_TEMP;
 	constexpr float max_temp = MAX_TEMP;
-	auto color = RGB<uint8_t>::Unpack(Renderer::heatTableAt(int((temp - min_temp) / (max_temp - min_temp) * 1024)));
+	RGB<uint8_t> color = Renderer::heatTableAt(int((temp - min_temp) / (max_temp - min_temp) * 1024));
 	color.Red   *= 0.7f;
 	color.Green *= 0.7f;
 	color.Blue  *= 0.7f;

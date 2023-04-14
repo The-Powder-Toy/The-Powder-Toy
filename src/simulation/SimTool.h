@@ -9,7 +9,7 @@ class SimTool
 public:
 	ByteString Identifier;
 	String Name;
-	pixel Colour;
+	RGB<uint8_t> Colour;
 	String Description;
 
 	int (*Perform)(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);

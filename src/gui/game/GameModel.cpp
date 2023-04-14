@@ -270,19 +270,19 @@ void GameModel::BuildMenus()
 			Tool * tempTool;
 			if(i == PT_LIGH)
 			{
-				tempTool = new Element_LIGH_Tool(i, sim->elements[i].Name, sim->elements[i].Description, RGB<uint8_t>::Unpack(sim->elements[i].Colour), sim->elements[i].Identifier, sim->elements[i].IconGenerator);
+				tempTool = new Element_LIGH_Tool(i, sim->elements[i].Name, sim->elements[i].Description, sim->elements[i].Colour, sim->elements[i].Identifier, sim->elements[i].IconGenerator);
 			}
 			else if(i == PT_TESC)
 			{
-				tempTool = new Element_TESC_Tool(i, sim->elements[i].Name, sim->elements[i].Description, RGB<uint8_t>::Unpack(sim->elements[i].Colour), sim->elements[i].Identifier, sim->elements[i].IconGenerator);
+				tempTool = new Element_TESC_Tool(i, sim->elements[i].Name, sim->elements[i].Description, sim->elements[i].Colour, sim->elements[i].Identifier, sim->elements[i].IconGenerator);
 			}
 			else if(i == PT_STKM || i == PT_FIGH || i == PT_STKM2)
 			{
-				tempTool = new PlopTool(i, sim->elements[i].Name, sim->elements[i].Description, RGB<uint8_t>::Unpack(sim->elements[i].Colour), sim->elements[i].Identifier, sim->elements[i].IconGenerator);
+				tempTool = new PlopTool(i, sim->elements[i].Name, sim->elements[i].Description, sim->elements[i].Colour, sim->elements[i].Identifier, sim->elements[i].IconGenerator);
 			}
 			else
 			{
-				tempTool = new ElementTool(i, sim->elements[i].Name, sim->elements[i].Description, RGB<uint8_t>::Unpack(sim->elements[i].Colour), sim->elements[i].Identifier, sim->elements[i].IconGenerator);
+				tempTool = new ElementTool(i, sim->elements[i].Name, sim->elements[i].Description, sim->elements[i].Colour, sim->elements[i].Identifier, sim->elements[i].IconGenerator);
 			}
 
 			if (sim->elements[i].MenuSection >= 0 && sim->elements[i].MenuSection < SC_TOTAL && sim->elements[i].MenuVisible)
@@ -300,7 +300,7 @@ void GameModel::BuildMenus()
 	//Build menu for GOL types
 	for(int i = 0; i < NGOL; i++)
 	{
-		Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(i), builtinGol[i].name, builtinGol[i].description, RGB<uint8_t>::Unpack(builtinGol[i].colour), "DEFAULT_PT_LIFE_"+builtinGol[i].name.ToAscii());
+		Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(i), builtinGol[i].name, builtinGol[i].description, builtinGol[i].colour, "DEFAULT_PT_LIFE_"+builtinGol[i].name.ToAscii());
 		menuList[SC_LIFE]->AddTool(tempTool);
 	}
 	{
@@ -362,7 +362,7 @@ void GameModel::BuildMenus()
 	//Build other menus from wall data
 	for(int i = 0; i < UI_WALLCOUNT; i++)
 	{
-		Tool * tempTool = new WallTool(i, sim->wtypes[i].descs, RGB<uint8_t>::Unpack(sim->wtypes[i].colour), sim->wtypes[i].identifier, sim->wtypes[i].textureGen);
+		Tool * tempTool = new WallTool(i, sim->wtypes[i].descs, sim->wtypes[i].colour, sim->wtypes[i].identifier, sim->wtypes[i].textureGen);
 		menuList[SC_WALL]->AddTool(tempTool);
 		//sim->wtypes[i]
 	}
@@ -374,7 +374,7 @@ void GameModel::BuildMenus()
 			i,
 			sim->tools[i].Name,
 			sim->tools[i].Description,
-			RGB<uint8_t>::Unpack(sim->tools[i].Colour),
+			sim->tools[i].Colour,
 			sim->tools[i].Identifier
 		);
 		menuList[SC_TOOL]->AddTool(tempTool);

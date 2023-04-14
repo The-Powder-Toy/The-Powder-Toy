@@ -9,7 +9,7 @@ void Element::Element_LIGH()
 {
 	Identifier = "DEFAULT_PT_LIGH";
 	Name = "LIGH";
-	Colour = 0xFFFFC0_rgb .Pack();
+	Colour = 0xFFFFC0_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

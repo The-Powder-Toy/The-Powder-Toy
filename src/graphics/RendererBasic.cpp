@@ -20,14 +20,7 @@ void Renderer::RenderBegin()
 	{
 		for (int i = 0; i < VIDXRES*YRES; i++)
 		{
-			auto rgb = RGB<uint8_t>::Unpack(vid[i]);
-			if (rgb.Red > 0)
-				rgb.Red--;
-			if (rgb.Green > 0)
-				rgb.Green--;
-			if (rgb.Blue > 0)
-				rgb.Blue--;
-			persistentVid[i] = rgb.Pack();
+			persistentVid[i] = RGB<uint8_t>::Unpack(vid[i]).Decay().Pack();
 		}
 	}
 
@@ -141,15 +134,9 @@ void Renderer::render_gravlensing(pixel * source)
 			if(rx >= 0 && rx < XRES && ry >= 0 && ry < YRES && gx >= 0 && gx < XRES && gy >= 0 && gy < YRES && bx >= 0 && bx < XRES && by >= 0 && by < YRES)
 			{
 				auto t = RGB<uint8_t>::Unpack(dst[ny*(VIDXRES)+nx]);
-				t.Red   += RGB<uint8_t>::Unpack(src[ry*(VIDXRES)+rx]).Red;
-				t.Green += RGB<uint8_t>::Unpack(src[gy*(VIDXRES)+gx]).Green;
-				t.Blue  += RGB<uint8_t>::Unpack(src[by*(VIDXRES)+bx]).Blue;
-				if (t.Red > 255)
-					t.Red = 255;
-				if (t.Green > 255)
-					t.Green = 255;
-				if (t.Blue > 255)
-					t.Blue = 255;
+				t.Red   = std::min(0xFF, (int)RGB<uint8_t>::Unpack(src[ry*(VIDXRES)+rx]).Red   + t.Red);
+				t.Green = std::min(0xFF, (int)RGB<uint8_t>::Unpack(src[gy*(VIDXRES)+gx]).Green + t.Green);
+				t.Blue  = std::min(0xFF, (int)RGB<uint8_t>::Unpack(src[by*(VIDXRES)+bx]).Blue  + t.Blue);
 				dst[ny*(VIDXRES)+nx] = t.Pack();
 			}
 		}
@@ -198,11 +185,11 @@ pixel Renderer::GetPixel(int x, int y)
 	return vid[(y*VIDXRES)+x];
 }
 
-std::vector<pixel> Renderer::flameTable;
-std::vector<pixel> Renderer::plasmaTable;
-std::vector<pixel> Renderer::heatTable;
-std::vector<pixel> Renderer::clfmTable;
-std::vector<pixel> Renderer::firwTable;
+std::vector<RGB<uint8_t>> Renderer::flameTable;
+std::vector<RGB<uint8_t>> Renderer::plasmaTable;
+std::vector<RGB<uint8_t>> Renderer::heatTable;
+std::vector<RGB<uint8_t>> Renderer::clfmTable;
+std::vector<RGB<uint8_t>> Renderer::firwTable;
 static bool tablesPopulated = false;
 static std::mutex tablesPopulatedMx;
 void Renderer::PopulateTables()
@@ -212,47 +199,47 @@ void Renderer::PopulateTables()
 	{
 		tablesPopulated = true;
 		flameTable = Graphics::Gradient({
-			{ 0x000000, 0.00f },
-			{ 0x60300F, 0.50f },
-			{ 0xDFBF6F, 0.90f },
-			{ 0xAF9F0F, 1.00f },
+			{ 0x000000_rgb, 0.00f },
+			{ 0x60300F_rgb, 0.50f },
+			{ 0xDFBF6F_rgb, 0.90f },
+			{ 0xAF9F0F_rgb, 1.00f },
 		}, 200);
 		plasmaTable = Graphics::Gradient({
-			{ 0x000000, 0.00f },
-			{ 0x301040, 0.25f },
-			{ 0x301060, 0.50f },
-			{ 0xAFFFFF, 0.90f },
-			{ 0xAFFFFF, 1.00f },
+			{ 0x000000_rgb, 0.00f },
+			{ 0x301040_rgb, 0.25f },
+			{ 0x301060_rgb, 0.50f },
+			{ 0xAFFFFF_rgb, 0.90f },
+			{ 0xAFFFFF_rgb, 1.00f },
 		}, 200);
 		heatTable = Graphics::Gradient({
-			{ 0x2B00FF, 0.00f },
-			{ 0x003CFF, 0.01f },
-			{ 0x00C0FF, 0.05f },
-			{ 0x00FFEB, 0.08f },
-			{ 0x00FF14, 0.19f },
-			{ 0x4BFF00, 0.25f },
-			{ 0xC8FF00, 0.37f },
-			{ 0xFFDC00, 0.45f },
-			{ 0xFF0000, 0.71f },
-			{ 0xFF00DC, 1.00f },
+			{ 0x2B00FF_rgb, 0.00f },
+			{ 0x003CFF_rgb, 0.01f },
+			{ 0x00C0FF_rgb, 0.05f },
+			{ 0x00FFEB_rgb, 0.08f },
+			{ 0x00FF14_rgb, 0.19f },
+			{ 0x4BFF00_rgb, 0.25f },
+			{ 0xC8FF00_rgb, 0.37f },
+			{ 0xFFDC00_rgb, 0.45f },
+			{ 0xFF0000_rgb, 0.71f },
+			{ 0xFF00DC_rgb, 1.00f },
 		}, 1024);
 		clfmTable = Graphics::Gradient({
-			{ 0x000000, 0.00f },
-			{ 0x0A0917, 0.10f },
-			{ 0x19163C, 0.20f },
-			{ 0x28285E, 0.30f },
-			{ 0x343E77, 0.40f },
-			{ 0x49769A, 0.60f },
-			{ 0x57A0B4, 0.80f },
-			{ 0x5EC4C6, 1.00f },
+			{ 0x000000_rgb, 0.00f },
+			{ 0x0A0917_rgb, 0.10f },
+			{ 0x19163C_rgb, 0.20f },
+			{ 0x28285E_rgb, 0.30f },
+			{ 0x343E77_rgb, 0.40f },
+			{ 0x49769A_rgb, 0.60f },
+			{ 0x57A0B4_rgb, 0.80f },
+			{ 0x5EC4C6_rgb, 1.00f },
 		}, 200);
 		firwTable = Graphics::Gradient({
-			{ 0xFF00FF, 0.00f },
-			{ 0x0000FF, 0.20f },
-			{ 0x00FFFF, 0.40f },
-			{ 0x00FF00, 0.60f },
-			{ 0xFFFF00, 0.80f },
-			{ 0xFF0000, 1.00f },
+			{ 0xFF00FF_rgb, 0.00f },
+			{ 0x0000FF_rgb, 0.20f },
+			{ 0x00FFFF_rgb, 0.40f },
+			{ 0x00FF00_rgb, 0.60f },
+			{ 0xFFFF00_rgb, 0.80f },
+			{ 0xFF0000_rgb, 1.00f },
 		}, 200);
 	}
 }

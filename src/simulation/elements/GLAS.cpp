@@ -7,7 +7,7 @@ void Element::Element_GLAS()
 {
 	Identifier = "DEFAULT_PT_GLAS";
 	Name = "GLAS";
-	Colour = 0x404040_rgb .Pack();
+	Colour = 0x404040_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

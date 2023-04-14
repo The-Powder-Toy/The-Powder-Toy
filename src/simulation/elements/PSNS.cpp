@@ -6,7 +6,7 @@ void Element::Element_PSNS()
 {
 	Identifier = "DEFAULT_PT_PSNS";
 	Name = "PSNS";
-	Colour = 0xDB2020_rgb .Pack();
+	Colour = 0xDB2020_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SENSOR;
 	Enabled = 1;

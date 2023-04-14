@@ -8,7 +8,7 @@ void Element::Element_SPRK()
 {
 	Identifier = "DEFAULT_PT_SPRK";
 	Name = "SPRK";
-	Colour = 0xFFFF80_rgb .Pack();
+	Colour = 0xFFFF80_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

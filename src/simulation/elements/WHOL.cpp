@@ -4,7 +4,7 @@ void Element::Element_WHOL()
 {
 	Identifier = "DEFAULT_PT_WHOL";
 	Name = "VENT";
-	Colour = 0xEFEFEF_rgb .Pack();
+	Colour = 0xEFEFEF_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

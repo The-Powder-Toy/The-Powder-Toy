@@ -6,7 +6,7 @@ void Element::Element_RPEL()
 {
 	Identifier = "DEFAULT_PT_RPEL";
 	Name = "RPEL";
-	Colour = 0x99CC00_rgb .Pack();
+	Colour = 0x99CC00_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
 	Enabled = 1;

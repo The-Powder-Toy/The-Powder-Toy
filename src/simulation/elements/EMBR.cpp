@@ -7,7 +7,7 @@ void Element::Element_EMBR()
 {
 	Identifier = "DEFAULT_PT_EMBR";
 	Name = "EMBR";
-	Colour = 0xFFF288_rgb .Pack();
+	Colour = 0xFFF288_rgb;
 	MenuVisible = 0;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

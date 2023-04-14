@@ -4,7 +4,7 @@ void Element::Element_LRBD()
 {
 	Identifier = "DEFAULT_PT_LRBD";
 	Name = "LRBD";
-	Colour = 0xAAAAAA_rgb .Pack();
+	Colour = 0xAAAAAA_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

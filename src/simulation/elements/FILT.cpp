@@ -9,7 +9,7 @@ void Element::Element_FILT()
 {
 	Identifier = "DEFAULT_PT_FILT";
 	Name = "FILT";
-	Colour = 0x000056_rgb .Pack();
+	Colour = 0x000056_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

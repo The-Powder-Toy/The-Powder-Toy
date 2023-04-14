@@ -4,7 +4,7 @@ void Element::Element_INST()
 {
 	Identifier = "DEFAULT_PT_INST";
 	Name = "INST";
-	Colour = 0x404039_rgb .Pack();
+	Colour = 0x404039_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

@@ -6,7 +6,7 @@ void Element::Element_ANAR()
 {
 	Identifier = "DEFAULT_PT_ANAR";
 	Name = "ANAR";
-	Colour = 0xFFFFEE_rgb .Pack();
+	Colour = 0xFFFFEE_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

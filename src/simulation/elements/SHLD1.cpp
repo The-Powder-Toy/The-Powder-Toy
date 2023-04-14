@@ -6,7 +6,7 @@ void Element::Element_SHLD1()
 {
 	Identifier = "DEFAULT_PT_SHLD1";
 	Name = "SHLD";
-	Colour = 0xAAAAAA_rgb .Pack();
+	Colour = 0xAAAAAA_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

@@ -7,7 +7,7 @@ void Element::Element_GBMB()
 {
 	Identifier = "DEFAULT_PT_GBMB";
 	Name = "GBMB";
-	Colour = 0x1144BB_rgb .Pack();
+	Colour = 0x1144BB_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
 	Enabled = 1;

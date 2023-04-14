@@ -55,7 +55,7 @@ void ElementPopulationDebug::Draw()
 			auto barSize = int(count * scale - 0.5f);
 			int barX = bars;//*2;
 
-			auto colour = RGB<uint8_t>::Unpack(sim->elements[i].Colour);
+			RGB<uint8_t> colour = sim->elements[i].Colour;
 
 			g->draw_line(xStart+barX, yBottom+3, xStart+barX, yBottom+2, colour.Red, colour.Green, colour.Blue, 255);
 			if(sim->elementCount[i])

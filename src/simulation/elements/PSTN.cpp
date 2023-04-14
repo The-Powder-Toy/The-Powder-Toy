@@ -12,7 +12,7 @@ void Element::Element_PSTN()
 {
 	Identifier = "DEFAULT_PT_PSTN";
 	Name = "PSTN";
-	Colour = 0xAA9999_rgb .Pack();
+	Colour = 0xAA9999_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_FORCE;
 	Enabled = 1;

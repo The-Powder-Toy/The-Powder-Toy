@@ -6,7 +6,7 @@ void Element::Element_BTRY()
 {
 	Identifier = "DEFAULT_PT_BTRY";
 	Name = "BTRY";
-	Colour = 0x858505_rgb .Pack();
+	Colour = 0x858505_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

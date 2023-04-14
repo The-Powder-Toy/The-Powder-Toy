@@ -7,7 +7,7 @@ void Element::Element_LIFE()
 {
 	Identifier = "DEFAULT_PT_LIFE";
 	Name = "LIFE";
-	Colour = 0x0CAC00_rgb .Pack();
+	Colour = 0x0CAC00_rgb;
 	MenuVisible = 0;
 	MenuSection = SC_LIFE;
 	Enabled = 1;
@@ -62,8 +62,8 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	{
 		if (!renderDeco || !ren->decorations_enable)
 		{
-			colour1 = RGB<uint8_t>::Unpack(builtinGol[ruleset].colour);
-			colour2 = RGB<uint8_t>::Unpack(builtinGol[ruleset].colour2);
+			colour1 = builtinGol[ruleset].colour;
+			colour2 = builtinGol[ruleset].colour2;
 			renderDeco = true;
 		}
 		ruleset = builtinGol[ruleset].ruleset;
@@ -99,8 +99,8 @@ static void create(ELEMENT_CREATE_FUNC_ARGS)
 	sim->parts[i].ctype = v;
 	if (v < NGOL)
 	{
-		sim->parts[i].dcolour = builtinGol[v].colour;
-		sim->parts[i].tmp = builtinGol[v].colour2;
+		sim->parts[i].dcolour = builtinGol[v].colour.Pack();
+		sim->parts[i].tmp = builtinGol[v].colour2.Pack();
 		v = builtinGol[v].ruleset;
 	}
 	else if (!skipLookup)

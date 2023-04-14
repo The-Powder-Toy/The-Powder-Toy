@@ -7,7 +7,7 @@ void Element::Element_VRSS()
 {
 	Identifier = "DEFAULT_PT_VRSS";
 	Name = "VRSS";
-	Colour = 0xD408CD_rgb .Pack();
+	Colour = 0xD408CD_rgb;
 	MenuVisible = 0;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

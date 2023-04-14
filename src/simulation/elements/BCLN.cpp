@@ -6,7 +6,7 @@ void Element::Element_BCLN()
 {
 	Identifier = "DEFAULT_PT_BCLN";
 	Name = "BCLN";
-	Colour = 0xFFD040_rgb .Pack();
+	Colour = 0xFFD040_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

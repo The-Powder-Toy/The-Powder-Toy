@@ -4,7 +4,7 @@ void Element::Element_BGLA()
 {
 	Identifier = "DEFAULT_PT_BGLA";
 	Name = "BGLA";
-	Colour = 0x606060_rgb .Pack();
+	Colour = 0x606060_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;

@@ -6,7 +6,7 @@ void Element::Element_CO2()
 {
 	Identifier = "DEFAULT_PT_CO2";
 	Name = "CO2";
-	Colour = 0x666666_rgb .Pack();
+	Colour = 0x666666_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;

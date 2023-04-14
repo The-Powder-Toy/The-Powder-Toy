@@ -8,7 +8,7 @@ void Element::Element_SLCN()
 {
 	Identifier = "DEFAULT_PT_SLCN";
 	Name = "SLCN";
-	Colour = 0xBCCDDF_rgb .Pack();
+	Colour = 0xBCCDDF_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_POWDERS;
 	Enabled = 1;
@@ -49,11 +49,11 @@ void Element::Element_SLCN()
 	Create = &create;
 }
 
-static const int SLCN_COLOUR[16] = {
-	0x5A6679_rgb .Pack(), 0x6878A1_rgb .Pack(), 0xABBFDD_rgb .Pack(), 0x838490_rgb .Pack(),
-	0xBCCDDF_rgb .Pack(), 0x82A0D2_rgb .Pack(), 0x5B6680_rgb .Pack(), 0x232C3B_rgb .Pack(),
-	0x485067_rgb .Pack(), 0x8B9AB6_rgb .Pack(), 0xADB1C1_rgb .Pack(), 0xC3C6D1_rgb .Pack(),
-	0x8594AD_rgb .Pack(), 0x262F47_rgb .Pack(), 0xA9AEBC_rgb .Pack(), 0xC2E1F7_rgb .Pack(),
+static const RGB<uint8_t> SLCN_COLOUR[16] = {
+	0x5A6679_rgb, 0x6878A1_rgb, 0xABBFDD_rgb, 0x838490_rgb,
+	0xBCCDDF_rgb, 0x82A0D2_rgb, 0x5B6680_rgb, 0x232C3B_rgb,
+	0x485067_rgb, 0x8B9AB6_rgb, 0xADB1C1_rgb, 0xC3C6D1_rgb,
+	0x8594AD_rgb, 0x262F47_rgb, 0xA9AEBC_rgb, 0xC2E1F7_rgb,
 };
 
 static void initSparkles(Simulation *sim, Particle &part)
@@ -108,10 +108,10 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	auto curr_colour = RGB<uint8_t>::Unpack(SLCN_COLOUR[(cpart->tmp >> 12) & 15]);
+	RGB<uint8_t> curr_colour = SLCN_COLOUR[(cpart->tmp >> 12) & 15];
 	if (cpart->tmp & 0x800) // mix with next colour if phase is at least halfway there
 	{
-		auto next_colour = RGB<uint8_t>::Unpack(SLCN_COLOUR[(cpart->tmp >> 16) & 15]);
+		RGB<uint8_t> next_colour = SLCN_COLOUR[(cpart->tmp >> 16) & 15];
 		curr_colour = RGB<uint8_t>(
 			(curr_colour.Red   + next_colour.Red) / 2,
 			(curr_colour.Green + next_colour.Green) / 2,

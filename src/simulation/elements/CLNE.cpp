@@ -6,7 +6,7 @@ void Element::Element_CLNE()
 {
 	Identifier = "DEFAULT_PT_CLNE";
 	Name = "CLNE";
-	Colour = 0xFFD010_rgb .Pack();
+	Colour = 0xFFD010_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

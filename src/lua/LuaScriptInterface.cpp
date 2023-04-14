@@ -1865,19 +1865,10 @@ int LuaScriptInterface::simulation_decoColor(lua_State * l)
 		color = RGBA<uint8_t>::Unpack(luaL_optnumber(l, 1, 0xFFFF0000));
 	else
 	{
-		color.Red = luaL_optint(l, 1, 255);
-		color.Green = luaL_optint(l, 2, 255);
-		color.Blue = luaL_optint(l, 3, 255);
-		color.Alpha = luaL_optint(l, 4, 255);
-
-		if (color.Red < 0) color.Red = 0;
-		if (color.Red > 255) color.Red = 255;
-		if (color.Green < 0) color.Green = 0;
-		if (color.Green > 255) color.Green = 255;
-		if (color.Blue < 0) color.Blue = 0;
-		if (color.Blue > 255) color.Blue = 255;
-		if (color.Alpha < 0) color.Alpha = 0;
-		if (color.Alpha > 255) color.Alpha = 255;
+		color.Red   = std::clamp(luaL_optint(l, 1, 255), 0, 255);
+		color.Green = std::clamp(luaL_optint(l, 2, 255), 0, 255);
+		color.Blue  = std::clamp(luaL_optint(l, 3, 255), 0, 255);
+		color.Alpha = std::clamp(luaL_optint(l, 4, 255), 0, 255);
 	}
 	luacon_model->SetColourSelectorColour(ui::Colour(color.Red, color.Green, color.Blue, color.Alpha));
 	return 0;

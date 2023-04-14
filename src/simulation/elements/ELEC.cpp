@@ -8,7 +8,7 @@ void Element::Element_ELEC()
 {
 	Identifier = "DEFAULT_PT_ELEC";
 	Name = "ELEC";
-	Colour = 0xDFEFFF_rgb .Pack();
+	Colour = 0xDFEFFF_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_NUCLEAR;
 	Enabled = 1;

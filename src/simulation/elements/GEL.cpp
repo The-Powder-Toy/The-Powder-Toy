@@ -7,7 +7,7 @@ void Element::Element_GEL()
 {
 	Identifier = "DEFAULT_PT_GEL";
 	Name = "GEL";
-	Colour = 0xFF9900_rgb .Pack();
+	Colour = 0xFF9900_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_LIQUID;
 	Enabled = 1;

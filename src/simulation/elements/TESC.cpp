@@ -6,7 +6,7 @@ void Element::Element_TESC()
 {
 	Identifier = "DEFAULT_PT_TESC";
 	Name = "TESC";
-	Colour = 0x707040_rgb .Pack();
+	Colour = 0x707040_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

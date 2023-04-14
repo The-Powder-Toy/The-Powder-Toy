@@ -6,7 +6,7 @@ void Element::Element_BRAY()
 {
 	Identifier = "DEFAULT_PT_BRAY";
 	Name = "BRAY";
-	Colour = 0xFFFFFF_rgb .Pack();
+	Colour = 0xFFFFFF_rgb;
 	MenuVisible = 0;
 	MenuSection = SC_ELEC;
 	Enabled = 1;

@@ -157,8 +157,8 @@ public:
 	~Renderer();
 
 #define RENDERER_TABLE(name) \
-	static std::vector<pixel> name; \
-	static inline pixel name ## At(int index) \
+	static std::vector<RGB<uint8_t>> name; \
+	static inline RGB<uint8_t> name ## At(int index) \
 	{ \
 		auto size = int(name.size()); \
 		if (index <        0) index =        0; \

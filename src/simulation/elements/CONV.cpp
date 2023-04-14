@@ -6,7 +6,7 @@ void Element::Element_CONV()
 {
 	Identifier = "DEFAULT_PT_CONV";
 	Name = "CONV";
-	Colour = 0x0AAB0A_rgb .Pack();
+	Colour = 0x0AAB0A_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

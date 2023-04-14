@@ -12,7 +12,7 @@ void Element::Element_TRON()
 {
 	Identifier = "DEFAULT_PT_TRON";
 	Name = "TRON";
-	Colour = 0xA9FF00_rgb .Pack();
+	Colour = 0xA9FF00_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SPECIAL;
 	Enabled = 1;

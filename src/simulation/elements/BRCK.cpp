@@ -6,7 +6,7 @@ void Element::Element_BRCK()
 {
 	Identifier = "DEFAULT_PT_BRCK";
 	Name = "BRCK";
-	Colour = 0x808080_rgb .Pack();
+	Colour = 0x808080_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
 	Enabled = 1;

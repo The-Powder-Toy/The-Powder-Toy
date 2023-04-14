@@ -6,7 +6,7 @@ void Element::Element_FSEP()
 {
 	Identifier = "DEFAULT_PT_FSEP";
 	Name = "FSEP";
-	Colour = 0x63AD5F_rgb .Pack();
+	Colour = 0x63AD5F_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_EXPLOSIVE;
 	Enabled = 1;

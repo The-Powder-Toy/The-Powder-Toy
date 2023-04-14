@@ -4,7 +4,7 @@ void Element::Element_E146()
 {
 	Identifier = "DEFAULT_PT_146";
 	Name = "BRAN";
-	Colour = 0xCCCC00_rgb .Pack();
+	Colour = 0xCCCC00_rgb;
 	MenuVisible = 0;
 	MenuSection = SC_LIFE;
 	Enabled = 0;

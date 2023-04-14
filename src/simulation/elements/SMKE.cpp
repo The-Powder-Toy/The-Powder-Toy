@@ -6,7 +6,7 @@ void Element::Element_SMKE()
 {
 	Identifier = "DEFAULT_PT_SMKE";
 	Name = "SMKE";
-	Colour = 0x222222_rgb .Pack();
+	Colour = 0x222222_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_GAS;
 	Enabled = 1;
