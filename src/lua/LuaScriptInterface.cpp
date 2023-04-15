@@ -1856,9 +1856,7 @@ int LuaScriptInterface::simulation_decoColor(lua_State * l)
 	RGBA<uint8_t> color(0, 0, 0, 0);
 	if (acount == 0)
 	{
-		ui::Colour tempColor = luacon_model->GetColourSelectorColour();
-		unsigned int color = (tempColor.Alpha << 24) | RGB<uint8_t>(tempColor.Red, tempColor.Green, tempColor.Blue).Pack();
-		lua_pushnumber(l, color);
+		lua_pushnumber(l, luacon_model->GetColourSelectorColour().Pack());
 		return 1;
 	}
 	else if (acount == 1)
@@ -1870,7 +1868,7 @@ int LuaScriptInterface::simulation_decoColor(lua_State * l)
 		color.Blue  = std::clamp(luaL_optint(l, 3, 255), 0, 255);
 		color.Alpha = std::clamp(luaL_optint(l, 4, 255), 0, 255);
 	}
-	luacon_model->SetColourSelectorColour(ui::Colour(color.Red, color.Green, color.Blue, color.Alpha));
+	luacon_model->SetColourSelectorColour(color);
 	return 0;
 }
 
