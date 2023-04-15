@@ -175,13 +175,29 @@ static int mathRandom(lua_State *l)
 {
 	// only thing that matters is that the rng not be luacon_sim->rng when !inSimEvent
 	auto &rng = inSimEvent ? luacon_sim->rng : interfaceRng;
+	int lower, upper;
 	switch (lua_gettop(l))
 	{
-	case 0:  lua_pushnumber (l,                                               rng.uniform01()); break;
-	case 1:  lua_pushinteger(l, rng.between(                      1, luaL_checkinteger(l, 1))); break;
-	default: lua_pushinteger(l, rng.between(luaL_checkinteger(l, 1), luaL_checkinteger(l, 2))); break;
-	}
+	case 0:
+		lua_pushnumber(l, rng.uniform01());
 		return 1;
+
+	case 1:
+		lower = 1;
+		upper = luaL_checkinteger(l, 1);
+		break;
+
+	default:
+		lower = luaL_checkinteger(l, 1);
+		upper = luaL_checkinteger(l, 2);
+		break;
+	}
+	if (upper < lower)
+	{
+		luaL_error(l, "interval is empty");
+	}
+	lua_pushinteger(l, rng.between(lower, upper));
+	return 1;
 }
 
 static int mathRandomseed(lua_State *l)
