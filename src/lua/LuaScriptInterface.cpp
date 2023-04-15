@@ -163,6 +163,57 @@ static void initBZ2API(lua_State *L)
 	lua_setglobal(L, "bz2");
 }
 
+static int osExit(lua_State *l)
+{
+	Platform::Exit(luaL_optinteger(l, 1, 0));
+	return 0;
+}
+
+static bool inSimEvent = false;
+
+static int mathRandom(lua_State *l)
+{
+	// only thing that matters is that the rng not be luacon_sim->rng when !inSimEvent
+	auto &rng = inSimEvent ? luacon_sim->rng : interfaceRng;
+	switch (lua_gettop(l))
+	{
+	case 0:  lua_pushnumber (l,                                               rng.uniform01()); break;
+	case 1:  lua_pushinteger(l, rng.between(                      1, luaL_checkinteger(l, 1))); break;
+	default: lua_pushinteger(l, rng.between(luaL_checkinteger(l, 1), luaL_checkinteger(l, 2))); break;
+	}
+		return 1;
+}
+
+static int mathRandomseed(lua_State *l)
+{
+	interfaceRng.seed(luaL_checkinteger(l, 1));
+	return 0;
+}
+
+static int simRandomseed(lua_State *l)
+{
+	if (lua_gettop(l))
+	{
+		luacon_sim->rng.state({
+			uint32_t(luaL_checkinteger(l, 1)) | (uint64_t(uint32_t(luaL_checkinteger(l, 2))) << 32),
+			uint32_t(luaL_checkinteger(l, 3)) | (uint64_t(uint32_t(luaL_checkinteger(l, 4))) << 32),
+		});
+		return 0;
+	}
+	auto s = luacon_sim->rng.state();
+	lua_pushinteger(l,  s[0]        & UINT32_C(0xFFFFFFFF));
+	lua_pushinteger(l, (s[0] >> 32) & UINT32_C(0xFFFFFFFF));
+	lua_pushinteger(l,  s[1]        & UINT32_C(0xFFFFFFFF));
+	lua_pushinteger(l, (s[1] >> 32) & UINT32_C(0xFFFFFFFF));
+	return 4;
+}
+
+static int simHash(lua_State *l)
+{
+	lua_pushinteger(l, luacon_sim->CreateSnapshot()->Hash());
+	return 1;
+}
+
 LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	TPTScriptInterface(c, m),
 	luacon_mousex(0),
@@ -214,11 +265,15 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	initSocketAPI();
 
 	lua_getglobal(l, "os");
-	lua_pushcfunction(l, [](lua_State *l) -> int {
-		Platform::Exit(luaL_optinteger(l, 1, 0));
-		return 0;
-	});
+	lua_pushcfunction(l, osExit);
 	lua_setfield(l, -2, "exit");
+	lua_pop(l, 1);
+
+	lua_getglobal(l, "math");
+	lua_pushcfunction(l, mathRandom);
+	lua_setfield(l, -2, "random");
+	lua_pushcfunction(l, mathRandomseed);
+	lua_setfield(l, -2, "randomseed");
 	lua_pop(l, 1);
 
 	initBZ2API(l);
@@ -437,7 +492,7 @@ tpt.partsdata = nil");
 
 	initLegacyProps();
 
-	if (luaL_loadbuffer(l, (const char *)eventcompat_lua, eventcompat_lua_size, "@[built-in eventcompat.lua]") || tpt_lua_pcall(l, 0, 0, 0))
+	if (luaL_loadbuffer(l, (const char *)eventcompat_lua, eventcompat_lua_size, "@[built-in eventcompat.lua]") || tpt_lua_pcall(l, 0, 0, 0, false))
 	{
 		throw std::runtime_error(ByteString("failed to load built-in eventcompat: ") + tpt_lua_toByteString(l, -1));
 	}
@@ -462,7 +517,7 @@ void LuaScriptInterface::Init()
 {
 	if (Platform::FileExists("autorun.lua"))
 	{
-		if(luaL_loadfile(l, "autorun.lua") || tpt_lua_pcall(l, 0, 0, 0))
+		if(luaL_loadfile(l, "autorun.lua") || tpt_lua_pcall(l, 0, 0, 0, false))
 			Log(CommandInterface::LogError, luacon_geterror());
 		else
 			Log(CommandInterface::LogWarning, "Loaded autorun.lua");
@@ -946,6 +1001,8 @@ void LuaScriptInterface::initSimulationAPI()
 		{"lastUpdatedID", simulation_lastUpdatedID},
 		{"updateUpTo", simulation_updateUpTo},
 		{"temperatureScale", simulation_temperatureScale},
+		{"randomseed", simRandomseed},
+		{"hash", simHash},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);
@@ -3138,7 +3195,7 @@ static int luaUpdateWrapper(UPDATE_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, y);
 		lua_pushinteger(luacon_ci->l, surround_space);
 		lua_pushinteger(luacon_ci->l, nt);
-		callret = tpt_lua_pcall(luacon_ci->l, 5, 1, 0);
+		callret = tpt_lua_pcall(luacon_ci->l, 5, 1, 0, true);
 		if (callret)
 			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 		if(lua_isboolean(luacon_ci->l, -1)){
@@ -3174,7 +3231,7 @@ static int luaGraphicsWrapper(GRAPHICS_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, *colr);
 		lua_pushinteger(luacon_ci->l, *colg);
 		lua_pushinteger(luacon_ci->l, *colb);
-		callret = tpt_lua_pcall(luacon_ci->l, 4, 10, 0);
+		callret = tpt_lua_pcall(luacon_ci->l, 4, 10, 0, false);
 		if (callret)
 		{
 			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
@@ -3220,7 +3277,7 @@ static void luaCreateWrapper(ELEMENT_CREATE_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, y);
 		lua_pushinteger(luacon_ci->l, t);
 		lua_pushinteger(luacon_ci->l, v);
-		if (tpt_lua_pcall(luacon_ci->l, 5, 0, 0))
+		if (tpt_lua_pcall(luacon_ci->l, 5, 0, 0, true))
 		{
 			luacon_ci->Log(CommandInterface::LogError, "In create func: " + luacon_geterror());
 			lua_pop(luacon_ci->l, 1);
@@ -3239,7 +3296,7 @@ static bool luaCreateAllowedWrapper(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, x);
 		lua_pushinteger(luacon_ci->l, y);
 		lua_pushinteger(luacon_ci->l, t);
-		if (tpt_lua_pcall(luacon_ci->l, 4, 1, 0))
+		if (tpt_lua_pcall(luacon_ci->l, 4, 1, 0, true))
 		{
 			luacon_ci->Log(CommandInterface::LogError, "In create allowed: " + luacon_geterror());
 			lua_pop(luacon_ci->l, 1);
@@ -3265,7 +3322,7 @@ static void luaChangeTypeWrapper(ELEMENT_CHANGETYPE_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, y);
 		lua_pushinteger(luacon_ci->l, from);
 		lua_pushinteger(luacon_ci->l, to);
-		if (tpt_lua_pcall(luacon_ci->l, 5, 0, 0))
+		if (tpt_lua_pcall(luacon_ci->l, 5, 0, 0, true))
 		{
 			luacon_ci->Log(CommandInterface::LogError, "In change type: " + luacon_geterror());
 			lua_pop(luacon_ci->l, 1);
@@ -3283,7 +3340,7 @@ static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, i);
 		lua_pushinteger(luacon_ci->l, t);
 		lua_pushinteger(luacon_ci->l, v);
-		if (tpt_lua_pcall(luacon_ci->l, 3, 1, 0))
+		if (tpt_lua_pcall(luacon_ci->l, 3, 1, 0, true))
 		{
 			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 			lua_pop(luacon_ci->l, 1);
@@ -4255,7 +4312,9 @@ bool LuaScriptInterface::HandleEvent(const GameControllerEvent &event)
 	{
 		lua_rawgeti(l, -1, i);
 		int numArgs = PushGameControllerEvent(l, event);
-		int callret = tpt_lua_pcall(l, numArgs, 1, 0);
+		auto simEvent = std::get_if<BeforeSimEvent>(&event) ||
+		                std::get_if<AfterSimEvent>(&event);
+		int callret = tpt_lua_pcall(l, numArgs, 1, 0, simEvent);
 		if (callret)
 		{
 			if (luacon_geterror() == "Error: Script not responding")
@@ -4333,7 +4392,7 @@ int LuaScriptInterface::Command(String command)
 		else
 		{
 			lastCode = "";
-			ret = tpt_lua_pcall(l, 0, LUA_MULTRET, 0);
+			ret = tpt_lua_pcall(l, 0, LUA_MULTRET, 0, false);
 			if (ret)
 			{
 				lastError = luacon_geterror();
@@ -4668,7 +4727,7 @@ int tpt_lua_loadstring(lua_State *L, const ByteString &str)
 
 int tpt_lua_dostring(lua_State *L, const ByteString &str)
 {
-	return tpt_lua_loadstring(L, str) || tpt_lua_pcall(L, 0, LUA_MULTRET, 0);
+	return tpt_lua_loadstring(L, str) || tpt_lua_pcall(L, 0, LUA_MULTRET, 0, false);
 }
 
 bool tpt_lua_equalsString(lua_State *L, int index, const char *data, size_t size)
@@ -4676,10 +4735,25 @@ bool tpt_lua_equalsString(lua_State *L, int index, const char *data, size_t size
 	return lua_isstring(L, index) && lua_objlen(L, index) == size && !memcmp(lua_tostring(L, index), data, size);
 }
 
-int tpt_lua_pcall(lua_State *L, int numArgs, int numResults, int errorFunc)
+int tpt_lua_pcall(lua_State *L, int numArgs, int numResults, int errorFunc, bool simEvent)
 {
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	luacon_ci->luaExecutionStart = Platform::GetTime();
+	struct AtReturn
+	{
+		bool oldInSimEvent;
+
+		AtReturn(bool newInSimEvent)
+		{
+			oldInSimEvent = inSimEvent;
+			inSimEvent = newInSimEvent;
+		}
+
+		~AtReturn()
+		{
+			inSimEvent = oldInSimEvent;
+		}
+	} atReturn(simEvent);
 	return lua_pcall(L, numArgs, numResults, errorFunc);
 }
 
