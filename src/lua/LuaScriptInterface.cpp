@@ -214,6 +214,17 @@ static int simHash(lua_State *l)
 	return 1;
 }
 
+static int simEnsureDeterminism(lua_State *l)
+{
+	if (lua_gettop(l))
+	{
+		luacon_sim->ensureDeterminism = lua_toboolean(l, 1);
+		return 0;
+	}
+	lua_pushboolean(l, luacon_sim->ensureDeterminism);
+	return 1;
+}
+
 LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	TPTScriptInterface(c, m),
 	luacon_mousex(0),
@@ -1003,6 +1014,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"temperatureScale", simulation_temperatureScale},
 		{"randomseed", simRandomseed},
 		{"hash", simHash},
+		{"ensureDeterminism", simEnsureDeterminism},
 		{NULL, NULL}
 	};
 	luaL_register(l, "simulation", simulationAPIMethods);

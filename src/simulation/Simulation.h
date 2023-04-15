@@ -119,6 +119,7 @@ public:
 	int sandcolour_frame;
 	int deco_space;
 	uint64_t frameCount;
+	bool ensureDeterminism;
 
 	int Load(const GameSave * save, bool includePressure);
 	int Load(const GameSave * save, bool includePressure, int x, int y);

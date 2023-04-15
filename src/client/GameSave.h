@@ -1,6 +1,7 @@
 #pragma once
 #include "common/Plane.h"
 #include "common/String.h"
+#include "common/tpt-rand.h"
 #include "simulation/Sign.h"
 #include "simulation/Particle.h"
 #include "Misc.h"
@@ -95,8 +96,8 @@ public:
 	bool hasPressure = false;
 	bool hasAmbientHeat = false;
 	bool hasBlockAirMaps = false; // only written by readOPS, never read
-	bool ensureDeterminism = false; // only read by serializeOPS, never written
-	std::array<uint64_t, 2> rngState;
+	bool ensureDeterminism = false; // only taken seriously by serializeOPS; readOPS may set this even if the save does not have everything required for determinism
+	RNG::State rngState;
 	uint64_t frameCount = 0;
 
 	//Simulation data

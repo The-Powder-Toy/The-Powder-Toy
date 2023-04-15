@@ -114,6 +114,9 @@ private:
 	void notifyToolTipChanged();
 	void notifyQuickOptionsChanged();
 	void notifyLastToolChanged();
+
+	void SaveToSimParameters(const GameSave *saveData);
+
 public:
 	GameModel();
 	~GameModel();

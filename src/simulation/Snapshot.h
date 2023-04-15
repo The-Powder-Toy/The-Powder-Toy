@@ -2,6 +2,7 @@
 #include "Particle.h"
 #include "Sign.h"
 #include "Stickman.h"
+#include "common/tpt-rand.h"
 #include <vector>
 #include <array>
 #include <json/json.h>
@@ -36,7 +37,7 @@ public:
 	std::vector<sign> signs;
 
 	uint64_t FrameCount;
-	std::array<uint64_t, 2> RngState;
+	RNG::State RngState;
 
 	uint32_t Hash() const;
 

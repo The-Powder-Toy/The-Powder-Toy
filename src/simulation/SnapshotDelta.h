@@ -68,7 +68,7 @@ struct SnapshotDelta
 	HunkVector<uint32_t> stickmen;
 	SingleDiff<std::vector<sign>> signs;
 	SingleDiff<uint64_t> FrameCount;
-	SingleDiff<std::array<uint64_t, 2>> RngState;
+	SingleDiff<RNG::State> RngState;
 
 	SingleDiff<Json::Value> Authors;
 

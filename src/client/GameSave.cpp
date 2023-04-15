@@ -539,6 +539,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 		CheckBsonFieldFloat(iter, "ambientAirTemp", &ambientAirTemp);
 		CheckBsonFieldInt(iter, "edgeMode", &edgeMode);
 		CheckBsonFieldInt(iter, "pmapbits", &pmapbits);
+		CheckBsonFieldBool(iter, "ensureDeterminism", &ensureDeterminism);
 		CheckBsonFieldLong(iter, "frameCount", reinterpret_cast<int64_t *>(&frameCount));
 		CheckBsonFieldLong(iter, "rngState0", reinterpret_cast<int64_t *>(&rngState[0]));
 		CheckBsonFieldLong(iter, "rngState1", reinterpret_cast<int64_t *>(&rngState[1]));
@@ -2546,6 +2547,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 		bson_append_binary(&b, "soapLinks", (char)BSON_BIN_USER, (const char *)&soapLinkData[0], soapLinkDataLen);
 	if (ensureDeterminism)
 	{
+		bson_append_bool(&b, "ensureDeterminism", ensureDeterminism);
 		bson_append_binary(&b, "blockAir", (char)BSON_BIN_USER, (const char *)&blockAirData[0], blockAirDataLen);
 		bson_append_long(&b, "frameCount", int64_t(frameCount));
 		bson_append_long(&b, "rngState0", int64_t(rngState[0]));

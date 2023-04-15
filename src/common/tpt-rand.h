@@ -5,8 +5,11 @@
 
 class RNG
 {
+public:
+	using State = std::array<uint64_t, 2>;
+
 private:
-	std::array<uint64_t, 2> s;
+	State s;
 	uint64_t next();
 public:
 	unsigned int operator()();
@@ -18,12 +21,12 @@ public:
 	RNG();
 	void seed(unsigned int sd);
 
-	void state(std::array<uint64_t, 2> ns)
+	void state(State ns)
 	{
 		s = ns;
 	}
 
-	std::array<uint64_t, 2> state() const
+	State state() const
 	{
 		return s;
 	}

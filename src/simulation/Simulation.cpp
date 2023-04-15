@@ -64,8 +64,6 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 	}
 
 	RecalcFreeParticles(false);
-	frameCount = save->frameCount;
-	rng.state(save->rngState);
 
 	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
 	auto &properties = Particle::GetProperties();
@@ -490,15 +488,12 @@ GameSave * Simulation::Save(bool includePressure, int fullX, int fullY, int full
 			}
 		}
 	}
-	if (includePressure)
+	if (includePressure || ensureDeterminism)
 	{
 		newSave->hasPressure = true;
 		newSave->hasAmbientHeat = true;
 	}
-	if (true) // TODO: tie to an option maybe?
-	{
-		newSave->ensureDeterminism = true;
-	}
+	newSave->ensureDeterminism = ensureDeterminism;
 
 	newSave->stkm.rocketBoots1 = player.rocketBoots;
 	newSave->stkm.rocketBoots2 = player2.rocketBoots;
@@ -1092,6 +1087,7 @@ int Simulation::parts_avg(int ci, int ni,int t)
 
 void Simulation::clear_sim(void)
 {
+	ensureDeterminism = false;
 	frameCount = 0;
 	debug_nextToUpdate = 0;
 	debug_mostRecentlyUpdated = -1;
