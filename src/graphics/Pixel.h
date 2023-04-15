@@ -137,6 +137,12 @@ struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) 
 	}
 
 	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
+	constexpr pixel Pack() const
+	{
+		return Red << 16 | Green << 8 | Blue | Alpha << 24;
+	}
+
+	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
 	constexpr static RGBA<T> Unpack(pixel_rgba px)
 	{
 		return RGBA<T>(px >> 16, px >> 8, px, px >> 24);

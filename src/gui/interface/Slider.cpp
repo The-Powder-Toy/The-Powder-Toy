@@ -68,8 +68,8 @@ void Slider::SetColour(Colour col1, Colour col2)
 	this->col1 = col1;
 	this->col2 = col2;
 	bgGradient = Graphics::Gradient({
-		{ RGB<uint8_t>(col1.Red, col1.Green, col1.Blue), 0.f },
-		{ RGB<uint8_t>(col2.Red, col2.Green, col2.Blue), 1.f },
+		{ col1.NoAlpha(), 0.f },
+		{ col2.NoAlpha(), 1.f },
 	}, Size.X-7);
 }
 
