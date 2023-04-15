@@ -97,6 +97,7 @@ public:
 	bool hasAmbientHeat = false;
 	bool hasBlockAirMaps = false; // only written by readOPS, never read
 	bool ensureDeterminism = false; // only taken seriously by serializeOPS; readOPS may set this even if the save does not have everything required for determinism
+	bool hasRngState = false; // only written by readOPS, never read
 	RNG::State rngState;
 	uint64_t frameCount = 0;
 

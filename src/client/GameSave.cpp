@@ -25,13 +25,11 @@ static void CheckBsonFieldFloat(bson_iterator iter, const char *field, float *se
 
 GameSave::GameSave(int width, int height)
 {
-	rngState = RNG().state(); // initialize it with something sane
 	setSize(width, height);
 }
 
 GameSave::GameSave(const std::vector<char> &data, bool newWantAuthors)
 {
-	rngState = RNG().state(); // initialize it with something sane
 	wantAuthors = newWantAuthors;
 	blockWidth = 0;
 	blockHeight = 0;
@@ -543,7 +541,19 @@ void GameSave::readOPS(const std::vector<char> &data)
 		CheckBsonFieldLong(iter, "frameCount", reinterpret_cast<int64_t *>(&frameCount));
 		CheckBsonFieldLong(iter, "rngState0", reinterpret_cast<int64_t *>(&rngState[0]));
 		CheckBsonFieldLong(iter, "rngState1", reinterpret_cast<int64_t *>(&rngState[1]));
-		if (!strcmp(bson_iterator_key(&iter), "signs"))
+		if (!strcmp(bson_iterator_key(&iter), "rngState"))
+		{
+			if (bson_iterator_type(&iter) == BSON_BINDATA && ((unsigned char)bson_iterator_bin_type(&iter)) == BSON_BIN_USER && bson_iterator_bin_len(&iter) == sizeof(rngState))
+			{
+				memcpy(&rngState, bson_iterator_bin_data(&iter), sizeof(rngState));
+				hasRngState = true;
+			}
+			else
+			{
+				fprintf(stderr, "Invalid datatype for rngState: %d[%d] %d[%d] %d[%d]\n", bson_iterator_type(&iter), bson_iterator_type(&iter)==BSON_BINDATA, (unsigned char)bson_iterator_bin_type(&iter), ((unsigned char)bson_iterator_bin_type(&iter))==BSON_BIN_USER, bson_iterator_bin_len(&iter), bson_iterator_bin_len(&iter)>0);
+			}
+		}
+		else if (!strcmp(bson_iterator_key(&iter), "signs"))
 		{
 			if (bson_iterator_type(&iter)==BSON_ARRAY)
 			{
@@ -2550,8 +2560,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 		bson_append_bool(&b, "ensureDeterminism", ensureDeterminism);
 		bson_append_binary(&b, "blockAir", (char)BSON_BIN_USER, (const char *)&blockAirData[0], blockAirDataLen);
 		bson_append_long(&b, "frameCount", int64_t(frameCount));
-		bson_append_long(&b, "rngState0", int64_t(rngState[0]));
-		bson_append_long(&b, "rngState1", int64_t(rngState[1]));
+		bson_append_binary(&b, "rngState", (char)BSON_BIN_USER, (const char *)&rngState, sizeof(rngState));
 		RESTRICTVERSION(98, 0);
 	}
 	unsigned int signsCount = 0;

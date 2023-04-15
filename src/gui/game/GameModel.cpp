@@ -955,7 +955,14 @@ void GameModel::SaveToSimParameters(const GameSave *saveData)
 		sim->grav->stop_grav_async();
 	}
 	sim->frameCount = saveData->frameCount;
-	sim->rng.state(saveData->rngState);
+	if (saveData->hasRngState)
+	{
+		sim->rng.state(saveData->rngState);
+	}
+	else
+	{
+		sim->rng = RNG();
+	}
 	sim->ensureDeterminism = saveData->ensureDeterminism;
 }
 
