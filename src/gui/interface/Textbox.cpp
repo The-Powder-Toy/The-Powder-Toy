@@ -360,10 +360,11 @@ void Textbox::OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			StopTextEditing();
 			if (HasSelection())
 			{
-				if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
+				int lowerBound = getLowerSelectionBound(), higherBound = getHigherSelectionBound();
+				if (lowerBound < 0 || higherBound > (int)backingText.length())
 					return;
-				backingText.Erase(getLowerSelectionBound(), getHigherSelectionBound());
-				cursor = getLowerSelectionBound();
+				backingText.Erase(lowerBound, higherBound - lowerBound);
+				cursor = lowerBound;
 				changed = true;
 			}
 			else if (backingText.length() && cursor < (int)backingText.length())
@@ -387,10 +388,11 @@ void Textbox::OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			StopTextEditing();
 			if (HasSelection())
 			{
-				if (getLowerSelectionBound() < 0 || getHigherSelectionBound() > (int)backingText.length())
+				int lowerBound = getLowerSelectionBound(), higherBound = getHigherSelectionBound();
+				if (lowerBound < 0 || higherBound > (int)backingText.length())
 					return;
-				backingText.erase(backingText.begin()+getLowerSelectionBound(), backingText.begin()+getHigherSelectionBound());
-				cursor = getLowerSelectionBound();
+				backingText.Erase(lowerBound, higherBound - lowerBound);
+				cursor = lowerBound;
 				changed = true;
 			}
 			else if (backingText.length() && cursor > 0)
