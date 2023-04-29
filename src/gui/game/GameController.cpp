@@ -928,7 +928,8 @@ void GameController::SetToolStrength(float value)
 
 void GameController::SetZoomPosition(ui::Point position)
 {
-	ui::Point zoomPosition = position-(gameModel->GetZoomSize()/2);
+	auto zoomhalf = gameModel->GetZoomSize() / 2;
+	ui::Point zoomPosition = position - Vec2{ zoomhalf, zoomhalf };
 	if(zoomPosition.X < 0)
 			zoomPosition.X = 0;
 	if(zoomPosition.Y < 0)

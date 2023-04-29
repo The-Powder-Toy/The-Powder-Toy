@@ -113,7 +113,7 @@ void DirectionSelector::Draw(const ui::Point& screenPos)
 {
 	Graphics * g = GetGraphics();
 	auto handleTrackRadius = radius + handleRadius;
-	ui::Point center = screenPos + handleTrackRadius;
+	ui::Point center = screenPos + Vec2{ handleTrackRadius, handleTrackRadius };
 
 	g->fillcircle(center.X, center.Y, handleTrackRadius, handleTrackRadius, backgroundColor.Red, backgroundColor.Green, backgroundColor.Blue, backgroundColor.Alpha);
 	g->drawcircle(center.X, center.Y, handleTrackRadius, handleTrackRadius, borderColor.Red, borderColor.Green, borderColor.Blue, borderColor.Alpha);

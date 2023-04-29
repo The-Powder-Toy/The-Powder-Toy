@@ -702,7 +702,7 @@ void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, in
 
 bool Simulation::ColorCompare(Renderer *ren, int x, int y, int replaceR, int replaceG, int replaceB)
 {
-	auto pix = RGB<uint8_t>::Unpack(ren->vid[x+y*WINDOWW]);
+	auto pix = RGB<uint8_t>::Unpack(ren->GetPixel({ x, y }));
 	int r = pix.Red;
 	int g = pix.Green;
 	int b = pix.Blue;

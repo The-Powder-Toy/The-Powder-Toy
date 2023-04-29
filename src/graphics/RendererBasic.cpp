@@ -18,10 +18,9 @@ void Renderer::RenderBegin()
 	
 	if(display_mode & DISPLAY_PERS)
 	{
-		for (int i = 0; i < VIDXRES*YRES; i++)
-		{
-			persistentVid[i] = RGB<uint8_t>::Unpack(vid[i]).Decay().Pack();
-		}
+		std::transform(video.RowIterator({ 0, 0 }), video.RowIterator({ 0, YRES }), persistentVideo.begin(), [](pixel p) {
+			return RGB<uint8_t>::Unpack(p).Decay().Pack();
+		});
 	}
 
 	render_fire();
@@ -37,15 +36,15 @@ void Renderer::RenderEnd()
 	RenderZoom();
 }
 
-void Renderer::SetSample(int x, int y)
+void Renderer::SetSample(Vec2<int> pos)
 {
-	sampleColor = GetPixel(x, y);
+	sampleColor = GetPixel(pos);
 }
 
 void Renderer::clearScreen() {
 	if(display_mode & DISPLAY_PERS)
 	{
-		std::copy(persistentVid, persistentVid+(VIDXRES*YRES), vid);
+		std::copy(persistentVideo.begin(), persistentVideo.end(), video.RowIterator({ 0, 0 }));
 	}
 	else
 	{
@@ -59,7 +58,7 @@ void Renderer::FinaliseParts()
 	{
 		warpVideo = video;
 		std::fill_n(video.data(), VIDXRES * YRES, 0);
-		render_gravlensing(warpVid);
+		render_gravlensing(warpVideo);
 	}
 }
 
@@ -70,17 +69,16 @@ void Renderer::RenderZoom()
 	{
 		int x, y, i, j;
 		pixel pix;
-		pixel * img = vid;
 		clearrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1);
 		drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+3, zoomScopeSize*ZFACTOR+3, 192, 192, 192, 255);
 		drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1, 0, 0, 0, 255);
 		for (j=0; j<zoomScopeSize; j++)
 			for (i=0; i<zoomScopeSize; i++)
 			{
-				pix = img[(j+zoomScopePosition.Y)*(VIDXRES)+(i+zoomScopePosition.X)];
+				pix = video[{ i + zoomScopePosition.X, j + zoomScopePosition.Y }];
 				for (y=0; y<ZFACTOR-1; y++)
 					for (x=0; x<ZFACTOR-1; x++)
-						img[(j*ZFACTOR+y+zoomWindowPosition.Y)*(VIDXRES)+(i*ZFACTOR+x+zoomWindowPosition.X)] = pix;
+						video[{ i * ZFACTOR + x + zoomWindowPosition.X, j * ZFACTOR + y + zoomWindowPosition.Y }] = pix;
 			}
 		if (zoomEnabled)
 		{
@@ -112,13 +110,9 @@ void Renderer::DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsign
 }
 
 
-void Renderer::render_gravlensing(pixel * source)
+void Renderer::render_gravlensing(const Video &source)
 {
 	int nx, ny, rx, ry, gx, gy, bx, by, co;
-	pixel *src = source;
-	pixel *dst = vid;
-	if (!dst)
-		return;
 	for(nx = 0; nx < XRES; nx++)
 	{
 		for(ny = 0; ny < YRES; ny++)
@@ -132,11 +126,11 @@ void Renderer::render_gravlensing(pixel * source)
 			by = (int)(ny-sim->gravy[co]+0.5f);
 			if(rx >= 0 && rx < XRES && ry >= 0 && ry < YRES && gx >= 0 && gx < XRES && gy >= 0 && gy < YRES && bx >= 0 && bx < XRES && by >= 0 && by < YRES)
 			{
-				auto t = RGB<uint8_t>::Unpack(dst[ny*(VIDXRES)+nx]);
-				t.Red   = std::min(0xFF, (int)RGB<uint8_t>::Unpack(src[ry*(VIDXRES)+rx]).Red   + t.Red);
-				t.Green = std::min(0xFF, (int)RGB<uint8_t>::Unpack(src[gy*(VIDXRES)+gx]).Green + t.Green);
-				t.Blue  = std::min(0xFF, (int)RGB<uint8_t>::Unpack(src[by*(VIDXRES)+bx]).Blue  + t.Blue);
-				dst[ny*(VIDXRES)+nx] = t.Pack();
+				auto t = RGB<uint8_t>::Unpack(video[{ nx, ny }]);
+				t.Red   = std::min(0xFF, (int)RGB<uint8_t>::Unpack(source[{ rx, ry }]).Red   + t.Red);
+				t.Green = std::min(0xFF, (int)RGB<uint8_t>::Unpack(source[{ gx, gy }]).Green + t.Green);
+				t.Blue  = std::min(0xFF, (int)RGB<uint8_t>::Unpack(source[{ bx, by }]).Blue  + t.Blue);
+				video[{ nx, ny }] = t.Pack();
 			}
 		}
 	}
@@ -177,11 +171,11 @@ void Renderer::drawblob(int x, int y, unsigned char cr, unsigned char cg, unsign
 	blendpixel(x-1, y+1, cr, cg, cb, 64);
 }
 
-pixel Renderer::GetPixel(int x, int y)
+pixel Renderer::GetPixel(Vec2<int> pos) const
 {
-	if (x<0 || y<0 || x>=VIDXRES || y>=VIDYRES)
+	if (pos.X<0 || pos.Y<0 || pos.X>=VIDXRES || pos.Y>=VIDYRES)
 		return 0;
-	return vid[(y*VIDXRES)+x];
+	return video[pos];
 }
 
 std::vector<RGB<uint8_t>> Renderer::flameTable;
@@ -369,7 +363,7 @@ void Renderer::ClearAccumulation()
 	std::fill(&fire_r[0][0], &fire_r[0][0] + NCELL, 0);
 	std::fill(&fire_g[0][0], &fire_g[0][0] + NCELL, 0);
 	std::fill(&fire_b[0][0], &fire_b[0][0] + NCELL, 0);
-	std::fill(persistentVid, persistentVid+(VIDXRES*YRES), 0);
+	std::fill(persistentVideo.begin(), persistentVideo.end(), 0);
 }
 
 void Renderer::AddRenderMode(unsigned int mode)

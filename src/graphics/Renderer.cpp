@@ -527,7 +527,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_FLAT)
 				{
-					vid[ny*(VIDXRES)+nx] = RGB<uint8_t>(colr, colg, colb).Pack();
+					video[{ nx, ny }] = RGB<uint8_t>(colr, colg, colb).Pack();
 				}
 				if(pixel_mode & PMODE_BLEND)
 				{
@@ -539,7 +539,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_BLOB)
 				{
-					vid[ny*(VIDXRES)+nx] = RGB<uint8_t>(colr, colg, colb).Pack();
+					video[{ nx, ny }] = RGB<uint8_t>(colr, colg, colb).Pack();
 
 					blendpixel(nx+1, ny, colr, colg, colb, 223);
 					blendpixel(nx-1, ny, colr, colg, colb, 223);
@@ -890,7 +890,7 @@ void Renderer::draw_air()
 			}
 			for (j=0; j<CELL; j++)//draws the colors
 				for (i=0; i<CELL; i++)
-					vid[(x*CELL+i) + (y*CELL+j)*(VIDXRES)] = c.Pack();
+					video[{ x * CELL + i, y * CELL + j }] = c.Pack();
 		}
 }
 
@@ -931,14 +931,14 @@ void Renderer::DrawWalls()
 							for (int j = 0; j < CELL; j++)
 								for (int i =0; i < CELL; i++)
 									if (i&j&1)
-										vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+										video[{ x * CELL + i, y * CELL + j }] = pc;
 						}
 						else
 						{
 							for (int j = 0; j < CELL; j++)
 								for (int i = 0; i < CELL; i++)
 									if (!(i&j&1))
-										vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+										video[{ x * CELL + i, y * CELL + j }] = pc;
 						}
 					}
 					else if (wt == WL_WALLELEC)
@@ -947,9 +947,9 @@ void Renderer::DrawWalls()
 							for (int i = 0; i < CELL; i++)
 							{
 								if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+									video[{ x * CELL + i, y * CELL + j }] = pc;
 								else
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = 0x808080_rgb .Pack();
+									video[{ x * CELL + i, y * CELL + j }] = 0x808080_rgb .Pack();
 							}
 					}
 					else if (wt == WL_EHOLE)
@@ -958,16 +958,16 @@ void Renderer::DrawWalls()
 						{
 							for (int j = 0; j < CELL; j++)
 								for (int i = 0; i < CELL; i++)
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = 0x242424_rgb .Pack();
+									video[{ x * CELL + i, y * CELL + j }] = 0x242424_rgb .Pack();
 							for (int j = 0; j < CELL; j += 2)
 								for (int i = 0; i < CELL; i += 2)
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = 0x000000_rgb .Pack();
+									video[{ x * CELL + i, y * CELL + j }] = 0x000000_rgb .Pack();
 						}
 						else
 						{
 							for (int j = 0; j < CELL; j += 2)
 								for (int i =0; i < CELL; i += 2)
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = 0x242424_rgb .Pack();
+									video[{ x * CELL + i, y * CELL + j }] = 0x242424_rgb .Pack();
 						}
 					}
 					else if (wt == WL_STREAM)
@@ -1017,27 +1017,27 @@ void Renderer::DrawWalls()
 				case 1:
 					for (int j = 0; j < CELL; j += 2)
 						for (int i = (j>>1)&1; i < CELL; i += 2)
-							vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+							video[{ x * CELL + i, y * CELL + j }] = pc;
 					break;
 				case 2:
 					for (int j = 0; j < CELL; j += 2)
 						for (int i = 0; i < CELL; i += 2)
-							vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+							video[{ x * CELL + i, y * CELL + j }] = pc;
 					break;
 				case 3:
 					for (int j = 0; j < CELL; j++)
 						for (int i = 0; i < CELL; i++)
-							vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+							video[{ x * CELL + i, y * CELL + j }] = pc;
 					break;
 				case 4:
 					for (int j = 0; j < CELL; j++)
 						for (int i = 0; i < CELL; i++)
 							if (i == j)
-								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = pc;
+								video[{ x * CELL + i, y * CELL + j }] = pc;
 							else if (i == j+1 || (i == 0 && j == CELL-1))
-								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = gc;
+								video[{ x * CELL + i, y * CELL + j }] = gc;
 							else
-								vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = 0x202020_rgb .Pack();
+								video[{ x * CELL + i, y * CELL + j }] = 0x202020_rgb .Pack();
 					break;
 				}
 
@@ -1086,7 +1086,7 @@ void Renderer::DrawWalls()
 								for (int j = 0; j < CELL; j += 2)
 									for (int i = 0; i < CELL; i += 2)
 										// looks bad if drawing black blobs
-										vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = 0x000000_rgb .Pack();
+										video[{ x * CELL + i, y * CELL + j }] = 0x000000_rgb .Pack();
 							}
 							else
 							{
@@ -1117,10 +1117,10 @@ void Renderer::DrawWalls()
 								if (i == j)
 									drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
 								else if (i == j+1 || (i == 0 && j == CELL-1))
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = gc;
+									video[{ x * CELL + i, y * CELL + j }] = gc;
 								else
 									// looks bad if drawing black blobs
-									vid[(y*CELL+j)*(VIDXRES)+(x*CELL+i)] = 0x202020_rgb .Pack();
+									video[{ x * CELL + i, y * CELL + j }] = 0x202020_rgb .Pack();
 						break;
 					}
 				}

@@ -43,13 +43,6 @@ struct Vec2
 		return Vec2<decltype(std::declval<T>() + std::declval<S>())>(X + other.X, Y + other.Y);
 	}
 
-	template<typename S>
-	[[deprecated("Use operator+(Vec2)")]]
-	constexpr Vec2<decltype(std::declval<T>() + std::declval<S>())> operator+(S other) const
-	{
-		return Vec2<decltype(std::declval<T>() + std::declval<S>())>(X + other, Y + other);
-	}
-
 	constexpr Vec2<T> operator-() const
 	{
 		return Vec2<T>(-X, -Y);
@@ -59,13 +52,6 @@ struct Vec2
 	constexpr Vec2<decltype(std::declval<T>() - std::declval<S>())> operator-(Vec2<S> other) const
 	{
 		return Vec2<decltype(std::declval<T>() - std::declval<S>())>(X - other.X, Y - other.Y);
-	}
-
-	template<typename S>
-	[[deprecated("Use operator-(Vec2)")]]
-	constexpr Vec2<decltype(std::declval<T>() - std::declval<S>())> operator-(S other) const
-	{
-		return Vec2<decltype(std::declval<T>() - std::declval<S>())>(X - other, Y - other);
 	}
 
 	template<typename S, typename = std::enable_if_t<std::is_arithmetic_v<S>>>

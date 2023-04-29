@@ -27,7 +27,7 @@ BitmapBrush::BitmapBrush(const BitmapBrush &other) : BitmapBrush(other.origSize,
 
 std::unique_ptr<unsigned char []> BitmapBrush::GenerateBitmap() const
 {
-	ui::Point size = radius * 2 + 1;
+	ui::Point size = radius * 2 + Vec2{ 1, 1 };
 	auto bitmap = std::make_unique<unsigned char []>(size.X * size.Y);
 	if (size == origSize)
 		std::copy(&origBitmap[0], &origBitmap[origSize.X * origSize.Y], &bitmap[0]);

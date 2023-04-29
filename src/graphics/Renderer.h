@@ -37,9 +37,10 @@ int HeatToColour(float temp);
 
 class Renderer: public RasterDrawMethods<Renderer>
 {
-	PlaneAdapter<std::array<pixel, WINDOW.X * RES.Y>, WINDOW.X, RES.Y> video;
+	using Video = PlaneAdapter<std::array<pixel, WINDOW.X * RES.Y>, WINDOW.X, RES.Y>;
+	Video video;
 	std::array<pixel, WINDOW.X * RES.Y> persistentVideo;
-	PlaneAdapter<std::array<pixel, WINDOW.X * RES.Y>, WINDOW.X, RES.Y> warpVideo;
+	Video warpVideo;
 
 	Rect<int> getClipRect() const
 	{
@@ -103,7 +104,7 @@ public:
 	void DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb);
 	void DrawWalls();
 	void DrawSigns();
-	void render_gravlensing(pixel * source);
+	void render_gravlensing(const Video &source);
 	void render_fire();
 	void prepare_alpha(int size, float intensity);
 	void render_parts();
@@ -115,14 +116,7 @@ public:
 
 	void ClearAccumulation();
 	void clearScreen();
-	void SetSample(int x, int y);
-
-	[[deprecated("Use video")]]
-	pixel *const vid = video.Base.data();
-	[[deprecated("Use persistentVideo")]]
-	pixel *const persistentVid = persistentVideo.data();
-	[[deprecated("Use wrapVideo")]]
-	pixel *const warpVid = warpVideo.data();
+	void SetSample(Vec2<int> pos);
 
 	void draw_icon(int x, int y, Icon icon);
 
@@ -130,7 +124,7 @@ public:
 
 	void drawblob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb);
 
-	pixel GetPixel(int x, int y);
+	pixel GetPixel(Vec2<int> pos) const;
 	//...
 	//Display mode modifiers
 	void CompileDisplayMode();
