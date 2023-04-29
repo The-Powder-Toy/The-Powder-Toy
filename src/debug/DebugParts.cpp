@@ -47,8 +47,8 @@ void DebugParts::Draw()
 	g->addpixel(lpx, lpy+1, 255, 50, 50, 120);
 	g->addpixel(lpx, lpy-1, 255, 50, 50, 120);
 
-	g->fillrect(7, YRES-26, g->textwidth(info)+5, 14, 0, 0, 0, 180);
-	g->drawtext(10, YRES-22, info, 255, 255, 255, 255);
+	g->fillrect(7, YRES-26, g->TextSize(info).X + 4, 14, 0, 0, 0, 180);
+	g->BlendText({ 10, YRES-22 }, info, RGBA<uint8_t>(255, 255, 255, 255));
 }
 
 DebugParts::~DebugParts()

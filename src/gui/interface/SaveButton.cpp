@@ -194,13 +194,12 @@ void SaveButton::Draw(const Point& screenPos)
 	if (thumbnail)
 	{
 		//thumbBoxSize = ui::Point(thumbnail->Width, thumbnail->Height);
-		if (save && save->id)
-			g->draw_image(thumbnail.get(), screenPos.X-3+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, 255);
-		else
-			g->draw_image(thumbnail.get(), screenPos.X+(Size.X-thumbSize.X)/2, screenPos.Y+(Size.Y-21-thumbSize.Y)/2, 255);
+		auto *tex = thumbnail.get();
+		auto space = Size - Vec2{ 0, 21 };
+		g->BlendImage(tex->Data(), 255, RectSized(screenPos + ((save && save->id) ? ((space - thumbBoxSize) / 2 - Vec2{ 3, 0 }) : (space - thumbSize) / 2), tex->Size()));
 	}
 	else if (file && !file->GetGameSave())
-		g->drawtext(screenPos.X+(Size.X-Graphics::textwidth("Error loading save"))/2, screenPos.Y+(Size.Y-28)/2, "Error loading save", 180, 180, 180, 255);
+		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize("Error loading save").X - 1))/2, (Size.Y-28)/2 }, "Error loading save", RGBA<uint8_t>(180, 180, 180, 255));
 	if(save)
 	{
 		if(save->id)
@@ -230,38 +229,27 @@ void SaveButton::Draw(const Point& screenPos)
 				g->drawrect(screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbBoxSize.X, thumbBoxSize.Y, 180, 180, 180, 255);
 		}
 
-		if(isMouseInside && !isMouseInsideAuthor)
-			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth(name))/2, screenPos.Y+Size.Y - 21, name, 255, 255, 255, 255);
-		else
-			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth(name))/2, screenPos.Y+Size.Y - 21, name, 180, 180, 180, 255);
-
-		if(isMouseInsideAuthor)
-			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth(save->userName.FromUtf8()))/2, screenPos.Y+Size.Y - 10, save->userName.FromUtf8(), 200, 230, 255, 255);
-		else
-			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth(save->userName.FromUtf8()))/2, screenPos.Y+Size.Y - 10, save->userName.FromUtf8(), 100, 130, 160, 255);
+		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize(name).X - 1))/2, Size.Y - 21 }, name, (isMouseInside && !isMouseInsideAuthor) ? RGBA<uint8_t>(255, 255, 255, 255) : RGBA<uint8_t>(180, 180, 180, 255));
+		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize(save->userName.FromUtf8()).X - 1))/2, Size.Y - 10 }, save->userName.FromUtf8(), isMouseInsideAuthor ? RGBA<uint8_t>(200, 230, 255, 255) : RGBA<uint8_t>(100, 130, 160, 255));
 		if (showVotes)// && !isMouseInside)
 		{
-			int x = screenPos.X-7+(Size.X-thumbBoxSize.X)/2+thumbBoxSize.X-Graphics::textwidth(votesBackground);
+			int x = screenPos.X-7+(Size.X-thumbBoxSize.X)/2+thumbBoxSize.X-(Graphics::TextSize(votesBackground).X - 1);
 			int y = screenPos.Y-23+(Size.Y-thumbBoxSize.Y)/2+thumbBoxSize.Y;
-			g->drawtext(x, y, votesBackground, 16, 72, 16, 255);
-			g->drawtext(x, y, votesBackground2, 192, 192, 192, 255);
-			g->drawtext(x+3, y, votesString, 255, 255, 255, 255);
+			g->BlendText({ x, y }, votesBackground, RGBA<uint8_t>(16, 72, 16, 255));
+			g->BlendText({ x, y }, votesBackground2, RGBA<uint8_t>(192, 192, 192, 255));
+			g->BlendText({ x+3, y }, votesString, RGBA<uint8_t>(255, 255, 255, 255));
 		}
 		if (isMouseInsideHistory && showVotes)
 		{
 			int x = screenPos.X;
 			int y = screenPos.Y-15+(Size.Y-thumbBoxSize.Y)/2+thumbBoxSize.Y;
 			g->fillrect(x+1, y+1, 7, 8, 255, 255, 255, 255);
-			if (isMouseInsideHistory) {
-				g->drawtext(x, y, 0xE026, 200, 100, 80, 255);
-			} else {
-				g->drawtext(x, y, 0xE026, 160, 70, 50, 255);
-			}
+			g->BlendText({ x, y }, 0xE026, isMouseInsideHistory ? RGBA<uint8_t>(200, 100, 80, 255) : RGBA<uint8_t>(160, 70, 50, 255));
 		}
 		if (!save->GetPublished())
 		{
-			g->drawtext(screenPos.X, screenPos.Y-2, 0xE04D, 255, 255, 255, 255);
-			g->drawtext(screenPos.X, screenPos.Y-2, 0xE04E, 212, 151, 81, 255);
+			g->BlendText(screenPos - Vec2{ 0, 2 }, 0xE04D, RGBA<uint8_t>(255, 255, 255, 255));
+			g->BlendText(screenPos - Vec2{ 0, 2 }, 0xE04E, RGBA<uint8_t>(212, 151, 81, 255));
 		}
 	}
 	else if (file)
@@ -273,14 +261,7 @@ void SaveButton::Draw(const Point& screenPos)
 		if (thumbSize.X)
 			g->xor_rect(screenPos.X+(Size.X-thumbSize.X)/2, screenPos.Y+(Size.Y-21-thumbSize.Y)/2, thumbSize.X, thumbSize.Y);
 
-		if (isMouseInside)
-		{
-			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth(name))/2, screenPos.Y+Size.Y - 21, name, 255, 255, 255, 255);
-		}
-		else
-		{
-			g->drawtext(screenPos.X+(Size.X-Graphics::textwidth(name))/2, screenPos.Y+Size.Y - 21, name, 180, 180, 180, 255);
-		}
+		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize(name).X - 1))/2, Size.Y - 21 }, name, isMouseInside ? RGBA<uint8_t>(255, 255, 255, 255) : RGBA<uint8_t>(180, 180, 180, 255));
 	}
 
 	if(isMouseInside && selectable)

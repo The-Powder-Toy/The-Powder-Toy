@@ -83,7 +83,7 @@ void Checkbox::Draw(const Point& screenPos)
 		g->drawrect(screenPos.X+2, screenPos.Y+2, 12, 12, 255, 255, 255, 255);
 		g->fillrect(screenPos.X+5, screenPos.Y+5, 6, 6, 255, 255, 255, 170);
 		if (!Appearance.icon)
-			g->drawtext(screenPos.X+18, screenPos.Y+4, text, 255, 255, 255, 255);
+			g->BlendText(screenPos + Vec2{ 18, 4 }, text, RGBA<uint8_t>(255, 255, 255, 255));
 		else
 			g->draw_icon(screenPos.X+iconPosition.X, screenPos.Y+iconPosition.Y, Appearance.icon, 255);
 	}
@@ -91,7 +91,7 @@ void Checkbox::Draw(const Point& screenPos)
 	{
 		g->drawrect(screenPos.X+2, screenPos.Y+2, 12, 12, 255, 255, 255, 200);
 		if (!Appearance.icon)
-			g->drawtext(screenPos.X+18, screenPos.Y+4, text, 255, 255, 255, 200);
+			g->BlendText(screenPos + Vec2{ 18, 4 }, text, RGBA<uint8_t>(255, 255, 255, 200));
 		else
 			g->draw_icon(screenPos.X+iconPosition.X, screenPos.Y+iconPosition.Y, Appearance.icon, 200);
 	}

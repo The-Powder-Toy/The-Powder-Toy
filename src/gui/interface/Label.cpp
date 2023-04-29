@@ -285,11 +285,10 @@ void Label::Draw(const Point& screenPos)
 		}
 	}
 
-	g->drawtext(
-		screenPos.X + textPosition.X,
-		screenPos.Y + textPosition.Y,
+	g->BlendText(
+		screenPos + textPosition,
 		displayTextWithSelection,
-		textColour.Red, textColour.Green, textColour.Blue, 255
+		RGBA<uint8_t>(textColour.Red, textColour.Green, textColour.Blue, 255)
 	);
 }
 

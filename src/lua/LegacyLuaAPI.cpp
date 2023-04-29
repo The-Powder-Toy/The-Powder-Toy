@@ -332,7 +332,7 @@ int luatpt_drawtext(lua_State* l)
 	if (textalpha<0) textalpha = 0;
 	if (textalpha>255) textalpha = 255;
 
-	luacon_g->drawtext(textx, texty, string, textred, textgreen, textblue, textalpha);
+	luacon_g->BlendText({ textx, texty }, string, RGBA<uint8_t>(textred, textgreen, textblue, textalpha));
 	return 0;
 }
 
@@ -983,7 +983,7 @@ int luatpt_drawline(lua_State* l)
 int luatpt_textwidth(lua_State* l)
 {
 	auto string = tpt_lua_optString(l, 1, "");
-	int strwidth = Graphics::textwidth(string);
+	int strwidth = Graphics::TextSize(string).X - 1;
 	lua_pushinteger(l, strwidth);
 	return 1;
 }

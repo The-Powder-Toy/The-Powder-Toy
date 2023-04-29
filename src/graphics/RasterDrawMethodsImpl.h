@@ -402,18 +402,6 @@ String::const_iterator RasterDrawMethods<Derived>::TextFit(String const &str, in
 }
 
 template<typename Derived>
-int RasterDrawMethods<Derived>::drawtext_outline(int x, int y, const String &s, int r, int g, int b, int a)
-{
-	return x + BlendTextOutline(Vec2(x, y), s, RGBA<uint8_t>(r, g, b, a)).X;
-}
-
-template<typename Derived>
-int RasterDrawMethods<Derived>::drawtext(int x, int y, const String &str, int r, int g, int b, int a)
-{
-	return x + BlendText(Vec2(x, y), str, RGBA<uint8_t>(r, g, b, a)).X;
-}
-
-template<typename Derived>
 int RasterDrawMethods<Derived>::drawchar(int x, int y, String::value_type c, int r, int g, int b, int a)
 {
 	return x + BlendChar(Vec2(x, y), c, RGBA<uint8_t>(r, g, b, a));
@@ -511,18 +499,6 @@ template<typename Derived>
 void RasterDrawMethods<Derived>::clearrect(int x, int y, int w, int h)
 {
 	DrawFilledRect(RectSized(Vec2(x + 1, y + 1), Vec2(w - 1, h - 1)), 0x000000_rgb);
-}
-
-template<typename Derived>
-void RasterDrawMethods<Derived>::draw_image(const pixel *img, int x, int y, int w, int h, int a)
-{
-	BlendImage(img, a, RectSized(Vec2(x, y), Vec2(w, h)));
-}
-
-template<typename Derived>
-void RasterDrawMethods<Derived>::draw_image(const VideoBuffer * vidBuf, int x, int y, int a)
-{
-	BlendImage(vidBuf->Data(), a, RectSized(Vec2(x, y), vidBuf->Size()));
 }
 
 #undef video

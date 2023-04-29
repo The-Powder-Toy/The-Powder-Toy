@@ -10,26 +10,26 @@
 SaveIDMessage::SaveIDMessage(int id):
 	ui::Window(ui::Point((XRES-244)/2, (YRES-90)/2), ui::Point(244, 90))
 {
-	int textWidth = Graphics::textwidth("Save ID");
+	int textWidth = Graphics::TextSize("Save ID").X - 1;
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(textWidth+20, 16), "Save ID");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	textWidth = Graphics::textwidth("Saved Successfully!");
+	textWidth = Graphics::TextSize("Saved Successfully!").X - 1;
 	ui::Label * messageLabel = new ui::Label(ui::Point(4, 24), ui::Point(textWidth+20, 16), "Saved Successfully!");
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(messageLabel);
 
-	textWidth = Graphics::textwidth("Click the box below to copy the save ID");
+	textWidth = Graphics::TextSize("Click the box below to copy the save ID").X - 1;
 	ui::Label * copyTextLabel = new ui::Label(ui::Point((Size.X-textWidth-20)/2, 35), ui::Point(textWidth+20, 16), "Click the box below to copy the save id");
 	copyTextLabel->SetTextColour(ui::Colour(150, 150, 150));
 	copyTextLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	AddComponent(copyTextLabel);
 
-	textWidth = Graphics::textwidth(String::Build(id));
+	textWidth = Graphics::TextSize(String::Build(id)).X - 1;
 	ui::CopyTextButton * copyTextButton = new ui::CopyTextButton(ui::Point((Size.X-textWidth-10)/2, 50), ui::Point(textWidth+10, 18), String::Build(id), copyTextLabel);
 	AddComponent(copyTextButton);
 

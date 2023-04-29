@@ -60,10 +60,6 @@ struct RasterDrawMethods
 
 	void Clear();
 
-	[[deprecated("Use BlendTextOutline")]]
-	int drawtext_outline(int x, int y, const String &, int r, int g, int b, int a);
-	[[deprecated("Use BlendText")]]
-	int drawtext(int x, int y, const String &, int r, int g, int b, int a);
 	[[deprecated("Use BlendChar")]]
 	int drawchar(int x, int y, String::value_type, int r, int g, int b, int a);
 	[[deprecated("Use AddChar")]]
@@ -92,8 +88,4 @@ struct RasterDrawMethods
 	void fillcircle(int x, int y, int rx, int ry, int r, int g, int b, int a);
 	[[deprecated("Use DrawFilledRect (beware off by 1)")]]
 	void clearrect(int x, int y, int w, int h);
-	[[deprecated("Use BlendImage")]]
-	void draw_image(pixel const *, int x, int y, int w, int h, int a);
-	[[deprecated("Use BlendImage")]]
-	void draw_image(VideoBuffer const *, int x, int y, int a);
 };

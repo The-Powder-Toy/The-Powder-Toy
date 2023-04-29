@@ -44,7 +44,7 @@ void ElementPopulationDebug::Draw()
 	halfValString = String::Build(maxAverage/2);
 
 
-	g->fillrect(xStart-5, yBottom - 263, bars+10+Graphics::textwidth(maxValString)+10, 255 + 13, 0, 0, 0, 180);
+	g->fillrect(xStart-5, yBottom - 263, bars+10+Graphics::TextSize(maxValString).X+9, 255 + 13, 0, 0, 0, 180);
 
 	bars = 0;
 	for(int i = 0; i < PT_NUM; i++)
@@ -76,9 +76,9 @@ void ElementPopulationDebug::Draw()
 		}
 	}
 
-	g->drawtext(xStart + bars + 5, yBottom-5, "0", 255, 255, 255, 255);
-	g->drawtext(xStart + bars + 5, yBottom-132, halfValString, 255, 255, 255, 255);
-	g->drawtext(xStart + bars + 5, yBottom-260, maxValString, 255, 255, 255, 255);
+	g->BlendText({ xStart + bars + 5, yBottom-5 }, "0", RGBA<uint8_t>(255, 255, 255, 255));
+	g->BlendText({ xStart + bars + 5, yBottom-132 }, halfValString, RGBA<uint8_t>(255, 255, 255, 255));
+	g->BlendText({ xStart + bars + 5, yBottom-260 }, maxValString, RGBA<uint8_t>(255, 255, 255, 255));
 }
 
 ElementPopulationDebug::~ElementPopulationDebug()

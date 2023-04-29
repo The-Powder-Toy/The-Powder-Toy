@@ -503,7 +503,7 @@ void FontEditor::OnDraw()
 	}
 	else
 	{
-		g->drawtext(8, 8, "No character", 255, 0, 0, 255);
+		g->BlendText({ 8, 8 }, "No character", RGBA<uint8_t>(255, 0, 0, 255));
 	}
 }
 

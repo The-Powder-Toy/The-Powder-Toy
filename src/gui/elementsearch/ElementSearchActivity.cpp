@@ -218,7 +218,7 @@ void ElementSearchActivity::OnDraw()
 	g->drawrect(Position.X+searchField->Position.X, Position.Y+searchField->Position.Y+searchField->Size.Y+8, searchField->Size.X, Size.Y-(searchField->Position.Y+searchField->Size.Y+8)-23, 255, 255, 255, 180);
 	if (toolTipPresence && toolTip.length())
 	{
-		g->drawtext(10, Size.Y+70, toolTip, 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
+		g->BlendText({ 10, Size.Y+70 }, toolTip, RGBA<uint8_t>(255, 255, 255, toolTipPresence>51?255:toolTipPresence*5));
 	}
 }
 

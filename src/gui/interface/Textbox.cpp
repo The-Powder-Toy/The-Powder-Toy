@@ -200,9 +200,9 @@ void Textbox::pasteIntoSelection()
 	{
 		newText = newText.Substr(0, limit-backingText.length());
 	}
-	if (!multiline && Graphics::textwidth(backingText + newText) > regionWidth)
+	if (!multiline && Graphics::TextSize(backingText + newText).X - 1 > regionWidth)
 	{
-		int pLimit = regionWidth - Graphics::textwidth(backingText);
+		int pLimit = regionWidth - (Graphics::TextSize(backingText).X - 1);
 		int pWidth = 0;
 		auto it = newText.begin();
 		while (it != newText.end())
@@ -488,7 +488,7 @@ void Textbox::InsertText(String text)
 			regionWidth -= 13;
 		regionWidth -= Appearance.Margin.Left;
 		regionWidth -= Appearance.Margin.Right;
-		if ((limit==String::npos || backingText.length() < limit) && (Graphics::textwidth(backingText + text) <= regionWidth || multiline))
+		if ((limit==String::npos || backingText.length() < limit) && (Graphics::TextSize(backingText + text).X - 1 <= regionWidth || multiline))
 		{
 			if (cursor == (int)backingText.length())
 			{
@@ -620,7 +620,7 @@ void Textbox::Draw(const Point& screenPos)
 	{
 		if(!text.length())
 		{
-			g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, placeHolder, textColour.Red, textColour.Green, textColour.Blue, 170);
+			g->BlendText(screenPos + textPosition, placeHolder, RGBA<uint8_t>(textColour.Red, textColour.Green, textColour.Blue, 170));
 		}
 		if(border) g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 160, 160, 160, 255);
 	}

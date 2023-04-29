@@ -83,7 +83,7 @@ void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)
 	{
 		String pageInfo = String::Build("of ", pageCount);
 		pageCountLabel->SetText(pageInfo);
-		int width = Graphics::textwidth(pageInfo);
+		int width = Graphics::TextSize(pageInfo).X - 1;
 
 		pageLabel->Position.X = WINDOWW/2-width-20;
 		pageTextbox->Position.X = WINDOWW/2-width+11;

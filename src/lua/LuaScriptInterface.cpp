@@ -3812,7 +3812,7 @@ int LuaScriptInterface::graphics_drawText(lua_State * l)
 	if (a<0) a = 0;
 	else if (a>255) a = 255;
 
-	luacon_g->drawtext(x, y, text, r, g, b, a);
+	luacon_g->BlendText({ x, y }, text, RGBA<uint8_t>(r, g, b, a));
 	return 0;
 }
 

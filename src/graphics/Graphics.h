@@ -91,10 +91,6 @@ public:
 	};
 	static std::vector<RGB<uint8_t>> Gradient(std::vector<GradientStop> stops, int resolution);
 
-	//Font/text metrics
-	[[deprecated("Use TextSize().X - 1 (yes this is very bad code eww)")]]
-	static int textwidth(const String &s);
-
 	VideoBuffer DumpFrame();
 
 	void draw_icon(int x, int y, Icon icon, unsigned char alpha = 255, bool invert = false);

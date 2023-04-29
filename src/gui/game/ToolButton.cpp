@@ -53,7 +53,8 @@ void ToolButton::Draw(const ui::Point& screenPos)
 
 	if (Appearance.GetTexture())
 	{
-		g->draw_image(Appearance.GetTexture(), screenPos.X+2, screenPos.Y+2, 255);
+		auto *tex = Appearance.GetTexture();
+		g->BlendImage(tex->Data(), 255, RectSized(screenPos + Vec2{ 2, 2 }, tex->Size()));
 	}
 	else
 	{
@@ -70,16 +71,16 @@ void ToolButton::Draw(const ui::Point& screenPos)
 	}
 	if (Favorite::Ref().IsFavorite(toolIdentifier))
 	{
-		g->drawtext(screenPos.X, screenPos.Y, 0xE068, Appearance.BorderFavorite.Red, Appearance.BorderFavorite.Green, Appearance.BorderFavorite.Blue, Appearance.BorderFavorite.Alpha);
+		g->BlendText(screenPos, 0xE068, Appearance.BorderFavorite);
 	}
 
 	if (totalColour<544)
 	{
-		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, buttonDisplayText, 255, 255, 255, 255);
+		g->BlendText(screenPos + textPosition, buttonDisplayText, RGBA<uint8_t>(255, 255, 255, 255));
 	}
 	else
 	{
-		g->drawtext(screenPos.X+textPosition.X, screenPos.Y+textPosition.Y, buttonDisplayText, 0, 0, 0, 255);
+		g->BlendText(screenPos + textPosition, buttonDisplayText, RGBA<uint8_t>(0, 0, 0, 255));
 	}
 
 	if (ClipRect.Size().X && ClipRect.Size().Y)

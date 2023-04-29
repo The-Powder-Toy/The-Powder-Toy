@@ -72,10 +72,7 @@ void ProgressBar::Draw(const Point & screenPos)
 			g->fillrect(screenPos.X + 2, screenPos.Y + 2, rsize, Size.Y-4, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
 		}
 	}
-	if(progress<50)
-		g->drawtext(screenPos.X + ((Size.X-Graphics::textwidth(progressStatus))/2), screenPos.Y + (Size.Y-8)/2, progressStatus, 255, 255, 255, 255);
-	else
-		g->drawtext(screenPos.X + ((Size.X-Graphics::textwidth(progressStatus))/2), screenPos.Y + (Size.Y-8)/2, progressStatus, 0, 0, 0, 255);
+	g->BlendText(screenPos + Vec2{ ((Size.X-(Graphics::TextSize(progressStatus).X - 1))/2), (Size.Y-8)/2 }, progressStatus, progress<50 ? RGBA<uint8_t>(255, 255, 255, 255) : RGBA<uint8_t>(0, 0, 0, 255));
 }
 
 void ProgressBar::Tick(float dt)

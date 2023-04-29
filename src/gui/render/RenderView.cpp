@@ -170,7 +170,7 @@ void RenderView::OnDraw()
 	g->draw_line(XRES, 0, XRES, WINDOWH, 255, 255, 255, 255);
 	if(toolTipPresence && toolTip.length())
 	{
-		g->drawtext(6, Size.Y-MENUSIZE-12, toolTip, 255, 255, 255, toolTipPresence>51?255:toolTipPresence*5);
+		g->BlendText({ 6, Size.Y-MENUSIZE-12 }, toolTip, RGBA<uint8_t>(255, 255, 255, toolTipPresence>51?255:toolTipPresence*5));
 	}
 }
 

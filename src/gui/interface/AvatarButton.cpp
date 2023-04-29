@@ -39,7 +39,8 @@ void AvatarButton::Draw(const Point& screenPos)
 
 	if(avatar)
 	{
-		g->draw_image(avatar.get(), screenPos.X, screenPos.Y, 255);
+		auto *tex = avatar.get();
+		g->BlendImage(tex->Data(), 255, RectSized(screenPos, tex->Size()));
 	}
 }
 

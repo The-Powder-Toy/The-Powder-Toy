@@ -152,7 +152,7 @@ void Renderer::DrawSigns()
 			String text = currentSign.getDisplayText(sim, x, y, w, h);
 			clearrect(x, y, w+1, h);
 			drawrect(x, y, w+1, h, 192, 192, 192, 255);
-			drawtext(x+3, y+4, text, 255, 255, 255, 255);
+			BlendText({ x+3, y+4 }, text, RGBA<uint8_t>(255, 255, 255, 255));
 
 			if (currentSign.ju != sign::None)
 			{
@@ -417,7 +417,7 @@ void Renderer::render_parts()
 					if (mousePos.X>(nx-3) && mousePos.X<(nx+3) && mousePos.Y<(ny+3) && mousePos.Y>(ny-3)) //If mouse is in the head
 					{
 						String hp = String::Build(Format::Width(sim->parts[i].life, 3));
-						drawtext(mousePos.X-8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), mousePos.Y-12, hp, 255, 255, 255, 255);
+						BlendText(mousePos + Vec2{ -8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), -12 }, hp, RGBA<uint8_t>(255, 255, 255, 255));
 					}
 
 					if (findingElement == t)
@@ -980,7 +980,7 @@ void Renderer::DrawWalls()
 						// there is no velocity here, draw a streamline and continue
 						if (!xVel && !yVel)
 						{
-							drawtext(x*CELL, y*CELL-2, 0xE00D, 255, 255, 255, 128);
+							BlendText({ x*CELL, y*CELL-2 }, 0xE00D, RGBA<uint8_t>(255, 255, 255, 128));
 							addpixel(oldX, oldY, 255, 255, 255, 255);
 							continue;
 						}
@@ -1011,7 +1011,7 @@ void Renderer::DrawWalls()
 							xf += xVel;
 							yf += yVel;
 						}
-						drawtext(x*CELL, y*CELL-2, 0xE00D, 255, 255, 255, 128);
+						BlendText({ x*CELL, y*CELL-2 }, 0xE00D, RGBA<uint8_t>(255, 255, 255, 128));
 					}
 					break;
 				case 1:
