@@ -169,7 +169,7 @@ Graphics::Graphics()
 
 int Graphics::textwidth(const String &str)
 {
-	return TextSize(str).X;
+	return TextSize(str).X - 1;
 }
 
 void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool invert)

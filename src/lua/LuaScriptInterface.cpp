@@ -3785,7 +3785,6 @@ void LuaScriptInterface::initGraphicsAPI()
 
 int LuaScriptInterface::graphics_textSize(lua_State * l)
 {
-	int width, height;
 	auto text = tpt_lua_optString(l, 1, "");
 	auto size = Graphics::TextSize(text);
 

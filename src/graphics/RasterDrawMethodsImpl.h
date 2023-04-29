@@ -334,7 +334,7 @@ template<typename Derived>
 Vec2<int> RasterDrawMethods<Derived>::TextSize(String const &str)
 {
 	Vec2<int> size = Vec2(0, FONT_H - 2);
-	int curX = -1; // characters have 1px of spacing between them
+	int curX = 0; // characters have 1px of spacing between them
 	for (size_t i = 0; i < str.length(); i++)
 	{
 		if (str[i] == '\n')

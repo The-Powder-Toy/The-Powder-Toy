@@ -115,7 +115,6 @@ void Renderer::DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsign
 void Renderer::render_gravlensing(pixel * source)
 {
 	int nx, ny, rx, ry, gx, gy, bx, by, co;
-	int r, g, b;
 	pixel *src = source;
 	pixel *dst = vid;
 	if (!dst)

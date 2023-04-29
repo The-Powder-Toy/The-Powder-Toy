@@ -25,7 +25,7 @@ void Button::TextPosition(String ButtonText)
 	buttonDisplayText = ButtonText;
 	if(buttonDisplayText.length())
 	{
-		if (Graphics::TextSize(buttonDisplayText).X > Size.X - (Appearance.icon ? 22 : 0))
+		if (Graphics::TextSize(buttonDisplayText).X - 1 > Size.X - (Appearance.icon ? 22 : 0))
 		{
 			auto it = Graphics::TextFit(buttonDisplayText, Size.X - (Appearance.icon ? 38 : 22));
 			buttonDisplayText.erase(it, buttonDisplayText.end());

@@ -39,7 +39,7 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save_) : SaveButto
 	if(save)
 	{
 		name = save->name;
-		if (Graphics::TextSize(name).X > Size.X)
+		if (Graphics::TextSize(name).X - 1 > Size.X)
 		{
 			auto it = Graphics::TextFit(name, Size.X - (Appearance.icon ? 38 : 22));
 			name.erase(it, name.end());
@@ -100,7 +100,7 @@ SaveButton::SaveButton(Point position, Point size, SaveFile * file_) : SaveButto
 	if(file)
 	{
 		name = file->GetDisplayName();
-		if (Graphics::TextSize(name).X > Size.X)
+		if (Graphics::TextSize(name).X - 1 > Size.X)
 		{
 			auto it = Graphics::TextFit(name, Size.X - (Appearance.icon ? 38 : 22));
 			name.erase(it, name.end());
