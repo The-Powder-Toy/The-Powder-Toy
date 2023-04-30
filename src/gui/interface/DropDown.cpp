@@ -15,7 +15,7 @@ class DropDownWindow : public ui::Window
 
 public:
 	DropDownWindow(DropDown * dropDown):
-		Window(dropDown->GetScreenPos() + ui::Point(-1, -1 - dropDown->optionIndex * 16), ui::Point(dropDown->Size.X+2, 1+dropDown->options.size()*16)),
+		Window(dropDown->GetScreenPos() + ui::Point(-1, -1 - dropDown->optionIndex * 16), ui::Point(dropDown->Size.X+2, 2+dropDown->options.size()*16)),
 		dropDown(dropDown),
 		appearance(dropDown->Appearance)
 	{
@@ -39,7 +39,7 @@ public:
 	void OnDraw() override
 	{
 		Graphics * g = GetGraphics();
-		g->clearrect(Position.X, Position.Y, Size.X, Size.Y);
+		g->DrawFilledRect(RectSized(Position, Size), 0x000000_rgb);
 	}
 	void setOption(String option)
 	{

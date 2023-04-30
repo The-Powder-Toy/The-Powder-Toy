@@ -168,7 +168,7 @@ void SignWindow::DoDraw()
 		Graphics * g = GetGraphics();
 
 		String text = currentSign.getDisplayText(sim, x, y, w, h);
-		g->clearrect(x, y, w+1, h);
+		g->DrawFilledRect(RectSized(Vec2{ x + 1, y + 1 }, Vec2{ w, h - 1 }), 0x000000_rgb);
 		g->drawrect(x, y, w+1, h, 192, 192, 192, 255);
 		g->BlendText({ x+3, y+4 }, text, RGBA<uint8_t>(255, 255, 255, 255));
 
@@ -222,7 +222,7 @@ void SignWindow::OnDraw()
 {
 	Graphics * g = GetGraphics();
 
-	g->clearrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3);
+	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
 	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);
 }
 

@@ -100,31 +100,35 @@ void Brush::RenderRect(Renderer * ren, ui::Point position1, ui::Point position2)
 		width *= -1;
 	}
 
-	ren->xor_line(position1.X, position1.Y, position1.X+width, position1.Y);
-	if (height>0){
-		ren->xor_line(position1.X, position1.Y+height, position1.X+width, position1.Y+height);
-		if (height>1){
-			ren->xor_line(position1.X+width, position1.Y+1, position1.X+width, position1.Y+height-1);
-			if (width>0)
-				ren->xor_line(position1.X, position1.Y+1, position1.X, position1.Y+height-1);
+	ren->XorLine(position1, position1 + Vec2{ width, 0 });
+	if (height > 0)
+	{
+		ren->XorLine(position1 + Vec2{ 0, height }, position1 + Vec2{ width, height });
+		if (height > 1)
+		{
+			ren->XorLine(position1 + Vec2{ width, 1 }, position1 + Vec2{ width, height - 1 });
+			if (width > 0)
+			{
+				ren->XorLine(position1 + Vec2{ 0, 1 }, position1 + Vec2{ 0, height - 1 });
+			}
 		}
 	}
 }
 
 void Brush::RenderLine(Renderer * ren, ui::Point position1, ui::Point position2) const
 {
-	ren->xor_line(position1.X, position1.Y, position2.X, position2.Y);
+	ren->XorLine(position1, position2);
 }
 
 void Brush::RenderPoint(Renderer * ren, ui::Point position) const
 {
-	ren->xor_bitmap(&outline[0], position.X - radius.X, position.Y - radius.Y, 2 * radius.X + 1, 2 * radius.Y + 1);
+	ren->XorImage(&outline[0], RectBetween(position - radius, position + radius));
 }
 
 void Brush::RenderFill(Renderer * ren, ui::Point position) const
 {
-	ren->xor_line(position.X-5, position.Y, position.X-1, position.Y);
-	ren->xor_line(position.X+5, position.Y, position.X+1, position.Y);
-	ren->xor_line(position.X, position.Y-5, position.X, position.Y-1);
-	ren->xor_line(position.X, position.Y+5, position.X, position.Y+1);
+	ren->XorLine(position - Vec2{ 5, 0 }, position - Vec2{ 1, 0 });
+	ren->XorLine(position + Vec2{ 5, 0 }, position + Vec2{ 1, 0 });
+	ren->XorLine(position - Vec2{ 0, 5 }, position - Vec2{ 0, 1 });
+	ren->XorLine(position + Vec2{ 0, 5 }, position + Vec2{ 0, 1 });
 }

@@ -69,7 +69,8 @@ void Renderer::RenderZoom()
 	{
 		int x, y, i, j;
 		pixel pix;
-		clearrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1);
+
+		DrawFilledRect(RectSized(zoomWindowPosition, { zoomScopeSize * ZFACTOR, zoomScopeSize * ZFACTOR }), 0x000000_rgb);
 		drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+3, zoomScopeSize*ZFACTOR+3, 192, 192, 192, 255);
 		drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1, 0, 0, 0, 255);
 		for (j=0; j<zoomScopeSize; j++)
@@ -84,13 +85,13 @@ void Renderer::RenderZoom()
 		{
 			for (j=-1; j<=zoomScopeSize; j++)
 			{
-				xor_pixel(zoomScopePosition.X+j, zoomScopePosition.Y-1);
-				xor_pixel(zoomScopePosition.X+j, zoomScopePosition.Y+zoomScopeSize);
+				XorPixel(zoomScopePosition + Vec2{ j, -1 });
+				XorPixel(zoomScopePosition + Vec2{ j, zoomScopeSize });
 			}
 			for (j=0; j<zoomScopeSize; j++)
 			{
-				xor_pixel(zoomScopePosition.X-1, zoomScopePosition.Y+j);
-				xor_pixel(zoomScopePosition.X+zoomScopeSize, zoomScopePosition.Y+j);
+				XorPixel(zoomScopePosition + Vec2{ -1, j });
+				XorPixel(zoomScopePosition + Vec2{ zoomScopeSize, j });
 			}
 		}
 	}

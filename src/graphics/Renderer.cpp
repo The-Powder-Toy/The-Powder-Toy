@@ -150,7 +150,7 @@ void Renderer::DrawSigns()
 		if (currentSign.text.length())
 		{
 			String text = currentSign.getDisplayText(sim, x, y, w, h);
-			clearrect(x, y, w+1, h);
+			DrawFilledRect(RectSized(Vec2{ x + 1, y + 1 }, Vec2{ w, h - 1 }), 0x000000_rgb);
 			drawrect(x, y, w+1, h, 192, 192, 192, 255);
 			BlendText({ x+3, y+4 }, text, RGBA<uint8_t>(255, 255, 255, 255));
 
@@ -535,7 +535,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_ADD)
 				{
-					addpixel(nx, ny, colr, colg, colb, cola);
+					AddPixel({ nx, ny }, RGBA<uint8_t>(colr, colg, colb, cola));
 				}
 				if(pixel_mode & PMODE_BLOB)
 				{
@@ -554,24 +554,24 @@ void Renderer::render_parts()
 				if(pixel_mode & PMODE_GLOW)
 				{
 					int cola1 = (5*cola)/255;
-					addpixel(nx, ny, colr, colg, colb, (192*cola)/255);
-					addpixel(nx+1, ny, colr, colg, colb, (96*cola)/255);
-					addpixel(nx-1, ny, colr, colg, colb, (96*cola)/255);
-					addpixel(nx, ny+1, colr, colg, colb, (96*cola)/255);
-					addpixel(nx, ny-1, colr, colg, colb, (96*cola)/255);
+					AddPixel({ nx, ny }, RGBA<uint8_t>(colr, colg, colb, (192*cola)/255));
+					AddPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb, (96*cola)/255));
+					AddPixel({ nx-1, ny }, RGBA<uint8_t>(colr, colg, colb, (96*cola)/255));
+					AddPixel({ nx, ny+1 }, RGBA<uint8_t>(colr, colg, colb, (96*cola)/255));
+					AddPixel({ nx, ny-1 }, RGBA<uint8_t>(colr, colg, colb, (96*cola)/255));
 
 					for (x = 1; x < 6; x++) {
-						addpixel(nx, ny-x, colr, colg, colb, cola1);
-						addpixel(nx, ny+x, colr, colg, colb, cola1);
-						addpixel(nx-x, ny, colr, colg, colb, cola1);
-						addpixel(nx+x, ny, colr, colg, colb, cola1);
+						AddPixel({ nx, ny-x }, RGBA<uint8_t>(colr, colg, colb, cola1));
+						AddPixel({ nx, ny+x }, RGBA<uint8_t>(colr, colg, colb, cola1));
+						AddPixel({ nx-x, ny }, RGBA<uint8_t>(colr, colg, colb, cola1));
+						AddPixel({ nx+x, ny }, RGBA<uint8_t>(colr, colg, colb, cola1));
 						for (y = 1; y < 6; y++) {
 							if(x + y > 7)
 								continue;
-							addpixel(nx+x, ny-y, colr, colg, colb, cola1);
-							addpixel(nx-x, ny+y, colr, colg, colb, cola1);
-							addpixel(nx+x, ny+y, colr, colg, colb, cola1);
-							addpixel(nx-x, ny-y, colr, colg, colb, cola1);
+							AddPixel({ nx+x, ny-y }, RGBA<uint8_t>(colr, colg, colb, cola1));
+							AddPixel({ nx-x, ny+y }, RGBA<uint8_t>(colr, colg, colb, cola1));
+							AddPixel({ nx+x, ny+y }, RGBA<uint8_t>(colr, colg, colb, cola1));
+							AddPixel({ nx-x, ny-y }, RGBA<uint8_t>(colr, colg, colb, cola1));
 						}
 					}
 				}
@@ -595,11 +595,10 @@ void Renderer::render_parts()
 					flicker = float(rng()%20);
 					gradv = 4*sim->parts[i].life + flicker;
 					for (x = 0; gradv>0.5; x++) {
-						addpixel(nx+x, ny, colr, colg, colb, int(gradv));
-						addpixel(nx-x, ny, colr, colg, colb, int(gradv));
-
-						addpixel(nx, ny+x, colr, colg, colb, int(gradv));
-						addpixel(nx, ny-x, colr, colg, colb, int(gradv));
+						AddPixel({ nx+x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+						AddPixel({ nx-x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+						AddPixel({ nx, ny+x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+						AddPixel({ nx, ny-x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						gradv = gradv/1.5f;
 					}
 				}
@@ -618,10 +617,10 @@ void Renderer::render_parts()
 					blendpixel(nx+1, ny+1, colr, colg, colb, int(gradv));
 					blendpixel(nx-1, ny+1, colr, colg, colb, int(gradv));
 					for (x = 1; gradv>0.5; x++) {
-						addpixel(nx+x, ny, colr, colg, colb, int(gradv));
-						addpixel(nx-x, ny, colr, colg, colb, int(gradv));
-						addpixel(nx, ny+x, colr, colg, colb, int(gradv));
-						addpixel(nx, ny-x, colr, colg, colb, int(gradv));
+						AddPixel({ nx+x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+						AddPixel({ nx-x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+						AddPixel({ nx, ny+x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+						AddPixel({ nx, ny-x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						gradv = gradv/1.2f;
 					}
 				}
@@ -640,10 +639,10 @@ void Renderer::render_parts()
 					blendpixel(nx+1, ny+1, colr, colg, colb, int(gradv));
 					blendpixel(nx-1, ny+1, colr, colg, colb, int(gradv));
 					for (x = 1; gradv>0.5; x++) {
-						addpixel(nx+x, ny, colr, colg, colb, int(gradv));
-						addpixel(nx-x, ny, colr, colg, colb, int(gradv));
-						addpixel(nx, ny+x, colr, colg, colb, int(gradv));
-						addpixel(nx, ny-x, colr, colg, colb, int(gradv));
+						AddPixel({ nx+x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+						AddPixel({ nx-x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+						AddPixel({ nx, ny+x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+						AddPixel({ nx, ny-x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						gradv = gradv/1.01f;
 					}
 				}
@@ -661,7 +660,7 @@ void Renderer::render_parts()
 						nxo = (int)(ddist*cos(drad));
 						nyo = (int)(ddist*sin(drad));
 						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES && TYP(sim->pmap[ny+nyo][nx+nxo]) != PT_PRTI)
-							addpixel(nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
+							AddPixel({ nx+nxo, ny+nyo }, RGBA<uint8_t>(colr, colg, colb, 255-orbd[r]));
 					}
 				}
 				if (pixel_mode & EFFECT_GRAVOUT)
@@ -678,7 +677,7 @@ void Renderer::render_parts()
 						nxo = (int)(ddist*cos(drad));
 						nyo = (int)(ddist*sin(drad));
 						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES && TYP(sim->pmap[ny+nyo][nx+nxo]) != PT_PRTO)
-							addpixel(nx+nxo, ny+nyo, colr, colg, colb, 255-orbd[r]);
+							AddPixel({ nx+nxo, ny+nyo }, RGBA<uint8_t>(colr, colg, colb, 255-orbd[r]));
 					}
 				}
 				if (pixel_mode & EFFECT_DBGLINES && !(display_mode&DISPLAY_PERS))
@@ -697,7 +696,7 @@ void Renderer::render_parts()
 							{
 								othertmp = (int)((parts[z].temp-73.15f)/100+1);
 								if (tmp == othertmp)
-									xor_line(nx,ny,(int)(parts[z].x+0.5f),(int)(parts[z].y+0.5f));
+									XorLine({ nx, ny }, Vec2{ int(parts[z].x+0.5f), int(parts[z].y+0.5f) });
 							}
 						}
 					}
@@ -809,7 +808,7 @@ void Renderer::draw_grav()
 			{
 				nx -= sim->gravx[ca]*0.5f;
 				ny -= sim->gravy[ca]*0.5f;
-				addpixel((int)(nx+0.5f), (int)(ny+0.5f), 255, 255, 255, (int)(dist*20.0f));
+				AddPixel({ int(nx+0.5f), int(ny+0.5f) }, RGBA<uint8_t>(255, 255, 255, (int)(dist*20.0f)));
 			}
 		}
 	}
@@ -981,7 +980,7 @@ void Renderer::DrawWalls()
 						if (!xVel && !yVel)
 						{
 							BlendText({ x*CELL, y*CELL-2 }, 0xE00D, RGBA<uint8_t>(255, 255, 255, 128));
-							addpixel(oldX, oldY, 255, 255, 255, 255);
+							AddPixel({ oldX, oldY }, RGBA<uint8_t>(255, 255, 255, 255));
 							continue;
 						}
 						bool changed = false;
@@ -997,7 +996,7 @@ void Renderer::DrawWalls()
 							}
 							if (changed && (newX<0 || newX>=XRES || newY<0 || newY>=YRES))
 								break;
-							addpixel(newX, newY, 255, 255, 255, 64);
+							AddPixel({ newX, newY }, RGBA<uint8_t>(255, 255, 255, 64));
 							// cache velocity and other checks so we aren't running them constantly
 							if (changed)
 							{
@@ -1165,7 +1164,7 @@ void Renderer::render_fire()
 						a = fire_alpha[y+CELL][x+CELL];
 						if (findingElement)
 							a /= 2;
-						addpixel(i*CELL+x, j*CELL+y, r, g, b, a);
+						AddPixel({ i*CELL+x, j*CELL+y }, RGBA<uint8_t>(r, g, b, a));
 					}
 			r *= 8;
 			g *= 8;

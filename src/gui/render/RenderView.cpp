@@ -155,7 +155,7 @@ void RenderView::NotifyColourChanged(RenderModel * sender)
 void RenderView::OnDraw()
 {
 	Graphics * g = GetGraphics();
-	g->clearrect(-1, -1, WINDOWW+1, WINDOWH+1);
+	g->DrawFilledRect(RectSized({ 0, 0 }, WINDOW), 0x000000_rgb);
 	if(ren)
 	{
 		ren->clearScreen();

@@ -259,14 +259,14 @@ void SaveButton::Draw(const Point& screenPos)
 		else
 			g->drawrect(screenPos.X+(Size.X-thumbBoxSize.X)/2, screenPos.Y+(Size.Y-21-thumbBoxSize.Y)/2, thumbBoxSize.X, thumbBoxSize.Y, 180, 180, 180, 255);
 		if (thumbSize.X)
-			g->xor_rect(screenPos.X+(Size.X-thumbSize.X)/2, screenPos.Y+(Size.Y-21-thumbSize.Y)/2, thumbSize.X, thumbSize.Y);
+			g->XorDottedRect(RectSized(screenPos + (Size - thumbSize - Vec2{ 0, 21 }) / 2, thumbSize));
 
 		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize(name).X - 1))/2, Size.Y - 21 }, name, isMouseInside ? RGBA<uint8_t>(255, 255, 255, 255) : RGBA<uint8_t>(180, 180, 180, 255));
 	}
 
 	if(isMouseInside && selectable)
 	{
-		g->clearrect(screenPos.X+(Size.X-20), screenPos.Y+6, 14, 14);
+		g->DrawFilledRect(RectSized(screenPos + Vec2{ Size.X - 19, 7 }, Vec2{ 13, 13 }), 0x000000_rgb);
 		g->drawrect(screenPos.X+(Size.X-20), screenPos.Y+6, 14, 14, 255, 255, 255, 255);
 		if(selected)
 			g->fillrect(screenPos.X+(Size.X-18), screenPos.Y+8, 10, 10, 255, 255, 255, 255);

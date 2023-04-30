@@ -5,7 +5,6 @@
 #include "Graphics.h"
 #include "RasterDrawMethods.h"
 
-#define video() (static_cast<Derived &>(*this).video)
 #define clipRect() (static_cast<Derived const &>(*this).getClipRect())
 
 template<typename Derived, typename V>
@@ -402,58 +401,12 @@ String::const_iterator RasterDrawMethods<Derived>::TextFit(String const &str, in
 }
 
 template<typename Derived>
-int RasterDrawMethods<Derived>::drawchar(int x, int y, String::value_type c, int r, int g, int b, int a)
-{
-	return x + BlendChar(Vec2(x, y), c, RGBA<uint8_t>(r, g, b, a));
-}
-
-template<typename Derived>
-int RasterDrawMethods<Derived>::addchar(int x, int y, String::value_type c, int r, int g, int b, int a)
-{
-	FontReader reader(c);
-	for (int j = -2; j < FONT_H - 2; j++)
-		for (int i = 0; i < reader.GetWidth(); i++)
-			addpixel(x + i, y + j, r, g, b, reader.NextPixel() * a / 3);
-	return x + reader.GetWidth();
-}
-
-template<typename Derived>
-void RasterDrawMethods<Derived>::xor_pixel(int x, int y)
-{
-	XorPixel(Vec2(x, y));
-}
-
-template<typename Derived>
 void RasterDrawMethods<Derived>::blendpixel(int x, int y, int r, int g, int b, int a)
 {
 	if (a == 0xFF)
 		DrawPixel(Vec2(x, y), RGB<uint8_t>(r, g, b));
 	else
 		BlendPixel(Vec2(x, y), RGBA<uint8_t>(r, g, b, a));
-}
-
-template<typename Derived>
-void RasterDrawMethods<Derived>::addpixel(int x, int y, int r, int g, int b, int a)
-{
-	AddPixel(Vec2(x, y), RGBA<uint8_t>(r, g, b, a));
-}
-
-template<typename Derived>
-void RasterDrawMethods<Derived>::xor_line(int x1, int y1, int x2, int y2)
-{
-	XorLine(Vec2(x1, y1), Vec2(x2, y2));
-}
-
-template<typename Derived>
-void RasterDrawMethods<Derived>::xor_rect(int x, int y, int w, int h)
-{
-	XorDottedRect(RectSized(Vec2(x, y), Vec2(w, h)));
-}
-
-template<typename Derived>
-void RasterDrawMethods<Derived>::xor_bitmap(unsigned char * bitmap, int x, int y, int w, int h)
-{
-	XorImage(bitmap, RectSized(Vec2(x, y), Vec2(w, h)));
 }
 
 template<typename Derived>
@@ -483,23 +436,4 @@ void RasterDrawMethods<Derived>::fillrect(int x, int y, int w, int h, int r, int
 		BlendFilledRect(RectSized(Vec2(x, y), Vec2(w, h)), RGBA<uint8_t>(r, g, b, a));
 }
 
-template<typename Derived>
-void RasterDrawMethods<Derived>::drawcircle(int x, int y, int rx, int ry, int r, int g, int b, int a)
-{
-	BlendEllipse(Vec2(x, y), Vec2(rx, ry), RGBA<uint8_t>(r, g, b, a));
-}
-
-template<typename Derived>
-void RasterDrawMethods<Derived>::fillcircle(int x, int y, int rx, int ry, int r, int g, int b, int a)
-{
-	BlendFilledEllipse(Vec2(x, y), Vec2(rx, ry), RGBA<uint8_t>(r, g, b, a));
-}
-
-template<typename Derived>
-void RasterDrawMethods<Derived>::clearrect(int x, int y, int w, int h)
-{
-	DrawFilledRect(RectSized(Vec2(x + 1, y + 1), Vec2(w - 1, h - 1)), 0x000000_rgb);
-}
-
-#undef video
 #undef clipRect

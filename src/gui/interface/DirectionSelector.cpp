@@ -115,8 +115,8 @@ void DirectionSelector::Draw(const ui::Point& screenPos)
 	auto handleTrackRadius = radius + handleRadius;
 	ui::Point center = screenPos + Vec2{ handleTrackRadius, handleTrackRadius };
 
-	g->fillcircle(center.X, center.Y, handleTrackRadius, handleTrackRadius, backgroundColor.Red, backgroundColor.Green, backgroundColor.Blue, backgroundColor.Alpha);
-	g->drawcircle(center.X, center.Y, handleTrackRadius, handleTrackRadius, borderColor.Red, borderColor.Green, borderColor.Blue, borderColor.Alpha);
+	g->BlendFilledEllipse(center, { handleTrackRadius, handleTrackRadius }, backgroundColor);
+	g->BlendEllipse(center, { handleTrackRadius, handleTrackRadius }, borderColor);
 
 	for (auto &point : snapPoints)
 	{
@@ -128,8 +128,8 @@ void DirectionSelector::Draw(const ui::Point& screenPos)
 		);
 	}
 
-	g->fillcircle(center.X + value.offset.X, center.Y + value.offset.Y, handleRadius, handleRadius, foregroundColor.Red, foregroundColor.Green, foregroundColor.Blue, (mouseHover || mouseDown) ? std::min((int)(foregroundColor.Alpha * 1.5f), 255) : foregroundColor.Alpha);
-	g->drawcircle(center.X + value.offset.X, center.Y + value.offset.Y, handleRadius, handleRadius, borderColor.Red, borderColor.Green, borderColor.Blue, borderColor.Alpha);
+	g->BlendFilledEllipse(center + value.offset, { handleRadius, handleRadius }, RGBA<uint8_t>(foregroundColor.Red, foregroundColor.Green, foregroundColor.Blue, (mouseHover || mouseDown) ? std::min(int(foregroundColor.Alpha * 1.5f), 255) : foregroundColor.Alpha));
+	g->BlendEllipse(center + value.offset, { handleRadius, handleRadius }, borderColor);
 }
 
 void DirectionSelector::OnMouseMoved(int x, int y, int dx, int dy)

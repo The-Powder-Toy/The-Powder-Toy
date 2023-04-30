@@ -60,32 +60,12 @@ struct RasterDrawMethods
 
 	void Clear();
 
-	[[deprecated("Use BlendChar")]]
-	int drawchar(int x, int y, String::value_type, int r, int g, int b, int a);
-	[[deprecated("Use AddChar")]]
-	int addchar(int x, int y, String::value_type, int r, int g, int b, int a);
-	[[deprecated("Use XorPixel")]]
-	void xor_pixel(int x, int y);
 	[[deprecated("Use DrawPixel/BlendPixel")]]
 	void blendpixel(int x, int y, int r, int g, int b, int a);
-	[[deprecated("Use AddPixel")]]
-	void addpixel(int x, int y, int r, int g, int b, int a);
-	[[deprecated("Use XorLine")]]
-	void xor_line(int x1, int y1, int x2, int y2);
-	[[deprecated("Use XorDottedRect")]]
-	void xor_rect(int x, int y, int w, int h);
-	[[deprecated("Use XorImage")]]
-	void xor_bitmap(unsigned char *bitmap, int x, int y, int w, int h);
 	[[deprecated("Use DrawLine/BlendLine")]]
 	void draw_line(int x1, int y1, int x2, int y2, int r, int g, int b, int a);
 	[[deprecated("Use DrawRect/BlendRect")]]
 	void drawrect(int x, int y, int w, int h, int r, int g, int b, int a);
 	[[deprecated("Use DrawFilledRect/BlendFilledRect")]]
 	void fillrect(int x, int y, int w, int h, int r, int g, int b, int a);
-	[[deprecated("Use BlendEllipse")]]
-	void drawcircle(int x, int y, int rx, int ry, int r, int g, int b, int a);
-	[[deprecated("Use BlendFilledEllipse")]]
-	void fillcircle(int x, int y, int rx, int ry, int r, int g, int b, int a);
-	[[deprecated("Use DrawFilledRect (beware off by 1)")]]
-	void clearrect(int x, int y, int w, int h);
 };

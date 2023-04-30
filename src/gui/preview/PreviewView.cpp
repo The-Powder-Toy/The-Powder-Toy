@@ -282,7 +282,7 @@ void PreviewView::OnDraw()
 	Graphics * g = GetGraphics();
 
 	//Window Background+Outline
-	g->clearrect(Position.X-2, Position.Y-2, Size.X+4, Size.Y+4);
+	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
 
 	//Save preview (top-left)
 	if (savePreview)
