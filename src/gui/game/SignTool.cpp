@@ -169,8 +169,8 @@ void SignWindow::DoDraw()
 
 		String text = currentSign.getDisplayText(sim, x, y, w, h);
 		g->DrawFilledRect(RectSized(Vec2{ x + 1, y + 1 }, Vec2{ w, h - 1 }), 0x000000_rgb);
-		g->DrawRect(RectSized(Vec2{ x, y }, Vec2{ w+1, h }), RGB<uint8_t>(192, 192, 192));
-		g->BlendText({ x+3, y+4 }, text, RGBA<uint8_t>(255, 255, 255, 255));
+		g->DrawRect(RectSized(Vec2{ x, y }, Vec2{ w+1, h }), 0xC0C0C0_rgb);
+		g->BlendText({ x+3, y+4 }, text, 0xFFFFFF_rgb .WithAlpha(255));
 
 		if (currentSign.ju != sign::None)
 		{
@@ -180,7 +180,7 @@ void SignWindow::DoDraw()
 			dy = (currentSign.y > 18) ? -1 : 1;
 			for (int j=0; j<4; j++)
 			{
-				g->DrawPixel({ x, y }, RGB<uint8_t>(192, 192, 192));
+				g->DrawPixel({ x, y }, 0xC0C0C0_rgb);
 				x+=dx;
 				y+=dy;
 			}
@@ -223,7 +223,7 @@ void SignWindow::OnDraw()
 	Graphics * g = GetGraphics();
 
 	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
-	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(200, 200, 200));
+	g->DrawRect(RectSized(Position, Size), 0xC8C8C8_rgb);
 }
 
 std::unique_ptr<VideoBuffer> SignTool::GetIcon(int toolID, Vec2<int> size)

@@ -213,15 +213,15 @@ void ElementSearchActivity::OnDraw()
 {
 	Graphics * g = GetGraphics();
 	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
-	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(255, 255, 255));
+	g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 
 	g->BlendRect(
 		RectSized(Position + searchField->Position + Vec2{ 0, searchField->Size.Y+8 },
 		{ searchField->Size.X, Size.Y-(searchField->Position.Y+searchField->Size.Y+8)-23 }),
-		RGBA<uint8_t>(255, 255, 255, 180));
+		0xFFFFFF_rgb .WithAlpha(180));
 	if (toolTipPresence && toolTip.length())
 	{
-		g->BlendText({ 10, Size.Y+70 }, toolTip, RGBA<uint8_t>(255, 255, 255, toolTipPresence>51?255:toolTipPresence*5));
+		g->BlendText({ 10, Size.Y+70 }, toolTip, 0xFFFFFF_rgb .WithAlpha(toolTipPresence>51?255:toolTipPresence*5));
 	}
 }
 

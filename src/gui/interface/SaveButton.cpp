@@ -188,7 +188,7 @@ void SaveButton::Draw(const Point& screenPos)
 
 	if(selected && selectable)
 	{
-		g->BlendFilledRect(RectSized(screenPos, Size), RGBA<uint8_t>(100, 170, 255, 100));
+		g->BlendFilledRect(RectSized(screenPos, Size), 0x64AAFF_rgb .WithAlpha(100));
 	}
 
 	if (thumbnail)
@@ -199,63 +199,63 @@ void SaveButton::Draw(const Point& screenPos)
 		g->BlendImage(tex->Data(), 255, RectSized(screenPos + ((save && save->id) ? ((space - thumbBoxSize) / 2 - Vec2{ 3, 0 }) : (space - thumbSize) / 2), tex->Size()));
 	}
 	else if (file && !file->GetGameSave())
-		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize("Error loading save").X - 1))/2, (Size.Y-28)/2 }, "Error loading save", RGBA<uint8_t>(180, 180, 180, 255));
+		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize("Error loading save").X - 1))/2, (Size.Y-28)/2 }, "Error loading save", 0xB4B4B4_rgb .WithAlpha(255));
 	if(save)
 	{
 		if(save->id)
 		{
-			g->DrawRect(RectSized(screenPos + Vec2{                - 3, 0 } + (Size - thumbBoxSize - Vec2{ 0, 21 }) / 2,              thumbBoxSize), isMouseInside ? RGB<uint8_t>(210, 230, 255) : RGB<uint8_t>(180, 180, 180));
-			g->DrawRect(RectSized(screenPos + Vec2{ thumbBoxSize.X - 4, 0 } + (Size - thumbBoxSize - Vec2{ 0, 21 }) / 2, Vec2{ 7, thumbBoxSize.Y }), isMouseInside ? RGB<uint8_t>(210, 230, 255) : RGB<uint8_t>(180, 180, 180));
+			g->DrawRect(RectSized(screenPos + Vec2{                - 3, 0 } + (Size - thumbBoxSize - Vec2{ 0, 21 }) / 2,              thumbBoxSize), isMouseInside ? 0xD2E6FF_rgb : 0xB4B4B4_rgb);
+			g->DrawRect(RectSized(screenPos + Vec2{ thumbBoxSize.X - 4, 0 } + (Size - thumbBoxSize - Vec2{ 0, 21 }) / 2, Vec2{ 7, thumbBoxSize.Y }), isMouseInside ? 0xD2E6FF_rgb : 0xB4B4B4_rgb);
 
-			g->DrawFilledRect(RectSized(screenPos + Vec2{ -3+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, 1+(Size.Y-20-thumbBoxSize.Y)/2 }, Vec2{ 5, (thumbBoxSize.Y+1)/2-1 }), RGB<uint8_t>(0, 107, 10));
-			g->DrawFilledRect(RectSized(screenPos + Vec2{ -3+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, (Size.Y-20)/2 }, Vec2{ 5, thumbBoxSize.Y/2-1 }), RGB<uint8_t>(107, 10, 0));
+			g->DrawFilledRect(RectSized(screenPos + Vec2{ -3+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, 1+(Size.Y-20-thumbBoxSize.Y)/2 }, Vec2{ 5, (thumbBoxSize.Y+1)/2-1 }), 0x006B0A_rgb);
+			g->DrawFilledRect(RectSized(screenPos + Vec2{ -3+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, (Size.Y-20)/2 }, Vec2{ 5, thumbBoxSize.Y/2-1 }), 0x6B0A00_rgb);
 
-			g->DrawFilledRect(RectSized(screenPos + Vec2{ -2+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, (Size.Y-20)/2-voteBarHeightUp }, Vec2{ 3, voteBarHeightUp }), RGB<uint8_t>(57, 187, 57)); //green
-			g->DrawFilledRect(RectSized(screenPos + Vec2{ -2+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, (Size.Y-20)/2 }, Vec2{ 3, voteBarHeightDown }), RGB<uint8_t>(187, 57, 57)); //red
+			g->DrawFilledRect(RectSized(screenPos + Vec2{ -2+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, (Size.Y-20)/2-voteBarHeightUp }, Vec2{ 3, voteBarHeightUp }), 0x39BB39_rgb); //green
+			g->DrawFilledRect(RectSized(screenPos + Vec2{ -2+thumbBoxSize.X+(Size.X-thumbBoxSize.X)/2, (Size.Y-20)/2 }, Vec2{ 3, voteBarHeightDown }), 0xBB3939_rgb); //red
 		}
 		else
 		{
-			g->DrawRect(RectSized(screenPos + (Size - thumbBoxSize - Vec2{ 0, 21 }) / 2, thumbBoxSize), isMouseInside ? RGB<uint8_t>(210, 230, 255) : RGB<uint8_t>(180, 180, 180));
+			g->DrawRect(RectSized(screenPos + (Size - thumbBoxSize - Vec2{ 0, 21 }) / 2, thumbBoxSize), isMouseInside ? 0xD2E6FF_rgb : 0xB4B4B4_rgb);
 		}
 
-		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize(name).X - 1))/2, Size.Y - 21 }, name, (isMouseInside && !isMouseInsideAuthor) ? RGBA<uint8_t>(255, 255, 255, 255) : RGBA<uint8_t>(180, 180, 180, 255));
-		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize(save->userName.FromUtf8()).X - 1))/2, Size.Y - 10 }, save->userName.FromUtf8(), isMouseInsideAuthor ? RGBA<uint8_t>(200, 230, 255, 255) : RGBA<uint8_t>(100, 130, 160, 255));
+		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize(name).X - 1))/2, Size.Y - 21 }, name, (isMouseInside && !isMouseInsideAuthor) ? 0xFFFFFF_rgb .WithAlpha(255) : 0xB4B4B4_rgb .WithAlpha(255));
+		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize(save->userName.FromUtf8()).X - 1))/2, Size.Y - 10 }, save->userName.FromUtf8(), isMouseInsideAuthor ? 0xC8E6FF_rgb .WithAlpha(255) : 0x6482A0_rgb .WithAlpha(255));
 		if (showVotes)// && !isMouseInside)
 		{
 			int x = screenPos.X-7+(Size.X-thumbBoxSize.X)/2+thumbBoxSize.X-(Graphics::TextSize(votesBackground).X - 1);
 			int y = screenPos.Y-23+(Size.Y-thumbBoxSize.Y)/2+thumbBoxSize.Y;
-			g->BlendText({ x, y }, votesBackground, RGBA<uint8_t>(16, 72, 16, 255));
-			g->BlendText({ x, y }, votesBackground2, RGBA<uint8_t>(192, 192, 192, 255));
-			g->BlendText({ x+3, y }, votesString, RGBA<uint8_t>(255, 255, 255, 255));
+			g->BlendText({ x, y }, votesBackground, 0x104810_rgb .WithAlpha(255));
+			g->BlendText({ x, y }, votesBackground2, 0xC0C0C0_rgb .WithAlpha(255));
+			g->BlendText({ x+3, y }, votesString, 0xFFFFFF_rgb .WithAlpha(255));
 		}
 		if (isMouseInsideHistory && showVotes)
 		{
 			int x = screenPos.X;
 			int y = screenPos.Y-15+(Size.Y-thumbBoxSize.Y)/2+thumbBoxSize.Y;
-			g->DrawFilledRect(RectSized(Vec2{ x+1, y+1 }, Vec2{ 7, 8 }), RGB<uint8_t>(255, 255, 255));
-			g->BlendText({ x, y }, 0xE026, isMouseInsideHistory ? RGBA<uint8_t>(200, 100, 80, 255) : RGBA<uint8_t>(160, 70, 50, 255));
+			g->DrawFilledRect(RectSized(Vec2{ x+1, y+1 }, Vec2{ 7, 8 }), 0xFFFFFF_rgb);
+			g->BlendText({ x, y }, 0xE026, isMouseInsideHistory ? 0xC86450_rgb .WithAlpha(255) : 0xA04632_rgb .WithAlpha(255));
 		}
 		if (!save->GetPublished())
 		{
-			g->BlendText(screenPos - Vec2{ 0, 2 }, 0xE04D, RGBA<uint8_t>(255, 255, 255, 255));
-			g->BlendText(screenPos - Vec2{ 0, 2 }, 0xE04E, RGBA<uint8_t>(212, 151, 81, 255));
+			g->BlendText(screenPos - Vec2{ 0, 2 }, 0xE04D, 0xFFFFFF_rgb .WithAlpha(255));
+			g->BlendText(screenPos - Vec2{ 0, 2 }, 0xE04E, 0xD49751_rgb .WithAlpha(255));
 		}
 	}
 	else if (file)
 	{
-		g->DrawRect(RectSized(screenPos + (Size - thumbBoxSize- Vec2{ 0, 21 }) / 2, thumbBoxSize), isMouseInside ? RGB<uint8_t>(210, 230, 255) : RGB<uint8_t>(180, 180, 180));
+		g->DrawRect(RectSized(screenPos + (Size - thumbBoxSize- Vec2{ 0, 21 }) / 2, thumbBoxSize), isMouseInside ? 0xD2E6FF_rgb : 0xB4B4B4_rgb);
 		if (thumbSize.X)
 			g->XorDottedRect(RectSized(screenPos + (Size - thumbSize - Vec2{ 0, 21 }) / 2, thumbSize));
 
-		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize(name).X - 1))/2, Size.Y - 21 }, name, isMouseInside ? RGBA<uint8_t>(255, 255, 255, 255) : RGBA<uint8_t>(180, 180, 180, 255));
+		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize(name).X - 1))/2, Size.Y - 21 }, name, isMouseInside ? 0xFFFFFF_rgb .WithAlpha(255) : 0xB4B4B4_rgb .WithAlpha(255));
 	}
 
 	if(isMouseInside && selectable)
 	{
 		g->DrawFilledRect(RectSized(screenPos + Vec2{ Size.X - 19, 7 }, Vec2{ 13, 13 }), 0x000000_rgb);
-		g->DrawRect(RectSized(screenPos + Vec2{ Size.X-20, 6 }, Vec2{ 14, 14 }), RGB<uint8_t>(255, 255, 255));
+		g->DrawRect(RectSized(screenPos + Vec2{ Size.X-20, 6 }, Vec2{ 14, 14 }), 0xFFFFFF_rgb);
 		if(selected)
-			g->DrawFilledRect(RectSized(screenPos + Vec2{ Size.X-18, 8 }, Vec2{ 10, 10 }), RGB<uint8_t>(255, 255, 255));
+			g->DrawFilledRect(RectSized(screenPos + Vec2{ Size.X-18, 8 }, Vec2{ 10, 10 }), 0xFFFFFF_rgb);
 	}
 }
 

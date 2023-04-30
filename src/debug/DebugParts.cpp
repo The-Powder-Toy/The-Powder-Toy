@@ -22,9 +22,9 @@ void DebugParts::Draw()
 	for (int i = 0; i < NPART; i++)
 	{
 		if (sim->parts[i].type)
-			g->AddPixel({ x, y }, RGBA<uint8_t>(255, 255, 255, 180));
+			g->AddPixel({ x, y }, 0xFFFFFF_rgb .WithAlpha(180));
 		else
-			g->AddPixel({ x, y }, RGBA<uint8_t>(0, 0, 0, 180));
+			g->AddPixel({ x, y }, 0x000000_rgb .WithAlpha(180));
 
 		if (i == sim->parts_lastActiveIndex)
 		{
@@ -38,17 +38,17 @@ void DebugParts::Draw()
 			x = 0;
 		}
 	}
-	g->DrawLine({ 0, lpy }, { XRES, lpy }, RGB<uint8_t>(0, 255, 120));
-	g->DrawLine({ lpx, 0 }, { lpx, YRES }, RGB<uint8_t>(0, 255, 120));
-	g->AddPixel({ lpx, lpy }, RGBA<uint8_t>(255, 50, 50, 220));
+	g->DrawLine({ 0, lpy }, { XRES, lpy }, 0x00FF78_rgb);
+	g->DrawLine({ lpx, 0 }, { lpx, YRES }, 0x00FF78_rgb);
+	g->AddPixel({ lpx, lpy }, 0xFF3232_rgb .WithAlpha(220));
 
-	g->AddPixel({ lpx+1, lpy }, RGBA<uint8_t>(255, 50, 50, 120));
-	g->AddPixel({ lpx-1, lpy }, RGBA<uint8_t>(255, 50, 50, 120));
-	g->AddPixel({ lpx, lpy+1 }, RGBA<uint8_t>(255, 50, 50, 120));
-	g->AddPixel({ lpx, lpy-1 }, RGBA<uint8_t>(255, 50, 50, 120));
+	g->AddPixel({ lpx+1, lpy }, 0xFF3232_rgb .WithAlpha(120));
+	g->AddPixel({ lpx-1, lpy }, 0xFF3232_rgb .WithAlpha(120));
+	g->AddPixel({ lpx, lpy+1 }, 0xFF3232_rgb .WithAlpha(120));
+	g->AddPixel({ lpx, lpy-1 }, 0xFF3232_rgb .WithAlpha(120));
 
-	g->BlendFilledRect(RectSized(Vec2{ 7, YRES-26}, Vec2{ g->TextSize(info).X + 4, 14}), RGBA<uint8_t>(0, 0, 0, 180));
-	g->BlendText({ 10, YRES-22 }, info, RGBA<uint8_t>(255, 255, 255, 255));
+	g->BlendFilledRect(RectSized(Vec2{ 7, YRES-26}, Vec2{ g->TextSize(info).X + 4, 14}), 0x000000_rgb .WithAlpha(180));
+	g->BlendText({ 10, YRES-22 }, info, 0xFFFFFF_rgb .WithAlpha(255));
 }
 
 DebugParts::~DebugParts()

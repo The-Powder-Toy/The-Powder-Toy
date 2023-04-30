@@ -87,9 +87,9 @@ void TaskWindow::OnDraw()
 {
 	Graphics * g = GetGraphics();
 	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
-	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(255, 255, 255));
+	g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 
-	g->DrawLine(Position + Vec2{ 0, Size.Y-17 }, Position + Vec2{ Size.X - 1, Size.Y-17 }, RGB<uint8_t>(255, 255, 255));
+	g->DrawLine(Position + Vec2{ 0, Size.Y-17 }, Position + Vec2{ Size.X - 1, Size.Y-17 }, 0xFFFFFF_rgb);
 
 	ui::Colour progressBarColour = style::Colour::WarningTitle;
 
@@ -117,7 +117,7 @@ void TaskWindow::OnDraw()
 			g->DrawFilledRect(RectSized(Position + Vec2{ 2, Size.Y-15 }, Vec2{ rsize, 13 }), progressBarColour.NoAlpha());
 		}
 	}
-	g->BlendText(Position + Vec2{ ((Size.X-(Graphics::TextSize(progressStatus).X - 1))/2), Size.Y-13 }, progressStatus, progress<50 ? RGBA<uint8_t>(255, 255, 255, 255) : RGBA<uint8_t>(0, 0, 0, 255));
+	g->BlendText(Position + Vec2{ ((Size.X-(Graphics::TextSize(progressStatus).X - 1))/2), Size.Y-13 }, progressStatus, progress<50 ? 0xFFFFFF_rgb .WithAlpha(255) : 0x000000_rgb .WithAlpha(255));
 }
 
 TaskWindow::~TaskWindow() {

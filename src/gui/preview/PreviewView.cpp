@@ -263,15 +263,15 @@ void PreviewView::DoDraw()
 		g->BlendLine(
 				Position + Vec2{ 1+XRES/2, linePos },
 				Position + Vec2{ Size.X-2, linePos },
-				RGBA<uint8_t>(255, 255, 255, 100));
+				0xFFFFFF_rgb .WithAlpha(100));
 	}
 	if (c->GetDoOpen())
 	{
-		g->BlendFilledRect(RectSized(Position + Size / 2 - Vec2{ 101, 26 }, { 202, 52 }), RGBA<uint8_t>(0, 0, 0, 210));
-		g->BlendRect(RectSized(Position + Size / 2 - Vec2{ 100, 25 }, Vec2{ 200, 50 }), RGBA<uint8_t>(255, 255, 255, 180));
-		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize("Loading save...").X - 1)/2), (Size.Y/2)-5}, "Loading save...", RGBA<uint8_t>(style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255));
+		g->BlendFilledRect(RectSized(Position + Size / 2 - Vec2{ 101, 26 }, { 202, 52 }), 0x000000_rgb .WithAlpha(210));
+		g->BlendRect(RectSized(Position + Size / 2 - Vec2{ 100, 25 }, Vec2{ 200, 50 }), 0xFFFFFF_rgb .WithAlpha(180));
+		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize("Loading save...").X - 1)/2), (Size.Y/2)-5}, "Loading save...", style::Colour::InformationTitle.NoAlpha().WithAlpha(255));
 	}
-	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(255, 255, 255));
+	g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 
 }
 
@@ -287,8 +287,8 @@ void PreviewView::OnDraw()
 	{
 		g->BlendImage(savePreview->Data(), 0xFF, RectSized(Position + Vec2(1, 1) + (RES / 2 - savePreview->Size()) / 2, savePreview->Size()));
 	}
-	g->BlendRect(RectSized(Position, RES / 2 + Vec2{ 1, 1 }), RGBA<uint8_t>(255, 255, 255, 100));
-	g->DrawLine(Position + Vec2{ XRES/2, 1 }, Position + Vec2{ XRES/2, Size.Y-2 }, RGB<uint8_t>(200, 200, 200));
+	g->BlendRect(RectSized(Position, RES / 2 + Vec2{ 1, 1 }), 0xFFFFFF_rgb .WithAlpha(100));
+	g->DrawLine(Position + Vec2{ XRES/2, 1 }, Position + Vec2{ XRES/2, Size.Y-2 }, 0xC8C8C8_rgb);
 
 	if(votesUp || votesDown)
 	{
@@ -312,13 +312,13 @@ void PreviewView::OnDraw()
 		nyu = nyu>50?50:nyu;
 		nyd = nyd>50?50:nyd;
 
-		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -55, 3 }, Vec2{ 53, 7 }), RGB<uint8_t>(0, 107, 10));
-		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -55, 9 }, Vec2{ 53, 7 }), RGB<uint8_t>(107, 10, 0));
-		g->DrawRect(RectSized(Position + Vec2{ (XRES/2)-55, (YRES/2)+3 }, { 53, 7 }), RGB<uint8_t>(128, 128, 128));
-		g->DrawRect(RectSized(Position + Vec2{ (XRES/2)-55, (YRES/2)+9 }, { 53, 7 }), RGB<uint8_t>(128, 128, 128));
+		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -55, 3 }, Vec2{ 53, 7 }), 0x006B0A_rgb);
+		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -55, 9 }, Vec2{ 53, 7 }), 0x6B0A00_rgb);
+		g->DrawRect(RectSized(Position + Vec2{ (XRES/2)-55, (YRES/2)+3 }, { 53, 7 }), 0x808080_rgb);
+		g->DrawRect(RectSized(Position + Vec2{ (XRES/2)-55, (YRES/2)+9 }, { 53, 7 }), 0x808080_rgb);
 
-		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -4-nyu, 5 }, Vec2{ nyu, 3 }), RGB<uint8_t>(57, 187, 57));
-		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -4-nyd, 11 }, Vec2{ nyd, 3 }), RGB<uint8_t>(187, 57, 57));
+		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -4-nyu, 5 }, Vec2{ nyu, 3 }), 0x39BB39_rgb);
+		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -4-nyd, 11 }, Vec2{ nyd, 3 }), 0xBB3939_rgb);
 	}
 }
 

@@ -239,7 +239,7 @@ void PropertyWindow::OnDraw()
 	Graphics * g = GetGraphics();
 
 	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
-	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(200, 200, 200));
+	g->DrawRect(RectSized(Position, Size), 0xC8C8C8_rgb);
 }
 
 void PropertyWindow::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)

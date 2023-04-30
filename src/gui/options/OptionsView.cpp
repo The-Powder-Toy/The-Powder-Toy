@@ -46,7 +46,7 @@ OptionsView::OptionsView():
 
 		void Draw(const ui::Point& screenPos) override
 		{
-			GetGraphics()->BlendRect(RectSized(screenPos, Size), RGBA<uint8_t>(255, 255, 255, 180));
+			GetGraphics()->BlendRect(RectSized(screenPos, Size), 0xFFFFFF_rgb .WithAlpha(180));
 		}		
 	};
 	
@@ -159,7 +159,7 @@ OptionsView::OptionsView():
 			Graphics * g = GetGraphics();
 
 			g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
-			g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(200, 200, 200));
+			g->DrawRect(RectSized(Position, Size), 0xC8C8C8_rgb);
 		}
 
 		ui::DirectionSelector * gravityDirection;
@@ -541,7 +541,7 @@ void OptionsView::OnDraw()
 {
 	Graphics * g = GetGraphics();
 	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
-	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(255, 255, 255));
+	g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 }
 
 void OptionsView::OnTryExit(ExitMethod method)

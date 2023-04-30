@@ -253,7 +253,7 @@ void Label::Draw(const Point& screenPos)
 					screenPos + textPosition + Vec2{ selectionXL - 1, selectionYL - 2 },
 					Vec2{ selectionXH - selectionXL + 1, FONT_H }
 				),
-				RGB<uint8_t>(255, 255, 255)
+				0xFFFFFF_rgb
 			);
 		}
 		else
@@ -263,7 +263,7 @@ void Label::Draw(const Point& screenPos)
 					screenPos + textPosition + Vec2{ selectionXL - 1, selectionYL - 2 },
 					Vec2{ textSize.X - selectionXL + 1, FONT_H }
 				),
-				RGB<uint8_t>(255, 255, 255)
+				0xFFFFFF_rgb
 			);
 			for (int i = 1; i < selectionLineH - selectionLineL; ++i)
 			{
@@ -272,7 +272,7 @@ void Label::Draw(const Point& screenPos)
 						screenPos + textPosition + Vec2{ -1, selectionYL - 2 + i * FONT_H },
 						Vec2{ textSize.X + 1, FONT_H }
 					),
-					RGB<uint8_t>(255, 255, 255)
+					0xFFFFFF_rgb
 				);
 			}
 			g->DrawFilledRect(
@@ -280,7 +280,7 @@ void Label::Draw(const Point& screenPos)
 					screenPos + textPosition + Vec2{ -1, selectionYH - 2 },
 					Vec2{ selectionXH + 1, FONT_H }
 				),
-				RGB<uint8_t>(255, 255, 255)
+				0xFFFFFF_rgb
 			);
 		}
 	}
@@ -288,7 +288,7 @@ void Label::Draw(const Point& screenPos)
 	g->BlendText(
 		screenPos + textPosition,
 		displayTextWithSelection,
-		RGBA<uint8_t>(textColour.Red, textColour.Green, textColour.Blue, 255)
+		textColour.NoAlpha().WithAlpha(255)
 	);
 }
 

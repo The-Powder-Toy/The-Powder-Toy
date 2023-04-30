@@ -174,269 +174,269 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 	{
 	case IconOpen:
 		if(invert)
-			BlendChar({ x, y }, 0xE001, RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x, y }, 0xE001, 0x000000_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y }, 0xE001, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y }, 0xE001, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconReload:
 		if(invert)
-			BlendChar({ x, y }, 0xE011, RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x, y }, 0xE011, 0x000000_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y }, 0xE011, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y }, 0xE011, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconSave:
 		if(invert)
-			BlendChar({ x, y }, 0xE002, RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x, y }, 0xE002, 0x000000_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y }, 0xE002, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y }, 0xE002, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconVoteUp:
 		if(invert)
 		{
-			BlendChar({ x-11, y+1 }, 0xE04B, RGBA<uint8_t>(0, 100, 0, alpha));
-			BlendText({ x+2, y+1 }, "Vote", RGBA<uint8_t>(0, 100, 0, alpha));
+			BlendChar({ x-11, y+1 }, 0xE04B, 0x006400_rgb .WithAlpha(alpha));
+			BlendText({ x+2, y+1 }, "Vote", 0x006400_rgb .WithAlpha(alpha));
 		}
 		else
 		{
-			BlendChar({ x-11, y+1 }, 0xE04B, RGBA<uint8_t>(0, 187, 18, alpha));
-			BlendText({ x+2, y+1 }, "Vote", RGBA<uint8_t>(0, 187, 18, alpha));
+			BlendChar({ x-11, y+1 }, 0xE04B, 0x00BB12_rgb .WithAlpha(alpha));
+			BlendText({ x+2, y+1 }, "Vote", 0x00BB12_rgb .WithAlpha(alpha));
 		}
 		break;
 	case IconVoteDown:
 		if(invert)
-			BlendChar({ x, y }, 0xE04A, RGBA<uint8_t>(100, 10, 0, alpha));
+			BlendChar({ x, y }, 0xE04A, 0x640A00_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y }, 0xE04A, RGBA<uint8_t>(187, 40, 0, alpha));
+			BlendChar({ x, y }, 0xE04A, 0xBB2800_rgb .WithAlpha(alpha));
 		break;
 	case IconTag:
 		if(invert)
-			BlendChar({ x, y }, 0xE003, RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x, y }, 0xE003, 0x000000_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y }, 0xE003, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y }, 0xE003, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconNew:
 		if(invert)
-			BlendChar({ x, y }, 0xE012, RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x, y }, 0xE012, 0x000000_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y }, 0xE012, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y }, 0xE012, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconLogin:
 		if(invert)
-			BlendChar({ x, y + 1 }, 0xE004, RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x, y + 1 }, 0xE004, 0x000000_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y + 1 }, 0xE004, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y + 1 }, 0xE004, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconSimulationSettings:
 		if(invert)
-			BlendChar({ x, y + 1 }, 0xE04F, RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x, y + 1 }, 0xE04F, 0x000000_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y + 1 }, 0xE04F, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y + 1 }, 0xE04F, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconRenderSettings:
 		if(invert)
 		{
-			BlendChar({ x, y + 1 }, 0xE058, RGBA<uint8_t>(255, 0, 0, alpha));
-			BlendChar({ x, y + 1 }, 0xE059, RGBA<uint8_t>(0, 255, 0, alpha));
-			BlendChar({ x, y + 1 }, 0xE05A, RGBA<uint8_t>(0, 0, 255, alpha));
+			BlendChar({ x, y + 1 }, 0xE058, 0xFF0000_rgb .WithAlpha(alpha));
+			BlendChar({ x, y + 1 }, 0xE059, 0x00FF00_rgb .WithAlpha(alpha));
+			BlendChar({ x, y + 1 }, 0xE05A, 0x0000FF_rgb .WithAlpha(alpha));
 		}
 		else
 		{
-			AddChar({ x, y + 1 }, 0xE058, RGBA<uint8_t>(255, 0, 0, alpha));
-			AddChar({ x, y + 1 }, 0xE059, RGBA<uint8_t>(0, 255, 0, alpha));
-			AddChar({ x, y + 1 }, 0xE05A, RGBA<uint8_t>(0, 0, 255, alpha));
+			AddChar({ x, y + 1 }, 0xE058, 0xFF0000_rgb .WithAlpha(alpha));
+			AddChar({ x, y + 1 }, 0xE059, 0x00FF00_rgb .WithAlpha(alpha));
+			AddChar({ x, y + 1 }, 0xE05A, 0x0000FF_rgb .WithAlpha(alpha));
 		}
 		break;
 	case IconPause:
 		if(invert)
-			BlendChar({ x, y }, 0xE010, RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x, y }, 0xE010, 0x000000_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y }, 0xE010, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y }, 0xE010, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconFavourite:
 		if(invert)
-			BlendChar({ x, y }, 0xE04C, RGBA<uint8_t>(100, 80, 32, alpha));
+			BlendChar({ x, y }, 0xE04C, 0x645020_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y }, 0xE04C, RGBA<uint8_t>(192, 160, 64, alpha));
+			BlendChar({ x, y }, 0xE04C, 0xC0A040_rgb .WithAlpha(alpha));
 		break;
 	case IconReport:
 		if(invert)
-			BlendChar({ x, y }, 0xE063, RGBA<uint8_t>(140, 140, 0, alpha));
+			BlendChar({ x, y }, 0xE063, 0x8C8C00_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y }, 0xE063, RGBA<uint8_t>(255, 255, 0, alpha));
+			BlendChar({ x, y }, 0xE063, 0xFFFF00_rgb .WithAlpha(alpha));
 		break;
 	case IconUsername:
 		if(invert)
 		{
-			BlendChar({ x, y }, 0xE00B, RGBA<uint8_t>(32, 64, 128, alpha));
-			BlendChar({ x, y }, 0xE00A, RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x, y }, 0xE00B, 0x204080_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE00A, 0x000000_rgb .WithAlpha(alpha));
 		}
 		else
 		{
-			BlendChar({ x, y }, 0xE00B, RGBA<uint8_t>(32, 64, 128, alpha));
-			BlendChar({ x, y }, 0xE00A, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y }, 0xE00B, 0x204080_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE00A, 0xFFFFFF_rgb .WithAlpha(alpha));
 		}
 		break;
 	case IconPassword:
 		if(invert)
 		{
-			BlendChar({ x, y }, 0xE00C, RGBA<uint8_t>(160, 144, 32, alpha));
-			BlendChar({ x, y }, 0xE004, RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x, y }, 0xE00C, 0xA09020_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE004, 0x000000_rgb .WithAlpha(alpha));
 		}
 		else
 		{
-			BlendChar({ x, y }, 0xE00C, RGBA<uint8_t>(160, 144, 32, alpha));
-			BlendChar({ x, y }, 0xE004, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y }, 0xE00C, 0xA09020_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE004, 0xFFFFFF_rgb .WithAlpha(alpha));
 		}
 		break;
 	case IconClose:
 		if(invert)
-			BlendChar({ x, y }, 0xE02A, RGBA<uint8_t>(20, 20, 20, alpha));
+			BlendChar({ x, y }, 0xE02A, 0x141414_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y }, 0xE02A, RGBA<uint8_t>(230, 230, 230, alpha));
+			BlendChar({ x, y }, 0xE02A, 0xE6E6E6_rgb .WithAlpha(alpha));
 		break;
 	case IconVoteSort:
 		if (invert)
 		{
-			BlendChar({ x, y }, 0xE029, RGBA<uint8_t>(44, 48, 32, alpha));
-			BlendChar({ x, y }, 0xE028, RGBA<uint8_t>(32, 44, 32, alpha));
-			BlendChar({ x, y }, 0xE027, RGBA<uint8_t>(128, 128, 128, alpha));
+			BlendChar({ x, y }, 0xE029, 0x2C3020_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE028, 0x202C20_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE027, 0x808080_rgb .WithAlpha(alpha));
 		}
 		else
 		{
-			BlendChar({ x, y }, 0xE029, RGBA<uint8_t>(144, 48, 32, alpha));
-			BlendChar({ x, y }, 0xE028, RGBA<uint8_t>(32, 144, 32, alpha));
-			BlendChar({ x, y }, 0xE027, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y }, 0xE029, 0x903020_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE028, 0x209020_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE027, 0xFFFFFF_rgb .WithAlpha(alpha));
 		}
 		break;
 	case IconDateSort:
 		if (invert)
 		{
-			BlendChar({ x, y }, 0xE026, RGBA<uint8_t>(32, 32, 32, alpha));
+			BlendChar({ x, y }, 0xE026, 0x202020_rgb .WithAlpha(alpha));
 		}
 		else
 		{
-			BlendChar({ x, y }, 0xE026, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y }, 0xE026, 0xFFFFFF_rgb .WithAlpha(alpha));
 		}
 		break;
 	case IconMyOwn:
 		if (invert)
 		{
-			BlendChar({ x, y }, 0xE014, RGBA<uint8_t>(192, 160, 64, alpha));
-			BlendChar({ x, y }, 0xE013, RGBA<uint8_t>(32, 32, 32, alpha));
+			BlendChar({ x, y }, 0xE014, 0xC0A040_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE013, 0x202020_rgb .WithAlpha(alpha));
 		}
 		else
 		{
-			BlendChar({ x, y }, 0xE014, RGBA<uint8_t>(192, 160, 64, alpha));
-			BlendChar({ x, y }, 0xE013, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y }, 0xE014, 0xC0A040_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE013, 0xFFFFFF_rgb .WithAlpha(alpha));
 		}
 		break;
 	case IconSearch:
-		BlendChar({ x, y }, 0xE00E, RGBA<uint8_t>(30, 30, 180, alpha));
-		BlendChar({ x, y }, 0xE00F, RGBA<uint8_t>(255, 255, 255, alpha));
+		BlendChar({ x, y }, 0xE00E, 0x1E1EB4_rgb .WithAlpha(alpha));
+		BlendChar({ x, y }, 0xE00F, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconDelete:
 		if(invert)
 		{
-			BlendChar({ x, y }, 0xE006, RGBA<uint8_t>(159, 47, 31, alpha));
-			BlendChar({ x, y }, 0xE005, RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x, y }, 0xE006, 0x9F2F1F_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE005, 0x000000_rgb .WithAlpha(alpha));
 		}
 		else
 		{
-			BlendChar({ x, y }, 0xE006, RGBA<uint8_t>(159, 47, 31, alpha));
-			BlendChar({ x, y }, 0xE005, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y }, 0xE006, 0x9F2F1F_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE005, 0xFFFFFF_rgb .WithAlpha(alpha));
 		}
 		break;
 	case IconAdd:
 		if(invert)
 		{
-			BlendChar({ x, y }, 0xE006, RGBA<uint8_t>(32, 144, 32, alpha));
-			BlendChar({ x, y }, 0xE009, RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x, y }, 0xE006, 0x209020_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE009, 0x000000_rgb .WithAlpha(alpha));
 		}
 		else
 		{
-			BlendChar({ x, y }, 0xE006, RGBA<uint8_t>(32, 144, 32, alpha));
-			BlendChar({ x, y }, 0xE009, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y }, 0xE006, 0x209020_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE009, 0xFFFFFF_rgb .WithAlpha(alpha));
 		}
 		break;
 	case IconVelocity:
-		BlendChar({ x + 1, y }, 0xE018, RGBA<uint8_t>(128, 160, 255, alpha));
+		BlendChar({ x + 1, y }, 0xE018, 0x80A0FF_rgb .WithAlpha(alpha));
 		break;
 	case IconPressure:
 		if(invert)
-			BlendChar({ x + 1, y + 1 }, 0xE019, RGBA<uint8_t>(180, 160, 16, alpha));
+			BlendChar({ x + 1, y + 1 }, 0xE019, 0xB4A010_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x + 1, y + 1 }, 0xE019, RGBA<uint8_t>(255, 212, 32, alpha));
+			BlendChar({ x + 1, y + 1 }, 0xE019, 0xFFD420_rgb .WithAlpha(alpha));
 		break;
 	case IconPersistant:
 		if(invert)
-			BlendChar({ x + 1, y + 1 }, 0xE01A, RGBA<uint8_t>(20, 20, 20, alpha));
+			BlendChar({ x + 1, y + 1 }, 0xE01A, 0x141414_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x + 1, y + 1 }, 0xE01A, RGBA<uint8_t>(212, 212, 212, alpha));
+			BlendChar({ x + 1, y + 1 }, 0xE01A, 0xD4D4D4_rgb .WithAlpha(alpha));
 		break;
 	case IconFire:
-		BlendChar({ x + 1, y + 1 }, 0xE01B, RGBA<uint8_t>(255, 0, 0, alpha));
-		BlendChar({ x + 1, y + 1 }, 0xE01C, RGBA<uint8_t>(255, 255, 64, alpha));
+		BlendChar({ x + 1, y + 1 }, 0xE01B, 0xFF0000_rgb .WithAlpha(alpha));
+		BlendChar({ x + 1, y + 1 }, 0xE01C, 0xFFFF40_rgb .WithAlpha(alpha));
 		break;
 	case IconBlob:
 		if(invert)
-			BlendChar({ x + 1, y }, 0xE03F, RGBA<uint8_t>(55, 180, 55, alpha));
+			BlendChar({ x + 1, y }, 0xE03F, 0x37B437_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x + 1, y }, 0xE03F, RGBA<uint8_t>(55, 255, 55, alpha));
+			BlendChar({ x + 1, y }, 0xE03F, 0x37FF37_rgb .WithAlpha(alpha));
 		break;
 	case IconHeat:
-		BlendChar({ x + 3, y }, 0xE03E, RGBA<uint8_t>(255, 0, 0, alpha));
+		BlendChar({ x + 3, y }, 0xE03E, 0xFF0000_rgb .WithAlpha(alpha));
 		if(invert)
-			BlendChar({ x + 3, y }, 0xE03D, RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x + 3, y }, 0xE03D, 0x000000_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x + 3, y }, 0xE03D, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x + 3, y }, 0xE03D, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconBlur:
 		if(invert)
-			BlendChar({ x + 1, y }, 0xE044, RGBA<uint8_t>(50, 70, 180, alpha));
+			BlendChar({ x + 1, y }, 0xE044, 0x3246B4_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x + 1, y }, 0xE044, RGBA<uint8_t>(100, 150, 255, alpha));
+			BlendChar({ x + 1, y }, 0xE044, 0x6496FF_rgb .WithAlpha(alpha));
 		break;
 	case IconGradient:
 		if(invert)
-			BlendChar({ x + 1, y + 1 }, 0xE053, RGBA<uint8_t>(255, 50, 255, alpha));
+			BlendChar({ x + 1, y + 1 }, 0xE053, 0xFF32FF_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x + 1, y + 1 }, 0xE053, RGBA<uint8_t>(205, 50, 205, alpha));
+			BlendChar({ x + 1, y + 1 }, 0xE053, 0xCD32CD_rgb .WithAlpha(alpha));
 		break;
 	case IconLife:
 		if(invert)
-			BlendChar({ x, y + 1 }, 0xE060, RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x, y + 1 }, 0xE060, 0x000000_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y + 1 }, 0xE060, RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y + 1 }, 0xE060, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconEffect:
-		BlendChar({ x + 1, y }, 0xE061, RGBA<uint8_t>(255, 255, 160, alpha));
+		BlendChar({ x + 1, y }, 0xE061, 0xFFFFA0_rgb .WithAlpha(alpha));
 		break;
 	case IconGlow:
-		BlendChar({ x + 1, y }, 0xE05F, RGBA<uint8_t>(200, 255, 255, alpha));
+		BlendChar({ x + 1, y }, 0xE05F, 0xC8FFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconWarp:
-		BlendChar({ x + 1, y }, 0xE05E, RGBA<uint8_t>(255, 255, 255, alpha));
+		BlendChar({ x + 1, y }, 0xE05E, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconBasic:
 		if(invert)
-			BlendChar({ x + 1, y + 1 }, 0xE05B, RGBA<uint8_t>(50, 50, 0, alpha));
+			BlendChar({ x + 1, y + 1 }, 0xE05B, 0x323200_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x + 1, y + 1 }, 0xE05B, RGBA<uint8_t>(255, 255, 200, alpha));
+			BlendChar({ x + 1, y + 1 }, 0xE05B, 0xFFFFC8_rgb .WithAlpha(alpha));
 		break;
 	case IconAltAir:
 		if(invert) {
-			BlendChar({ x + 1, y + 1 }, 0xE054, RGBA<uint8_t>(180, 55, 55, alpha));
-			BlendChar({ x + 1, y + 1 }, 0xE055, RGBA<uint8_t>(55, 180, 55, alpha));
+			BlendChar({ x + 1, y + 1 }, 0xE054, 0xB43737_rgb .WithAlpha(alpha));
+			BlendChar({ x + 1, y + 1 }, 0xE055, 0x37B437_rgb .WithAlpha(alpha));
 		} else {
-			BlendChar({ x + 1, y + 1 }, 0xE054, RGBA<uint8_t>(255, 55, 55, alpha));
-			BlendChar({ x + 1, y + 1 }, 0xE055, RGBA<uint8_t>(55, 255, 55, alpha));
+			BlendChar({ x + 1, y + 1 }, 0xE054, 0xFF3737_rgb .WithAlpha(alpha));
+			BlendChar({ x + 1, y + 1 }, 0xE055, 0x37FF37_rgb .WithAlpha(alpha));
 		}
 		break;
 	default:
 		if(invert)
-			BlendChar({ x, y }, 't', RGBA<uint8_t>(0, 0, 0, alpha));
+			BlendChar({ x, y }, 't', 0x000000_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y }, 't', RGBA<uint8_t>(255, 255, 255, alpha));
+			BlendChar({ x, y }, 't', 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	}
 }

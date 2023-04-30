@@ -151,8 +151,8 @@ void Renderer::DrawSigns()
 		{
 			String text = currentSign.getDisplayText(sim, x, y, w, h);
 			DrawFilledRect(RectSized(Vec2{ x + 1, y + 1 }, Vec2{ w, h - 1 }), 0x000000_rgb);
-			DrawRect(RectSized(Vec2{ x, y }, Vec2{ w+1, h }), RGB<uint8_t>(192, 192, 192));
-			BlendText({ x+3, y+4 }, text, RGBA<uint8_t>(255, 255, 255, 255));
+			DrawRect(RectSized(Vec2{ x, y }, Vec2{ w+1, h }), 0xC0C0C0_rgb);
+			BlendText({ x+3, y+4 }, text, 0xFFFFFF_rgb .WithAlpha(255));
 
 			if (currentSign.ju != sign::None)
 			{
@@ -162,7 +162,7 @@ void Renderer::DrawSigns()
 				int dy = (currentSign.y > 18) ? -1 : 1;
 				for (int j = 0; j < 4; j++)
 				{
-					DrawPixel({ x, y }, RGB<uint8_t>(192, 192, 192));
+					DrawPixel({ x, y }, 0xC0C0C0_rgb);
 					x += dx;
 					y += dy;
 				}
@@ -188,9 +188,9 @@ void Renderer::render_parts()
 			for (nx=0; nx<XRES; nx++)
 			{
 				if (ny%(4*gridSize) == 0)
-					BlendPixel({ nx, ny }, RGBA<uint8_t>(100, 100, 100, 80));
+					BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
 				if (nx%(4*gridSize) == 0 && ny%(4*gridSize) != 0)
-					BlendPixel({ nx, ny }, RGBA<uint8_t>(100, 100, 100, 80));
+					BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
 			}
 	}
 	foundElements = 0;
@@ -417,7 +417,7 @@ void Renderer::render_parts()
 					if (mousePos.X>(nx-3) && mousePos.X<(nx+3) && mousePos.Y<(ny+3) && mousePos.Y>(ny-3)) //If mouse is in the head
 					{
 						String hp = String::Build(Format::Width(sim->parts[i].life, 3));
-						BlendText(mousePos + Vec2{ -8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), -12 }, hp, RGBA<uint8_t>(255, 255, 255, 255));
+						BlendText(mousePos + Vec2{ -8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), -12 }, hp, 0xFFFFFF_rgb .WithAlpha(255));
 					}
 
 					if (findingElement == t)
@@ -510,9 +510,9 @@ void Renderer::render_parts()
 							int nx = int(cplayer->legs[leg*8+4]), ny = int(cplayer->legs[leg*8+5]);
 							int colr = 255, colg = 0, colb = 255;
 							if (((int)(cplayer->comm)&0x04) == 0x04 || (((int)(cplayer->comm)&0x01) == 0x01 && leg==0) || (((int)(cplayer->comm)&0x02) == 0x02 && leg==1))
-								DrawPixel({ nx, ny }, RGB<uint8_t>(0, 255, 0));
+								DrawPixel({ nx, ny }, 0x00FF00_rgb);
 							else
-								DrawPixel({ nx, ny }, RGB<uint8_t>(255, 0, 0));
+								DrawPixel({ nx, ny }, 0xFF0000_rgb);
 							BlendPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb, 223));
 							BlendPixel({ nx-1, ny }, RGBA<uint8_t>(colr, colg, colb, 223));
 							BlendPixel({ nx, ny+1 }, RGBA<uint8_t>(colr, colg, colb, 223));
@@ -778,9 +778,9 @@ void Renderer::draw_grav_zones()
 				for (j=0; j<CELL; j++)//draws the colors
 					for (i=0; i<CELL; i++)
 						if(i == j)
-							BlendPixel({ x*CELL+i, y*CELL+j }, RGBA<uint8_t>(255, 200, 0, 120));
+							BlendPixel({ x*CELL+i, y*CELL+j }, 0xFFC800_rgb .WithAlpha(120));
 						else
-							BlendPixel({ x*CELL+i, y*CELL+j }, RGBA<uint8_t>(32, 32, 32, 120));
+							BlendPixel({ x*CELL+i, y*CELL+j }, 0x202020_rgb .WithAlpha(120));
 			}
 		}
 	}
@@ -808,7 +808,7 @@ void Renderer::draw_grav()
 			{
 				nx -= sim->gravx[ca]*0.5f;
 				ny -= sim->gravy[ca]*0.5f;
-				AddPixel({ int(nx+0.5f), int(ny+0.5f) }, RGBA<uint8_t>(255, 255, 255, (int)(dist*20.0f)));
+				AddPixel({ int(nx+0.5f), int(ny+0.5f) }, 0xFFFFFF_rgb .WithAlpha(int(dist*20.0f)));
 			}
 		}
 	}
@@ -979,8 +979,8 @@ void Renderer::DrawWalls()
 						// there is no velocity here, draw a streamline and continue
 						if (!xVel && !yVel)
 						{
-							BlendText({ x*CELL, y*CELL-2 }, 0xE00D, RGBA<uint8_t>(255, 255, 255, 128));
-							AddPixel({ oldX, oldY }, RGBA<uint8_t>(255, 255, 255, 255));
+							BlendText({ x*CELL, y*CELL-2 }, 0xE00D, 0xFFFFFF_rgb .WithAlpha(128));
+							AddPixel({ oldX, oldY }, 0xFFFFFF_rgb .WithAlpha(255));
 							continue;
 						}
 						bool changed = false;
@@ -996,7 +996,7 @@ void Renderer::DrawWalls()
 							}
 							if (changed && (newX<0 || newX>=XRES || newY<0 || newY>=YRES))
 								break;
-							AddPixel({ newX, newY }, RGBA<uint8_t>(255, 255, 255, 64));
+							AddPixel({ newX, newY }, 0xFFFFFF_rgb .WithAlpha(64));
 							// cache velocity and other checks so we aren't running them constantly
 							if (changed)
 							{
@@ -1010,7 +1010,7 @@ void Renderer::DrawWalls()
 							xf += xVel;
 							yf += yVel;
 						}
-						BlendText({ x*CELL, y*CELL-2 }, 0xE00D, RGBA<uint8_t>(255, 255, 255, 128));
+						BlendText({ x*CELL, y*CELL-2 }, 0xE00D, 0xFFFFFF_rgb .WithAlpha(128));
 					}
 					break;
 				case 1:

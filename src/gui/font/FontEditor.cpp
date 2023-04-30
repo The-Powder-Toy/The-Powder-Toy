@@ -491,19 +491,19 @@ void FontEditor::OnDraw()
 
 		if(rulers)
 		{
-			g->DrawLine({ 0, 7 + 0 * FONT_SCALE }, { areaWidth - 1, 7 + 0 * FONT_SCALE }, RGB<uint8_t>(128, 128, 128));
-			g->DrawLine({ 0, 7 + 2 * FONT_SCALE }, { areaWidth - 1, 7 + 2 * FONT_SCALE }, RGB<uint8_t>(128, 128, 128));
-			g->DrawLine({ 0, 7 + 4 * FONT_SCALE }, { areaWidth - 1, 7 + 4 * FONT_SCALE }, RGB<uint8_t>(128, 128, 128));
-			g->DrawLine({ 0, 7 + 9 * FONT_SCALE }, { areaWidth - 1, 7 + 9 * FONT_SCALE }, RGB<uint8_t>(128, 128, 128));
-			g->DrawLine({ 0, 7 + 12 * FONT_SCALE }, { areaWidth - 1, 7 + 12 * FONT_SCALE }, RGB<uint8_t>(128, 128, 128));
+			g->DrawLine({ 0, 7 + 0 * FONT_SCALE }, { areaWidth - 1, 7 + 0 * FONT_SCALE }, 0x808080_rgb);
+			g->DrawLine({ 0, 7 + 2 * FONT_SCALE }, { areaWidth - 1, 7 + 2 * FONT_SCALE }, 0x808080_rgb);
+			g->DrawLine({ 0, 7 + 4 * FONT_SCALE }, { areaWidth - 1, 7 + 4 * FONT_SCALE }, 0x808080_rgb);
+			g->DrawLine({ 0, 7 + 9 * FONT_SCALE }, { areaWidth - 1, 7 + 9 * FONT_SCALE }, 0x808080_rgb);
+			g->DrawLine({ 0, 7 + 12 * FONT_SCALE }, { areaWidth - 1, 7 + 12 * FONT_SCALE }, 0x808080_rgb);
 
-			g->DrawLine({ 7, 8 }, { 7, 7 + FONT_H * FONT_SCALE }, RGB<uint8_t>(128, 128, 128));
-			g->DrawLine({ 7 + width * FONT_SCALE, 8}, { 7 + width * FONT_SCALE, 7 + FONT_H * FONT_SCALE }, RGB<uint8_t>(128, 128, 128));
+			g->DrawLine({ 7, 8 }, { 7, 7 + FONT_H * FONT_SCALE }, 0x808080_rgb);
+			g->DrawLine({ 7 + width * FONT_SCALE, 8}, { 7 + width * FONT_SCALE, 7 + FONT_H * FONT_SCALE }, 0x808080_rgb);
 		}
 	}
 	else
 	{
-		g->BlendText({ 8, 8 }, "No character", RGBA<uint8_t>(255, 0, 0, 255));
+		g->BlendText({ 8, 8 }, "No character", 0xFF0000_rgb .WithAlpha(255));
 	}
 }
 

@@ -46,7 +46,7 @@ void ProgressBar::Draw(const Point & screenPos)
 
 	ui::Colour progressBarColour = style::Colour::WarningTitle;
 
-	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(255, 255, 255));
+	g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 
 	if(progress!=-1)
 	{
@@ -72,7 +72,7 @@ void ProgressBar::Draw(const Point & screenPos)
 			g->DrawFilledRect(RectSized(screenPos + Vec2{ 2, 2 }, Vec2{ rsize, Size.Y-4 }), progressBarColour.NoAlpha());
 		}
 	}
-	g->BlendText(screenPos + Vec2{ ((Size.X-(Graphics::TextSize(progressStatus).X - 1))/2), (Size.Y-8)/2 }, progressStatus, progress<50 ? RGBA<uint8_t>(255, 255, 255, 255) : RGBA<uint8_t>(0, 0, 0, 255));
+	g->BlendText(screenPos + Vec2{ ((Size.X-(Graphics::TextSize(progressStatus).X - 1))/2), (Size.Y-8)/2 }, progressStatus, progress<50 ? 0xFFFFFF_rgb .WithAlpha(255) : 0x000000_rgb .WithAlpha(255));
 }
 
 void ProgressBar::Tick(float dt)

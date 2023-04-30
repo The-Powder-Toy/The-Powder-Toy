@@ -614,20 +614,20 @@ void Textbox::Draw(const Point& screenPos)
 	if(IsFocused())
 	{
 		if(border)
-			g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(255, 255, 255));
+			g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 		g->DrawLine(
 			screenPos + textPosition + Vec2{ cursorPositionX, cursorPositionY-2 },
 			screenPos + textPosition + Vec2{ cursorPositionX, cursorPositionY+9 },
-			RGB<uint8_t>(255, 255, 255));
+			0xFFFFFF_rgb);
 	}
 	else
 	{
 		if(!text.length())
 		{
-			g->BlendText(screenPos + textPosition, placeHolder, RGBA<uint8_t>(textColour.Red, textColour.Green, textColour.Blue, 170));
+			g->BlendText(screenPos + textPosition, placeHolder, textColour.NoAlpha().WithAlpha(170));
 		}
 		if(border)
-			g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(160, 160, 160));
+			g->DrawRect(RectSized(Position, Size), 0xA0A0A0_rgb);
 	}
 	if(Appearance.icon)
 		g->draw_icon(screenPos.X+iconPosition.X, screenPos.Y+iconPosition.Y, Appearance.icon);

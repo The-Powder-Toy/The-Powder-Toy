@@ -116,7 +116,7 @@ void Slider::Draw(const Point& screenPos)
 		}
 	}
 
-	g->DrawRect(RectSized(screenPos + Vec2{ 3, 3 }, Size - Vec2{ 6, 6 }), RGB<uint8_t>(255, 255, 255));
+	g->DrawRect(RectSized(screenPos + Vec2{ 3, 3 }, Size - Vec2{ 6, 6 }), 0xFFFFFF_rgb);
 
 	auto fPosition = float(sliderPosition);
 	auto fSize = float(Size.X-6);
@@ -126,8 +126,8 @@ void Slider::Draw(const Point& screenPos)
 	auto sliderX = int(fSliderX);
 	sliderX += 3;
 
-	g->DrawFilledRect(RectSized(screenPos + Vec2{ sliderX-2, 1 }, Vec2{ 4, Size.Y-2 }), RGB<uint8_t>(20, 20, 20));
-	g->DrawRect(RectSized(screenPos + Vec2{ sliderX-2, 1 }, Vec2{ 4, Size.Y-2 }), RGB<uint8_t>(200, 200, 200));
+	g->DrawFilledRect(RectSized(screenPos + Vec2{ sliderX-2, 1 }, Vec2{ 4, Size.Y-2 }), 0x141414_rgb);
+	g->DrawRect(RectSized(screenPos + Vec2{ sliderX-2, 1 }, Vec2{ 4, Size.Y-2 }), 0xC8C8C8_rgb);
 }
 
 } /* namespace ui */

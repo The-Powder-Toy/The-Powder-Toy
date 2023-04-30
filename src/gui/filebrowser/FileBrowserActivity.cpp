@@ -304,7 +304,7 @@ void FileBrowserActivity::OnDraw()
 
 	//Window Background+Outline
 	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
-	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(255, 255, 255));
+	g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 }
 
 FileBrowserActivity::~FileBrowserActivity()

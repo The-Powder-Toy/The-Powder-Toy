@@ -125,11 +125,11 @@ void DirectionSelector::Draw(const ui::Point& screenPos)
 				center + point.offset - Vec2{ snapPointRadius, snapPointRadius },
 				center + point.offset + Vec2{ snapPointRadius, snapPointRadius }
 			),
-			RGBA<uint8_t>(snapPointColor.Red, snapPointColor.Green, snapPointColor.Blue, altDown ? (int)(snapPointColor.Alpha / 2) : snapPointColor.Alpha)
+			snapPointColor.NoAlpha().WithAlpha(altDown ? (int)(snapPointColor.Alpha / 2) : snapPointColor.Alpha)
 		);
 	}
 
-	g->BlendFilledEllipse(center + value.offset, { handleRadius, handleRadius }, RGBA<uint8_t>(foregroundColor.Red, foregroundColor.Green, foregroundColor.Blue, (mouseHover || mouseDown) ? std::min(int(foregroundColor.Alpha * 1.5f), 255) : foregroundColor.Alpha));
+	g->BlendFilledEllipse(center + value.offset, { handleRadius, handleRadius }, foregroundColor.NoAlpha().WithAlpha((mouseHover || mouseDown) ? std::min(int(foregroundColor.Alpha * 1.5f), 255) : foregroundColor.Alpha));
 	g->BlendEllipse(center + value.offset, { handleRadius, handleRadius }, borderColor);
 }
 
