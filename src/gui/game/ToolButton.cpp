@@ -58,16 +58,16 @@ void ToolButton::Draw(const ui::Point& screenPos)
 	}
 	else
 	{
-		g->fillrect(screenPos.X+2, screenPos.Y+2, Size.X-4, Size.Y-4, Appearance.BackgroundInactive.Red, Appearance.BackgroundInactive.Green, Appearance.BackgroundInactive.Blue, Appearance.BackgroundInactive.Alpha);
+		g->BlendFilledRect(RectSized(screenPos + Vec2{ 2, 2 }, Size - Vec2{ 4, 4 }), Appearance.BackgroundInactive);
 	}
 
 	if (isMouseInside && currentSelection == -1)
 	{
-		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, Appearance.BorderActive.Red, Appearance.BorderActive.Green, Appearance.BorderActive.Blue, Appearance.BorderActive.Alpha);
+		g->BlendRect(RectSized(screenPos, Size), Appearance.BorderActive);
 	}
 	else
 	{
-		g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, Appearance.BorderInactive.Red, Appearance.BorderInactive.Green, Appearance.BorderInactive.Blue, Appearance.BorderInactive.Alpha);
+		g->BlendRect(RectSized(screenPos, Size), Appearance.BorderInactive);
 	}
 	if (Favorite::Ref().IsFavorite(toolIdentifier))
 	{

@@ -110,9 +110,9 @@ void ConsoleView::NotifyCurrentCommandChanged(ConsoleModel * sender)
 void ConsoleView::OnDraw()
 {
 	Graphics * g = GetGraphics();
-	g->fillrect(Position.X, Position.Y, Size.X, Size.Y, 0, 0, 0, 110);
-	g->draw_line(Position.X, Position.Y+Size.Y-16, Position.X+Size.X, Position.Y+Size.Y-16, 255, 255, 255, 160);
-	g->draw_line(Position.X, Position.Y+Size.Y, Position.X+Size.X, Position.Y+Size.Y, 255, 255, 255, 200);
+	g->BlendFilledRect(RectSized(Position, Size), RGBA<uint8_t>(0, 0, 0, 110));
+	g->BlendLine(Position + Vec2{ 0, Size.Y-16 }, Position + Size - Vec2{ 0, 16 }, RGBA<uint8_t>(255, 255, 255, 160));
+	g->BlendLine(Position + Vec2{ 0, Size.Y }, Position + Size, RGBA<uint8_t>(255, 255, 255, 200));
 }
 
 void ConsoleView::OnTick(float dt)

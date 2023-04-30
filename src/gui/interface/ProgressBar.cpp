@@ -46,7 +46,7 @@ void ProgressBar::Draw(const Point & screenPos)
 
 	ui::Colour progressBarColour = style::Colour::WarningTitle;
 
-	g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 255);
+	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(255, 255, 255));
 
 	if(progress!=-1)
 	{
@@ -56,7 +56,7 @@ void ProgressBar::Draw(const Point & screenPos)
 				progress = 100;
 			float size = float(Size.X-4)*(float(progress)/100.0f); // TIL...
 			size = std::min(std::max(size, 0.0f), float(Size.X-4));
-			g->fillrect(screenPos.X + 2, screenPos.Y + 2, int(size), Size.Y-4, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
+			g->DrawFilledRect(RectSized(screenPos + Vec2{ 2, 2 }, Vec2{ int(size), Size.Y-4 }), progressBarColour.NoAlpha());
 		}
 	} else {
 		int size = 40, rsize = 0;
@@ -66,10 +66,10 @@ void ProgressBar::Draw(const Point & screenPos)
 			size = int((Size.X-4)-position+1);
 			rsize = 40-size;
 		}
-		g->fillrect(screenPos.X + 2 + int(position), screenPos.Y + 2, size, Size.Y-4, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
+		g->DrawFilledRect(RectSized(screenPos + Vec2{ 2 + int(position), 2 }, Vec2{ size, Size.Y-4 }), progressBarColour.NoAlpha());
 		if(rsize)
 		{
-			g->fillrect(screenPos.X + 2, screenPos.Y + 2, rsize, Size.Y-4, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
+			g->DrawFilledRect(RectSized(screenPos + Vec2{ 2, 2 }, Vec2{ rsize, Size.Y-4 }), progressBarColour.NoAlpha());
 		}
 	}
 	g->BlendText(screenPos + Vec2{ ((Size.X-(Graphics::TextSize(progressStatus).X - 1))/2), (Size.Y-8)/2 }, progressStatus, progress<50 ? RGBA<uint8_t>(255, 255, 255, 255) : RGBA<uint8_t>(0, 0, 0, 255));

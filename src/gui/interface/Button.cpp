@@ -113,19 +113,19 @@ void Button::Draw(const Point& screenPos)
 	}
 
 	bgColour = Appearance.BackgroundInactive;
-	g->fillrect(Position.X+1, Position.Y+1, Size.X-2, Size.Y-2, backgroundColour.Red, backgroundColour.Green, backgroundColour.Blue, backgroundColour.Alpha);
+	g->BlendFilledRect(RectSized(Position + Vec2{ 1, 1 }, Size - Vec2{ 2, 2 }), backgroundColour);
 	if(Appearance.Border == 1)
-		g->drawrect(Position.X, Position.Y, Size.X, Size.Y, borderColour.Red, borderColour.Green, borderColour.Blue, borderColour.Alpha);
+		g->BlendRect(RectSized(Position, Size), borderColour);
 	else
 	{
 		if(Appearance.Border.Top)
-			g->draw_line(Position.X, Position.Y, Position.X+Size.X-1, Position.Y, borderColour.Red, borderColour.Green, borderColour.Blue, borderColour.Alpha);
+			g->BlendLine(Position + Vec2{       0 ,        0 }, Position + Vec2{ Size.X-1,        0 }, borderColour);
 		if(Appearance.Border.Bottom)
-			g->draw_line(Position.X, Position.Y+Size.Y-1, Position.X+Size.X-1, Position.Y+Size.Y-1, borderColour.Red, borderColour.Green, borderColour.Blue, borderColour.Alpha);
+			g->BlendLine(Position + Vec2{       0 , Size.Y-1 }, Position + Vec2{ Size.X-1, Size.Y-1 }, borderColour);
 		if(Appearance.Border.Left)
-			g->draw_line(Position.X, Position.Y, Position.X, Position.Y+Size.Y-1, borderColour.Red, borderColour.Green, borderColour.Blue, borderColour.Alpha);
+			g->BlendLine(Position + Vec2{       0 ,        0 }, Position + Vec2{        0, Size.Y-1 }, borderColour);
 		if(Appearance.Border.Right)
-			g->draw_line(Position.X+Size.X-1, Position.Y, Position.X+Size.X-1, Position.Y+Size.Y-1, borderColour.Red, borderColour.Green, borderColour.Blue, borderColour.Alpha);
+			g->BlendLine(Position + Vec2{ Size.X-1,        0 }, Position + Vec2{ Size.X-1, Size.Y-1 }, borderColour);
 	}
 	g->BlendText(Position + textPosition, buttonDisplayText, textColour);
 

@@ -248,39 +248,39 @@ void Label::Draw(const Point& screenPos)
 	{
 		if (selectionLineH == selectionLineL)
 		{
-			g->fillrect(
-				screenPos.X + textPosition.X + selectionXL - 1,
-				screenPos.Y + textPosition.Y + selectionYL - 2,
-				selectionXH - selectionXL + 1,
-				FONT_H,
-				255, 255, 255, 255
+			g->DrawFilledRect(
+				RectSized(
+					screenPos + textPosition + Vec2{ selectionXL - 1, selectionYL - 2 },
+					Vec2{ selectionXH - selectionXL + 1, FONT_H }
+				),
+				RGB<uint8_t>(255, 255, 255)
 			);
 		}
 		else
 		{
-			g->fillrect(
-				screenPos.X + textPosition.X + selectionXL - 1,
-				screenPos.Y + textPosition.Y + selectionYL - 2,
-				textSize.X - selectionXL + 1,
-				FONT_H,
-				255, 255, 255, 255
+			g->DrawFilledRect(
+				RectSized(
+					screenPos + textPosition + Vec2{ selectionXL - 1, selectionYL - 2 },
+					Vec2{ textSize.X - selectionXL + 1, FONT_H }
+				),
+				RGB<uint8_t>(255, 255, 255)
 			);
 			for (int i = 1; i < selectionLineH - selectionLineL; ++i)
 			{
-				g->fillrect(
-					screenPos.X + textPosition.X - 1,
-					screenPos.Y + textPosition.Y + selectionYL - 2 + i * FONT_H,
-					textSize.X + 1,
-					FONT_H,
-					255, 255, 255, 255
+				g->DrawFilledRect(
+					RectSized(
+						screenPos + textPosition + Vec2{ -1, selectionYL - 2 + i * FONT_H },
+						Vec2{ textSize.X + 1, FONT_H }
+					),
+					RGB<uint8_t>(255, 255, 255)
 				);
 			}
-			g->fillrect(
-				screenPos.X + textPosition.X - 1,
-				screenPos.Y + textPosition.Y + selectionYH - 2,
-				selectionXH + 1,
-				FONT_H,
-				255, 255, 255, 255
+			g->DrawFilledRect(
+				RectSized(
+					screenPos + textPosition + Vec2{ -1, selectionYH - 2 },
+					Vec2{ selectionXH + 1, FONT_H }
+				),
+				RGB<uint8_t>(255, 255, 255)
 			);
 		}
 	}

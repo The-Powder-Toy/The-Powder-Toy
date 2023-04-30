@@ -98,8 +98,8 @@ void DropDown::Draw(const Point& screenPos)
 		backgroundColour = Appearance.BackgroundInactive;
 	}
 
-	g->fillrect(Position.X-1, Position.Y-1, Size.X+2, Size.Y+2, backgroundColour.Red, backgroundColour.Green, backgroundColour.Blue, backgroundColour.Alpha);
-	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, borderColour.Red, borderColour.Green, borderColour.Blue, borderColour.Alpha);
+	g->BlendFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), backgroundColour);
+	g->BlendRect(RectSized(Position, Size), borderColour);
 	if(optionIndex!=-1)
 		g->BlendText(Position + textPosition, options[optionIndex].first, textColour);
 }

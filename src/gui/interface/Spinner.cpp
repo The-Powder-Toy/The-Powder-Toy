@@ -27,8 +27,10 @@ void Spinner::Draw(const Point& screenPos)
 	int lineOuter = (Size.X/2)+3;
 	for(float t = 0.0f; t < 6.0f; t+=0.25f)
 	{
-		//g->drawblob(baseX+(sin(cValue+t)*(Size.X/2)), baseY+(cos(cValue+t)*(Size.X/2)), t*255, t*255, t*255);
-		g->draw_line(int(baseX+(sin(cValue+t)*lineInner)), int(baseY+(cos(cValue+t)*lineInner)), int(baseX+(sin(cValue+t)*lineOuter)), int(baseY+(cos(cValue+t)*lineOuter)), int((t/6)*255), int((t/6)*255), int((t/6)*255), 255);
+		g->DrawLine(
+			{ int(baseX+(sin(cValue+t)*lineInner)), int(baseY+(cos(cValue+t)*lineInner)) },
+			{ int(baseX+(sin(cValue+t)*lineOuter)), int(baseY+(cos(cValue+t)*lineOuter)) },
+			RGB<uint8_t>(int((t/6)*255), int((t/6)*255), int((t/6)*255)));
 	}
 }
 Spinner::~Spinner()

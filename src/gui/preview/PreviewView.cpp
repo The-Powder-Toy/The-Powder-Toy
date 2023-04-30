@@ -260,20 +260,18 @@ void PreviewView::DoDraw()
 	{
 		int linePos = commentTextComponents[i]->Position.Y+commentsPanel->ViewportPosition.Y+commentTextComponents[i]->Size.Y+4;
 		if (linePos > 0 && linePos < Size.Y-commentBoxHeight)
-		g->draw_line(
-				Position.X+1+XRES/2,
-				Position.Y+linePos,
-				Position.X+Size.X-2,
-				Position.Y+linePos,
-				255, 255, 255, 100);
+		g->BlendLine(
+				Position + Vec2{ 1+XRES/2, linePos },
+				Position + Vec2{ Size.X-2, linePos },
+				RGBA<uint8_t>(255, 255, 255, 100));
 	}
 	if (c->GetDoOpen())
 	{
-		g->fillrect(Position.X+(Size.X/2)-101, Position.Y+(Size.Y/2)-26, 202, 52, 0, 0, 0, 210);
-		g->drawrect(Position.X+(Size.X/2)-100, Position.Y+(Size.Y/2)-25, 200, 50, 255, 255, 255, 180);
+		g->BlendFilledRect(RectSized(Position + Size / 2 - Vec2{ 101, 26 }, { 202, 52 }), RGBA<uint8_t>(0, 0, 0, 210));
+		g->BlendRect(RectSized(Position + Size / 2 - Vec2{ 100, 25 }, Vec2{ 200, 50 }), RGBA<uint8_t>(255, 255, 255, 180));
 		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize("Loading save...").X - 1)/2), (Size.Y/2)-5}, "Loading save...", RGBA<uint8_t>(style::Colour::InformationTitle.Red, style::Colour::InformationTitle.Green, style::Colour::InformationTitle.Blue, 255));
 	}
-	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
+	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(255, 255, 255));
 
 }
 
@@ -289,8 +287,8 @@ void PreviewView::OnDraw()
 	{
 		g->BlendImage(savePreview->Data(), 0xFF, RectSized(Position + Vec2(1, 1) + (RES / 2 - savePreview->Size()) / 2, savePreview->Size()));
 	}
-	g->drawrect(Position.X, Position.Y, (XRES/2)+1, (YRES/2)+1, 255, 255, 255, 100);
-	g->draw_line(Position.X+XRES/2, Position.Y+1, Position.X+XRES/2, Position.Y+Size.Y-2, 200, 200, 200, 255);
+	g->BlendRect(RectSized(Position, RES / 2 + Vec2{ 1, 1 }), RGBA<uint8_t>(255, 255, 255, 100));
+	g->DrawLine(Position + Vec2{ XRES/2, 1 }, Position + Vec2{ XRES/2, Size.Y-2 }, RGB<uint8_t>(200, 200, 200));
 
 	if(votesUp || votesDown)
 	{
@@ -314,13 +312,13 @@ void PreviewView::OnDraw()
 		nyu = nyu>50?50:nyu;
 		nyd = nyd>50?50:nyd;
 
-		g->fillrect(Position.X+(XRES/2)-55, Position.Y+(YRES/2)+3, 53, 7, 0, 107, 10, 255);
-		g->fillrect(Position.X+(XRES/2)-55, Position.Y+(YRES/2)+9, 53, 7, 107, 10, 0, 255);
-		g->drawrect(Position.X+(XRES/2)-55, Position.Y+(YRES/2)+3, 53, 7, 128, 128, 128, 255);
-		g->drawrect(Position.X+(XRES/2)-55, Position.Y+(YRES/2)+9, 53, 7, 128, 128, 128, 255);
+		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -55, 3 }, Vec2{ 53, 7 }), RGB<uint8_t>(0, 107, 10));
+		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -55, 9 }, Vec2{ 53, 7 }), RGB<uint8_t>(107, 10, 0));
+		g->DrawRect(RectSized(Position + Vec2{ (XRES/2)-55, (YRES/2)+3 }, { 53, 7 }), RGB<uint8_t>(128, 128, 128));
+		g->DrawRect(RectSized(Position + Vec2{ (XRES/2)-55, (YRES/2)+9 }, { 53, 7 }), RGB<uint8_t>(128, 128, 128));
 
-		g->fillrect(Position.X+(XRES/2)-4-nyu, Position.Y+(YRES/2)+5, nyu, 3, 57, 187, 57, 255);
-		g->fillrect(Position.X+(XRES/2)-4-nyd, Position.Y+(YRES/2)+11, nyd, 3, 187, 57, 57, 255);
+		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -4-nyu, 5 }, Vec2{ nyu, 3 }), RGB<uint8_t>(57, 187, 57));
+		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -4-nyd, 11 }, Vec2{ nyd, 3 }), RGB<uint8_t>(187, 57, 57));
 	}
 }
 

@@ -71,8 +71,8 @@ void Renderer::RenderZoom()
 		pixel pix;
 
 		DrawFilledRect(RectSized(zoomWindowPosition, { zoomScopeSize * ZFACTOR, zoomScopeSize * ZFACTOR }), 0x000000_rgb);
-		drawrect(zoomWindowPosition.X-2, zoomWindowPosition.Y-2, zoomScopeSize*ZFACTOR+3, zoomScopeSize*ZFACTOR+3, 192, 192, 192, 255);
-		drawrect(zoomWindowPosition.X-1, zoomWindowPosition.Y-1, zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1, 0, 0, 0, 255);
+		DrawRect(RectSized(zoomWindowPosition - Vec2{ 2, 2 }, Vec2{ zoomScopeSize*ZFACTOR+3, zoomScopeSize*ZFACTOR+3 }), RGB<uint8_t>(192, 192, 192));
+		DrawRect(RectSized(zoomWindowPosition - Vec2{ 1, 1 }, Vec2{ zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1 }), RGB<uint8_t>(0, 0, 0));
 		for (j=0; j<zoomScopeSize; j++)
 			for (i=0; i<zoomScopeSize; i++)
 			{
@@ -97,17 +97,16 @@ void Renderer::RenderZoom()
 	}
 }
 
-void Renderer::DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb)
+void Renderer::DrawBlob(Vec2<int> pos, RGB<uint8_t> colour)
 {
-	blendpixel(x+1, y, cr, cg, cb, 112);
-	blendpixel(x-1, y, cr, cg, cb, 112);
-	blendpixel(x, y+1, cr, cg, cb, 112);
-	blendpixel(x, y-1, cr, cg, cb, 112);
-
-	blendpixel(x+1, y-1, cr, cg, cb, 64);
-	blendpixel(x-1, y-1, cr, cg, cb, 64);
-	blendpixel(x+1, y+1, cr, cg, cb, 64);
-	blendpixel(x-1, y+1, cr, cg, cb, 64);
+	BlendPixel(pos + Vec2{ +1,  0 }, colour.WithAlpha(112));
+	BlendPixel(pos + Vec2{ -1,  0 }, colour.WithAlpha(112));
+	BlendPixel(pos + Vec2{  0,  1 }, colour.WithAlpha(112));
+	BlendPixel(pos + Vec2{  0, -1 }, colour.WithAlpha(112));
+	BlendPixel(pos + Vec2{  1, -1 }, colour.WithAlpha(64));
+	BlendPixel(pos + Vec2{ -1, -1 }, colour.WithAlpha(64));
+	BlendPixel(pos + Vec2{  1,  1 }, colour.WithAlpha(64));
+	BlendPixel(pos + Vec2{ -1, +1 }, colour.WithAlpha(64));
 }
 
 
@@ -157,19 +156,6 @@ void Renderer::prepare_alpha(int size, float intensity)
 		for (y=0; y<CELL*3; y++)
 			fire_alpha[y][x] = (int)(multiplier*temp[y][x]/(CELL*CELL));
 
-}
-
-void Renderer::drawblob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb)
-{
-	blendpixel(x+1, y, cr, cg, cb, 112);
-	blendpixel(x-1, y, cr, cg, cb, 112);
-	blendpixel(x, y+1, cr, cg, cb, 112);
-	blendpixel(x, y-1, cr, cg, cb, 112);
-
-	blendpixel(x+1, y-1, cr, cg, cb, 64);
-	blendpixel(x-1, y-1, cr, cg, cb, 64);
-	blendpixel(x+1, y+1, cr, cg, cb, 64);
-	blendpixel(x-1, y+1, cr, cg, cb, 64);
 }
 
 pixel Renderer::GetPixel(Vec2<int> pos) const

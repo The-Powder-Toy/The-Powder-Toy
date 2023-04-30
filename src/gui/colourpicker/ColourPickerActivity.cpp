@@ -255,10 +255,10 @@ void ColourPickerActivity::OnKeyPress(int key, int scan, bool repeat, bool shift
 void ColourPickerActivity::OnDraw()
 {
 	Graphics * g = GetGraphics();
-	g->fillrect(Position.X-2, Position.Y-2, Size.X+3, Size.Y+3, 0, 0, 0, currentAlpha);
-	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
+	g->BlendFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), RGBA<uint8_t>(0, 0, 0, currentAlpha));
+	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(255, 255, 255));
 
-	g->drawrect(Position.X+4, Position.Y+4, 258, 130, 180, 180, 180, 255);
+	g->DrawRect(RectSized(Position + Vec2{ 4, 4 }, Vec2{ 258, 130 }), RGB<uint8_t>(180, 180, 180));
 
 
 	auto offset = Position + Vec2{ 5, 5 };
@@ -278,7 +278,7 @@ void ColourPickerActivity::OnDraw()
 			int cg = 0;
 			int cb = 0;
 			HSV_to_RGB(hue, 255-saturation, currentValue, &cr, &cg, &cb);
-			g->blendpixel(currx, (saturation/2)+offset.Y, cr, cg, cb, currentAlpha);
+			g->BlendPixel({ currx, (saturation/2)+offset.Y }, RGBA<uint8_t>(cr, cg, cb, currentAlpha));
 		}
 	}
 
@@ -291,10 +291,9 @@ void ColourPickerActivity::OnDraw()
 		HSV_to_RGB(hue, currentSaturation, currentValue, &red, &green, &blue);
 		for (int ry = 0; ry < (hSlider->Size.Y / 2) - 1; ry++)
 		{
-			g->blendpixel(
-				rx + offset.X + hSlider->Position.X,
-				ry + offset.Y + hSlider->Position.Y,
-				red, green, blue, currentAlpha
+			g->BlendPixel(
+				offset + hSlider->Position + Vec2{ rx, ry },
+				RGBA<uint8_t>(red, green, blue, currentAlpha)
 			);
 		}
 	}

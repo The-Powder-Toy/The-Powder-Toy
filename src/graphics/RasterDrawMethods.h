@@ -59,13 +59,4 @@ struct RasterDrawMethods
 	static String::const_iterator TextFit(String const &, int width);
 
 	void Clear();
-
-	[[deprecated("Use DrawPixel/BlendPixel")]]
-	void blendpixel(int x, int y, int r, int g, int b, int a);
-	[[deprecated("Use DrawLine/BlendLine")]]
-	void draw_line(int x1, int y1, int x2, int y2, int r, int g, int b, int a);
-	[[deprecated("Use DrawRect/BlendRect")]]
-	void drawrect(int x, int y, int w, int h, int r, int g, int b, int a);
-	[[deprecated("Use DrawFilledRect/BlendFilledRect")]]
-	void fillrect(int x, int y, int w, int h, int r, int g, int b, int a);
 };

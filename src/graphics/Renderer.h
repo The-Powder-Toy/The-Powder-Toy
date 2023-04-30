@@ -101,7 +101,7 @@ public:
 	void RenderEnd();
 
 	void RenderZoom();
-	void DrawBlob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb);
+	void DrawBlob(Vec2<int> pos, RGB<uint8_t> colour);
 	void DrawWalls();
 	void DrawSigns();
 	void render_gravlensing(const Video &source);
@@ -121,8 +121,6 @@ public:
 	void draw_icon(int x, int y, Icon icon);
 
 	VideoBuffer DumpFrame();
-
-	void drawblob(int x, int y, unsigned char cr, unsigned char cg, unsigned char cb);
 
 	pixel GetPixel(Vec2<int> pos) const;
 	//...

@@ -38,8 +38,8 @@ void DebugParts::Draw()
 			x = 0;
 		}
 	}
-	g->draw_line(0, lpy, XRES, lpy, 0, 255, 120, 255);
-	g->draw_line(lpx, 0, lpx, YRES, 0, 255, 120, 255);
+	g->DrawLine({ 0, lpy }, { XRES, lpy }, RGB<uint8_t>(0, 255, 120));
+	g->DrawLine({ lpx, 0 }, { lpx, YRES }, RGB<uint8_t>(0, 255, 120));
 	g->AddPixel({ lpx, lpy }, RGBA<uint8_t>(255, 50, 50, 220));
 
 	g->AddPixel({ lpx+1, lpy }, RGBA<uint8_t>(255, 50, 50, 120));
@@ -47,7 +47,7 @@ void DebugParts::Draw()
 	g->AddPixel({ lpx, lpy+1 }, RGBA<uint8_t>(255, 50, 50, 120));
 	g->AddPixel({ lpx, lpy-1 }, RGBA<uint8_t>(255, 50, 50, 120));
 
-	g->fillrect(7, YRES-26, g->TextSize(info).X + 4, 14, 0, 0, 0, 180);
+	g->BlendFilledRect(RectSized(Vec2{ 7, YRES-26}, Vec2{ g->TextSize(info).X + 4, 14}), RGBA<uint8_t>(0, 0, 0, 180));
 	g->BlendText({ 10, YRES-22 }, info, RGBA<uint8_t>(255, 255, 255, 255));
 }
 

@@ -162,12 +162,12 @@ void RenderView::OnDraw()
 		ren->RenderBegin();
 		ren->RenderEnd();
 	}
-	g->draw_line(0, YRES, XRES-1, YRES, 200, 200, 200, 255);
-	g->draw_line(line1, YRES, line1, WINDOWH, 200, 200, 200, 255);
-	g->draw_line(line2, YRES, line2, WINDOWH, 200, 200, 200, 255);
-	g->draw_line(line3, YRES, line3, WINDOWH, 200, 200, 200, 255);
-	g->draw_line(line4, YRES, line4, WINDOWH, 200, 200, 200, 255);
-	g->draw_line(XRES, 0, XRES, WINDOWH, 255, 255, 255, 255);
+	g->DrawLine({ 0, YRES }, { XRES-1, YRES }, RGB<uint8_t>(200, 200, 200));
+	g->DrawLine({ line1, YRES }, { line1, WINDOWH }, RGB<uint8_t>(200, 200, 200));
+	g->DrawLine({ line2, YRES }, { line2, WINDOWH }, RGB<uint8_t>(200, 200, 200));
+	g->DrawLine({ line3, YRES }, { line3, WINDOWH }, RGB<uint8_t>(200, 200, 200));
+	g->DrawLine({ line4, YRES }, { line4, WINDOWH }, RGB<uint8_t>(200, 200, 200));
+	g->DrawLine({ XRES, 0 }, { XRES, WINDOWH }, RGB<uint8_t>(255, 255, 255));
 	if(toolTipPresence && toolTip.length())
 	{
 		g->BlendText({ 6, Size.Y-MENUSIZE-12 }, toolTip, RGBA<uint8_t>(255, 255, 255, toolTipPresence>51?255:toolTipPresence*5));

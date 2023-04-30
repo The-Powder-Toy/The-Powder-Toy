@@ -151,7 +151,7 @@ void Renderer::DrawSigns()
 		{
 			String text = currentSign.getDisplayText(sim, x, y, w, h);
 			DrawFilledRect(RectSized(Vec2{ x + 1, y + 1 }, Vec2{ w, h - 1 }), 0x000000_rgb);
-			drawrect(x, y, w+1, h, 192, 192, 192, 255);
+			DrawRect(RectSized(Vec2{ x, y }, Vec2{ w+1, h }), RGB<uint8_t>(192, 192, 192));
 			BlendText({ x+3, y+4 }, text, RGBA<uint8_t>(255, 255, 255, 255));
 
 			if (currentSign.ju != sign::None)
@@ -162,7 +162,7 @@ void Renderer::DrawSigns()
 				int dy = (currentSign.y > 18) ? -1 : 1;
 				for (int j = 0; j < 4; j++)
 				{
-					blendpixel(x, y, 192, 192, 192, 255);
+					DrawPixel({ x, y }, RGB<uint8_t>(192, 192, 192));
 					x += dx;
 					y += dy;
 				}
@@ -188,9 +188,9 @@ void Renderer::render_parts()
 			for (nx=0; nx<XRES; nx++)
 			{
 				if (ny%(4*gridSize) == 0)
-					blendpixel(nx, ny, 100, 100, 100, 80);
+					BlendPixel({ nx, ny }, RGBA<uint8_t>(100, 100, 100, 80));
 				if (nx%(4*gridSize) == 0 && ny%(4*gridSize) != 0)
-					blendpixel(nx, ny, 100, 100, 100, 80);
+					BlendPixel({ nx, ny }, RGBA<uint8_t>(100, 100, 100, 80));
 			}
 	}
 	foundElements = 0;
@@ -398,7 +398,7 @@ void Renderer::render_parts()
 					if (t==PT_SOAP)
 					{
 						if ((parts[i].ctype&3) == 3 && parts[i].tmp >= 0 && parts[i].tmp < NPART)
-							draw_line(nx, ny, (int)(parts[parts[i].tmp].x+0.5f), (int)(parts[parts[i].tmp].y+0.5f), colr, colg, colb, cola);
+							BlendLine({ nx, ny }, { int(parts[parts[i].tmp].x+0.5f), int(parts[parts[i].tmp].y+0.5f) }, RGBA<uint8_t>(colr, colg, colb, cola));
 					}
 				}
 				if(pixel_mode & PSPEC_STICKMAN)
@@ -486,23 +486,23 @@ void Renderer::render_parts()
 					//head
 					if(t==PT_FIGH)
 					{
-						draw_line(nx, ny+2, nx+2, ny, colr, colg, colb, 255);
-						draw_line(nx+2, ny, nx, ny-2, colr, colg, colb, 255);
-						draw_line(nx, ny-2, nx-2, ny, colr, colg, colb, 255);
-						draw_line(nx-2, ny, nx, ny+2, colr, colg, colb, 255);
+						DrawLine({ nx, ny+2 }, { nx+2, ny }, RGB<uint8_t>(colr, colg, colb));
+						DrawLine({ nx+2, ny }, { nx, ny-2 }, RGB<uint8_t>(colr, colg, colb));
+						DrawLine({ nx, ny-2 }, { nx-2, ny }, RGB<uint8_t>(colr, colg, colb));
+						DrawLine({ nx-2, ny }, { nx, ny+2 }, RGB<uint8_t>(colr, colg, colb));
 					}
 					else
 					{
-						draw_line(nx-2, ny+2, nx+2, ny+2, colr, colg, colb, 255);
-						draw_line(nx-2, ny-2, nx+2, ny-2, colr, colg, colb, 255);
-						draw_line(nx-2, ny-2, nx-2, ny+2, colr, colg, colb, 255);
-						draw_line(nx+2, ny-2, nx+2, ny+2, colr, colg, colb, 255);
+						DrawLine({ nx-2, ny+2 }, { nx+2, ny+2 }, RGB<uint8_t>(colr, colg, colb));
+						DrawLine({ nx-2, ny-2 }, { nx+2, ny-2 }, RGB<uint8_t>(colr, colg, colb));
+						DrawLine({ nx-2, ny-2 }, { nx-2, ny+2 }, RGB<uint8_t>(colr, colg, colb));
+						DrawLine({ nx+2, ny-2 }, { nx+2, ny+2 }, RGB<uint8_t>(colr, colg, colb));
 					}
 					//legs
-					draw_line(nx, ny+3, int(cplayer->legs[0]), int(cplayer->legs[1]), legr, legg, legb, 255);
-					draw_line(int(cplayer->legs[0]), int(cplayer->legs[1]), int(cplayer->legs[4]), int(cplayer->legs[5]), legr, legg, legb, 255);
-					draw_line(nx, ny+3, int(cplayer->legs[8]), int(cplayer->legs[9]), legr, legg, legb, 255);
-					draw_line(int(cplayer->legs[8]), int(cplayer->legs[9]), int(cplayer->legs[12]), int(cplayer->legs[13]), legr, legg, legb, 255);
+					DrawLine({                    nx,                  ny+3 }, { int(cplayer->legs[ 0]), int(cplayer->legs[ 1]) }, RGB<uint8_t>(legr, legg, legb));
+					DrawLine({ int(cplayer->legs[0]), int(cplayer->legs[1]) }, { int(cplayer->legs[ 4]), int(cplayer->legs[ 5]) }, RGB<uint8_t>(legr, legg, legb));
+					DrawLine({                    nx,                  ny+3 }, { int(cplayer->legs[ 8]), int(cplayer->legs[ 9]) }, RGB<uint8_t>(legr, legg, legb));
+					DrawLine({ int(cplayer->legs[8]), int(cplayer->legs[9]) }, { int(cplayer->legs[12]), int(cplayer->legs[13]) }, RGB<uint8_t>(legr, legg, legb));
 					if (cplayer->rocketBoots)
 					{
 						for (int leg=0; leg<2; leg++)
@@ -510,18 +510,18 @@ void Renderer::render_parts()
 							int nx = int(cplayer->legs[leg*8+4]), ny = int(cplayer->legs[leg*8+5]);
 							int colr = 255, colg = 0, colb = 255;
 							if (((int)(cplayer->comm)&0x04) == 0x04 || (((int)(cplayer->comm)&0x01) == 0x01 && leg==0) || (((int)(cplayer->comm)&0x02) == 0x02 && leg==1))
-								blendpixel(nx, ny, 0, 255, 0, 255);
+								DrawPixel({ nx, ny }, RGB<uint8_t>(0, 255, 0));
 							else
-								blendpixel(nx, ny, 255, 0, 0, 255);
-							blendpixel(nx+1, ny, colr, colg, colb, 223);
-							blendpixel(nx-1, ny, colr, colg, colb, 223);
-							blendpixel(nx, ny+1, colr, colg, colb, 223);
-							blendpixel(nx, ny-1, colr, colg, colb, 223);
+								DrawPixel({ nx, ny }, RGB<uint8_t>(255, 0, 0));
+							BlendPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb, 223));
+							BlendPixel({ nx-1, ny }, RGBA<uint8_t>(colr, colg, colb, 223));
+							BlendPixel({ nx, ny+1 }, RGBA<uint8_t>(colr, colg, colb, 223));
+							BlendPixel({ nx, ny-1 }, RGBA<uint8_t>(colr, colg, colb, 223));
 
-							blendpixel(nx+1, ny-1, colr, colg, colb, 112);
-							blendpixel(nx-1, ny-1, colr, colg, colb, 112);
-							blendpixel(nx+1, ny+1, colr, colg, colb, 112);
-							blendpixel(nx-1, ny+1, colr, colg, colb, 112);
+							BlendPixel({ nx+1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, 112));
+							BlendPixel({ nx-1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, 112));
+							BlendPixel({ nx+1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, 112));
+							BlendPixel({ nx-1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, 112));
 						}
 					}
 				}
@@ -531,7 +531,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_BLEND)
 				{
-					blendpixel(nx, ny, colr, colg, colb, cola);
+					BlendPixel({ nx, ny }, RGBA<uint8_t>(colr, colg, colb, cola));
 				}
 				if(pixel_mode & PMODE_ADD)
 				{
@@ -541,15 +541,15 @@ void Renderer::render_parts()
 				{
 					video[{ nx, ny }] = RGB<uint8_t>(colr, colg, colb).Pack();
 
-					blendpixel(nx+1, ny, colr, colg, colb, 223);
-					blendpixel(nx-1, ny, colr, colg, colb, 223);
-					blendpixel(nx, ny+1, colr, colg, colb, 223);
-					blendpixel(nx, ny-1, colr, colg, colb, 223);
+					BlendPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb, 223));
+					BlendPixel({ nx-1, ny }, RGBA<uint8_t>(colr, colg, colb, 223));
+					BlendPixel({ nx, ny+1 }, RGBA<uint8_t>(colr, colg, colb, 223));
+					BlendPixel({ nx, ny-1 }, RGBA<uint8_t>(colr, colg, colb, 223));
 
-					blendpixel(nx+1, ny-1, colr, colg, colb, 112);
-					blendpixel(nx-1, ny-1, colr, colg, colb, 112);
-					blendpixel(nx+1, ny+1, colr, colg, colb, 112);
-					blendpixel(nx-1, ny+1, colr, colg, colb, 112);
+					BlendPixel({ nx+1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, 112));
+					BlendPixel({ nx-1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, 112));
+					BlendPixel({ nx+1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, 112));
+					BlendPixel({ nx-1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, 112));
 				}
 				if(pixel_mode & PMODE_GLOW)
 				{
@@ -582,11 +582,11 @@ void Renderer::render_parts()
 						for (y=-3; y<4; y++)
 						{
 							if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2))
-								blendpixel(x+nx, y+ny, colr, colg, colb, 30);
+								BlendPixel({ x+nx, y+ny }, RGBA<uint8_t>(colr, colg, colb, 30));
 							if (abs(x)+abs(y) <=3 && abs(x)+abs(y))
-								blendpixel(x+nx, y+ny, colr, colg, colb, 20);
+								BlendPixel({ x+nx, y+ny }, RGBA<uint8_t>(colr, colg, colb, 20));
 							if (abs(x)+abs(y) == 2)
-								blendpixel(x+nx, y+ny, colr, colg, colb, 10);
+								BlendPixel({ x+nx, y+ny }, RGBA<uint8_t>(colr, colg, colb, 10));
 						}
 					}
 				}
@@ -606,16 +606,16 @@ void Renderer::render_parts()
 				{
 					flicker = float(rng()%20);
 					gradv = flicker + fabs(parts[i].vx)*17 + fabs(sim->parts[i].vy)*17;
-					blendpixel(nx, ny, colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) );
-					blendpixel(nx+1, ny, colr, colg, colb,int( (gradv*2)>255?255:(gradv*2)) );
-					blendpixel(nx-1, ny, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );
-					blendpixel(nx, ny+1, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );
-					blendpixel(nx, ny-1, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );
+					BlendPixel({ nx, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) ));
+					BlendPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb,int( (gradv*2)>255?255:(gradv*2)) ));
+					BlendPixel({ nx-1, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
+					BlendPixel({ nx, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
+					BlendPixel({ nx, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
 					if (gradv>255) gradv=255;
-					blendpixel(nx+1, ny-1, colr, colg, colb, int(gradv));
-					blendpixel(nx-1, ny-1, colr, colg, colb, int(gradv));
-					blendpixel(nx+1, ny+1, colr, colg, colb, int(gradv));
-					blendpixel(nx-1, ny+1, colr, colg, colb, int(gradv));
+					BlendPixel({ nx+1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+					BlendPixel({ nx-1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+					BlendPixel({ nx+1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+					BlendPixel({ nx-1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 					for (x = 1; gradv>0.5; x++) {
 						AddPixel({ nx+x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						AddPixel({ nx-x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
@@ -628,16 +628,16 @@ void Renderer::render_parts()
 				{
 					flicker = float(rng()%20);
 					gradv = flicker + fabs(parts[i].vx)*17 + fabs(parts[i].vy)*17;
-					blendpixel(nx, ny, colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) );
-					blendpixel(nx+1, ny, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );
-					blendpixel(nx-1, ny, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );
-					blendpixel(nx, ny+1, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );
-					blendpixel(nx, ny-1, colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) );
+					BlendPixel({ nx, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) ));
+					BlendPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
+					BlendPixel({ nx-1, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
+					BlendPixel({ nx, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
+					BlendPixel({ nx, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
 					if (gradv>255) gradv=255;
-					blendpixel(nx+1, ny-1, colr, colg, colb, int(gradv));
-					blendpixel(nx-1, ny-1, colr, colg, colb, int(gradv));
-					blendpixel(nx+1, ny+1, colr, colg, colb, int(gradv));
-					blendpixel(nx-1, ny+1, colr, colg, colb, int(gradv));
+					BlendPixel({ nx+1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+					BlendPixel({ nx-1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+					BlendPixel({ nx+1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+					BlendPixel({ nx-1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 					for (x = 1; gradv>0.5; x++) {
 						AddPixel({ nx+x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						AddPixel({ nx-x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
@@ -758,7 +758,7 @@ void Renderer::draw_other() // EMP effect
 		for (j=0; j<YRES; j++)
 			for (i=0; i<XRES; i++)
 			{
-				blendpixel(i, j, r, g, b, a);
+				BlendPixel({ i, j }, RGBA<uint8_t>(r, g, b, a));
 			}
 	}
 }
@@ -778,9 +778,9 @@ void Renderer::draw_grav_zones()
 				for (j=0; j<CELL; j++)//draws the colors
 					for (i=0; i<CELL; i++)
 						if(i == j)
-							blendpixel(x*CELL+i, y*CELL+j, 255, 200, 0, 120);
+							BlendPixel({ x*CELL+i, y*CELL+j }, RGBA<uint8_t>(255, 200, 0, 120));
 						else
-							blendpixel(x*CELL+i, y*CELL+j, 32, 32, 32, 120);
+							BlendPixel({ x*CELL+i, y*CELL+j }, RGBA<uint8_t>(32, 32, 32, 120));
 			}
 		}
 	}
@@ -1054,14 +1054,14 @@ void Renderer::DrawWalls()
 								for (int j = 0; j < CELL; j++)
 									for (int i =0; i < CELL; i++)
 										if (i&j&1)
-											drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
+											DrawBlob({ x*CELL+i, y*CELL+j }, prgb);
 							}
 							else
 							{
 								for (int j = 0; j < CELL; j++)
 									for (int i = 0; i < CELL; i++)
 										if (!(i&j&1))
-											drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
+											DrawBlob({ x*CELL+i, y*CELL+j }, prgb);
 							}
 						}
 						else if (wt == WL_WALLELEC)
@@ -1070,9 +1070,9 @@ void Renderer::DrawWalls()
 								for (int i =0; i < CELL; i++)
 								{
 									if (!((y*CELL+j)%2) && !((x*CELL+i)%2))
-										drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
+										DrawBlob({ x*CELL+i, y*CELL+j }, prgb);
 									else
-										drawblob((x*CELL+i), (y*CELL+j), 0x80, 0x80, 0x80);
+										DrawBlob({ x*CELL+i, y*CELL+j }, 0x808080_rgb);
 								}
 						}
 						else if (wt == WL_EHOLE)
@@ -1081,7 +1081,7 @@ void Renderer::DrawWalls()
 							{
 								for (int j = 0; j < CELL; j++)
 									for (int i = 0; i < CELL; i++)
-										drawblob((x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
+										DrawBlob({ x*CELL+i, y*CELL+j }, 0x242424_rgb);
 								for (int j = 0; j < CELL; j += 2)
 									for (int i = 0; i < CELL; i += 2)
 										// looks bad if drawing black blobs
@@ -1091,30 +1091,30 @@ void Renderer::DrawWalls()
 							{
 								for (int j = 0; j < CELL; j += 2)
 									for (int i = 0; i < CELL; i += 2)
-										drawblob((x*CELL+i), (y*CELL+j), 0x24, 0x24, 0x24);
+										DrawBlob({ x*CELL+i, y*CELL+j }, 0x242424_rgb);
 							}
 						}
 						break;
 					case 1:
 						for (int j = 0; j < CELL; j += 2)
 							for (int i = (j>>1)&1; i < CELL; i += 2)
-								drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
+								DrawBlob({ x*CELL+i, y*CELL+j }, prgb);
 						break;
 					case 2:
 						for (int j = 0; j < CELL; j += 2)
 							for (int i = 0; i < CELL; i+=2)
-								drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
+								DrawBlob({ x*CELL+i, y*CELL+j }, prgb);
 						break;
 					case 3:
 						for (int j = 0; j < CELL; j++)
 							for (int i = 0; i < CELL; i++)
-								drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
+								DrawBlob({ x*CELL+i, y*CELL+j }, prgb);
 						break;
 					case 4:
 						for (int j = 0; j < CELL; j++)
 							for (int i = 0; i < CELL; i++)
 								if (i == j)
-									drawblob((x*CELL+i), (y*CELL+j), prgb.Red, prgb.Green, prgb.Blue);
+									DrawBlob({ x*CELL+i, y*CELL+j }, prgb);
 								else if (i == j+1 || (i == 0 && j == CELL-1))
 									video[{ x * CELL + i, y * CELL + j }] = gc;
 								else

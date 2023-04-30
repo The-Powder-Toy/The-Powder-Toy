@@ -120,11 +120,12 @@ void DirectionSelector::Draw(const ui::Point& screenPos)
 
 	for (auto &point : snapPoints)
 	{
-		g->fillrect(
-			(center.X + point.offset.X) - snapPointRadius,
-			(center.Y + point.offset.Y) - snapPointRadius,
-			snapPointRadius * 2 + 1, snapPointRadius * 2 + 1,
-			snapPointColor.Red, snapPointColor.Green, snapPointColor.Blue, altDown ? (int)(snapPointColor.Alpha / 2) : snapPointColor.Alpha
+		g->BlendFilledRect(
+			RectBetween(
+				center + point.offset - Vec2{ snapPointRadius, snapPointRadius },
+				center + point.offset + Vec2{ snapPointRadius, snapPointRadius }
+			),
+			RGBA<uint8_t>(snapPointColor.Red, snapPointColor.Green, snapPointColor.Blue, altDown ? (int)(snapPointColor.Alpha / 2) : snapPointColor.Alpha)
 		);
 	}
 

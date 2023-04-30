@@ -613,8 +613,12 @@ void Textbox::Draw(const Point& screenPos)
 	Graphics * g = GetGraphics();
 	if(IsFocused())
 	{
-		if(border) g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 255);
-		g->draw_line(screenPos.X+textPosition.X+cursorPositionX, screenPos.Y-2+textPosition.Y+cursorPositionY, screenPos.X+textPosition.X+cursorPositionX, screenPos.Y+9+textPosition.Y+cursorPositionY, 255, 255, 255, 255);
+		if(border)
+			g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(255, 255, 255));
+		g->DrawLine(
+			screenPos + textPosition + Vec2{ cursorPositionX, cursorPositionY-2 },
+			screenPos + textPosition + Vec2{ cursorPositionX, cursorPositionY+9 },
+			RGB<uint8_t>(255, 255, 255));
 	}
 	else
 	{
@@ -622,7 +626,8 @@ void Textbox::Draw(const Point& screenPos)
 		{
 			g->BlendText(screenPos + textPosition, placeHolder, RGBA<uint8_t>(textColour.Red, textColour.Green, textColour.Blue, 170));
 		}
-		if(border) g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 160, 160, 160, 255);
+		if(border)
+			g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(160, 160, 160));
 	}
 	if(Appearance.icon)
 		g->draw_icon(screenPos.X+iconPosition.X, screenPos.Y+iconPosition.Y, Appearance.icon);

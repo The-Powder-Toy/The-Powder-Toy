@@ -479,26 +479,26 @@ void FontEditor::OnDraw()
 		std::array<std::array<char, MAX_WIDTH>, FONT_H> const &pixels = fontPixels[currentChar];
 
 		int areaWidth = 8 + width * FONT_SCALE + 8;
-		g->fillrect(0, 0, areaWidth, 8 + FONT_H * FONT_SCALE + 4 + FONT_H + 4, bgR, bgG, bgB, 255);
+		g->DrawFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ areaWidth, 8 + FONT_H * FONT_SCALE + 4 + FONT_H + 4 }), RGB<uint8_t>(bgR, bgG, bgB));
 		for(int j = 0; j < FONT_H; j++)
 			for(int i = 0; i < width; i++)
-				g->fillrect(8 + i * FONT_SCALE, 8 + j * FONT_SCALE, FONT_SCALE - grid, FONT_SCALE - grid, fgR, fgG, fgB, pixels[j][i] * 255 / 3);
+				g->BlendFilledRect(RectSized(Vec2{ 8 + i * FONT_SCALE, 8 + j * FONT_SCALE }, Vec2{ FONT_SCALE - grid, FONT_SCALE - grid }), RGBA<uint8_t>(fgR, fgG, fgB, pixels[j][i] * 255 / 3));
 
 		for(int j = 0; j < FONT_H; j++)
 			for(int i = 0; i < width; i++)
-				g->blendpixel(8 + i, 8 + FONT_H * FONT_SCALE + 4 + j, fgR, fgG, fgB, pixels[j][i] * 255 / 3);
+				g->BlendPixel({ 8 + i, 8 + FONT_H * FONT_SCALE + 4 + j }, RGBA<uint8_t>(fgR, fgG, fgB, pixels[j][i] * 255 / 3));
 
 
 		if(rulers)
 		{
-			g->draw_line(0, 7 + 0 * FONT_SCALE , areaWidth - 1, 7 + 0 * FONT_SCALE, 128, 128, 128, 255);
-			g->draw_line(0, 7 + 2 * FONT_SCALE , areaWidth - 1, 7 + 2 * FONT_SCALE, 128, 128, 128, 255);
-			g->draw_line(0, 7 + 4 * FONT_SCALE , areaWidth - 1, 7 + 4 * FONT_SCALE, 128, 128, 128, 255);
-			g->draw_line(0, 7 + 9 * FONT_SCALE , areaWidth - 1, 7 + 9 * FONT_SCALE, 128, 128, 128, 255);
-			g->draw_line(0, 7 + 12 * FONT_SCALE , areaWidth - 1, 7 + 12 * FONT_SCALE, 128, 128, 128, 255);
+			g->DrawLine({ 0, 7 + 0 * FONT_SCALE }, { areaWidth - 1, 7 + 0 * FONT_SCALE }, RGB<uint8_t>(128, 128, 128));
+			g->DrawLine({ 0, 7 + 2 * FONT_SCALE }, { areaWidth - 1, 7 + 2 * FONT_SCALE }, RGB<uint8_t>(128, 128, 128));
+			g->DrawLine({ 0, 7 + 4 * FONT_SCALE }, { areaWidth - 1, 7 + 4 * FONT_SCALE }, RGB<uint8_t>(128, 128, 128));
+			g->DrawLine({ 0, 7 + 9 * FONT_SCALE }, { areaWidth - 1, 7 + 9 * FONT_SCALE }, RGB<uint8_t>(128, 128, 128));
+			g->DrawLine({ 0, 7 + 12 * FONT_SCALE }, { areaWidth - 1, 7 + 12 * FONT_SCALE }, RGB<uint8_t>(128, 128, 128));
 
-			g->draw_line(7, 8, 7, 7 + FONT_H * FONT_SCALE, 128, 128, 128, 255);
-			g->draw_line(7 + width * FONT_SCALE, 8, 7 + width * FONT_SCALE, 7 + FONT_H * FONT_SCALE, 128, 128, 128, 255);
+			g->DrawLine({ 7, 8 }, { 7, 7 + FONT_H * FONT_SCALE }, RGB<uint8_t>(128, 128, 128));
+			g->DrawLine({ 7 + width * FONT_SCALE, 8}, { 7 + width * FONT_SCALE, 7 + FONT_H * FONT_SCALE }, RGB<uint8_t>(128, 128, 128));
 		}
 	}
 	else

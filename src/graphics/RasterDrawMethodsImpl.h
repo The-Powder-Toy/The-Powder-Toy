@@ -400,40 +400,4 @@ String::const_iterator RasterDrawMethods<Derived>::TextFit(String const &str, in
 	return str.end();
 }
 
-template<typename Derived>
-void RasterDrawMethods<Derived>::blendpixel(int x, int y, int r, int g, int b, int a)
-{
-	if (a == 0xFF)
-		DrawPixel(Vec2(x, y), RGB<uint8_t>(r, g, b));
-	else
-		BlendPixel(Vec2(x, y), RGBA<uint8_t>(r, g, b, a));
-}
-
-template<typename Derived>
-void RasterDrawMethods<Derived>::draw_line(int x1, int y1, int x2, int y2, int r, int g, int b, int a)
-{
-	if (a == 0xFF)
-		DrawLine(Vec2(x1, y1), Vec2(x2, y2), RGB<uint8_t>(r, g, b));
-	else
-		BlendLine(Vec2(x1, y1), Vec2(x2, y2), RGBA<uint8_t>(r, g, b, a));
-}
-
-template<typename Derived>
-void RasterDrawMethods<Derived>::drawrect(int x, int y, int w, int h, int r, int g, int b, int a)
-{
-	if (a == 0xFF)
-		DrawRect(RectSized(Vec2(x, y), Vec2(w, h)), RGB<uint8_t>(r, g, b));
-	else
-		BlendRect(RectSized(Vec2(x, y), Vec2(w, h)), RGBA<uint8_t>(r, g, b, a));
-}
-
-template<typename Derived>
-void RasterDrawMethods<Derived>::fillrect(int x, int y, int w, int h, int r, int g, int b, int a)
-{
-	if (a == 0xFF)
-		DrawFilledRect(RectSized(Vec2(x, y), Vec2(w, h)), RGB<uint8_t>(r, g, b));
-	else
-		BlendFilledRect(RectSized(Vec2(x, y), Vec2(w, h)), RGBA<uint8_t>(r, g, b, a));
-}
-
 #undef clipRect

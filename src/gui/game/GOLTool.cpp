@@ -186,7 +186,7 @@ void GOLWindow::OnDraw()
 	Graphics * g = GetGraphics();
 
 	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
-	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);
+	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(200, 200, 200));
 
 	int width = Size.X - 60;
 	for (int xx = 0; xx < width; ++xx)
@@ -197,7 +197,7 @@ void GOLWindow::OnDraw()
 			auto rr = int(highColour.Red * (1.f - f) + lowColour.Red * f);
 			auto gg = int(highColour.Green * (1.f - f) + lowColour.Green * f);
 			auto bb = int(highColour.Blue * (1.f - f) + lowColour.Blue * f);
-			g->blendpixel(Position.X + xx + 30, Position.Y + yy + 67, rr, gg, bb, 255);
+			g->DrawPixel(Position + Vec2{ xx + 30, yy + 67 }, RGB<uint8_t>(rr, gg, bb));
 		}
 	}
 }

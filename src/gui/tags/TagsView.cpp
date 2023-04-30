@@ -53,7 +53,7 @@ void TagsView::OnDraw()
 {
 	Graphics * g = GetGraphics();
 	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
-	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
+	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(255, 255, 255));
 }
 
 void TagsView::NotifyTagsChanged(TagsModel * sender)

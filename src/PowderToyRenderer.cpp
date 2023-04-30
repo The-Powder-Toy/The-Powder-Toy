@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		int w = Graphics::TextSize("Save file invalid").X + 15, x = (XRES-w)/2, y = (YRES-24)/2;
-		ren->drawrect(x, y, w, 24, 192, 192, 192, 255);
+		ren->DrawRect(RectSized(Vec2{ x, y }, Vec2{ w, 24 }), RGB<uint8_t>(192, 192, 192));
 		ren->BlendText({ x+8, y+8 }, "Save file invalid", RGBA<uint8_t>(192, 192, 240, 255));
 	}
 

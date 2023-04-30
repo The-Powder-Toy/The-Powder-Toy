@@ -3836,7 +3836,14 @@ int LuaScriptInterface::graphics_drawLine(lua_State * l)
 	if (a<0) a = 0;
 	else if (a>255) a = 255;
 
-	luacon_g->draw_line(x1, y1, x2, y2, r, g, b, a);
+	if (a == 255)
+	{
+		luacon_g->DrawLine({ x1, y1 }, { x2, y2 }, RGB<uint8_t>(r, g, b));
+	}
+	else
+	{
+		luacon_g->BlendLine({ x1, y1 }, { x2, y2 }, RGBA<uint8_t>(r, g, b, a));
+	}
 	return 0;
 }
 
@@ -3860,7 +3867,14 @@ int LuaScriptInterface::graphics_drawRect(lua_State * l)
 	if (a<0) a = 0;
 	else if (a>255) a = 255;
 
-	luacon_g->drawrect(x, y, width, height, r, g, b, a);
+	if (a == 255)
+	{
+		luacon_g->DrawRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGB<uint8_t>(r, g, b));
+	}
+	else
+	{
+		luacon_g->BlendRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGBA<uint8_t>(r, g, b, a));
+	}
 	return 0;
 }
 
@@ -3884,7 +3898,14 @@ int LuaScriptInterface::graphics_fillRect(lua_State * l)
 	if (a<0) a = 0;
 	else if (a>255) a = 255;
 
-	luacon_g->fillrect(x, y, width, height, r, g, b, a);
+	if (a == 255)
+	{
+		luacon_g->DrawFilledRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGB<uint8_t>(r, g, b));
+	}
+	else
+	{
+		luacon_g->BlendFilledRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGBA<uint8_t>(r, g, b, a));
+	}
 	return 0;
 }
 

@@ -104,7 +104,6 @@ void Slider::SetSteps(int steps)
 void Slider::Draw(const Point& screenPos)
 {
 	Graphics * g = GetGraphics();
-	//g->drawrect(screenPos.X, screenPos.Y, Size.X, Size.Y, 255, 255, 255, 255);
 
 	if (bgGradient.size())
 	{
@@ -112,13 +111,12 @@ void Slider::Draw(const Point& screenPos)
 		{
 			for (int i = 3; i < Size.X-7; i++)
 			{
-				RGB<uint8_t> color = bgGradient[i - 3];
-				g->blendpixel(screenPos.X+i+2, screenPos.Y+j+2, color.Red, color.Green, color.Blue, 255);
+				g->DrawPixel(screenPos + Vec2{ i + 2, j + 2 }, bgGradient[i - 3]);
 			}
 		}
 	}
 
-	g->drawrect(screenPos.X+3, screenPos.Y+3, Size.X-6, Size.Y-6, 255, 255, 255, 255);
+	g->DrawRect(RectSized(screenPos + Vec2{ 3, 3 }, Size - Vec2{ 6, 6 }), RGB<uint8_t>(255, 255, 255));
 
 	auto fPosition = float(sliderPosition);
 	auto fSize = float(Size.X-6);
@@ -128,8 +126,8 @@ void Slider::Draw(const Point& screenPos)
 	auto sliderX = int(fSliderX);
 	sliderX += 3;
 
-	g->fillrect(screenPos.X+sliderX-2, screenPos.Y+1, 4, Size.Y-2, 20, 20, 20, 255);
-	g->drawrect(screenPos.X+sliderX-2, screenPos.Y+1, 4, Size.Y-2, 200, 200, 200, 255);
+	g->DrawFilledRect(RectSized(screenPos + Vec2{ sliderX-2, 1 }, Vec2{ 4, Size.Y-2 }), RGB<uint8_t>(20, 20, 20));
+	g->DrawRect(RectSized(screenPos + Vec2{ sliderX-2, 1 }, Vec2{ 4, Size.Y-2 }), RGB<uint8_t>(200, 200, 200));
 }
 
 } /* namespace ui */

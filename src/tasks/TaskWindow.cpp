@@ -87,9 +87,9 @@ void TaskWindow::OnDraw()
 {
 	Graphics * g = GetGraphics();
 	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
-	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 255, 255, 255, 255);
+	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(255, 255, 255));
 
-	g->draw_line(Position.X, Position.Y + Size.Y-17, Position.X + Size.X - 1, Position.Y + Size.Y-17, 255, 255, 255, 255);
+	g->DrawLine(Position + Vec2{ 0, Size.Y-17 }, Position + Vec2{ Size.X - 1, Size.Y-17 }, RGB<uint8_t>(255, 255, 255));
 
 	ui::Colour progressBarColour = style::Colour::WarningTitle;
 
@@ -101,7 +101,7 @@ void TaskWindow::OnDraw()
 				progress = 100;
 			float size = float(Size.X-4)*(float(progress)/100.0f); // TIL...
 			size = std::min(std::max(size, 0.0f), float(Size.X-4));
-			g->fillrect(Position.X + 2, Position.Y + Size.Y-15, int(size), 13, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
+			g->DrawFilledRect(RectSized(Position + Vec2{ 2, Size.Y-15 }, Vec2{ int(size), 13 }), progressBarColour.NoAlpha());
 		}
 	} else {
 		int size = 40, rsize = 0;
@@ -111,10 +111,10 @@ void TaskWindow::OnDraw()
 			size = (Size.X-4)-int(position)+1;
 			rsize = 40-size;
 		}
-		g->fillrect(Position.X + 2 + int(position), Position.Y + Size.Y-15, size, 13, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
+		g->DrawFilledRect(RectSized(Position + Vec2{ 2 + int(position), Size.Y-15 }, Vec2{ size, 13 }), progressBarColour.NoAlpha());
 		if(rsize)
 		{
-			g->fillrect(Position.X + 2, Position.Y + Size.Y-15, rsize, 13, progressBarColour.Red, progressBarColour.Green, progressBarColour.Blue, 255);
+			g->DrawFilledRect(RectSized(Position + Vec2{ 2, Size.Y-15 }, Vec2{ rsize, 13 }), progressBarColour.NoAlpha());
 		}
 	}
 	g->BlendText(Position + Vec2{ ((Size.X-(Graphics::TextSize(progressStatus).X - 1))/2), Size.Y-13 }, progressStatus, progress<50 ? RGBA<uint8_t>(255, 255, 255, 255) : RGBA<uint8_t>(0, 0, 0, 255));

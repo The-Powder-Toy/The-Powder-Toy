@@ -206,7 +206,7 @@ void SearchController::OpenSave(int saveID)
 {
 	delete activePreview;
 	Graphics * g = searchView->GetGraphics();
-	g->fillrect(XRES/3, WINDOWH-20, XRES/3, 20, 0, 0, 0, 150); //dim the "Page X of Y" a little to make the CopyTextButton more noticeable
+	g->BlendFilledRect(RectSized(Vec2{ XRES/3, WINDOWH-20 }, Vec2{ XRES/3, 20 }), RGBA<uint8_t>(0, 0, 0, 150)); //dim the "Page X of Y" a little to make the CopyTextButton more noticeable
 	activePreview = new PreviewController(saveID, 0, instantOpen, [this] { OpenSaveDone(); });
 	activePreview->GetView()->MakeActiveWindow();
 }
@@ -215,7 +215,7 @@ void SearchController::OpenSave(int saveID, int saveDate)
 {
 	delete activePreview;
 	Graphics * g = searchView->GetGraphics();
-	g->fillrect(XRES/3, WINDOWH-20, XRES/3, 20, 0, 0, 0, 150); //dim the "Page X of Y" a little to make the CopyTextButton more noticeable
+	g->BlendFilledRect(RectSized(Vec2{ XRES/3, WINDOWH-20 }, Vec2{ XRES/3, 20 }), RGBA<uint8_t>(0, 0, 0, 150)); //dim the "Page X of Y" a little to make the CopyTextButton more noticeable
 	activePreview = new PreviewController(saveID, saveDate, instantOpen, [this] { OpenSaveDone(); });
 	activePreview->GetView()->MakeActiveWindow();
 }

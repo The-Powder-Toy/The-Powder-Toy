@@ -21,13 +21,12 @@ void DebugLines::Draw()
 		ui::Point drawPoint1 = controller->PointTranslate(view->GetLineStartCoords()), drawPoint2 = controller->PointTranslate(view->GetLineFinishCoords());
 		if (view->GetDrawSnap())
 			drawPoint2 = view->lineSnapCoords(drawPoint1, drawPoint2);
-		//g->draw_line(drawPoint1.X, drawPoint1.Y, drawPoint2.X, drawPoint2.Y, 255, 0, 255, 255);
 
-		g->draw_line(0, drawPoint1.Y, XRES, drawPoint1.Y, 255, 255, 255, 120);
-		g->draw_line(drawPoint1.X, 0, drawPoint1.X, YRES, 255, 255, 255, 120);
+		g->BlendLine({ 0, drawPoint1.Y }, { XRES, drawPoint1.Y }, RGBA<uint8_t>(255, 255, 255, 120));
+		g->BlendLine({ drawPoint1.X, 0 }, { drawPoint1.X, YRES }, RGBA<uint8_t>(255, 255, 255, 120));
 
-		g->draw_line(0, drawPoint2.Y, XRES, drawPoint2.Y, 255, 255, 255, 120);
-		g->draw_line(drawPoint2.X, 0, drawPoint2.X, YRES, 255, 255, 255, 120);
+		g->BlendLine({ 0, drawPoint2.Y }, { XRES, drawPoint2.Y }, RGBA<uint8_t>(255, 255, 255, 120));
+		g->BlendLine({ drawPoint2.X, 0 }, { drawPoint2.X, YRES }, RGBA<uint8_t>(255, 255, 255, 120));
 
 		String info;
 		info = String::Build(drawPoint2.X, " x ", drawPoint2.Y);

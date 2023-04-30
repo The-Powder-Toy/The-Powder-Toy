@@ -59,5 +59,5 @@ void ErrorMessage::OnDraw()
 	Graphics * g = GetGraphics();
 
 	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
-	g->drawrect(Position.X, Position.Y, Size.X, Size.Y, 200, 200, 200, 255);
+	g->DrawRect(RectSized(Position, Size), RGB<uint8_t>(200, 200, 200));
 }
