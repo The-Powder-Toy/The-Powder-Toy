@@ -25,7 +25,7 @@ Thanks
 * Skresanov Savely
 * cracker64
 * Catelite
-* Bryan Hoyle
+* Victoria Hoyle
 * Nathan Cousins
 * jacksonmj
 * Felix Wallin
