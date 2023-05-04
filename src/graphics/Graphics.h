@@ -22,7 +22,6 @@ class VideoBuffer: public RasterDrawMethods<VideoBuffer>
 	friend struct RasterDrawMethods<VideoBuffer>;
 
 public:
-	VideoBuffer(VideoBuffer const &) = default;
 	VideoBuffer(pixel const *data, Vec2<int> size);
 	VideoBuffer(pixel const *data, Vec2<int> size, size_t rowStride);
 	VideoBuffer(Vec2<int> size);

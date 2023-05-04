@@ -1,7 +1,10 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
 #include <limits>
+#include <type_traits>
+#include <utility>
 
 #include "common/Vec2.h"
 
@@ -54,6 +57,24 @@ struct yExtent: extentStorage<Extent>
 	using extentStorage<Extent>::extentStorage;
 };
 
+template<typename T>
+struct baseStorage
+{
+	using type = T;
+};
+
+template<typename T>
+struct baseStorage<T &>
+{
+	using type = std::reference_wrapper<T>;
+};
+
+template<typename T>
+struct baseStorage<T &&>
+{
+	using type = std::reference_wrapper<T>;
+};
+
 // A class that contains some container T and lets you index into it as if it
 // were a 2D array of size Width x Height, in row-major order.
 template<typename T, size_t Width = DynamicExtent, size_t Height = DynamicExtent>
@@ -73,25 +94,23 @@ class PlaneAdapter: xExtent<Width>, yExtent<Height>
 		return yExtent<Height>::getExtent();
 	}
 
+	std::remove_reference_t<T> &getBase()
+	{
+		return Base;
+	}
+
+	std::remove_reference_t<T> const &getBase() const
+	{
+		return Base;
+	}
+
 public:
-	T Base;
+	typename baseStorage<T>::type Base;
 
 	PlaneAdapter():
 		xExtent<Width>(0),
 		yExtent<Height>(0),
 		Base()
-	{}
-
-	PlaneAdapter(PlaneAdapter const &) = default;
-
-	PlaneAdapter(PlaneAdapter &&) = default;
-
-	// PlaneAdapter<T> can be constructed from (Vec2, T &&)
-	// PlaneAdapter<T &> can be constructed from (Vec2, T &)
-	PlaneAdapter(Vec2<int> size, T &&base):
-		xExtent<Width>(size.X),
-		yExtent<Height>(size.Y),
-		Base(std::forward<T>(base))
 	{}
 
 	template<typename... Args>
@@ -101,9 +120,12 @@ public:
 		Base(getWidth() * getHeight(), std::forward<Args>(args)...)
 	{}
 
-	PlaneAdapter &operator=(PlaneAdapter const &) = default;
-
-	PlaneAdapter &operator=(PlaneAdapter &&) = default;
+	template<typename... Args>
+	PlaneAdapter(Vec2<int> size, std::in_place_t, Args&&... args):
+		xExtent<Width>(size.X),
+		yExtent<Height>(size.Y),
+		Base(std::forward<Args>(args)...)
+	{}
 
 	Vec2<int> Size() const
 	{
@@ -118,31 +140,31 @@ public:
 
 	iterator RowIterator(Vec2<int> p)
 	{
-		return std::begin(Base) + (p.X + p.Y * getWidth());
+		return std::begin(getBase()) + (p.X + p.Y * getWidth());
 	}
 
 	const_iterator RowIterator(Vec2<int> p) const
 	{
-		return std::begin(Base) + (p.X + p.Y * getWidth());
+		return std::begin(getBase()) + (p.X + p.Y * getWidth());
 	}
 
 	value_type *data()
 	{
-		return std::data(Base);
+		return std::data(getBase());
 	}
 
 	value_type const *data() const
 	{
-		return std::data(Base);
+		return std::data(getBase());
 	}
 
 	value_type &operator[](Vec2<int> p)
 	{
-		return Base[p.X + p.Y * getWidth()];
+		return getBase()[p.X + p.Y * getWidth()];
 	}
 
 	value_type const &operator[](Vec2<int> p) const
 	{
-		return Base[p.X + p.Y * getWidth()];
+		return getBase()[p.X + p.Y * getWidth()];
 	}
 };
