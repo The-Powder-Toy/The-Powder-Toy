@@ -25,7 +25,7 @@ inline ByteString IntroText()
 	      "Use 'H' to toggle the HUD. Use 'D' to toggle debug mode in the HUD.\n"
 	      "\n"
 	      "Contributors: \bgStanislaw K Skowronek (Designed the original Powder Toy),\n"
-	      "\bgSimon Robertshaw, Skresanov Savely, cracker64, Catelite, Bryan Hoyle, Nathan Cousins, jacksonmj,\n"
+	      "\bgSimon Robertshaw, Skresanov Savely, cracker64, Catelite, Victoria Hoyle, Nathan Cousins, jacksonmj,\n"
 	      "\bgFelix Wallin, Lieuwe Mosch, Anthony Boot, Me4502, MaksProg, jacob1, mniip, LBPHacker\n"
 	      "\n";
 	if constexpr (BETA)
