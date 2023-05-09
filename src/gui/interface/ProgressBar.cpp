@@ -46,7 +46,7 @@ void ProgressBar::Draw(const Point & screenPos)
 
 	ui::Colour progressBarColour = style::Colour::WarningTitle;
 
-	g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
+	g->DrawRect(RectSized(screenPos, Size), 0xFFFFFF_rgb);
 
 	if(progress!=-1)
 	{
