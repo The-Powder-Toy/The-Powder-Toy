@@ -82,6 +82,26 @@ bool DirectoryExists(ByteString directory)
 	}
 }
 
+bool IsLink(ByteString path)
+{
+	struct stat s;
+	if (stat(path.c_str(), &s) == 0)
+	{
+		if (s.st_mode & S_IFLNK)
+		{
+			return true; // Is path
+		}
+		else
+		{
+			return false; // Is file or something else
+		}
+	}
+	else
+	{
+		return false; // Doesn't exist
+	}
+}
+
 bool RemoveFile(ByteString filename)
 {
 	return remove(filename.c_str()) == 0;

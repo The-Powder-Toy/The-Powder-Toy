@@ -11,18 +11,18 @@
 #include <shlwapi.h>
 #include <windows.h>
 #include <crtdbg.h>
+#include <memory>
 
 namespace Platform
 {
 ByteString GetCwd()
 {
 	ByteString cwd;
-	wchar_t *cwdPtr = _wgetcwd(NULL, 0);
+	auto cwdPtr = std::unique_ptr<wchar_t, decltype(&free)>(_wgetcwd(NULL, 0), free);
 	if (cwdPtr)
 	{
-		cwd = WinNarrow(cwdPtr);
+		cwd = WinNarrow(cwdPtr.get());
 	}
-	free(cwdPtr);
 	return cwd;
 }
 
@@ -47,7 +47,7 @@ long unsigned int GetTime()
 bool Stat(ByteString filename)
 {
 	struct _stat s;
-	if (_stat(filename.c_str(), &s) == 0)
+	if (_wstat(WinWiden(filename).c_str(), &s) == 0)
 	{
 		return true; // Something exists, be it a file, directory, link, etc.
 	}
@@ -60,7 +60,7 @@ bool Stat(ByteString filename)
 bool FileExists(ByteString filename)
 {
 	struct _stat s;
-	if (_stat(filename.c_str(), &s) == 0)
+	if (_wstat(WinWiden(filename).c_str(), &s) == 0)
 	{
 		if(s.st_mode & S_IFREG)
 		{
@@ -80,9 +80,29 @@ bool FileExists(ByteString filename)
 bool DirectoryExists(ByteString directory)
 {
 	struct _stat s;
-	if (_stat(directory.c_str(), &s) == 0)
+	if (_wstat(WinWiden(directory).c_str(), &s) == 0)
 	{
 		if(s.st_mode & S_IFDIR)
+		{
+			return true; // Is directory
+		}
+		else
+		{
+			return false; // Is file or something else
+		}
+	}
+	else
+	{
+		return false; // Doesn't exist
+	}
+}
+
+bool IsLink(ByteString path)
+{
+	struct _stat s;
+	if (_wstat(WinWiden(path).c_str(), &s) == 0)
+	{
+		if (GetFileAttributesW(WinWiden(path).c_str()) & FILE_ATTRIBUTE_REPARSE_POINT)
 		{
 			return true; // Is directory
 		}

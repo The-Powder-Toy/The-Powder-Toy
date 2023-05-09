@@ -17,6 +17,7 @@ namespace Platform
 	bool Stat(ByteString filename);
 	bool FileExists(ByteString filename);
 	bool DirectoryExists(ByteString directory);
+	bool IsLink(ByteString path);
 	/**
 	 * @return true on success
 	 */

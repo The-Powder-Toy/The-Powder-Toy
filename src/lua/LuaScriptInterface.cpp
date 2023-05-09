@@ -4002,6 +4002,14 @@ int LuaScriptInterface::graphics_setClipRect(lua_State * l)
 	return 4;
 }
 
+static int fsIsLink(lua_State * l)
+{
+	auto dirname = tpt_lua_checkByteString(l, 1);
+	bool ret = Platform::IsLink(dirname);
+	lua_pushboolean(l, ret);
+	return 1;
+}
+
 void LuaScriptInterface::initFileSystemAPI()
 {
 	//Methods
@@ -4010,6 +4018,7 @@ void LuaScriptInterface::initFileSystemAPI()
 		{"exists", fileSystem_exists},
 		{"isFile", fileSystem_isFile},
 		{"isDirectory", fileSystem_isDirectory},
+		{"isLink", fsIsLink},
 		{"makeDirectory", fileSystem_makeDirectory},
 		{"removeDirectory", fileSystem_removeDirectory},
 		{"removeFile", fileSystem_removeFile},
