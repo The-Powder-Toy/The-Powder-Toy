@@ -27,10 +27,10 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	GameSave * gameSave = NULL;
+	std::unique_ptr<GameSave> gameSave;
 	try
 	{
-		gameSave = new GameSave(fileData, false);
+		gameSave = std::make_unique<GameSave>(fileData, false);
 	}
 	catch (ParseException &e)
 	{
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
 	if (gameSave)
 	{
-		sim->Load(gameSave, true);
+		sim->Load(gameSave.get(), true);
 
 		//Render save
 		ren->decorations_enable = true;

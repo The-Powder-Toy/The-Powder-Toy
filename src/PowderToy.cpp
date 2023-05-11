@@ -415,11 +415,10 @@ int main(int argc, char * argv[])
 					}
 					else
 					{
-						SaveFile * newFile = new SaveFile(openArg.value());
-						GameSave * newSave = new GameSave(std::move(gameSaveData));
-						newFile->SetGameSave(newSave);
-						gameController->LoadSaveFile(newFile);
-						delete newFile;
+						auto newFile = std::make_unique<SaveFile>(openArg.value());
+						auto newSave = std::make_unique<GameSave>(std::move(gameSaveData));
+						newFile->SetGameSave(std::move(newSave));
+						gameController->LoadSaveFile(std::move(newFile));
 					}
 
 				}
@@ -463,17 +462,16 @@ int main(int argc, char * argv[])
 				}
 				int saveId = saveIdPart.ToNumber<int>();
 
-				SaveInfo * newSave = Client::Ref().GetSave(saveId, 0);
+				auto newSave = Client::Ref().GetSave(saveId, 0);
 				if (!newSave)
 					throw std::runtime_error("Could not load save info");
 				auto saveData = Client::Ref().GetSaveData(saveId, 0);
 				if (!saveData.size())
 					throw std::runtime_error(("Could not load save\n" + Client::Ref().GetLastError()).ToUtf8());
-				GameSave * newGameSave = new GameSave(std::move(saveData));
-				newSave->SetGameSave(newGameSave);
+				auto newGameSave = std::make_unique<GameSave>(std::move(saveData));
+				newSave->SetGameSave(std::move(newGameSave));
 
-				gameController->LoadSave(newSave);
-				delete newSave;
+				gameController->LoadSave(std::move(newSave));
 			}
 			catch (std::exception & e)
 			{

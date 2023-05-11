@@ -415,7 +415,7 @@ void PreviewView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ct
 
 void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
-	SaveInfo * save = sender->GetSaveInfo();
+	auto *save = sender->GetSaveInfo();
 	savePreview = nullptr;
 	if(save)
 	{

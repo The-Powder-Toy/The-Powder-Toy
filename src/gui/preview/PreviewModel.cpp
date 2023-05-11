@@ -15,7 +15,6 @@
 PreviewModel::PreviewModel():
 	doOpen(false),
 	canOpen(true),
-	saveInfo(NULL),
 	saveData(NULL),
 	saveComments(NULL),
 	commentBoxEnabled(false),
@@ -27,7 +26,6 @@ PreviewModel::PreviewModel():
 
 PreviewModel::~PreviewModel()
 {
-	delete saveInfo;
 	delete saveData;
 	ClearComments();
 }
@@ -65,11 +63,7 @@ void PreviewModel::UpdateSave(int saveID, int saveDate)
 	this->saveID = saveID;
 	this->saveDate = saveDate;
 
-	if (saveInfo)
-	{
-		delete saveInfo;
-		saveInfo = NULL;
-	}
+	saveInfo.reset();
 	if (saveData)
 	{
 		delete saveData;
@@ -120,9 +114,14 @@ bool PreviewModel::GetCanOpen()
 	return canOpen;
 }
 
-SaveInfo * PreviewModel::GetSaveInfo()
+const SaveInfo *PreviewModel::GetSaveInfo() const
 {
-	return saveInfo;
+	return saveInfo.get();
+}
+
+std::unique_ptr<SaveInfo> PreviewModel::TakeSaveInfo()
+{
+	return std::move(saveInfo);
 }
 
 int PreviewModel::GetCommentsPageNum()
@@ -173,10 +172,10 @@ void PreviewModel::OnSaveReady()
 	commentsTotal = saveInfo->Comments;
 	try
 	{
-		GameSave *gameSave = new GameSave(*saveData);
+		auto gameSave = std::make_unique<GameSave>(*saveData);
 		if (gameSave->fromNewerVersion)
 			new ErrorMessage("This save is from a newer version", "Please update TPT in game or at https://powdertoy.co.uk");
-		saveInfo->SetGameSave(gameSave);
+		saveInfo->SetGameSave(std::move(gameSave));
 	}
 	catch(ParseException &e)
 	{
@@ -204,7 +203,7 @@ void PreviewModel::ClearComments()
 
 bool PreviewModel::ParseSaveInfo(ByteString &saveInfoResponse)
 {
-	delete saveInfo;
+	saveInfo.reset();
 
 	try // how does this differ from Client::GetSave?
 	{
@@ -232,13 +231,13 @@ bool PreviewModel::ParseSaveInfo(ByteString &saveInfoResponse)
 		for (Json::UInt j = 0; j < tagsArray.size(); j++)
 			tempTags.push_back(tagsArray[j].asString());
 
-		saveInfo = new SaveInfo(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp,
+		auto newSaveInfo = std::make_unique<SaveInfo>(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp,
 		                        tempScoreDown, tempMyScore, tempUsername, tempName,
 		                        tempDescription, tempPublished, tempTags);
-		saveInfo->Comments = tempComments;
-		saveInfo->Favourite = tempFavourite;
-		saveInfo->Views = tempViews;
-		saveInfo->Version = tempVersion;
+		newSaveInfo->Comments = tempComments;
+		newSaveInfo->Favourite = tempFavourite;
+		newSaveInfo->Views = tempViews;
+		newSaveInfo->Version = tempVersion;
 
 		// This is a workaround for a bug on the TPT server where the wrong 404 save is returned
 		// Redownload the .cps file for a fixed version of the 404 save
@@ -249,13 +248,13 @@ bool PreviewModel::ParseSaveInfo(ByteString &saveInfoResponse)
 			saveDataDownload = std::make_unique<http::Request>(ByteString::Build(STATICSCHEME, STATICSERVER, "/2157797.cps"));
 			saveDataDownload->Start();
 		}
-		return true;
+		saveInfo = std::move(newSaveInfo);
 	}
 	catch (std::exception &e)
 	{
-		saveInfo = NULL;
 		return false;
 	}
+	return true;
 }
 
 bool PreviewModel::ParseComments(ByteString &commentsResponse)

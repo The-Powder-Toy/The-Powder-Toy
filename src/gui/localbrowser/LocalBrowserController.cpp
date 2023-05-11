@@ -4,6 +4,8 @@
 #include "LocalBrowserView.h"
 
 #include "client/Client.h"
+#include "client/GameSave.h"
+#include "client/SaveFile.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "tasks/TaskWindow.h"
 #include "tasks/Task.h"
@@ -25,14 +27,14 @@ LocalBrowserController::LocalBrowserController(std::function<void ()> onDone_):
 	browserModel->UpdateSavesList(1);
 }
 
-void LocalBrowserController::OpenSave(SaveFile * save)
+void LocalBrowserController::OpenSave(int index)
 {
-	browserModel->SetSave(save);
+	browserModel->OpenSave(index);
 }
 
-SaveFile * LocalBrowserController::GetSave()
+std::unique_ptr<SaveFile> LocalBrowserController::TakeSave()
 {
-	return browserModel->GetSave();
+	return browserModel->TakeSave();
 }
 
 void LocalBrowserController::RemoveSelected()
@@ -105,7 +107,7 @@ void LocalBrowserController::SetPageRelative(int offset)
 
 void LocalBrowserController::Update()
 {
-	if(browserModel->GetSave())
+	if (browserModel->GetSave())
 	{
 		Exit();
 	}

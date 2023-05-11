@@ -41,12 +41,8 @@ HistoryEntry::~HistoryEntry()
 }
 
 GameModel::GameModel():
-	clipboard(NULL),
-	placeSave(NULL),
 	activeMenu(-1),
 	currentBrush(0),
-	currentSave(NULL),
-	currentFile(NULL),
 	currentUser(0, ""),
 	toolStrength(1.0f),
 	historyPosition(0),
@@ -187,10 +183,6 @@ GameModel::~GameModel()
 	}
 	delete sim;
 	delete ren;
-	delete placeSave;
-	delete clipboard;
-	delete currentSave;
-	delete currentFile;
 	//if(activeTools)
 	//	delete[] activeTools;
 }
@@ -929,60 +921,58 @@ std::vector<Menu*> GameModel::GetMenuList()
 	return menuList;
 }
 
-SaveInfo * GameModel::GetSave()
+SaveInfo *GameModel::GetSave() // non-owning
 {
-	return currentSave;
+	return currentSave.get();
 }
 
-void GameModel::SaveToSimParameters(const GameSave *saveData)
+std::unique_ptr<SaveInfo> GameModel::TakeSave()
 {
-	SetPaused(saveData->paused | GetPaused());
-	sim->gravityMode = saveData->gravityMode;
-	sim->customGravityX = saveData->customGravityX;
-	sim->customGravityY = saveData->customGravityY;
-	sim->air->airMode = saveData->airMode;
-	sim->air->ambientAirTemp = saveData->ambientAirTemp;
-	sim->edgeMode = saveData->edgeMode;
-	sim->legacy_enable = saveData->legacyEnable;
-	sim->water_equal_test = saveData->waterEEnabled;
-	sim->aheat_enable = saveData->aheatEnable;
-	if (saveData->gravityEnable && !sim->grav->IsEnabled())
+	// we don't notify listeners because we'll get a new save soon anyway
+	return std::move(currentSave);
+}
+
+void GameModel::SaveToSimParameters(const GameSave &saveData)
+{
+	SetPaused(saveData.paused | GetPaused());
+	sim->gravityMode = saveData.gravityMode;
+	sim->customGravityX = saveData.customGravityX;
+	sim->customGravityY = saveData.customGravityY;
+	sim->air->airMode = saveData.airMode;
+	sim->air->ambientAirTemp = saveData.ambientAirTemp;
+	sim->edgeMode = saveData.edgeMode;
+	sim->legacy_enable = saveData.legacyEnable;
+	sim->water_equal_test = saveData.waterEEnabled;
+	sim->aheat_enable = saveData.aheatEnable;
+	if (saveData.gravityEnable && !sim->grav->IsEnabled())
 	{
 		sim->grav->start_grav_async();
 	}
-	else if (!saveData->gravityEnable && sim->grav->IsEnabled())
+	else if (!saveData.gravityEnable && sim->grav->IsEnabled())
 	{
 		sim->grav->stop_grav_async();
 	}
-	sim->frameCount = saveData->frameCount;
-	if (saveData->hasRngState)
+	sim->frameCount = saveData.frameCount;
+	if (saveData.hasRngState)
 	{
-		sim->rng.state(saveData->rngState);
+		sim->rng.state(saveData.rngState);
 	}
 	else
 	{
 		sim->rng = RNG();
 	}
-	sim->ensureDeterminism = saveData->ensureDeterminism;
+	sim->ensureDeterminism = saveData.ensureDeterminism;
 }
 
-void GameModel::SetSave(SaveInfo * newSave, bool invertIncludePressure)
+void GameModel::SetSave(std::unique_ptr<SaveInfo> newSave, bool invertIncludePressure)
 {
-	if(currentSave != newSave)
-	{
-		delete currentSave;
-		if(newSave == NULL)
-			currentSave = NULL;
-		else
-			currentSave = new SaveInfo(*newSave);
-	}
-	delete currentFile;
-	currentFile = NULL;
+	currentSave = std::move(newSave);
+	currentFile.reset();
 
-	if (newSave && newSave->GetGameSave())
+	if (currentSave && currentSave->GetGameSave())
 	{
-		GameSave *saveData = newSave->GetGameSave();
-		SaveToSimParameters(saveData);
+		auto *saveData = currentSave->GetGameSave();
+		SaveToSimParameters(*saveData);
 		sim->clear_sim();
 		ren->ClearAccumulation();
 		if (!sim->Load(saveData, !invertIncludePressure))
@@ -991,19 +981,23 @@ void GameModel::SetSave(SaveInfo * newSave, bool invertIncludePressure)
 			// Add in the correct info
 			if (saveData->authors.size() == 0)
 			{
-				saveData->authors["type"] = "save";
-				saveData->authors["id"] = newSave->id;
-				saveData->authors["username"] = newSave->userName;
-				saveData->authors["title"] = newSave->name.ToUtf8();
-				saveData->authors["description"] = newSave->Description.ToUtf8();
-				saveData->authors["published"] = (int)newSave->Published;
-				saveData->authors["date"] = newSave->updatedDate;
+				auto gameSave = currentSave->TakeGameSave();
+				gameSave->authors["type"] = "save";
+				gameSave->authors["id"] = currentSave->id;
+				gameSave->authors["username"] = currentSave->userName;
+				gameSave->authors["title"] = currentSave->name.ToUtf8();
+				gameSave->authors["description"] = currentSave->Description.ToUtf8();
+				gameSave->authors["published"] = (int)currentSave->Published;
+				gameSave->authors["date"] = currentSave->updatedDate;
+				currentSave->SetGameSave(std::move(gameSave));
 			}
 			// This save was probably just created, and we didn't know the ID when creating it
 			// Update with the proper ID
 			else if (saveData->authors.get("id", -1) == 0 || saveData->authors.get("id", -1) == -1)
 			{
-				saveData->authors["id"] = newSave->id;
+				auto gameSave = currentSave->TakeGameSave();
+				gameSave->authors["id"] = currentSave->id;
+				currentSave->SetGameSave(std::move(gameSave));
 			}
 			Client::Ref().OverwriteAuthorInfo(saveData->authors);
 		}
@@ -1012,28 +1006,26 @@ void GameModel::SetSave(SaveInfo * newSave, bool invertIncludePressure)
 	UpdateQuickOptions();
 }
 
-SaveFile * GameModel::GetSaveFile()
+const SaveFile *GameModel::GetSaveFile() const
 {
-	return currentFile;
+	return currentFile.get();
 }
 
-void GameModel::SetSaveFile(SaveFile * newSave, bool invertIncludePressure)
+std::unique_ptr<SaveFile> GameModel::TakeSaveFile()
 {
-	if(currentFile != newSave)
-	{
-		delete currentFile;
-		if(newSave == NULL)
-			currentFile = NULL;
-		else
-			currentFile = new SaveFile(*newSave);
-	}
-	delete currentSave;
-	currentSave = NULL;
+	// we don't notify listeners because we'll get a new save soon anyway
+	return std::move(currentFile);
+}
 
-	if (newSave && newSave->GetGameSave())
+void GameModel::SetSaveFile(std::unique_ptr<SaveFile> newSave, bool invertIncludePressure)
+{
+	currentFile = std::move(newSave);
+	currentSave.reset();
+
+	if (currentFile && currentFile->GetGameSave())
 	{
-		GameSave *saveData = newSave->GetGameSave();
-		SaveToSimParameters(saveData);
+		auto *saveData = currentFile->GetGameSave();
+		SaveToSimParameters(*saveData);
 		sim->clear_sim();
 		ren->ClearAccumulation();
 		if (!sim->Load(saveData, !invertIncludePressure))
@@ -1342,33 +1334,31 @@ void GameModel::ClearSimulation()
 	UpdateQuickOptions();
 }
 
-void GameModel::SetPlaceSave(GameSave * save)
+void GameModel::SetPlaceSave(std::unique_ptr<GameSave> save)
 {
-	if (save != placeSave)
-	{
-		delete placeSave;
-		if (save)
-			placeSave = new GameSave(*save);
-		else
-			placeSave = NULL;
-	}
+	placeSave = std::move(save);
 	notifyPlaceSaveChanged();
 }
 
-void GameModel::SetClipboard(GameSave * save)
+void GameModel::SetClipboard(std::unique_ptr<GameSave> save)
 {
-	delete clipboard;
-	clipboard = save;
+	clipboard = std::move(save);
 }
 
-GameSave * GameModel::GetClipboard()
+const GameSave *GameModel::GetClipboard() const
 {
-	return clipboard;
+	return clipboard.get();
 }
 
-GameSave * GameModel::GetPlaceSave()
+const GameSave *GameModel::GetPlaceSave() const
 {
-	return placeSave;
+	return placeSave.get();
+}
+
+std::unique_ptr<GameSave> GameModel::TakePlaceSave()
+{
+	// we don't notify listeners because we'll get a new save soon anyway
+	return std::move(placeSave);
 }
 
 void GameModel::Log(String message, bool printToFile)

@@ -2,13 +2,13 @@
 #include "SearchView.h"
 #include "Format.h"
 #include "client/SaveInfo.h"
+#include "client/GameSave.h"
 #include "client/Client.h"
 #include "common/tpt-minmax.h"
 #include <thread>
 #include <cmath>
 
 SearchModel::SearchModel():
-	loadedSave(NULL),
 	currentSort("best"),
 	currentPage(1),
 	resultCount(0),
@@ -60,9 +60,9 @@ void SearchModel::BeginSearchSaves(int start, int count, String query, ByteStrin
 	searchSaves->Start();
 }
 
-std::vector<SaveInfo *> SearchModel::EndSearchSaves()
+std::vector<std::unique_ptr<SaveInfo>> SearchModel::EndSearchSaves()
 {
-	std::vector<SaveInfo *> saveArray;
+	std::vector<std::unique_ptr<SaveInfo>> saveArray;
 	auto [ dataStatus, data ] = searchSaves->Finish();
 	searchSaves.reset();
 	auto &client = Client::Ref();
@@ -88,10 +88,10 @@ std::vector<SaveInfo *> SearchModel::EndSearchSaves()
 				String tempName = ByteString(savesArray[j]["Name"].asString()).FromUtf8();
 				int tempVersion = savesArray[j]["Version"].asInt();
 				bool tempPublished = savesArray[j]["Published"].asBool();
-				SaveInfo * tempSaveInfo = new SaveInfo(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp, tempScoreDown, tempUsername, tempName);
+				auto tempSaveInfo = std::make_unique<SaveInfo>(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp, tempScoreDown, tempUsername, tempName);
 				tempSaveInfo->Version = tempVersion;
 				tempSaveInfo->SetPublished(tempPublished);
-				saveArray.push_back(tempSaveInfo);
+				saveArray.push_back(std::move(tempSaveInfo));
 			}
 		}
 		catch (std::exception &e)
@@ -193,27 +193,28 @@ bool SearchModel::UpdateSaveList(int pageNumber, String query)
 	return false;
 }
 
-void SearchModel::SetLoadedSave(SaveInfo * save)
+void SearchModel::SetLoadedSave(std::unique_ptr<SaveInfo> save)
 {
-	if(loadedSave != save && loadedSave)
-		delete loadedSave;
-	if(save)
-	{
-		loadedSave = new SaveInfo(*save);
-	}
-	else
-	{
-		loadedSave = NULL;
-	}
+	loadedSave = std::move(save);
 }
 
-SaveInfo * SearchModel::GetLoadedSave(){
-	return loadedSave;
+const SaveInfo *SearchModel::GetLoadedSave() const
+{
+	return loadedSave.get();
 }
 
-std::vector<SaveInfo*> SearchModel::GetSaveList()
+std::unique_ptr<SaveInfo> SearchModel::TakeLoadedSave()
 {
-	return saveList;
+	return std::move(loadedSave);
+}
+
+std::vector<SaveInfo *> SearchModel::GetSaveList() // non-owning
+{
+	std::vector<SaveInfo *> nonOwningSaveList;
+	std::transform(saveList.begin(), saveList.end(), std::back_inserter(nonOwningSaveList), [](auto &ptr) {
+		return ptr.get();
+	});
+	return nonOwningSaveList;
 }
 
 std::vector<std::pair<ByteString, int> > SearchModel::GetTagList()
@@ -358,11 +359,6 @@ void SearchModel::notifySelectedChanged()
 		SearchView* cObserver = observers[i];
 		cObserver->NotifySelectedChanged(this);
 	}
-}
-
-SearchModel::~SearchModel()
-{
-	delete loadedSave;
 }
 
 int SearchModel::GetPageCount()

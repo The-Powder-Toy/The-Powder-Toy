@@ -5,6 +5,8 @@
 #include "SearchView.h"
 
 #include "client/Client.h"
+#include "client/SaveInfo.h"
+#include "client/GameSave.h"
 #include "common/platform/Platform.h"
 #include "common/tpt-minmax.h"
 #include "graphics/Graphics.h"
@@ -34,14 +36,14 @@ SearchController::SearchController(std::function<void ()> onDone_):
 	onDone = onDone_;
 }
 
-SaveInfo * SearchController::GetLoadedSave()
+const SaveInfo *SearchController::GetLoadedSave() const
 {
 	return searchModel->GetLoadedSave();
 }
 
-void SearchController::ReleaseLoadedSave()
+std::unique_ptr<SaveInfo> SearchController::TakeLoadedSave()
 {
-	searchModel->SetLoadedSave(NULL);
+	return searchModel->TakeLoadedSave();
 }
 
 void SearchController::Update()
@@ -194,11 +196,11 @@ void SearchController::OpenSaveDone()
 {
 	if (activePreview->GetDoOpen() && activePreview->GetSaveInfo())
 	{
-		searchModel->SetLoadedSave(activePreview->GetSaveInfo());
+		searchModel->SetLoadedSave(activePreview->TakeSaveInfo());
 	}
 	else
 	{
-		searchModel->SetLoadedSave(NULL);
+		searchModel->SetLoadedSave(nullptr);
 	}
 }
 

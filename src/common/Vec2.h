@@ -343,7 +343,7 @@ public:
 
 	constexpr explicit operator bool() const
 	{
-		return BottomRight.X >= TopLeft.X || BottomRight.Y >= TopLeft.Y;
+		return BottomRight.X >= TopLeft.X && BottomRight.Y >= TopLeft.Y;
 	}
 
 	// Return the smallest rectangle that contains both input rectangles,

@@ -238,7 +238,7 @@ std::pair<int, sign::Type> GameController::GetSignSplit(int signID)
 
 void GameController::PlaceSave(ui::Point position)
 {
-	GameSave *placeSave = gameModel->GetPlaceSave();
+	auto *placeSave = gameModel->GetPlaceSave();
 	if (placeSave)
 	{
 		HistorySnapshot();
@@ -408,33 +408,35 @@ void GameController::DrawPoints(int toolSelection, ui::Point oldPos, ui::Point n
 
 bool GameController::LoadClipboard()
 {
-	GameSave *clip = gameModel->GetClipboard();
+	auto *clip = gameModel->GetClipboard();
 	if (!clip)
 		return false;
-	gameModel->SetPlaceSave(clip);
+	gameModel->SetPlaceSave(std::make_unique<GameSave>(*clip));
 	return true;
 }
 
-void GameController::LoadStamp(GameSave *stamp)
+void GameController::LoadStamp(std::unique_ptr<GameSave> stamp)
 {
-	gameModel->SetPlaceSave(stamp);
+	gameModel->SetPlaceSave(std::move(stamp));
 }
 
 void GameController::TranslateSave(ui::Point point)
 {
 	vector2d translate = v2d_new(float(point.X), float(point.Y));
-	vector2d translated = gameModel->GetPlaceSave()->Translate(translate);
+	auto save = gameModel->TakePlaceSave();
+	vector2d translated = save->Translate(translate);
 	ui::Point currentPlaceSaveOffset = gameView->GetPlaceSaveOffset();
 	// resets placeSaveOffset to 0, which is why we back it up first
-	gameModel->SetPlaceSave(gameModel->GetPlaceSave());
+	gameModel->SetPlaceSave(std::move(save));
 	gameView->SetPlaceSaveOffset(ui::Point(int(translated.x), int(translated.y)) + currentPlaceSaveOffset);
 }
 
 void GameController::TransformSave(matrix2d transform)
 {
 	vector2d translate = v2d_zero;
-	gameModel->GetPlaceSave()->Transform(transform, translate);
-	gameModel->SetPlaceSave(gameModel->GetPlaceSave());
+	auto save = gameModel->TakePlaceSave();
+	save->Transform(transform, translate);
+	gameModel->SetPlaceSave(std::move(save));
 }
 
 void GameController::ToolClick(int toolSelection, ui::Point point)
@@ -449,12 +451,11 @@ void GameController::ToolClick(int toolSelection, ui::Point point)
 
 ByteString GameController::StampRegion(ui::Point point1, ui::Point point2)
 {
-	GameSave * newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), point1.X, point1.Y, point2.X, point2.Y);
+	auto newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), point1.X, point1.Y, point2.X, point2.Y);
 	if(newSave)
 	{
 		newSave->paused = gameModel->GetPaused();
-		ByteString stampName = Client::Ref().AddStamp(newSave);
-		delete newSave;
+		ByteString stampName = Client::Ref().AddStamp(std::move(newSave));
 		if (stampName.length() == 0)
 			new ErrorMessage("Could not create stamp", "Error serializing save file");
 		return stampName;
@@ -468,7 +469,7 @@ ByteString GameController::StampRegion(ui::Point point1, ui::Point point2)
 
 void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 {
-	GameSave * newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), point1.X, point1.Y, point2.X, point2.Y);
+	auto newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), point1.X, point1.Y, point2.X, point2.Y);
 	if(newSave)
 	{
 		Json::Value clipboardInfo;
@@ -479,7 +480,7 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 		newSave->authors = clipboardInfo;
 
 		newSave->paused = gameModel->GetPaused();
-		gameModel->SetClipboard(newSave);
+		gameModel->SetClipboard(std::move(newSave));
 	}
 }
 
@@ -1133,8 +1134,7 @@ void GameController::OpenSearch(String searchText)
 				try
 				{
 					HistorySnapshot();
-					gameModel->SetSave(search->GetLoadedSave(), gameView->ShiftBehaviour());
-					search->ReleaseLoadedSave();
+					gameModel->SetSave(search->TakeLoadedSave(), gameView->ShiftBehaviour());
 				}
 				catch(GameModelException & ex)
 				{
@@ -1150,7 +1150,7 @@ void GameController::OpenSearch(String searchText)
 void GameController::OpenLocalSaveWindow(bool asCurrent)
 {
 	Simulation * sim = gameModel->GetSimulation();
-	GameSave * gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
+	auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
 	if(!gameSave)
 	{
 		new ErrorMessage("Error", "Unable to build save.");
@@ -1159,18 +1159,18 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 	{
 		gameSave->paused = gameModel->GetPaused();
 
-		SaveFile tempSave("");
+		auto tempSave = std::make_unique<SaveFile>("");
 		if (gameModel->GetSaveFile())
 		{
-			tempSave.SetFileName(gameModel->GetSaveFile()->GetName());
-			tempSave.SetDisplayName(gameModel->GetSaveFile()->GetDisplayName());
+			tempSave->SetFileName(gameModel->GetSaveFile()->GetName());
+			tempSave->SetDisplayName(gameModel->GetSaveFile()->GetDisplayName());
 		}
-		tempSave.SetGameSave(gameSave);
+		tempSave->SetGameSave(std::move(gameSave));
 
 		if (!asCurrent || !gameModel->GetSaveFile())
 		{
-			new LocalSaveActivity(tempSave, [this](SaveFile *file) {
-				gameModel->SetSaveFile(file, gameView->ShiftBehaviour());
+			new LocalSaveActivity(std::move(tempSave), [this](auto file) {
+				gameModel->SetSaveFile(std::move(file), gameView->ShiftBehaviour());
 			});
 		}
 		else if (gameModel->GetSaveFile())
@@ -1183,9 +1183,9 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			Client::Ref().SaveAuthorInfo(&localSaveInfo);
 			gameSave->authors = localSaveInfo;
 
-			gameModel->SetSaveFile(&tempSave, gameView->ShiftBehaviour());
 			Platform::MakeDirectory(LOCAL_SAVE_DIR);
 			auto [ fromNewerVersion, saveData ] = gameSave->Serialise();
+			gameModel->SetSaveFile(std::move(tempSave), gameView->ShiftBehaviour());
 			(void)fromNewerVersion;
 			if (saveData.size() == 0)
 				new ErrorMessage("Error", "Unable to serialize game data.");
@@ -1197,15 +1197,15 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 	}
 }
 
-void GameController::LoadSaveFile(SaveFile * file)
+void GameController::LoadSaveFile(std::unique_ptr<SaveFile> file)
 {
-	gameModel->SetSaveFile(file, gameView->ShiftBehaviour());
+	gameModel->SetSaveFile(std::move(file), gameView->ShiftBehaviour());
 }
 
 
-void GameController::LoadSave(SaveInfo * save)
+void GameController::LoadSave(std::unique_ptr<SaveInfo> save)
 {
-	gameModel->SetSave(save, gameView->ShiftBehaviour());
+	gameModel->SetSave(std::move(save), gameView->ShiftBehaviour());
 }
 
 void GameController::OpenSaveDone()
@@ -1215,7 +1215,7 @@ void GameController::OpenSaveDone()
 		try
 		{
 			HistorySnapshot();
-			LoadSave(activePreview->GetSaveInfo());
+			LoadSave(activePreview->TakeSaveInfo());
 		}
 		catch(GameModelException & ex)
 		{
@@ -1241,9 +1241,9 @@ void GameController::OpenSavePreview()
 
 void GameController::OpenLocalBrowse()
 {
-	new FileBrowserActivity(ByteString::Build(LOCAL_SAVE_DIR, PATH_SEP_CHAR), [this](std::unique_ptr<SaveFile> file) {
+	new FileBrowserActivity(ByteString::Build(LOCAL_SAVE_DIR, PATH_SEP_CHAR), [this](auto file) {
 		HistorySnapshot();
-		LoadSaveFile(file.get());
+		LoadSaveFile(std::move(file));
 	});
 }
 
@@ -1313,14 +1313,14 @@ void GameController::OpenTags()
 void GameController::OpenStamps()
 {
 	localBrowser = new LocalBrowserController([this] {
-		SaveFile *file = localBrowser->GetSave();
+		auto file = localBrowser->TakeSave();
 		if (file)
 		{
 			if (file->GetError().length())
 				new ErrorMessage("Error loading stamp", file->GetError());
 			else if (localBrowser->GetMoveToFront())
 				Client::Ref().MoveStampToFront(file->GetDisplayName().ToUtf8());
-			LoadStamp(file->GetGameSave());
+			LoadStamp(file->TakeGameSave());
 		}
 	});
 	ui::Engine::Ref().ShowWindow(localBrowser->GetView());
@@ -1361,7 +1361,7 @@ void GameController::OpenSaveWindow()
 	if(gameModel->GetUser().UserID)
 	{
 		Simulation * sim = gameModel->GetSimulation();
-		GameSave * gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
+		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
 		if(!gameSave)
 		{
 			new ErrorMessage("Error", "Unable to build save.");
@@ -1372,22 +1372,22 @@ void GameController::OpenSaveWindow()
 
 			if(gameModel->GetSave())
 			{
-				SaveInfo tempSave(*gameModel->GetSave());
-				tempSave.SetGameSave(gameSave);
-				new ServerSaveActivity(tempSave, [this](SaveInfo &save) {
-					save.SetVote(1);
-					save.SetVotesUp(1);
-					LoadSave(&save);
+				auto tempSave = gameModel->GetSave()->CloneInfo();
+				tempSave->SetGameSave(std::move(gameSave));
+				new ServerSaveActivity(std::move(tempSave), [this](auto save) {
+					save->SetVote(1);
+					save->SetVotesUp(1);
+					LoadSave(std::move(save));
 				});
 			}
 			else
 			{
-				SaveInfo tempSave(0, 0, 0, 0, 0, gameModel->GetUser().Username, "");
-				tempSave.SetGameSave(gameSave);
-				new ServerSaveActivity(tempSave, [this](SaveInfo &save) {
-					save.SetVote(1);
-					save.SetVotesUp(1);
-					LoadSave(&save);
+				auto tempSave = std::make_unique<SaveInfo>(0, 0, 0, 0, 0, gameModel->GetUser().Username, "");
+				tempSave->SetGameSave(std::move(gameSave));
+				new ServerSaveActivity(std::move(tempSave), [this](auto save) {
+					save->SetVote(1);
+					save->SetVotesUp(1);
+					LoadSave(std::move(save));
 				});
 			}
 		}
@@ -1403,7 +1403,7 @@ void GameController::SaveAsCurrent()
 	if(gameModel->GetSave() && gameModel->GetUser().UserID && gameModel->GetUser().Username == gameModel->GetSave()->GetUserName())
 	{
 		Simulation * sim = gameModel->GetSimulation();
-		GameSave * gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
+		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
 		if(!gameSave)
 		{
 			new ErrorMessage("Error", "Unable to build save.");
@@ -1414,15 +1414,15 @@ void GameController::SaveAsCurrent()
 
 			if(gameModel->GetSave())
 			{
-				SaveInfo tempSave(*gameModel->GetSave());
-				tempSave.SetGameSave(gameSave);
-				new ServerSaveActivity(tempSave, true, [this](SaveInfo &save) { LoadSave(&save); });
+				auto tempSave = gameModel->GetSave()->CloneInfo();
+				tempSave->SetGameSave(std::move(gameSave));
+				new ServerSaveActivity(std::move(tempSave), true, [this](auto save) { LoadSave(std::move(save)); });
 			}
 			else
 			{
-				SaveInfo tempSave(0, 0, 0, 0, 0, gameModel->GetUser().Username, "");
-				tempSave.SetGameSave(gameSave);
-				new ServerSaveActivity(tempSave, true, [this](SaveInfo &save) { LoadSave(&save); });
+				auto tempSave = std::make_unique<SaveInfo>(0, 0, 0, 0, 0, gameModel->GetUser().Username, "");
+				tempSave->SetGameSave(std::move(gameSave));
+				new ServerSaveActivity(std::move(tempSave), true, [this](auto save) { LoadSave(std::move(save)); });
 			}
 		}
 	}
@@ -1497,12 +1497,12 @@ void GameController::ReloadSim()
 	if(gameModel->GetSave() && gameModel->GetSave()->GetGameSave())
 	{
 		HistorySnapshot();
-		gameModel->SetSave(gameModel->GetSave(), gameView->ShiftBehaviour());
+		gameModel->SetSave(gameModel->TakeSave(), gameView->ShiftBehaviour());
 	}
 	else if(gameModel->GetSaveFile() && gameModel->GetSaveFile()->GetGameSave())
 	{
 		HistorySnapshot();
-		gameModel->SetSaveFile(gameModel->GetSaveFile(), gameView->ShiftBehaviour());
+		gameModel->SetSaveFile(gameModel->TakeSaveFile(), gameView->ShiftBehaviour());
 	}
 }
 

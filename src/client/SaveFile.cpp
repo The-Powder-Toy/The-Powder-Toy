@@ -2,19 +2,7 @@
 #include "GameSave.h"
 #include "common/platform/Platform.h"
 
-SaveFile::SaveFile(SaveFile & save):
-	gameSave(NULL),
-	filename(save.filename),
-	displayName(save.displayName),
-	loadingError(save.loadingError),
-	lazyLoad(save.lazyLoad)
-{
-	if (save.gameSave)
-		gameSave = new GameSave(*save.gameSave);
-}
-
 SaveFile::SaveFile(ByteString filename, bool newLazyLoad):
-	gameSave(NULL),
 	filename(filename),
 	displayName(filename.FromUtf8()),
 	loadingError(""),
@@ -23,7 +11,7 @@ SaveFile::SaveFile(ByteString filename, bool newLazyLoad):
 
 }
 
-GameSave * SaveFile::GetGameSave()
+const GameSave *SaveFile::LazyGetGameSave() // non-owning
 {
 	if (!gameSave && !loadingError.size() && lazyLoad)
 	{
@@ -32,7 +20,7 @@ GameSave * SaveFile::GetGameSave()
 			std::vector<char> data;
 			if (Platform::ReadFile(data, filename))
 			{
-				gameSave = new GameSave(std::move(data));
+				gameSave = std::make_unique<GameSave>(std::move(data));
 			}
 			else
 			{
@@ -44,24 +32,33 @@ GameSave * SaveFile::GetGameSave()
 			loadingError = ByteString(e.what()).FromUtf8();
 		}
 	}
-	return gameSave;
+	return gameSave.get();
+}
+
+const GameSave *SaveFile::GetGameSave() const
+{
+	return gameSave.get();
+}
+
+std::unique_ptr<GameSave> SaveFile::TakeGameSave()
+{
+	return std::move(gameSave);
 }
 
 void SaveFile::LazyUnload()
 {
-	if (lazyLoad && gameSave)
+	if (lazyLoad)
 	{
-		delete gameSave;
-		gameSave = nullptr;
+		gameSave.reset();
 	}
 }
 
-void SaveFile::SetGameSave(GameSave * save)
+void SaveFile::SetGameSave(std::unique_ptr<GameSave> newGameSave)
 {
-	gameSave = save;
+	gameSave = std::move(newGameSave);
 }
 
-ByteString SaveFile::GetName()
+const ByteString &SaveFile::GetName() const
 {
 	return filename;
 }
@@ -71,7 +68,7 @@ void SaveFile::SetFileName(ByteString fileName)
 	this->filename = fileName;
 }
 
-String SaveFile::GetDisplayName()
+const String &SaveFile::GetDisplayName() const
 {
 	return displayName;
 }
@@ -81,7 +78,7 @@ void SaveFile::SetDisplayName(String displayName)
 	this->displayName = displayName;
 }
 
-String SaveFile::GetError()
+const String &SaveFile::GetError() const
 {
 	return loadingError;
 }
@@ -89,11 +86,4 @@ String SaveFile::GetError()
 void SaveFile::SetLoadingError(String error)
 {
 	loadingError = error;
-}
-
-SaveFile::~SaveFile() {
-	if (gameSave)
-	{
-		delete gameSave;
-	}
 }

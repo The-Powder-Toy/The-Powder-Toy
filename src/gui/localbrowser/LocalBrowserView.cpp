@@ -118,7 +118,7 @@ void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 	int buttonWidth, buttonHeight, saveX = 0, saveY = 0, savesX = 5, savesY = 4, buttonPadding = 2;
 	int buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
 
-	std::vector<SaveFile*> saves = sender->GetSavesList();
+	auto saves = sender->GetSavesList(); // non-owning
 	for (size_t i = 0; i < stampButtons.size(); i++)
 	{
 		RemoveComponent(stampButtons[i]);
@@ -131,7 +131,7 @@ void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 	buttonAreaHeight = Size.Y - buttonYOffset - 18;
 	buttonWidth = (buttonAreaWidth/savesX) - buttonPadding*2;
 	buttonHeight = (buttonAreaHeight/savesY) - buttonPadding*2;
-	for (size_t i = 0; i < saves.size(); i++)
+	for (auto i = 0; i < int(saves.size()); i++)
 	{
 		if(saveX == savesX)
 		{
@@ -150,9 +150,9 @@ void LocalBrowserView::NotifySavesListChanged(LocalBrowserModel * sender)
 					saves[i]);
 		saveButton->SetSelectable(true);
 		saveButton->SetActionCallback({
-			[this, saveButton] {
+			[this, saveButton, i] {
 				if (saveButton->GetSaveFile())
-					c->OpenSave(saveButton->GetSaveFile());
+					c->OpenSave(i);
 			},
 			nullptr,
 			nullptr,

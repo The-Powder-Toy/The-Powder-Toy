@@ -1,30 +1,6 @@
 #include "SaveInfo.h"
 #include "GameSave.h"
 
-SaveInfo::SaveInfo(SaveInfo & save):
-	id(save.id),
-	createdDate(save.createdDate),
-	updatedDate(save.updatedDate),
-	votesUp(save.votesUp),
-	votesDown(save.votesDown),
-	vote(save.vote),
-	Favourite(false),
-	Comments(save.Comments),
-	Views(save.Views),
-	Version(save.Version),
-	userName(save.userName),
-	name(save.name),
-	Description(save.Description),
-	Published(save.Published),
-	gameSave(NULL)
-{
-	std::list<ByteString> tagsSorted = save.tags;
-	tagsSorted.sort();
-	tags = tagsSorted;
-	if (save.gameSave)
-		gameSave = new GameSave(*save.gameSave);
-}
-
 SaveInfo::SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, int _votesDown, ByteString _userName, String _name):
 	id(_id),
 	createdDate(_createdDate),
@@ -39,9 +15,7 @@ SaveInfo::SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, in
 	userName(_userName),
 	name(_name),
 	Description(""),
-	Published(false),
-	tags(),
-	gameSave(NULL)
+	Published(false)
 {
 
 }
@@ -60,21 +34,11 @@ SaveInfo::SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, in
 	userName(_userName),
 	name(_name),
 	Description(description_),
-	Published(published_),
-	tags(),
-	gameSave(NULL)
+	Published(published_)
 {
 	std::list<ByteString> tagsSorted = tags_;
 	tagsSorted.sort();
 	tags=tagsSorted;
-}
-
-SaveInfo::~SaveInfo()
-{
-	if(gameSave)
-	{
-		delete gameSave;
-	}
 }
 
 void SaveInfo::SetName(String name)
@@ -99,7 +63,7 @@ void SaveInfo::SetPublished(bool published)
 {
 	Published = published;
 }
-bool SaveInfo::GetPublished()
+bool SaveInfo::GetPublished() const
 {
 	return Published;
 }
@@ -108,7 +72,7 @@ void SaveInfo::SetVote(int vote)
 {
 	this->vote = vote;
 }
-int SaveInfo::GetVote()
+int SaveInfo::GetVote() const
 {
 	return vote;
 }
@@ -118,7 +82,7 @@ void SaveInfo::SetUserName(ByteString userName)
 	this->userName = userName;
 }
 
-ByteString SaveInfo::GetUserName()
+const ByteString &SaveInfo::GetUserName() const
 {
 	return userName;
 }
@@ -127,7 +91,7 @@ void SaveInfo::SetID(int id)
 {
 	this->id = id;
 }
-int SaveInfo::GetID()
+int SaveInfo::GetID() const
 {
 	return id;
 }
@@ -136,7 +100,7 @@ void SaveInfo::SetVotesUp(int votesUp)
 {
 	this->votesUp = votesUp;
 }
-int SaveInfo::GetVotesUp()
+int SaveInfo::GetVotesUp() const
 {
 	return votesUp;
 }
@@ -145,7 +109,7 @@ void SaveInfo::SetVotesDown(int votesDown)
 {
 	this->votesDown = votesDown;
 }
-int SaveInfo::GetVotesDown()
+int SaveInfo::GetVotesDown() const
 {
 	return votesDown;
 }
@@ -154,7 +118,7 @@ void SaveInfo::SetVersion(int version)
 {
 	this->Version = version;
 }
-int SaveInfo::GetVersion()
+int SaveInfo::GetVersion() const
 {
 	return Version;
 }
@@ -166,18 +130,33 @@ void SaveInfo::SetTags(std::list<ByteString> tags)
 	this->tags=tagsSorted;
 }
 
-std::list<ByteString> SaveInfo::GetTags()
+std::list<ByteString> SaveInfo::GetTags() const
 {
 	return tags;
 }
 
-GameSave * SaveInfo::GetGameSave()
+const GameSave *SaveInfo::GetGameSave() const
 {
-	return gameSave;
+	return gameSave.get();
 }
 
-void SaveInfo::SetGameSave(GameSave * saveGame)
+std::unique_ptr<GameSave> SaveInfo::TakeGameSave()
 {
-	delete gameSave;
-	gameSave = saveGame;
+	return std::move(gameSave);
+}
+
+void SaveInfo::SetGameSave(std::unique_ptr<GameSave> newGameSave)
+{
+	gameSave = std::move(newGameSave);
+}
+
+std::unique_ptr<SaveInfo> SaveInfo::CloneInfo() const
+{
+	auto clone = std::make_unique<SaveInfo>(id, createdDate, updatedDate, votesUp, votesDown, vote, userName, name, Description, Published, tags);
+	clone->Favourite = false;
+	clone->Comments = Comments;
+	clone->Views = Views;
+	clone->Version = Version;
+	clone->tags.sort();
+	return clone;
 }

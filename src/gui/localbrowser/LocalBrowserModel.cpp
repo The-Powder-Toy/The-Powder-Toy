@@ -2,13 +2,13 @@
 #include "LocalBrowserView.h"
 #include "client/Client.h"
 #include "client/SaveFile.h"
+#include "client/GameSave.h"
 #include "common/tpt-minmax.h"
 #include <algorithm>
 
 constexpr auto pageSize = 20;
 
 LocalBrowserModel::LocalBrowserModel():
-	stamp(NULL),
 	currentPage(1),
 	stampToFront(1)
 {
@@ -16,9 +16,13 @@ LocalBrowserModel::LocalBrowserModel():
 }
 
 
-std::vector<SaveFile*> LocalBrowserModel::GetSavesList()
+std::vector<SaveFile *> LocalBrowserModel::GetSavesList() // non-owning
 {
-	return savesList;
+	std::vector<SaveFile *> nonOwningSaveList;
+	std::transform(savesList.begin(), savesList.end(), std::back_inserter(nonOwningSaveList), [](auto &ptr) {
+		return ptr.get();
+	});
+	return nonOwningSaveList;
 }
 
 void LocalBrowserModel::AddObserver(LocalBrowserView * observer)
@@ -45,15 +49,20 @@ void LocalBrowserModel::notifyPageChanged()
 	}
 }
 
-SaveFile * LocalBrowserModel::GetSave()
+const SaveFile *LocalBrowserModel::GetSave()
 {
-	return stamp;
+	return stamp.get();
 }
 
-void LocalBrowserModel::SetSave(SaveFile * newStamp)
+std::unique_ptr<SaveFile> LocalBrowserModel::TakeSave()
 {
-	delete stamp;
-	stamp = new SaveFile(*newStamp);
+	return std::move(stamp);
+}
+
+void LocalBrowserModel::OpenSave(int index)
+{
+	stamp = std::move(savesList[index]);
+	savesList.clear();
 }
 
 bool LocalBrowserModel::GetMoveToFront()
@@ -68,25 +77,19 @@ void LocalBrowserModel::SetMoveToFront(bool move)
 
 void LocalBrowserModel::UpdateSavesList(int pageNumber)
 {
-	std::vector<SaveFile*> tempSavesList = savesList;
 	savesList.clear();
 	currentPage = pageNumber;
 	notifyPageChanged();
 	notifySavesListChanged();
-	//notifyStampsListChanged();
-	/*for(int i = 0; i < tempSavesList.size(); i++)
-	{
-		delete tempSavesList[i];
-	}*/
 
 	stampIDs = Client::Ref().GetStamps();
 	auto size = int(stampIDs.size());
 	for (int i = (currentPage - 1) * pageSize; i < size && i < currentPage * pageSize; i++)
 	{
-		SaveFile * tempSave = Client::Ref().GetStamp(stampIDs[i]);
+		auto tempSave = Client::Ref().GetStamp(stampIDs[i]);
 		if (tempSave)
 		{
-			savesList.push_back(tempSave);
+			savesList.push_back(std::move(tempSave));
 		}
 	}
 	notifySavesListChanged();
@@ -131,8 +134,3 @@ void LocalBrowserModel::notifySelectedChanged()
 		cObserver->NotifySelectedChanged(this);
 	}
 }
-
-LocalBrowserModel::~LocalBrowserModel() {
-	delete stamp;
-}
-

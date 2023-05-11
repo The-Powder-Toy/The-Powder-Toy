@@ -18,8 +18,6 @@ namespace ui {
 
 SaveButton::SaveButton(Point position, Point size) :
 	Component(position, size),
-	file(nullptr),
-	save(nullptr),
 	wantsDraw(false),
 	triedThumbnail(false),
 	isMouseInsideAuthor(false),
@@ -33,9 +31,9 @@ SaveButton::SaveButton(Point position, Point size) :
 {
 }
 
-SaveButton::SaveButton(Point position, Point size, SaveInfo * save_) : SaveButton(position, size)
+SaveButton::SaveButton(Point position, Point size, SaveInfo *newSave /* non-owning */) : SaveButton(position, size)
 {
-	save = save_;
+	save = newSave;
 	if(save)
 	{
 		name = save->name;
@@ -94,9 +92,9 @@ SaveButton::SaveButton(Point position, Point size, SaveInfo * save_) : SaveButto
 	}
 }
 
-SaveButton::SaveButton(Point position, Point size, SaveFile * file_) : SaveButton(position, size)
+SaveButton::SaveButton(Point position, Point size, SaveFile *newFile /* non-owning */) : SaveButton(position, size)
 {
-	file = file_;
+	file = newFile;
 	if(file)
 	{
 		name = file->GetDisplayName();
@@ -115,8 +113,6 @@ SaveButton::~SaveButton()
 	{
 		thumbnailRenderer->Abandon();
 	}
-	delete save;
-	delete file;
 }
 
 void SaveButton::Tick(float dt)
@@ -198,7 +194,7 @@ void SaveButton::Draw(const Point& screenPos)
 		auto space = Size - Vec2{ 0, 21 };
 		g->BlendImage(tex->Data(), 255, RectSized(screenPos + ((save && save->id) ? ((space - thumbBoxSize) / 2 - Vec2{ 3, 0 }) : (space - thumbSize) / 2), tex->Size()));
 	}
-	else if (file && !file->GetGameSave())
+	else if (file && !file->LazyGetGameSave())
 		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize("Error loading save").X - 1))/2, (Size.Y-28)/2 }, "Error loading save", 0xB4B4B4_rgb .WithAlpha(255));
 	if(save)
 	{

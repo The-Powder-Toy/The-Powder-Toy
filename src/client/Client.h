@@ -114,9 +114,9 @@ public:
 	RequestStatus ExecVote(int saveID, int direction);
 	RequestStatus UploadSave(SaveInfo & save);
 
-	SaveFile * GetStamp(ByteString stampID);
+	std::unique_ptr<SaveFile> GetStamp(ByteString stampID);
 	void DeleteStamp(ByteString stampID);
-	ByteString AddStamp(GameSave * saveData);
+	ByteString AddStamp(std::unique_ptr<GameSave> saveData);
 	void RescanStamps();
 	const std::vector<ByteString> &GetStamps() const;
 	void MoveStampToFront(ByteString stampID);
@@ -127,8 +127,8 @@ public:
 
 	LoginStatus Login(ByteString username, ByteString password, User & user);
 
-	SaveInfo * GetSave(int saveID, int saveDate);
-	SaveFile * LoadSaveFile(ByteString filename);
+	std::unique_ptr<SaveInfo> GetSave(int saveID, int saveDate);
+	std::unique_ptr<SaveFile> LoadSaveFile(ByteString filename);
 
 	RequestStatus DeleteSave(int saveID);
 	RequestStatus ReportSave(int saveID, String message);

@@ -6,15 +6,13 @@ class SaveInfo;
 
 class TagsView;
 class TagsModel {
-	SaveInfo * save;
+	SaveInfo *save = nullptr; // non-owning
 	std::vector<TagsView*> observers;
 	void notifyTagsChanged();
 public:
-	TagsModel();
 	void AddObserver(TagsView * observer);
-	void SetSave(SaveInfo * save);
+	void SetSave(SaveInfo *newSave /* non-owning */);
 	void RemoveTag(ByteString tag);
 	void AddTag(ByteString tag);
-	SaveInfo * GetSave();
-	virtual ~TagsModel();
+	SaveInfo *GetSave(); // non-owning
 };

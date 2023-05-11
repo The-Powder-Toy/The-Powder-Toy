@@ -1,6 +1,7 @@
 #pragma once
 #include "common/String.h"
 #include <functional>
+#include <memory>
 
 class SaveInfo;
 class PreviewController;
@@ -48,6 +49,6 @@ public:
 	void RemoveSelected();
 	void UnpublishSelected(bool publish);
 	void FavouriteSelected();
-	void ReleaseLoadedSave();
-	SaveInfo * GetLoadedSave();
+	const SaveInfo *GetLoadedSave() const;
+	std::unique_ptr<SaveInfo> TakeLoadedSave();
 };

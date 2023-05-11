@@ -17,6 +17,7 @@
 #include "client/SaveInfo.h"
 #include "client/SaveFile.h"
 #include "client/Client.h"
+#include "client/GameSave.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
@@ -1542,11 +1543,10 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		auto &stampIDs = Client::Ref().GetStamps();
 		if (stampIDs.size())
 		{
-			SaveFile *saveFile = Client::Ref().GetStamp(stampIDs[0]);
+			auto saveFile = Client::Ref().GetStamp(stampIDs[0]);
 			if (!saveFile || !saveFile->GetGameSave())
 				break;
-			c->LoadStamp(saveFile->GetGameSave());
-			delete saveFile;
+			c->LoadStamp(saveFile->TakeGameSave());
 			selectPoint1 = selectPoint2 = mousePosition;
 			isMouseDown = false;
 			break;
@@ -1641,7 +1641,7 @@ void GameView::OnFileDrop(ByteString filename)
 		return;
 	}
 
-	SaveFile *saveFile = Client::Ref().LoadSaveFile(filename);
+	auto saveFile = Client::Ref().LoadSaveFile(filename);
 	if (!saveFile)
 		return;
 	if (saveFile->GetError().length())
@@ -1649,8 +1649,7 @@ void GameView::OnFileDrop(ByteString filename)
 		new ErrorMessage("Error loading save", "Dropped save file could not be loaded: " + saveFile->GetError());
 		return;
 	}
-	c->LoadSaveFile(saveFile);
-	delete saveFile;
+	c->LoadSaveFile(std::move(saveFile));
 
 	// hide the info text if it's not already hidden
 	introText = 0;

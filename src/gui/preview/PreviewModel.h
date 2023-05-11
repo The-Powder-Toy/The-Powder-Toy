@@ -16,7 +16,7 @@ class PreviewModel
 	bool doOpen;
 	bool canOpen;
 	std::vector<PreviewView*> observers;
-	SaveInfo * saveInfo;
+	std::unique_ptr<SaveInfo> saveInfo;
 	std::vector<char> * saveData;
 	std::vector<SaveComment*> * saveComments;
 	void notifySaveChanged();
@@ -39,7 +39,8 @@ public:
 	PreviewModel();
 	~PreviewModel();
 
-	SaveInfo * GetSaveInfo();
+	const SaveInfo *GetSaveInfo() const;
+	std::unique_ptr<SaveInfo> TakeSaveInfo();
 	std::vector<SaveComment*> * GetComments();
 
 	bool GetCommentBoxEnabled();

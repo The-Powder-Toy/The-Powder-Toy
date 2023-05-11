@@ -123,9 +123,9 @@ public:
 
 	int Load(const GameSave * save, bool includePressure);
 	int Load(const GameSave * save, bool includePressure, int x, int y);
-	GameSave * Save(bool includePressure);
-	GameSave * Save(bool includePressure, int x1, int y1, int x2, int y2);
-	void SaveSimOptions(GameSave * gameSave);
+	std::unique_ptr<GameSave> Save(bool includePressure);
+	std::unique_ptr<GameSave> Save(bool includePressure, int x1, int y1, int x2, int y2);
+	void SaveSimOptions(GameSave &gameSave);
 	SimulationSample GetSample(int x, int y);
 
 	std::unique_ptr<Snapshot> CreateSnapshot();

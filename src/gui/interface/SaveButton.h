@@ -15,8 +15,8 @@ namespace ui
 {
 class SaveButton : public Component
 {
-	SaveFile * file;
-	SaveInfo * save;
+	SaveFile *file = nullptr; // non-owning
+	SaveInfo *save = nullptr; // non-owning
 	std::unique_ptr<VideoBuffer> thumbnail;
 	ui::Point thumbSize = ui::Point(0, 0);
 	String name;
@@ -43,8 +43,8 @@ class SaveButton : public Component
 	SaveButton(Point position, Point size);
 
 public:
-	SaveButton(Point position, Point size, SaveInfo * save);
-	SaveButton(Point position, Point size, SaveFile * file);
+	SaveButton(Point position, Point size, SaveInfo *newSave /* non-owning */);
+	SaveButton(Point position, Point size, SaveFile *newFile /* non-owning */);
 	virtual ~SaveButton();
 
 	void OnMouseClick(int x, int y, unsigned int button) override;
@@ -67,8 +67,8 @@ public:
 	bool GetSelectable() { return selectable; }
 	void SetShowVotes(bool showVotes_) { showVotes = showVotes_; }
 
-	SaveInfo * GetSave() { return save; }
-	SaveFile * GetSaveFile() { return file; }
+	const SaveInfo *GetSave() const { return save; }
+	const SaveFile *GetSaveFile() const { return file; }
 	inline bool GetState() { return state; }
 	void DoAction();
 	void DoAltAction();

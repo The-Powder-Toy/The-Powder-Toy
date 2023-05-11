@@ -1,27 +1,27 @@
 #pragma once
 #include "common/String.h"
+#include <memory>
 
 class GameSave;
 
 class SaveFile {
 public:
-	SaveFile(SaveFile & save);
 	SaveFile(ByteString filename, bool newLazyLoad = false);
 
-	GameSave * GetGameSave();
-	void SetGameSave(GameSave * save);
-	String GetDisplayName();
+	const GameSave *LazyGetGameSave();
+	const GameSave *GetGameSave() const;
+	std::unique_ptr<GameSave> TakeGameSave();
+	void SetGameSave(std::unique_ptr<GameSave> newSameSave);
+	const String &GetDisplayName() const;
 	void SetDisplayName(String displayName);
-	ByteString GetName();
+	const ByteString &GetName() const;
 	void SetFileName(ByteString fileName);
-	String GetError();
+	const String &GetError() const;
 	void SetLoadingError(String error);
 
 	void LazyUnload();
-
-	virtual ~SaveFile();
 private:
-	GameSave * gameSave;
+	std::unique_ptr<GameSave> gameSave;
 	ByteString filename;
 	String displayName;
 	String loadingError;

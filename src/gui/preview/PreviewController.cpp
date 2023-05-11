@@ -5,6 +5,7 @@
 #include "PreviewView.h"
 #include "client/Client.h"
 #include "client/SaveInfo.h"
+#include "client/GameSave.h"
 #include "common/platform/Platform.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
@@ -84,9 +85,14 @@ void PreviewController::NotifyAuthUserChanged(Client * sender)
 	previewModel->SetCommentBoxEnabled(sender->GetAuthUser().UserID);
 }
 
-SaveInfo * PreviewController::GetSaveInfo()
+const SaveInfo *PreviewController::GetSaveInfo() const
 {
 	return previewModel->GetSaveInfo();
+}
+
+std::unique_ptr<SaveInfo> PreviewController::TakeSaveInfo()
+{
+	return previewModel->TakeSaveInfo();
 }
 
 bool PreviewController::GetDoOpen()

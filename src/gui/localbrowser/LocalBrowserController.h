@@ -1,6 +1,7 @@
 #pragma once
 #include "common/String.h"
 #include <functional>
+#include <memory>
 
 class SaveFile;
 class LocalBrowserView;
@@ -13,14 +14,14 @@ public:
 	bool HasDone;
 	LocalBrowserController(std::function<void ()> onDone = nullptr);
 	LocalBrowserView * GetView() {return browserView;}
-	SaveFile * GetSave();
+	std::unique_ptr<SaveFile> TakeSave();
 	void RemoveSelected();
 	void removeSelectedC();
 	void ClearSelection();
 	void Selected(ByteString stampID, bool selected);
 	void RescanStamps();
 	void RefreshSavesList();
-	void OpenSave(SaveFile * stamp);
+	void OpenSave(int index);
 	bool GetMoveToFront();
 	void SetMoveToFront(bool move);
 	void SetPage(int page);

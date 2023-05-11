@@ -6,19 +6,13 @@
 #include "client/Client.h"
 #include "client/SaveInfo.h"
 
-TagsModel::TagsModel():
-	save(NULL)
+void TagsModel::SetSave(SaveInfo *newSave /* non-owning */)
 {
-
-}
-
-void TagsModel::SetSave(SaveInfo * save)
-{
-	this->save = save;
+	this->save = newSave;
 	notifyTagsChanged();
 }
 
-SaveInfo * TagsModel::GetSave()
+SaveInfo *TagsModel::GetSave() // non-owning
 {
 	return save;
 }
@@ -72,7 +66,3 @@ void TagsModel::notifyTagsChanged()
 		observers[i]->NotifyTagsChanged(this);
 	}
 }
-
-TagsModel::~TagsModel() {
-}
-

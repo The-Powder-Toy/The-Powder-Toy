@@ -24,7 +24,7 @@ class LoadFilesTask: public Task
 {
 	ByteString directory;
 	ByteString search;
-	std::vector<SaveFile*> saveFiles;
+	std::vector<std::unique_ptr<SaveFile>> saveFiles;
 
 	void before() override
 	{
@@ -44,20 +44,20 @@ class LoadFilesTask: public Task
 		notifyProgress(-1);
 		for(std::vector<ByteString>::iterator iter = files.begin(), end = files.end(); iter != end; ++iter)
 		{
-			SaveFile * saveFile = new SaveFile(directory + *iter, true);
-			saveFiles.push_back(saveFile);
+			auto saveFile = std::make_unique<SaveFile>(directory + *iter, true);
 
 			ByteString filename = (*iter).SplitFromEndBy(PATH_SEP_CHAR).After();
 			filename = filename.SplitFromEndBy('.').Before();
 			saveFile->SetDisplayName(filename.FromUtf8());
+			saveFiles.push_back(std::move(saveFile));
 		}
 		return true;
 	}
 
 public:
-	std::vector<SaveFile*> GetSaveFiles()
+	std::vector<std::unique_ptr<SaveFile>> TakeSaveFiles()
 	{
-		return saveFiles;
+		return std::move(saveFiles);
 	}
 
 	LoadFilesTask(ByteString directory, ByteString search):
@@ -128,15 +128,20 @@ void FileBrowserActivity::DoSearch(ByteString search)
 	}
 }
 
-void FileBrowserActivity::SelectSave(SaveFile * file)
+void FileBrowserActivity::SelectSave(int index)
 {
 	if (onSelected)
-		onSelected(std::unique_ptr<SaveFile>(new SaveFile(*file)));
+	{
+		auto file = std::move(files[index]);
+		files.clear();
+		onSelected(std::move(file));
+	}
 	Exit();
 }
 
-void FileBrowserActivity::DeleteSave(SaveFile * file)
+void FileBrowserActivity::DeleteSave(int index)
 {
+	auto &file = files[index];
 	String deleteMessage = "Are you sure you want to delete " + file->GetDisplayName() + ".cps?";
 	if (ConfirmPrompt::Blocking("Delete Save", deleteMessage))
 	{
@@ -145,8 +150,9 @@ void FileBrowserActivity::DeleteSave(SaveFile * file)
 	}
 }
 
-void FileBrowserActivity::RenameSave(SaveFile * file)
+void FileBrowserActivity::RenameSave(int index)
 {
+	auto &file = files[index];
 	ByteString newName = TextPrompt::Blocking("Rename", "Change save name", file->GetDisplayName(), "", 0).ToUtf8();
 	if (newName.length())
 	{
@@ -168,10 +174,6 @@ void FileBrowserActivity::cleanup()
 	}
 	componentsQueue.clear();
 
-	for (auto file : files)
-	{
-		delete file;
-	}
 	files.clear();
 }
 
@@ -199,7 +201,8 @@ void FileBrowserActivity::NotifyDone(Task * task)
 {
 	fileX = 0;
 	fileY = 0;
-	files = ((LoadFilesTask*)task)->GetSaveFiles();
+	files = ((LoadFilesTask*)task)->TakeSaveFiles();
+	createButtons = true;
 	totalFiles = files.size();
 	delete loadFiles;
 	loadFiles = NULL;
@@ -254,35 +257,37 @@ void FileBrowserActivity::OnTick(float dt)
 	if(loadFiles)
 		loadFiles->Poll();
 
-	while(files.size())
+	if (createButtons)
 	{
-		SaveFile * saveFile = files.back();
-		files.pop_back();
-
-		if(fileX == filesX)
+		createButtons = false;
+		for (auto i = 0; i < int(files.size()); ++i)
 		{
-			fileX = 0;
-			fileY++;
-		}
-		ui::SaveButton * saveButton = new ui::SaveButton(
-						ui::Point(
-							buttonXOffset + buttonPadding + fileX*(buttonWidth+buttonPadding*2),
-							buttonYOffset + buttonPadding + fileY*(buttonHeight+buttonPadding*2)
-							),
-						ui::Point(buttonWidth, buttonHeight),
-						saveFile);
-		saveButton->AddContextMenu(1);
-		saveButton->Tick(dt);
-		saveButton->SetActionCallback({
-			[this, saveButton] { SelectSave(saveButton->GetSaveFile()); },
-			[this, saveButton] { RenameSave(saveButton->GetSaveFile()); },
-			[this, saveButton] { DeleteSave(saveButton->GetSaveFile()); }
-		});
+			auto &saveFile = files[i];
+			if(fileX == filesX)
+			{
+				fileX = 0;
+				fileY++;
+			}
+			ui::SaveButton * saveButton = new ui::SaveButton(
+							ui::Point(
+								buttonXOffset + buttonPadding + fileX*(buttonWidth+buttonPadding*2),
+								buttonYOffset + buttonPadding + fileY*(buttonHeight+buttonPadding*2)
+								),
+							ui::Point(buttonWidth, buttonHeight),
+							saveFile.get());
+			saveButton->AddContextMenu(1);
+			saveButton->Tick(dt);
+			saveButton->SetActionCallback({
+				[this, i] { SelectSave(i); },
+				[this, i] { RenameSave(i); },
+				[this, i] { DeleteSave(i); }
+			});
 
-		progressBar->SetStatus("Rendering thumbnails");
-		progressBar->SetProgress(totalFiles ? (totalFiles - files.size()) * 100 / totalFiles : 0);
-		componentsQueue.push_back(saveButton);
-		fileX++;
+			progressBar->SetStatus("Rendering thumbnails");
+			progressBar->SetProgress(totalFiles ? (totalFiles - files.size()) * 100 / totalFiles : 0);
+			componentsQueue.push_back(saveButton);
+			fileX++;
+		}
 	}
 	if(componentsQueue.size())
 	{

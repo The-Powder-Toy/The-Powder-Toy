@@ -1,6 +1,7 @@
 #pragma once
 #include "client/ClientListener.h"
 #include <functional>
+#include <memory>
 
 class SaveInfo;
 class LoginController;
@@ -24,7 +25,8 @@ public:
 	void Report(String message);
 	void ShowLogin();
 	bool GetDoOpen();
-	SaveInfo * GetSaveInfo();
+	const SaveInfo *GetSaveInfo() const;
+	std::unique_ptr<SaveInfo> TakeSaveInfo();
 	PreviewView * GetView() { return previewView; }
 	void Update();
 	void FavouriteSave();

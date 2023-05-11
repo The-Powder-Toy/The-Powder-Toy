@@ -15,7 +15,7 @@ class SaveRenderer: public ExplicitSingleton<SaveRenderer> {
 	std::mutex renderMutex;
 public:
 	SaveRenderer();
-	std::unique_ptr<VideoBuffer> Render(GameSave * save, bool decorations = true, bool fire = true, Renderer *renderModeSource = nullptr);
+	std::unique_ptr<VideoBuffer> Render(const GameSave *save, bool decorations = true, bool fire = true, Renderer *renderModeSource = nullptr);
 	void Flush(int begin, int end);
 	virtual ~SaveRenderer();
 };

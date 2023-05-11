@@ -343,12 +343,12 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 	return 0;
 }
 
-GameSave * Simulation::Save(bool includePressure)
+std::unique_ptr<GameSave> Simulation::Save(bool includePressure)
 {
 	return Save(includePressure, 0, 0, XRES-1, YRES-1);
 }
 
-GameSave * Simulation::Save(bool includePressure, int fullX, int fullY, int fullX2, int fullY2)
+std::unique_ptr<GameSave> Simulation::Save(bool includePressure, int fullX, int fullY, int fullX2, int fullY2)
 {
 	int blockX, blockY, blockX2, blockY2, blockW, blockH;
 	//Normalise incoming coords
@@ -376,7 +376,7 @@ GameSave * Simulation::Save(bool includePressure, int fullX, int fullY, int full
 	blockW = blockX2-blockX;
 	blockH = blockY2-blockY;
 
-	GameSave * newSave = new GameSave(blockW, blockH);
+	auto newSave = std::make_unique<GameSave>(blockW, blockH);
 	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
 	auto &properties = Particle::GetProperties();
 	newSave->frameCount = frameCount;
@@ -507,25 +507,23 @@ GameSave * Simulation::Save(bool includePressure, int fullX, int fullY, int full
 			newSave->stkm.fanFigh.push_back(i);
 	}
 
-	SaveSimOptions(newSave);
+	SaveSimOptions(*newSave);
 	newSave->pmapbits = PMAPBITS;
 	return newSave;
 }
 
-void Simulation::SaveSimOptions(GameSave * gameSave)
+void Simulation::SaveSimOptions(GameSave &gameSave)
 {
-	if (!gameSave)
-		return;
-	gameSave->gravityMode = gravityMode;
-	gameSave->customGravityX = customGravityX;
-	gameSave->customGravityY = customGravityY;
-	gameSave->airMode = air->airMode;
-	gameSave->ambientAirTemp = air->ambientAirTemp;
-	gameSave->edgeMode = edgeMode;
-	gameSave->legacyEnable = legacy_enable;
-	gameSave->waterEEnabled = water_equal_test;
-	gameSave->gravityEnable = grav->IsEnabled();
-	gameSave->aheatEnable = aheat_enable;
+	gameSave.gravityMode = gravityMode;
+	gameSave.customGravityX = customGravityX;
+	gameSave.customGravityY = customGravityY;
+	gameSave.airMode = air->airMode;
+	gameSave.ambientAirTemp = air->ambientAirTemp;
+	gameSave.edgeMode = edgeMode;
+	gameSave.legacyEnable = legacy_enable;
+	gameSave.waterEEnabled = water_equal_test;
+	gameSave.gravityEnable = grav->IsEnabled();
+	gameSave.aheatEnable = aheat_enable;
 }
 
 bool Simulation::FloodFillPmapCheck(int x, int y, int type)

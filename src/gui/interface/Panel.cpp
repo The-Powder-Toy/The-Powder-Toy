@@ -78,7 +78,9 @@ void Panel::Draw(const Point& screenPos)
 			auto rect = RectSized(child->Position + ViewportPosition, child->Size);
 			//check if the component is in the screen, draw if it is
 			if (rect & Size.OriginRect())
+			{
 				child->Draw(screenPos + rect.TopLeft);
+			}
 		}
 
 	GetGraphics()->SwapClipRect(clip); // apply old cliprect
