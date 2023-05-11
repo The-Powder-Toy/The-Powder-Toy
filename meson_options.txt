@@ -280,3 +280,9 @@ option(
 	value: '',
 	description: 'Build date string, used by ghactions workflows, not useful otherwise'
 )
+option(
+	'platform_clipboard',
+	type: 'boolean',
+	value: true,
+	description: 'Enable platform clipboard, allows copying simulation data between different windows'
+)

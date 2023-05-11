@@ -5,6 +5,7 @@
 #include "gui/interface/Engine.h"
 #include "graphics/Graphics.h"
 #include "common/platform/Platform.h"
+#include "common/clipboard/Clipboard.h"
 #include <iostream>
 
 int desktopWidth = 1280;
@@ -113,6 +114,7 @@ void SDLOpen()
 		fprintf(stderr, "Initializing SDL (video subsystem): %s\n", SDL_GetError());
 		Platform::Exit(-1);
 	}
+	Clipboard::Init();
 
 	SDLSetScreen();
 
@@ -256,6 +258,7 @@ void SDLSetScreen()
 			Platform::Exit(-1);
 		}
 		SDL_RaiseWindow(sdl_window);
+		Clipboard::RecreateWindow();
 	}
 	SDL_RenderSetIntegerScale(sdl_renderer, newFrameOpsNorm.forceIntegerScaling ? SDL_TRUE : SDL_FALSE);
 	if (!(newFrameOpsNorm.resizable && SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_MAXIMIZED))

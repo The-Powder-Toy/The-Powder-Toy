@@ -50,9 +50,6 @@ class GameModel
 
 private:
 	std::vector<Notification*> notifications;
-	//int clipboardSize;
-	//unsigned char * clipboardData;
-	std::unique_ptr<GameSave> clipboard;
 	std::unique_ptr<GameSave> placeSave;
 	std::unique_ptr<GameSave> transformedPlaceSave;
 	std::deque<String> consoleLog;

@@ -19,6 +19,7 @@
 #include "client/SaveInfo.h"
 #include "client/http/ExecVoteRequest.h"
 #include "common/platform/Platform.h"
+#include "common/clipboard/Clipboard.h"
 #include "graphics/Renderer.h"
 #include "simulation/Air.h"
 #include "simulation/GOLString.h"
@@ -1371,12 +1372,12 @@ void GameModel::TransformPlaceSave(Mat2<int> transform, Vec2<int> nudge)
 
 void GameModel::SetClipboard(std::unique_ptr<GameSave> save)
 {
-	clipboard = std::move(save);
+	Clipboard::SetClipboardData(std::move(save));
 }
 
 const GameSave *GameModel::GetClipboard() const
 {
-	return clipboard.get();
+	return Clipboard::GetClipboardData();
 }
 
 const GameSave *GameModel::GetTransformedPlaceSave() const

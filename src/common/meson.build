@@ -4,4 +4,5 @@ common_files += files(
 	'tpt-thread-local.cpp',
 )
 
+subdir('clipboard')
 subdir('platform')

@@ -1,6 +1,7 @@
 #pragma once
 #include "common/String.h"
 #include <json/json.h>
+#include <optional>
 
 class Prefs
 {
@@ -35,7 +36,7 @@ public:
 	Prefs(ByteString path);
 
 	template<class Type>
-	Type Get(ByteString path, Type defaultValue) const
+	std::optional<Type> Get(ByteString path) const
 	{
 		auto value = GetJson(root, path);
 		if (value != Json::nullValue)
@@ -47,6 +48,17 @@ public:
 			catch (const std::exception &e)
 			{
 			}
+		}
+		return std::nullopt;
+	}
+
+	template<class Type>
+	Type Get(ByteString path, Type defaultValue) const
+	{
+		auto value = Get<Type>(path);
+		if (value)
+		{
+			return *value;
 		}
 		return defaultValue;
 	}

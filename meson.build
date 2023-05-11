@@ -362,6 +362,7 @@ else
 endif
 
 data_files = []
+powder_deps = []
 
 subdir('src')
 subdir('resources')
@@ -377,7 +378,7 @@ if host_platform == 'emscripten'
 endif
 
 if get_option('build_powder')
-	powder_deps = [
+	powder_deps += [
 		threads_dep,
 		zlib_dep,
 		png_dep,

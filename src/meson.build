@@ -176,6 +176,18 @@ configure_file(
 	configuration: elements_conf_data
 )
 
+clipboard_impl_defs = []
+foreach impl_subsys_factory : clipboard_impl_factories
+	clipboard_impl_defs += 'IMPL_DEFINE(' + impl_subsys_factory[0] + ', ' + impl_subsys_factory[1] + ')'
+endforeach
+clipboard_impls_data = configuration_data()
+clipboard_impls_data.set('impl_defs', '\n'.join(clipboard_impl_defs))
+configure_file(
+	input: 'common/clipboard/ClipboardImpls.template.h',
+	output: 'ClipboardImpls.h',
+	configuration: clipboard_impls_data
+)
+
 simulation_tool_defs = []
 foreach tool_name_id : simulation_tool_ids
 	simulation_tool_defs += 'TOOL_DEFINE(' + tool_name_id[0] + ', ' + tool_name_id[1].to_string() + ');'
