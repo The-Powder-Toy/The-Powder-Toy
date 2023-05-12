@@ -152,8 +152,7 @@ public:
 	void ShowConsole();
 	void HideConsole();
 	void FrameStep();
-	void TranslateSave(ui::Point point);
-	void TransformSave(matrix2d transform);
+	void TransformPlaceSave(Mat2<int> transform, Vec2<int> nudge);
 	bool MouseInZoom(ui::Point position);
 	ui::Point PointTranslate(ui::Point point);
 	ui::Point PointTranslateNoClamp(ui::Point point);

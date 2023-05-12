@@ -156,6 +156,15 @@ struct Mat2
 		return Vec2<decltype(std::declval<T>() * std::declval<S>())>(A * vec.X + B * vec.Y, C * vec.X + D * vec.Y);
 	}
 
+	template<typename S>
+	constexpr Mat2<decltype(std::declval<T>() * std::declval<S>())> operator*(Mat2<S> mat) const
+	{
+		return Mat2<decltype(std::declval<T>() * std::declval<S>())>(
+			A * mat.A + B * mat.C, A * mat.B + B * mat.D,
+			C * mat.A + D * mat.C, C * mat.B + D * mat.D
+		);
+	}
+
 	static Mat2<T> const Identity, MirrorX, MirrorY, CCW;
 };
 

@@ -36,6 +36,7 @@
 
 #include "Config.h"
 #include <cstring>
+#include <cstdlib>
 #include <iostream>
 #include <SDL.h>
 
@@ -1198,7 +1199,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 				{
 					if (placeSaveThumb && y <= WINDOWH-BARSIZE)
 					{
-						auto thumb = selectPoint2 - (placeSaveThumb->Size() - placeSaveOffset) / 2;
+						auto thumb = selectPoint2 + placeSaveOffset;
 						thumb = thumb.Clamp(RectBetween(Vec2<int>::Zero, RES - placeSaveThumb->Size()));
 						c->PlaceSave(thumb);
 					}
@@ -1334,16 +1335,16 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			switch (key)
 			{
 			case SDLK_RIGHT:
-				c->TranslateSave(ui::Point(1, 0));
+				TranslateSave({  1,  0 });
 				return;
 			case SDLK_LEFT:
-				c->TranslateSave(ui::Point(-1, 0));
+				TranslateSave({ -1,  0 });
 				return;
 			case SDLK_UP:
-				c->TranslateSave(ui::Point(0, -1));
+				TranslateSave({  0, -1 });
 				return;
 			case SDLK_DOWN:
-				c->TranslateSave(ui::Point(0, 1));
+				TranslateSave({  0,  1 });
 				return;
 			}
 			if (scan == SDL_SCANCODE_R && !repeat)
@@ -1351,17 +1352,17 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 				if (ctrl && shift)
 				{
 					//Vertical flip
-					c->TransformSave(m2d_new(1,0,0,-1));
+					TransformSave(Mat2<int>::MirrorY);
 				}
 				else if (!ctrl && shift)
 				{
 					//Horizontal flip
-					c->TransformSave(m2d_new(-1,0,0,1));
+					TransformSave(Mat2<int>::MirrorX);
 				}
 				else
 				{
 					//Rotate 90deg
-					c->TransformSave(m2d_new(0,1,-1,0));
+					TransformSave(Mat2<int>::CCW);
 				}
 				return;
 			}
@@ -1908,16 +1909,62 @@ void GameView::NotifyLogChanged(GameModel * sender, String entry)
 
 void GameView::NotifyPlaceSaveChanged(GameModel * sender)
 {
-	placeSaveOffset = ui::Point(0, 0);
-	if(sender->GetPlaceSave())
+	placeSaveTransform = Mat2<int>::Identity;
+	placeSaveTranslate = Vec2<int>::Zero;
+	ApplyTransformPlaceSave();
+}
+
+void GameView::TranslateSave(Vec2<int> addToTranslate)
+{
+	placeSaveTranslate += addToTranslate;
+	ApplyTransformPlaceSave();
+}
+
+void GameView::TransformSave(Mat2<int> mulToTransform)
+{
+	placeSaveTranslate = Vec2<int>::Zero; // reset offset
+	placeSaveTransform = mulToTransform * placeSaveTransform;
+	ApplyTransformPlaceSave();
+}
+
+template<class Signed>
+static std::pair<Signed, Signed> floorDiv(Signed a, Signed b)
+{
+	auto quo = a / b;
+	auto rem = a % b;
+	if (a < Signed(0) && rem)
 	{
-		placeSaveThumb = SaveRenderer::Ref().Render(sender->GetPlaceSave(), true, true, sender->GetRenderer());
+		quo -= Signed(1);
+		rem += b;
+	}
+	return { quo, rem };
+}
+
+void GameView::ApplyTransformPlaceSave()
+{
+	auto remX = floorDiv(placeSaveTranslate.X, CELL).second;
+	auto remY = floorDiv(placeSaveTranslate.Y, CELL).second;
+	c->TransformPlaceSave(placeSaveTransform, { remX, remY });
+}
+
+void GameView::NotifyTransformedPlaceSaveChanged(GameModel *sender)
+{
+	if (sender->GetTransformedPlaceSave())
+	{
+		placeSaveThumb = SaveRenderer::Ref().Render(sender->GetTransformedPlaceSave(), true, true, sender->GetRenderer());
+		auto [ quoX, remX ] = floorDiv(placeSaveTranslate.X, CELL);
+		auto [ quoY, remY ] = floorDiv(placeSaveTranslate.Y, CELL);
+		placeSaveOffset = Vec2{ quoX, quoY } * CELL;
+		auto usefulSize = placeSaveThumb->Size();
+		if (remX) usefulSize.X -= CELL;
+		if (remY) usefulSize.Y -= CELL;
+		placeSaveOffset -= usefulSize / 2;
 		selectMode = PlaceSave;
 		selectPoint2 = mousePosition;
 	}
 	else
 	{
-		placeSaveThumb = nullptr;
+		placeSaveThumb.reset();
 		selectMode = SelectNone;
 	}
 }
@@ -2127,7 +2174,7 @@ void GameView::OnDraw()
 			{
 				if(placeSaveThumb && selectPoint2.X!=-1)
 				{
-					auto thumb = selectPoint2 - (placeSaveThumb->Size() - placeSaveOffset) / 2 + Vec2(1, 1) * CELL / 2;
+					auto thumb = selectPoint2 + placeSaveOffset + Vec2(1, 1) * CELL / 2;
 					thumb = c->NormaliseBlockCoord(thumb).Clamp(RectBetween(Vec2<int>::Zero, RES - placeSaveThumb->Size()));
 					auto rect = RectSized(thumb, placeSaveThumb->Size());
 					ren->BlendImage(placeSaveThumb->Data(), 0x80, rect);

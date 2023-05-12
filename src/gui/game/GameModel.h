@@ -46,6 +46,7 @@ private:
 	//unsigned char * clipboardData;
 	std::unique_ptr<GameSave> clipboard;
 	std::unique_ptr<GameSave> placeSave;
+	std::unique_ptr<GameSave> transformedPlaceSave;
 	std::deque<String> consoleLog;
 	std::vector<GameView*> observers;
 	std::vector<Tool*> toolList;
@@ -104,6 +105,7 @@ private:
 	void notifyZoomChanged();
 	void notifyClipboardChanged();
 	void notifyPlaceSaveChanged();
+	void notifyTransformedPlaceSaveChanged();
 	void notifyColourSelectorColourChanged();
 	void notifyColourSelectorVisibilityChanged();
 	void notifyColourPresetsChanged();
@@ -227,11 +229,12 @@ public:
 	ui::Point GetZoomWindowPosition();
 	void SetClipboard(std::unique_ptr<GameSave> save);
 	void SetPlaceSave(std::unique_ptr<GameSave> save);
+	void TransformPlaceSave(Mat2<int> transform, Vec2<int> nudge);
 	void Log(String message, bool printToFile);
 	std::deque<String> GetLog();
 	const GameSave *GetClipboard() const;
 	const GameSave *GetPlaceSave() const;
-	std::unique_ptr<GameSave> TakePlaceSave();
+	const GameSave *GetTransformedPlaceSave() const;
 	bool GetMouseClickRequired();
 	void SetMouseClickRequired(bool mouseClickRequired);
 	bool GetIncludePressure();

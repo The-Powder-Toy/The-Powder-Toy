@@ -238,7 +238,7 @@ std::pair<int, sign::Type> GameController::GetSignSplit(int signID)
 
 void GameController::PlaceSave(ui::Point position)
 {
-	auto *placeSave = gameModel->GetPlaceSave();
+	auto *placeSave = gameModel->GetTransformedPlaceSave();
 	if (placeSave)
 	{
 		HistorySnapshot();
@@ -248,6 +248,7 @@ void GameController::PlaceSave(ui::Point position)
 			Client::Ref().MergeStampAuthorInfo(placeSave->authors);
 		}
 	}
+	gameModel->SetPlaceSave(nullptr);
 }
 
 void GameController::Install()
@@ -420,23 +421,9 @@ void GameController::LoadStamp(std::unique_ptr<GameSave> stamp)
 	gameModel->SetPlaceSave(std::move(stamp));
 }
 
-void GameController::TranslateSave(ui::Point point)
+void GameController::TransformPlaceSave(Mat2<int> transform, Vec2<int> nudge)
 {
-	vector2d translate = v2d_new(float(point.X), float(point.Y));
-	auto save = gameModel->TakePlaceSave();
-	vector2d translated = save->Translate(translate);
-	ui::Point currentPlaceSaveOffset = gameView->GetPlaceSaveOffset();
-	// resets placeSaveOffset to 0, which is why we back it up first
-	gameModel->SetPlaceSave(std::move(save));
-	gameView->SetPlaceSaveOffset(ui::Point(int(translated.x), int(translated.y)) + currentPlaceSaveOffset);
-}
-
-void GameController::TransformSave(matrix2d transform)
-{
-	vector2d translate = v2d_zero;
-	auto save = gameModel->TakePlaceSave();
-	save->Transform(transform, translate);
-	gameModel->SetPlaceSave(std::move(save));
+	gameModel->TransformPlaceSave(transform, nudge);
 }
 
 void GameController::ToolClick(int toolSelection, ui::Point point)

@@ -57,7 +57,6 @@ public:
 class GameSave
 {
 	// number of pixels translated. When translating CELL pixels, shift all CELL grids
-	vector2d translated = { 0, 0 };
 	void readOPS(const std::vector<char> &data);
 	void readPSv(const std::vector<char> &data);
 	std::pair<bool, std::vector<char>> serialiseOPS() const;
@@ -120,9 +119,7 @@ public:
 	void setSize(Vec2<int> newBlockSize);
 	// return value is [ fakeFromNewerVersion, gameData ]
 	std::pair<bool, std::vector<char>> Serialise() const;
-	vector2d Translate(vector2d translate);
-	void Transform(matrix2d transform, vector2d translate);
-	void Transform(matrix2d transform, vector2d translate, vector2d translateReal, Vec2<int> newPartSize);
+	void Transform(Mat2<int> transform, Vec2<int> nudge);
 
 	void Expand(const std::vector<char> &data);
 

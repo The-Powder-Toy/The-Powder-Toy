@@ -111,232 +111,141 @@ std::pair<bool, std::vector<char>> GameSave::Serialise() const
 	return { false, {} };
 }
 
-vector2d GameSave::Translate(vector2d translate)
+extern const std::array<Vec2<int>, 8> Element_PIPE_offsets;
+void Element_PIPE_transformPatchOffsets(Particle &part, const std::array<int, 8> &offsetMap);
+
+void GameSave::Transform(Mat2<int> transform, Vec2<int> nudge)
 {
-	float nx, ny;
-	vector2d pos;
-	vector2d translateReal = translate;
-	float minx = 0, miny = 0, maxx = 0, maxy = 0;
-	// determine minimum and maximum position of all particles / signs
-	for (size_t i = 0; i < signs.size(); i++)
+	// undo translation by rotation
+	auto br  = transform * (blockSize * CELL - Vec2{ 1, 1 });
+	auto bbr = transform * (blockSize        - Vec2{ 1, 1 });
+	auto translate  = Vec2{ std::max(0,  -br.X), std::max(0,  -br.Y) };
+	auto btranslate = Vec2{ std::max(0, -bbr.X), std::max(0, -bbr.Y) };
+	auto newBlockS = transform * blockSize;
+	newBlockS.X = std::abs(newBlockS.X);
+	newBlockS.Y = std::abs(newBlockS.Y);
+	translate += nudge;
+
+	// Grow as needed.
+	assert((Vec2{ CELL, CELL }.OriginRect().Contains(nudge)));
+	if (nudge.X) newBlockS.X += 1;
+	if (nudge.Y) newBlockS.Y += 1;
+
+	// TODO: allow transforms to yield bigger saves. For this we'd need SaveRenderer (the singleton, not Renderer)
+	// to fully render them (possible with stitching) and Simulation::Load to be able to take only the part that fits.
+	newBlockS = newBlockS.Clamp(RectBetween({ 0, 0 }, CELLS));
+	auto newPartS = newBlockS * CELL;
+
+	// Prepare to patch pipes.
+	std::array<int, 8> pipeOffsetMap;
 	{
-		pos = v2d_new(float(signs[i].x), float(signs[i].y));
-		pos = v2d_add(pos,translate);
-		nx = floor(pos.x+0.5f);
-		ny = floor(pos.y+0.5f);
-		if (nx < minx)
-			minx = nx;
-		if (ny < miny)
-			miny = ny;
-		if (nx > maxx)
-			maxx = nx;
-		if (ny > maxy)
-			maxy = ny;
+		std::transform(Element_PIPE_offsets.begin(), Element_PIPE_offsets.end(), pipeOffsetMap.begin(), [transform](auto offset) {
+			auto it = std::find(Element_PIPE_offsets.begin(), Element_PIPE_offsets.end(), transform * offset);
+			assert(it != Element_PIPE_offsets.end());
+			return int(it - Element_PIPE_offsets.begin());
+		});
 	}
-	for (int i = 0; i < particlesCount; i++)
+
+	// Translate signs.
+	for (auto i = 0U; i < signs.size(); i++)
 	{
-		if (!particles[i].type) continue;
-		pos = v2d_new(particles[i].x, particles[i].y);
-		pos = v2d_add(pos,translate);
-		nx = floor(pos.x+0.5f);
-		ny = floor(pos.y+0.5f);
-		if (nx < minx)
-			minx = nx;
-		if (ny < miny)
-			miny = ny;
-		if (nx > maxx)
-			maxx = nx;
-		if (ny > maxy)
-			maxy = ny;
-	}
-	// determine whether corrections are needed. If moving in this direction would delete stuff, expand the save
-	vector2d backCorrection = v2d_new(
-		(minx < 0) ? (-floor(minx / CELL)) : 0,
-		(miny < 0) ? (-floor(miny / CELL)) : 0
-	);
-	int blockBoundsX = int(maxx / CELL) + 1, blockBoundsY = int(maxy / CELL) + 1;
-	vector2d frontCorrection = v2d_new(
-		float((blockBoundsX > blockSize.X) ? (blockBoundsX - blockSize.X) : 0),
-		float((blockBoundsY > blockSize.Y) ? (blockBoundsY - blockSize.Y) : 0)
-	);
-
-	// get new width based on corrections
-	auto newWidth = int((blockSize.X + backCorrection.x + frontCorrection.x) * CELL);
-	auto newHeight = int((blockSize.Y + backCorrection.y + frontCorrection.y) * CELL);
-	if (newWidth > XRES)
-		frontCorrection.x = backCorrection.x = 0;
-	if (newHeight > YRES)
-		frontCorrection.y = backCorrection.y = 0;
-
-	// call Transform to do the transformation we wanted when calling this function
-	translate = v2d_add(translate, v2d_multiply_float(backCorrection, CELL));
-	Transform(m2d_identity, translate, translateReal, {
-	    int((blockSize.X + backCorrection.x + frontCorrection.x) * CELL),
-	    int((blockSize.Y + backCorrection.y + frontCorrection.y) * CELL)
-	});
-
-	// return how much we corrected. This is used to offset the position of the current stamp
-	// otherwise it would attempt to recenter it with the current size
-	return v2d_add(v2d_multiply_float(backCorrection, -CELL), v2d_multiply_float(frontCorrection, CELL));
-}
-
-void GameSave::Transform(matrix2d transform, vector2d translate)
-{
-	int width = blockSize.X*CELL, height = blockSize.Y*CELL;
-	vector2d tmp, ctl, cbr;
-	vector2d cornerso[4];
-	vector2d translateReal = translate;
-	// undo any translation caused by rotation
-	cornerso[0] = v2d_new(0,0);
-	cornerso[1] = v2d_new(float(width-1),0);
-	cornerso[2] = v2d_new(0,float(height-1));
-	cornerso[3] = v2d_new(float(width-1),float(height-1));
-	for (int i = 0; i < 4; i++)
-	{
-		tmp = m2d_multiply_v2d(transform,cornerso[i]);
-		if (i==0) ctl = cbr = tmp; // top left, bottom right corner
-		if (tmp.x<ctl.x) ctl.x = tmp.x;
-		if (tmp.y<ctl.y) ctl.y = tmp.y;
-		if (tmp.x>cbr.x) cbr.x = tmp.x;
-		if (tmp.y>cbr.y) cbr.y = tmp.y;
-	}
-	// casting as int doesn't quite do what we want with negative numbers, so use floor()
-	tmp = v2d_new(floor(ctl.x+0.5f),floor(ctl.y+0.5f));
-	translate = v2d_sub(translate,tmp);
-	auto newWidth = int(floor(cbr.x+0.5f))-int(floor(ctl.x+0.5f))+1;
-	auto newHeight = int(floor(cbr.y+0.5f))-int(floor(ctl.y+0.5f))+1;
-	Transform(transform, translate, translateReal, { newWidth, newHeight });
-}
-
-// transform is a matrix describing how we want to rotate this save
-// translate can vary depending on whether the save is bring rotated, or if a normal translate caused it to expand
-// translateReal is the original amount we tried to translate, used to calculate wall shifting
-void GameSave::Transform(matrix2d transform, vector2d translate, vector2d translateReal, Vec2<int> newPartSize)
-{
-	if (newPartSize.X>XRES) newPartSize.X = XRES;
-	if (newPartSize.Y>YRES) newPartSize.Y = YRES;
-
-	auto newBlockSize = newPartSize / CELL;
-
-	PlaneAdapter<std::vector<unsigned char>> blockMapNew(newBlockSize, 0);
-	PlaneAdapter<std::vector<float>> fanVelXNew(newBlockSize, 0.0f);
-	PlaneAdapter<std::vector<float>> fanVelYNew(newBlockSize, 0.0f);
-	PlaneAdapter<std::vector<float>> pressureNew(newBlockSize, 0.0f);
-	PlaneAdapter<std::vector<float>> velocityXNew(newBlockSize, 0.0f);
-	PlaneAdapter<std::vector<float>> velocityYNew(newBlockSize, 0.0f);
-	PlaneAdapter<std::vector<float>> ambientHeatNew(newBlockSize, 0.0f);
-	PlaneAdapter<std::vector<unsigned char>> blockAirNew(newBlockSize, 0);
-	PlaneAdapter<std::vector<unsigned char>> blockAirhNew(newBlockSize, 0);
-
-	// Match these up with the matrices provided in GameView::OnKeyPress.
-	bool patchPipeR = transform.a ==  0 && transform.b ==  1 && transform.c == -1 && transform.d ==  0;
-	bool patchPipeH = transform.a == -1 && transform.b ==  0 && transform.c ==  0 && transform.d ==  1;
-	bool patchPipeV = transform.a ==  1 && transform.b ==  0 && transform.c ==  0 && transform.d == -1;
-
-	// rotate and translate signs, parts, walls
-	for (size_t i = 0; i < signs.size(); i++)
-	{
-		auto pos = v2d_new(float(signs[i].x), float(signs[i].y));
-		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
-		auto newPos = Vec2{ int(floor(pos.x+0.5f)), int(floor(pos.y+0.5f)) };
-		if (!newPartSize.OriginRect().Contains(newPos))
+		auto newPos = transform * Vec2{ signs[i].x, signs[i].y } + translate;
+		if (!newPartS.OriginRect().Contains(newPos))
 		{
-			signs[i].text[0] = 0;
+			signs[i].text.clear();
 			continue;
 		}
 		signs[i].x = newPos.X;
 		signs[i].y = newPos.Y;
 	}
+
+	// Translate particles.
 	for (int i = 0; i < particlesCount; i++)
 	{
-		if (!particles[i].type) continue;
-		auto pos = v2d_new(particles[i].x, particles[i].y);
-		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
-		auto newPos = Vec2{ int(floor(pos.x+0.5f)), int(floor(pos.y+0.5f)) };
-		if (!newPartSize.OriginRect().Contains(newPos))
+		if (!particles[i].type)
+		{
+			continue;
+		}
+		{
+			// * We want particles to retain their distance from the centre of the particle grid cell
+			//   they are in, but more importantly we also don't want them to change grid cells,
+			//   so we just get rid of the edge cases.
+			constexpr auto threshold = 0.001f;
+			auto boundaryDiffX = particles[i].x - (floor(particles[i].x) + 0.5f);
+			if (fabs(boundaryDiffX) < threshold)
+			{
+				particles[i].x += copysign(threshold, boundaryDiffX);
+			}
+			auto boundaryDiffY = particles[i].y - (floor(particles[i].y) + 0.5f);
+			if (fabs(boundaryDiffY) < threshold)
+			{
+				particles[i].y += copysign(threshold, boundaryDiffY);
+			}
+		}
+		if (particles[i].x - floor(particles[i].x) == 0.5f) particles[i].x += 0.001f;
+		if (particles[i].y - floor(particles[i].y) == 0.5f) particles[i].y += 0.001f;
+		auto newPos = transform * Vec2{ particles[i].x, particles[i].y } + translate;
+		if (!newPartS.OriginRect().Contains(Vec2{ int(floor(newPos.X + 0.5f)), int(floor(newPos.Y + 0.5f)) }))
 		{
 			particles[i].type = PT_NONE;
 			continue;
 		}
-		particles[i].x = float(newPos.X);
-		particles[i].y = float(newPos.Y);
-		auto vel = v2d_new(particles[i].vx, particles[i].vy);
-		vel = m2d_multiply_v2d(transform, vel);
-		particles[i].vx = vel.x;
-		particles[i].vy = vel.y;
+		particles[i].x = newPos.X;
+		particles[i].y = newPos.Y;
+		auto newVel = transform * Vec2{ particles[i].vx, particles[i].vy };
+		particles[i].vx = newVel.X;
+		particles[i].vy = newVel.Y;
 		if (particles[i].type == PT_PIPE || particles[i].type == PT_PPIP)
 		{
-			if (patchPipeR)
-			{
-				void Element_PIPE_patchR(Particle &part);
-				Element_PIPE_patchR(particles[i]);
-			}
-			if (patchPipeH)
-			{
-				void Element_PIPE_patchH(Particle &part);
-				Element_PIPE_patchH(particles[i]);
-			}
-			if (patchPipeV)
-			{
-				void Element_PIPE_patchV(Particle &part);
-				Element_PIPE_patchV(particles[i]);
-			}
+			Element_PIPE_transformPatchOffsets(particles[i], pipeOffsetMap);
 		}
 	}
 
-	// translate walls and other grid items when the stamp is shifted more than 4 pixels in any direction
-	int translateX = 0, translateY = 0;
-	if (translateReal.x > 0 && ((int)translated.x%CELL == 3
-	                        || (translated.x < 0 && (int)translated.x%CELL == 0)))
-		translateX = CELL;
-	else if (translateReal.x < 0 && ((int)translated.x%CELL == -3
-	                             || (translated.x > 0 && (int)translated.x%CELL == 0)))
-		translateX = -CELL;
-	if (translateReal.y > 0 && ((int)translated.y%CELL == 3
-	                        || (translated.y < 0 && (int)translated.y%CELL == 0)))
-		translateY = CELL;
-	else if (translateReal.y < 0 && ((int)translated.y%CELL == -3
-	                             || (translated.y > 0 && (int)translated.y%CELL == 0)))
-		translateY = -CELL;
-
+	// Translate blocky stuff.
+	PlaneAdapter<std::vector<unsigned char>> newBlockMap(newBlockS, 0);
+	PlaneAdapter<std::vector<float>> newFanVelX(newBlockS, 0.0f);
+	PlaneAdapter<std::vector<float>> newFanVelY(newBlockS, 0.0f);
+	PlaneAdapter<std::vector<float>> newPressure(newBlockS, 0.0f);
+	PlaneAdapter<std::vector<float>> newVelocityX(newBlockS, 0.0f);
+	PlaneAdapter<std::vector<float>> newVelocityY(newBlockS, 0.0f);
+	PlaneAdapter<std::vector<float>> newAmbientHeat(newBlockS, 0.0f);
+	PlaneAdapter<std::vector<unsigned char>> newBlockAir(newBlockS, 0);
+	PlaneAdapter<std::vector<unsigned char>> newBlockAirh(newBlockS, 0);
 	for (auto bpos : blockSize.OriginRect())
 	{
-		auto pos = v2d_new(bpos.X*CELL+CELL*0.4f+translateX, bpos.Y*CELL+CELL*0.4f+translateY);
-		pos = v2d_add(m2d_multiply_v2d(transform,pos),translate);
-		auto newBpos = Vec2{ int(pos.x/CELL), int(pos.y/CELL) };
-		if (!newBlockSize.OriginRect().Contains(newBpos))
+		auto newBpos = transform * bpos + btranslate;
+		if (!newBlockS.OriginRect().Contains(newBpos))
+		{
 			continue;
+		}
 		if (blockMap[bpos])
 		{
-			blockMapNew[newBpos] = blockMap[bpos];
-			if (blockMap[bpos]==WL_FAN)
+			newBlockMap[newBpos] = blockMap[bpos];
+			if (blockMap[bpos] == WL_FAN)
 			{
-				auto vel = v2d_new(fanVelX[bpos], fanVelY[bpos]);
-				vel = m2d_multiply_v2d(transform, vel);
-				fanVelXNew[newBpos] = vel.x;
-				fanVelYNew[newBpos] = vel.y;
+				auto newVel = transform * Vec2{ fanVelX[bpos], fanVelY[bpos] };
+				newFanVelX[newBpos] = newVel.X;
+				newFanVelY[newBpos] = newVel.Y;
 			}
 		}
-		pressureNew[newBpos] = pressure[bpos];
-		velocityXNew[newBpos] = velocityX[bpos];
-		velocityYNew[newBpos] = velocityY[bpos];
-		ambientHeatNew[newBpos] = ambientHeat[bpos];
-		blockAirNew[newBpos] = blockAir[bpos];
-		blockAirhNew[newBpos] = blockAirh[bpos];
+		newPressure[newBpos] = pressure[bpos];
+		newVelocityX[newBpos] = velocityX[bpos];
+		newVelocityY[newBpos] = velocityY[bpos];
+		newAmbientHeat[newBpos] = ambientHeat[bpos];
+		newBlockAir[newBpos] = blockAir[bpos];
+		newBlockAirh[newBpos] = blockAirh[bpos];
 	}
-	translated = v2d_add(m2d_multiply_v2d(transform, translated), translateReal);
+	blockMap = std::move(newBlockMap);
+	fanVelX = std::move(newFanVelX);
+	fanVelY = std::move(newFanVelY);
+	pressure = std::move(newPressure);
+	velocityX = std::move(newVelocityX);
+	velocityY = std::move(newVelocityY);
+	ambientHeat = std::move(newAmbientHeat);
+	blockAir = std::move(newBlockAir);
+	blockAirh = std::move(newBlockAirh);
 
-	blockSize = newBlockSize;
-
-	blockMap = blockMapNew;
-	fanVelX = fanVelXNew;
-	fanVelY = fanVelYNew;
-	pressure = pressureNew;
-	velocityX = velocityXNew;
-	velocityY = velocityYNew;
-	ambientHeat = ambientHeatNew;
-	blockAir = blockAirNew;
-	blockAirh = blockAirhNew;
+	blockSize = newBlockS;
 }
 
 static void CheckBsonFieldUser(bson_iterator iter, const char *field, unsigned char **data, unsigned int *fieldLen)

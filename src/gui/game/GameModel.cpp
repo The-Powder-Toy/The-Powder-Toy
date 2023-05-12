@@ -1336,8 +1336,19 @@ void GameModel::ClearSimulation()
 
 void GameModel::SetPlaceSave(std::unique_ptr<GameSave> save)
 {
+	transformedPlaceSave.reset();
 	placeSave = std::move(save);
 	notifyPlaceSaveChanged();
+}
+
+void GameModel::TransformPlaceSave(Mat2<int> transform, Vec2<int> nudge)
+{
+	if (placeSave)
+	{
+		transformedPlaceSave = std::make_unique<GameSave>(*placeSave);
+		transformedPlaceSave->Transform(transform, nudge);
+	}
+	notifyTransformedPlaceSaveChanged();
 }
 
 void GameModel::SetClipboard(std::unique_ptr<GameSave> save)
@@ -1350,15 +1361,9 @@ const GameSave *GameModel::GetClipboard() const
 	return clipboard.get();
 }
 
-const GameSave *GameModel::GetPlaceSave() const
+const GameSave *GameModel::GetTransformedPlaceSave() const
 {
-	return placeSave.get();
-}
-
-std::unique_ptr<GameSave> GameModel::TakePlaceSave()
-{
-	// we don't notify listeners because we'll get a new save soon anyway
-	return std::move(placeSave);
+	return transformedPlaceSave.get();
 }
 
 void GameModel::Log(String message, bool printToFile)
@@ -1556,6 +1561,14 @@ void GameModel::notifyPlaceSaveChanged()
 	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyPlaceSaveChanged(this);
+	}
+}
+
+void GameModel::notifyTransformedPlaceSaveChanged()
+{
+	for (size_t i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifyTransformedPlaceSaveChanged(this);
 	}
 }
 

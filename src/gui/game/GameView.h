@@ -119,6 +119,11 @@ private:
 
 	std::unique_ptr<VideoBuffer> placeSaveThumb;
 	ui::Point placeSaveOffset;
+	Mat2<int> placeSaveTransform = Mat2<int>::Identity;
+	Vec2<int> placeSaveTranslate = Vec2<int>::Zero;
+	void TranslateSave(Vec2<int> addToTranslate);
+	void TransformSave(Mat2<int> mulToTransform);
+	void ApplyTransformPlaceSave();
 
 	SimulationSample sample;
 
@@ -185,6 +190,7 @@ public:
 	void NotifyColourPresetsChanged(GameModel * sender);
 	void NotifyColourActivePresetChanged(GameModel * sender);
 	void NotifyPlaceSaveChanged(GameModel * sender);
+	void NotifyTransformedPlaceSaveChanged(GameModel *sender);
 	void NotifyNotificationsChanged(GameModel * sender);
 	void NotifyLogChanged(GameModel * sender, String entry);
 	void NotifyToolTipChanged(GameModel * sender);

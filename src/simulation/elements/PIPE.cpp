@@ -1,5 +1,7 @@
 #include "simulation/ElementCommon.h"
 
+extern const std::array<Vec2<int>, 8> Element_PIPE_offsets;
+void Element_PIPE_transformPatchOffsets(Particle &part, const std::array<int, 8> &offsetMap);
 int Element_PIPE_update(UPDATE_FUNC_ARGS);
 int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS);
 void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR);
@@ -78,40 +80,21 @@ constexpr int PPIP_TMPFLAG_TRIGGER_OFF     = 0x08000000;
 constexpr int PPIP_TMPFLAG_TRIGGER_ON      = 0x10000000;
 constexpr int PPIP_TMPFLAG_TRIGGERS        = 0x1C000000;
 
-signed char pos_1_rx[] = { -1,-1,-1, 0, 0, 1, 1, 1 };
-signed char pos_1_ry[] = { -1, 0, 1,-1, 1,-1, 0, 1 };
+const std::array<Vec2<int>, 8> Element_PIPE_offsets = {{
+	{ -1, -1 },
+	{ -1,  0 },
+	{ -1,  1 },
+	{  0, -1 },
+	{  0,  1 },
+	{  1, -1 },
+	{  1,  0 },
+	{  1,  1 },
+}};
 
-static void transformPatch(Particle &part, const int (&patch)[8])
+void Element_PIPE_transformPatchOffsets(Particle &part, const std::array<int, 8> &offsetMap)
 {
-	if (part.tmp & 0x00000200) part.tmp = (part.tmp & 0xFFFFE3FF) | (patch[(part.tmp & 0x00001C00) >> 10] << 10);
-	if (part.tmp & 0x00002000) part.tmp = (part.tmp & 0xFFFE3FFF) | (patch[(part.tmp & 0x0001C000) >> 14] << 14);
-}
-
-void Element_PIPE_patchR(Particle &part)
-{
-	// 035 -> 210
-	// 1 6 -> 4 3
-	// 247 -> 765
-	const int patchR[] = { 2, 4, 7, 1, 6, 0, 3, 5 };
-	transformPatch(part, patchR);
-}
-
-void Element_PIPE_patchH(Particle &part)
-{
-	// 035 -> 530
-	// 1 6 -> 6 1
-	// 247 -> 742
-	const int patchH[] = { 5, 6, 7, 3, 4, 0, 1, 2 };
-	transformPatch(part, patchH);
-}
-
-void Element_PIPE_patchV(Particle &part)
-{
-	// 035 -> 247
-	// 1 6 -> 1 6
-	// 247 -> 035
-	const int patchV[] = { 2, 1, 0, 4, 3, 7, 6, 5 };
-	transformPatch(part, patchV);
+	if (part.tmp & 0x00000200) part.tmp = (part.tmp & 0xFFFFE3FF) | (offsetMap[(part.tmp & 0x00001C00) >> 10] << 10);
+	if (part.tmp & 0x00002000) part.tmp = (part.tmp & 0xFFFE3FFF) | (offsetMap[(part.tmp & 0x0001C000) >> 14] << 14);
 }
 
 static unsigned int prevColor(unsigned int flags)
@@ -260,8 +243,8 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 				rndstore = sim->rng.gen();
 				rnd = rndstore&7;
 				//rndstore = rndstore>>3;
-				rx = pos_1_rx[rnd];
-				ry = pos_1_ry[rnd];
+				rx = Element_PIPE_offsets[rnd].X;
+				ry = Element_PIPE_offsets[rnd].Y;
 				if (BOUNDS_CHECK)
 				{
 					r = pmap[y+ry][x+rx];
@@ -501,8 +484,8 @@ static void pushParticle(Simulation * sim, int i, int count, int original)
 		{
 			rnd = rndstore&7;
 			rndstore = rndstore>>3;
-			rx = pos_1_rx[rnd];
-			ry = pos_1_ry[rnd];
+			rx = Element_PIPE_offsets[rnd].X;
+			ry = Element_PIPE_offsets[rnd].Y;
 			if (BOUNDS_CHECK)
 			{
 				r = sim->pmap[y+ry][x+rx];
@@ -537,7 +520,7 @@ static void pushParticle(Simulation * sim, int i, int count, int original)
 	else //predefined 1 pixel thick pipe movement
 	{
 		int coords = 7 - ((sim->parts[i].tmp>>10)&7);
-		r = sim->pmap[y+ pos_1_ry[coords]][x+ pos_1_rx[coords]];
+		r = sim->pmap[y+ Element_PIPE_offsets[coords].Y][x+ Element_PIPE_offsets[coords].X];
 		if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP) && (sim->parts[ID(r)].tmp&PFLAG_COLORS) != notctype && !TYP(sim->parts[ID(r)].ctype))
 		{
 			transfer_pipe_to_pipe(sim->parts+i, sim->parts+(ID(r)), false);
@@ -563,8 +546,8 @@ static void pushParticle(Simulation * sim, int i, int count, int original)
 		}
 		else if (!r) //Move particles out of pipe automatically, much faster at ends
 		{
-			rx = pos_1_rx[coords];
-			ry = pos_1_ry[coords];
+			rx = Element_PIPE_offsets[coords].X;
+			ry = Element_PIPE_offsets[coords].Y;
 			np = sim->create_part(-1,x+rx,y+ry,TYP(sim->parts[i].ctype));
 			if (np!=-1)
 			{
