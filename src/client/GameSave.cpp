@@ -742,42 +742,30 @@ void GameSave::readOPS(const std::vector<char> &data)
 			throw ParseException(ParseException::Corrupt, "Not enough wall data");
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
-			auto &bm = blockMap[blockP + bpos];
+			unsigned char bm = 0;
 			if (wallDataPlane[bpos])
 				bm = wallDataPlane[bpos];
 
-			if (bm==O_WL_WALLELEC)
-				bm=WL_WALLELEC;
-			if (bm==O_WL_EWALL)
-				bm=WL_EWALL;
-			if (bm==O_WL_DETECT)
-				bm=WL_DETECT;
-			if (bm==O_WL_STREAM)
-				bm=WL_STREAM;
-			if (bm==O_WL_FAN || bm==O_WL_FANHELPER)
-				bm=WL_FAN;
-			if (bm==O_WL_ALLOWLIQUID)
-				bm=WL_ALLOWLIQUID;
-			if (bm==O_WL_DESTROYALL)
-				bm=WL_DESTROYALL;
-			if (bm==O_WL_ERASE)
-				bm=WL_ERASE;
-			if (bm==O_WL_WALL)
-				bm=WL_WALL;
-			if (bm==O_WL_ALLOWAIR)
-				bm=WL_ALLOWAIR;
-			if (bm==O_WL_ALLOWSOLID)
-				bm=WL_ALLOWPOWDER;
-			if (bm==O_WL_ALLOWALLELEC)
-				bm=WL_ALLOWALLELEC;
-			if (bm==O_WL_EHOLE)
-				bm=WL_EHOLE;
-			if (bm==O_WL_ALLOWGAS)
-				bm=WL_ALLOWGAS;
-			if (bm==O_WL_GRAV)
-				bm=WL_GRAV;
-			if (bm==O_WL_ALLOWENERGY)
-				bm=WL_ALLOWENERGY;
+			switch (bm)
+			{
+			case O_WL_WALLELEC:     bm = WL_WALLELEC;     break;
+			case O_WL_EWALL:        bm = WL_EWALL;        break;
+			case O_WL_DETECT:       bm = WL_DETECT;       break;
+			case O_WL_STREAM:       bm = WL_STREAM;       break;
+			case O_WL_FAN:
+			case O_WL_FANHELPER:    bm = WL_FAN;          break;
+			case O_WL_ALLOWLIQUID:  bm = WL_ALLOWLIQUID;  break;
+			case O_WL_DESTROYALL:   bm = WL_DESTROYALL;   break;
+			case O_WL_ERASE:        bm = WL_ERASE;        break;
+			case O_WL_WALL:         bm = WL_WALL;         break;
+			case O_WL_ALLOWAIR:     bm = WL_ALLOWAIR;     break;
+			case O_WL_ALLOWSOLID:   bm = WL_ALLOWPOWDER;  break;
+			case O_WL_ALLOWALLELEC: bm = WL_ALLOWALLELEC; break;
+			case O_WL_EHOLE:        bm = WL_EHOLE;        break;
+			case O_WL_ALLOWGAS:     bm = WL_ALLOWGAS;     break;
+			case O_WL_GRAV:         bm = WL_GRAV;         break;
+			case O_WL_ALLOWENERGY:  bm = WL_ALLOWENERGY;  break;
+			}
 
 			if (bm == WL_FAN && fanData)
 			{
@@ -791,6 +779,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 
 			if (bm >= UI_WALLCOUNT)
 				bm = 0;
+			blockMap[blockP + bpos] = bm;
 		}
 	}
 
@@ -1371,76 +1360,54 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 				p++;
 				continue;
 			}
-			auto &bm = blockMap[bpos];
-			bm = data[p];
-			if (bm==1)
-				bm=WL_WALL;
-			else if (bm==2)
-				bm=WL_DESTROYALL;
-			else if (bm==3)
-				bm=WL_ALLOWLIQUID;
-			else if (bm==4)
-				bm=WL_FAN;
-			else if (bm==5)
-				bm=WL_STREAM;
-			else if (bm==6)
-				bm=WL_DETECT;
-			else if (bm==7)
-				bm=WL_EWALL;
-			else if (bm==8)
-				bm=WL_WALLELEC;
-			else if (bm==9)
-				bm=WL_ALLOWAIR;
-			else if (bm==10)
-				bm=WL_ALLOWPOWDER;
-			else if (bm==11)
-				bm=WL_ALLOWALLELEC;
-			else if (bm==12)
-				bm=WL_EHOLE;
-			else if (bm==13)
-				bm=WL_ALLOWGAS;
+			auto bm = data[p];
+			switch (bm)
+			{
+			case  1: bm = WL_WALL        ; break;
+			case  2: bm = WL_DESTROYALL  ; break;
+			case  3: bm = WL_ALLOWLIQUID ; break;
+			case  4: bm = WL_FAN         ; break;
+			case  5: bm = WL_STREAM      ; break;
+			case  6: bm = WL_DETECT      ; break;
+			case  7: bm = WL_EWALL       ; break;
+			case  8: bm = WL_WALLELEC    ; break;
+			case  9: bm = WL_ALLOWAIR    ; break;
+			case 10: bm = WL_ALLOWPOWDER ; break;
+			case 11: bm = WL_ALLOWALLELEC; break;
+			case 12: bm = WL_EHOLE       ; break;
+			case 13: bm = WL_ALLOWGAS    ; break;
+			}
 
 			if (ver>=44)
 			{
 				/* The numbers used to save walls were changed, starting in v44.
 				 * The new numbers are ignored for older versions due to some corruption of bmap in saves from older versions.
 				 */
-				if (bm==O_WL_WALLELEC)
-					bm=WL_WALLELEC;
-				else if (bm==O_WL_EWALL)
-					bm=WL_EWALL;
-				else if (bm==O_WL_DETECT)
-					bm=WL_DETECT;
-				else if (bm==O_WL_STREAM)
-					bm=WL_STREAM;
-				else if (bm==O_WL_FAN||bm==O_WL_FANHELPER)
-					bm=WL_FAN;
-				else if (bm==O_WL_ALLOWLIQUID)
-					bm=WL_ALLOWLIQUID;
-				else if (bm==O_WL_DESTROYALL)
-					bm=WL_DESTROYALL;
-				else if (bm==O_WL_ERASE)
-					bm=WL_ERASE;
-				else if (bm==O_WL_WALL)
-					bm=WL_WALL;
-				else if (bm==O_WL_ALLOWAIR)
-					bm=WL_ALLOWAIR;
-				else if (bm==O_WL_ALLOWSOLID)
-					bm=WL_ALLOWPOWDER;
-				else if (bm==O_WL_ALLOWALLELEC)
-					bm=WL_ALLOWALLELEC;
-				else if (bm==O_WL_EHOLE)
-					bm=WL_EHOLE;
-				else if (bm==O_WL_ALLOWGAS)
-					bm=WL_ALLOWGAS;
-				else if (bm==O_WL_GRAV)
-					bm=WL_GRAV;
-				else if (bm==O_WL_ALLOWENERGY)
-					bm=WL_ALLOWENERGY;
+				switch (bm)
+				{
+				case O_WL_WALLELEC:     bm = WL_WALLELEC    ; break;
+				case O_WL_EWALL:        bm = WL_EWALL       ; break;
+				case O_WL_DETECT:       bm = WL_DETECT      ; break;
+				case O_WL_STREAM:       bm = WL_STREAM      ; break;
+				case O_WL_FAN:
+				case O_WL_FANHELPER:    bm = WL_FAN         ; break;
+				case O_WL_ALLOWLIQUID:  bm = WL_ALLOWLIQUID ; break;
+				case O_WL_DESTROYALL:   bm = WL_DESTROYALL  ; break;
+				case O_WL_ERASE:        bm = WL_ERASE       ; break;
+				case O_WL_WALL:         bm = WL_WALL        ; break;
+				case O_WL_ALLOWAIR:     bm = WL_ALLOWAIR    ; break;
+				case O_WL_ALLOWSOLID:   bm = WL_ALLOWPOWDER ; break;
+				case O_WL_ALLOWALLELEC: bm = WL_ALLOWALLELEC; break;
+				case O_WL_EHOLE:        bm = WL_EHOLE       ; break;
+				case O_WL_ALLOWGAS:     bm = WL_ALLOWGAS    ; break;
+				case O_WL_GRAV:         bm = WL_GRAV        ; break;
+				case O_WL_ALLOWENERGY:  bm = WL_ALLOWENERGY ; break;
+				}
 			}
 
 			if (bm >= UI_WALLCOUNT)
 				bm = 0;
+			blockMap[bpos] = bm;
 		}
 
 		p++;
@@ -1503,7 +1470,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	}
 
 	// load particle properties
-	for (auto pos : partS.OriginRect())
+	for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
 		auto i = particleIDMap[pos];
 		if (i)
@@ -1520,7 +1487,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 				p += 2;
 		}
 	}
-	for (auto pos : partS.OriginRect())
+	for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
 		auto i = particleIDMap[pos];
 		if (i)
@@ -1547,7 +1514,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		}
 	}
 	if (ver>=44) {
-		for (auto pos : partS.OriginRect())
+		for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 		{
 			auto i = particleIDMap[pos];
 			if (i)
@@ -1578,7 +1545,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	// TODO: use PlaneAdapter<std::span<unsigned char>> once we're C++20
 	auto dataPlanePty = PlaneAdapter<const std::basic_string_view<unsigned char>>(partS, std::in_place, data + pty, partS.X * partS.Y);
 	if (ver>=53) {
-		for (auto pos : partS.OriginRect())
+		for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 		{
 			auto i = particleIDMap[pos];
 			ty = dataPlanePty[pos];
@@ -1594,7 +1561,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		}
 	}
 	//Read ALPHA component
-	for (auto pos : partS.OriginRect())
+	for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
 		auto i = particleIDMap[pos];
 		if (i)
@@ -1612,7 +1579,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		}
 	}
 	//Read RED component
-	for (auto pos : partS.OriginRect())
+	for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
 		auto i = particleIDMap[pos];
 		if (i)
@@ -1630,7 +1597,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		}
 	}
 	//Read GREEN component
-	for (auto pos : partS.OriginRect())
+	for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
 		auto i = particleIDMap[pos];
 		if (i)
@@ -1648,7 +1615,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		}
 	}
 	//Read BLUE component
-	for (auto pos : partS.OriginRect())
+	for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
 		auto i = particleIDMap[pos];
 		if (i)
@@ -1665,7 +1632,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 			}
 		}
 	}
-	for (auto pos : partS.OriginRect())
+	for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
 		auto i = particleIDMap[pos];
 		ty = dataPlanePty[pos];
@@ -1709,7 +1676,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 			}
 		}
 	}
-	for (auto pos : partS.OriginRect())
+	for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
 		auto i = particleIDMap[pos];
 		int gnum = 0;
