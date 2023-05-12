@@ -9,4 +9,4 @@ void Graphics::Finalise()
 
 }
 
-template class RasterDrawMethods<Graphics>;
+template struct RasterDrawMethods<Graphics>;

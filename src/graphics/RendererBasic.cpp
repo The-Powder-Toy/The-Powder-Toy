@@ -472,4 +472,4 @@ Renderer::~Renderer()
 	delete[] graphicscache;
 }
 
-template class RasterDrawMethods<Renderer>;
+template struct RasterDrawMethods<Renderer>;

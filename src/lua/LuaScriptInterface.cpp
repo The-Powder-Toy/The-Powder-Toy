@@ -1860,7 +1860,7 @@ int LuaScriptInterface::simulation_decoColor(lua_State * l)
 		return 1;
 	}
 	else if (acount == 1)
-		color = RGBA<uint8_t>::Unpack(luaL_optnumber(l, 1, 0xFFFF0000));
+		color = RGBA<uint8_t>::Unpack(pixel_rgba(luaL_optnumber(l, 1, 0xFFFF0000)));
 	else
 	{
 		color.Red   = std::clamp(luaL_optint(l, 1, 255), 0, 255);
@@ -2277,7 +2277,7 @@ int LuaScriptInterface::simulation_brush(lua_State * l)
 	std::vector<ui::Point> points;
 	std::copy(newBrush->begin(), newBrush->end(), std::back_inserter(points));
 	lua_pushnumber(l, 0); // index
-	lua_pushnumber(l, points.size());
+	lua_pushnumber(l, int(points.size()));
 	auto points_ud = reinterpret_cast<ui::Point *>(lua_newuserdata(l, points.size() * sizeof(ui::Point)));
 	std::copy(points.begin(), points.end(), points_ud);
 

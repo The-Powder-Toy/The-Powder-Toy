@@ -9,9 +9,6 @@
 #include "simulation/gravity/Gravity.h"
 #include <cmath>
 
-constexpr auto VIDXRES = WINDOWW;
-// constexpr auto VIDYRES = WINDOWH; // not actually used anywhere
-
 std::unique_ptr<VideoBuffer> Renderer::WallIcon(int wallID, Vec2<int> size)
 {
 	auto wtypes = LoadWalls();
@@ -1191,8 +1188,8 @@ int HeatToColour(float temp)
 	constexpr float min_temp = MIN_TEMP;
 	constexpr float max_temp = MAX_TEMP;
 	RGB<uint8_t> color = Renderer::heatTableAt(int((temp - min_temp) / (max_temp - min_temp) * 1024));
-	color.Red   *= 0.7f;
-	color.Green *= 0.7f;
-	color.Blue  *= 0.7f;
+	color.Red   = uint8_t(color.Red   * 0.7f);
+	color.Green = uint8_t(color.Green * 0.7f);
+	color.Blue  = uint8_t(color.Blue  * 0.7f);
 	return color.Pack();
 }

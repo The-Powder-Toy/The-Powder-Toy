@@ -71,7 +71,7 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	playerst* figh = &sim->fighters[(unsigned char)parts[i].tmp];
 
-	int tarx, tary;
+	int tarx = 0, tary = 0;
 
 	parts[i].tmp2 = 0; //0 - stay in place, 1 - seek a stick man
 

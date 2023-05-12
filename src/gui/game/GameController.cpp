@@ -572,7 +572,7 @@ bool GameController::TextEditing(String text)
 
 bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	bool ret = commandInterface->HandleEvent(KeyPressEvent{ key, scan, repeat, shift, ctrl, alt });
+	bool ret = commandInterface->HandleEvent(KeyPressEvent{ { key, scan, repeat, shift, ctrl, alt } });
 	if (repeat)
 		return ret;
 	if (ret)
@@ -651,7 +651,7 @@ bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool c
 
 bool GameController::KeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	bool ret = commandInterface->HandleEvent(KeyReleaseEvent{ key, scan, repeat, shift, ctrl, alt });
+	bool ret = commandInterface->HandleEvent(KeyReleaseEvent{ { key, scan, repeat, shift, ctrl, alt } });
 	if (repeat)
 		return ret;
 	if (ret)

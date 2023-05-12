@@ -123,7 +123,7 @@ void VideoBuffer::Resize(Vec2<int> size, bool resample)
 
 void VideoBuffer::Resize(float factor, bool resample)
 {
-	Resize(Vec2<int>(Size() * factor), resample);
+	Resize(Vec2{ int(Size().X * factor), int(Size().Y * factor) }, resample);
 }
 
 void VideoBuffer::ResizeToFit(Vec2<int> bound, bool resample)
@@ -135,9 +135,9 @@ void VideoBuffer::ResizeToFit(Vec2<int> bound, bool resample)
 			return a / b + ((a % b) ? 1 : 0);
 		};
 		if (bound.X * size.Y < bound.Y * size.X)
-			size = { ceilDiv(size.X * bound.X, size.X), ceilDiv(size.Y * bound.X, size.X) };
+			size = { bound.X, ceilDiv(size.Y * bound.X, size.X) };
 		else
-			size = { ceilDiv(size.X * bound.Y, size.Y), ceilDiv(size.Y * bound.Y, size.Y) };
+			size = { ceilDiv(size.X * bound.Y, size.Y), bound.Y };
 	}
 	Resize(size, resample);
 }
@@ -165,7 +165,7 @@ std::vector<char> VideoBuffer::ToPPM() const
 	return format::PixelsToPPM(video);
 }
 
-template class RasterDrawMethods<VideoBuffer>;
+template struct RasterDrawMethods<VideoBuffer>;
 
 Graphics::Graphics()
 {}
@@ -483,7 +483,7 @@ std::vector<RGB<uint8_t>> Graphics::Gradient(std::vector<GradientStop> stops, in
 			auto &left = stops[stop];
 			auto &right = stops[stop + 1];
 			auto f = (point - left.point) / (right.point - left.point);
-			table[i] = left.color.Blend(right.color.WithAlpha(f * 0xFF));
+			table[i] = left.color.Blend(right.color.WithAlpha(uint8_t(f * 0xFF)));
 		}
 	}
 	return table;

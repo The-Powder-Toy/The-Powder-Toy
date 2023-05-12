@@ -1353,7 +1353,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 			if (p >= dataLength)
 				throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 			auto j=data[p++];
-			if (j >= PT_NUM) {
+			if (int(j) >= PT_NUM) { // not possible these days since PMAPBITS >= 8
 				j = PT_DUST;//throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 			}
 			if (j)

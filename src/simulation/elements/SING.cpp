@@ -49,7 +49,7 @@ void Element::Element_SING()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, cry, crx, nb, spawncount;
+	int r, rx, ry, cry, crx, spawncount;
 	int singularity = -parts[i].life;
 	float angle, v;
 
@@ -80,6 +80,7 @@ static int update(UPDATE_FUNC_ARGS)
 		spawncount = (spawncount>255) ? 3019 : int(std::pow((double)(spawncount/8), 2)*TPT_PI_FLT);
 		for (int j = 0;j < spawncount; j++)
 		{
+			auto nb = -1;
 			switch (sim->rng.gen() % 3)
 			{
 				case 0:

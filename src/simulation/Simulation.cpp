@@ -765,7 +765,7 @@ bool Simulation::flood_water(int x, int y, int i)
 					else if (!eval_move(parts[i].type, x, y - 1, nullptr))
 						continue;
 
-					move(i, originalX, originalY, x, y - 1);
+					move(i, originalX, originalY, float(x), float(y - 1));
 					return true;
 				}
 
@@ -2287,7 +2287,7 @@ void Simulation::delete_part(int x, int y)//calls kill_part with the particle lo
 
 void Simulation::UpdateParticles(int start, int end)
 {
-	int i, j, x, y, t, nx, ny, r, surround_space, s, rt, nt;
+	int i, j, x, y, t, r, surround_space, s, rt, nt;
 	float mv, dx, dy, nrx, nry, dp, ctemph, ctempl, gravtot;
 	int fin_x, fin_y, clear_x, clear_y, stagnant;
 	float fin_xf, fin_yf, clear_xf, clear_yf;
@@ -2406,8 +2406,8 @@ void Simulation::UpdateParticles(int start, int end)
 			transitionOccurred = false;
 
 			j = surround_space = nt = 0;//if nt is greater than 1 after this, then there is a particle around the current particle, that is NOT the current particle's type, for water movement.
-			for (nx=-1; nx<2; nx++)
-				for (ny=-1; ny<2; ny++) {
+			for (auto nx=-1; nx<2; nx++)
+				for (auto ny=-1; ny<2; ny++) {
 					if (nx||ny) {
 						surround[j] = r = pmap[y+ny][x+nx];
 						j++;
@@ -2804,14 +2804,14 @@ void Simulation::UpdateParticles(int start, int end)
 			//spark updates from walls
 			if ((elements[t].Properties&PROP_CONDUCTS) || t==PT_SPRK)
 			{
-				nx = x % CELL;
+				auto nx = x % CELL;
 				if (nx == 0)
 					nx = x/CELL - 1;
 				else if (nx == CELL-1)
 					nx = x/CELL + 1;
 				else
 					nx = x/CELL;
-				ny = y % CELL;
+				auto ny = y % CELL;
 				if (ny == 0)
 					ny = y/CELL - 1;
 				else if (ny == CELL-1)
@@ -3300,6 +3300,7 @@ killed:
 							if (t==PT_GEL)
 								rt = int(parts[i].tmp*0.20f+5.0f);
 
+							auto nx = -1, ny = -1;
 							for (j=clear_x+r; j>=0 && j>=clear_x-rt && j<clear_x+rt && j<XRES; j+=r)
 							{
 								if ((TYP(pmap[fin_y][j])!=t || bmap[fin_y/CELL][j/CELL])
@@ -3348,8 +3349,8 @@ killed:
 							// clear_xf, clear_yf is the last known position that the particle should almost certainly be able to move to
 							nxf = clear_xf;
 							nyf = clear_yf;
-							nx = clear_x;
-							ny = clear_y;
+							auto nx = clear_x;
+							auto ny = clear_y;
 							// Look for spaces to move horizontally (perpendicular to gravity direction), keep going until a space is found or the number of positions examined = rt
 							for (j=0;j<rt;j++)
 							{
