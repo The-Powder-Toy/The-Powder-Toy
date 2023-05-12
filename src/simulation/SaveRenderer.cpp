@@ -58,7 +58,7 @@ std::unique_ptr<VideoBuffer> SaveRenderer::Render(const GameSave *save, bool dec
 		ren->RenderBegin();
 		ren->RenderEnd();
 
-		tempThumb = std::make_unique<VideoBuffer>(Vec2(save->blockWidth, save->blockHeight) * CELL);
+		tempThumb = std::make_unique<VideoBuffer>(save->blockSize * CELL);
 		tempThumb->BlendImage(ren->Data(), 0xFF, ren->Size().OriginRect());
 	}
 

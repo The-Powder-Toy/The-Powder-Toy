@@ -54,31 +54,6 @@ public:
 	}
 };
 
-template<typename Item>
-struct [[deprecated("Use PlaneAdapter<std::vector>")]] Plane: PlaneAdapter<std::vector<Item>>
-{
-	[[deprecated("Use operator[](Vec2)")]]
-	Item *operator [](int y)
-	{
-		return &*PlaneAdapter<std::vector<Item>>::RowIterator(Vec2(0, y));
-	}
-
-	[[deprecated("Use operator[](Vec2)")]]
-	const Item *operator [](int y) const
-	{
-		return &*PlaneAdapter<std::vector<Item>>::RowIterator(Vec2(0, y));
-	}
-
-	[[deprecated("Use PlaneAdapter<std::vector>")]]
-	Plane() = default;
-
-	[[deprecated("Use PlaneAdapter<std::vector>")]]
-	Plane(int newWidth, int newHeight, Item defaultVal):
-		PlaneAdapter<std::vector<Item>>(Vec2(newWidth, newHeight), defaultVal)
-	{
-	}
-};
-
 class GameSave
 {
 	// number of pixels translated. When translating CELL pixels, shift all CELL grids
@@ -88,8 +63,7 @@ class GameSave
 	std::pair<bool, std::vector<char>> serialiseOPS() const;
 
 public:
-	int blockWidth = 0;
-	int blockHeight = 0;
+	Vec2<int> blockSize = { 0, 0 };
 	bool fromNewerVersion = false;
 	int majorVersion = 0;
 	int minorVersion = 0;
@@ -104,15 +78,15 @@ public:
 	//Simulation data
 	int particlesCount = 0;
 	std::vector<Particle> particles;
-	Plane<unsigned char> blockMap;
-	Plane<float> fanVelX;
-	Plane<float> fanVelY;
-	Plane<float> pressure;
-	Plane<float> velocityX;
-	Plane<float> velocityY;
-	Plane<float> ambientHeat;
-	Plane<unsigned char> blockAir;
-	Plane<unsigned char> blockAirh;
+	PlaneAdapter<std::vector<unsigned char>> blockMap;
+	PlaneAdapter<std::vector<float>> fanVelX;
+	PlaneAdapter<std::vector<float>> fanVelY;
+	PlaneAdapter<std::vector<float>> pressure;
+	PlaneAdapter<std::vector<float>> velocityX;
+	PlaneAdapter<std::vector<float>> velocityY;
+	PlaneAdapter<std::vector<float>> ambientHeat;
+	PlaneAdapter<std::vector<unsigned char>> blockAir;
+	PlaneAdapter<std::vector<unsigned char>> blockAirh;
 
 	//Simulation Options
 	bool waterEEnabled = false;
@@ -141,14 +115,14 @@ public:
 
 	int pmapbits = 8; // default to 8 bits for older saves
 
-	GameSave(int width, int height);
+	GameSave(Vec2<int> newBlockSize);
 	GameSave(const std::vector<char> &data, bool newWantAuthors = true);
-	void setSize(int width, int height);
+	void setSize(Vec2<int> newBlockSize);
 	// return value is [ fakeFromNewerVersion, gameData ]
 	std::pair<bool, std::vector<char>> Serialise() const;
 	vector2d Translate(vector2d translate);
 	void Transform(matrix2d transform, vector2d translate);
-	void Transform(matrix2d transform, vector2d translate, vector2d translateReal, int newWidth, int newHeight);
+	void Transform(matrix2d transform, vector2d translate, vector2d translateReal, Vec2<int> newPartSize);
 
 	void Expand(const std::vector<char> &data);
 
