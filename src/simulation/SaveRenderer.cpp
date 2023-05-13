@@ -20,7 +20,7 @@ void SaveRenderer::Flush(int begin, int end)
 	std::fill(ren->graphicscache + begin, ren->graphicscache + end, gcache_item());
 }
 
-std::unique_ptr<VideoBuffer> SaveRenderer::Render(const GameSave *save, bool decorations, bool fire, Renderer *renderModeSource)
+std::pair<std::unique_ptr<VideoBuffer>, std::vector<ByteString>> SaveRenderer::Render(const GameSave *save, bool decorations, bool fire, Renderer *renderModeSource)
 {
 	std::lock_guard<std::mutex> gx(renderMutex);
 
@@ -32,11 +32,9 @@ std::unique_ptr<VideoBuffer> SaveRenderer::Render(const GameSave *save, bool dec
 		ren->SetColourMode(renderModeSource->GetColourMode());
 	}
 
-	std::unique_ptr<VideoBuffer> tempThumb;
-
 	sim->clear_sim();
 
-	sim->Load(save, true, { 0, 0 });
+	auto missingElementTypes = sim->Load(save, true, { 0, 0 });
 	ren->decorations_enable = true;
 	ren->blackDecorations = !decorations;
 	ren->ClearAccumulation();
@@ -57,10 +55,10 @@ std::unique_ptr<VideoBuffer> SaveRenderer::Render(const GameSave *save, bool dec
 	ren->RenderBegin();
 	ren->RenderEnd();
 
-	tempThumb = std::make_unique<VideoBuffer>(save->blockSize * CELL);
+	auto tempThumb = std::make_unique<VideoBuffer>(save->blockSize * CELL);
 	tempThumb->BlendImage(ren->Data(), 0xFF, ren->Size().OriginRect());
 
-	return tempThumb;
+	return { std::move(tempThumb), missingElementTypes };
 }
 
 SaveRenderer::~SaveRenderer()

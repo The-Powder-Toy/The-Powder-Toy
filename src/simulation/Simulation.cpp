@@ -19,8 +19,9 @@ extern int Element_LOLZ_lolz[XRES/9][YRES/9];
 extern int Element_LOVE_RuleTable[9][9];
 extern int Element_LOVE_love[XRES/9][YRES/9];
 
-void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> blockP) // block coordinates
+std::vector<ByteString> Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> blockP) // block coordinates
 {
+	std::vector<ByteString> missingElementTypes;
 	auto partP = blockP * CELL;
 	unsigned int pmapmask = (1<<save->pmapbits)-1;
 
@@ -44,8 +45,15 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 				// if this is a custom element, set the ID to the ID we found when comparing identifiers in the palette map
 				// set type to 0 if we couldn't find an element with that identifier present when loading,
 				//  unless this is a default element, in which case keep the current ID, because otherwise when an element is renamed it wouldn't show up anymore in older saves
-				if (myId != 0 || !pi.first.BeginsWith("DEFAULT_PT_"))
+				if (myId != 0)
+				{
 					partMap[pi.second] = myId;
+				}
+				else if (!pi.first.BeginsWith("DEFAULT_PT_"))
+				{
+					missingElementTypes.push_back(pi.first);
+					partMap[pi.second] = myId;
+				}
 			}
 		}
 	}
@@ -318,6 +326,8 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 	{
 		air->ApproximateBlockAirMaps();
 	}
+
+	return missingElementTypes;
 }
 
 std::unique_ptr<GameSave> Simulation::Save(bool includePressure, Rect<int> partR) // particle coordinates

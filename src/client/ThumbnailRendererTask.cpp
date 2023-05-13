@@ -29,7 +29,7 @@ ThumbnailRendererTask::~ThumbnailRendererTask()
 
 bool ThumbnailRendererTask::doWork()
 {
-	thumbnail = std::unique_ptr<VideoBuffer>(SaveRenderer::Ref().Render(save.get(), decorations, fire));
+	std::tie(thumbnail, std::ignore) = SaveRenderer::Ref().Render(save.get(), decorations, fire);
 	if (thumbnail)
 	{
 		thumbnail->ResizeToFit(size, true);

@@ -93,6 +93,22 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	browserOpenButton->SetActionCallback({ [this] { c->OpenInBrowser(); } });
 	AddComponent(browserOpenButton);
 
+	loadErrorButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), "Error loading save");
+	loadErrorButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	loadErrorButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	loadErrorButton->SetIcon(IconDelete);
+	loadErrorButton->SetActionCallback({ [this] { ShowLoadError(); } });
+	loadErrorButton->Visible = false;
+	AddComponent(loadErrorButton);
+
+	missingElementsButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), "Missing custom elements");
+	missingElementsButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	missingElementsButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	missingElementsButton->SetIcon(IconReport);
+	missingElementsButton->SetActionCallback({ [this] { ShowMissingCustomElements(); } });
+	missingElementsButton->Visible = false;
+	AddComponent(missingElementsButton);
+
 	if(showAvatars)
 		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(100, 16), "");
 	else
@@ -387,9 +403,9 @@ void PreviewView::OnTick(float dt)
 	c->Update();
 	if (doError)
 	{
-		new ErrorMessage("Error loading save", doErrorMessage, { [this]() {
-			c->Exit();
-		} });
+		openButton->Enabled = false;
+		loadErrorButton->Visible = true;
+		UpdateLoadStatus();
 	}
 
 	if (reportSaveRequest && reportSaveRequest->CheckDone())
@@ -464,6 +480,36 @@ void PreviewView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ct
 		openButton->DoAction();
 }
 
+void PreviewView::ShowLoadError()
+{
+	new ErrorMessage("Error loading save", doErrorMessage, {});
+}
+
+void PreviewView::ShowMissingCustomElements()
+{
+	StringBuilder sb;
+	sb << "This save uses custom elements that are not currently available. Make sure that you use the mod and/or have all the scripts the save requires to fully load. A list of identifiers of missing custom elements follows, which may help you determine how to fix this problem.\n";
+	for (auto &identifier : missingElementTypes)
+	{
+		sb << "\n - " << identifier.FromUtf8();
+	}
+	new InformationMessage("Missing custom elements", sb.Build(), true);
+}
+
+void PreviewView::UpdateLoadStatus()
+{
+	auto y = YRES / 2 - 22;
+	auto showButton = [&y](ui::Button *button) {
+		if (button->Visible)
+		{
+			button->Position = { XRES / 2 - button->Size.X - 3, y };
+			y -= button->Size.Y + 3;
+		}
+	};
+	showButton(missingElementsButton);
+	showButton(loadErrorButton);
+}
+
 void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
 	auto *save = sender->GetSaveInfo();
@@ -510,9 +556,11 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 
 		if(save->GetGameSave())
 		{
-			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
+			std::tie(savePreview, missingElementTypes) = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
 			if (savePreview)
 				savePreview->ResizeToFit(RES / 2, true);
+			missingElementsButton->Visible = missingElementTypes.size();
+			UpdateLoadStatus();
 		}
 		else if (!sender->GetCanOpen())
 			openButton->Enabled = false;
