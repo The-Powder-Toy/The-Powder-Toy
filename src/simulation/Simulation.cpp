@@ -171,6 +171,14 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 	{
 		Particle tempPart = save->particles[n];
 
+		if (elements[tempPart.type].CreateAllowed)
+		{
+			if (!(*(elements[tempPart.type].CreateAllowed))(this, -3, int(tempPart.x + 0.5f), int(tempPart.y + 0.5f), tempPart.type))
+			{
+				continue;
+			}
+		}
+
 		// Allocate particle (this location is guaranteed to be empty due to "full scan" logic above)
 		if (pfree == -1)
 			break;
