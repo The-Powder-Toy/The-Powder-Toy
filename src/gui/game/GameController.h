@@ -21,6 +21,7 @@ class SearchController;
 class PreviewController;
 class RenderController;
 class CommandInterface;
+class VideoBuffer;
 class Tool;
 class Menu;
 class SaveInfo;

@@ -33,9 +33,8 @@
 # undef GetUserName // dammit windows
 #endif
 
-PreviewView::PreviewView():
+PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+210, (YRES/2)+150)),
-	savePreview(nullptr),
 	submitCommentButton(NULL),
 	addCommentBox(NULL),
 	commentWarningLabel(NULL),
@@ -48,6 +47,11 @@ PreviewView::PreviewView():
 	commentBoxHeight(20),
 	commentHelpText(false)
 {
+	if (newSavePreview)
+	{
+		newSavePreview->Resize(RES / 2, true);
+		savePreview = std::move(newSavePreview);
+	}
 	showAvatars = ui::Engine::Ref().ShowAvatars;
 
 	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), "Fav");
@@ -416,7 +420,6 @@ void PreviewView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ct
 void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
 	auto *save = sender->GetSaveInfo();
-	savePreview = nullptr;
 	if(save)
 	{
 		votesUp = save->votesUp;

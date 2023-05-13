@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 
+class VideoBuffer;
 class SaveInfo;
 class LoginController;
 class PreviewModel;
@@ -18,7 +19,7 @@ public:
 	inline int SaveID() { return saveId; }
 
 	bool HasExited;
-	PreviewController(int saveID, int saveDate, bool instant, std::function<void ()> onDone = nullptr);
+	PreviewController(int saveID, int saveDate, bool instant, std::function<void ()> onDone, std::unique_ptr<VideoBuffer> thumbnail);
 	void Exit();
 	void DoOpen();
 	void OpenInBrowser();

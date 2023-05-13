@@ -1213,7 +1213,7 @@ void GameController::OpenSaveDone()
 
 void GameController::OpenSavePreview(int saveID, int saveDate, bool instant)
 {
-	activePreview = new PreviewController(saveID, saveDate, instant, [this] { OpenSaveDone(); });
+	activePreview = new PreviewController(saveID, saveDate, instant, [this] { OpenSaveDone(); }, nullptr);
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }
 
@@ -1221,7 +1221,7 @@ void GameController::OpenSavePreview()
 {
 	if(gameModel->GetSave())
 	{
-		activePreview = new PreviewController(gameModel->GetSave()->GetID(), 0, false, [this] { OpenSaveDone(); });
+		activePreview = new PreviewController(gameModel->GetSave()->GetID(), 0, false, [this] { OpenSaveDone(); }, nullptr);
 		ui::Engine::Ref().ShowWindow(activePreview->GetView());
 	}
 }

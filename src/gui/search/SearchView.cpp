@@ -562,7 +562,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 						saves[i]);
 			saveButton->AddContextMenu(0);
 			saveButton->SetActionCallback({
-				[this, saveButton] { c->OpenSave(saveButton->GetSave()->GetID(), saveButton->GetSave()->GetVersion()); },
+				[this, saveButton] { c->OpenSave(saveButton->GetSave()->GetID(), saveButton->GetSave()->GetVersion(), saveButton->CloneThumbnail()); },
 				[this, saveButton] { Search(String::Build("history:", saveButton->GetSave()->GetID())); },
 				[this, saveButton] { Search(String::Build("user:", saveButton->GetSave()->GetUserName().FromUtf8())); },
 				[this, saveButton] { c->Selected(saveButton->GetSave()->GetID(), saveButton->GetSelected()); }

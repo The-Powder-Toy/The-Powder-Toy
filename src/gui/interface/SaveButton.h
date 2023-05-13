@@ -75,6 +75,11 @@ public:
 	void DoAltAction2();
 	void DoSelection();
 	inline void SetActionCallback(SaveButtonAction action) { actionCallback = action; }
+
+	// TODO: clone the request instead because sometimes the user of CloneThumbnail might end up
+	// with a nullptr even though the thumbnail for the SaveButton will eventually arrive.
+	std::unique_ptr<VideoBuffer> CloneThumbnail() const;
+
 protected:
 	bool isButtonDown, state, isMouseInside, selected, selectable;
 };

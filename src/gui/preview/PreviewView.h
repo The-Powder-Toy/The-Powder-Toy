@@ -66,7 +66,7 @@ class PreviewView: public ui::Window
 	void CheckComment();
 public:
 	void AttachController(PreviewController * controller);
-	PreviewView();
+	PreviewView(std::unique_ptr<VideoBuffer> newSavePreviev);
 	void NotifySaveChanged(PreviewModel * sender);
 	void NotifyCommentsChanged(PreviewModel * sender);
 	void NotifyCommentsPageChanged(PreviewModel * sender);

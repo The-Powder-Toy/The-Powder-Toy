@@ -401,4 +401,13 @@ void SaveButton::DoSelection()
 		actionCallback.selected();
 }
 
+std::unique_ptr<VideoBuffer> SaveButton::CloneThumbnail() const
+{
+	if (thumbnail)
+	{
+		return std::make_unique<VideoBuffer>(*thumbnail);
+	}
+	return nullptr;
+}
+
 } /* namespace ui */
