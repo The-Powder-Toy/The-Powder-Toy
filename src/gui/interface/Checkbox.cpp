@@ -35,14 +35,7 @@ void Checkbox::SetIcon(Icon icon)
 
 void Checkbox::OnMouseClick(int x, int y, unsigned int button)
 {
-	if(checked)
-	{
-		checked = false;
-	}
-	else
-	{
-		checked = true;
-	}
+	checked = !checked;
 	if (actionCallback.action)
 		actionCallback.action();
 }
@@ -60,7 +53,7 @@ void Checkbox::OnMouseEnter(int x, int y)
 
 void Checkbox::OnMouseHover(int x, int y)
 {
-	if(toolTip.length()>0 && GetParentWindow())
+	if(toolTip.length() > 0 && GetParentWindow())
 	{
 		GetParentWindow()->ToolTip(Position, toolTip);
 	}
@@ -75,9 +68,8 @@ void Checkbox::Draw(const Point& screenPos)
 {
 	Graphics * g = GetGraphics();
 	if(checked)
-	{
 		g->DrawFilledRect(RectSized(screenPos + Vec2{ 5, 5 }, Vec2{ 6, 6 }), 0xFFFFFF_rgb);
-	}
+	
 	if(isMouseOver)
 	{
 		g->DrawRect(RectSized(screenPos + Vec2{ 2, 2 }, Vec2{ 12, 12 }), 0xFFFFFF_rgb);
