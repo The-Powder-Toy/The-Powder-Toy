@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sys/stat.h>
 #include <io.h>
+#include <fcntl.h>
 #include <shlobj.h>
 #include <shlwapi.h>
 #include <windows.h>
@@ -398,6 +399,10 @@ void UpdateCleanup()
 
 void SetupCrt()
 {
+	_setmode(0, _O_BINARY);
+	_setmode(1, _O_BINARY);
+	SetConsoleCP(CP_UTF8);
+	SetConsoleOutputCP(CP_UTF8);
 	if constexpr (DEBUG)
 	{
 		_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);

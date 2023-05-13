@@ -1,4 +1,6 @@
 #include "resource.h"
+#include <winuser.h>
 
 IDI_ICON ICON DISCARDABLE "icon_exe.ico"
 IDI_DOC_ICON ICON DISCARDABLE "icon_cps.ico"
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "winutf8.xml"

@@ -60,6 +60,7 @@ if host_platform == 'windows'
 		],
 		depend_files: [
 			'resource.h',
+			'winutf8.xml',
 		],
 	)
 elif host_platform == 'darwin'
