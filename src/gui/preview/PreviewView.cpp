@@ -316,10 +316,10 @@ void PreviewView::OnDraw()
 		nyu = nyu>50?50:nyu;
 		nyd = nyd>50?50:nyd;
 
-		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -55, 3 }, Vec2{ 53, 7 }), 0x006B0A_rgb);
-		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -55, 9 }, Vec2{ 53, 7 }), 0x6B0A00_rgb);
-		g->DrawRect(RectSized(Position + Vec2{ (XRES/2)-55, (YRES/2)+3 }, { 53, 7 }), 0x808080_rgb);
-		g->DrawRect(RectSized(Position + Vec2{ (XRES/2)-55, (YRES/2)+9 }, { 53, 7 }), 0x808080_rgb);
+		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -56, 3 }, Vec2{ 54, 7 }), 0x006B0A_rgb);
+		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -56, 9 }, Vec2{ 54, 7 }), 0x6B0A00_rgb);
+		g->DrawRect(RectSized(Position + Vec2{ (XRES/2)-56, (YRES/2)+3 }, { 54, 7 }), 0x808080_rgb);
+		g->DrawRect(RectSized(Position + Vec2{ (XRES/2)-56, (YRES/2)+9 }, { 54, 7 }), 0x808080_rgb);
 
 		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -4-nyu, 5 }, Vec2{ nyu, 3 }), 0x39BB39_rgb);
 		g->DrawFilledRect(RectSized(Position + RES / 2 + Vec2{ -4-nyd, 11 }, Vec2{ nyd, 3 }), 0xBB3939_rgb);
