@@ -19,21 +19,11 @@ extern int Element_LOLZ_lolz[XRES/9][YRES/9];
 extern int Element_LOVE_RuleTable[9][9];
 extern int Element_LOVE_love[XRES/9][YRES/9];
 
-int Simulation::Load(const GameSave * save, bool includePressure)
+void Simulation::Load(const GameSave *originalSave, bool includePressure, Vec2<int> blockP)
 {
-	return Load(save, includePressure, 0, 0);
-}
-
-int Simulation::Load(const GameSave * originalSave, bool includePressure, int fullX, int fullY)
-{
-	if (!originalSave)
-		return 1;
 	auto save = std::unique_ptr<GameSave>(new GameSave(*originalSave));
 
-	//Align to blockMap
-	auto blockP = Vec2{ (fullX + CELL / 2) / CELL, (fullY + CELL / 2) / CELL };
-	fullX = blockP.X * CELL;
-	fullY = blockP.Y * CELL;
+	auto partP = blockP * CELL;
 	unsigned int pmapmask = (1<<save->pmapbits)-1;
 
 	int partMap[PT_NUM];
@@ -71,8 +61,8 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
 		Particle *tempPart = &save->particles[n];
-		tempPart->x += (float)fullX;
-		tempPart->y += (float)fullY;
+		tempPart->x += (float)partP.X;
+		tempPart->y += (float)partP.Y;
 		int x = int(tempPart->x + 0.5f);
 		int y = int(tempPart->y + 0.5f);
 
@@ -307,8 +297,8 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 		if (save->signs[i].text[0])
 		{
 			sign tempSign = save->signs[i];
-			tempSign.x += fullX;
-			tempSign.y += fullY;
+			tempSign.x += partP.X;
+			tempSign.y += partP.Y;
 			signs.push_back(tempSign);
 		}
 	}
@@ -343,38 +333,14 @@ int Simulation::Load(const GameSave * originalSave, bool includePressure, int fu
 	{
 		air->ApproximateBlockAirMaps();
 	}
-
-	return 0;
 }
 
-std::unique_ptr<GameSave> Simulation::Save(bool includePressure)
+std::unique_ptr<GameSave> Simulation::Save(bool includePressure, Rect<int> blockR)
 {
-	return Save(includePressure, 0, 0, XRES-1, YRES-1);
-}
+	auto blockP = blockR.TopLeft;
+	auto partR = RectSized(blockR.TopLeft * CELL, blockR.Size() * CELL);
 
-std::unique_ptr<GameSave> Simulation::Save(bool includePressure, int fullX, int fullY, int fullX2, int fullY2)
-{
-	//Normalise incoming coords
-	int swapTemp;
-	if(fullY>fullY2)
-	{
-		swapTemp = fullY;
-		fullY = fullY2;
-		fullY2 = swapTemp;
-	}
-	if(fullX>fullX2)
-	{
-		swapTemp = fullX;
-		fullX = fullX2;
-		fullX2 = swapTemp;
-	}
-
-	//Align coords to blockMap
-	auto blockP = Vec2{ fullX / CELL, fullY / CELL };
-	auto blockP2 = Vec2{ (fullX2 + CELL) / CELL, (fullY2 + CELL) / CELL };
-	auto blockS = blockP2 - blockP;
-
-	auto newSave = std::make_unique<GameSave>(blockS);
+	auto newSave = std::make_unique<GameSave>(blockR.Size());
 	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
 	auto &properties = Particle::GetProperties();
 	newSave->frameCount = frameCount;
@@ -392,7 +358,7 @@ std::unique_ptr<GameSave> Simulation::Save(bool includePressure, int fullX, int 
 		int x, y;
 		x = int(parts[i].x + 0.5f);
 		y = int(parts[i].y + 0.5f);
-		if (parts[i].type && x >= fullX && y >= fullY && x <= fullX2 && y <= fullY2)
+		if (parts[i].type && partR.Contains({ x, y }))
 		{
 			Particle tempPart = parts[i];
 			tempPart.x -= blockP.X * CELL;
@@ -456,7 +422,7 @@ std::unique_ptr<GameSave> Simulation::Save(bool includePressure, int fullX, int 
 
 	for (size_t i = 0; i < MAXSIGNS && i < signs.size(); i++)
 	{
-		if(signs[i].text.length() && signs[i].x >= fullX && signs[i].y >= fullY && signs[i].x <= fullX2 && signs[i].y <= fullY2)
+		if (signs[i].text.length() && partR.Contains({ signs[i].x, signs[i].y }))
 		{
 			sign tempSign = signs[i];
 			tempSign.x -= blockP.X * CELL;

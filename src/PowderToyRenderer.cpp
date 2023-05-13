@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
 	if (gameSave)
 	{
-		sim->Load(gameSave.get(), true);
+		sim->Load(gameSave.get(), true, { 0, 0 });
 
 		//Render save
 		ren->decorations_enable = true;

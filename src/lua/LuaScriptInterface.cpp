@@ -1967,8 +1967,8 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 	int i = -1;
 	int pushed = 1;
 	std::unique_ptr<SaveFile> tempfile;
-	int x = luaL_optint(l,2,0);
-	int y = luaL_optint(l,3,0);
+	int x = luaL_optint(l,2,0) / CELL;
+	int y = luaL_optint(l,3,0) / CELL;
 	auto &client = Client::Ref();
 	if (lua_isstring(l, 1)) //Load from 10 char name, or full filename
 	{
@@ -1984,33 +1984,24 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 		tempfile = client.GetStamp(stampIDs[i]);
 	}
 
-	if (tempfile)
+	if (tempfile && tempfile->GetGameSave())
 	{
-		if (!luacon_sim->Load(tempfile->GetGameSave(), !luacon_controller->GetView()->ShiftBehaviour(), x, y))
-		{
-			//luacon_sim->sys_pause = (tempfile->GetGameSave()->paused | luacon_model->GetPaused())?1:0;
-			lua_pushinteger(l, 1);
+		// TODO: maybe do a gameSave->Transform with a new transform argument for the lua function and the "low" [0, CELL) part of x, y
+		auto gameSave = tempfile->TakeGameSave();
+		luacon_sim->Load(gameSave.get(), !luacon_controller->GetView()->ShiftBehaviour(), { x, y });
+		lua_pushinteger(l, 1);
 
-			if (tempfile->GetGameSave()->authors.size())
-			{
-				auto gameSave = tempfile->TakeGameSave();
-				gameSave->authors["type"] = "luastamp";
-				client.MergeStampAuthorInfo(gameSave->authors);
-				tempfile->SetGameSave(std::move(gameSave));
-			}
-		}
-		else
+		if (gameSave->authors.size())
 		{
-			pushed = 2;
-			lua_pushnil(l);
-			tpt_lua_pushString(l, luacon_ci->GetLastError());
+			gameSave->authors["type"] = "luastamp";
+			client.MergeStampAuthorInfo(gameSave->authors);
 		}
 	}
 	else
 	{
 		pushed = 2;
 		lua_pushnil(l);
-		lua_pushliteral(l, "Failed to read file");
+		tpt_lua_pushString(l, luacon_ci->GetLastError());
 	}
 	return pushed;
 }

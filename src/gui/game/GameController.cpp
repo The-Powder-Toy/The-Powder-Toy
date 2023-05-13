@@ -242,11 +242,9 @@ void GameController::PlaceSave(ui::Point position)
 	if (placeSave)
 	{
 		HistorySnapshot();
-		if (!gameModel->GetSimulation()->Load(placeSave, !gameView->ShiftBehaviour(), position.X, position.Y))
-		{
-			gameModel->SetPaused(placeSave->paused | gameModel->GetPaused());
-			Client::Ref().MergeStampAuthorInfo(placeSave->authors);
-		}
+		gameModel->GetSimulation()->Load(placeSave, !gameView->ShiftBehaviour(), position);
+		gameModel->SetPaused(placeSave->paused | gameModel->GetPaused());
+		Client::Ref().MergeStampAuthorInfo(placeSave->authors);
 	}
 	gameModel->SetPlaceSave(nullptr);
 }
@@ -436,9 +434,20 @@ void GameController::ToolClick(int toolSelection, ui::Point point)
 	activeTool->Click(sim, cBrush, point);
 }
 
+static Rect<int> SaneSaveRect(Vec2<int> point1, Vec2<int> point2)
+{
+	point1 = point1.Clamp(RES.OriginRect());
+	point2 = point2.Clamp(RES.OriginRect());
+	auto tlx = std::min(point1.X, point2.X);
+	auto tly = std::min(point1.Y, point2.Y);
+	auto brx = std::max(point1.X, point2.X);
+	auto bry = std::max(point1.Y, point2.Y);
+	return RectBetween(Vec2{ tlx, tly } / CELL, Vec2{ brx, bry } / CELL);
+}
+
 ByteString GameController::StampRegion(ui::Point point1, ui::Point point2)
 {
-	auto newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), point1.X, point1.Y, point2.X, point2.Y);
+	auto newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), SaneSaveRect(point1, point2));
 	if(newSave)
 	{
 		newSave->paused = gameModel->GetPaused();
@@ -456,7 +465,7 @@ ByteString GameController::StampRegion(ui::Point point1, ui::Point point2)
 
 void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 {
-	auto newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), point1.X, point1.Y, point2.X, point2.Y);
+	auto newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), SaneSaveRect(point1, point2));
 	if(newSave)
 	{
 		Json::Value clipboardInfo;
@@ -1137,7 +1146,7 @@ void GameController::OpenSearch(String searchText)
 void GameController::OpenLocalSaveWindow(bool asCurrent)
 {
 	Simulation * sim = gameModel->GetSimulation();
-	auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
+	auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), CELLS.OriginRect());
 	if(!gameSave)
 	{
 		new ErrorMessage("Error", "Unable to build save.");
@@ -1348,7 +1357,7 @@ void GameController::OpenSaveWindow()
 	if(gameModel->GetUser().UserID)
 	{
 		Simulation * sim = gameModel->GetSimulation();
-		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
+		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), CELLS.OriginRect());
 		if(!gameSave)
 		{
 			new ErrorMessage("Error", "Unable to build save.");
@@ -1390,7 +1399,7 @@ void GameController::SaveAsCurrent()
 	if(gameModel->GetSave() && gameModel->GetUser().UserID && gameModel->GetUser().Username == gameModel->GetSave()->GetUserName())
 	{
 		Simulation * sim = gameModel->GetSimulation();
-		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
+		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), CELLS.OriginRect());
 		if(!gameSave)
 		{
 			new ErrorMessage("Error", "Unable to build save.");

@@ -975,32 +975,30 @@ void GameModel::SetSave(std::unique_ptr<SaveInfo> newSave, bool invertIncludePre
 		SaveToSimParameters(*saveData);
 		sim->clear_sim();
 		ren->ClearAccumulation();
-		if (!sim->Load(saveData, !invertIncludePressure))
+		sim->Load(saveData, !invertIncludePressure, { 0, 0 });
+		// This save was created before logging existed
+		// Add in the correct info
+		if (saveData->authors.size() == 0)
 		{
-			// This save was created before logging existed
-			// Add in the correct info
-			if (saveData->authors.size() == 0)
-			{
-				auto gameSave = currentSave->TakeGameSave();
-				gameSave->authors["type"] = "save";
-				gameSave->authors["id"] = currentSave->id;
-				gameSave->authors["username"] = currentSave->userName;
-				gameSave->authors["title"] = currentSave->name.ToUtf8();
-				gameSave->authors["description"] = currentSave->Description.ToUtf8();
-				gameSave->authors["published"] = (int)currentSave->Published;
-				gameSave->authors["date"] = currentSave->updatedDate;
-				currentSave->SetGameSave(std::move(gameSave));
-			}
-			// This save was probably just created, and we didn't know the ID when creating it
-			// Update with the proper ID
-			else if (saveData->authors.get("id", -1) == 0 || saveData->authors.get("id", -1) == -1)
-			{
-				auto gameSave = currentSave->TakeGameSave();
-				gameSave->authors["id"] = currentSave->id;
-				currentSave->SetGameSave(std::move(gameSave));
-			}
-			Client::Ref().OverwriteAuthorInfo(saveData->authors);
+			auto gameSave = currentSave->TakeGameSave();
+			gameSave->authors["type"] = "save";
+			gameSave->authors["id"] = currentSave->id;
+			gameSave->authors["username"] = currentSave->userName;
+			gameSave->authors["title"] = currentSave->name.ToUtf8();
+			gameSave->authors["description"] = currentSave->Description.ToUtf8();
+			gameSave->authors["published"] = (int)currentSave->Published;
+			gameSave->authors["date"] = currentSave->updatedDate;
+			currentSave->SetGameSave(std::move(gameSave));
 		}
+		// This save was probably just created, and we didn't know the ID when creating it
+		// Update with the proper ID
+		else if (saveData->authors.get("id", -1) == 0 || saveData->authors.get("id", -1) == -1)
+		{
+			auto gameSave = currentSave->TakeGameSave();
+			gameSave->authors["id"] = currentSave->id;
+			currentSave->SetGameSave(std::move(gameSave));
+		}
+		Client::Ref().OverwriteAuthorInfo(saveData->authors);
 	}
 	notifySaveChanged();
 	UpdateQuickOptions();
@@ -1028,10 +1026,8 @@ void GameModel::SetSaveFile(std::unique_ptr<SaveFile> newSave, bool invertInclud
 		SaveToSimParameters(*saveData);
 		sim->clear_sim();
 		ren->ClearAccumulation();
-		if (!sim->Load(saveData, !invertIncludePressure))
-		{
-			Client::Ref().OverwriteAuthorInfo(saveData->authors);
-		}
+		sim->Load(saveData, !invertIncludePressure, { 0, 0 });
+		Client::Ref().OverwriteAuthorInfo(saveData->authors);
 	}
 
 	notifySaveChanged();

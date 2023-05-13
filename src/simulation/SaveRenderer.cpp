@@ -36,31 +36,29 @@ std::unique_ptr<VideoBuffer> SaveRenderer::Render(const GameSave *save, bool dec
 
 	sim->clear_sim();
 
-	if(!sim->Load(save, true))
+	sim->Load(save, true, { 0, 0 });
+	ren->decorations_enable = true;
+	ren->blackDecorations = !decorations;
+	ren->ClearAccumulation();
+	ren->clearScreen();
+
+	if (fire)
 	{
-		ren->decorations_enable = true;
-		ren->blackDecorations = !decorations;
-		ren->ClearAccumulation();
-		ren->clearScreen();
-
-		if (fire)
+   		int frame = 15;
+		while(frame)
 		{
-	   		int frame = 15;
-			while(frame)
-			{
-				frame--;
-				ren->render_parts();
-				ren->render_fire();
-				ren->clearScreen();
-			}
+			frame--;
+			ren->render_parts();
+			ren->render_fire();
+			ren->clearScreen();
 		}
-
-		ren->RenderBegin();
-		ren->RenderEnd();
-
-		tempThumb = std::make_unique<VideoBuffer>(save->blockSize * CELL);
-		tempThumb->BlendImage(ren->Data(), 0xFF, ren->Size().OriginRect());
 	}
+
+	ren->RenderBegin();
+	ren->RenderEnd();
+
+	tempThumb = std::make_unique<VideoBuffer>(save->blockSize * CELL);
+	tempThumb->BlendImage(ren->Data(), 0xFF, ren->Size().OriginRect());
 
 	return tempThumb;
 }

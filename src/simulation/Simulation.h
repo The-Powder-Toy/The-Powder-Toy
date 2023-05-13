@@ -121,10 +121,8 @@ public:
 	uint64_t frameCount;
 	bool ensureDeterminism;
 
-	int Load(const GameSave * save, bool includePressure);
-	int Load(const GameSave * save, bool includePressure, int x, int y);
-	std::unique_ptr<GameSave> Save(bool includePressure);
-	std::unique_ptr<GameSave> Save(bool includePressure, int x1, int y1, int x2, int y2);
+	void Load(const GameSave *save, bool includePressure, Vec2<int> blockP);
+	std::unique_ptr<GameSave> Save(bool includePressure, Rect<int> blockR);
 	void SaveSimOptions(GameSave &gameSave);
 	SimulationSample GetSample(int x, int y);
 
