@@ -139,6 +139,9 @@ private:
 	void disableAltBehaviour();
 	void UpdateDrawMode();
 	void UpdateToolStrength();
+
+	Vec2<int> PlaceSavePos() const;
+
 public:
 	GameView();
 	virtual ~GameView();

@@ -1179,6 +1179,11 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 	}
 }
 
+Vec2<int> GameView::PlaceSavePos() const
+{
+	return c->NormaliseBlockCoord(selectPoint2 + placeSaveOffset * CELL + Vec2(1, 1) * CELL / 2).Clamp(RectBetween(Vec2<int>::Zero, RES - placeSaveThumb->Size()));
+}
+
 void GameView::OnMouseUp(int x, int y, unsigned button)
 {
 	currentMouse = ui::Point(x, y);
@@ -1199,7 +1204,7 @@ void GameView::OnMouseUp(int x, int y, unsigned button)
 				{
 					if (placeSaveThumb && y <= WINDOWH-BARSIZE)
 					{
-						c->PlaceSave((selectPoint2 / CELL + placeSaveOffset).Clamp((CELLS - placeSaveThumb->Size() / CELL).OriginRect()));
+						c->PlaceSave(PlaceSavePos() / CELL);
 					}
 				}
 				else
@@ -2172,9 +2177,7 @@ void GameView::OnDraw()
 			{
 				if(placeSaveThumb && selectPoint2.X!=-1)
 				{
-					auto thumb = selectPoint2 + placeSaveOffset * CELL + Vec2(1, 1) * CELL / 2;
-					thumb = c->NormaliseBlockCoord(thumb).Clamp(RectBetween(Vec2<int>::Zero, RES - placeSaveThumb->Size()));
-					auto rect = RectSized(thumb, placeSaveThumb->Size());
+					auto rect = RectSized(PlaceSavePos(), placeSaveThumb->Size());
 					ren->BlendImage(placeSaveThumb->Data(), 0x80, rect);
 					ren->XorDottedRect(rect);
 				}
