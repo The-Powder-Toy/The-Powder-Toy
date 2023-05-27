@@ -42,7 +42,14 @@ private:
 		{
 			int total, done;
 			std::tie(total, done) = request->CheckProgress();
-			notifyProgress(total ? done * 100 / total : 0);
+			if (total == -1)
+			{
+				notifyProgress(-1);
+			}
+			else
+			{
+				notifyProgress(total ? done * 100 / total : 0);
+			}
 			Platform::Millisleep(1);
 		}
 

@@ -371,11 +371,11 @@ namespace http
 			{
 #ifdef REQUEST_USE_CURL_OFFSET_T
 				curl_off_t total, done;
-				HandleCURLcode(curl_easy_getinfo(handle->curlEasy, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &total));
+				HandleCURLcode(curl_easy_getinfo(handle->curlEasy, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &total)); // stores -1 if unknown
 				HandleCURLcode(curl_easy_getinfo(handle->curlEasy, CURLINFO_SIZE_DOWNLOAD_T, &done));
 #else
 				double total, done;
-				HandleCURLcode(curl_easy_getinfo(handle->curlEasy, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &total));
+				HandleCURLcode(curl_easy_getinfo(handle->curlEasy, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &total)); // stores -1 if unknown
 				HandleCURLcode(curl_easy_getinfo(handle->curlEasy, CURLINFO_SIZE_DOWNLOAD, &done));
 #endif
 				handle->bytesTotal = int(total);
@@ -383,7 +383,7 @@ namespace http
 			}
 			else
 			{
-				handle->bytesTotal = 0;
+				handle->bytesTotal = -1;
 				handle->bytesDone = 0;
 			}
 		}

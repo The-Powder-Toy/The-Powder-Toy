@@ -37,7 +37,7 @@ namespace http
 		State state = ready;
 		std::mutex stateMx;
 		std::condition_variable stateCv;
-		std::atomic<int> bytesTotal = 0;
+		std::atomic<int> bytesTotal = -1;
 		std::atomic<int> bytesDone = 0;
 		int statusCode = 0;
 		ByteString responseData;
