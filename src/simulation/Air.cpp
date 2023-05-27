@@ -57,7 +57,6 @@ void Air::update_airh(void)
 	{
 		hv[i][0] = ambientAirTemp;
 		hv[i][1] = ambientAirTemp;
-		hv[i][XCELLS-3] = ambientAirTemp;
 		hv[i][XCELLS-2] = ambientAirTemp;
 		hv[i][XCELLS-1] = ambientAirTemp;
 	}
@@ -65,7 +64,6 @@ void Air::update_airh(void)
 	{
 		hv[0][i] = ambientAirTemp;
 		hv[1][i] = ambientAirTemp;
-		hv[YCELLS-3][i] = ambientAirTemp;
 		hv[YCELLS-2][i] = ambientAirTemp;
 		hv[YCELLS-1][i] = ambientAirTemp;
 	}
@@ -144,7 +142,6 @@ void Air::update_air(void)
 		{
 			pv[i][0] = pv[i][0]*0.8f;
 			pv[i][1] = pv[i][1]*0.8f;
-			pv[i][2] = pv[i][2]*0.8f;
 			pv[i][XCELLS-2] = pv[i][XCELLS-2]*0.8f;
 			pv[i][XCELLS-1] = pv[i][XCELLS-1]*0.8f;
 			vx[i][0] = vx[i][0]*0.9f;
@@ -160,7 +157,6 @@ void Air::update_air(void)
 		{
 			pv[0][i] = pv[0][i]*0.8f;
 			pv[1][i] = pv[1][i]*0.8f;
-			pv[2][i] = pv[2][i]*0.8f;
 			pv[YCELLS-2][i] = pv[YCELLS-2][i]*0.8f;
 			pv[YCELLS-1][i] = pv[YCELLS-1][i]*0.8f;
 			vx[0][i] = vx[0][i]*0.9f;
@@ -173,43 +169,45 @@ void Air::update_air(void)
 			vy[YCELLS-1][i] = vy[YCELLS-1][i]*0.9f;
 		}
 
-		for (j=1; j<YCELLS; j++) //clear some velocities near walls
+		for (j=1; j<YCELLS-1; j++) //clear some velocities near walls
 		{
-			for (i=1; i<XCELLS; i++)
+			for (i=1; i<XCELLS-1; i++)
 			{
 				if (bmap_blockair[j][i])
 				{
 					vx[j][i] = 0.0f;
 					vx[j][i-1] = 0.0f;
+					vx[j][i+1] = 0.0f;
 					vy[j][i] = 0.0f;
 					vy[j-1][i] = 0.0f;
+					vy[j+1][i] = 0.0f;
 				}
 			}
 		}
 
-		for (y=1; y<YCELLS; y++) //pressure adjustments from velocity
-			for (x=1; x<XCELLS; x++)
+		for (y=1; y<YCELLS-1; y++) //pressure adjustments from velocity
+			for (x=1; x<XCELLS-1; x++)
 			{
 				dp = 0.0f;
-				dp += vx[y][x-1] - vx[y][x];
-				dp += vy[y-1][x] - vy[y][x];
+				dp += vx[y][x-1] - vx[y][x+1];
+				dp += vy[y-1][x] - vy[y+1][x];
 				pv[y][x] *= AIR_PLOSS;
-				pv[y][x] += dp*AIR_TSTEPP;
+				pv[y][x] += dp*AIR_TSTEPP * 0.5f;;
 			}
 
-		for (y=0; y<YCELLS-1; y++) //velocity adjustments from pressure
-			for (x=0; x<XCELLS-1; x++)
+		for (y=1; y<YCELLS-1; y++) //velocity adjustments from pressure
+			for (x=1; x<XCELLS-1; x++)
 			{
 				dx = dy = 0.0f;
-				dx += pv[y][x] - pv[y][x+1];
-				dy += pv[y][x] - pv[y+1][x];
+				dx += pv[y][x-1] - pv[y][x+1];
+				dy += pv[y-1][x] - pv[y+1][x];
 				vx[y][x] *= AIR_VLOSS;
 				vy[y][x] *= AIR_VLOSS;
-				vx[y][x] += dx*AIR_TSTEPV;
-				vy[y][x] += dy*AIR_TSTEPV;
-				if (bmap_blockair[y][x] || bmap_blockair[y][x+1])
+				vx[y][x] += dx*AIR_TSTEPV * 0.5f;
+				vy[y][x] += dy*AIR_TSTEPV * 0.5f;
+				if (bmap_blockair[y][x-1] || bmap_blockair[y][x] || bmap_blockair[y][x+1])
 					vx[y][x] = 0;
-				if (bmap_blockair[y][x] || bmap_blockair[y+1][x])
+				if (bmap_blockair[y-1][x] || bmap_blockair[y][x] || bmap_blockair[y+1][x])
 					vy[y][x] = 0;
 			}
 
