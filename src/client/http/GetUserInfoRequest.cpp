@@ -9,10 +9,6 @@ namespace http
 	{
 	}
 
-	GetUserInfoRequest::~GetUserInfoRequest()
-	{
-	}
-
 	std::unique_ptr<UserInfo> GetUserInfoRequest::Finish()
 	{
 		std::unique_ptr<UserInfo> user_info;

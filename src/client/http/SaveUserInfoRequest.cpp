@@ -13,10 +13,6 @@ namespace http
 		});
 	}
 
-	SaveUserInfoRequest::~SaveUserInfoRequest()
-	{
-	}
-
 	bool SaveUserInfoRequest::Finish()
 	{
 		auto result = APIRequest::Finish();

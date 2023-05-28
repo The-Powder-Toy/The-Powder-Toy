@@ -9,7 +9,6 @@ namespace http
 	{
 	public:
 		SaveUserInfoRequest(UserInfo &info);
-		virtual ~SaveUserInfoRequest();
 
 		bool Finish();
 	};

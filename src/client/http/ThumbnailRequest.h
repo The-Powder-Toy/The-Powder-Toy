@@ -7,6 +7,5 @@ namespace http
 	{
 	public:
 		ThumbnailRequest(int saveID, int saveDate, Vec2<int> size);
-		virtual ~ThumbnailRequest();
 	};
 }

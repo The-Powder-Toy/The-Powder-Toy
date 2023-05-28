@@ -11,9 +11,5 @@ namespace http
 		), size)
 	{
 	}
-
-	ThumbnailRequest::~ThumbnailRequest()
-	{
-	}
 }
 

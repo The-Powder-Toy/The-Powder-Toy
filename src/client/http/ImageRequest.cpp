@@ -9,9 +9,6 @@ namespace http
 		size(size)
 	{}
 
-	ImageRequest::~ImageRequest()
-	{}
-
 	std::unique_ptr<VideoBuffer> ImageRequest::Finish()
 	{
 		auto [ status, data ] = Request::Finish();

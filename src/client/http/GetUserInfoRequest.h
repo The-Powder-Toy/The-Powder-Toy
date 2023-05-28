@@ -9,7 +9,6 @@ namespace http
 	{
 	public:
 		GetUserInfoRequest(ByteString username);
-		virtual ~GetUserInfoRequest();
 
 		std::unique_ptr<UserInfo> Finish();
 	};
