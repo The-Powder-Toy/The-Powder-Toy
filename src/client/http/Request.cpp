@@ -1,6 +1,7 @@
 #include "Request.h"
 #include "requestmanager/RequestManager.h"
 #include <memory>
+#include <iostream>
 
 namespace http
 {
@@ -95,6 +96,20 @@ namespace http
 		assert(handle->state == RequestHandle::done);
 		handle->state = RequestHandle::dead;
 		return { handle->statusCode, std::move(handle->responseData) };
+	}
+
+	void RequestHandle::MarkDone()
+	{
+		{
+			std::lock_guard lk(stateMx);
+			assert(state == RequestHandle::running);
+			state = RequestHandle::done;
+		}
+		stateCv.notify_one();
+		if (error.size())
+		{
+			std::cerr << error << std::endl;
+		}
 	}
 
 	std::pair<int, ByteString> Request::Simple(ByteString uri, FormData postData)
