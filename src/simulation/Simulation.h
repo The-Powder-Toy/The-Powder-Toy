@@ -121,8 +121,8 @@ public:
 	uint64_t frameCount;
 	bool ensureDeterminism;
 
-	void Load(const GameSave *save, bool includePressure, Vec2<int> blockP);
-	std::unique_ptr<GameSave> Save(bool includePressure, Rect<int> blockR);
+	void Load(const GameSave *save, bool includePressure, Vec2<int> blockP); // block coordinates
+	std::unique_ptr<GameSave> Save(bool includePressure, Rect<int> partR); // particle coordinates
 	void SaveSimOptions(GameSave &gameSave);
 	SimulationSample GetSample(int x, int y);
 
