@@ -10,10 +10,6 @@ namespace http
 		AuthHeaders(ByteString::Build(user.UserID), user.SessionID);
 	}
 
-	APIRequest::~APIRequest()
-	{
-	}
-
 	APIRequest::Result APIRequest::Finish()
 	{
 		Result result;

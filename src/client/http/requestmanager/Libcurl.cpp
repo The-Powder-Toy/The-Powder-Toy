@@ -96,224 +96,67 @@ namespace http
 	{
 		using RequestManager::RequestManager;
 
+		RequestManagerImpl(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork);
+		~RequestManagerImpl();
+
+		std::thread worker;
+		void Worker();
+		void WorkerInit();
+		void WorkerPerform();
+		void WorkerExit();
+
+		// State shared between Request threads and the worker thread.
+		std::vector<std::shared_ptr<RequestHandle>> requestHandlesToRegister;
+		std::vector<std::shared_ptr<RequestHandle>> requestHandlesToUnregister;
+		bool running = true;
+		std::mutex sharedStateMx;
+
+		std::vector<std::shared_ptr<RequestHandle>> requestHandles;
+		void RegisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle);
+		void UnregisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle);
+
 		bool curlGlobalInit = false;
 		CURLM *curlMulti = NULL;
 	};
 
-	void RequestManager::InitWorker()
+	RequestManagerImpl::RequestManagerImpl(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork) :
+		RequestManager(newProxy, newCafile, newCapath, newDisableNetwork)
 	{
-		auto manager = static_cast<RequestManagerImpl *>(this);
+		worker = std::thread([this]() {
+			Worker();
+		});
+	}
+
+	RequestManagerImpl::~RequestManagerImpl()
+	{
+		{
+			std::lock_guard lk(sharedStateMx);
+			running = false;
+		}
+		worker.join();
+	}
+
+	void RequestManagerImpl::WorkerInit()
+	{
 		if (!curl_global_init(CURL_GLOBAL_DEFAULT))
 		{
-			manager->curlGlobalInit = true;
-			manager->curlMulti = curl_multi_init();
-			if (manager->curlMulti)
+			curlGlobalInit = true;
+			curlMulti = curl_multi_init();
+			if (curlMulti)
 			{
-				HandleCURLMcode(curl_multi_setopt(manager->curlMulti, CURLMOPT_MAX_HOST_CONNECTIONS, curlMaxHostConnections));
+				HandleCURLMcode(curl_multi_setopt(curlMulti, CURLMOPT_MAX_HOST_CONNECTIONS, curlMaxHostConnections));
 #if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 67, 0)
-				HandleCURLMcode(curl_multi_setopt(manager->curlMulti, CURLMOPT_MAX_CONCURRENT_STREAMS, curlMaxConcurrentStreams));
+				HandleCURLMcode(curl_multi_setopt(curlMulti, CURLMOPT_MAX_CONCURRENT_STREAMS, curlMaxConcurrentStreams));
 #endif
 			}
 		}
 	}
 
-	void RequestManager::ExitWorker()
+	void RequestManagerImpl::WorkerPerform()
 	{
-		auto manager = static_cast<RequestManagerImpl *>(this);
-		curl_multi_cleanup(manager->curlMulti);
-		manager->curlMulti = NULL;
-		curl_global_cleanup();
-	}
-
-	void RequestManager::RegisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle)
-	{
-		auto manager = static_cast<RequestManagerImpl *>(this);
-		auto handle = static_cast<RequestHandleHttp *>(requestHandle.get());
-		auto failEarly = [&requestHandle](int statusCode, ByteString error) {
-			requestHandle->statusCode = statusCode;
-			requestHandle->error = error;
-		};
-		if (disableNetwork)
-		{
-			return failEarly(604, "network disabled upon request");
-		}
-		if (!manager->curlGlobalInit)
-		{
-			return failEarly(600, "no CURL");
-		}
-		if (!manager->curlMulti)
-		{
-			return failEarly(600, "no CURL multi handle");
-		}
-		try
-		{
-			handle->curlEasy = curl_easy_init();
-			if (!handle->curlEasy)
-			{
-				return failEarly(600, "no CURL easy handle");
-			} 
-			for (auto &header : handle->headers)
-			{
-				auto *newHeaders = curl_slist_append(handle->curlHeaders, header.c_str());
-				if (!newHeaders)
-				{
-					// Hopefully this is what a NULL from curl_slist_append means.
-					HandleCURLcode(CURLE_OUT_OF_MEMORY);
-				}
-				handle->curlHeaders = newHeaders;
-			}
-			{
-				auto postData = handle->postData;
-				if (postData.size())
-				{
-#ifdef REQUEST_USE_CURL_MIMEPOST
-					handle->curlPostFields = curl_mime_init(handle->curlEasy);
-					if (!handle->curlPostFields)
-					{
-						// Hopefully this is what a NULL from curl_mime_init means.
-						HandleCURLcode(CURLE_OUT_OF_MEMORY);
-					}
-					for (auto &field : postData)
-					{
-						curl_mimepart *part = curl_mime_addpart(handle->curlPostFields);
-						if (!part)
-						{
-							// Hopefully this is what a NULL from curl_mime_addpart means.
-							HandleCURLcode(CURLE_OUT_OF_MEMORY);
-						}
-						HandleCURLcode(curl_mime_data(part, &field.second[0], field.second.size()));
-						if (auto split = field.first.SplitBy(':'))
-						{
-							HandleCURLcode(curl_mime_name(part, split.Before().c_str()));
-							HandleCURLcode(curl_mime_filename(part, split.After().c_str()));
-						}
-						else
-						{
-							HandleCURLcode(curl_mime_name(part, field.first.c_str()));
-						}
-					}
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_MIMEPOST, handle->curlPostFields));
-#else
-					for (auto &field : postData)
-					{
-						if (auto split = field.first.SplitBy(':'))
-						{
-							HandleCURLFORMcode(curl_formadd(&handle->curlPostFieldsFirst, &handle->curlPostFieldsLast,
-								CURLFORM_COPYNAME, split.Before().c_str(),
-								CURLFORM_BUFFER, split.After().c_str(),
-								CURLFORM_BUFFERPTR, &field.second[0],
-								CURLFORM_BUFFERLENGTH, field.second.size(),
-							CURLFORM_END));
-						}
-						else
-						{
-							HandleCURLFORMcode(curl_formadd(&handle->curlPostFieldsFirst, &handle->curlPostFieldsLast,
-								CURLFORM_COPYNAME, field.first.c_str(),
-								CURLFORM_PTRCONTENTS, &field.second[0],
-								CURLFORM_CONTENTLEN, field.second.size(),
-							CURLFORM_END));
-						}
-					}
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_HTTPPOST, handle->curlPostFieldsFirst));
-#endif
-				}
-				else if (handle->isPost)
-				{
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POST, 1L));
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDS, ""));
-				}
-				else
-				{
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_HTTPGET, 1L));
-				}
-				if (handle->verb.size())
-				{
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_CUSTOMREQUEST, handle->verb.c_str()));
-				}
-				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_FOLLOWLOCATION, 1L));
-				if constexpr (ENFORCE_HTTPS)
-				{
-#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 85, 0)
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_PROTOCOLS_STR, "https"));
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_REDIR_PROTOCOLS_STR, "https"));
-#else
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS));
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS));
-#endif
-				}
-				else
-				{
-#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 85, 0)
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_PROTOCOLS_STR, "https,http"));
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_REDIR_PROTOCOLS_STR, "https,http"));
-#else
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP));
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP));
-#endif
-				}
-				SetupCurlEasyCiphers(handle->curlEasy);
-				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_MAXREDIRS, 10L));
-				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_ERRORBUFFER, handle->curlErrorBuffer));
-				handle->curlErrorBuffer[0] = 0;
-				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_CONNECTTIMEOUT, curlConnectTimeoutS));
-				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_HTTPHEADER, handle->curlHeaders));
-				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_URL, handle->uri.c_str()));
-				if (proxy.size())
-				{
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_PROXY, proxy.c_str()));
-				}
-				if (cafile.size())
-				{
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_CAINFO, cafile.c_str()));
-				}
-				if (capath.size())
-				{
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_CAPATH, capath.c_str()));
-				}
-				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_PRIVATE, (void *)handle));
-				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_USERAGENT, userAgent.c_str()));
-				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_HEADERDATA, (void *)handle));
-				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_HEADERFUNCTION, &RequestHandleHttp::HeaderDataHandler));
-				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_WRITEDATA, (void *)handle));
-				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_WRITEFUNCTION, &RequestHandleHttp::WriteDataHandler));
-			}
-		}
-		catch (const CurlError &ex)
-		{
-			return failEarly(600, ex.what());
-		}
-		HandleCURLMcode(curl_multi_add_handle(manager->curlMulti, handle->curlEasy));
-		handle->curlAddedToMulti = true;
-	}
-
-	void RequestManager::UnregisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle)
-	{
-		auto manager = static_cast<RequestManagerImpl *>(this);
-		auto handle = static_cast<RequestHandleHttp *>(requestHandle.get());
-		if (handle->curlAddedToMulti)
-		{
-			HandleCURLMcode(curl_multi_remove_handle(manager->curlMulti, handle->curlEasy));
-			handle->curlAddedToMulti = false;
-		}
-		curl_easy_cleanup(handle->curlEasy);
-#ifdef REQUEST_USE_CURL_MIMEPOST
-		curl_mime_free(handle->curlPostFields);
-#else
-		curl_formfree(handle->curlPostFieldsFirst);
-#endif
-		curl_slist_free_all(handle->curlHeaders);
-	}
-
-	void RequestManager::Tick()
-	{
-		if (!requestHandles.size())
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(TickMs));
-			return;
-		}
 		auto manager = static_cast<RequestManagerImpl *>(this);
 		int dontcare;
-		HandleCURLMcode(curl_multi_wait(manager->curlMulti, NULL, 0, TickMs, &dontcare));
+		HandleCURLMcode(curl_multi_poll(manager->curlMulti, NULL, 0, 1000, &dontcare));
 		HandleCURLMcode(curl_multi_perform(manager->curlMulti, &dontcare));
 		while (auto msg = curl_multi_info_read(manager->curlMulti, &dontcare))
 		{
@@ -387,6 +230,254 @@ namespace http
 				handle->bytesDone = 0;
 			}
 		}
+	}
+
+	void RequestManagerImpl::WorkerExit()
+	{
+		curl_multi_cleanup(curlMulti);
+		curlMulti = NULL;
+		curl_global_cleanup();
+	}
+
+	void RequestManagerImpl::Worker()
+	{
+		WorkerInit();
+		while (true)
+		{
+			{
+				std::lock_guard lk(sharedStateMx);
+				for (auto &requestHandle : requestHandles)
+				{
+					if (requestHandle->statusCode)
+					{
+						requestHandlesToUnregister.push_back(requestHandle);
+					}
+				}
+				for (auto &requestHandle : requestHandlesToRegister)
+				{
+					requestHandles.push_back(requestHandle);
+					RegisterRequestHandle(requestHandle);
+				}
+				requestHandlesToRegister.clear();
+				for (auto &requestHandle : requestHandlesToUnregister)
+				{
+					auto eraseFrom = std::remove(requestHandles.begin(), requestHandles.end(), requestHandle);
+					if (eraseFrom != requestHandles.end())
+					{
+						assert(eraseFrom + 1 == requestHandles.end());
+						UnregisterRequestHandle(requestHandle);
+						requestHandles.erase(eraseFrom, requestHandles.end());
+						requestHandle->MarkDone();
+					}
+				}
+				requestHandlesToUnregister.clear();
+				if (!running)
+				{
+					break;
+				}
+			}
+			WorkerPerform();
+		}
+		assert(!requestHandles.size());
+		WorkerExit();
+	}
+
+	void RequestManager::RegisterRequestImpl(Request &request)
+	{
+		auto manager = static_cast<RequestManagerImpl *>(this);
+		std::lock_guard lk(manager->sharedStateMx);
+		manager->requestHandlesToRegister.push_back(request.handle);
+		curl_multi_wakeup(manager->curlMulti);
+	}
+
+	void RequestManager::UnregisterRequestImpl(Request &request)
+	{
+		auto manager = static_cast<RequestManagerImpl *>(this);
+		std::lock_guard lk(manager->sharedStateMx);
+		manager->requestHandlesToUnregister.push_back(request.handle);
+		curl_multi_wakeup(manager->curlMulti);
+	}
+
+	void RequestManagerImpl::RegisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle)
+	{
+		auto manager = static_cast<RequestManagerImpl *>(this);
+		auto handle = static_cast<RequestHandleHttp *>(requestHandle.get());
+		auto failEarly = [&requestHandle](int statusCode, ByteString error) {
+			requestHandle->statusCode = statusCode;
+			requestHandle->error = error;
+		};
+		if (!manager->curlGlobalInit)
+		{
+			return failEarly(600, "no CURL");
+		}
+		if (!manager->curlMulti)
+		{
+			return failEarly(600, "no CURL multi handle");
+		}
+		try
+		{
+			handle->curlEasy = curl_easy_init();
+			if (!handle->curlEasy)
+			{
+				return failEarly(600, "no CURL easy handle");
+			} 
+			for (auto &header : handle->headers)
+			{
+				auto *newHeaders = curl_slist_append(handle->curlHeaders, header.c_str());
+				if (!newHeaders)
+				{
+					// Hopefully this is what a NULL from curl_slist_append means.
+					HandleCURLcode(CURLE_OUT_OF_MEMORY);
+				}
+				handle->curlHeaders = newHeaders;
+			}
+			{
+				auto &postData = handle->postData;
+				if (std::holds_alternative<http::FormData>(postData) && std::get<http::FormData>(postData).size())
+				{
+					auto &formData = std::get<http::FormData>(postData);
+#ifdef REQUEST_USE_CURL_MIMEPOST
+					handle->curlPostFields = curl_mime_init(handle->curlEasy);
+					if (!handle->curlPostFields)
+					{
+						// Hopefully this is what a NULL from curl_mime_init means.
+						HandleCURLcode(CURLE_OUT_OF_MEMORY);
+					}
+					for (auto &field : formData)
+					{
+						curl_mimepart *part = curl_mime_addpart(handle->curlPostFields);
+						if (!part)
+						{
+							// Hopefully this is what a NULL from curl_mime_addpart means.
+							HandleCURLcode(CURLE_OUT_OF_MEMORY);
+						}
+						HandleCURLcode(curl_mime_data(part, &field.second[0], field.second.size()));
+						if (auto split = field.first.SplitBy(':'))
+						{
+							HandleCURLcode(curl_mime_name(part, split.Before().c_str()));
+							HandleCURLcode(curl_mime_filename(part, split.After().c_str()));
+						}
+						else
+						{
+							HandleCURLcode(curl_mime_name(part, field.first.c_str()));
+						}
+					}
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_MIMEPOST, handle->curlPostFields));
+#else
+					for (auto &field : formData)
+					{
+						if (auto split = field.first.SplitBy(':'))
+						{
+							HandleCURLFORMcode(curl_formadd(&handle->curlPostFieldsFirst, &handle->curlPostFieldsLast,
+								CURLFORM_COPYNAME, split.Before().c_str(),
+								CURLFORM_BUFFER, split.After().c_str(),
+								CURLFORM_BUFFERPTR, &field.second[0],
+								CURLFORM_BUFFERLENGTH, field.second.size(),
+							CURLFORM_END));
+						}
+						else
+						{
+							HandleCURLFORMcode(curl_formadd(&handle->curlPostFieldsFirst, &handle->curlPostFieldsLast,
+								CURLFORM_COPYNAME, field.first.c_str(),
+								CURLFORM_PTRCONTENTS, &field.second[0],
+								CURLFORM_CONTENTLEN, field.second.size(),
+							CURLFORM_END));
+						}
+					}
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_HTTPPOST, handle->curlPostFieldsFirst));
+#endif
+				}
+				else if (std::holds_alternative<http::StringData>(postData) && std::get<http::StringData>(postData).size())
+				{
+					auto &stringData = std::get<http::StringData>(postData);
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDS, &stringData[0]));
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDSIZE_LARGE, curl_off_t(stringData.size())));
+				}
+				else if (handle->isPost)
+				{
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POST, 1L));
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDS, ""));
+				}
+				else
+				{
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_HTTPGET, 1L));
+				}
+				if (handle->verb.size())
+				{
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_CUSTOMREQUEST, handle->verb.c_str()));
+				}
+				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_FOLLOWLOCATION, 1L));
+				if constexpr (ENFORCE_HTTPS)
+				{
+#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 85, 0)
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_PROTOCOLS_STR, "https"));
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_REDIR_PROTOCOLS_STR, "https"));
+#else
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS));
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS));
+#endif
+				}
+				else
+				{
+#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 85, 0)
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_PROTOCOLS_STR, "https,http"));
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_REDIR_PROTOCOLS_STR, "https,http"));
+#else
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP));
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS | CURLPROTO_HTTP));
+#endif
+				}
+				SetupCurlEasyCiphers(handle->curlEasy);
+				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_MAXREDIRS, 10L));
+				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_ERRORBUFFER, handle->curlErrorBuffer));
+				handle->curlErrorBuffer[0] = 0;
+				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_CONNECTTIMEOUT, curlConnectTimeoutS));
+				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_HTTPHEADER, handle->curlHeaders));
+				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_URL, handle->uri.c_str()));
+				if (proxy.size())
+				{
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_PROXY, proxy.c_str()));
+				}
+				if (cafile.size())
+				{
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_CAINFO, cafile.c_str()));
+				}
+				if (capath.size())
+				{
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_CAPATH, capath.c_str()));
+				}
+				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_PRIVATE, (void *)handle));
+				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_USERAGENT, userAgent.c_str()));
+				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_HEADERDATA, (void *)handle));
+				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_HEADERFUNCTION, &RequestHandleHttp::HeaderDataHandler));
+				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_WRITEDATA, (void *)handle));
+				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_WRITEFUNCTION, &RequestHandleHttp::WriteDataHandler));
+			}
+		}
+		catch (const CurlError &ex)
+		{
+			return failEarly(600, ex.what());
+		}
+		HandleCURLMcode(curl_multi_add_handle(manager->curlMulti, handle->curlEasy));
+		handle->curlAddedToMulti = true;
+	}
+
+	void RequestManagerImpl::UnregisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle)
+	{
+		auto manager = static_cast<RequestManagerImpl *>(this);
+		auto handle = static_cast<RequestHandleHttp *>(requestHandle.get());
+		if (handle->curlAddedToMulti)
+		{
+			HandleCURLMcode(curl_multi_remove_handle(manager->curlMulti, handle->curlEasy));
+			handle->curlAddedToMulti = false;
+		}
+		curl_easy_cleanup(handle->curlEasy);
+#ifdef REQUEST_USE_CURL_MIMEPOST
+		curl_mime_free(handle->curlPostFields);
+#else
+		curl_formfree(handle->curlPostFieldsFirst);
+#endif
+		curl_slist_free_all(handle->curlHeaders);
 	}
 
 	RequestManagerPtr RequestManager::Create(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork)

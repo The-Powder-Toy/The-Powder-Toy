@@ -15,7 +15,6 @@ namespace http
 
 	public:
 		ImageRequest(ByteString url, Vec2<int> size);
-		virtual ~ImageRequest();
 
 		std::unique_ptr<VideoBuffer> Finish();
 	};

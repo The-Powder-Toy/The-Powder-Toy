@@ -17,7 +17,6 @@ namespace http
 		};
 
 		APIRequest(ByteString url);
-		virtual ~APIRequest();
 
 		Result Finish();
 	};

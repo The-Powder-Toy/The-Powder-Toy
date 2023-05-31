@@ -19,7 +19,7 @@ extern int Element_LOLZ_lolz[XRES/9][YRES/9];
 extern int Element_LOVE_RuleTable[9][9];
 extern int Element_LOVE_love[XRES/9][YRES/9];
 
-void Simulation::Load(const GameSave *originalSave, bool includePressure, Vec2<int> blockP)
+void Simulation::Load(const GameSave *originalSave, bool includePressure, Vec2<int> blockP) // block coordinates
 {
 	auto save = std::unique_ptr<GameSave>(new GameSave(*originalSave));
 
@@ -335,10 +335,10 @@ void Simulation::Load(const GameSave *originalSave, bool includePressure, Vec2<i
 	}
 }
 
-std::unique_ptr<GameSave> Simulation::Save(bool includePressure, Rect<int> blockR)
+std::unique_ptr<GameSave> Simulation::Save(bool includePressure, Rect<int> partR) // particle coordinates
 {
+	auto blockR = RectBetween(partR.TopLeft / CELL, partR.BottomRight / CELL);
 	auto blockP = blockR.TopLeft;
-	auto partR = RectSized(blockR.TopLeft * CELL, blockR.Size() * CELL);
 
 	auto newSave = std::make_unique<GameSave>(blockR.Size());
 	auto &possiblyCarriesType = Particle::PossiblyCarriesType();

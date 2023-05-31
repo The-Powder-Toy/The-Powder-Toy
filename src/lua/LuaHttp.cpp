@@ -46,7 +46,7 @@ private:
 	}
 
 public:
-	static int Make(lua_State *l, const ByteString &uri, bool isPost, const ByteString &verb, RequestType type, const std::map<ByteString, ByteString> &post_data, const std::vector<ByteString> &headers)
+	static int Make(lua_State *l, const ByteString &uri, bool isPost, const ByteString &verb, RequestType type, const http::PostData &postData, const std::vector<ByteString> &headers)
 	{
 		auto authUser = Client::Ref().GetAuthUser();
 		if (type == getAuthToken && !authUser.UserID)
@@ -73,7 +73,7 @@ public:
 		}
 		if (isPost)
 		{
-			rh->request->AddPostData(post_data);
+			rh->request->AddPostData(postData);
 		}
 		if (type == getAuthToken)
 		{
@@ -220,7 +220,7 @@ static int http_request_finish(lua_State *l)
 static int http_request(lua_State *l, bool isPost)
 {
 	ByteString uri = tpt_lua_checkByteString(l, 1);
-	std::map<ByteString, ByteString> post_data;
+	http::PostData postData;
 	auto headersIndex = 2;
 	auto verbIndex = 3;
 
@@ -228,13 +228,19 @@ static int http_request(lua_State *l, bool isPost)
 	{
 		headersIndex += 1;
 		verbIndex += 1;
-		if (lua_istable(l, 2))
+		if (lua_isstring(l, 2))
 		{
+			postData = tpt_lua_toByteString(l, 2);
+		}
+		else if (lua_istable(l, 2))
+		{
+			postData = http::FormData{};
+			auto &formData = std::get<http::FormData>(postData);
 			lua_pushnil(l);
 			while (lua_next(l, 2))
 			{
 				lua_pushvalue(l, -2);
-				post_data.emplace(tpt_lua_toByteString(l, -1), tpt_lua_toByteString(l, -2));
+				formData.emplace(tpt_lua_toByteString(l, -1), tpt_lua_toByteString(l, -2));
 				lua_pop(l, 2);
 			}
 		}
@@ -267,7 +273,7 @@ static int http_request(lua_State *l, bool isPost)
 	}
 
 	auto verb = tpt_lua_optByteString(l, verbIndex, "");
-	return RequestHandle::Make(l, uri, isPost, verb, RequestHandle::normal, post_data, headers);
+	return RequestHandle::Make(l, uri, isPost, verb, RequestHandle::normal, postData, headers);
 }
 
 static int http_get_auth_token(lua_State *l)

@@ -7,14 +7,10 @@ namespace http
 	SaveUserInfoRequest::SaveUserInfoRequest(UserInfo &info) :
 		APIRequest(ByteString::Build(SCHEME, SERVER, "/Profile.json"))
 	{
-		AddPostData({
+		AddPostData(FormData{
 			{ "Location", info.location.ToUtf8() },
 			{ "Biography", info.biography.ToUtf8() }
 		});
-	}
-
-	SaveUserInfoRequest::~SaveUserInfoRequest()
-	{
 	}
 
 	bool SaveUserInfoRequest::Finish()

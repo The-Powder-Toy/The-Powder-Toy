@@ -1,5 +1,6 @@
 #pragma once
 #include "common/String.h"
+#include "PostData.h"
 #include <map>
 #include <utility>
 #include <vector>
@@ -22,7 +23,8 @@ namespace http
 
 		void Verb(ByteString newVerb);
 		void AddHeader(ByteString header);
-		void AddPostData(std::map<ByteString, ByteString> data);
+
+		void AddPostData(PostData data);
 		void AuthHeaders(ByteString ID, ByteString session);
 
 		void Start();
@@ -32,8 +34,8 @@ namespace http
 		const std::vector<ByteString> &ResponseHeaders() const;
 		std::pair<int, ByteString> Finish(); // status, data
 
-		static std::pair<int, ByteString> Simple(ByteString uri, std::map<ByteString, ByteString> post_data = {});
-		static std::pair<int, ByteString> SimpleAuth(ByteString uri, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data = {});
+		static std::pair<int, ByteString> Simple(ByteString uri, FormData postData = {});
+		static std::pair<int, ByteString> SimpleAuth(ByteString uri, ByteString ID, ByteString session, FormData postData = {});
 
 		friend class RequestManager;
 	};

@@ -1,6 +1,7 @@
 #include "Request.h"
 #include "requestmanager/RequestManager.h"
 #include <memory>
+#include <iostream>
 
 namespace http
 {
@@ -30,12 +31,12 @@ namespace http
 		handle->headers.push_back(header);
 	}
 
-	void Request::AddPostData(std::map<ByteString, ByteString> data)
+	void Request::AddPostData(PostData data)
 	{
 		assert(handle->state == RequestHandle::ready);
 		// Even if the map is empty, calling this function signifies you want to do a POST request
 		handle->isPost = true;
-		handle->postData.insert(data.begin(), data.end());
+		handle->postData = data;
 	}
 
 	void Request::AuthHeaders(ByteString ID, ByteString session)
@@ -97,17 +98,31 @@ namespace http
 		return { handle->statusCode, std::move(handle->responseData) };
 	}
 
-	std::pair<int, ByteString> Request::Simple(ByteString uri, std::map<ByteString, ByteString> post_data)
+	void RequestHandle::MarkDone()
 	{
-		return SimpleAuth(uri, "", "", post_data);
+		{
+			std::lock_guard lk(stateMx);
+			assert(state == RequestHandle::running);
+			state = RequestHandle::done;
+		}
+		stateCv.notify_one();
+		if (error.size())
+		{
+			std::cerr << error << std::endl;
+		}
 	}
 
-	std::pair<int, ByteString> Request::SimpleAuth(ByteString uri, ByteString ID, ByteString session, std::map<ByteString, ByteString> post_data)
+	std::pair<int, ByteString> Request::Simple(ByteString uri, FormData postData)
+	{
+		return SimpleAuth(uri, "", "", postData);
+	}
+
+	std::pair<int, ByteString> Request::SimpleAuth(ByteString uri, ByteString ID, ByteString session, FormData postData)
 	{
 		auto request = std::make_unique<Request>(uri);
-		if (!post_data.empty())
+		if (!postData.empty())
 		{
-			request->AddPostData(post_data);
+			request->AddPostData(postData);
 		}
 		request->AuthHeaders(ID, session);
 		request->Start();
