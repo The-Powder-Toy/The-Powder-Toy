@@ -218,7 +218,10 @@ public:
 	Simulation();
 	~Simulation();
 
-	bool InBounds(int x, int y);
+	static bool InBounds(int x, int y)
+	{
+		return RES.OriginRect().Contains({ x, y });
+	}
 
 	// These don't really belong anywhere at the moment, so go here for loop edge mode
 	static int remainder_p(int x, int y);
