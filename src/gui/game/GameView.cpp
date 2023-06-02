@@ -1181,7 +1181,7 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 
 Vec2<int> GameView::PlaceSavePos() const
 {
-	return c->NormaliseBlockCoord(selectPoint2 + placeSaveOffset * CELL + Vec2(1, 1) * CELL / 2).Clamp(RectBetween(Vec2<int>::Zero, RES - placeSaveThumb->Size()));
+	return c->NormaliseBlockCoord(selectPoint2 + placeSaveOffset * CELL + Vec2(1, 1) * CELL / 2);
 }
 
 void GameView::OnMouseUp(int x, int y, unsigned button)
