@@ -61,12 +61,17 @@ void Simulation::Load(const GameSave *originalSave, bool includePressure, Vec2<i
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
 		Particle *tempPart = &save->particles[n];
+		auto &type = tempPart->type;
+		if (!type)
+		{
+			continue;
+		}
+
 		tempPart->x += (float)partP.X;
 		tempPart->y += (float)partP.Y;
 		int x = int(tempPart->x + 0.5f);
 		int y = int(tempPart->y + 0.5f);
 
-		auto &type = tempPart->type;
 
 		// Check various scenarios where we are unable to spawn the element, and set type to 0 to block spawning later
 		if (!InBounds(x, y))
@@ -160,6 +165,10 @@ void Simulation::Load(const GameSave *originalSave, bool includePressure, Vec2<i
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
 		Particle tempPart = save->particles[n];
+		if (!tempPart.type)
+		{
+			continue;
+		}
 
 		if (elements[tempPart.type].CreateAllowed)
 		{
