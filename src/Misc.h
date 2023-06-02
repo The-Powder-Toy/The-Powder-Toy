@@ -5,6 +5,19 @@
 #include <cstddef>
 #include <vector>
 
+template<class Signed>
+inline std::pair<Signed, Signed> floorDiv(Signed a, Signed b)
+{
+	auto quo = a / b;
+	auto rem = a % b;
+	if (a < Signed(0) && rem)
+	{
+		quo -= Signed(1);
+		rem += b;
+	}
+	return { quo, rem };
+}
+
 //Linear interpolation
 template <typename T> inline T LinearInterpolate(T val1, T val2, T lowerCoord, T upperCoord, T coord)
 {

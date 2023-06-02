@@ -1967,8 +1967,12 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 	int i = -1;
 	int pushed = 1;
 	std::unique_ptr<SaveFile> tempfile;
-	int x = luaL_optint(l,2,0) / CELL;
-	int y = luaL_optint(l,3,0) / CELL;
+	Vec2<int> partP = {
+		luaL_optint(l, 2, 0),
+		luaL_optint(l, 3, 0),
+	};
+	auto hflip = lua_toboolean(l, 4);
+	auto rotation = luaL_optint(l, 5, 0) & 3; // [0, 3] rotations
 	auto &client = Client::Ref();
 	if (lua_isstring(l, 1)) //Load from 10 char name, or full filename
 	{
@@ -1986,9 +1990,23 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 
 	if (tempfile && tempfile->GetGameSave())
 	{
-		// TODO: maybe do a gameSave->Transform with a new transform argument for the lua function and the "low" [0, CELL) part of x, y
 		auto gameSave = tempfile->TakeGameSave();
-		luacon_sim->Load(gameSave.get(), !luacon_controller->GetView()->ShiftBehaviour(), { x, y });
+		auto [ quoX, remX ] = floorDiv(partP.X, CELL);
+		auto [ quoY, remY ] = floorDiv(partP.Y, CELL);
+		if (remX || remY || hflip || rotation)
+		{
+			auto transform = Mat2<int>::Identity;
+			if (hflip)
+			{
+				transform = Mat2<int>::MirrorX * transform;
+			}
+			for (auto i = 0; i < rotation; ++i)
+			{
+				transform = Mat2<int>::CCW * transform;
+			}
+			gameSave->Transform(transform, { remX, remY });
+		}
+		luacon_sim->Load(gameSave.get(), !luacon_controller->GetView()->ShiftBehaviour(), { quoX, quoY });
 		lua_pushinteger(l, 1);
 
 		if (gameSave->authors.size())

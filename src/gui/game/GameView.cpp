@@ -1930,19 +1930,6 @@ void GameView::TransformSave(Mat2<int> mulToTransform)
 	ApplyTransformPlaceSave();
 }
 
-template<class Signed>
-static std::pair<Signed, Signed> floorDiv(Signed a, Signed b)
-{
-	auto quo = a / b;
-	auto rem = a % b;
-	if (a < Signed(0) && rem)
-	{
-		quo -= Signed(1);
-		rem += b;
-	}
-	return { quo, rem };
-}
-
 void GameView::ApplyTransformPlaceSave()
 {
 	auto remX = floorDiv(placeSaveTranslate.X, CELL).second;
