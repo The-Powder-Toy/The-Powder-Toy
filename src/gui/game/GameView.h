@@ -118,7 +118,6 @@ private:
 	ui::Point mousePosition;
 
 	std::unique_ptr<VideoBuffer> placeSaveThumb;
-	ui::Point placeSaveOffset;
 	Mat2<int> placeSaveTransform = Mat2<int>::Identity;
 	Vec2<int> placeSaveTranslate = Vec2<int>::Zero;
 	void TranslateSave(Vec2<int> addToTranslate);
@@ -163,8 +162,6 @@ public:
 	bool AltBehaviour(){ return altBehaviour; }
 	SelectMode GetSelectMode() { return selectMode; }
 	void BeginStampSelection();
-	ui::Point GetPlaceSaveOffset() { return placeSaveOffset; }
-	void SetPlaceSaveOffset(ui::Point offset) { placeSaveOffset = offset; }
 	ByteString TakeScreenshot(int captureUI, int fileType);
 	int Record(bool record);
 
