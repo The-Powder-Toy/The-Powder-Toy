@@ -46,8 +46,10 @@ void TagsController::Exit()
 
 TagsController::~TagsController()
 {
-	tagsView->CloseActiveWindow();
 	delete tagsModel;
-	delete tagsView;
+	if (tagsView->CloseActiveWindow())
+	{
+		delete tagsView;
+	}
 }
 

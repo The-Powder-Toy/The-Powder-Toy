@@ -149,8 +149,10 @@ void OptionsController::Exit()
 
 OptionsController::~OptionsController()
 {
-	view->CloseActiveWindow();
 	delete model;
-	delete view;
+	if (view->CloseActiveWindow())
+	{
+		delete view;
+	}
 }
 

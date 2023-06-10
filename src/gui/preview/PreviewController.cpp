@@ -171,8 +171,10 @@ void PreviewController::Exit()
 
 PreviewController::~PreviewController()
 {
-	previewView->CloseActiveWindow();
 	Client::Ref().RemoveListener(this);
 	delete previewModel;
-	delete previewView;
+	if (previewView->CloseActiveWindow())
+	{
+		delete previewView;
+	}
 }

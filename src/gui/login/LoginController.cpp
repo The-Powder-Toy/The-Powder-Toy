@@ -39,8 +39,10 @@ void LoginController::Exit()
 
 LoginController::~LoginController()
 {
-	loginView->CloseActiveWindow();
 	delete loginModel;
-	delete loginView;
+	if (loginView->CloseActiveWindow())
+	{
+		delete loginView;
+	}
 }
 
