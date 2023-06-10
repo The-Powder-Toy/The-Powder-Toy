@@ -52,7 +52,7 @@ namespace http
 						return;
 					}
 					auto &info = versions[key];
-					auto getOr = [&info](ByteString key, int defaultValue) {
+					auto getOr = [&info](ByteString key, int defaultValue) -> int {
 						if (!info.isMember(key))
 						{
 							return defaultValue;
@@ -75,18 +75,18 @@ namespace http
 				};
 				if constexpr (SNAPSHOT || MOD)
 				{
-					parseUpdate("Snapshot", UpdateInfo::channelSnapshot, [](int build) {
+					parseUpdate("Snapshot", UpdateInfo::channelSnapshot, [](int build) -> bool {
 						return build > SNAPSHOT_ID;
 					});
 				}
 				else
 				{
-					parseUpdate("Stable", UpdateInfo::channelStable, [](int build) {
+					parseUpdate("Stable", UpdateInfo::channelStable, [](int build) -> bool {
 						return build > BUILD_NUM;
 					});
 					if (!startupInfo.updateInfo.has_value())
 					{
-						parseUpdate("Beta", UpdateInfo::channelBeta, [](int build) {
+						parseUpdate("Beta", UpdateInfo::channelBeta, [](int build) -> bool {
 							return build > BUILD_NUM;
 						});
 					}
