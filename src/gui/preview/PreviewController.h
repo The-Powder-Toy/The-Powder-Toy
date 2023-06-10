@@ -23,7 +23,6 @@ public:
 	void Exit();
 	void DoOpen();
 	void OpenInBrowser();
-	void Report(String message);
 	void ShowLogin();
 	bool GetDoOpen();
 	const SaveInfo *GetSaveInfo() const;
@@ -31,10 +30,10 @@ public:
 	PreviewView * GetView() { return previewView; }
 	void Update();
 	void FavouriteSave();
-	bool SubmitComment(String comment);
 
 	bool NextCommentPage();
 	bool PrevCommentPage();
+	void CommentAdded();
 
 	virtual ~PreviewController();
 };

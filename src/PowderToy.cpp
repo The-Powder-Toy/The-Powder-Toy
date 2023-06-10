@@ -7,6 +7,8 @@
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
 #include "client/http/requestmanager/RequestManager.h"
+#include "client/http/GetSaveRequest.h"
+#include "client/http/GetSaveDataRequest.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "simulation/SaveRenderer.h"
@@ -462,15 +464,31 @@ int main(int argc, char * argv[])
 				}
 				int saveId = saveIdPart.ToNumber<int>();
 
-				auto newSave = Client::Ref().GetSave(saveId, 0);
-				if (!newSave)
-					throw std::runtime_error("Could not load save info");
-				auto saveData = Client::Ref().GetSaveData(saveId, 0);
-				if (!saveData.size())
-					throw std::runtime_error(("Could not load save\n" + Client::Ref().GetLastError()).ToUtf8());
-				auto newGameSave = std::make_unique<GameSave>(std::move(saveData));
-				newSave->SetGameSave(std::move(newGameSave));
-
+				auto getSave = std::make_unique<http::GetSaveRequest>(saveId, 0);
+				getSave->Start();
+				getSave->Wait();
+				std::unique_ptr<SaveInfo> newSave;
+				try
+				{
+					newSave = getSave->Finish();
+				}
+				catch (const http::RequestError &ex)
+				{
+					throw std::runtime_error("Could not load save info\n" + ByteString(ex.what()));
+				}
+				auto getSaveData = std::make_unique<http::GetSaveDataRequest>(saveId, 0);
+				getSaveData->Start();
+				getSaveData->Wait();
+				std::unique_ptr<GameSave> saveData;
+				try
+				{
+					saveData = std::make_unique<GameSave>(getSaveData->Finish());
+				}
+				catch (const http::RequestError &ex)
+				{
+					throw std::runtime_error("Could not load save\n" + ByteString(ex.what()));
+				}
+				newSave->SetGameSave(std::move(saveData));
 				gameController->LoadSave(std::move(newSave));
 			}
 			catch (std::exception & e)

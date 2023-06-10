@@ -5,6 +5,7 @@ client_files = files(
 	'ThumbnailRendererTask.cpp',
 	'Client.cpp',
 	'GameSave.cpp',
+	'User.cpp',
 )
 
 subdir('http')

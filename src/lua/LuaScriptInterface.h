@@ -7,6 +7,12 @@
 #include "simulation/StructProperty.h"
 #include "simulation/ElementDefs.h"
 #include <map>
+#include <memory>
+
+namespace http
+{
+	class Request;
+}
 
 namespace ui
 {
@@ -22,6 +28,11 @@ class LuaComponent;
 
 class LuaScriptInterface: public TPTScriptInterface
 {
+	std::unique_ptr<http::Request> scriptDownload;
+	ByteString scriptDownloadFilename;
+	bool scriptDownloadRunScript;
+	bool scriptDownloadConfirmPrompt;
+
 	int luacon_mousex, luacon_mousey, luacon_mousebutton;
 	ByteString luacon_selectedl, luacon_selectedr, luacon_selectedalt, luacon_selectedreplace;
 	bool luacon_mousedown;
@@ -180,6 +191,8 @@ class LuaScriptInterface: public TPTScriptInterface
 	static int event_register(lua_State * l);
 	static int event_unregister(lua_State * l);
 	static int event_getmodifiers(lua_State * l);
+
+	static int luatpt_getscript(lua_State * l);
 
 	void initHttpAPI();
 	void initSocketAPI();

@@ -1,7 +1,5 @@
 #include "ServerSaveActivity.h"
-
 #include "graphics/Graphics.h"
-
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Button.h"
@@ -10,13 +8,11 @@
 #include "gui/dialogues/SaveIDMessage.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/InformationMessage.h"
-
 #include "client/Client.h"
 #include "client/ThumbnailRendererTask.h"
 #include "client/GameSave.h"
-
+#include "client/http/UploadSaveRequest.h"
 #include "tasks/Task.h"
-
 #include "gui/Style.h"
 
 class SaveUploadTask: public Task
@@ -36,7 +32,19 @@ class SaveUploadTask: public Task
 	bool doWork() override
 	{
 		notifyProgress(-1);
-		return Client::Ref().UploadSave(save) == RequestOkay;
+		auto uploadSaveRequest = std::make_unique<http::UploadSaveRequest>(save);
+		uploadSaveRequest->Start();
+		uploadSaveRequest->Wait();
+		try
+		{
+			save.SetID(uploadSaveRequest->Finish());
+		}
+		catch (const http::RequestError &ex)
+		{
+			notifyError(ByteString(ex.what()).FromUtf8());
+			return false;
+		}
+		return true;
 	}
 
 public:
@@ -168,7 +176,7 @@ void ServerSaveActivity::NotifyDone(Task * task)
 	if(!task->GetSuccess())
 	{
 		Exit();
-		new ErrorMessage("Error", Client::Ref().GetLastError());
+		new ErrorMessage("Error", task->GetError());
 	}
 	else
 	{
@@ -182,24 +190,20 @@ void ServerSaveActivity::NotifyDone(Task * task)
 
 void ServerSaveActivity::Save()
 {
-	if(nameField->GetText().length())
+	if (!nameField->GetText().length())
 	{
-		if(Client::Ref().GetAuthUser().Username != save->GetUserName() && publishedCheckbox->GetChecked())
-		{
-			new ConfirmPrompt("Publish", "This save was created by " + save->GetUserName().FromUtf8() + ", you're about to publish this under your own name; If you haven't been given permission by the author to do so, please uncheck the publish box, otherwise continue", { [this] {
-				Exit();
-				saveUpload();
-			} });
-		}
-		else
-		{
-			Exit();
+		new ErrorMessage("Error", "You must specify a save name.");
+		return;
+	}
+	if(Client::Ref().GetAuthUser().Username != save->GetUserName() && publishedCheckbox->GetChecked())
+	{
+		new ConfirmPrompt("Publish", "This save was created by " + save->GetUserName().FromUtf8() + ", you're about to publish this under your own name; If you haven't been given permission by the author to do so, please uncheck the publish box, otherwise continue", { [this] {
 			saveUpload();
-		}
+		} });
 	}
 	else
 	{
-		new ErrorMessage("Error", "You must specify a save name.");
+		saveUpload();
 	}
 }
 
@@ -223,6 +227,7 @@ void ServerSaveActivity::AddAuthorInfo()
 
 void ServerSaveActivity::saveUpload()
 {
+	okayButton->Enabled = false;
 	save->SetName(nameField->GetText());
 	save->SetDescription(descriptionField->GetText());
 	save->SetPublished(publishedCheckbox->GetChecked());
@@ -234,16 +239,8 @@ void ServerSaveActivity::saveUpload()
 		save->SetGameSave(std::move(gameSave));
 	}
 	AddAuthorInfo();
-
-	if(Client::Ref().UploadSave(*save) != RequestOkay)
-	{
-		new ErrorMessage("Error", "Upload failed with error:\n"+Client::Ref().GetLastError());
-	}
-	else if (onUploaded)
-	{
-		new SaveIDMessage(save->GetID());
-		onUploaded(std::move(save));
-	}
+	uploadSaveRequest = std::make_unique<http::UploadSaveRequest>(*save);
+	uploadSaveRequest->Start();
 }
 
 void ServerSaveActivity::Exit()
@@ -362,6 +359,26 @@ void ServerSaveActivity::OnTick(float dt)
 			thumbnail = thumbnailRenderer->Finish();
 			thumbnailRenderer = nullptr;
 		}
+	}
+
+	if (uploadSaveRequest && uploadSaveRequest->CheckDone())
+	{
+		okayButton->Enabled = true;
+		try
+		{
+			save->SetID(uploadSaveRequest->Finish());
+			Exit();
+			new SaveIDMessage(save->GetID());
+			if (onUploaded)
+			{
+				onUploaded(std::move(save));
+			}
+		}
+		catch (const http::RequestError &ex)
+		{
+			new ErrorMessage("Error", "Upload failed with error:\n" + ByteString(ex.what()).FromUtf8());
+		}
+		uploadSaveRequest.reset();
 	}
 
 	if(saveUploadTask)

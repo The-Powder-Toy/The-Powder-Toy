@@ -49,6 +49,11 @@ TagsView::TagsView():
 	AddComponent(title);
 }
 
+void TagsView::OnTick(float dt)
+{
+	c->Tick();
+}
+
 void TagsView::OnDraw()
 {
 	Graphics * g = GetGraphics();
@@ -76,7 +81,7 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 			tags.push_back(tempLabel);
 			AddComponent(tempLabel);
 
-			if(sender->GetSave()->GetUserName() == Client::Ref().GetAuthUser().Username || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
+			if(sender->GetSave()->GetUserName() == Client::Ref().GetAuthUser().Username || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationMod)
 			{
 				ui::Button * tempButton = new ui::Button(ui::Point(15, 37+(16*i)), ui::Point(11, 12));
 				tempButton->Appearance.icon = IconDelete;
@@ -85,14 +90,7 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 				tempButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 				tempButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 				tempButton->SetActionCallback({ [this, tag] {
-					try
-					{
-						c->RemoveTag(tag);
-					}
-					catch(TagsModelException & ex)
-					{
-						new ErrorMessage("Could not remove tag", ByteString(ex.what()).FromUtf8());
-					}
+					c->RemoveTag(tag);
 				} });
 				tags.push_back(tempButton);
 				AddComponent(tempButton);
@@ -125,13 +123,6 @@ void TagsView::addTag()
 		new ErrorMessage("Tag not long enough", "Must be at least 4 letters");
 		return;
 	}
-	try
-	{
-		c->AddTag(tagInput->GetText().ToUtf8());
-	}
-	catch(TagsModelException & ex)
-	{
-		new ErrorMessage("Could not add tag", ByteString(ex.what()).FromUtf8());
-	}
+	c->AddTag(tagInput->GetText().ToUtf8());
 	tagInput->SetText("");
 }

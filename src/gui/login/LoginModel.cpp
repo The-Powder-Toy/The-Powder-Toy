@@ -1,39 +1,32 @@
 #include "LoginModel.h"
-
 #include "LoginView.h"
-
 #include "client/Client.h"
-
-LoginModel::LoginModel():
-	currentUser(0, "")
-{
-
-}
+#include "client/http/LoginRequest.h"
+#include "client/http/LogoutRequest.h"
 
 void LoginModel::Login(ByteString username, ByteString password)
 {
 	if (username.Contains("@"))
 	{
 		statusText = "Use your Powder Toy account to log in, not your email. If you don't have a Powder Toy account, you can create one at https://powdertoy.co.uk/Register.html";
-		loginStatus = false;
+		loginStatus = loginIdle;
 		notifyStatusChanged();
 		return;
 	}
 	statusText = "Logging in...";
-	loginStatus = false;
+	loginStatus = loginWorking;
 	notifyStatusChanged();
-	LoginStatus status = Client::Ref().Login(username, password, currentUser);
-	switch(status)
-	{
-	case LoginOkay:
-		statusText = "Logged in";
-		loginStatus = true;
-		break;
-	case LoginError:
-		statusText = Client::Ref().GetLastError();
-		break;
-	}
+	loginRequest = std::make_unique<http::LoginRequest>(username, password);
+	loginRequest->Start();
+}
+
+void LoginModel::Logout()
+{
+	statusText = "Logging out...";
+	loginStatus = loginWorking;
 	notifyStatusChanged();
+	logoutRequest = std::make_unique<http::LogoutRequest>();
+	logoutRequest->Start();
 }
 
 void LoginModel::AddObserver(LoginView * observer)
@@ -46,14 +39,47 @@ String LoginModel::GetStatusText()
 	return statusText;
 }
 
-User LoginModel::GetUser()
+void LoginModel::Tick()
 {
-	return currentUser;
-}
-
-bool LoginModel::GetStatus()
-{
-	return loginStatus;
+	if (loginRequest && loginRequest->CheckDone())
+	{
+		try
+		{
+			auto info = loginRequest->Finish();
+			auto &client = Client::Ref();
+			client.SetAuthUser(info.user);
+			for (auto &item : info.notifications)
+			{
+				client.AddServerNotification(item);
+			}
+			statusText = "Logged in";
+			loginStatus = loginSucceeded;
+		}
+		catch (const http::RequestError &ex)
+		{
+			statusText = ByteString(ex.what()).FromUtf8();
+			loginStatus = loginIdle;
+		}
+		notifyStatusChanged();
+		loginRequest.reset();
+	}
+	if (logoutRequest && logoutRequest->CheckDone())
+	{
+		try
+		{
+			logoutRequest->Finish();
+			auto &client = Client::Ref();
+			client.SetAuthUser(User(0, ""));
+			statusText = "Logged out";
+		}
+		catch (const http::RequestError &ex)
+		{
+			statusText = ByteString(ex.what()).FromUtf8();
+		}
+		loginStatus = loginIdle;
+		notifyStatusChanged();
+		logoutRequest.reset();
+	}
 }
 
 void LoginModel::notifyStatusChanged()
@@ -64,6 +90,7 @@ void LoginModel::notifyStatusChanged()
 	}
 }
 
-LoginModel::~LoginModel() {
+LoginModel::~LoginModel()
+{
+	// Satisfy std::unique_ptr
 }
-

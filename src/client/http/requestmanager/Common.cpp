@@ -22,6 +22,13 @@ namespace http
 
 	void RequestManager::RegisterRequest(Request &request)
 	{
+		if (request.handle->failEarly)
+		{
+			request.handle->error = request.handle->failEarly.value();
+			request.handle->statusCode = 600;
+			request.handle->MarkDone();
+			return;
+		}
 		if (disableNetwork)
 		{
 			request.handle->statusCode = 604;

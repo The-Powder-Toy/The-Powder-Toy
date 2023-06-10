@@ -5,6 +5,12 @@
 #include "common/String.h"
 #include "gui/interface/Window.h"
 
+namespace http
+{
+	class AddCommentRequest;
+	class ReportSaveRequest;
+}
+
 namespace ui
 {
 	class Button;
@@ -64,6 +70,10 @@ class PreviewView: public ui::Window
 	void submitComment();
 	bool CheckSwearing(String text);
 	void CheckComment();
+
+	std::unique_ptr<http::AddCommentRequest> addCommentRequest;
+	std::unique_ptr<http::ReportSaveRequest> reportSaveRequest;
+
 public:
 	void AttachController(PreviewController * controller);
 	PreviewView(std::unique_ptr<VideoBuffer> newSavePreviev);

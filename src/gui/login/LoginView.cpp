@@ -1,18 +1,13 @@
 #include "LoginView.h"
-
 #include "LoginModel.h"
 #include "LoginController.h"
-
 #include "graphics/Graphics.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/Style.h"
-
 #include "client/Client.h"
-
 #include "Misc.h"
-
 #include <SDL.h>
 
 LoginView::LoginView():
@@ -39,11 +34,15 @@ LoginView::LoginView():
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	loginButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	loginButton->Appearance.TextInactive = style::Colour::ConfirmButton;
-	loginButton->SetActionCallback({ [this] { c->Login(usernameField->GetText().ToUtf8(), passwordField->GetText().ToUtf8()); } });
+	loginButton->SetActionCallback({ [this] {
+		c->Login(usernameField->GetText().ToUtf8(), passwordField->GetText().ToUtf8());
+	} });
 	AddComponent(cancelButton);
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	cancelButton->SetActionCallback({ [this] { c->Exit(); } });
+	cancelButton->SetActionCallback({ [this] {
+		c->Logout();
+	} });
 	AddComponent(titleLabel);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -85,12 +84,17 @@ void LoginView::NotifyStatusChanged(LoginModel * sender)
 		targetSize.Y = 87;
 	infoLabel->SetText(sender->GetStatusText());
 	infoLabel->AutoHeight();
+	auto notWorking = sender->GetStatus() != loginWorking;
+	loginButton->Enabled = notWorking;
+	cancelButton->Enabled = notWorking && Client::Ref().GetAuthUser().UserID;
+	usernameField->Enabled = notWorking;
+	passwordField->Enabled = notWorking;
 	if (sender->GetStatusText().length())
 	{
 		targetSize.Y += infoLabel->Size.Y+2;
 		infoLabel->Visible = true;
 	}
-	if(sender->GetStatus())
+	if (sender->GetStatus() == loginSucceeded)
 	{
 		c->Exit();
 	}
@@ -98,6 +102,7 @@ void LoginView::NotifyStatusChanged(LoginModel * sender)
 
 void LoginView::OnTick(float dt)
 {
+	c->Tick();
 	//if(targetSize != Size)
 	{
 		ui::Point difference = targetSize-Size;

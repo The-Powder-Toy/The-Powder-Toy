@@ -22,6 +22,7 @@ class TagsView: public ui::Window {
 public:
 	TagsView();
 	void OnDraw() override;
+	void OnTick(float dt) override;
 	void AttachController(TagsController * c_) { c = c_; }
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void NotifyTagsChanged(TagsModel * sender);

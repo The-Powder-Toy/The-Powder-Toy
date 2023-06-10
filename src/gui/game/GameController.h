@@ -1,5 +1,6 @@
 #pragma once
 #include "client/ClientListener.h"
+#include "client/StartupInfo.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Colour.h"
 #include "simulation/Sign.h"
@@ -181,8 +182,8 @@ public:
 
 	void NotifyUpdateAvailable(Client * sender) override;
 	void NotifyAuthUserChanged(Client * sender) override;
-	void NotifyNewNotification(Client * sender, std::pair<String, ByteString> notification) override;
-	void RunUpdater();
+	void NotifyNewNotification(Client * sender, ServerNotification notification) override;
+	void RunUpdater(UpdateInfo info);
 	bool GetMouseClickRequired();
 
 	void RemoveCustomGOLType(const ByteString &identifier);

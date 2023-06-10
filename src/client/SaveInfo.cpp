@@ -45,7 +45,7 @@ void SaveInfo::SetName(String name)
 {
 	this->name = name;
 }
-String SaveInfo::GetName()
+const String &SaveInfo::GetName() const
 {
 	return name;
 }
@@ -54,7 +54,7 @@ void SaveInfo::SetDescription(String description)
 {
 	Description = description;
 }
-String SaveInfo::GetDescription()
+const String &SaveInfo::GetDescription() const
 {
 	return Description;
 }

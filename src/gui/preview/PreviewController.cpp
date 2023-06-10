@@ -6,6 +6,10 @@
 #include "client/Client.h"
 #include "client/SaveInfo.h"
 #include "client/GameSave.h"
+#include "client/http/GetSaveRequest.h"
+#include "client/http/GetSaveDataRequest.h"
+#include "client/http/GetCommentsRequest.h"
+#include "client/http/FavouriteSaveRequest.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "gui/dialogues/ErrorMessage.h"
@@ -51,30 +55,6 @@ void PreviewController::Update()
 	}
 }
 
-bool PreviewController::SubmitComment(String comment)
-{
-	if(comment.length() < 4)
-	{
-		new ErrorMessage("Error", "Comment is too short");
-		return false;
-	}
-	else
-	{
-		RequestStatus status = Client::Ref().AddComment(saveId, comment);
-		if(status != RequestOkay)
-		{
-			new ErrorMessage("Error submitting comment", Client::Ref().GetLastError());
-			return false;
-		}
-		else
-		{
-			previewModel->CommentAdded();
-			previewModel->UpdateComments(1);
-		}
-	}
-	return true;
-}
-
 void PreviewController::ShowLogin()
 {
 	loginWindow = new LoginController();
@@ -106,32 +86,11 @@ void PreviewController::DoOpen()
 	previewModel->SetDoOpen(true);
 }
 
-void PreviewController::Report(String message)
-{
-	if(Client::Ref().ReportSave(saveId, message) == RequestOkay)
-	{
-		Exit();
-		new InformationMessage("Information", "Report submitted", false);
-	}
-	else
-		new ErrorMessage("Error", "Unable to file report: " + Client::Ref().GetLastError());
-}
-
 void PreviewController::FavouriteSave()
 {
-	if(previewModel->GetSaveInfo() && Client::Ref().GetAuthUser().UserID)
+	if (previewModel->GetSaveInfo() && Client::Ref().GetAuthUser().UserID)
 	{
-		try
-		{
-			if(previewModel->GetSaveInfo()->Favourite)
-				previewModel->SetFavourite(false);
-			else
-				previewModel->SetFavourite(true);
-		}
-		catch (PreviewModelException & e)
-		{
-			new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
-		}
+		previewModel->SetFavourite(!previewModel->GetSaveInfo()->Favourite);
 	}
 }
 
@@ -159,6 +118,12 @@ bool PreviewController::PrevCommentPage()
 		return true;
 	}
 	return false;
+}
+
+void PreviewController::CommentAdded()
+{
+	previewModel->CommentAdded();
+	previewModel->UpdateComments(1);
 }
 
 void PreviewController::Exit()

@@ -4,12 +4,14 @@
 #include "client/SaveInfo.h"
 #include "client/GameSave.h"
 #include "client/Client.h"
+#include "client/http/SearchSavesRequest.h"
+#include "client/http/SearchTagsRequest.h"
 #include "common/tpt-minmax.h"
 #include <thread>
 #include <cmath>
 
 SearchModel::SearchModel():
-	currentSort("best"),
+	currentSort(http::sortByVotes),
 	currentPage(1),
 	resultCount(0),
 	showOwn(false),
@@ -28,81 +30,26 @@ bool SearchModel::GetShowTags()
 	return showTags;
 }
 
-void SearchModel::BeginSearchSaves(int start, int count, String query, ByteString sort, ByteString category)
+void SearchModel::BeginSearchSaves(int start, int count, String query, http::Sort sort, http::Category category)
 {
 	lastError = "";
 	resultCount = 0;
-	ByteStringBuilder urlStream;
-	ByteString data;
-	urlStream << SCHEME << SERVER << "/Browse.json?Start=" << start << "&Count=" << count;
-	if(query.length() || sort.length())
-	{
-		urlStream << "&Search_Query=";
-		if(query.length())
-			urlStream << format::URLEncode(query.ToUtf8());
-		if(sort == "date")
-		{
-			if(query.length())
-				urlStream << format::URLEncode(" ");
-			urlStream << format::URLEncode("sort:") << format::URLEncode(sort);
-		}
-	}
-	if(category.length())
-	{
-		urlStream << "&Category=" << format::URLEncode(category);
-	}
-	searchSaves = std::make_unique<http::Request>(urlStream.Build());
-	auto authUser = Client::Ref().GetAuthUser();
-	if (authUser.UserID)
-	{
-		searchSaves->AuthHeaders(ByteString::Build(Client::Ref().GetAuthUser().UserID), Client::Ref().GetAuthUser().SessionID);
-	}
+	searchSaves = std::make_unique<http::SearchSavesRequest>(start, count, query.ToUtf8(), sort, category);
 	searchSaves->Start();
 }
 
 std::vector<std::unique_ptr<SaveInfo>> SearchModel::EndSearchSaves()
 {
 	std::vector<std::unique_ptr<SaveInfo>> saveArray;
-	auto [ dataStatus, data ] = searchSaves->Finish();
+	try
+	{
+		std::tie(resultCount, saveArray) = searchSaves->Finish();
+	}
+	catch (const http::RequestError &ex)
+	{
+		lastError = ByteString(ex.what()).FromUtf8();
+	}
 	searchSaves.reset();
-	auto &client = Client::Ref();
-	client.ParseServerReturn(data, dataStatus, true);
-	if (dataStatus == 200 && data.size())
-	{
-		try
-		{
-			std::istringstream dataStream(data);
-			Json::Value objDocument;
-			dataStream >> objDocument;
-
-			resultCount = objDocument["Count"].asInt();
-			Json::Value savesArray = objDocument["Saves"];
-			for (Json::UInt j = 0; j < savesArray.size(); j++)
-			{
-				int tempID = savesArray[j]["ID"].asInt();
-				int tempCreatedDate = savesArray[j]["Created"].asInt();
-				int tempUpdatedDate = savesArray[j]["Updated"].asInt();
-				int tempScoreUp = savesArray[j]["ScoreUp"].asInt();
-				int tempScoreDown = savesArray[j]["ScoreDown"].asInt();
-				ByteString tempUsername = savesArray[j]["Username"].asString();
-				String tempName = ByteString(savesArray[j]["Name"].asString()).FromUtf8();
-				int tempVersion = savesArray[j]["Version"].asInt();
-				bool tempPublished = savesArray[j]["Published"].asBool();
-				auto tempSaveInfo = std::make_unique<SaveInfo>(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp, tempScoreDown, tempUsername, tempName);
-				tempSaveInfo->Version = tempVersion;
-				tempSaveInfo->SetPublished(tempPublished);
-				saveArray.push_back(std::move(tempSaveInfo));
-			}
-		}
-		catch (std::exception &e)
-		{
-			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
-		}
-	}
-	else
-	{
-		lastError = client.GetLastError();
-	}
 	return saveArray;
 }
 
@@ -117,40 +64,22 @@ void SearchModel::BeginGetTags(int start, int count, String query)
 		if(query.length())
 			urlStream << format::URLEncode(query.ToUtf8());
 	}
-	getTags = std::make_unique<http::Request>(urlStream.Build());
+	getTags = std::make_unique<http::SearchTagsRequest>(start, count, query.ToUtf8());
 	getTags->Start();
 }
 
 std::vector<std::pair<ByteString, int>> SearchModel::EndGetTags()
 {
 	std::vector<std::pair<ByteString, int>> tagArray;
-	auto [ dataStatus, data ] = getTags->Finish();
+	try
+	{
+		tagArray = getTags->Finish();
+	}
+	catch (const http::RequestError &ex)
+	{
+		lastError = ByteString(ex.what()).FromUtf8();
+	}
 	getTags.reset();
-	if(dataStatus == 200 && data.size())
-	{
-		try
-		{
-			std::istringstream dataStream(data);
-			Json::Value objDocument;
-			dataStream >> objDocument;
-
-			Json::Value tagsArray = objDocument["Tags"];
-			for (Json::UInt j = 0; j < tagsArray.size(); j++)
-			{
-				int tagCount = tagsArray[j]["Count"].asInt();
-				ByteString tag = tagsArray[j]["Tag"].asString();
-				tagArray.push_back(std::pair<ByteString, int>(tag, tagCount));
-			}
-		}
-		catch (std::exception & e)
-		{
-			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
-		}
-	}
-	else
-	{
-		lastError = http::StatusText(dataStatus);
-	}
 	return tagArray;
 }
 
@@ -166,7 +95,7 @@ bool SearchModel::UpdateSaveList(int pageNumber, String query)
 		//resultCount = 0;
 		currentPage = pageNumber;
 
-		if(pageNumber == 1 && !showOwn && !showFavourite && currentSort == "best" && query == "")
+		if(pageNumber == 1 && !showOwn && !showFavourite && currentSort == http::sortByVotes && query == "")
 			SetShowTags(true);
 		else
 			SetShowTags(false);
@@ -182,12 +111,16 @@ bool SearchModel::UpdateSaveList(int pageNumber, String query)
 			BeginGetTags(0, 24, "");
 		}
 
-		ByteString category = "";
-		if(showFavourite)
-			category = "Favourites";
-		if(showOwn && Client::Ref().GetAuthUser().UserID)
-			category = "by:"+Client::Ref().GetAuthUser().Username;
-		BeginSearchSaves((currentPage-1)*20, 20, lastQuery, currentSort=="new"?"date":"votes", category);
+		auto category = http::categoryNone;
+		if (showFavourite)
+		{
+			category = http::categoryFavourites;
+		}
+		if (showOwn && Client::Ref().GetAuthUser().UserID)
+		{
+			category = http::categoryMyOwn;
+		}
+		BeginSearchSaves((currentPage-1)*20, 20, lastQuery, currentSort, category);
 		return true;
 	}
 	return false;
@@ -363,7 +296,7 @@ void SearchModel::notifySelectedChanged()
 
 int SearchModel::GetPageCount()
 {
-	if (!showOwn && !showFavourite && currentSort == "best" && lastQuery == "")
+	if (!showOwn && !showFavourite && currentSort == http::sortByVotes && lastQuery == "")
 		return std::max(1, (int)(ceil(resultCount/20.0f))+1); //add one for front page (front page saves are repeated twice)
 	else
 		return std::max(1, (int)(ceil(resultCount/20.0f)));

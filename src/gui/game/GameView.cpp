@@ -1426,8 +1426,7 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		c->ReloadSim();
 		break;
 	case SDL_SCANCODE_A:
-		if ((Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator
-		     || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin) && ctrl)
+		if (Client::Ref().GetAuthUser().UserElevation != User::ElevationNone && ctrl)
 		{
 			ByteString authorString = Client::Ref().GetAuthorInfo().toStyledString();
 			new InformationMessage("Save authorship info", authorString.FromUtf8(), true);

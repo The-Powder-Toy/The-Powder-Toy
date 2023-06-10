@@ -132,7 +132,17 @@ public:
 				{
 					headers = request->ResponseHeaders();
 				}
-				std::tie(status, data) = request->Finish();
+				// Get this separately so it's always present.
+				status = request->StatusCode();
+				try
+				{
+					data = request->Finish().second;
+				}
+				catch (const http::RequestError &ex)
+				{
+					// Nothing, the only way to fail here is to fail in RequestManager, and
+					// that means the problem has already been printed to std::cerr.
+				}
 				request.reset();
 				if (type == getAuthToken)
 				{

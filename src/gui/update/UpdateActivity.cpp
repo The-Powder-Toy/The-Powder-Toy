@@ -1,7 +1,6 @@
 #include "UpdateActivity.h"
 #include "client/http/Request.h"
 #include "prefs/GlobalPrefs.h"
-#include "client/Client.h"
 #include "common/platform/Platform.h"
 #include "tasks/Task.h"
 #include "tasks/TaskWindow.h"
@@ -53,7 +52,16 @@ private:
 			Platform::Millisleep(1);
 		}
 
-		auto [ status, data ] = request->Finish();
+		int status;
+		ByteString data;
+		try
+		{
+			std::tie(status, data) = request->Finish();
+		}
+		catch (const http::RequestError &ex)
+		{
+			return niceNotifyError("Could not download update: " + String::Build("Server responded with Status ", ByteString(ex.what()).FromAscii()));
+		}
 		if (status!=200)
 		{
 			return niceNotifyError("Could not download update: " + String::Build("Server responded with Status ", status));
@@ -107,9 +115,9 @@ private:
 	}
 };
 
-UpdateActivity::UpdateActivity() {
-	ByteString file = ByteString::Build(SCHEME, USE_UPDATESERVER ? UPDATESERVER : SERVER, Client::Ref().GetUpdateInfo().File);
-	updateDownloadTask = new UpdateDownloadTask(file, this);
+UpdateActivity::UpdateActivity(UpdateInfo info)
+{
+	updateDownloadTask = new UpdateDownloadTask(info.file, this);
 	updateWindow = new TaskWindow("Downloading update...", updateDownloadTask, true);
 }
 

@@ -17,6 +17,7 @@
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
+#include "client/http/ExecVoteRequest.h"
 #include "common/platform/Platform.h"
 #include "graphics/Renderer.h"
 #include "simulation/Air.h"
@@ -30,6 +31,7 @@
 #include "simulation/ToolClasses.h"
 #include "gui/game/DecorationTool.h"
 #include "gui/interface/Engine.h"
+#include "gui/dialogues/ErrorMessage.h"
 #include <iostream>
 #include <algorithm>
 #include <optional>
@@ -780,18 +782,33 @@ void GameModel::SetUndoHistoryLimit(unsigned int undoHistoryLimit_)
 
 void GameModel::SetVote(int direction)
 {
-	if(currentSave)
+	queuedVote = direction;
+}
+
+void GameModel::Tick()
+{
+	if (execVoteRequest && execVoteRequest->CheckDone())
 	{
-		RequestStatus status = Client::Ref().ExecVote(currentSave->GetID(), direction);
-		if(status == RequestOkay)
+		try
 		{
-			currentSave->vote = direction;
+			execVoteRequest->Finish();
+			currentSave->vote = execVoteRequest->Direction();
 			notifySaveChanged();
 		}
-		else
+		catch (const http::RequestError &ex)
 		{
-			throw GameModelException("Could not vote: "+Client::Ref().GetLastError());
+			new ErrorMessage("Error while voting", ByteString(ex.what()).FromUtf8());
 		}
+		execVoteRequest.reset();
+	}
+	if (!execVoteRequest && queuedVote)
+	{
+		if (currentSave)
+		{
+			execVoteRequest = std::make_unique<http::ExecVoteRequest>(currentSave->GetID(), *queuedVote);
+			execVoteRequest->Start();
+		}
+		queuedVote.reset();
 	}
 }
 

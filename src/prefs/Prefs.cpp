@@ -1,6 +1,7 @@
 #include "Prefs.h"
 #include "common/platform/Platform.h"
 #include "common/tpt-rand.h"
+#include "client/User.h"
 #include <fstream>
 #include <iostream>
 
@@ -114,6 +115,9 @@ template<> ByteString  Prefs::Bipacker<ByteString>::Unpack(const Json::Value &va
 
 template<> Json::Value Prefs::Bipacker<String>::Pack  (const String      &value) { return Json::Value(value.ToUtf8()); }
 template<> String      Prefs::Bipacker<String>::Unpack(const Json::Value &value) { return ByteString(value.asString()).FromUtf8(); }
+
+template<> Json::Value     Prefs::Bipacker<User::Elevation>::Pack  (const User::Elevation &value) { return Json::Value(User::ElevationToString(value)); }
+template<> User::Elevation Prefs::Bipacker<User::Elevation>::Unpack(const Json::Value     &value) { return User::ElevationFromString(value.asString()); }
 
 template<class Item>
 struct Prefs::Bipacker<std::vector<Item>>

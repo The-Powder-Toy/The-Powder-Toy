@@ -2,6 +2,8 @@
 #include "requestmanager/RequestManager.h"
 #include <memory>
 #include <iostream>
+#include <cstring>
+#include <json/json.h>
 
 namespace http
 {
@@ -13,10 +15,26 @@ namespace http
 
 	Request::~Request()
 	{
-		if (handle->state != RequestHandle::ready)
+		bool tryUnregister;
 		{
+			std::lock_guard lk(handle->stateMx);
+			tryUnregister = handle->state == RequestHandle::running;
+		}
+		if (tryUnregister)
+		{
+			// At this point it may have already finished and been unregistered but that's ok,
+			// attempting to unregister a request multiple times is allowed. We only do the
+			// state-checking dance so we don't wake up RequestManager if we don't have to.
+			// In fact, we could just not unregister requests here at all, they'd just run to
+			// completion and be unregistered later. All this does is cancel them early.
 			RequestManager::Ref().UnregisterRequest(*this);
 		}
+	}
+
+	void Request::FailEarly(ByteString error)
+	{
+		assert(handle->state == RequestHandle::ready);
+		handle->failEarly = error;
 	}
 
 	void Request::Verb(ByteString newVerb)
@@ -84,18 +102,36 @@ namespace http
 		return handle->responseHeaders;
 	}
 
-	std::pair<int, ByteString> Request::Finish()
+	void Request::Wait()
 	{
 		std::unique_lock lk(handle->stateMx);
-		if (handle->state == RequestHandle::running)
+		assert(handle->state == RequestHandle::running);
+		handle->stateCv.wait(lk, [this]() {
+			return handle->state == RequestHandle::done;
+		});
+	}
+
+	int Request::StatusCode() const
+	{
 		{
-			handle->stateCv.wait(lk, [this]() {
-				return handle->state == RequestHandle::done;
-			});
+			std::unique_lock lk(handle->stateMx);
+			assert(handle->state == RequestHandle::done);
 		}
-		assert(handle->state == RequestHandle::done);
+		return handle->statusCode;
+	}
+
+	std::pair<int, ByteString> Request::Finish()
+	{
+		{
+			std::unique_lock lk(handle->stateMx);
+			assert(handle->state == RequestHandle::done);
+		}
 		handle->state = RequestHandle::dead;
-		return { handle->statusCode, std::move(handle->responseData) };
+		if (handle->error)
+		{
+			throw RequestError(*handle->error);
+		}
+		return std::pair{ handle->statusCode, std::move(handle->responseData) };
 	}
 
 	void RequestHandle::MarkDone()
@@ -106,30 +142,13 @@ namespace http
 			state = RequestHandle::done;
 		}
 		stateCv.notify_one();
-		if (error.size())
+		if (error)
 		{
-			std::cerr << error << std::endl;
+			std::cerr << *error << std::endl;
 		}
 	}
 
-	std::pair<int, ByteString> Request::Simple(ByteString uri, FormData postData)
-	{
-		return SimpleAuth(uri, "", "", postData);
-	}
-
-	std::pair<int, ByteString> Request::SimpleAuth(ByteString uri, ByteString ID, ByteString session, FormData postData)
-	{
-		auto request = std::make_unique<Request>(uri);
-		if (!postData.empty())
-		{
-			request->AddPostData(postData);
-		}
-		request->AuthHeaders(ID, session);
-		request->Start();
-		return request->Finish();
-	}
-
-	String StatusText(int ret)
+	const char *StatusText(int ret)
 	{
 		switch (ret)
 		{
@@ -211,7 +230,69 @@ namespace http
 		case 619: return "SSL: Failed to Load CRL File";
 		case 620: return "SSL: Issuer Check Failed";
 		case 621: return "SSL: Pinned Public Key Mismatch";
-		default:  return "Unknown Status Code";
+		}
+		return "Unknown Status Code";
+	}
+
+	void Request::ParseResponse(const ByteString &result, int status, ResponseType responseType)
+	{
+		// no server response, return "Malformed Response"
+		if (status == 200 && !result.size())
+		{
+			status = 603;
+		}
+		if (status == 302)
+		{
+			return;
+		}
+		if (status != 200)
+		{
+			throw RequestError(ByteString::Build("HTTP Error ", status, ": ", http::StatusText(status)));
+		}
+
+		switch (responseType)
+		{
+		case responseOk:
+			if (strncmp(result.c_str(), "OK", 2))
+			{
+				throw RequestError(result);
+			}
+			break;
+
+		case responseJson:
+			{
+				std::istringstream ss(result);
+				Json::Value root;
+				try
+				{
+					ss >> root;
+					// assume everything is fine if an empty [] is returned
+					if (root.size() == 0)
+					{
+						return;
+					}
+					int status = root.get("Status", 1).asInt();
+					if (status != 1)
+					{
+						throw RequestError(ByteString(root.get("Error", "Unspecified Error").asString()));
+					}
+				}
+				catch (const std::exception &ex)
+				{
+					// sometimes the server returns a 200 with the text "Error: 401"
+					if (!strncmp(result.c_str(), "Error: ", 7))
+					{
+						status = ByteString(result.begin() + 7, result.end()).ToNumber<int>();
+						throw RequestError(ByteString::Build("HTTP Error ", status, ": ", http::StatusText(status)));
+					}
+					throw RequestError("Could not read response: " + ByteString(ex.what()));
+				}
+			}
+			break;
+
+		case responseData:
+			// no further processing required
+			break;
 		}
 	}
 }

@@ -6,10 +6,17 @@
 #include <vector>
 #include <mutex>
 #include <condition_variable>
+#include <optional>
 
 namespace http
 {
 	struct RequestHandle;
+
+	// Thrown by Finish and ParseResponse
+	struct RequestError : public std::runtime_error
+	{
+		using runtime_error::runtime_error;
+	};
 
 	class Request
 	{
@@ -20,6 +27,8 @@ namespace http
 		Request(const Request &) = delete;
 		Request &operator =(const Request &) = delete;
 		~Request();
+
+		void FailEarly(ByteString error);
 
 		void Verb(ByteString newVerb);
 		void AddHeader(ByteString header);
@@ -32,13 +41,21 @@ namespace http
 
 		std::pair<int, int> CheckProgress() const; // total, done
 		const std::vector<ByteString> &ResponseHeaders() const;
+		void Wait();
+
+		int StatusCode() const; // status
 		std::pair<int, ByteString> Finish(); // status, data
 
-		static std::pair<int, ByteString> Simple(ByteString uri, FormData postData = {});
-		static std::pair<int, ByteString> SimpleAuth(ByteString uri, ByteString ID, ByteString session, FormData postData = {});
+		enum ResponseType
+		{
+			responseOk,
+			responseJson,
+			responseData,
+		};
+		static void ParseResponse(const ByteString &result, int status, ResponseType responseType);
 
 		friend class RequestManager;
 	};
 
-	String StatusText(int code);
+	const char *StatusText(int code);
 }

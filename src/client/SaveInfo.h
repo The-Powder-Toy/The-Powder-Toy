@@ -37,10 +37,10 @@ public:
 	SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, int _votesDown, int _vote, ByteString _userName, String _name, String description_, bool published_, std::list<ByteString> tags);
 
 	void SetName(String name);
-	String GetName();
+	const String &GetName() const;
 
 	void SetDescription(String description);
-	String GetDescription();
+	const String &GetDescription() const;
 
 	void SetPublished(bool published);
 	bool GetPublished() const;

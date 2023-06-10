@@ -18,5 +18,6 @@ public:
 	void RemoveTag(ByteString tag);
 	void AddTag(ByteString tag);
 	void Exit();
+	void Tick();
 	virtual ~TagsController();
 };

@@ -285,16 +285,20 @@ namespace http
 	void RequestManager::RegisterRequestImpl(Request &request)
 	{
 		auto manager = static_cast<RequestManagerImpl *>(this);
-		std::lock_guard lk(manager->sharedStateMx);
-		manager->requestHandlesToRegister.push_back(request.handle);
+		{
+			std::lock_guard lk(manager->sharedStateMx);
+			manager->requestHandlesToRegister.push_back(request.handle);
+		}
 		curl_multi_wakeup(manager->curlMulti);
 	}
 
 	void RequestManager::UnregisterRequestImpl(Request &request)
 	{
 		auto manager = static_cast<RequestManagerImpl *>(this);
-		std::lock_guard lk(manager->sharedStateMx);
-		manager->requestHandlesToUnregister.push_back(request.handle);
+		{
+			std::lock_guard lk(manager->sharedStateMx);
+			manager->requestHandlesToUnregister.push_back(request.handle);
+		}
 		curl_multi_wakeup(manager->curlMulti);
 	}
 

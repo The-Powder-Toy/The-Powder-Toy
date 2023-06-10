@@ -14,8 +14,9 @@ public:
 	bool HasExited;
 	LoginController(std::function<void ()> onDone = nullptr);
 	void Login(ByteString username, ByteString password);
+	void Logout();
+	void Tick();
 	void Exit();
 	LoginView * GetView() { return loginView; }
-	User GetUser();
-	virtual ~LoginController();
+	~LoginController();
 };

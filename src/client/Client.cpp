@@ -1,6 +1,6 @@
 #include "Client.h"
 #include "prefs/GlobalPrefs.h"
-#include "client/http/Request.h"
+#include "client/http/StartupRequest.h"
 #include "ClientListener.h"
 #include "Format.h"
 #include "MD5.h"
@@ -13,7 +13,6 @@
 #include "graphics/Graphics.h"
 #include "prefs/Prefs.h"
 #include "lua/CommandInterface.h"
-#include "gui/preview/Comment.h"
 #include "Config.h"
 #include <cstring>
 #include <cstdlib>
@@ -29,8 +28,6 @@
 
 Client::Client():
 	messageOfTheDay("Fetching the message of the day..."),
-	versionCheckRequest(nullptr),
-	alternateVersionCheckRequest(nullptr),
 	usingAltUpdateServer(false),
 	updateAvailable(false),
 	authUser(0, "")
@@ -40,16 +37,7 @@ Client::Client():
 	authUser.Username = prefs.Get("User.Username", ByteString(""));
 	authUser.SessionID = prefs.Get("User.SessionID", ByteString(""));
 	authUser.SessionKey = prefs.Get("User.SessionKey", ByteString(""));
-	auto elevation = prefs.Get("User.Elevation", ByteString(""));
-	authUser.UserElevation = User::ElevationNone;
-	if (elevation == "Admin")
-	{
-		authUser.UserElevation = User::ElevationAdmin;
-	}
-	if (elevation == "Mod")
-	{
-		authUser.UserElevation = User::ElevationModerator;
-	}
+	authUser.UserElevation = prefs.Get("User.Elevation", User::ElevationNone);
 	firstRun = !prefs.BackedByFile();
 }
 
@@ -88,24 +76,14 @@ void Client::Initialize()
 	}
 
 	//Begin version check
-	versionCheckRequest = std::make_unique<http::Request>(ByteString::Build(SCHEME, SERVER, "/Startup.json"));
-
-	if (authUser.UserID)
-	{
-		versionCheckRequest->AuthHeaders(ByteString::Build(authUser.UserID), authUser.SessionID);
-	}
+	versionCheckRequest = std::make_unique<http::StartupRequest>(false);
 	versionCheckRequest->Start();
-
 	if constexpr (USE_UPDATESERVER)
 	{
 		// use an alternate update server
-		alternateVersionCheckRequest = std::make_unique<http::Request>(ByteString::Build(SCHEME, UPDATESERVER, "/Startup.json"));
-		usingAltUpdateServer = true;
-		if (authUser.UserID)
-		{
-			alternateVersionCheckRequest->AuthHeaders(authUser.Username, "");
-		}
+		alternateVersionCheckRequest = std::make_unique<http::StartupRequest>(true);
 		alternateVersionCheckRequest->Start();
+		usingAltUpdateServer = true;
 	}
 }
 
@@ -125,203 +103,82 @@ String Client::GetMessageOfTheDay()
 	return messageOfTheDay;
 }
 
-void Client::AddServerNotification(std::pair<String, ByteString> notification)
+void Client::AddServerNotification(ServerNotification notification)
 {
 	serverNotifications.push_back(notification);
 	notifyNewNotification(notification);
 }
 
-std::vector<std::pair<String, ByteString> > Client::GetServerNotifications()
+std::vector<ServerNotification> Client::GetServerNotifications()
 {
 	return serverNotifications;
 }
 
-RequestStatus Client::ParseServerReturn(ByteString &result, int status, bool json)
-{
-	lastError = "";
-	// no server response, return "Malformed Response"
-	if (status == 200 && !result.size())
-	{
-		status = 603;
-	}
-	if (status == 302)
-		return RequestOkay;
-	if (status != 200)
-	{
-		lastError = String::Build("HTTP Error ", status, ": ", http::StatusText(status));
-		return RequestFailure;
-	}
-
-	if (json)
-	{
-		std::istringstream datastream(result);
-		Json::Value root;
-
-		try
-		{
-			datastream >> root;
-			// assume everything is fine if an empty [] is returned
-			if (root.size() == 0)
-			{
-				return RequestOkay;
-			}
-			int status = root.get("Status", 1).asInt();
-			if (status != 1)
-			{
-				lastError = ByteString(root.get("Error", "Unspecified Error").asString()).FromUtf8();
-				return RequestFailure;
-			}
-		}
-		catch (std::exception &e)
-		{
-			// sometimes the server returns a 200 with the text "Error: 401"
-			if (!strncmp(result.c_str(), "Error: ", 7))
-			{
-				status = ByteString(result.begin() + 7, result.end()).ToNumber<int>();
-				lastError = String::Build("HTTP Error ", status, ": ", http::StatusText(status));
-				return RequestFailure;
-			}
-			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
-			return RequestFailure;
-		}
-	}
-	else
-	{
-		if (strncmp(result.c_str(), "OK", 2))
-		{
-			lastError = result.FromUtf8();
-			return RequestFailure;
-		}
-	}
-	return RequestOkay;
-}
-
 void Client::Tick()
 {
-	CheckUpdate(versionCheckRequest, true);
-	CheckUpdate(alternateVersionCheckRequest, false);
-}
-
-void Client::CheckUpdate(std::unique_ptr<http::Request> &updateRequest, bool checkSession)
-{
-	//Check status on version check request
-	if (updateRequest && updateRequest->CheckDone())
+	auto applyUpdateInfo = false;
+	if (versionCheckRequest && versionCheckRequest->CheckDone())
 	{
-		auto [ status, data ] = updateRequest->Finish();
-
-		if (checkSession && status == 618)
+		if (versionCheckRequest->StatusCode() == 618)
 		{
 			AddServerNotification({ "Failed to load SSL certificates", ByteString(SCHEME) + "powdertoy.co.uk/FAQ.html" });
 		}
-
-		if (status != 200)
+		try
 		{
-			//free(data);
-			if (usingAltUpdateServer && !checkSession)
-				this->messageOfTheDay = String::Build("HTTP Error ", status, " while checking for updates: ", http::StatusText(status));
-			else
-				this->messageOfTheDay = String::Build("HTTP Error ", status, " while fetching MotD");
-		}
-		else if(data.size())
-		{
-			std::istringstream dataStream(data);
-
-			try
+			auto info = versionCheckRequest->Finish();
+			if (!info.sessionGood)
 			{
-				Json::Value objDocument;
-				dataStream >> objDocument;
-
-				//Check session
-				if (checkSession)
-				{
-					if (!objDocument["Session"].asBool())
-					{
-						SetAuthUser(User(0, ""));
-					}
-				}
-
-				//Notifications from server
-				Json::Value notificationsArray = objDocument["Notifications"];
-				for (Json::UInt j = 0; j < notificationsArray.size(); j++)
-				{
-					ByteString notificationLink = notificationsArray[j]["Link"].asString();
-					String notificationText = ByteString(notificationsArray[j]["Text"].asString()).FromUtf8();
-
-					std::pair<String, ByteString> item = std::pair<String, ByteString>(notificationText, notificationLink);
-					AddServerNotification(item);
-				}
-
-
-				//MOTD
-				if (!usingAltUpdateServer || !checkSession)
-				{
-					this->messageOfTheDay = ByteString(objDocument["MessageOfTheDay"].asString()).FromUtf8();
-					notifyMessageOfTheDay();
-
-					if constexpr (!IGNORE_UPDATES)
-					{
-						//Check for updates
-						Json::Value versions = objDocument["Updates"];
-						if constexpr (!SNAPSHOT)
-						{
-							Json::Value stableVersion = versions["Stable"];
-							int stableMajor = stableVersion["Major"].asInt();
-							int stableMinor = stableVersion["Minor"].asInt();
-							int stableBuild = stableVersion["Build"].asInt();
-							ByteString stableFile = stableVersion["File"].asString();
-							String stableChangelog = ByteString(stableVersion["Changelog"].asString()).FromUtf8();
-							if (stableBuild > BUILD_NUM)
-							{
-								updateAvailable = true;
-								updateInfo = UpdateInfo(stableMajor, stableMinor, stableBuild, stableFile, stableChangelog, UpdateInfo::Stable);
-							}
-						}
-
-						if (!updateAvailable)
-						{
-							Json::Value betaVersion = versions["Beta"];
-							int betaMajor = betaVersion["Major"].asInt();
-							int betaMinor = betaVersion["Minor"].asInt();
-							int betaBuild = betaVersion["Build"].asInt();
-							ByteString betaFile = betaVersion["File"].asString();
-							String betaChangelog = ByteString(betaVersion["Changelog"].asString()).FromUtf8();
-							if (betaBuild > BUILD_NUM)
-							{
-								updateAvailable = true;
-								updateInfo = UpdateInfo(betaMajor, betaMinor, betaBuild, betaFile, betaChangelog, UpdateInfo::Beta);
-							}
-						}
-
-						if constexpr (SNAPSHOT || MOD)
-						{
-							Json::Value snapshotVersion = versions["Snapshot"];
-							int snapshotSnapshot = snapshotVersion["Snapshot"].asInt();
-							ByteString snapshotFile = snapshotVersion["File"].asString();
-							String snapshotChangelog = ByteString(snapshotVersion["Changelog"].asString()).FromUtf8();
-							if (snapshotSnapshot > SNAPSHOT_ID)
-							{
-								updateAvailable = true;
-								updateInfo = UpdateInfo(snapshotSnapshot, snapshotFile, snapshotChangelog, UpdateInfo::Snapshot);
-							}
-						}
-
-						if(updateAvailable)
-						{
-							notifyUpdateAvailable();
-						}
-					}
-				}
+				SetAuthUser(User(0, ""));
 			}
-			catch (std::exception & e)
+			if (!usingAltUpdateServer)
 			{
-				//Do nothing
+				updateInfo = info.updateInfo;
+				applyUpdateInfo = true;
+				messageOfTheDay = info.messageOfTheDay;
+			}
+			for (auto &notification : info.notifications)
+			{
+				AddServerNotification(notification);
 			}
 		}
-		updateRequest.reset();
+		catch (const http::RequestError &ex)
+		{
+			if (!usingAltUpdateServer)
+			{
+				messageOfTheDay = ByteString::Build("Error while fetching MotD: ", ex.what()).FromUtf8();
+			}
+		}
+		versionCheckRequest.reset();
+	}
+	if (alternateVersionCheckRequest && alternateVersionCheckRequest->CheckDone())
+	{
+		try
+		{
+			auto info = alternateVersionCheckRequest->Finish();
+			updateInfo = info.updateInfo;
+			applyUpdateInfo = true;
+			messageOfTheDay = info.messageOfTheDay;
+			for (auto &notification : info.notifications)
+			{
+				AddServerNotification(notification);
+			}
+		}
+		catch (const http::RequestError &ex)
+		{
+			messageOfTheDay = ByteString::Build("Error while checking for updates: ", ex.what()).FromUtf8();
+		}
+		alternateVersionCheckRequest.reset();
+	}
+	if (applyUpdateInfo && !IGNORE_UPDATES)
+	{
+		if (updateInfo)
+		{
+			notifyUpdateAvailable();
+		}
 	}
 }
 
-UpdateInfo Client::GetUpdateInfo()
+std::optional<UpdateInfo> Client::GetUpdateInfo()
 {
 	return updateInfo;
 }
@@ -350,7 +207,7 @@ void Client::notifyAuthUserChanged()
 	}
 }
 
-void Client::notifyNewNotification(std::pair<String, ByteString> notification)
+void Client::notifyNewNotification(ServerNotification notification)
 {
 	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
 	{
@@ -391,16 +248,7 @@ void Client::SetAuthUser(User user)
 			prefs.Set("User.SessionID", authUser.SessionID);
 			prefs.Set("User.SessionKey", authUser.SessionKey);
 			prefs.Set("User.Username", authUser.Username);
-			ByteString elevation = "None";
-			if (authUser.UserElevation == User::ElevationAdmin)
-			{
-				elevation = "Admin";
-			}
-			if (authUser.UserElevation == User::ElevationModerator)
-			{
-				elevation = "Mod";
-			}
-			prefs.Set("User.Elevation", elevation);
+			prefs.Set("User.Elevation", authUser.UserElevation);
 		}
 		else
 		{
@@ -413,65 +261,6 @@ void Client::SetAuthUser(User user)
 User Client::GetAuthUser()
 {
 	return authUser;
-}
-
-RequestStatus Client::UploadSave(SaveInfo & save)
-{
-	lastError = "";
-	int dataStatus;
-	ByteString data;
-	ByteString userID = ByteString::Build(authUser.UserID);
-	if (authUser.UserID)
-	{
-		if (!save.GetGameSave())
-		{
-			lastError = "Empty game save";
-			return RequestFailure;
-		}
-
-		save.SetID(0);
-
-		auto [ fromNewerVersion, gameData ] = save.GetGameSave()->Serialise();
-		(void)fromNewerVersion;
-
-		if (!gameData.size())
-		{
-			lastError = "Cannot serialize game save";
-			return RequestFailure;
-		}
-		else if (ALLOW_FAKE_NEWER_VERSION && fromNewerVersion && save.GetPublished())
-		{
-			lastError = "Cannot publish save, incompatible with latest release version.";
-			return RequestFailure;
-		}
-
-		std::tie(dataStatus, data) = http::Request::SimpleAuth(ByteString::Build(SCHEME, SERVER, "/Save.api"), userID, authUser.SessionID, {
-			{ "Name", save.GetName().ToUtf8() },
-			{ "Description", save.GetDescription().ToUtf8() },
-			{ "Data:save.bin", ByteString(gameData.begin(), gameData.end()) },
-			{ "Publish", save.GetPublished() ? "Public" : "Private" },
-			{ "Key", authUser.SessionKey }
-		});
-	}
-	else
-	{
-		lastError = "Not authenticated";
-		return RequestFailure;
-	}
-
-	RequestStatus ret = ParseServerReturn(data, dataStatus, false);
-	if (ret == RequestOkay)
-	{
-		int saveID = ByteString(data.begin() + 3, data.end()).ToNumber<int>();
-		if (!saveID)
-		{
-			lastError = "Server did not return Save ID";
-			ret = RequestFailure;
-		}
-		else
-			save.SetID(saveID);
-	}
-	return ret;
 }
 
 void Client::MoveStampToFront(ByteString stampID)
@@ -618,312 +407,6 @@ const std::vector<ByteString> &Client::GetStamps() const
 	return stampIDs;
 }
 
-RequestStatus Client::ExecVote(int saveID, int direction)
-{
-	lastError = "";
-	int dataStatus;
-	ByteString data;
-
-	if (authUser.UserID)
-	{
-		ByteString saveIDText = ByteString::Build(saveID);
-		ByteString userIDText = ByteString::Build(authUser.UserID);
-		std::tie(dataStatus, data) = http::Request::SimpleAuth(ByteString::Build(SCHEME, SERVER, "/Vote.api"), userIDText, authUser.SessionID, {
-			{ "ID", saveIDText },
-			{ "Action", direction ? (direction == 1 ? "Up" : "Down") : "Reset" },
-			{ "Key", authUser.SessionKey }
-		});
-	}
-	else
-	{
-		lastError = "Not authenticated";
-		return RequestFailure;
-	}
-	RequestStatus ret = ParseServerReturn(data, dataStatus, false);
-	return ret;
-}
-
-std::vector<char> Client::GetSaveData(int saveID, int saveDate)
-{
-	lastError = "";
-	ByteString urlStr;
-	if (saveDate)
-		urlStr = ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, "_", saveDate, ".cps");
-	else
-		urlStr = ByteString::Build(STATICSCHEME, STATICSERVER, "/", saveID, ".cps");
-
-	auto [ dataStatus, data ] = http::Request::Simple(urlStr);
-
-	// will always return failure
-	ParseServerReturn(data, dataStatus, false);
-	if (data.size() && dataStatus == 200)
-	{
-		return std::vector<char>(data.begin(), data.end());
-	}
-	return {};
-}
-
-LoginStatus Client::Login(ByteString username, ByteString password, User & user)
-{
-	lastError = "";
-
-	user.UserID = 0;
-	user.Username = "";
-	user.SessionID = "";
-	user.SessionKey = "";
-
-	auto [ dataStatus, data ] = http::Request::Simple(ByteString::Build("https://", SERVER, "/Login.json"), {
-		{ "name", username },
-		{ "pass", password },
-	});
-
-	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	if (ret == RequestOkay)
-	{
-		try
-		{
-			std::istringstream dataStream(data);
-			Json::Value objDocument;
-			dataStream >> objDocument;
-
-			ByteString usernameTemp = objDocument["Username"].asString();
-			int userIDTemp = objDocument["UserID"].asInt();
-			ByteString sessionIDTemp = objDocument["SessionID"].asString();
-			ByteString sessionKeyTemp = objDocument["SessionKey"].asString();
-			ByteString userElevationTemp = objDocument["Elevation"].asString();
-
-			Json::Value notificationsArray = objDocument["Notifications"];
-			for (Json::UInt j = 0; j < notificationsArray.size(); j++)
-			{
-				ByteString notificationLink = notificationsArray[j]["Link"].asString();
-				String notificationText = ByteString(notificationsArray[j]["Text"].asString()).FromUtf8();
-
-				std::pair<String, ByteString> item = std::pair<String, ByteString>(notificationText, notificationLink);
-				AddServerNotification(item);
-			}
-
-			user.Username = usernameTemp;
-			user.UserID = userIDTemp;
-			user.SessionID = sessionIDTemp;
-			user.SessionKey = sessionKeyTemp;
-			ByteString userElevation = userElevationTemp;
-			if(userElevation == "Admin")
-				user.UserElevation = User::ElevationAdmin;
-			else if(userElevation == "Mod")
-				user.UserElevation = User::ElevationModerator;
-			else
-				user.UserElevation= User::ElevationNone;
-			return LoginOkay;
-		}
-		catch (std::exception &e)
-		{
-			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
-			return LoginError;
-		}
-	}
-	return LoginError;
-}
-
-RequestStatus Client::DeleteSave(int saveID)
-{
-	lastError = "";
-	ByteString data;
-	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Delete&Key=", authUser.SessionKey);
-	int dataStatus;
-	if(authUser.UserID)
-	{
-		ByteString userID = ByteString::Build(authUser.UserID);
-		std::tie(dataStatus, data) = http::Request::SimpleAuth(url, userID, authUser.SessionID);
-	}
-	else
-	{
-		lastError = "Not authenticated";
-		return RequestFailure;
-	}
-	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	return ret;
-}
-
-RequestStatus Client::AddComment(int saveID, String comment)
-{
-	lastError = "";
-	ByteString data;
-	int dataStatus;
-	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Comments.json?ID=", saveID);
-	if(authUser.UserID)
-	{
-		ByteString userID = ByteString::Build(authUser.UserID);
-		std::tie(dataStatus, data) = http::Request::SimpleAuth(url, userID, authUser.SessionID, {
-			{ "Comment", comment.ToUtf8() },
-			{ "Key", authUser.SessionKey }
-		});
-	}
-	else
-	{
-		lastError = "Not authenticated";
-		return RequestFailure;
-	}
-	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	return ret;
-}
-
-RequestStatus Client::FavouriteSave(int saveID, bool favourite)
-{
-	lastError = "";
-	ByteStringBuilder urlStream;
-	ByteString data;
-	int dataStatus;
-	urlStream << SCHEME << SERVER << "/Browse/Favourite.json?ID=" << saveID << "&Key=" << authUser.SessionKey;
-	if(!favourite)
-		urlStream << "&Mode=Remove";
-	if(authUser.UserID)
-	{
-		ByteString userID = ByteString::Build(authUser.UserID);
-		std::tie(dataStatus, data) = http::Request::SimpleAuth(urlStream.Build(), userID, authUser.SessionID);
-	}
-	else
-	{
-		lastError = "Not authenticated";
-		return RequestFailure;
-	}
-	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	return ret;
-}
-
-RequestStatus Client::ReportSave(int saveID, String message)
-{
-	lastError = "";
-	ByteString data;
-	int dataStatus;
-	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Report.json?ID=", saveID, "&Key=", authUser.SessionKey);
-	if(authUser.UserID)
-	{
-		ByteString userID = ByteString::Build(authUser.UserID);
-		std::tie(dataStatus, data) = http::Request::SimpleAuth(url, userID, authUser.SessionID, {
-			{ "Reason", message.ToUtf8() },
-		});
-	}
-	else
-	{
-		lastError = "Not authenticated";
-		return RequestFailure;
-	}
-	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	return ret;
-}
-
-RequestStatus Client::UnpublishSave(int saveID)
-{
-	lastError = "";
-	ByteString data;
-	int dataStatus;
-	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Unpublish&Key=", authUser.SessionKey);
-	if(authUser.UserID)
-	{
-		ByteString userID = ByteString::Build(authUser.UserID);
-		std::tie(dataStatus, data) = http::Request::SimpleAuth(url, userID, authUser.SessionID);
-	}
-	else
-	{
-		lastError = "Not authenticated";
-		return RequestFailure;
-	}
-	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	return ret;
-}
-
-RequestStatus Client::PublishSave(int saveID)
-{
-	lastError = "";
-	ByteString data;
-	int dataStatus;
-	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/View.json?ID=", saveID, "&Key=", authUser.SessionKey);
-	if (authUser.UserID)
-	{
-		ByteString userID = ByteString::Build(authUser.UserID);
-		std::tie(dataStatus, data) = http::Request::SimpleAuth(url, userID, authUser.SessionID, {
-			{ "ActionPublish", "bagels" },
-		});
-	}
-	else
-	{
-		lastError = "Not authenticated";
-		return RequestFailure;
-	}
-	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	return ret;
-}
-
-std::unique_ptr<SaveInfo> Client::GetSave(int saveID, int saveDate)
-{
-	lastError = "";
-	ByteStringBuilder urlStream;
-	urlStream << SCHEME << SERVER  << "/Browse/View.json?ID=" << saveID;
-	if(saveDate)
-	{
-		urlStream << "&Date=" << saveDate;
-	}
-	ByteString data;
-	int dataStatus;
-	if(authUser.UserID)
-	{
-		ByteString userID = ByteString::Build(authUser.UserID);
-		std::tie(dataStatus, data) = http::Request::SimpleAuth(urlStream.Build(), userID, authUser.SessionID);
-	}
-	else
-	{
-		std::tie(dataStatus, data) = http::Request::Simple(urlStream.Build());
-	}
-	if(dataStatus == 200 && data.size())
-	{
-		try
-		{
-			std::istringstream dataStream(data);
-			Json::Value objDocument;
-			dataStream >> objDocument;
-
-			int tempID = objDocument["ID"].asInt();
-			int tempScoreUp = objDocument["ScoreUp"].asInt();
-			int tempScoreDown = objDocument["ScoreDown"].asInt();
-			int tempMyScore = objDocument["ScoreMine"].asInt();
-			ByteString tempUsername = objDocument["Username"].asString();
-			String tempName = ByteString(objDocument["Name"].asString()).FromUtf8();
-			String tempDescription = ByteString(objDocument["Description"].asString()).FromUtf8();
-			int tempCreatedDate = objDocument["DateCreated"].asInt();
-			int tempUpdatedDate = objDocument["Date"].asInt();
-			bool tempPublished = objDocument["Published"].asBool();
-			bool tempFavourite = objDocument["Favourite"].asBool();
-			int tempComments = objDocument["Comments"].asInt();
-			int tempViews = objDocument["Views"].asInt();
-			int tempVersion = objDocument["Version"].asInt();
-
-			Json::Value tagsArray = objDocument["Tags"];
-			std::list<ByteString> tempTags;
-			for (Json::UInt j = 0; j < tagsArray.size(); j++)
-				tempTags.push_back(tagsArray[j].asString());
-
-			auto tempSave = std::make_unique<SaveInfo>(tempID, tempCreatedDate, tempUpdatedDate, tempScoreUp,
-			                                   tempScoreDown, tempMyScore, tempUsername, tempName,
-			                                   tempDescription, tempPublished, tempTags);
-			tempSave->Comments = tempComments;
-			tempSave->Favourite = tempFavourite;
-			tempSave->Views = tempViews;
-			tempSave->Version = tempVersion;
-			return tempSave;
-		}
-		catch (std::exception & e)
-		{
-			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
-			return nullptr;
-		}
-	}
-	else
-	{
-		lastError = http::StatusText(dataStatus);
-	}
-	return nullptr;
-}
-
 std::unique_ptr<SaveFile> Client::LoadSaveFile(ByteString filename)
 {
 	ByteString err;
@@ -962,84 +445,6 @@ std::unique_ptr<SaveFile> Client::LoadSaveFile(ByteString filename)
 		commandInterface->SetLastError(err.FromUtf8());
 	}
 	return file;
-}
-
-std::list<ByteString> * Client::RemoveTag(int saveID, ByteString tag)
-{
-	lastError = "";
-	std::list<ByteString> * tags = NULL;
-	ByteString data;
-	int dataStatus;
-	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/EditTag.json?Op=delete&ID=", saveID, "&Tag=", tag, "&Key=", authUser.SessionKey);
-	if(authUser.UserID)
-	{
-		ByteString userID = ByteString::Build(authUser.UserID);
-		std::tie(dataStatus, data) = http::Request::SimpleAuth(url, userID, authUser.SessionID);
-	}
-	else
-	{
-		lastError = "Not authenticated";
-		return NULL;
-	}
-	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	if (ret == RequestOkay)
-	{
-		try
-		{
-			std::istringstream dataStream(data);
-			Json::Value responseObject;
-			dataStream >> responseObject;
-
-			Json::Value tagsArray = responseObject["Tags"];
-			tags = new std::list<ByteString>();
-			for (Json::UInt j = 0; j < tagsArray.size(); j++)
-				tags->push_back(tagsArray[j].asString());
-		}
-		catch (std::exception &e)
-		{
-			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
-		}
-	}
-	return tags;
-}
-
-std::list<ByteString> * Client::AddTag(int saveID, ByteString tag)
-{
-	lastError = "";
-	std::list<ByteString> * tags = NULL;
-	ByteString data;
-	int dataStatus;
-	ByteString url = ByteString::Build(SCHEME, SERVER, "/Browse/EditTag.json?Op=add&ID=", saveID, "&Tag=", tag, "&Key=", authUser.SessionKey);
-	if(authUser.UserID)
-	{
-		ByteString userID = ByteString::Build(authUser.UserID);
-		std::tie(dataStatus, data) = http::Request::SimpleAuth(url, userID, authUser.SessionID);
-	}
-	else
-	{
-		lastError = "Not authenticated";
-		return NULL;
-	}
-	RequestStatus ret = ParseServerReturn(data, dataStatus, true);
-	if (ret == RequestOkay)
-	{
-		try
-		{
-			std::istringstream dataStream(data);
-			Json::Value responseObject;
-			dataStream >> responseObject;
-
-			Json::Value tagsArray = responseObject["Tags"];
-			tags = new std::list<ByteString>();
-			for (Json::UInt j = 0; j < tagsArray.size(); j++)
-				tags->push_back(tagsArray[j].asString());
-		}
-		catch (std::exception & e)
-		{
-			lastError = "Could not read response: " + ByteString(e.what()).FromUtf8();
-		}
-	}
-	return tags;
 }
 
 // stamp-specific wrapper for MergeAuthorInfo

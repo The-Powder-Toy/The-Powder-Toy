@@ -18,7 +18,6 @@
 #include "gui/game/GameController.h"
 #include "gui/game/GameModel.h"
 #include "gui/interface/Engine.h"
-#include "client/http/Request.h"
 #include <iomanip>
 #include <vector>
 #include <algorithm>
@@ -1289,48 +1288,6 @@ int luatpt_setdrawcap(lua_State* l)
 	if(drawcap < 0)
 		return luaL_error(l, "draw cap too small");
 	ui::Engine::Ref().SetDrawingFrequencyLimit(drawcap);
-	return 0;
-}
-
-int luatpt_getscript(lua_State* l)
-{
-	int scriptID = luaL_checkinteger(l, 1);
-	auto filename = tpt_lua_checkByteString(l, 2);
-	int runScript = luaL_optint(l, 3, 0);
-	int confirmPrompt = luaL_optint(l, 4, 1);
-
-	ByteString url = ByteString::Build(SCHEME, "starcatcher.us/scripts/main.lua?get=", scriptID);
-	if (confirmPrompt && !ConfirmPrompt::Blocking("Do you want to install script?", url.FromUtf8(), "Install"))
-		return 0;
-
-	auto [ ret, scriptData ] = http::Request::Simple(url);
-	if (!scriptData.size())
-	{
-		return luaL_error(l, "Server did not return data");
-	}
-	if (ret != 200)
-	{
-		return luaL_error(l, http::StatusText(ret).ToUtf8().c_str());
-	}
-
-	if (scriptData.Contains("Invalid script ID"))
-	{
-		return luaL_error(l, "Invalid Script ID");
-	}
-
-	if (Platform::FileExists(filename) && confirmPrompt && !ConfirmPrompt::Blocking("File already exists, overwrite?", filename.FromUtf8(), "Overwrite"))
-	{
-		return 0;
-	}
-	if (!Platform::WriteFile(std::vector<char>(scriptData.begin(), scriptData.end()), filename))
-	{
-		return luaL_error(l, "Unable to write to file");
-	}
-	if (runScript)
-	{
-		tpt_lua_dostring(l, ByteString::Build("dofile('", filename, "')"));
-	}
-
 	return 0;
 }
 

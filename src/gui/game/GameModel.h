@@ -5,6 +5,7 @@
 #include <vector>
 #include <deque>
 #include <memory>
+#include <optional>
 
 class Menu;
 class Tool;
@@ -20,6 +21,11 @@ class Renderer;
 class Snapshot;
 struct SnapshotDelta;
 class GameSave;
+
+namespace http
+{
+	class ExecVoteRequest;
+};
 
 class ToolSelection
 {
@@ -40,6 +46,8 @@ struct HistoryEntry
 
 class GameModel
 {
+	std::unique_ptr<http::ExecVoteRequest> execVoteRequest;
+
 private:
 	std::vector<Notification*> notifications;
 	//int clipboardSize;
@@ -119,9 +127,13 @@ private:
 
 	void SaveToSimParameters(const GameSave &saveData);
 
+	std::optional<int> queuedVote;
+
 public:
 	GameModel();
 	~GameModel();
+
+	void Tick();
 
 	void SetEdgeMode(int edgeMode);
 	int GetEdgeMode();

@@ -63,6 +63,7 @@
 
 #include "Config.h"
 #include <SDL.h>
+#include <iostream>
 
 #ifdef GetUserName
 # undef GetUserName // dammit windows
@@ -699,6 +700,7 @@ bool GameController::KeyRelease(int key, int scan, bool repeat, bool shift, bool
 
 void GameController::Tick()
 {
+	gameModel->Tick();
 	if(firstTick)
 	{
 		commandInterface->Init();
@@ -1440,16 +1442,9 @@ void GameController::FrameStep()
 
 void GameController::Vote(int direction)
 {
-	if(gameModel->GetSave() && gameModel->GetUser().UserID && gameModel->GetSave()->GetID())
+	if (gameModel->GetSave() && gameModel->GetUser().UserID && gameModel->GetSave()->GetID())
 	{
-		try
-		{
-			gameModel->SetVote(direction);
-		}
-		catch(GameModelException & ex)
-		{
-			new ErrorMessage("Error while voting", ByteString(ex.what()).FromUtf8());
-		}
+		gameModel->SetVote(direction);
 	}
 }
 
@@ -1536,7 +1531,7 @@ void GameController::NotifyAuthUserChanged(Client * sender)
 	gameModel->SetUser(newUser);
 }
 
-void GameController::NotifyNewNotification(Client * sender, std::pair<String, ByteString> notification)
+void GameController::NotifyNewNotification(Client * sender, ServerNotification notification)
 {
 	class LinkNotification : public Notification
 	{
@@ -1550,7 +1545,7 @@ void GameController::NotifyNewNotification(Client * sender, std::pair<String, By
 			Platform::OpenURI(link);
 		}
 	};
-	gameModel->AddNotification(new LinkNotification(notification.second, notification.first));
+	gameModel->AddNotification(new LinkNotification(notification.link, notification.text));
 }
 
 void GameController::NotifyUpdateAvailable(Client * sender)
@@ -1564,7 +1559,13 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 
 		void Action() override
 		{
-			UpdateInfo info = Client::Ref().GetUpdateInfo();
+			auto optinfo = Client::Ref().GetUpdateInfo();
+			if (!optinfo.has_value())
+			{
+				std::cerr << "odd, the update has disappeared" << std::endl;
+				return;
+			}
+			UpdateInfo info = optinfo.value();
 			StringBuilder updateMessage;
 			if (Platform::CanUpdate())
 			{
@@ -1593,36 +1594,41 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 			}
 
 			updateMessage << "\nNew version:\n ";
-			if (info.Type == UpdateInfo::Beta)
+			if (info.channel == UpdateInfo::channelBeta)
 			{
-				updateMessage << info.Major << "." << info.Minor << " Beta, Build " << info.Build;
+				updateMessage << info.major << "." << info.minor << " Beta, Build " << info.build;
 			}
-			else if (info.Type == UpdateInfo::Snapshot)
+			else if (info.channel == UpdateInfo::channelSnapshot)
 			{
 				if constexpr (MOD)
 				{
-					updateMessage << "Mod version " << info.Time;
+					updateMessage << "Mod version " << info.build;
 				}
 				else
 				{
-					updateMessage << "Snapshot " << info.Time;
+					updateMessage << "Snapshot " << info.build;
 				}
 			}
-			else if(info.Type == UpdateInfo::Stable)
+			else if(info.channel == UpdateInfo::channelStable)
 			{
-				updateMessage << info.Major << "." << info.Minor << " Stable, Build " << info.Build;
+				updateMessage << info.major << "." << info.minor << " Stable, Build " << info.build;
 			}
 
-			if (info.Changelog.length())
-				updateMessage << "\n\nChangelog:\n" << info.Changelog;
+			if (info.changeLog.length())
+				updateMessage << "\n\nChangelog:\n" << info.changeLog;
 
-			new ConfirmPrompt("Run Updater", updateMessage.Build(), { [this] { c->RunUpdater(); } });
+			new ConfirmPrompt("Run Updater", updateMessage.Build(), { [this, info] { c->RunUpdater(info); } });
 		}
 	};
 
-	switch(sender->GetUpdateInfo().Type)
+	auto optinfo = sender->GetUpdateInfo();
+	if (!optinfo.has_value())
 	{
-		case UpdateInfo::Snapshot:
+		return;
+	}
+	switch(optinfo.value().channel)
+	{
+		case UpdateInfo::channelSnapshot:
 			if constexpr (MOD)
 			{
 				gameModel->AddNotification(new UpdateNotification(this, "A new mod update is available - click here to update"));
@@ -1632,10 +1638,10 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 				gameModel->AddNotification(new UpdateNotification(this, "A new snapshot is available - click here to update"));
 			}
 			break;
-		case UpdateInfo::Stable:
+		case UpdateInfo::channelStable:
 			gameModel->AddNotification(new UpdateNotification(this, "A new version is available - click here to update"));
 			break;
-		case UpdateInfo::Beta:
+		case UpdateInfo::channelBeta:
 			gameModel->AddNotification(new UpdateNotification(this, "A new beta is available - click here to update"));
 			break;
 	}
@@ -1646,25 +1652,16 @@ void GameController::RemoveNotification(Notification * notification)
 	gameModel->RemoveNotification(notification);
 }
 
-void GameController::RunUpdater()
+void GameController::RunUpdater(UpdateInfo info)
 {
 	if (Platform::CanUpdate())
 	{
 		Exit();
-		new UpdateActivity();
+		new UpdateActivity(info);
 	}
 	else
 	{
-		ByteString file;
-		if constexpr (USE_UPDATESERVER)
-		{
-			file = ByteString::Build(SCHEME, UPDATESERVER, Client::Ref().GetUpdateInfo().File);
-		}
-		else
-		{
-			file = ByteString::Build(SCHEME, SERVER, Client::Ref().GetUpdateInfo().File);
-		}
-		Platform::OpenURI(file);
+		Platform::OpenURI(info.file);
 	}
 }
 

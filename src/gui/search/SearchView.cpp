@@ -211,7 +211,7 @@ void SearchView::Search(String query)
 
 void SearchView::NotifySortChanged(SearchModel * sender)
 {
-	if(sender->GetSort() == "best")
+	if(sender->GetSort() == http::sortByVotes)
 	{
 		sortButton->SetToggleState(false);
 		sortButton->SetText("By votes");
@@ -228,7 +228,7 @@ void SearchView::NotifySortChanged(SearchModel * sender)
 void SearchView::NotifyShowOwnChanged(SearchModel * sender)
 {
 	ownButton->SetToggleState(sender->GetShowOwn());
-	if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
+	if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationMod)
 	{
 		unpublishSelected->Enabled = true;
 		removeSelected->Enabled = true;
@@ -248,7 +248,7 @@ void SearchView::NotifyShowFavouriteChanged(SearchModel * sender)
 		unpublishSelected->Enabled = false;
 		removeSelected->Enabled = false;
 	}
-	else if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
+	else if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationMod)
 	{
 		unpublishSelected->Enabled = true;
 		removeSelected->Enabled = true;
@@ -323,7 +323,7 @@ void SearchView::CheckAccess()
 		favButton->Enabled = true;
 		favouriteSelected->Enabled = true;
 
-		if (Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
+		if (Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationMod)
 		{
 			unpublishSelected->Enabled = true;
 			removeSelected->Enabled = true;
@@ -569,7 +569,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			});
 			if(Client::Ref().GetAuthUser().UserID)
 				saveButton->SetSelectable(true);
-			if (saves[i]->GetUserName() == Client::Ref().GetAuthUser().Username || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationModerator)
+			if (saves[i]->GetUserName() == Client::Ref().GetAuthUser().Username || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationMod)
 				saveButton->SetShowVotes(true);
 			saveButtons.push_back(saveButton);
 			AddComponent(saveButton);

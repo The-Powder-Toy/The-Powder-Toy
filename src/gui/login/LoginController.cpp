@@ -1,7 +1,7 @@
 #include "LoginController.h"
-
 #include "client/Client.h"
-
+#include "client/http/LoginRequest.h"
+#include "client/http/LogoutRequest.h"
 #include "LoginView.h"
 #include "LoginModel.h"
 #include "Controller.h"
@@ -23,15 +23,19 @@ void LoginController::Login(ByteString username, ByteString password)
 	loginModel->Login(username, password);
 }
 
-User LoginController::GetUser()
+void LoginController::Logout()
 {
-	return loginModel->GetUser();
+	loginModel->Logout();
+}
+
+void LoginController::Tick()
+{
+	loginModel->Tick();
 }
 
 void LoginController::Exit()
 {
 	loginView->CloseActiveWindow();
-	Client::Ref().SetAuthUser(loginModel->GetUser());
 	if (onDone)
 		onDone();
 	HasExited = true;

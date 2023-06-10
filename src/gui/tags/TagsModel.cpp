@@ -1,13 +1,15 @@
 #include "TagsModel.h"
-
 #include "TagsView.h"
 #include "TagsModelException.h"
-
 #include "client/Client.h"
 #include "client/SaveInfo.h"
+#include "client/http/AddTagRequest.h"
+#include "client/http/RemoveTagRequest.h"
+#include "gui/dialogues/ErrorMessage.h"
 
 void TagsModel::SetSave(SaveInfo *newSave /* non-owning */)
 {
+	queuedTags.clear();
 	this->save = newSave;
 	notifyTagsChanged();
 }
@@ -17,40 +19,73 @@ SaveInfo *TagsModel::GetSave() // non-owning
 	return save;
 }
 
-void TagsModel::RemoveTag(ByteString tag)
+void TagsModel::Tick()
 {
-	if(save)
+	auto triggerTags = false;
+	std::list<ByteString> tags;
+	if (addTagRequest && addTagRequest->CheckDone())
 	{
-		std::list<ByteString> * tags = Client::Ref().RemoveTag(save->GetID(), tag);
-		if(tags)
+		try
 		{
-			save->SetTags(std::list<ByteString>(*tags));
-			notifyTagsChanged();
-			delete tags;
+			tags = addTagRequest->Finish();
+			triggerTags = true;
 		}
-		else
+		catch (const http::RequestError &ex)
 		{
-			throw TagsModelException(Client::Ref().GetLastError());
+			new ErrorMessage("Could not add tag", ByteString(ex.what()).FromUtf8());
+		}
+		addTagRequest.reset();
+	}
+	if (removeTagRequest && removeTagRequest->CheckDone())
+	{
+		try
+		{
+			tags = removeTagRequest->Finish();
+			triggerTags = true;
+		}
+		catch (const http::RequestError &ex)
+		{
+			new ErrorMessage("Could not remove tag", ByteString(ex.what()).FromUtf8());
+		}
+		removeTagRequest.reset();
+	}
+	if (triggerTags)
+	{
+		if (save)
+		{
+			save->SetTags(tags);
+		}
+		notifyTagsChanged();
+	}
+	if (!addTagRequest && !removeTagRequest && !queuedTags.empty())
+	{
+		auto it = queuedTags.begin();
+		auto [ tag, add ] = *it;
+		queuedTags.erase(it);
+		if (save)
+		{
+			if (add)
+			{
+				addTagRequest = std::make_unique<http::AddTagRequest>(save->GetID(), tag);
+				addTagRequest->Start();
+			}
+			else
+			{
+				removeTagRequest = std::make_unique<http::RemoveTagRequest>(save->GetID(), tag);
+				removeTagRequest->Start();
+			}
 		}
 	}
 }
 
+void TagsModel::RemoveTag(ByteString tag)
+{
+	queuedTags[tag] = false;
+}
+
 void TagsModel::AddTag(ByteString tag)
 {
-	if(save)
-	{
-		std::list<ByteString> * tags = Client::Ref().AddTag(save->GetID(), tag);
-		if(tags)
-		{
-			save->SetTags(std::list<ByteString>(*tags));
-			notifyTagsChanged();
-			delete tags;
-		}
-		else
-		{
-			throw TagsModelException(Client::Ref().GetLastError());
-		}
-	}
+	queuedTags[tag] = true;
 }
 
 void TagsModel::AddObserver(TagsView * observer)

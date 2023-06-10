@@ -8,6 +8,7 @@
 #include <memory>
 #include <mutex>
 #include <condition_variable>
+#include <optional>
 
 namespace http
 {
@@ -42,7 +43,8 @@ namespace http
 		int statusCode = 0;
 		ByteString responseData;
 		std::vector<ByteString> responseHeaders;
-		ByteString error;
+		std::optional<ByteString> error;
+		std::optional<ByteString> failEarly;
 
 		RequestHandle(CtorTag)
 		{

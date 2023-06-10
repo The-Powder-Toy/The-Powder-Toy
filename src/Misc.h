@@ -18,6 +18,12 @@ inline std::pair<Signed, Signed> floorDiv(Signed a, Signed b)
 	return { quo, rem };
 }
 
+template<class Signed>
+inline std::pair<Signed, Signed> ceilDiv(Signed a, Signed b)
+{
+	return floorDiv(a + b - Signed(1), b);
+}
+
 //Linear interpolation
 template <typename T> inline T LinearInterpolate(T val1, T val2, T lowerCoord, T upperCoord, T coord)
 {

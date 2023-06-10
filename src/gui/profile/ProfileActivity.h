@@ -2,9 +2,13 @@
 #include "common/String.h"
 #include "Activity.h"
 #include "client/UserInfo.h"
-#include "client/http/SaveUserInfoRequest.h"
-#include "client/http/GetUserInfoRequest.h"
 #include <memory>
+
+namespace http
+{
+	class SaveUserInfoRequest;
+	class GetUserInfoRequest;
+}
 
 namespace ui
 {

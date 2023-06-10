@@ -24,6 +24,7 @@
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
+#include "client/http/Request.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
@@ -44,6 +45,9 @@
 #include "gui/game/GameModel.h"
 #include "gui/game/Tool.h"
 #include "gui/game/Brush.h"
+#include "gui/dialogues/ConfirmPrompt.h"
+#include "gui/dialogues/ErrorMessage.h"
+#include "gui/dialogues/InformationMessage.h"
 
 #include "eventcompat.lua.h"
 
@@ -4398,6 +4402,52 @@ bool LuaScriptInterface::HandleEvent(const GameControllerEvent &event)
 
 void LuaScriptInterface::OnTick()
 {
+	if (scriptDownload && scriptDownload->CheckDone())
+	{
+
+		auto ret = scriptDownload->StatusCode();
+		ByteString scriptData;
+		auto handleResponse = [this, &scriptData, &ret]() {
+			if (!scriptData.size())
+			{
+				new ErrorMessage("Script download", "Server did not return data");
+				return;
+			}
+			if (ret != 200)
+			{
+				new ErrorMessage("Script download", ByteString(http::StatusText(ret)).FromUtf8());
+				return;
+			}
+			if (Platform::FileExists(scriptDownloadFilename) && scriptDownloadConfirmPrompt && !ConfirmPrompt::Blocking("File already exists, overwrite?", scriptDownloadFilename.FromUtf8(), "Overwrite"))
+			{
+				return;
+			}
+			if (!Platform::WriteFile(std::vector<char>(scriptData.begin(), scriptData.end()), scriptDownloadFilename))
+			{
+				new ErrorMessage("Script download", "Unable to write to file");
+				return;
+			}
+			if (scriptDownloadRunScript)
+			{
+				if (tpt_lua_dostring(l, ByteString::Build("dofile('", scriptDownloadFilename, "')")))
+				{
+					new ErrorMessage("Script download", luacon_geterror());
+					return;
+				}
+			}
+			new InformationMessage("Script download", "Script successfully downloaded", false);
+		};
+		try
+		{
+			scriptData = scriptDownload->Finish().second;
+			handleResponse();
+		}
+		catch (const http::RequestError &ex)
+		{
+			new ErrorMessage("Script download", ByteString(ex.what()).FromUtf8());
+		}
+		scriptDownload.reset();
+	}
 	lua_getglobal(l, "simulation");
 	if (lua_istable(l, -1))
 	{
@@ -4815,3 +4865,33 @@ CommandInterface *CommandInterface::Create(GameController * c, GameModel * m)
 	return new LuaScriptInterface(c, m);
 }
 
+int LuaScriptInterface::luatpt_getscript(lua_State* l)
+{
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+
+	int scriptID = luaL_checkinteger(l, 1);
+	auto filename = tpt_lua_checkByteString(l, 2);
+	bool runScript = luaL_optint(l, 3, 0);
+	int confirmPrompt = luaL_optint(l, 4, 1);
+
+	if (luacon_ci->scriptDownload)
+	{
+		new ErrorMessage("Script download", "A script download is already pending");
+		return 0;
+	}
+
+	ByteString url = ByteString::Build(SCHEME, "starcatcher.us/scripts/main.lua?get=", scriptID);
+	if (confirmPrompt && !ConfirmPrompt::Blocking("Do you want to install script?", url.FromUtf8(), "Install"))
+	{
+		return 0;
+	}
+
+	luacon_ci->scriptDownload = std::make_unique<http::Request>(url);
+	luacon_ci->scriptDownload->Start();
+	luacon_ci->scriptDownloadFilename = filename;
+	luacon_ci->scriptDownloadRunScript = runScript;
+	luacon_ci->scriptDownloadConfirmPrompt = confirmPrompt;
+
+	luacon_controller->HideConsole();
+	return 0;
+}
