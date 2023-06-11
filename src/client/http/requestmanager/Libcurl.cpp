@@ -500,7 +500,7 @@ namespace http
 		{
 			curl_version_info_data *version_info = curl_version_info(CURLVERSION_NOW);
 			ByteString ssl_type = version_info->ssl_version;
-			if (ssl_type.Contains("OpenSSL"))
+			if (ssl_type.Contains("OpenSSL") || ssl_type.Contains("mbedTLS"))
 			{
 				HandleCURLcode(curl_easy_setopt(easy, CURLOPT_SSL_CIPHER_LIST,
 					"ECDHE-ECDSA-AES256-GCM-SHA384" ":"
