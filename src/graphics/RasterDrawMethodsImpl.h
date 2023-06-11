@@ -5,7 +5,7 @@
 #include "Graphics.h"
 #include "RasterDrawMethods.h"
 
-#define clipRect() (static_cast<Derived const &>(*this).getClipRect())
+#define clipRect() (static_cast<Derived const &>(*this).GetClipRect())
 
 template<typename Derived, typename V>
 static inline void drawPixelUnchecked(RasterDrawMethods<Derived> &self, V Derived::*video, Vec2<int> pos, RGB<uint8_t> colour)

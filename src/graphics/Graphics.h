@@ -14,7 +14,7 @@ class VideoBuffer: public RasterDrawMethods<VideoBuffer>
 {
 	PlaneAdapter<std::vector<pixel>> video;
 
-	Rect<int> getClipRect() const
+	Rect<int> GetClipRect() const
 	{
 		return video.Size().OriginRect();
 	}
@@ -58,11 +58,6 @@ class Graphics: public RasterDrawMethods<Graphics>
 	PlaneAdapter<std::array<pixel, WINDOW.X * WINDOW.Y>, WINDOW.X, WINDOW.Y> video;
 	Rect<int> clipRect = video.Size().OriginRect();
 
-	Rect<int> getClipRect() const
-	{
-		return clipRect;
-	}
-
 	friend struct RasterDrawMethods<Graphics>;
 
 public:
@@ -99,4 +94,9 @@ public:
 	Graphics();
 
 	void SwapClipRect(Rect<int> &);
+
+	Rect<int> GetClipRect() const
+	{
+		return clipRect;
+	}
 };

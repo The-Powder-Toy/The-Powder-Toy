@@ -42,7 +42,7 @@ class Renderer: public RasterDrawMethods<Renderer>
 	std::array<pixel, WINDOW.X * RES.Y> persistentVideo;
 	Video warpVideo;
 
-	Rect<int> getClipRect() const
+	Rect<int> GetClipRect() const
 	{
 		return video.Size().OriginRect();
 	}

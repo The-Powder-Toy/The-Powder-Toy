@@ -40,39 +40,37 @@ String ProgressBar::GetStatus()
 	return progressStatus;
 }
 
-void ProgressBar::Draw(const Point & screenPos)
+void ProgressBar::Draw(const Point &screenPos)
 {
-	Graphics * g = GetGraphics();
-
-	ui::Colour progressBarColour = style::Colour::WarningTitle;
-
+	Graphics *g = GetGraphics();
 	g->DrawRect(RectSized(screenPos, Size), 0xFFFFFF_rgb);
-
-	if(progress!=-1)
+	auto inner = RectSized(screenPos + Vec2{ 2, 2 }, Size - Vec2{ 4, 4 });
+	auto drawContent = [this, screenPos, g, inner](int beginX, int endX, ui::Colour bgColour, ui::Colour textColour) {
+		auto clip = RectSized(inner.TopLeft + Vec2{ beginX, 0 }, Vec2{ endX - beginX, inner.Size().Y }) & g->GetClipRect();
+		g->SwapClipRect(clip);
+		if (bgColour.Alpha)
+		{
+			g->DrawFilledRect(inner, bgColour.NoAlpha());
+		}
+		g->BlendText(screenPos + Vec2{
+			(Size.X - (Graphics::TextSize(progressStatus).X - 1)) / 2,
+			(Size.Y - 8) / 2
+		}, progressStatus, textColour);
+		g->SwapClipRect(clip);
+	};
+	drawContent(0, inner.Size().X, 0x000000_rgb .WithAlpha(0), 0xFFFFFF_rgb .WithAlpha(255));
+	if (progress == -1)
 	{
-		if(progress > 0)
-		{
-			if(progress > 100)
-				progress = 100;
-			float size = float(Size.X-4)*(float(progress)/100.0f); // TIL...
-			size = std::min(std::max(size, 0.0f), float(Size.X-4));
-			g->DrawFilledRect(RectSized(screenPos + Vec2{ 2, 2 }, Vec2{ int(size), Size.Y-4 }), progressBarColour.NoAlpha());
-		}
-	} else {
-		int size = 40, rsize = 0;
-		float position = float(Size.X-4)*(intermediatePos/100.0f);
-		if(position + size - 1 > Size.X-4)
-		{
-			size = int((Size.X-4)-position+1);
-			rsize = 40-size;
-		}
-		g->DrawFilledRect(RectSized(screenPos + Vec2{ 2 + int(position), 2 }, Vec2{ size, Size.Y-4 }), progressBarColour.NoAlpha());
-		if(rsize)
-		{
-			g->DrawFilledRect(RectSized(screenPos + Vec2{ 2, 2 }, Vec2{ rsize, Size.Y-4 }), progressBarColour.NoAlpha());
-		}
+		constexpr auto size = 40;
+		auto pos = int(inner.Size().X * intermediatePos / 100);
+		drawContent(pos, pos + size, style::Colour::WarningTitle, 0x000000_rgb .WithAlpha(255));
+		pos -= inner.Size().X;
+		drawContent(pos, pos + size, style::Colour::WarningTitle, 0x000000_rgb .WithAlpha(255));
 	}
-	g->BlendText(screenPos + Vec2{ ((Size.X-(Graphics::TextSize(progressStatus).X - 1))/2), (Size.Y-8)/2 }, progressStatus, progress<50 ? 0xFFFFFF_rgb .WithAlpha(255) : 0x000000_rgb .WithAlpha(255));
+	else
+	{
+		drawContent(0, inner.Size().X * progress / 100, style::Colour::WarningTitle, 0x000000_rgb .WithAlpha(255));
+	}
 }
 
 void ProgressBar::Tick(float dt)
