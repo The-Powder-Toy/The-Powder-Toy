@@ -356,6 +356,7 @@ if get_option('build_powder')
 			win_subsystem: is_debug ? 'console' : 'windows',
 			link_args: project_link_args,
 			dependencies: powder_deps,
+			install: true,
 		)
 	endif
 endif
