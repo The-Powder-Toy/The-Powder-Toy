@@ -44,8 +44,8 @@ namespace http
 			}
 			saveInfo = std::make_unique<SaveInfo>(
 				document["ID"].asInt(),
-				document["DateCreated"].asInt(),
-				document["Date"].asInt(),
+				document["DateCreated"].asInt64(),
+				document["Date"].asInt64(),
 				document["ScoreUp"].asInt(),
 				document["ScoreDown"].asInt(),
 				document["ScoreMine"].asInt(),

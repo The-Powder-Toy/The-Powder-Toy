@@ -1,7 +1,7 @@
 #include "SaveInfo.h"
 #include "GameSave.h"
 
-SaveInfo::SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, int _votesDown, ByteString _userName, String _name):
+SaveInfo::SaveInfo(int _id, time_t _createdDate, time_t _updatedDate, int _votesUp, int _votesDown, ByteString _userName, String _name):
 	id(_id),
 	createdDate(_createdDate),
 	updatedDate(_updatedDate),
@@ -20,7 +20,7 @@ SaveInfo::SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, in
 
 }
 
-SaveInfo::SaveInfo(int _id, int _createdDate, int _updatedDate, int _votesUp, int _votesDown, int _vote, ByteString _userName, String _name, String description_, bool published_, std::list<ByteString> tags_):
+SaveInfo::SaveInfo(int _id, time_t _createdDate, time_t _updatedDate, int _votesUp, int _votesDown, int _vote, ByteString _userName, String _name, String description_, bool published_, std::list<ByteString> tags_):
 	id(_id),
 	createdDate(_createdDate),
 	updatedDate(_updatedDate),

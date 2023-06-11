@@ -1004,7 +1004,7 @@ void GameModel::SetSave(std::unique_ptr<SaveInfo> newSave, bool invertIncludePre
 			gameSave->authors["title"] = currentSave->name.ToUtf8();
 			gameSave->authors["description"] = currentSave->Description.ToUtf8();
 			gameSave->authors["published"] = (int)currentSave->Published;
-			gameSave->authors["date"] = currentSave->updatedDate;
+			gameSave->authors["date"] = (Json::Value::UInt64)currentSave->updatedDate;
 			currentSave->SetGameSave(std::move(gameSave));
 		}
 		// This save was probably just created, and we didn't know the ID when creating it

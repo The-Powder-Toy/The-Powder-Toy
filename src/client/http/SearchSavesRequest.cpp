@@ -64,8 +64,8 @@ namespace http
 			{
 				auto saveInfo = std::make_unique<SaveInfo>(
 					save["ID"].asInt(),
-					save["Created"].asInt(),
-					save["Updated"].asInt(),
+					save["Created"].asInt64(),
+					save["Updated"].asInt64(),
 					save["ScoreUp"].asInt(),
 					save["ScoreDown"].asInt(),
 					save["Username"].asString(),
