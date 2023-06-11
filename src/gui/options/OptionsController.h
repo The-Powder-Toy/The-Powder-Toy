@@ -28,6 +28,7 @@ public:
 	void SetAltFullscreen(bool altFullscreen);
 	void SetForceIntegerScaling(bool forceIntegerScaling);
 	void SetScale(int scale);
+	void SetGraveExitsConsole(bool graveExitsConsole);
 	void SetResizable(bool resizable);
 	void SetFastQuit(bool fastquit);
 	void SetDecoSpace(int decoSpace);

@@ -277,6 +277,7 @@ int main(int argc, char * argv[])
 
 	auto &prefs = GlobalPrefs::Ref();
 	scale = prefs.Get("Scale", 1);
+	auto graveExitsConsole = prefs.Get("GraveExitsConsole", true);
 	resizable = prefs.Get("Resizable", false);
 	fullscreen = prefs.Get("Fullscreen", false);
 	altFullscreen = prefs.Get("AltFullscreen", false);
@@ -381,6 +382,7 @@ int main(int argc, char * argv[])
 	auto &engine = ui::Engine::Ref();
 	engine.g = new Graphics();
 	engine.Scale = scale;
+	engine.GraveExitsConsole = graveExitsConsole;
 	engine.SetResizable(resizable);
 	engine.Fullscreen = fullscreen;
 	engine.SetAltFullscreen(altFullscreen);

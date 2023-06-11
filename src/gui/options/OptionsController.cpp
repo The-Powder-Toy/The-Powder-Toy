@@ -97,6 +97,11 @@ void OptionsController::SetScale(int scale)
 	model->SetScale(scale);
 }
 
+void OptionsController::SetGraveExitsConsole(bool graveExitsConsole)
+{
+	model->SetGraveExitsConsole(graveExitsConsole);
+}
+
 void OptionsController::SetResizable(bool resizable)
 {
 	model->SetResizable(resizable);

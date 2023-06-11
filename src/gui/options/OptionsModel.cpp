@@ -156,6 +156,18 @@ void OptionsModel::SetScale(int scale)
 	notifySettingsChanged();
 }
 
+bool OptionsModel::GetGraveExitsConsole()
+{
+	return ui::Engine::Ref().GraveExitsConsole;
+}
+
+void OptionsModel::SetGraveExitsConsole(bool graveExitsConsole)
+{
+	ui::Engine::Ref().GraveExitsConsole = graveExitsConsole;
+	GlobalPrefs::Ref().Set("GraveExitsConsole", graveExitsConsole);
+	notifySettingsChanged();
+}
+
 bool OptionsModel::GetResizable()
 {
 	return ui::Engine::Ref().GetResizable();

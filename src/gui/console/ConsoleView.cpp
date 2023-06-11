@@ -5,6 +5,7 @@
 #include "ConsoleCommand.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
+#include "gui/interface/Engine.h"
 #include "SimulationConfig.h"
 #include <deque>
 #include <SDL.h>
@@ -24,7 +25,7 @@ ConsoleView::ConsoleView():
 
 void ConsoleView::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	if ((scan == SDL_SCANCODE_GRAVE && key != '~') || key == SDLK_ESCAPE)
+	if ((ui::Engine::Ref().GraveExitsConsole && scan == SDL_SCANCODE_GRAVE && key != '~') || key == SDLK_ESCAPE)
 	{
 		if (!repeat)
 			doClose = true;

@@ -39,6 +39,8 @@ public:
 	void SetCustomGravityY(float y);
 	int GetScale();
 	void SetScale(int scale);
+	bool GetGraveExitsConsole();
+	void SetGraveExitsConsole(bool graveExitsConsole);
 	bool GetResizable();
 	void SetResizable(bool resizable);
 	bool GetFullscreen();

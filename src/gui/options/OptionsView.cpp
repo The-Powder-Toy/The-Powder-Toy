@@ -377,15 +377,26 @@ OptionsView::OptionsView():
 	scrollPanel->AddChild(includePressure);
 
 	currentY+=20;
-	perfectCirclePressure = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Perfect Circle", "");
-	autowidth(perfectCirclePressure);
-	perfectCirclePressure->SetActionCallback({ [this] { c->SetPerfectCircle(perfectCirclePressure->GetChecked()); } });
-	tempLabel = new ui::Label(ui::Point(perfectCirclePressure->Position.X+Graphics::TextSize(perfectCirclePressure->GetText()).X+19, currentY), ui::Point(1, 16), "\bg- Better circle brush, without incorrect points on edges");
+	perfectCircle = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Perfect Circle", "");
+	autowidth(perfectCircle);
+	perfectCircle->SetActionCallback({ [this] { c->SetPerfectCircle(perfectCircle->GetChecked()); } });
+	tempLabel = new ui::Label(ui::Point(perfectCircle->Position.X+Graphics::TextSize(perfectCircle->GetText()).X+19, currentY), ui::Point(1, 16), "\bg- Better circle brush, without incorrect points on edges");
 	autowidth(tempLabel);
 	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	scrollPanel->AddChild(tempLabel);
-	scrollPanel->AddChild(perfectCirclePressure);
+	scrollPanel->AddChild(perfectCircle);
+
+	currentY+=20;
+	graveExitsConsole = new ui::Checkbox(ui::Point(8, currentY), ui::Point(1, 16), "Key Under Esc Exits Console", "");
+	autowidth(graveExitsConsole);
+	graveExitsConsole->SetActionCallback({ [this] { c->SetGraveExitsConsole(graveExitsConsole->GetChecked()); } });
+	tempLabel = new ui::Label(ui::Point(graveExitsConsole->Position.X+Graphics::TextSize(graveExitsConsole->GetText()).X+19, currentY), ui::Point(1, 16), "\bg- Uncheck this if that key is 0 on your keyboard");
+	autowidth(tempLabel);
+	tempLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	tempLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	scrollPanel->AddChild(tempLabel);
+	scrollPanel->AddChild(graveExitsConsole);
 
 	currentY+=20;
 	decoSpace = new ui::DropDown(ui::Point(8, currentY), ui::Point(60, 16));
@@ -528,7 +539,8 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	showAvatars->SetChecked(sender->GetShowAvatars());
 	mouseClickRequired->SetChecked(sender->GetMouseClickRequired());
 	includePressure->SetChecked(sender->GetIncludePressure());
-	perfectCirclePressure->SetChecked(sender->GetPerfectCircle());
+	perfectCircle->SetChecked(sender->GetPerfectCircle());
+	graveExitsConsole->SetChecked(sender->GetGraveExitsConsole());
 	momentumScroll->SetChecked(sender->GetMomentumScroll());
 }
 

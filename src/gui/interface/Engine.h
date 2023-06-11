@@ -82,6 +82,7 @@ namespace ui
 		int drawingFrequencyLimit;
 		Graphics * g;
 		int Scale;
+		bool GraveExitsConsole;
 		bool Fullscreen;
 
 		unsigned int FrameIndex;
