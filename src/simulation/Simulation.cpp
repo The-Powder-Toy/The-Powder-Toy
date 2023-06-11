@@ -19,10 +19,8 @@ extern int Element_LOLZ_lolz[XRES/9][YRES/9];
 extern int Element_LOVE_RuleTable[9][9];
 extern int Element_LOVE_love[XRES/9][YRES/9];
 
-void Simulation::Load(const GameSave *originalSave, bool includePressure, Vec2<int> blockP) // block coordinates
+void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> blockP) // block coordinates
 {
-	auto save = std::unique_ptr<GameSave>(new GameSave(*originalSave));
-
 	auto partP = blockP * CELL;
 	unsigned int pmapmask = (1<<save->pmapbits)-1;
 
@@ -57,40 +55,33 @@ void Simulation::Load(const GameSave *originalSave, bool includePressure, Vec2<i
 	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
 	auto &properties = Particle::GetProperties();
 
-	bool doFullScan = false;
+	std::map<unsigned int, unsigned int> soapList;
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
-		Particle *tempPart = &save->particles[n];
-		auto &type = tempPart->type;
-		if (!type)
+		Particle tempPart = save->particles[n];
+		if (tempPart.type <= 0 || tempPart.type >= PT_NUM)
 		{
 			continue;
 		}
 
-		tempPart->x += (float)partP.X;
-		tempPart->y += (float)partP.Y;
-		int x = int(tempPart->x + 0.5f);
-		int y = int(tempPart->y + 0.5f);
+		tempPart.x += (float)partP.X;
+		tempPart.y += (float)partP.Y;
+		int x = int(tempPart.x + 0.5f);
+		int y = int(tempPart.y + 0.5f);
 
 
 		// Check various scenarios where we are unable to spawn the element, and set type to 0 to block spawning later
 		if (!InBounds(x, y))
 		{
-			type = 0;
 			continue;
 		}
 
-		if (type < 0 || type >= PT_NUM)
-		{
-			type = 0;
-			continue;
-		}
-		type = partMap[type];
+		tempPart.type = partMap[tempPart.type];
 		for (auto index : possiblyCarriesType)
 		{
-			if (elements[type].CarriesTypeIn & (1U << index))
+			if (elements[tempPart.type].CarriesTypeIn & (1U << index))
 			{
-				auto *prop = reinterpret_cast<int *>(reinterpret_cast<char *>(tempPart) + properties[index].Offset);
+				auto *prop = reinterpret_cast<int *>(reinterpret_cast<char *>(&tempPart) + properties[index].Offset);
 				auto carriedType = *prop & int(pmapmask);
 				auto extra = *prop >> save->pmapbits;
 				if (carriedType >= 0 && carriedType < PT_NUM)
@@ -102,73 +93,26 @@ void Simulation::Load(const GameSave *originalSave, bool includePressure, Vec2<i
 		}
 
 		// Ensure we can spawn this element
-		if ((player.spwn == 1 && type==PT_STKM) || (player2.spwn == 1 && type==PT_STKM2))
+		if ((player.spwn == 1 && tempPart.type==PT_STKM) || (player2.spwn == 1 && tempPart.type==PT_STKM2))
 		{
-			type = 0;
 			continue;
 		}
-		if ((type == PT_SPAWN || type == PT_SPAWN2) && elementCount[type])
+		if ((tempPart.type == PT_SPAWN || tempPart.type == PT_SPAWN2) && elementCount[tempPart.type])
 		{
-			type = 0;
 			continue;
 		}
 		bool Element_FIGH_CanAlloc(Simulation *sim);
-		if (type == PT_FIGH && !Element_FIGH_CanAlloc(this))
-		{
-			type = 0;
-			continue;
-		}
-		if (!elements[type].Enabled)
-		{
-			type = 0;
-			continue;
-		}
-
-		if (pmap[y][x])
-		{
-			// Particle already exists in this location. Set pmap to 0, then kill it and all stacked particles in the loop below
-			pmap[y][x] = 0;
-			doFullScan = true;
-		}
-		else if (photons[y][x])
-		{
-			// Particle already exists in this location. Set photons to 0, then kill it and all stacked particles in the loop below
-			photons[y][x] = 0;
-			doFullScan = true;
-		}
-	}
-
-	if (doFullScan)
-	{
-		// Loop through particles to find particles in need of being killed
-		for (int i = 0; i <= parts_lastActiveIndex; i++) {
-			if (parts[i].type)
-			{
-				int x = int(parts[i].x + 0.5f);
-				int y = int(parts[i].y + 0.5f);
-				if (elements[parts[i].type].Properties & TYPE_ENERGY)
-				{
-					if (!photons[y][x])
-						kill_part(i);
-				}
-				else
-				{
-					if (!pmap[y][x])
-						kill_part(i);
-				}
-			}
-		}
-	}
-
-	// Map of soap particles loaded into this save, old ID -> new ID
-	std::map<unsigned int, unsigned int> soapList;
-	for (int n = 0; n < NPART && n < save->particlesCount; n++)
-	{
-		Particle tempPart = save->particles[n];
-		if (!tempPart.type)
+		if (tempPart.type == PT_FIGH && !Element_FIGH_CanAlloc(this))
 		{
 			continue;
 		}
+		if (!elements[tempPart.type].Enabled)
+		{
+			continue;
+		}
+
+		// Mark location to be cleaned of existing particles.
+		pmap[y][x] = -1;
 
 		if (elements[tempPart.type].CreateAllowed)
 		{
@@ -272,10 +216,35 @@ void Simulation::Load(const GameSave *originalSave, bool includePressure, Vec2<i
 		{
 			parts[i].tmp3 = 0;
 		}
+
+		if (!parts[i].type)
+		{
+			continue;
+		}
+
+		// Mark to be preserved in the loop below.
+		parts[i].type |= 1 << PMAPBITS;
 	}
 	parts_lastActiveIndex = NPART-1;
 	force_stacking_check = true;
 	Element_PPIP_ppip_changed = 1;
+
+	// Loop through particles to find particles in need of being killed
+	for (int i = 0; i <= parts_lastActiveIndex; i++)
+	{
+		if (parts[i].type)
+		{
+			int x = int(parts[i].x + 0.5f);
+			int y = int(parts[i].y + 0.5f);
+			bool preserve = parts[i].type & (1 << PMAPBITS);
+			parts[i].type &= ~(1 << PMAPBITS);
+			if (pmap[y][x] == -1 && !preserve)
+			{
+				kill_part(i);
+			}
+		}
+	}
+
 	RecalcFreeParticles(false);
 
 	// fix SOAP links using soapList, a map of old particle ID -> new particle ID
