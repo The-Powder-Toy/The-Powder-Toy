@@ -203,6 +203,12 @@ option(
 	description: 'Enforce encrypted HTTP traffic, may be disabled for debugging'
 )
 option(
+	'secure_ciphers_only',
+	type: 'boolean',
+	value: false,
+	description: 'Use only secure ciphers for encrypted HTTP traffic, please review cipher list before enabling'
+)
+option(
 	'prepare',
 	type: 'boolean',
 	value: false,

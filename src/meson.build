@@ -21,10 +21,12 @@ conf_data.set('UPDATESERVER', update_server)
 conf_data.set('USE_UPDATESERVER', update_server != '' ? 'true' : 'false')
 
 enforce_https = get_option('enforce_https')
+secure_ciphers_only = get_option('secure_ciphers_only')
 if not is_debug and not enforce_https
 	error('refusing to build a release binary without enforcing HTTPS, configure with -Denforce_https=true to fix this error')
 endif
 conf_data.set('ENFORCE_HTTPS', enforce_https ? 'true' : 'false')
+conf_data.set('SECURE_CIPHERS_ONLY', secure_ciphers_only ? 'true' : 'false')
 
 conf_data.set('IGNORE_UPDATES', get_option('ignore_updates') ? 'true' : 'false')
 conf_data.set('SERVER', get_option('server'))

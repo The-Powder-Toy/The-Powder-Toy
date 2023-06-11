@@ -14,6 +14,7 @@ constexpr bool CAN_INSTALL              = @CAN_INSTALL@;
 constexpr bool INSTALL_CHECK            = @INSTALL_CHECK@;
 constexpr bool IGNORE_UPDATES           = @IGNORE_UPDATES@;
 constexpr bool ENFORCE_HTTPS            = @ENFORCE_HTTPS@;
+constexpr bool SECURE_CIPHERS_ONLY      = @SECURE_CIPHERS_ONLY@;
 constexpr char PATH_SEP_CHAR            = '@PATH_SEP_CHAR@';
 
 constexpr char SERVER[]         = "@SERVER@";
