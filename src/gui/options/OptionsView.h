@@ -50,5 +50,4 @@ public:
 	void AttachController(OptionsController * c_);
 	void OnDraw() override;
 	void OnTryExit(ExitMethod method) override;
-	virtual ~OptionsView();
 };
