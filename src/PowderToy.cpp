@@ -241,24 +241,22 @@ int main(int argc, char * argv[])
 	}
 	else
 	{
-		char *ddir = SDL_GetPrefPath(NULL, APPDATA);
+		auto ddir = std::unique_ptr<char, decltype(&SDL_free)>(SDL_GetPrefPath(NULL, APPDATA), SDL_free);
 		if (!Platform::FileExists("powder.pref"))
 		{
 			if (ddir)
 			{
-				if (!Platform::ChangeDir(ddir))
+				if (!Platform::ChangeDir(ddir.get()))
 				{
 					perror("failed to chdir to default ddir");
-					SDL_free(ddir);
-					ddir = nullptr;
+					ddir.reset();
 				}
 			}
 		}
 
 		if (ddir)
 		{
-			Platform::sharedCwd = ddir;
-			SDL_free(ddir);
+			Platform::sharedCwd = ddir.get();
 		}
 	}
 	// We're now in the correct directory, time to get prefs.
