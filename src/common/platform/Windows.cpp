@@ -407,5 +407,9 @@ void SetupCrt()
 	{
 		_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
 	}
+	if (GetACP() != CP_UTF8)
+	{
+		std::cerr << "failed to set codepage to utf-8, expect breakage" << std::endl;
+	}
 }
 }
