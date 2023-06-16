@@ -43,7 +43,7 @@ namespace http
 		handle->verb = newVerb;
 	}
 
-	void Request::AddHeader(ByteString header)
+	void Request::AddHeader(Header header)
 	{
 		assert(handle->state == RequestHandle::ready);
 		handle->headers.push_back(header);
@@ -64,12 +64,12 @@ namespace http
 		{
 			if (session.size())
 			{
-				AddHeader("X-Auth-User-Id: " + ID);
-				AddHeader("X-Auth-Session-Key: " + session);
+				AddHeader({ "X-Auth-User-Id", ID });
+				AddHeader({ "X-Auth-Session-Key", session });
 			}
 			else
 			{
-				AddHeader("X-Auth-User: " + ID);
+				AddHeader({ "X-Auth-User", ID });
 			}
 		}
 	}
@@ -95,7 +95,7 @@ namespace http
 		return { handle->bytesTotal, handle->bytesDone };
 	}
 
-	const std::vector<ByteString> &Request::ResponseHeaders() const
+	const std::vector<Header> &Request::ResponseHeaders() const
 	{
 		std::lock_guard lk(handle->stateMx);
 		assert(handle->state == RequestHandle::done);

@@ -46,7 +46,7 @@ private:
 	}
 
 public:
-	static int Make(lua_State *l, const ByteString &uri, bool isPost, const ByteString &verb, RequestType type, const http::PostData &postData, const std::vector<ByteString> &headers)
+	static int Make(lua_State *l, const ByteString &uri, bool isPost, const ByteString &verb, RequestType type, const http::PostData &postData, const std::vector<http::Header> &headers)
 	{
 		auto authUser = Client::Ref().GetAuthUser();
 		if (type == getAuthToken && !authUser.UserID)
@@ -67,7 +67,7 @@ public:
 		{
 			rh->request->Verb(verb);
 		}
-		for (auto &header : headers)
+		for (const auto &header : headers)
 		{
 			rh->request->AddHeader(header);
 		}
@@ -120,7 +120,7 @@ public:
 		}
 	}
 
-	std::pair<int, ByteString> Finish(std::vector<ByteString> &headers)
+	std::pair<int, ByteString> Finish(std::vector<http::Header> &headers)
 	{
 		int status = 0;
 		ByteString data;
@@ -212,14 +212,18 @@ static int http_request_finish(lua_State *l)
 	auto *rh = (RequestHandle *)luaL_checkudata(l, 1, "HTTPRequest");
 	if (!rh->Dead())
 	{
-		std::vector<ByteString> headers;
+		std::vector<http::Header> headers;
 		auto [ status, data ] = rh->Finish(headers);
 		tpt_lua_pushByteString(l, data);
 		lua_pushinteger(l, status);
 		lua_newtable(l);
 		for (auto i = 0; i < int(headers.size()); ++i)
 		{
-			lua_pushlstring(l, headers[i].data(), headers[i].size());
+			lua_newtable(l);
+			lua_pushlstring(l, headers[i].name.data(), headers[i].name.size());
+			lua_rawseti(l, -2, 1);
+			lua_pushlstring(l, headers[i].value.data(), headers[i].value.size());
+			lua_rawseti(l, -2, 1);
 			lua_rawseti(l, -2, i + 1);
 		}
 		return 3;
@@ -246,17 +250,59 @@ static int http_request(lua_State *l, bool isPost)
 		{
 			postData = http::FormData{};
 			auto &formData = std::get<http::FormData>(postData);
-			lua_pushnil(l);
-			while (lua_next(l, 2))
+			auto size = lua_objlen(l, headersIndex);
+			if (size)
 			{
-				lua_pushvalue(l, -2);
-				formData.emplace(tpt_lua_toByteString(l, -1), tpt_lua_toByteString(l, -2));
-				lua_pop(l, 2);
+				for (auto i = 0U; i < size; ++i)
+				{
+					lua_rawgeti(l, headersIndex, i + 1);
+					if (!lua_istable(l, -1))
+					{
+						luaL_error(l, "form item %i is not a table", i + 1);
+					}
+					lua_rawgeti(l, -1, 1);
+					if (!lua_isstring(l, -1))
+					{
+						luaL_error(l, "name of form item %i is not a string", i + 1);
+					}
+					auto name = tpt_lua_toByteString(l, -1);
+					lua_pop(l, 1);
+					lua_rawgeti(l, -1, 2);
+					if (!lua_isstring(l, -1))
+					{
+						luaL_error(l, "value of form item %i is not a string", i + 1);
+					}
+					auto value = tpt_lua_toByteString(l, -1);
+					lua_pop(l, 1);
+					std::optional<ByteString> filename;
+					lua_rawgeti(l, -1, 3);
+					if (!lua_isnoneornil(l, -1))
+					{
+						if (!lua_isstring(l, -1))
+						{
+							luaL_error(l, "filename of form item %i is not a string", i + 1);
+						}
+						filename = tpt_lua_toByteString(l, -1);
+					}
+					lua_pop(l, 1);
+					formData.push_back({ name, value, filename });
+					lua_pop(l, 1);
+				}
+			}
+			else
+			{
+				lua_pushnil(l);
+				while (lua_next(l, 2))
+				{
+					lua_pushvalue(l, -2);
+					formData.push_back({ tpt_lua_toByteString(l, -1), tpt_lua_toByteString(l, -2) });
+					lua_pop(l, 2);
+				}
 			}
 		}
 	}
 
-	std::vector<ByteString> headers;
+	std::vector<http::Header> headers;
 	if (lua_istable(l, headersIndex))
 	{
 		auto size = lua_objlen(l, headersIndex);
@@ -265,7 +311,25 @@ static int http_request(lua_State *l, bool isPost)
 			for (auto i = 0U; i < size; ++i)
 			{
 				lua_rawgeti(l, headersIndex, i + 1);
-				headers.push_back(tpt_lua_toByteString(l, -1));
+				if (!lua_istable(l, -1))
+				{
+					luaL_error(l, "header %i is not a table", i + 1);
+				}
+				lua_rawgeti(l, -1, 1);
+				if (!lua_isstring(l, -1))
+				{
+					luaL_error(l, "name of header %i is not a string", i + 1);
+				}
+				auto name = tpt_lua_toByteString(l, -1);
+				lua_pop(l, 1);
+				lua_rawgeti(l, -1, 2);
+				if (!lua_isstring(l, -1))
+				{
+					luaL_error(l, "value of header %i is not a string", i + 1);
+				}
+				auto value = tpt_lua_toByteString(l, -1);
+				lua_pop(l, 1);
+				headers.push_back({ name, value });
 				lua_pop(l, 1);
 			}
 		}
@@ -276,7 +340,7 @@ static int http_request(lua_State *l, bool isPost)
 			while (lua_next(l, headersIndex))
 			{
 				lua_pushvalue(l, -2);
-				headers.push_back(tpt_lua_toByteString(l, -1) + ByteString(": ") + tpt_lua_toByteString(l, -2));
+				headers.push_back({ tpt_lua_toByteString(l, -1), tpt_lua_toByteString(l, -2) });
 				lua_pop(l, 2);
 			}
 		}

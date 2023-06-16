@@ -29,7 +29,7 @@ namespace http
 		AddPostData(FormData{
 			{ "Name", saveInfo.GetName().ToUtf8() },
 			{ "Description", saveInfo.GetDescription().ToUtf8() },
-			{ "Data:save.bin", ByteString(gameData.begin(), gameData.end()) },
+			{ "Data", ByteString(gameData.begin(), gameData.end()), "save.bin" },
 			{ "Publish", saveInfo.GetPublished() ? "Public" : "Private" },
 			{ "Key", user.SessionKey },
 		});
