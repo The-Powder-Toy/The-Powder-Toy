@@ -39,7 +39,7 @@ private:
 		notifyProgress(-1);
 		while(!request->CheckDone())
 		{
-			int total, done;
+			int64_t total, done;
 			std::tie(total, done) = request->CheckProgress();
 			if (total == -1)
 			{

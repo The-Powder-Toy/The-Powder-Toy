@@ -103,7 +103,7 @@ public:
 		return request->CheckDone();
 	}
 
-	void Progress(int *total, int *done)
+	void Progress(int64_t *total, int64_t *done)
 	{
 		if (!dead)
 		{
@@ -188,7 +188,7 @@ static int http_request_progress(lua_State *l)
 	auto *rh = (RequestHandle *)luaL_checkudata(l, 1, "HTTPRequest");
 	if (!rh->Dead())
 	{
-		int total, done;
+		int64_t total, done;
 		rh->Progress(&total, &done);
 		lua_pushinteger(l, total);
 		lua_pushinteger(l, done);

@@ -88,7 +88,7 @@ namespace http
 		return handle->state == RequestHandle::done;
 	}
 
-	std::pair<int, int> Request::CheckProgress() const
+	std::pair<int64_t, int64_t> Request::CheckProgress() const
 	{
 		std::lock_guard lk(handle->stateMx);
 		assert(handle->state == RequestHandle::running || handle->state == RequestHandle::done);

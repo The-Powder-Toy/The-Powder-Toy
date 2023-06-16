@@ -39,7 +39,7 @@ namespace http
 		void Start();
 		bool CheckDone() const;
 
-		std::pair<int, int> CheckProgress() const; // total, done
+		std::pair<int64_t, int64_t> CheckProgress() const; // total, done
 		const std::vector<ByteString> &ResponseHeaders() const;
 		void Wait();
 

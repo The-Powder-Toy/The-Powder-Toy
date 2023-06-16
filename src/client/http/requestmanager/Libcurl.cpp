@@ -221,8 +221,8 @@ namespace http
 				HandleCURLcode(curl_easy_getinfo(handle->curlEasy, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &total)); // stores -1 if unknown
 				HandleCURLcode(curl_easy_getinfo(handle->curlEasy, CURLINFO_SIZE_DOWNLOAD, &done));
 #endif
-				handle->bytesTotal = int(total);
-				handle->bytesDone = int(done);
+				handle->bytesTotal = int64_t(total);
+				handle->bytesDone = int64_t(done);
 			}
 			else
 			{
