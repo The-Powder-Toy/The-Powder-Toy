@@ -24,10 +24,10 @@ if host_platform == 'windows'
 else
 	luaconsole_files += files('LuaSocketDefault.cpp')
 endif
-if enable_http
-	luaconsole_files += files('LuaSocketTCPHttp.cpp')
-else
+if not enable_http or host_platform == 'emscripten'
 	luaconsole_files += files('LuaSocketTCPNoHttp.cpp')
+else
+	luaconsole_files += files('LuaSocketTCPHttp.cpp')
 endif
 conf_data.set('LUACONSOLE', lua_variant != 'none' ? 'true' : 'false')
 

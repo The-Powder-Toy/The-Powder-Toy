@@ -297,7 +297,6 @@ if [[ $BSH_HOST_PLATFORM-$BSH_HOST_ARCH == darwin-aarch64 ]]; then
 	meson_configure+=$'\t'--cross-file=.github/macaa64-ghactions.ini
 fi
 if [[ $BSH_HOST_PLATFORM == emscripten ]]; then
-	meson_configure+=$'\t'-Dhttp=false # TODO: fix
 	meson_configure+=$'\t'--cross-file=.github/emscripten-ghactions.ini
 fi
 if [[ $RELEASE_TYPE == tptlibsdev ]] && ([[ $BSH_HOST_PLATFORM == windows ]] || [[ $BSH_STATIC_DYNAMIC == static ]]); then

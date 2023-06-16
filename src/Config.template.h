@@ -47,3 +47,6 @@ constexpr char STATICSCHEME[]   = "https://";
 constexpr char LOCAL_SAVE_DIR[] = "Saves";
 constexpr char STAMPS_DIR[]     = "stamps";
 constexpr char BRUSH_DIR[]      = "Brushes";
+
+constexpr int httpMaxConcurrentStreams = 50;
+constexpr int httpConnectTimeoutS      = 15;

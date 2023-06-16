@@ -15,9 +15,9 @@
 # define REQUEST_USE_CURL_TLSV13CL
 #endif
 
-const long curlMaxHostConnections   = 1;
-const long curlMaxConcurrentStreams = 50;
-const long curlConnectTimeoutS      = 15;
+constexpr long curlMaxHostConnections   = 1;
+constexpr long curlMaxConcurrentStreams = httpMaxConcurrentStreams;
+constexpr long curlConnectTimeoutS      = httpConnectTimeoutS;
 
 namespace http
 {
@@ -275,6 +275,8 @@ namespace http
 				}
 				for (auto &requestHandle : requestHandlesToRegister)
 				{
+					// Must not be present
+					assert(std::find(requestHandles.begin(), requestHandles.end(), requestHandle) == requestHandles.end());
 					requestHandles.push_back(requestHandle);
 					RegisterRequestHandle(requestHandle);
 				}
@@ -282,8 +284,10 @@ namespace http
 				for (auto &requestHandle : requestHandlesToUnregister)
 				{
 					auto eraseFrom = std::remove(requestHandles.begin(), requestHandles.end(), requestHandle);
+					// Must either not be present
 					if (eraseFrom != requestHandles.end())
 					{
+						// Or be present exactly once
 						assert(eraseFrom + 1 == requestHandles.end());
 						UnregisterRequestHandle(requestHandle);
 						requestHandles.erase(eraseFrom, requestHandles.end());
