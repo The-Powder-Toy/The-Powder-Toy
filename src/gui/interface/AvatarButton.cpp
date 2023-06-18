@@ -28,7 +28,14 @@ void AvatarButton::Tick(float dt)
 
 	if (imageRequest && imageRequest->CheckDone())
 	{
-		avatar = imageRequest->Finish();
+		try
+		{
+			avatar = imageRequest->Finish();
+		}
+		catch (const http::RequestError &ex)
+		{
+			// Nothing, oh well.
+		}
 		imageRequest.reset();
 	}
 }
