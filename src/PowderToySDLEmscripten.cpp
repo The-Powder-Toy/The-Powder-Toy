@@ -3,12 +3,23 @@
 #include <emscripten.h>
 #include <iostream>
 
+namespace Platform
+{
+	void MaybeTriggerSyncFs();
+}
+
+static void MainLoopBody()
+{
+	EngineProcess();
+	Platform::MaybeTriggerSyncFs();
+}
+
 void SetFpsLimit(FpsLimit newFpsLimit)
 {
 	static bool mainLoopSet = false;
 	if (!mainLoopSet)
 	{
-		emscripten_set_main_loop(EngineProcess, 0, 0);
+		emscripten_set_main_loop(MainLoopBody, 0, 0);
 		mainLoopSet = true;
 	}
 	if (auto *fpsLimitVsync = std::get_if<FpsLimitVsync>(&newFpsLimit))
@@ -28,8 +39,9 @@ void SetFpsLimit(FpsLimit newFpsLimit)
 	}
 }
 
+// Is actually only called once at startup, the real main loop body is MainLoopBody.
 void MainLoop()
 {
 	SetFpsLimit(ui::Engine::Ref().GetFpsLimit());
-	EngineProcess();
+	MainLoopBody();
 }

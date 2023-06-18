@@ -17,7 +17,7 @@ namespace http
 	};
 }
 
-extern "C" void RequestManager_UpdateRequestStatusThunk(http::RequestHandleHttp *handle);
+EMSCRIPTEN_KEEPALIVE extern "C" void RequestManager_UpdateRequestStatusThunk(http::RequestHandleHttp *handle);
 
 namespace http
 {

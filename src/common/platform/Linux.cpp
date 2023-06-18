@@ -109,4 +109,8 @@ bool Install()
 	}
 	return ok;
 }
+
+void SetupCrt()
+{
+}
 }

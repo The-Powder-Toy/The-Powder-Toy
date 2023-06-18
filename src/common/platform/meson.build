@@ -12,6 +12,10 @@ if host_platform == 'windows'
 		'Windows.cpp',
 		'ExitCommon.cpp',
 	)
+	powder_files += files(
+		'MainCommon.cpp',
+		'DdirCommon.cpp',
+	)
 elif host_platform == 'darwin'
 	can_install_enforce_no = true
 	common_files += files(
@@ -19,12 +23,20 @@ elif host_platform == 'darwin'
 		'Posix.cpp',
 		'ExitCommon.cpp',
 	)
+	powder_files += files(
+		'MainCommon.cpp',
+		'DdirCommon.cpp',
+	)
 elif host_platform == 'android'
 	can_install_enforce_no = true
 	common_files += files(
 		'Android.cpp',
 		'Posix.cpp',
 		'ExitCommon.cpp',
+	)
+	powder_files += files(
+		'MainCommon.cpp',
+		'DdirCommon.cpp',
 	)
 elif host_platform == 'emscripten'
 	use_bluescreen = false
@@ -41,12 +53,20 @@ elif host_platform == 'linux'
 		'Posix.cpp',
 		'ExitCommon.cpp',
 	)
+	powder_files += files(
+		'MainCommon.cpp',
+		'DdirCommon.cpp',
+	)
 else
 	can_install_enforce_no = true
 	common_files += files(
 		'Null.cpp',
 		'Posix.cpp',
 		'ExitCommon.cpp',
+	)
+	powder_files += files(
+		'MainCommon.cpp',
+		'DdirCommon.cpp',
 	)
 endif
 conf_data.set('SET_WINDOW_ICON', set_window_icon ? 'true' : 'false')

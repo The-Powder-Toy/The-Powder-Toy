@@ -11,4 +11,8 @@ bool CanUpdate()
 {
 	return false;
 }
+
+void SetupCrt()
+{
+}
 }

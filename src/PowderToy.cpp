@@ -179,9 +179,14 @@ struct ExplicitSingletons
 };
 static std::unique_ptr<ExplicitSingletons> explicitSingletons;
 
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
 	Platform::SetupCrt();
+	return Platform::InvokeMain(argc, argv);
+}
+
+int Main(int argc, char *argv[])
+{
 	Platform::Atexit([]() {
 		SaveWindowPosition();
 		// Unregister dodgy error handlers so they don't try to show the blue screen when the window is closed
@@ -254,22 +259,22 @@ int main(int argc, char * argv[])
 	}
 	else
 	{
-		auto ddir = std::unique_ptr<char, decltype(&SDL_free)>(SDL_GetPrefPath(NULL, APPDATA), SDL_free);
+		auto ddir = Platform::DefaultDdir();
 		if (!Platform::FileExists("powder.pref"))
 		{
-			if (ddir)
+			if (ddir.size())
 			{
-				if (!Platform::ChangeDir(ddir.get()))
+				if (!Platform::ChangeDir(ddir))
 				{
 					perror("failed to chdir to default ddir");
-					ddir.reset();
+					ddir = {};
 				}
 			}
 		}
 
-		if (ddir)
+		if (ddir.size())
 		{
-			Platform::sharedCwd = ddir.get();
+			Platform::sharedCwd = ddir;
 		}
 	}
 	// We're now in the correct directory, time to get prefs.

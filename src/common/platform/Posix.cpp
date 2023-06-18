@@ -218,8 +218,4 @@ bool UpdateFinish()
 void UpdateCleanup()
 {
 }
-
-void SetupCrt()
-{
-}
 }

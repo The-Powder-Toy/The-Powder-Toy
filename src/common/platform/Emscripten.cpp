@@ -1,5 +1,17 @@
 #include "Platform.h"
 #include <ctime>
+#include <emscripten.h>
+#include <emscripten/threading.h>
+#include <atomic>
+#include <iostream>
+
+static std::atomic<bool> shouldSyncFs = false;
+static bool syncFsInFlight = false;
+
+EMSCRIPTEN_KEEPALIVE extern "C" void Platform_SyncFsDone()
+{
+	syncFsInFlight = false;
+}
 
 namespace Platform
 {
@@ -37,4 +49,84 @@ void Atexit(ExitFunc exitFunc)
 void Exit(int code)
 {
 }
+
+ByteString DefaultDdir()
+{
+	return "/powder";
+}
+
+int InvokeMain(int argc, char *argv[])
+{
+	EM_ASM({
+		FS.syncfs(true, () => {
+			Module.ccall('MainJs', 'number', [ 'number', 'number' ], [ $0, $1 ]);
+		});
+	}, argc, argv);
+	return 0;
+}
+
+void MaybeTriggerSyncFs()
+{
+	if (!syncFsInFlight && shouldSyncFs.exchange(false, std::memory_order_relaxed))
+	{
+		std::cerr << "invoking FS.syncfs" << std::endl;
+		syncFsInFlight = true;
+		EM_ASM({
+			FS.syncfs(false, err => {
+				if (err) {
+					console.error(err);
+				}
+				Module.ccall('Platform_SyncFsDone', null, [], []);
+			});
+		});
+	}
+}
+}
+
+EMSCRIPTEN_KEEPALIVE extern "C" int MainJs(int argc, char *argv[])
+{
+	return Main(argc, argv);
+}
+
+EMSCRIPTEN_KEEPALIVE extern "C" void Platform_ShouldSyncFs()
+{
+	shouldSyncFs.store(true, std::memory_order_relaxed);
+}
+
+namespace Platform
+{
+	void SetupCrt()
+	{
+		EM_ASM({
+			let ddir = UTF8ToString($0);
+			let prefix = ddir + '/';
+			let shouldSyncFs = Module.cwrap(
+				'Platform_ShouldSyncFs',
+				null,
+				[]
+			);
+			FS.trackingDelegate['onMovePath'] = function(oldpath, newpath) {
+				if (oldpath.startsWith(prefix) || newpath.startsWith(prefix)) {
+					shouldSyncFs();
+				}
+			};
+			FS.trackingDelegate['onDeletePath'] = function(path) {
+				if (path.startsWith(prefix)) {
+					shouldSyncFs();
+				}
+			};
+			FS.trackingDelegate['onWriteToFile'] = function(path, bytesWritten) {
+				if (path.startsWith(prefix)) {
+					shouldSyncFs();
+				}
+			};
+			FS.trackingDelegate['onMakeDirectory'] = function(path, mode) {
+				if (path.startsWith(prefix)) {
+					shouldSyncFs();
+				}
+			};
+			FS.mkdir(ddir);
+			FS.mount(IDBFS, {}, ddir);
+		}, DefaultDdir().c_str());
+	}
 }

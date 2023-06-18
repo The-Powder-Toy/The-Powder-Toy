@@ -209,7 +209,10 @@ if host_platform == 'emscripten'
 		'-s', 'WASM=1',
 		'-s', 'ALLOW_MEMORY_GROWTH=1',
 		'-s', 'FORCE_FILESYSTEM=1',
-		'-s', 'EXIT_RUNTIME=1',
+		'-s', 'EXIT_RUNTIME=0',
+		'-s', 'EXPORTED_RUNTIME_METHODS=ccall,cwrap',
+		'-s', 'FS_DEBUG',
+		'-lidbfs.js',
 	]
 	emcc_args = [
 		'-s', 'USE_SDL=2',
