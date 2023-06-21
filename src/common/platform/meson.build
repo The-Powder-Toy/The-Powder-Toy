@@ -21,6 +21,7 @@ elif host_platform == 'darwin'
 	common_files += files(
 		'Darwin.cpp',
 		'Posix.cpp',
+		'PosixProc.cpp',
 		'ExitCommon.cpp',
 	)
 	powder_files += files(
@@ -32,6 +33,7 @@ elif host_platform == 'android'
 	common_files += files(
 		'Android.cpp',
 		'Posix.cpp',
+		'PosixProc.cpp',
 		'ExitCommon.cpp',
 	)
 	powder_files += files(
@@ -51,6 +53,7 @@ elif host_platform == 'linux'
 	common_files += files(
 		'Linux.cpp',
 		'Posix.cpp',
+		'PosixProc.cpp',
 		'ExitCommon.cpp',
 	)
 	powder_files += files(
@@ -62,6 +65,7 @@ else
 	common_files += files(
 		'Null.cpp',
 		'Posix.cpp',
+		'PosixProc.cpp',
 		'ExitCommon.cpp',
 	)
 	powder_files += files(

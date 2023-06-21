@@ -17,7 +17,16 @@ namespace Platform
 {
 void OpenURI(ByteString uri)
 {
-	fprintf(stderr, "cannot open URI: not implemented\n");
+	EM_ASM({
+		open(UTF8ToString($0));
+	}, uri.c_str());
+}
+
+void DoRestart()
+{
+	EM_ASM({
+		location.reload();
+	});
 }
 
 long unsigned int GetTime()
@@ -29,7 +38,7 @@ long unsigned int GetTime()
 
 ByteString ExecutableNameFirstApprox()
 {
-	return "";
+	return "powder.wasm"; // bogus
 }
 
 bool CanUpdate()
@@ -80,6 +89,25 @@ void MaybeTriggerSyncFs()
 			});
 		});
 	}
+}
+
+ByteString ExecutableName()
+{
+	return DefaultDdir() + "/" + ExecutableNameFirstApprox(); // bogus
+}
+
+bool UpdateStart(const std::vector<char> &data)
+{
+	return false;
+}
+
+bool UpdateFinish()
+{
+	return false;
+}
+
+void UpdateCleanup()
+{
 }
 }
 
