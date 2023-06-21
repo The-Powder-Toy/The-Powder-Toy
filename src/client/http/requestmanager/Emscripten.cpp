@@ -150,17 +150,28 @@ namespace http
 			Module.emscriptenRequestManager.requests[id] = request;
 			return id;
 		}, requestHandle->uri.c_str());
-		if (handle->headers.size())
 		{
+			auto userAgentSet = false;
 			for (auto &header : handle->headers)
 			{
-				EM_ASM({
-					Module.emscriptenRequestManager.requests[$0].fetchHeaders.append(
-						UTF8ToString($1),
-						UTF8ToString($2)
-					);
-				}, handle->id, header.name.c_str(), header.value.c_str());
+				if (header.name.ToLower() == "user-agent")
+				{
+					userAgentSet = true;
+				}
 			}
+			if (!userAgentSet)
+			{
+				handle->headers.push_back({ "user-agent", userAgent });
+			}
+		}
+		for (auto &header : handle->headers)
+		{
+			EM_ASM({
+				Module.emscriptenRequestManager.requests[$0].fetchHeaders.append(
+					UTF8ToString($1),
+					UTF8ToString($2)
+				);
+			}, handle->id, header.name.c_str(), header.value.c_str());
 		}
 		auto &postData = handle->postData;
 		if (std::holds_alternative<http::FormData>(postData) && std::get<http::FormData>(postData).size())
