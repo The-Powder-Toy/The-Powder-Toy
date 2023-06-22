@@ -368,9 +368,16 @@ public:
 	// Return the intersection of two rectangles (possibly empty)
 	Rect<T> operator&(Rect<T> other) const
 	{
-		return Rect<T>(
+		auto rect = Rect<T>(
 			Vec2<T>(std::max(TopLeft.X, other.TopLeft.X), std::max(TopLeft.Y, other.TopLeft.Y)),
 			Vec2<T>(std::min(BottomRight.X, other.BottomRight.X), std::min(BottomRight.Y, other.BottomRight.Y))
+		);
+		return Rect<T>(
+			rect.TopLeft,
+			Vec2<T>(
+				std::max(rect.TopLeft.X - 1, rect.BottomRight.X),
+				std::max(rect.TopLeft.Y - 1, rect.BottomRight.Y)
+			)
 		);
 	}
 
