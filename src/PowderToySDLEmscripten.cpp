@@ -44,4 +44,10 @@ void MainLoop()
 {
 	SetFpsLimit(ui::Engine::Ref().GetFpsLimit());
 	MainLoopBody();
+	EM_ASM({
+		let canvas = document.querySelector("canvas.emscripten");
+		if (canvas) {
+			canvas.scrollIntoView(true);
+		}
+	});
 }
