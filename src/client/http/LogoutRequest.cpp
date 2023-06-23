@@ -5,12 +5,8 @@
 namespace http
 {
 	LogoutRequest::LogoutRequest() :
-		APIRequest(ByteString::Build(SCHEME, SERVER, "/Logout.json"), authRequire, false)
+		APIRequest(ByteString::Build(SCHEME, SERVER, "/Logout.json?Key=" + Client::Ref().GetAuthUser().SessionKey), authRequire, false)
 	{
-		auto user = Client::Ref().GetAuthUser();
-		AddPostData(FormData{
-			{ "Key", user.SessionKey },
-		});
 	}
 
 	void LogoutRequest::Finish()
