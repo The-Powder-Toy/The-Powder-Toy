@@ -53,6 +53,9 @@ private:
 	void MigrateStampsDef();
 	void WriteStamps();
 
+	void LoadAuthUser();
+	void SaveAuthUser();
+
 public:
 
 	std::vector<ClientListener*> listeners;

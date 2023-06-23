@@ -21,7 +21,7 @@ namespace http
 				comments.push_back({
 					comment["Username"].asString(),
 					User::ElevationFromString(comment["Elevation"].asString()),
-					ByteString(comment["UserID"].asString()).ToNumber<int>() == user.UserID,
+					comment["Username"].asString() == user.Username,
 					comment["IsBanned"].asBool(),
 					ByteString(comment["Text"].asString()).FromUtf8(),
 				});

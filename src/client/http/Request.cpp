@@ -60,7 +60,7 @@ namespace http
 	void Request::AuthHeaders(ByteString ID, ByteString session)
 	{
 		assert(handle->state == RequestHandle::ready);
-		if (ID.size())
+		if (ID.size() && ID != "-1") // -1 is an emscripten hack, see AuthUserEmscripten.cpp
 		{
 			if (session.size())
 			{

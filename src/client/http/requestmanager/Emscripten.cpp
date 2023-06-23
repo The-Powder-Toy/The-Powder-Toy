@@ -252,7 +252,6 @@ namespace http
 				method: request.fetchMethod,
 				headers: request.fetchHeaders,
 				body: request.fetchBody,
-				credentials: 'omit',
 				signal: request.fetchController.signal,
 			}).then(response => {
 				request.statusEarly = response.status;
@@ -344,18 +343,12 @@ namespace http
 			handle->responseHeaders.resize(headerCount);
 			for (auto i = 0; i < headerCount; ++i)
 			{
-				handle->responseHeaders[i].name.resize(EM_ASM_INT({
-					return lengthBytesUTF8(Module.emscriptenRequestManager.requests[$0].responseHeaders[$1].name);
-				}, handle->id, i));
-				EM_ASM({
-					stringToUTF8(Module.emscriptenRequestManager.requests[$0].responseHeaders[$1].name, $2, $3);
-				}, handle->id, i, &handle->responseHeaders[i].name[0], handle->responseHeaders[i].name.size());
-				handle->responseHeaders[i].value.resize(EM_ASM_INT({
-					return lengthBytesUTF8(Module.emscriptenRequestManager.requests[$0].responseHeaders[$1].value);
-				}, handle->id, i));
-				EM_ASM({
-					stringToUTF8(Module.emscriptenRequestManager.requests[$0].responseHeaders[$1].value, $2, $3);
-				}, handle->id, i, &handle->responseHeaders[i].value[0], handle->responseHeaders[i].value.size());
+				handle->responseHeaders[i].name = ByteString(std::unique_ptr<char, decltype(&free)>((char *)EM_ASM_PTR({
+					return stringToNewUTF8(Module.emscriptenRequestManager.requests[$0].responseHeaders[$1].name);
+				}, handle->id, i), free).get());
+				handle->responseHeaders[i].value = ByteString(std::unique_ptr<char, decltype(&free)>((char *)EM_ASM_PTR({
+					return stringToNewUTF8(Module.emscriptenRequestManager.requests[$0].responseHeaders[$1].value);
+				}, handle->id, i), free).get());
 			}
 			handle->gotResponse = true;
 			HandleWake();
