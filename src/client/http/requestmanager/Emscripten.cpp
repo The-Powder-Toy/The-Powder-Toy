@@ -54,7 +54,7 @@ namespace http
 		EM_ASM({
 			Module.emscriptenRequestManager = {};
 			Module.emscriptenRequestManager.requests = [];
-			Module.emscriptenRequestManager.updateRequestStatus = Module.cwrap(
+			Module.emscriptenRequestManager.updateRequestStatusThunk = Module.cwrap(
 				'RequestManager_UpdateRequestStatusThunk',
 				null,
 				[ 'number' ]
@@ -241,7 +241,12 @@ namespace http
 			request.status = 0;
 			request.bytesTotal = -1;
 			request.bytesDone = 0;
-			Module.emscriptenRequestManager.updateRequestStatus(token);
+			request.alive = true;
+			let updateRequestStatus = () => {
+				if (request.alive) {
+					Module.emscriptenRequestManager.updateRequestStatusThunk(token);
+				}
+			};
 			request.fetchController = new AbortController();
 			fetch(request.fetchResource, {
 				method: request.fetchMethod,
@@ -264,7 +269,7 @@ namespace http
 									return controller.close();
 								}
 								request.bytesDone += value.byteLength;
-								Module.emscriptenRequestManager.updateRequestStatus(token);
+								updateRequestStatus();
 								controller.enqueue(value);
 								read();
 							}).catch(err => {
@@ -289,13 +294,13 @@ namespace http
 			}).then(data => {
 				request.status = request.statusEarly;
 				request.responseData = data;
-				Module.emscriptenRequestManager.updateRequestStatus(token);
+				updateRequestStatus();
 			}).catch(err => {
 				console.error(err);
 				if (!request.status) {
 					request.status = 600;
 				}
-				Module.emscriptenRequestManager.updateRequestStatus(token);
+				updateRequestStatus();
 			});
 		}, handle->id, handle);
 	}
@@ -363,6 +368,7 @@ namespace http
 		assert(handle->id >= 0);
 		EM_ASM({
 			let request = Module.emscriptenRequestManager.requests[$0];
+			request.alive = false;
 			request.fetchController.abort();
 			Module.emscriptenRequestManager.requests[$0] = null;
 		}, handle->id);
