@@ -1163,10 +1163,10 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			tempSave->SetFileName(gameModel->GetSaveFile()->GetName());
 			tempSave->SetDisplayName(gameModel->GetSaveFile()->GetDisplayName());
 		}
-		tempSave->SetGameSave(std::move(gameSave));
 
 		if (!asCurrent || !gameModel->GetSaveFile())
 		{
+			tempSave->SetGameSave(std::move(gameSave));
 			new LocalSaveActivity(std::move(tempSave), [this](auto file) {
 				gameModel->SetSaveFile(std::move(file), gameView->ShiftBehaviour());
 			});
@@ -1183,6 +1183,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 
 			Platform::MakeDirectory(LOCAL_SAVE_DIR);
 			auto [ fromNewerVersion, saveData ] = gameSave->Serialise();
+			tempSave->SetGameSave(std::move(gameSave));
 			gameModel->SetSaveFile(std::move(tempSave), gameView->ShiftBehaviour());
 			(void)fromNewerVersion;
 			if (saveData.size() == 0)
