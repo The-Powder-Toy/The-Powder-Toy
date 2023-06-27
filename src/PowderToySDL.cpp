@@ -223,6 +223,7 @@ bool RecreateWindow()
 	//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
 
 	LoadWindowPosition();
+	UpdateFpsLimit();
 
 	return true;
 }
@@ -233,15 +234,17 @@ void EventProcess(const SDL_Event &event)
 	switch (event.type)
 	{
 	case SDL_QUIT:
-		if (engine.GetFastQuit() || engine.CloseWindow())
+		if (ALLOW_QUIT && (engine.GetFastQuit() || engine.CloseWindow()))
+		{
 			engine.Exit();
+		}
 		break;
 	case SDL_KEYDOWN:
 		if (SDL_GetModState() & KMOD_GUI)
 		{
 			break;
 		}
-		if (!event.key.repeat && event.key.keysym.sym == 'q' && (event.key.keysym.mod&KMOD_CTRL))
+		if (ALLOW_QUIT && !event.key.repeat && event.key.keysym.sym == 'q' && (event.key.keysym.mod&KMOD_CTRL))
 			engine.ConfirmExit();
 		else
 			engine.onKeyPress(event.key.keysym.sym, event.key.keysym.scancode, event.key.repeat, event.key.keysym.mod&KMOD_SHIFT, event.key.keysym.mod&KMOD_CTRL, event.key.keysym.mod&KMOD_ALT);

@@ -39,10 +39,15 @@ void SetFpsLimit(FpsLimit newFpsLimit)
 	}
 }
 
+void UpdateFpsLimit()
+{
+	SetFpsLimit(ui::Engine::Ref().GetFpsLimit());
+}
+
 // Is actually only called once at startup, the real main loop body is MainLoopBody.
 void MainLoop()
 {
-	SetFpsLimit(ui::Engine::Ref().GetFpsLimit());
+	UpdateFpsLimit();
 	MainLoopBody();
 	EM_ASM({
 		let canvas = document.querySelector("canvas.emscripten");

@@ -49,3 +49,4 @@ void SaveWindowPosition();
 void LargeScreenDialog();
 void TickClient();
 void EventProcess(const SDL_Event &event);
+void UpdateFpsLimit();

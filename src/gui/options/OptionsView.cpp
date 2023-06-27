@@ -18,6 +18,7 @@
 #include "gui/interface/Textbox.h"
 #include "gui/interface/DirectionSelector.h"
 #include "PowderToySDL.h"
+#include "Config.h"
 #include <cstdio>
 #include <cstring>
 #include <cmath>
@@ -264,9 +265,12 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		c->SetForceIntegerScaling(forceIntegerScaling->GetChecked());
 	});
 	addSeparator();
-	fastquit = addCheckbox(0, "Fast quit", "Always exit completely when hitting close", [this] {
-		c->SetFastQuit(fastquit->GetChecked());
-	});
+	if (ALLOW_QUIT)
+	{
+		fastquit = addCheckbox(0, "Fast quit", "Always exit completely when hitting close", [this] {
+			c->SetFastQuit(fastquit->GetChecked());
+		});
+	}
 	showAvatars = addCheckbox(0, "Show avatars", "Disable if you have a slow connection", [this] {
 		c->SetShowAvatars(showAvatars->GetChecked());
 	});
@@ -424,7 +428,10 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	fullscreen->SetChecked(sender->GetFullscreen());
 	altFullscreen->SetChecked(sender->GetAltFullscreen());
 	forceIntegerScaling->SetChecked(sender->GetForceIntegerScaling());
-	fastquit->SetChecked(sender->GetFastQuit());
+	if (fastquit)
+	{
+		fastquit->SetChecked(sender->GetFastQuit());
+	}
 	showAvatars->SetChecked(sender->GetShowAvatars());
 	mouseClickRequired->SetChecked(sender->GetMouseClickRequired());
 	includePressure->SetChecked(sender->GetIncludePressure());

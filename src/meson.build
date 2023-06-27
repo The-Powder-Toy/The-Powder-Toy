@@ -21,10 +21,15 @@ conf_data.set('UPDATESERVER', update_server)
 conf_data.set('USE_UPDATESERVER', update_server != '' ? 'true' : 'false')
 
 enforce_https = get_option('enforce_https')
+allow_quit = true
+if host_platform == 'emscripten'
+	allow_quit = false
+endif
 secure_ciphers_only = get_option('secure_ciphers_only')
 if not is_debug and not enforce_https
 	error('refusing to build a release binary without enforcing HTTPS, configure with -Denforce_https=true to fix this error')
 endif
+conf_data.set('ALLOW_QUIT', allow_quit ? 'true' : 'false')
 conf_data.set('ENFORCE_HTTPS', enforce_https ? 'true' : 'false')
 conf_data.set('SECURE_CIPHERS_ONLY', secure_ciphers_only ? 'true' : 'false')
 

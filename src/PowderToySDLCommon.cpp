@@ -12,3 +12,7 @@ void MainLoop()
 void SetFpsLimit(FpsLimit newFpsLimit)
 {
 }
+
+void UpdateFpsLimit()
+{
+}

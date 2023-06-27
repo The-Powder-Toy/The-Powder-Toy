@@ -1495,7 +1495,10 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		break;
 	case SDL_SCANCODE_ESCAPE:
 	case SDL_SCANCODE_Q:
-		ui::Engine::Ref().ConfirmExit();
+		if (ALLOW_QUIT)
+		{
+			ui::Engine::Ref().ConfirmExit();
+		}
 		break;
 	case SDL_SCANCODE_U:
 		if (ctrl)

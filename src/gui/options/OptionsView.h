@@ -31,7 +31,7 @@ class OptionsView: public ui::Window
 	ui::Checkbox * fullscreen;
 	ui::Checkbox * altFullscreen;
 	ui::Checkbox * forceIntegerScaling;
-	ui::Checkbox * fastquit;
+	ui::Checkbox * fastquit = nullptr;
 	ui::DropDown * decoSpace;
 	ui::Checkbox * showAvatars;
 	ui::Checkbox * momentumScroll;
