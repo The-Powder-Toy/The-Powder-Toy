@@ -2345,6 +2345,10 @@ static int NeighboursClosure(lua_State *l)
 				r = 0;
 			}
 		}
+		if (cx == px && cy == py)
+		{
+			r = 0;
+		}
 		if (r)
 		{
 			lua_pushnumber(l, x);
