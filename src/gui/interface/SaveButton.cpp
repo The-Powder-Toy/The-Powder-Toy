@@ -148,7 +148,14 @@ void SaveButton::Tick(float dt)
 
 		if (thumbnailRequest && thumbnailRequest->CheckDone())
 		{
-			thumbnail = thumbnailRequest->Finish();
+			try
+			{
+				thumbnail = thumbnailRequest->Finish();
+			}
+			catch (const http::RequestError &ex)
+			{
+				// TODO: handle
+			}
 			thumbnailRequest.reset();
 		}
 
