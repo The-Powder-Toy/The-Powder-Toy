@@ -35,7 +35,7 @@ unsigned int RNG::operator()()
 int RNG::between(int lower, int upper)
 {
 	unsigned int r = next();
-	return static_cast<int>(r % (upper - lower + 1)) + lower;
+	return static_cast<int>(r % ((unsigned int)(upper) - (unsigned int)(lower) + 1U)) + lower;
 }
 
 bool RNG::chance(int nominator, unsigned int denominator)

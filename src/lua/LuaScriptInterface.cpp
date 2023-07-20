@@ -200,7 +200,7 @@ static int mathRandom(lua_State *l)
 	{
 		luaL_error(l, "interval is empty");
 	}
-	if (upper - lower + 1)
+	if ((unsigned int)(upper) - (unsigned int)(lower) + 1U)
 	{
 		lua_pushinteger(l, rng.between(lower, upper));
 	}
