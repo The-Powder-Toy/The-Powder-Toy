@@ -200,7 +200,16 @@ static int mathRandom(lua_State *l)
 	{
 		luaL_error(l, "interval is empty");
 	}
-	lua_pushinteger(l, rng.between(lower, upper));
+	if (upper - lower + 1)
+	{
+		lua_pushinteger(l, rng.between(lower, upper));
+	}
+	else
+	{
+		// The interval is *so* not empty that its size overflows 32-bit integers
+		// (only possible if it's exactly 0x100000000); don't use between.
+		lua_pushinteger(l, int(rng()));
+	}
 	return 1;
 }
 
