@@ -249,10 +249,15 @@ void Engine::onTextEditing(String text, int start)
 		//   arrives. We also forward a textediting event on every packet,
 		//   which is redundant, but should be okay, as textediting events are
 		//   not supposed to have an effect on the actual text being edited.
-		if (start == 0)
+		// * We define a first-y looking packet as one with a start parameter
+		//   lower than or equal to the start parameter of the previous packet.
+		//   This is general enough that it seems to work around the bugs
+		//   of all SDL input method backends.
+		if (start <= lastTextEditingStart)
 		{
 			textEditingBuf.clear();
 		}
+		lastTextEditingStart = start;
 		textEditingBuf.append(text);
 		if (state_ && !ignoreEvents)
 			state_->DoTextEditing(textEditingBuf);
