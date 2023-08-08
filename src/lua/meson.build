@@ -1,6 +1,5 @@
 luaconsole_files = files(
 	'LegacyLuaAPI.cpp',
-	'LuaBit.cpp',
 	'LuaButton.cpp',
 	'LuaCheckbox.cpp',
 	'LuaCompat.c',
@@ -15,6 +14,11 @@ luaconsole_files = files(
 	'LuaTextbox.cpp',
 	'LuaWindow.cpp',
 )
+if lua_variant != 'luajit'
+	luaconsole_files += files(
+		'LuaBit.cpp',
+	)
+endif
 if host_platform == 'windows'
 	luaconsole_files += files('LuaSocketWindows.cpp')
 else
