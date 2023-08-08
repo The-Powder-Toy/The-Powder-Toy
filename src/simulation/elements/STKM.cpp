@@ -103,6 +103,20 @@ constexpr bool INBOND(int x, int y)
 	return x >= 0 && y >= 0 && x < XRES && y < YRES;
 }
 
+void die(Simulation *sim, playerst *playerp, int i)
+{
+	int x = (int)(sim->parts[i].x + 0.5f);
+	int y = (int)(sim->parts[i].y + 0.5f);
+	for (int r = -2; r <= 1; r++)
+	{
+		sim->create_part(-1, x + r, y - 2, playerp->elem);
+		sim->create_part(-1, x + r + 1, y + 2, playerp->elem);
+		sim->create_part(-1, x - 2, y + r + 1, playerp->elem);
+		sim->create_part(-1, x + 2, y + r, playerp->elem);
+	}
+	sim->kill_part(i);  //Kill him
+}
+
 int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 {
 	int r, rx, ry;
@@ -129,14 +143,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 	//Death
 	if (parts[i].life<1 || (sim->pv[y/CELL][x/CELL]>=4.5f && !playerp->fan) ) //If his HP is less than 0 or there is very big wind...
 	{
-		for (r=-2; r<=1; r++)
-		{
-			sim->create_part(-1, x+r, y-2, playerp->elem);
-			sim->create_part(-1, x+r+1, y+2, playerp->elem);
-			sim->create_part(-1, x-2, y+r+1, playerp->elem);
-			sim->create_part(-1, x+2, y+r, playerp->elem);
-		}
-		sim->kill_part(i);  //Kill him
+		die(sim, playerp, i);
 		return 1;
 	}
 
@@ -631,14 +638,15 @@ void Element_STKM_interact(Simulation *sim, playerst *playerp, int i, int x, int
 	r = sim->pmap[y][x];
 	if (r)
 	{
+		int damage = 0;
 		if (TYP(r)==PT_SPRK && playerp->elem!=PT_LIGH) //If on charge
 		{
-			sim->parts[i].life -= sim->rng.between(32, 51);
+			damage += sim->rng.between(32, 51);
 		}
 
 		if (sim->elements[TYP(r)].HeatConduct && (TYP(r)!=PT_HSWC||sim->parts[ID(r)].life==10) && ((playerp->elem!=PT_LIGH && sim->parts[ID(r)].temp>=323) || sim->parts[ID(r)].temp<=243) && (!playerp->rocketBoots || TYP(r)!=PT_PLSM))
 		{
-			sim->parts[i].life -= 2;
+			damage += 2;
 			playerp->accs[3] -= 1;
 		}
 
@@ -646,15 +654,25 @@ void Element_STKM_interact(Simulation *sim, playerst *playerp, int i, int x, int
 			switch (TYP(r))
 			{
 				case PT_ACID:
-					sim->parts[i].life -= 5;
+					damage += 5;
 					break;
 				default:
-					sim->parts[i].life -= 1;
+					damage++;
 					break;
 			}
 
 		if (sim->elements[TYP(r)].Properties&PROP_RADIOACTIVE)
-			sim->parts[i].life -= 1;
+			damage++;
+
+		if (damage)
+		{
+			if (damage > sim->parts[i].life)
+			{
+				die(sim, playerp, i);
+				return;
+			}
+			sim->parts[i].life -= damage;
+		}
 
 		if (TYP(r)==PT_PRTI && sim->parts[i].type)
 		{
