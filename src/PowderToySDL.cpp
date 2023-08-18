@@ -16,6 +16,7 @@ int scale = 1;
 bool fullscreen = false;
 bool altFullscreen = false;
 bool forceIntegerScaling = true;
+bool vsyncHint = false;
 bool resizable = false;
 bool momentumScroll = true;
 bool showAvatars = true;
@@ -143,20 +144,22 @@ void SDLClose()
 	SDL_Quit();
 }
 
-void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscreen_, bool forceIntegerScaling_)
+void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscreen_, bool forceIntegerScaling_, bool vsyncHint_)
 {
 //	bool changingScale = scale != scale_;
 	bool changingFullscreen = fullscreen_ != fullscreen || (altFullscreen_ != altFullscreen && fullscreen);
 	bool changingResizable = resizable != resizable_;
+	bool changingVsync = vsyncHint != vsyncHint_;
 	scale = scale_;
 	fullscreen = fullscreen_;
 	altFullscreen = altFullscreen_;
 	resizable = resizable_;
 	forceIntegerScaling = forceIntegerScaling_;
+	vsyncHint = vsyncHint_;
 	// Recreate the window when toggling fullscreen, due to occasional issues
 	// Also recreate it when enabling resizable windows, to fix bugs on windows,
 	//  see https://github.com/jacob1/The-Powder-Toy/issues/24
-	if (changingFullscreen || altFullscreen || (changingResizable && resizable && !fullscreen))
+	if (changingFullscreen || altFullscreen || (changingResizable && resizable && !fullscreen) || changingVsync)
 	{
 		RecreateWindow();
 		return;
@@ -178,10 +181,13 @@ void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscr
 bool RecreateWindow()
 {
 	unsigned int flags = 0;
+	unsigned int rendererFlags = 0;
 	if (fullscreen)
 		flags = altFullscreen ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
 	if (resizable && !fullscreen)
 		flags |= SDL_WINDOW_RESIZABLE;
+	if (vsyncHint)
+		rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
 
 	if (sdl_texture)
 		SDL_DestroyTexture(sdl_texture);
@@ -199,7 +205,7 @@ bool RecreateWindow()
 	{
 		return false;
 	}
-	sdl_renderer = SDL_CreateRenderer(sdl_window, -1, 0);
+	sdl_renderer = SDL_CreateRenderer(sdl_window, -1, rendererFlags);
 	if (!sdl_renderer)
 	{
 		fprintf(stderr, "SDL_CreateRenderer failed; available renderers:\n");
@@ -376,24 +382,26 @@ void EngineProcess()
 
 	engine.Tick();
 
+	auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
 	int drawcap = ui::Engine::Ref().GetDrawingFrequencyLimit();
 	if (!drawcap || drawingTimer > 1e9f / drawcap)
 	{
 		engine.Draw();
 		drawingTimer = 0;
 
+		auto wantVsync = bool(std::get_if<FpsLimitVsync>(&fpsLimit));
 		if (scale != engine.Scale ||
 	        fullscreen != engine.Fullscreen ||
 		    altFullscreen != engine.GetAltFullscreen() ||
 		    forceIntegerScaling != engine.GetForceIntegerScaling() ||
-		    resizable != engine.GetResizable())
+		    resizable != engine.GetResizable() ||
+		    vsyncHint != wantVsync)
 		{
-			SDLSetScreen(engine.Scale, engine.GetResizable(), engine.Fullscreen, engine.GetAltFullscreen(), engine.GetForceIntegerScaling());
+			SDLSetScreen(engine.Scale, engine.GetResizable(), engine.Fullscreen, engine.GetAltFullscreen(), engine.GetForceIntegerScaling(), wantVsync);
 		}
 
 		blit(engine.g->Data());
 	}
-	auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
 	auto now = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
 	oldFrameStart = frameStart;
 	frameStart = now;
@@ -405,5 +413,4 @@ void EngineProcess()
 		frameStart = std::max(frameStart, frameStartTimeBlock * timeBlockDuration);
 		SDL_Delay((frameStart - now) / UINT64_C(1'000'000));
 	}
-	// TODO: else if (auto *fpsLimitExplicit = std::get_if<FpsLimitVsync>(&fpsLimit))
 }
