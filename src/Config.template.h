@@ -19,6 +19,8 @@ constexpr bool SECURE_CIPHERS_ONLY      = @SECURE_CIPHERS_ONLY@;
 constexpr bool FFTW_PLAN_MEASURE        = @FFTW_PLAN_MEASURE@;
 constexpr bool DEFAULT_VSYNC            = @DEFAULT_VSYNC@;
 constexpr bool ALLOW_QUIT               = @ALLOW_QUIT@;
+constexpr bool ALLOW_WINDOW_FRAME_OPS   = @ALLOW_WINDOW_FRAME_OPS@;
+constexpr bool ALLOW_DATA_FOLDER        = @ALLOW_DATA_FOLDER@;
 constexpr char PATH_SEP_CHAR            = '@PATH_SEP_CHAR@';
 
 constexpr char SERVER[]         = "@SERVER@";

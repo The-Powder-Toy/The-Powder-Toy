@@ -252,18 +252,21 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 			c->SetScale(scale->GetOption().second);
 		});
 	}
-	resizable = addCheckbox(0, "Resizable \bg- allow resizing and maximizing window", "", [this] {
-		c->SetResizable(resizable->GetChecked());
-	});
-	fullscreen = addCheckbox(0, "Fullscreen \bg- fill the entire screen", "", [this] {
-		c->SetFullscreen(fullscreen->GetChecked());
-	});
-	altFullscreen = addCheckbox(1, "Set optimal screen resolution", "", [this] {
-		c->SetAltFullscreen(altFullscreen->GetChecked());
-	});
-	forceIntegerScaling = addCheckbox(1, "Force integer scaling \bg- less blurry", "", [this] {
-		c->SetForceIntegerScaling(forceIntegerScaling->GetChecked());
-	});
+	if (ALLOW_WINDOW_FRAME_OPS)
+	{
+		resizable = addCheckbox(0, "Resizable \bg- allow resizing and maximizing window", "", [this] {
+			c->SetResizable(resizable->GetChecked());
+		});
+		fullscreen = addCheckbox(0, "Fullscreen \bg- fill the entire screen", "", [this] {
+			c->SetFullscreen(fullscreen->GetChecked());
+		});
+		altFullscreen = addCheckbox(1, "Set optimal screen resolution", "", [this] {
+			c->SetAltFullscreen(altFullscreen->GetChecked());
+		});
+		forceIntegerScaling = addCheckbox(1, "Force integer scaling \bg- less blurry", "", [this] {
+			c->SetForceIntegerScaling(forceIntegerScaling->GetChecked());
+		});
+	}
 	addSeparator();
 	if (ALLOW_QUIT)
 	{
@@ -298,8 +301,9 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		c->SetDecoSpace(decoSpace->GetOption().second);
 	});
 
+	currentY += 4;
+	if (ALLOW_DATA_FOLDER)
 	{
-		currentY += 4;
 		auto *dataFolderButton = new ui::Button(ui::Point(10, currentY), ui::Point(90, 16), "Open data folder");
 		dataFolderButton->SetActionCallback({ [] {
 			ByteString cwd = Platform::GetCwd();
@@ -424,10 +428,22 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	decoSpace->SetOption(sender->GetDecoSpace());
 	edgeMode->SetOption(sender->GetEdgeMode());
 	scale->SetOption(sender->GetScale());
-	resizable->SetChecked(sender->GetResizable());
-	fullscreen->SetChecked(sender->GetFullscreen());
-	altFullscreen->SetChecked(sender->GetAltFullscreen());
-	forceIntegerScaling->SetChecked(sender->GetForceIntegerScaling());
+	if (resizable)
+	{
+		resizable->SetChecked(sender->GetResizable());
+	}
+	if (fullscreen)
+	{
+		fullscreen->SetChecked(sender->GetFullscreen());
+	}
+	if (altFullscreen)
+	{
+		altFullscreen->SetChecked(sender->GetAltFullscreen());
+	}
+	if (forceIntegerScaling)
+	{
+		forceIntegerScaling->SetChecked(sender->GetForceIntegerScaling());
+	}
 	if (fastquit)
 	{
 		fastquit->SetChecked(sender->GetFastQuit());
