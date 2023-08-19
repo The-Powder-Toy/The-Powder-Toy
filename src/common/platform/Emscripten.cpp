@@ -126,6 +126,12 @@ namespace Platform
 	void SetupCrt()
 	{
 		EM_ASM({
+			// If we don't castrate assert here, we get a crash from within the emscripten port of
+			// SDL2 having to do with registering a callback that reports to the main thread, ever
+			// since this "fix" https://github.com/emscripten-core/emscripten/pull/19691/files
+			// TODO: Review later.
+			assert = () => {};
+
 			let ddir = UTF8ToString($0);
 			let prefix = ddir + '/';
 			let shouldSyncFs = Module.cwrap(
