@@ -55,7 +55,7 @@ std::vector<wall_type> LoadWalls()
 		{0xC0C0C0_rgb, 0x101010_rgb, 0, Renderer::WallIcon, String("CONDUCTIVE WALL"), "DEFAULT_WL_CNDTW",  String("Blocks everything. Conductive.")},
 		{0x808080_rgb, 0x808080_rgb, 0, Renderer::WallIcon, String("EWALL"),           "DEFAULT_WL_EWALL",  String("E-Wall. Becomes transparent when electricity is connected.")},
 		{0xFF8080_rgb, 0xFF2008_rgb, 1, Renderer::WallIcon, String("DETECTOR"),        "DEFAULT_WL_DTECT",  String("Detector. Generates electricity when a particle is inside.")},
-		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("STREAMLINE"),      "DEFAULT_WL_STRM",   String("Streamline. Set start point of a streamline.")},
+		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("STREAMLINE"),      "DEFAULT_WL_STRM",   String("Streamline. Creates a line that follows air movement.")},
 		{0x8080FF_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("FAN"),             "DEFAULT_WL_FAN",    String("Fan. Accelerates air. Use the line tool to set direction and strength.")},
 		{0xC0C0C0_rgb, 0x101010_rgb, 2, Renderer::WallIcon, String("LIQUID WALL"),     "DEFAULT_WL_LIQD",   String("Allows liquids, blocks all other particles. Conductive.")},
 		{0x808080_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("ABSORB WALL"),     "DEFAULT_WL_ABSRB",  String("Absorbs particles but lets air currents through.")},
