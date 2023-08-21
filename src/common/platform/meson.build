@@ -73,9 +73,9 @@ else
 		'DdirCommon.cpp',
 	)
 endif
-conf_data.set('SET_WINDOW_ICON', set_window_icon ? 'true' : 'false')
+conf_data.set('SET_WINDOW_ICON', set_window_icon.to_string())
 conf_data.set('PATH_SEP_CHAR', path_sep_char)
-conf_data.set('USE_BLUESCREEN', use_bluescreen ? 'true' : 'false')
+conf_data.set('USE_BLUESCREEN', use_bluescreen.to_string())
 
 can_install = get_option('can_install')
 if can_install == 'auto'
@@ -90,5 +90,5 @@ endif
 if can_install != 'no' and can_install_enforce_no
 	error('cannot provide install support, configure with -Dcan_install=no to fix this error')
 endif
-conf_data.set('CAN_INSTALL', can_install != 'no' ? 'true' : 'false')
-conf_data.set('INSTALL_CHECK', can_install == 'yes_check' ? 'true' : 'false')
+conf_data.set('CAN_INSTALL', (can_install != 'no').to_string())
+conf_data.set('INSTALL_CHECK', (can_install == 'yes_check').to_string())

@@ -29,7 +29,7 @@ if not enable_http or host_platform == 'emscripten'
 else
 	luaconsole_files += files('LuaSocketTCPHttp.cpp')
 endif
-conf_data.set('LUACONSOLE', lua_variant != 'none' ? 'true' : 'false')
+conf_data.set('LUACONSOLE', (lua_variant != 'none').to_string())
 
 subdir('luascripts')
 

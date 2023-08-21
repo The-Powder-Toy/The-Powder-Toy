@@ -9,4 +9,4 @@ elif host_platform == 'emscripten'
 else
 	client_files += files('Libcurl.cpp')
 endif
-conf_data.set('NOHTTP', not enable_http ? 'true' : 'false')
+conf_data.set('NOHTTP', (not enable_http).to_string())
