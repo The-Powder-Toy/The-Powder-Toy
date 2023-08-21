@@ -212,6 +212,8 @@ if host_platform == 'emscripten'
 		'-s', 'EXIT_RUNTIME=0',
 		'-s', 'EXPORTED_RUNTIME_METHODS=ccall,cwrap',
 		'-s', 'FS_DEBUG',
+		'-s', 'MODULARIZE',
+		'-s', 'EXPORT_NAME=create_' + app_exe,
 		'-lidbfs.js',
 	]
 	emcc_args = [
@@ -371,7 +373,7 @@ font_files += data_files
 
 if host_platform == 'emscripten'
 	project_link_args += [
-		'-o', app_exe + '.html', # so we get a .wasm, a .js, and a .html
+		'-o', app_exe + '.js', # so we get a .wasm, and a .js
 	]
 endif
 

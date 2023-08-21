@@ -449,7 +449,7 @@ if [[ $PACKAGE_MODE == dmg ]]; then
 	cp ../README.md dmgroot/README.md
 	hdiutil create -format UDZO -volname $APP_NAME -fs HFS+ -srcfolder dmgroot -o $ASSET_PATH
 elif [[ $PACKAGE_MODE == emscripten ]]; then
-	tar cvf $ASSET_PATH $APP_EXE.html $APP_EXE.js $APP_EXE.worker.js $APP_EXE.wasm
+	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.worker.js $APP_EXE.wasm
 elif [[ $PACKAGE_MODE == appimage ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
 	case $BSH_HOST_ARCH in

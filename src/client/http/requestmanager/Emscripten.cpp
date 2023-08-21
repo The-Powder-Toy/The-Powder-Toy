@@ -232,9 +232,6 @@ namespace http
 				Module.emscriptenRequestManager.requests[$0].fetchMethod = UTF8ToString($1);
 			}, handle->id, requestHandle->verb->c_str());
 		}
-		// TODO: set max redirects
-		// TODO: set max concurrent streams
-		// TODO: set connect timeout
 		EM_ASM({
 			let request = Module.emscriptenRequestManager.requests[$0];
 			let token = $1;
