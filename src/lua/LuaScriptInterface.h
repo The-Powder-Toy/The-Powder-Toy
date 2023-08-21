@@ -26,11 +26,15 @@ class Tool;
 class Simulation;
 class LuaComponent;
 
+struct GetScriptStatus;
+
 class LuaScriptInterface: public TPTScriptInterface
 {
 	std::unique_ptr<http::Request> scriptDownload;
 	ByteString scriptDownloadFilename;
+	bool scriptDownloadPending = false;
 	bool scriptDownloadRunScript;
+	std::function<void (GetScriptStatus)> scriptDownloadComplete;
 
 	int luacon_mousex, luacon_mousey, luacon_mousebutton;
 	ByteString luacon_selectedl, luacon_selectedr, luacon_selectedalt, luacon_selectedreplace;

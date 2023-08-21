@@ -365,7 +365,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 		{"setfire", &luatpt_setfire},
 		{"setdebug", &luatpt_setdebug},
 		{"setfpscap",&luatpt_setfpscap},
-		{"getscript",&luatpt_getscript},
+		{"beginGetScript",&luatpt_getscript},
 		{"setwindowsize",&luatpt_setwindowsize},
 		{"watertest",&luatpt_togglewater},
 		{"screenshot",&luatpt_screenshot},
@@ -4534,43 +4534,82 @@ bool LuaScriptInterface::HandleEvent(const GameControllerEvent &event)
 	return cont;
 }
 
+struct GetScriptStatus
+{
+	struct Ok
+	{
+	};
+	struct Cancelled
+	{
+	};
+	struct GetFailed
+	{
+		String error;
+	};
+	struct RunFailed
+	{
+		String error;
+	};
+	using Value = std::variant<
+		Ok,
+		Cancelled,
+		GetFailed,
+		RunFailed
+	>;
+	Value value;
+};
+
 void LuaScriptInterface::OnTick()
 {
 	if (scriptDownload && scriptDownload->CheckDone())
 	{
-
 		auto ret = scriptDownload->StatusCode();
 		ByteString scriptData;
-		auto handleResponse = [this, &scriptData, &ret]() {
+		auto complete = [this](GetScriptStatus status) {
+			if (std::get_if<GetScriptStatus::Ok>(&status.value))
+			{
+				new InformationMessage("Script download", "Script successfully downloaded", false);
+			}
+			if (auto *requestFailed = std::get_if<GetScriptStatus::GetFailed>(&status.value))
+			{
+				new ErrorMessage("Script download", "Failed to get script: " + requestFailed->error);
+			}
+			if (auto *runFailed = std::get_if<GetScriptStatus::RunFailed>(&status.value))
+			{
+				new ErrorMessage("Script download", "Failed to run script: " + runFailed->error);
+			}
+			scriptDownloadComplete(status);
+		};
+		auto handleResponse = [this, &scriptData, &ret, &complete]() {
 			if (!scriptData.size())
 			{
-				new ErrorMessage("Script download", "Server did not return data");
+				complete({ GetScriptStatus::GetFailed{ "Server did not return data" } });
 				return;
 			}
 			if (ret != 200)
 			{
-				new ErrorMessage("Script download", ByteString(http::StatusText(ret)).FromUtf8());
+				complete({ GetScriptStatus::GetFailed{ ByteString(http::StatusText(ret)).FromUtf8() } });
 				return;
 			}
 			if (Platform::FileExists(scriptDownloadFilename))
 			{
-				new ErrorMessage("Script download", "File already exists");
+				complete({ GetScriptStatus::GetFailed{ "File already exists" } });
 				return;
 			}
 			if (!Platform::WriteFile(std::vector<char>(scriptData.begin(), scriptData.end()), scriptDownloadFilename))
 			{
-				new ErrorMessage("Script download", "Unable to write to file");
+				complete({ GetScriptStatus::GetFailed{ "Unable to write to file" } });
 				return;
 			}
 			if (scriptDownloadRunScript)
 			{
 				if (tpt_lua_dostring(l, ByteString::Build("dofile('", scriptDownloadFilename, "')")))
 				{
-					new ErrorMessage("Script download", luacon_geterror());
+					complete({ GetScriptStatus::RunFailed{ luacon_geterror() } });
 					return;
 				}
 			}
-			new InformationMessage("Script download", "Script successfully downloaded", false);
+			complete({ GetScriptStatus::Ok{} });
 		};
 		try
 		{
@@ -4579,9 +4618,11 @@ void LuaScriptInterface::OnTick()
 		}
 		catch (const http::RequestError &ex)
 		{
-			new ErrorMessage("Script download", ByteString(ex.what()).FromUtf8());
+			complete({ GetScriptStatus::GetFailed{ ByteString(ex.what()).FromUtf8() } });
 		}
 		scriptDownload.reset();
+		scriptDownloadComplete = nullptr;
+		scriptDownloadPending = false;
 	}
 	lua_getglobal(l, "simulation");
 	if (lua_istable(l, -1))
@@ -5003,24 +5044,79 @@ CommandInterface *CommandInterface::Create(GameController * c, GameModel * m)
 int LuaScriptInterface::luatpt_getscript(lua_State* l)
 {
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+	if (luacon_ci->scriptDownloadPending)
+	{
+		new ErrorMessage("Script download", "A script download is already pending");
+		lua_pushnil(l);
+		lua_pushliteral(l, "pending");
+		return 2;
+	}
 
 	int scriptID = luaL_checkinteger(l, 1);
 	auto filename = tpt_lua_checkByteString(l, 2);
 	bool runScript = luaL_optint(l, 3, 0);
 
-	if (luacon_ci->scriptDownload)
-	{
-		new ErrorMessage("Script download", "A script download is already pending");
-		return 0;
-	}
+	auto cb = std::make_shared<LuaSmartRef>(luacon_ci->l); // * Bind to main lua state (might be different from l).
+	cb->Assign(l, 4);
+	luacon_ci->scriptDownloadComplete = [cb](const GetScriptStatus &status) {
+		auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+		auto l = luacon_ci->l;
+		cb->Push(l);
+		if (lua_isfunction(l, -1))
+		{
+			int nargs = 0;
+			if (std::get_if<GetScriptStatus::Ok>(&status.value))
+			{
+				lua_pushliteral(l, "ok");
+				nargs = 1;
+			}
+			if (std::get_if<GetScriptStatus::Cancelled>(&status.value))
+			{
+				lua_pushliteral(l, "cancelled");
+				nargs = 1;
+			}
+			if (auto *requestFailed = std::get_if<GetScriptStatus::GetFailed>(&status.value))
+			{
+				lua_pushliteral(l, "get_failed");
+				tpt_lua_pushString(l, requestFailed->error);
+				nargs = 2;
+			}
+			if (auto *runFailed = std::get_if<GetScriptStatus::RunFailed>(&status.value))
+			{
+				lua_pushliteral(l, "run_failed");
+				tpt_lua_pushString(l, runFailed->error);
+				nargs = 2;
+			}
+			if (lua_pcall(l, nargs, 0, 0))
+			{
+				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
+			}
+		}
+		else
+		{
+			lua_pop(l, 1);
+		}
+	};
 
 	ByteString url = ByteString::Build(SCHEME, "starcatcher.us/scripts/main.lua?get=", scriptID);
+	new ConfirmPrompt("Do you want to install this script?", url.FromUtf8(), {
+		[filename, runScript, url]() {
+			auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+			luacon_ci->scriptDownload = std::make_unique<http::Request>(url);
+			luacon_ci->scriptDownload->Start();
+			luacon_ci->scriptDownloadFilename = filename;
+			luacon_ci->scriptDownloadRunScript = runScript;
+			luacon_controller->HideConsole();
+		},
+		[]() {
+			auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+			luacon_ci->scriptDownloadComplete({ GetScriptStatus::Cancelled{} });
+			luacon_ci->scriptDownloadComplete = nullptr;
+			luacon_ci->scriptDownloadPending = false;
+		},
+	}, "Install");
 
-	luacon_ci->scriptDownload = std::make_unique<http::Request>(url);
-	luacon_ci->scriptDownload->Start();
-	luacon_ci->scriptDownloadFilename = filename;
-	luacon_ci->scriptDownloadRunScript = runScript;
-
-	luacon_controller->HideConsole();
-	return 0;
+	luacon_ci->scriptDownloadPending = true;
+	lua_pushboolean(l, 1);
+	return 1;
 }
