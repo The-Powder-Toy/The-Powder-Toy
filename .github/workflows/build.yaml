@@ -130,7 +130,7 @@ jobs:
         with:
           name: ${{ matrix.asset_name }}
       - run: mv ${{ matrix.asset_path }} ${{ matrix.starcatcher_name }}
-      - run: sudo apt update && sudo apt install lftp && bash -c './.github/starcatcher-publish.sh'
+      - run: sudo apt update && sudo apt install curlftpfs && bash -c './.github/starcatcher-publish.sh'
         env:
           PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
           PUBLISH_USERNAME: ${{ secrets.STARCATCHER_PUBLISH_USERNAME }}
