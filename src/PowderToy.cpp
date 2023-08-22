@@ -493,6 +493,7 @@ int Main(int argc, char *argv[])
 			catch (std::exception & e)
 			{
 				new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
+				Platform::MarkPresentable();
 			}
 		}
 

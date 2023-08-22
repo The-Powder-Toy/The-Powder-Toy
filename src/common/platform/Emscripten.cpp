@@ -74,6 +74,16 @@ int InvokeMain(int argc, char *argv[])
 	return 0;
 }
 
+void MarkPresentable()
+{
+	EM_ASM({
+		try {
+			window.mark_presentable();
+		} catch (e) {
+		}
+	});
+}
+
 void MaybeTriggerSyncFs()
 {
 	if (!syncFsInFlight && shouldSyncFs.exchange(false, std::memory_order_relaxed))

@@ -66,6 +66,8 @@ namespace Platform
 	ByteString DefaultDdir();
 
 	int InvokeMain(int argc, char *argv[]);
+
+	void MarkPresentable();
 }
 
 extern "C" int Main(int argc, char *argv[]);

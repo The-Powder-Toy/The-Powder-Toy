@@ -1225,6 +1225,10 @@ void GameController::OpenSaveDone()
 
 void GameController::OpenSavePreview(int saveID, int saveDate, SavePreviewType savePreviewType)
 {
+	if (savePreviewType == savePreviewUrl)
+	{
+		gameView->SkipIntroText();
+	}
 	activePreview = new PreviewController(saveID, saveDate, savePreviewType, [this] { OpenSaveDone(); }, nullptr);
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }

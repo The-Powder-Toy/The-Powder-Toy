@@ -25,6 +25,7 @@
 #include "gui/Style.h"
 
 #include "common/tpt-rand.h"
+#include "common/platform/Platform.h"
 #include "Format.h"
 #include "Misc.h"
 
@@ -607,6 +608,7 @@ void PreviewView::SaveLoadingError(String errorMessage)
 {
 	doError = true;
 	doErrorMessage = errorMessage;
+	Platform::MarkPresentable();
 }
 
 void PreviewView::NotifyCommentsPageChanged(PreviewModel * sender)

@@ -225,4 +225,6 @@ public:
 	void DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 
 	class OptionListener;
+
+	void SkipIntroText();
 };

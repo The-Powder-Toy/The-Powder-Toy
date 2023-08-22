@@ -1659,6 +1659,11 @@ void GameView::OnFileDrop(ByteString filename)
 	c->LoadSaveFile(std::move(saveFile));
 
 	// hide the info text if it's not already hidden
+	SkipIntroText();
+}
+
+void GameView::SkipIntroText()
+{
 	introText = 0;
 }
 

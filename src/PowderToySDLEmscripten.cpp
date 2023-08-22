@@ -49,10 +49,4 @@ void MainLoop()
 {
 	UpdateFpsLimit();
 	MainLoopBody();
-	EM_ASM({
-		let canvas = document.querySelector("canvas.emscripten");
-		if (canvas) {
-			canvas.scrollIntoView(true);
-		}
-	});
 }

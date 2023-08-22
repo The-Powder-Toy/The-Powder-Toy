@@ -52,6 +52,7 @@ void PreviewController::Update()
 	}
 	if (previewModel->GetDoOpen() && previewModel->GetSaveInfo() && previewModel->GetSaveInfo()->GetGameSave())
 	{
+		Platform::MarkPresentable();
 		Exit();
 	}
 }

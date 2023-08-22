@@ -6,4 +6,8 @@ int InvokeMain(int argc, char *argv[])
 {
 	return Main(argc, argv);
 }
+
+void MarkPresentable()
+{
+}
 }
