@@ -271,16 +271,19 @@ void PreviewView::CheckComment()
 
 void PreviewView::DoDraw()
 {
-	Window::DoDraw();
 	Graphics * g = GetGraphics();
-	for (size_t i = 0; i < commentTextComponents.size(); i++)
+	if (!c->GetFromUrl())
 	{
-		int linePos = commentTextComponents[i]->Position.Y+commentsPanel->ViewportPosition.Y+commentTextComponents[i]->Size.Y+4;
-		if (linePos > 0 && linePos < Size.Y-commentBoxHeight)
-		g->BlendLine(
-				Position + Vec2{ 1+XRES/2, linePos },
-				Position + Vec2{ Size.X-2, linePos },
-				0xFFFFFF_rgb .WithAlpha(100));
+		Window::DoDraw();
+		for (size_t i = 0; i < commentTextComponents.size(); i++)
+		{
+			int linePos = commentTextComponents[i]->Position.Y+commentsPanel->ViewportPosition.Y+commentTextComponents[i]->Size.Y+4;
+			if (linePos > 0 && linePos < Size.Y-commentBoxHeight)
+			g->BlendLine(
+					Position + Vec2{ 1+XRES/2, linePos },
+					Position + Vec2{ Size.X-2, linePos },
+					0xFFFFFF_rgb .WithAlpha(100));
+		}
 	}
 	if (c->GetDoOpen())
 	{
@@ -288,8 +291,10 @@ void PreviewView::DoDraw()
 		g->BlendRect(RectSized(Position + Size / 2 - Vec2{ 100, 25 }, Vec2{ 200, 50 }), 0xFFFFFF_rgb .WithAlpha(180));
 		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize("Loading save...").X - 1)/2), (Size.Y/2)-5}, "Loading save...", style::Colour::InformationTitle.NoAlpha().WithAlpha(255));
 	}
-	g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
-
+	if (!c->GetFromUrl())
+	{
+		g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
+	}
 }
 
 void PreviewView::OnDraw()

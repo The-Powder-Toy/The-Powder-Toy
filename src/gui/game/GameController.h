@@ -3,6 +3,7 @@
 #include "client/StartupInfo.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Colour.h"
+#include "gui/SavePreviewType.h"
 #include "simulation/Sign.h"
 #include "simulation/Particle.h"
 #include "Misc.h"
@@ -135,7 +136,7 @@ public:
 	void OpenLogin();
 	void OpenProfile();
 	void OpenTags();
-	void OpenSavePreview(int saveID, int saveDate, bool instant);
+	void OpenSavePreview(int saveID, int saveDate, SavePreviewType savePreiviewType);
 	void OpenSavePreview();
 	void OpenLocalSaveWindow(bool asCurrent);
 	void OpenLocalBrowse();

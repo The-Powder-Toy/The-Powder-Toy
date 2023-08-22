@@ -543,7 +543,7 @@ bool GameController::MouseUp(int x, int y, unsigned button, MouseupReason reason
 						{
 							int saveID = str.Substr(3, si.first - 3).ToNumber<int>(true);
 							if (saveID)
-								OpenSavePreview(saveID, 0, false);
+								OpenSavePreview(saveID, 0, savePreviewNormal);
 						}
 						break;
 					case sign::Type::Thread:
@@ -1223,9 +1223,9 @@ void GameController::OpenSaveDone()
 	}
 }
 
-void GameController::OpenSavePreview(int saveID, int saveDate, bool instant)
+void GameController::OpenSavePreview(int saveID, int saveDate, SavePreviewType savePreviewType)
 {
-	activePreview = new PreviewController(saveID, saveDate, instant, [this] { OpenSaveDone(); }, nullptr);
+	activePreview = new PreviewController(saveID, saveDate, savePreviewType, [this] { OpenSaveDone(); }, nullptr);
 	ui::Engine::Ref().ShowWindow(activePreview->GetView());
 }
 
@@ -1233,7 +1233,7 @@ void GameController::OpenSavePreview()
 {
 	if(gameModel->GetSave())
 	{
-		activePreview = new PreviewController(gameModel->GetSave()->GetID(), 0, false, [this] { OpenSaveDone(); }, nullptr);
+		activePreview = new PreviewController(gameModel->GetSave()->GetID(), 0, savePreviewNormal, [this] { OpenSaveDone(); }, nullptr);
 		ui::Engine::Ref().ShowWindow(activePreview->GetView());
 	}
 }

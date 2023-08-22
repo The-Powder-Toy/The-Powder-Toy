@@ -505,7 +505,7 @@ AnyType TPTScriptInterface::tptS_load(std::deque<String> * words)
 
 	if (saveID.Value() > 0)
 	{
-		c->OpenSavePreview(saveID.Value(), 0, false);
+		c->OpenSavePreview(saveID.Value(), 0, savePreviewNormal);
 		return NumberType(0);
 	}
 	else

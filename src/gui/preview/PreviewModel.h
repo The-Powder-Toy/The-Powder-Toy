@@ -18,6 +18,7 @@ class SaveInfo;
 class PreviewModel
 {
 	bool doOpen = false;
+	bool fromUrl = false;
 	bool canOpen = true;
 	std::vector<PreviewView*> observers;
 	std::unique_ptr<SaveInfo> saveInfo;
@@ -63,8 +64,10 @@ public:
 	void UpdateSave(int saveID, int saveDate);
 	void SetFavourite(bool favourite);
 	bool GetDoOpen();
+	bool GetFromUrl();
 	bool GetCanOpen();
 	void SetDoOpen(bool doOpen);
+	void SetFromUrl(bool fromUrl);
 	void Update();
 	void OnSaveReady();
 	bool ParseSaveInfo(ByteString &saveInfoResponse);

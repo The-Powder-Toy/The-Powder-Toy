@@ -480,34 +480,15 @@ int Main(int argc, char *argv[])
 				{
 					std::cout << "Got Ptsave: id: " << saveIdPart << std::endl;
 				}
+				ByteString saveHistoryPart = "0";
+				if (auto split = saveIdPart.SplitBy('@'))
+				{
+					saveHistoryPart = split.After();
+					saveIdPart = split.Before();
+				}
 				int saveId = saveIdPart.ToNumber<int>();
-
-				auto getSave = std::make_unique<http::GetSaveRequest>(saveId, 0);
-				getSave->Start();
-				getSave->Wait();
-				std::unique_ptr<SaveInfo> newSave;
-				try
-				{
-					newSave = getSave->Finish();
-				}
-				catch (const http::RequestError &ex)
-				{
-					throw std::runtime_error("Could not load save info\n" + ByteString(ex.what()));
-				}
-				auto getSaveData = std::make_unique<http::GetSaveDataRequest>(saveId, 0);
-				getSaveData->Start();
-				getSaveData->Wait();
-				std::unique_ptr<GameSave> saveData;
-				try
-				{
-					saveData = std::make_unique<GameSave>(getSaveData->Finish());
-				}
-				catch (const http::RequestError &ex)
-				{
-					throw std::runtime_error("Could not load save\n" + ByteString(ex.what()));
-				}
-				newSave->SetGameSave(std::move(saveData));
-				gameController->LoadSave(std::move(newSave));
+				int saveHistory = saveHistoryPart.ToNumber<int>();
+				gameController->OpenSavePreview(saveId, saveHistory, savePreviewUrl);
 			}
 			catch (std::exception & e)
 			{

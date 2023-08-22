@@ -75,6 +75,16 @@ bool PreviewModel::GetDoOpen()
 	return doOpen;
 }
 
+void PreviewModel::SetFromUrl(bool fromUrl)
+{
+	this->fromUrl = fromUrl;
+}
+
+bool PreviewModel::GetFromUrl()
+{
+	return fromUrl;
+}
+
 bool PreviewModel::GetCanOpen()
 {
 	return canOpen;
