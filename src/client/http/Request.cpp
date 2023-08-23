@@ -146,6 +146,10 @@ namespace http
 		{
 			std::cerr << *error << std::endl;
 		}
+		else if (statusCode >= 400)
+		{
+			std::cerr << "status code " << statusCode << " for request to " << uri << std::endl;
+		}
 	}
 
 	const char *StatusText(int ret)

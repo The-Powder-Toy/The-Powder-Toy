@@ -496,6 +496,10 @@ int Main(int argc, char *argv[])
 				Platform::MarkPresentable();
 			}
 		}
+		else
+		{
+			Platform::MarkPresentable();
+		}
 
 		MainLoop();
 	};
