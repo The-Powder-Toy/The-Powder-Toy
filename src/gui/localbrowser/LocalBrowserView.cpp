@@ -68,7 +68,7 @@ void LocalBrowserView::OnTick(float dt)
 	if (changed && lastChanged < GetTicks())
 	{
 		changed = false;
-		c->SetPage(std::max(pageTextbox->GetText().ToNumber<int>(true), 0));
+		c->SetPage(std::max(pageTextbox->GetText().ToNumber<int>(true) - 1, 0));
 	}
 }
 
@@ -91,11 +91,10 @@ void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)
 		//pageCountLabel->Position.X = WINDOWW/2+6;
 		pageLabel->Visible = pageCountLabel->Visible = pageTextbox->Visible = true;
 
-		pageInfo = String::Build(sender->GetPageNum());
-		pageTextbox->SetText(pageInfo);
+		pageTextbox->SetText(String::Build(sender->GetPageNum() + 1));
 	}
 
-	if(sender->GetPageNum() == 1)
+	if(sender->GetPageNum() == 0)
 	{
 		previousButton->Visible = false;
 	}
@@ -103,7 +102,7 @@ void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)
 	{
 		previousButton->Visible = true;
 	}
-	if(sender->GetPageNum() == sender->GetPageCount())
+	if(sender->GetPageNum() == sender->GetPageCount() - 1)
 	{
 		nextButton->Visible = false;
 	}

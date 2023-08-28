@@ -12,8 +12,8 @@ class LocalBrowserModel {
 	std::vector<ByteString> stampIDs;
 	std::vector<std::unique_ptr<SaveFile>> savesList;
 	std::vector<LocalBrowserView*> observers;
-	int currentPage;
-	bool stampToFront;
+	int currentPage = 0;
+	bool stampToFront = true;
 	void notifySavesListChanged();
 	void notifyPageChanged();
 	void notifySelectedChanged();

@@ -3,18 +3,14 @@
 #include "client/Client.h"
 #include "client/SaveFile.h"
 #include "client/GameSave.h"
-#include "common/tpt-minmax.h"
 #include <algorithm>
 
 constexpr auto pageSize = 20;
 
-LocalBrowserModel::LocalBrowserModel():
-	currentPage(1),
-	stampToFront(1)
+LocalBrowserModel::LocalBrowserModel()
 {
 	stampIDs = Client::Ref().GetStamps();
 }
-
 
 std::vector<SaveFile *> LocalBrowserModel::GetSavesList() // non-owning
 {
@@ -79,12 +75,10 @@ void LocalBrowserModel::UpdateSavesList(int pageNumber)
 {
 	savesList.clear();
 	currentPage = pageNumber;
-	notifyPageChanged();
-	notifySavesListChanged();
 
 	stampIDs = Client::Ref().GetStamps();
 	auto size = int(stampIDs.size());
-	for (int i = (currentPage - 1) * pageSize; i < size && i < currentPage * pageSize; i++)
+	for (int i = currentPage * pageSize; i < size && i < (currentPage + 1) * pageSize; i++)
 	{
 		auto tempSave = Client::Ref().GetStamp(stampIDs[i]);
 		if (tempSave)
@@ -92,6 +86,7 @@ void LocalBrowserModel::UpdateSavesList(int pageNumber)
 			savesList.push_back(std::move(tempSave));
 		}
 	}
+	notifyPageChanged();
 	notifySavesListChanged();
 }
 
@@ -103,7 +98,8 @@ void LocalBrowserModel::RescanStamps()
 int LocalBrowserModel::GetPageCount()
 {
 	auto size = int(stampIDs.size());
-	return size / pageSize + ((size % pageSize) ? 1 : 0);
+	auto count = size / pageSize + ((size % pageSize) ? 1 : 0);
+	return count ? count : 1; // there is always at least one page; there may not be anything on it though
 }
 
 void LocalBrowserModel::SelectSave(ByteString stampID)
