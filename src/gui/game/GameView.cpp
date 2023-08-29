@@ -1656,7 +1656,14 @@ void GameView::OnFileDrop(ByteString filename)
 		new ErrorMessage("Error loading save", "Dropped save file could not be loaded: " + saveFile->GetError());
 		return;
 	}
-	c->LoadSaveFile(std::move(saveFile));
+	if (filename.EndsWith(".stm"))
+	{
+		c->LoadStamp(saveFile->TakeGameSave());
+	}
+	else
+	{
+		c->LoadSaveFile(std::move(saveFile));
+	}
 
 	// hide the info text if it's not already hidden
 	SkipIntroText();
