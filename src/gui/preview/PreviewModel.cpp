@@ -9,7 +9,6 @@
 #include "client/GameSave.h"
 #include "client/SaveInfo.h"
 #include "gui/dialogues/ErrorMessage.h"
-#include "PreviewModelException.h"
 #include "PreviewView.h"
 #include "Config.h"
 #include <cmath>
@@ -244,11 +243,11 @@ void PreviewModel::Update()
 		{
 			if (favouriteSaveRequest->Favourite())
 			{
-				throw PreviewModelException("Error, could not fav. the save: " + ByteString(ex.what()).FromUtf8());
+				new ErrorMessage("Error", "Could not favourite the save: " + ByteString(ex.what()).FromUtf8());
 			}
 			else
 			{
-				throw PreviewModelException("Error, could not unfav. the save: " + ByteString(ex.what()).FromUtf8());
+				new ErrorMessage("Error", "Could not unfavourite the save: " + ByteString(ex.what()).FromUtf8());
 			}
 		}
 		favouriteSaveRequest.reset();
