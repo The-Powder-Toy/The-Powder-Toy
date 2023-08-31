@@ -78,12 +78,12 @@ static int update(UPDATE_FUNC_ARGS)
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
 
-	*firer = 16+int(restrict_flt(cpart->temp-(275.13f+32.0f), 0, 128)/2.0f);
+	*firer = 16+int(restrict_flt(cpart->temp-(273.15f+34.0f), 0, 128)/2.0f);
 	*fireg = 16+int(restrict_flt(float(cpart->ctype), 0, 128)/2.0f);
 	*fireb = 16+int(restrict_flt(float(cpart->tmp), 0, 128)/2.0f);
 	*firea = 64;
 
-	*colr = int(restrict_flt(64.0f+cpart->temp-(275.13f+32.0f), 0, 255));
+	*colr = int(restrict_flt(64.0f+cpart->temp-(273.15f+34.0f), 0, 255));
 	*colg = int(restrict_flt(64.0f+cpart->ctype, 0, 255));
 	*colb = int(restrict_flt(64.0f+cpart->tmp, 0, 255));
 
