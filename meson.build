@@ -10,7 +10,7 @@ project(
 		'build.cpp_std=c++17', # used by to_array
 		'build.cpp_rtti=false', # used by to_array
 	],
-	meson_version: '>=0.61.0',
+	meson_version: '>=0.64.0',
 )
 
 if get_option('prepare')
