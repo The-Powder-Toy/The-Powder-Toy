@@ -1,18 +1,24 @@
-simulation_tool_ids = [
-	[ 'HEAT', 0 ],
-	[ 'COOL', 1 ],
-	[ 'AIR',  2 ],
-	[ 'VAC',  3 ],
-	[ 'PGRV', 4 ],
-	[ 'NGRV', 5 ],
-	[ 'MIX',  6 ],
-	[ 'CYCL', 7 ],
-	[ 'AMBM', 8 ],
-	[ 'AMBP', 9 ],
+simulation_tool_names = [
+	'HEAT',
+	'COOL',
+	'AIR',
+	'VAC',
+	'PGRV',
+	'NGRV',
+	'MIX',
+	'CYCL',
+	'AMBM',
+	'AMBP',
 ]
 
 simulation_tool_src = []
-foreach tool_name_id : simulation_tool_ids
-	simulation_tool_src += tool_name_id[0] + '.cpp'
+simulation_tool_ids = []
+tool_id = 0
+foreach tool_name : simulation_tool_names
+	if not is_disabler(tool_name)
+		simulation_tool_src += tool_name + '.cpp'
+		simulation_tool_ids += [ [ tool_name, tool_id ] ]
+	endif
+	tool_id = tool_id + 1
 endforeach
 simulation_files += files(simulation_tool_src)
