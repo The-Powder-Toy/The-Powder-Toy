@@ -27,15 +27,7 @@ Engine::Engine():
 	mousexp_(0),
 	mouseyp_(0)
 {
-	SetFpsLimit(fpsLimit); // populate dt with whatever that makes any sort of sense
-	if constexpr (DEFAULT_VSYNC)
-	{
-		SetFpsLimit(FpsLimitVsync{});
-	}
-	else
-	{
-		SetFpsLimit(FpsLimitExplicit{ 60.0f });
-	}
+	SetFpsLimit(FpsLimitExplicit{ 60.0f });
 }
 
 Engine::~Engine()
