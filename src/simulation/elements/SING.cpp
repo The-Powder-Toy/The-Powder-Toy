@@ -49,9 +49,7 @@ void Element::Element_SING()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, cry, crx, spawncount;
 	int singularity = -parts[i].life;
-	float angle, v;
 
 	if (sim->pv[y/CELL][x/CELL]<singularity)
 		sim->pv[y/CELL][x/CELL] += 0.1f*(singularity-sim->pv[y/CELL][x/CELL]);
@@ -67,16 +65,18 @@ static int update(UPDATE_FUNC_ARGS)
 
 	if (parts[i].life<1) {
 		//Pop!
-		for (rx=-1; rx<2; rx++) {
-			crx = (x/CELL)+rx;
-			for (ry=-1; ry<2; ry++) {
-				cry = (y/CELL)+ry;
+		for (auto rx = -1; rx <= 1; rx++)
+		{
+			auto crx = (x/CELL)+rx;
+			for (auto ry = -1; ry <= 1; ry++)
+			{
+				auto cry = (y/CELL)+ry;
 				if (cry >= 0 && crx >= 0 && crx < XCELLS && cry < YCELLS) {
 					sim->pv[cry][crx] += (float)parts[i].tmp;
 				}
 			}
 		}
-		spawncount = std::abs(parts[i].tmp);
+		auto spawncount = std::abs(parts[i].tmp);
 		spawncount = (spawncount>255) ? 3019 : int(std::pow((double)(spawncount/8), 2)*TPT_PI_FLT);
 		for (int j = 0;j < spawncount; j++)
 		{
@@ -96,8 +96,8 @@ static int update(UPDATE_FUNC_ARGS)
 			if (nb!=-1) {
 				parts[nb].life = sim->rng.between(0, 299);
 				parts[nb].temp = MAX_TEMP/2;
-				angle = sim->rng.uniform01()*2.0f*TPT_PI_FLT;
-				v = sim->rng.uniform01()*5.0f;
+				auto angle = sim->rng.uniform01()*2.0f*TPT_PI_FLT;
+				auto v = sim->rng.uniform01()*5.0f;
 				parts[nb].vx = v*cosf(angle);
 				parts[nb].vy = v*sinf(angle);
 			}
@@ -107,11 +107,13 @@ static int update(UPDATE_FUNC_ARGS)
 		sim->kill_part(i);
 		return 1;
 	}
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -1; rx <= 1; rx++)
+	{
+		for (auto ry = -1; ry <= 1; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if (TYP(r)!=PT_DMND&& sim->rng.chance(1, 3))
@@ -141,6 +143,8 @@ static int update(UPDATE_FUNC_ARGS)
 					sim->kill_part(ID(r));
 				}
 			}
+		}
+	}
 	return 0;
 }
 

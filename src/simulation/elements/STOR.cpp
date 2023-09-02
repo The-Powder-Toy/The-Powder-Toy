@@ -53,16 +53,17 @@ void Element::Element_STOR()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, np, rx1, ry1;
 	if (!sim->IsElementOrNone(parts[i].tmp))
 		parts[i].tmp = 0;
 	if(parts[i].life && !parts[i].tmp)
 		parts[i].life--;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -2; rx <= 2; rx++)
+	{
+		for (auto ry = -2; ry <= 2; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if ((ID(r))>=NPART || !r)
 					continue;
 				if (!parts[i].tmp && !parts[i].life && TYP(r)!=PT_STOR && !(sim->elements[TYP(r)].Properties&TYPE_SOLID) && (!parts[i].ctype || TYP(r)==parts[i].ctype))
@@ -78,9 +79,11 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 				if(parts[i].tmp && TYP(r)==PT_SPRK && parts[ID(r)].ctype==PT_PSCN && parts[ID(r)].life>0 && parts[ID(r)].life<4)
 				{
-					for(ry1 = 1; ry1 >= -1; ry1--){
-						for(rx1 = 0; rx1 >= -1 && rx1 <= 1; rx1 = -rx1-rx1+1){ // Oscillate the X starting at 0, 1, -1, 3, -5, etc (Though stop at -1)
-							np = sim->create_part(-1,x+rx1,y+ry1,TYP(parts[i].tmp));
+					for(auto ry1 = 1; ry1 >= -1; ry1--)
+					{
+						for(auto rx1 = 0; rx1 >= -1 && rx1 <= 1; rx1 = -rx1-rx1+1) // Oscillate the X starting at 0, 1, -1, 3, -5, etc (Though stop at -1)
+						{
+							auto np = sim->create_part(-1,x+rx1,y+ry1,TYP(parts[i].tmp));
 							if (np!=-1)
 							{
 								parts[np].temp = parts[i].temp;
@@ -95,6 +98,8 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 				}
 			}
+		}
+	}
 	return 0;
 }
 

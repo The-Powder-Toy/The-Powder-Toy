@@ -47,17 +47,18 @@ void Element::Element_BRMT()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, tempFactor;
 	if (parts[i].temp > 523.15f)//250.0f+273.15f
 	{
-		tempFactor = int(1000 - ((523.15f-parts[i].temp)*2));
+		auto tempFactor = int(1000 - ((523.15f-parts[i].temp)*2));
 		if(tempFactor < 2)
 			tempFactor = 2;
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
+		for (auto rx = -1; rx <= 1; rx++)
+		{
+			for (auto ry = -1; ry <= 1; ry++)
+			{
+				if (rx || ry)
 				{
-					r = pmap[y+ry][x+rx];
+					auto r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
 					if (TYP(r)==PT_BREC && sim->rng.chance(1, tempFactor))
@@ -70,6 +71,8 @@ static int update(UPDATE_FUNC_ARGS)
 							sim->create_part(i, x, y, PT_THRM);
 					}
 				}
+			}
+		}
 	}
 	return 0;
 }

@@ -51,18 +51,19 @@ void Element::Element_PLNT()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, np, rndstore;
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -1; rx <= 1; rx++)
+	{
+		for (auto ry = -1; ry <= 1; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				switch (TYP(r))
 				{
 				case PT_WATR:
 					if (sim->rng.chance(1, 50))
 					{
-						np = sim->create_part(ID(r),x+rx,y+ry,PT_PLNT);
+						auto np = sim->create_part(ID(r),x+rx,y+ry,PT_PLNT);
 						if (np<0) continue;
 						parts[np].life = 0;
 					}
@@ -83,20 +84,22 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 					break;
 				case PT_WOOD:
-					rndstore = sim->rng.gen();
-					if (surround_space && !(rndstore%4) && parts[i].tmp==1)
 					{
-						rndstore >>= 3;
-						int nnx = (rndstore%3) -1;
-						rndstore >>= 2;
-						int nny = (rndstore%3) -1;
-						if (nnx || nny)
+						auto rndstore = sim->rng.gen();
+						if (surround_space && !(rndstore%4) && parts[i].tmp==1)
 						{
-							if (pmap[y+ry+nny][x+rx+nnx])
-								continue;
-							np = sim->create_part(-1,x+rx+nnx,y+ry+nny,PT_VINE);
-							if (np<0) continue;
-							parts[np].temp = parts[i].temp;
+							rndstore >>= 3;
+							int nnx = (rndstore%3) -1;
+							rndstore >>= 2;
+							int nny = (rndstore%3) -1;
+							if (nnx || nny)
+							{
+								if (pmap[y+ry+nny][x+rx+nnx])
+									continue;
+								auto np = sim->create_part(-1,x+rx+nnx,y+ry+nny,PT_VINE);
+								if (np<0) continue;
+								parts[np].temp = parts[i].temp;
+							}
 						}
 					}
 					break;
@@ -104,16 +107,22 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				}
 			}
+		}
+	}
 	if (parts[i].life==2)
 	{
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
+		for (auto rx = -1; rx <= 1; rx++)
+		{
+			for (auto ry = -1; ry <= 1; ry++)
+			{
+				if (rx || ry)
 				{
-					r = pmap[y+ry][x+rx];
+					auto r = pmap[y+ry][x+rx];
 					if (!r)
 						sim->create_part(-1,x+rx,y+ry,PT_O2);
 				}
+			}
+		}
 		parts[i].life = 0;
 	}
 	if (parts[i].temp > 350 && parts[i].temp > parts[i].tmp2)

@@ -51,27 +51,27 @@ static int update(UPDATE_FUNC_ARGS)
 {
 	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled)
 	{
-		int r, rx, ry, rt;
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (BOUNDS_CHECK)
+		for (auto rx = -1; rx <= 1; rx++)
+		{
+			for (auto ry = -1; ry <= 1; ry++)
+			{
+				auto r = sim->photons[y+ry][x+rx];
+				if (!r)
+					r = pmap[y+ry][x+rx];
+				if (!r)
+					continue;
+				auto rt = TYP(r);
+				if (rt!=PT_CLNE && rt!=PT_PCLN &&
+				    rt!=PT_BCLN && rt!=PT_STKM &&
+				    rt!=PT_PBCN && rt!=PT_STKM2 &&
+				    rt<PT_NUM)
 				{
-					r = sim->photons[y+ry][x+rx];
-					if (!r)
-						r = pmap[y+ry][x+rx];
-					if (!r)
-						continue;
-					rt = TYP(r);
-					if (rt!=PT_CLNE && rt!=PT_PCLN &&
-					    rt!=PT_BCLN && rt!=PT_STKM &&
-					    rt!=PT_PBCN && rt!=PT_STKM2 &&
-					    rt<PT_NUM)
-					{
-						parts[i].ctype = rt;
-						if (rt==PT_LIFE || rt==PT_LAVA)
-							parts[i].tmp = parts[ID(r)].ctype;
-					}
+					parts[i].ctype = rt;
+					if (rt==PT_LIFE || rt==PT_LAVA)
+						parts[i].tmp = parts[ID(r)].ctype;
 				}
+			}
+		}
 	}
 	else
 	{

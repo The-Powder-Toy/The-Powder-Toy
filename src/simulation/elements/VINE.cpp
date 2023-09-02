@@ -52,19 +52,19 @@ void Element::Element_VINE()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, np, rx, ry, rndstore = sim->rng.gen();
-	rx = (rndstore % 3) - 1;
+	int rndstore = sim->rng.gen();
+	auto rx = (rndstore % 3) - 1;
 	rndstore >>= 2;
-	ry = (rndstore % 3) - 1;
+	auto ry = (rndstore % 3) - 1;
 	rndstore >>= 2;
-	if (BOUNDS_CHECK && (rx || ry))
+	if (rx || ry)
 	{
-		r = pmap[y+ry][x+rx];
+		auto r = pmap[y+ry][x+rx];
 		if (!(rndstore % 15))
 			sim->part_change_type(i, x, y, PT_PLNT);
 		else if (!r)
 		{
-			np = sim->create_part(-1,x+rx,y+ry,PT_VINE);
+			auto np = sim->create_part(-1,x+rx,y+ry,PT_VINE);
 			if (np<0) return 0;
 			parts[np].temp = parts[i].temp;
 			sim->part_change_type(i,x,y,PT_PLNT);

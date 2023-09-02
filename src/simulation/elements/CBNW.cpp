@@ -50,7 +50,6 @@ void Element::Element_CBNW()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
 	if (sim->pv[y/CELL][x/CELL]<=3)
 	{
 		if (sim->pv[y/CELL][x/CELL] <= -0.5 || sim->rng.chance(1, 4000))
@@ -79,11 +78,13 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 		parts[i].tmp--;
 	}
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -1; rx <= 1; rx++)
+	{
+		for (auto ry = -1; ry <= 1; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if ((sim->elements[TYP(r)].Properties&TYPE_PART) && parts[i].tmp == 0 && sim->rng.chance(1, 83))
@@ -133,6 +134,8 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 				}
 			}
+		}
+	}
 	return 0;
 }
 

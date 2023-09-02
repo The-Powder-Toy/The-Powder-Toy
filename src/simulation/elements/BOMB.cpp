@@ -50,23 +50,24 @@ void Element::Element_BOMB()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, nb;
-
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -1; rx <= 1; rx++)
+	{
+		for (auto ry = -1; ry <= 1; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = TYP(r);
+				auto rt = TYP(r);
 				if (rt!=PT_BOMB && rt!=PT_EMBR && rt!=PT_DMND && rt!=PT_CLNE && rt!=PT_PCLN && rt!=PT_BCLN && rt!=PT_VIBR)
 				{
 					int rad = 8, nt;
-					int nxi, nxj;
 					sim->kill_part(i);
-					for (nxj=-rad; nxj<=rad; nxj++)
-						for (nxi=-rad; nxi<=rad; nxi++)
+					for (auto nxj=-rad; nxj<=rad; nxj++)
+					{
+						for (auto nxi=-rad; nxi<=rad; nxi++)
+						{
 							if ((pow((float)nxi,2))/(pow((float)rad,2))+(pow((float)nxj,2))/(pow((float)rad,2))<=1)
 							{
 								int ynxj = y + nxj, xnxi = x + nxi;
@@ -80,7 +81,7 @@ static int update(UPDATE_FUNC_ARGS)
 									if (nt)
 										sim->kill_part(ID(pmap[ynxj][xnxi]));
 									sim->pv[(ynxj)/CELL][(xnxi)/CELL] += 0.1f;
-									nb = sim->create_part(-3, xnxi, ynxj, PT_EMBR);
+									auto nb = sim->create_part(-3, xnxi, ynxj, PT_EMBR);
 									if (nb!=-1)
 									{
 										parts[nb].tmp = 2;
@@ -89,11 +90,15 @@ static int update(UPDATE_FUNC_ARGS)
 									}
 								}
 							}
-					for (nxj=-(rad+1); nxj<=(rad+1); nxj++)
-						for (nxi=-(rad+1); nxi<=(rad+1); nxi++)
+						}
+					}
+					for (auto nxj=-(rad+1); nxj<=(rad+1); nxj++)
+					{
+						for (auto nxi=-(rad+1); nxi<=(rad+1); nxi++)
+						{
 							if ((pow((float)nxi,2))/(pow((float)(rad+1),2))+(pow((float)nxj,2))/(pow((float)(rad+1),2))<=1 && !TYP(pmap[y+nxj][x+nxi]))
 							{
-								nb = sim->create_part(-3, x+nxi, y+nxj, PT_EMBR);
+								auto nb = sim->create_part(-3, x+nxi, y+nxj, PT_EMBR);
 								if (nb!=-1)
 								{
 									parts[nb].tmp = 0;
@@ -103,9 +108,13 @@ static int update(UPDATE_FUNC_ARGS)
 									parts[nb].vy = float(sim->rng.between(-20, 20));
 								}
 							}
+						}
+					}
 					return 1;
 				}
 			}
+		}
+	}
 	return 0;
 }
 

@@ -54,7 +54,7 @@ void Element::Element_FIRE()
 
 int Element_FIRE_update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, t = parts[i].type;
+	int t = parts[i].type;
 	switch (t)
 	{
 	case PT_PLSM:
@@ -141,14 +141,16 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 	default:
 		break;
 	}
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -2; rx <= 2; rx++)
+	{
+		for (auto ry = -2; ry <= 2; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = TYP(r);
+				auto rt = TYP(r);
 
 				//THRM burning
 				if (rt==PT_THRM && (t==PT_FIRE || t==PT_PLSM || t==PT_LAVA))
@@ -273,6 +275,8 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 						sim->pv[y/CELL][x/CELL] += 0.25f * CFDS;
 				}
 			}
+		}
+	}
 	if (sim->legacy_enable && t!=PT_SPRK) // SPRK has no legacy reactions
 		updateLegacy(UPDATE_FUNC_SUBCALL_ARGS);
 	return 0;
@@ -280,19 +284,21 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 
 static int updateLegacy(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, lpv, t = parts[i].type;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	int t = parts[i].type;
+	for (auto rx = -2; rx <= 2; rx++)
+	{
+		for (auto ry = -2; ry <= 2; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if (sim->bmap[(y+ry)/CELL][(x+rx)/CELL] && sim->bmap[(y+ry)/CELL][(x+rx)/CELL]!=WL_STREAM)
 					continue;
-				rt = TYP(r);
+				auto rt = TYP(r);
 
-				lpv = (int)sim->pv[(y+ry)/CELL][(x+rx)/CELL];
+				auto lpv = (int)sim->pv[(y+ry)/CELL][(x+rx)/CELL];
 				if (lpv < 1) lpv = 1;
 				if (sim->elements[rt].Meltable &&
 				        ((rt!=PT_RBDM && rt!=PT_LRBD) || t!=PT_SPRK)
@@ -348,6 +354,8 @@ static int updateLegacy(UPDATE_FUNC_ARGS)
 					}
 				}
 			}
+		}
+	}
 	return 0;
 }
 

@@ -53,36 +53,39 @@ constexpr float BLEND = 0.95f;
 
 int Element_BIZR_update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, nr, ng, nb, na;
-	float tr, tg, tb, ta, mr, mg, mb, ma;
-	if(parts[i].dcolour){
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
+	if(parts[i].dcolour)
+	{
+		for (auto rx = -2; rx <= 2; rx++)
+		{
+			for (auto ry = -2; ry <= 2; ry++)
+			{
+				if (rx || ry)
 				{
-					r = pmap[y+ry][x+rx];
+					auto r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
 					if (TYP(r)!=PT_BIZR && TYP(r)!=PT_BIZRG  && TYP(r)!=PT_BIZRS)
 					{
-						tr = float((parts[ID(r)].dcolour>>16)&0xFF);
-						tg = float((parts[ID(r)].dcolour>>8)&0xFF);
-						tb = float((parts[ID(r)].dcolour)&0xFF);
-						ta = float((parts[ID(r)].dcolour>>24)&0xFF);
+						auto tr = float((parts[ID(r)].dcolour>>16)&0xFF);
+						auto tg = float((parts[ID(r)].dcolour>>8)&0xFF);
+						auto tb = float((parts[ID(r)].dcolour)&0xFF);
+						auto ta = float((parts[ID(r)].dcolour>>24)&0xFF);
 
-						mr = float((parts[i].dcolour>>16)&0xFF);
-						mg = float((parts[i].dcolour>>8)&0xFF);
-						mb = float((parts[i].dcolour)&0xFF);
-						ma = float((parts[i].dcolour>>24)&0xFF);
+						auto mr = float((parts[i].dcolour>>16)&0xFF);
+						auto mg = float((parts[i].dcolour>>8)&0xFF);
+						auto mb = float((parts[i].dcolour)&0xFF);
+						auto ma = float((parts[i].dcolour>>24)&0xFF);
 
-						nr = int((tr*BLEND) + (mr*(1 - BLEND)));
-						ng = int((tg*BLEND) + (mg*(1 - BLEND)));
-						nb = int((tb*BLEND) + (mb*(1 - BLEND)));
-						na = int((ta*BLEND) + (ma*(1 - BLEND)));
+						auto nr = int((tr*BLEND) + (mr*(1 - BLEND)));
+						auto ng = int((tg*BLEND) + (mg*(1 - BLEND)));
+						auto nb = int((tb*BLEND) + (mb*(1 - BLEND)));
+						auto na = int((ta*BLEND) + (ma*(1 - BLEND)));
 
 						parts[ID(r)].dcolour = nr<<16 | ng<<8 | nb | na<<24;
 					}
 				}
+			}
+		}
 	}
 	return 0;
 }

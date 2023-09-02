@@ -50,26 +50,24 @@ void Element::Element_GBMB()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int rx,ry,r;
 	if (parts[i].life<=0)
 	{
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
+		for (auto rx = -1; rx <= 1; rx++)
+		{
+			for (auto ry = -1; ry <= 1; ry++)
 			{
-				if (BOUNDS_CHECK)
+				auto r = pmap[y+ry][x+rx];
+				if(!r)
+					continue;
+				if(TYP(r)!=PT_BOMB && TYP(r)!=PT_GBMB &&
+				   TYP(r)!=PT_CLNE && TYP(r)!=PT_PCLN &&
+				   TYP(r)!=PT_DMND)
 				{
-					r = pmap[y+ry][x+rx];
-					if(!r)
-						continue;
-					if(TYP(r)!=PT_BOMB && TYP(r)!=PT_GBMB &&
-					   TYP(r)!=PT_CLNE && TYP(r)!=PT_PCLN &&
-					   TYP(r)!=PT_DMND)
-					{
-						parts[i].life=60;
-						break;
-					}
+					parts[i].life=60;
+					break;
 				}
 			}
+		}
 	}
 	if (parts[i].life>20)
 		sim->gravmap[(y/CELL)*XCELLS+(x/CELL)] = 20;

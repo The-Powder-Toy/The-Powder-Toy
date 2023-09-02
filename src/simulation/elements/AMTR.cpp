@@ -49,15 +49,16 @@ void Element::Element_AMTR()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt;
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -1; rx <= 1; rx++)
+	{
+		for (auto ry = -1; ry <= 1; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = TYP(r);
+				auto rt = TYP(r);
 				if (rt!=PT_AMTR && rt!=PT_DMND && rt!=PT_CLNE && rt!=PT_PCLN && rt!=PT_VOID && rt!=PT_BHOL && rt!=PT_NBHL && rt!=PT_PRTI && rt!=PT_PRTO)
 				{
 					parts[i].life++;
@@ -73,6 +74,8 @@ static int update(UPDATE_FUNC_ARGS)
 					sim->pv[y/CELL][x/CELL] -= 2.0f;
 				}
 			}
+		}
+	}
 	return 0;
 }
 

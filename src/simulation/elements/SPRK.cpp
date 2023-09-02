@@ -52,7 +52,7 @@ void Element::Element_SPRK()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, nearp, pavg, ct = parts[i].ctype, sender, receiver;
+	int ct = parts[i].ctype;
 	Element_FIRE_update(UPDATE_FUNC_SUBCALL_ARGS);
 
 	if (parts[i].life<=0)
@@ -88,7 +88,7 @@ static int update(UPDATE_FUNC_ARGS)
 		if (parts[i].life==1)
 		{
 			int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId);
-			nearp = Element_ETRD_nearestSparkablePart(sim, i);
+			auto nearp = Element_ETRD_nearestSparkablePart(sim, i);
 			if (nearp!=-1 && sim->parts_avg(i, nearp, PT_INSL)!=PT_INSL)
 			{
 				sim->CreateLine(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), PT_PLSM);
@@ -116,11 +116,13 @@ static int update(UPDATE_FUNC_ARGS)
 	case PT_TESC:
 		if (parts[i].tmp>300)
 			parts[i].tmp=300;
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
+		for (auto rx = -1; rx <= 1; rx++)
+		{
+			for (auto ry = -1; ry <= 1; ry++)
+			{
+				if (rx || ry)
 				{
-					r = pmap[y+ry][x+rx];
+					auto r = pmap[y+ry][x+rx];
 					if (r)
 						continue;
 					if (parts[i].tmp>4 && sim->rng.chance(1, parts[i].tmp*parts[i].tmp/20+6))
@@ -145,13 +147,17 @@ static int update(UPDATE_FUNC_ARGS)
 						}
 					}
 				}
+			}
+		}
 		break;
 	case PT_IRON:
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
+		for (auto rx = -1; rx <= 1; rx++)
+		{
+			for (auto ry = -1; ry <= 1; ry++)
+			{
+				if (rx || ry)
 				{
-					r = pmap[y+ry][x+rx];
+					auto r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
 					if (TYP(r)==PT_DSTW || TYP(r)==PT_SLTW || TYP(r)==PT_WATR)
@@ -163,6 +169,8 @@ static int update(UPDATE_FUNC_ARGS)
 							sim->part_change_type(ID(r),x+rx,y+ry,PT_H2);
 					}
 				}
+			}
+		}
 		break;
 	case PT_TUNG:
 		if(parts[i].temp < 3595.0){
@@ -171,16 +179,18 @@ static int update(UPDATE_FUNC_ARGS)
 	default:
 		break;
 	}
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -2; rx <= 2; rx++)
+	{
+		for (auto ry = -2; ry <= 2; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				receiver = TYP(r);
-				sender = ct;
-				pavg = sim->parts_avg(ID(r), i,PT_INSL);
+				auto receiver = TYP(r);
+				auto sender = ct;
+				auto pavg = sim->parts_avg(ID(r), i,PT_INSL);
 				//receiver is the element SPRK is trying to conduct to
 				//sender is the element the SPRK is on
 				//First, some checks usually for (de)activation of elements
@@ -363,6 +373,8 @@ static int update(UPDATE_FUNC_ARGS)
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
 				}
 			}
+		}
+	}
 	return 0;
 }
 

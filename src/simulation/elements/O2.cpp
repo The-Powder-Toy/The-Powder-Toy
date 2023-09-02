@@ -47,12 +47,13 @@ void Element::Element_O2()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r,rx,ry;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -2; rx <= 2; rx++)
+	{
+		for (auto ry = -2; ry <= 2; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 
@@ -74,6 +75,8 @@ static int update(UPDATE_FUNC_ARGS)
 					parts[i].tmp |= 2;
 				}
 			}
+		}
+	}
 	if (parts[i].temp > 9973.15 && sim->pv[y/CELL][x/CELL] > 250.0f)
 	{
 		int gravPos = ((y/CELL)*XCELLS)+(x/CELL);
@@ -95,7 +98,7 @@ static int update(UPDATE_FUNC_ARGS)
 					parts[j].temp = MAX_TEMP;
 					parts[j].tmp = 0x1;
 				}
-				rx = x + sim->rng.between(-1, 1), ry = y + sim->rng.between(-1, 1), r = TYP(pmap[ry][rx]);
+				auto rx = x + sim->rng.between(-1, 1), ry = y + sim->rng.between(-1, 1), r = TYP(pmap[ry][rx]);
 				if (sim->can_move[PT_PLSM][r] || r == PT_O2)
 				{
 					j = sim->create_part(-3,rx,ry,PT_PLSM);

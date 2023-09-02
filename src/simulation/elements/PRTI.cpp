@@ -71,7 +71,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		int rx = sim->portal_rx[count];
 		int ry = sim->portal_ry[count];
-		if (BOUNDS_CHECK && (rx || ry))
+		if (rx || ry)
 		{
 			int r = pmap[y+ry][x+rx];
 			if (!r || TYP(r) == PT_STOR)

@@ -50,8 +50,10 @@ void Element::Element_CAUS()
 static int update(UPDATE_FUNC_ARGS)
 {
 	for (int rx = -2; rx <= 2; rx++)
+	{
 		for (int ry = -2; ry <= 2; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+		{
+			if (rx || ry)
 			{
 				int r = pmap[y+ry][x+rx];
 				if (!r)
@@ -86,5 +88,7 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 				}
 			}
+		}
+	}
 	return 0;
 }

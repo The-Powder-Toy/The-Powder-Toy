@@ -55,7 +55,7 @@ int Element_VIRS_update(UPDATE_FUNC_ARGS)
 {
 	//tmp3 measures how many frames until it is cured (0 if still actively spreading and not being cured)
 	//tmp4 measures how many frames until it dies
-	int r, rx, ry, rndstore = sim->rng.gen();
+	int rndstore = sim->rng.gen();
 	if (parts[i].tmp3)
 	{
 		parts[i].tmp3 -= (rndstore & 0x1) ? 0:1;
@@ -81,12 +81,13 @@ int Element_VIRS_update(UPDATE_FUNC_ARGS)
 		rndstore >>= 3;
 	}
 
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
+	for (auto rx = -1; rx <= 1; rx++)
+	{
+		for (auto ry = -1; ry <= 1; ry++)
 		{
-			if (BOUNDS_CHECK && (rx || ry))
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 
@@ -142,6 +143,7 @@ int Element_VIRS_update(UPDATE_FUNC_ARGS)
 			else if (!rx && !ry)
 				rndstore = sim->rng.gen();
 		}
+	}
 	return 0;
 }
 

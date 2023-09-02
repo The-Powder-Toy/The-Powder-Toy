@@ -95,9 +95,6 @@ constexpr float BLEND = 0.85f;
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, nr, ng, nb, na;
-	float tr, tg, tb, ta;
-
 	//0x01 - bubble on/off
 	//0x02 - first mate yes/no
 	//0x04 - "back" mate yes/no
@@ -143,25 +140,32 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 		if(!(parts[i].ctype&2))
 		{
-			for (rx=-2; rx<3; rx++)
-				for (ry=-2; ry<3; ry++)
-					if (BOUNDS_CHECK && (rx || ry))
+			for (auto rx = -2; rx <= 2; rx++)
+			{
+				for (auto ry = -2; ry <= 2; ry++)
+				{
+					if (rx || ry)
 					{
-						r = pmap[y+ry][x+rx];
+						auto r = pmap[y+ry][x+rx];
 						if (!r)
 							continue;
 						if ((parts[ID(r)].type == PT_SOAP) && (parts[ID(r)].ctype&1) && !(parts[ID(r)].ctype&4))
 							attach(parts, i, ID(r));
 					}
+				}
+			}
 		}
 		else
 		{
 			if (parts[i].life<=0)
-				for (rx=-2; rx<3; rx++)
-					for (ry=-2; ry<3; ry++)
-						if (BOUNDS_CHECK && (rx || ry))
+			{
+				for (auto rx = -2; rx <= 2; rx++)
+				{
+					for (auto ry = -2; ry <= 2; ry++)
+					{
+						if (rx || ry)
 						{
-							r = pmap[y+ry][x+rx];
+							auto r = pmap[y+ry][x+rx];
 							if (!r && !sim->bmap[(y+ry)/CELL][(x+rx)/CELL])
 								continue;
 							if (parts[i].temp>FREEZING)
@@ -198,6 +202,9 @@ static int update(UPDATE_FUNC_ARGS)
 								}
 							}
 						}
+					}
+				}
+			}
 		}
 		if(parts[i].ctype&2)
 		{
@@ -235,26 +242,30 @@ static int update(UPDATE_FUNC_ARGS)
 			parts[i].life = 10;
 		}
 	}
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -2; rx <= 2; rx++)
+	{
+		for (auto ry = -2; ry <= 2; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if (TYP(r)!=PT_SOAP)
 				{
-					tr = float((parts[ID(r)].dcolour>>16)&0xFF);
-					tg = float((parts[ID(r)].dcolour>>8)&0xFF);
-					tb = float((parts[ID(r)].dcolour)&0xFF);
-					ta = float((parts[ID(r)].dcolour>>24)&0xFF);
-					nr = int(tr*BLEND);
-					ng = int(tg*BLEND);
-					nb = int(tb*BLEND);
-					na = int(ta*BLEND);
+					auto tr = float((parts[ID(r)].dcolour>>16)&0xFF);
+					auto tg = float((parts[ID(r)].dcolour>>8)&0xFF);
+					auto tb = float((parts[ID(r)].dcolour)&0xFF);
+					auto ta = float((parts[ID(r)].dcolour>>24)&0xFF);
+					auto nr = int(tr*BLEND);
+					auto ng = int(tg*BLEND);
+					auto nb = int(tb*BLEND);
+					auto na = int(ta*BLEND);
 					parts[ID(r)].dcolour = nr<<16 | ng<<8 | nb | na<<24;
 				}
 			}
+		}
+	}
 
 	return 0;
 }

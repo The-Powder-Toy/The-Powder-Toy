@@ -49,12 +49,13 @@ void Element::Element_C5()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -2; rx <= 2; rx++)
+	{
+		for (auto ry = -2; ry <= 2; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if ((TYP(r)!=PT_C5 && parts[ID(r)].temp<100 && sim->elements[TYP(r)].HeatConduct && (TYP(r)!=PT_HSWC||parts[ID(r)].life==10)) || TYP(r)==PT_CFLM)
@@ -68,13 +69,15 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 				}
 			}
+		}
+	}
 	if (parts[i].ctype && !parts[i].life)
 	{
 		float vx = ((parts[i].tmp << 16) >> 16) / 255.0f;
 		float vy = (parts[i].tmp >> 16) / 255.0f;
 		float dx = ((parts[i].tmp2 << 16) >> 16) / 255.0f;
 		float dy = (parts[i].tmp2 >> 16) / 255.0f;
-		r = sim->create_part(-3, x, y, PT_PHOT);
+		auto r = sim->create_part(-3, x, y, PT_PHOT);
 		if (r != -1)
 		{
 			parts[r].ctype = parts[i].ctype;

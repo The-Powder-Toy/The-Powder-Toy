@@ -47,15 +47,16 @@ void Element::Element_BMTL()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
 	if (parts[i].tmp>1)
 	{
 		parts[i].tmp--;
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
+		for (auto rx = -1; rx <= 1; rx++)
+		{
+			for (auto ry = -1; ry <= 1; ry++)
+			{
+				if (rx || ry)
 				{
-					r = pmap[y+ry][x+rx];
+					auto r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
 					if ((TYP(r)==PT_METL || TYP(r)==PT_IRON) && sim->rng.chance(1, 100))
@@ -64,6 +65,8 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[ID(r)].tmp = (parts[i].tmp<=7) ? parts[i].tmp=1 : parts[i].tmp - sim->rng.between(0, 4);
 					}
 				}
+			}
+		}
 	}
 	else if (parts[i].tmp==1 && sim->rng.chance(1, 1000))
 	{

@@ -52,77 +52,82 @@ void Element::Element_ELEC()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rt, rx, ry, nb, rrx, rry;
-	for (rx=-2; rx<=2; rx++)
-		for (ry=-2; ry<=2; ry++)
-			if (BOUNDS_CHECK) {
-				r = pmap[y+ry][x+rx];
-				if (!r)
-					r = sim->photons[y+ry][x+rx];
-				if (!r)
-					continue;
-				rt = TYP(r);
-				switch (rt)
+	for (auto rx = -2; rx <= 2; rx++)
+	{
+		for (auto ry = -2; ry <= 2; ry++)
+		{
+			auto r = pmap[y+ry][x+rx];
+			if (!r)
+				r = sim->photons[y+ry][x+rx];
+			if (!r)
+				continue;
+			auto rt = TYP(r);
+			switch (rt)
+			{
+			case PT_GLAS:
+				for (auto rrx=-1; rrx<=1; rrx++)
 				{
-				case PT_GLAS:
-					for (rrx=-1; rrx<=1; rrx++)
-						for (rry=-1; rry<=1; rry++)
-							if (x+rx+rrx>=0 && y+ry+rry>=0 && x+rx+rrx<XRES && y+ry+rry<YRES) {
-								nb = sim->create_part(-1, x+rx+rrx, y+ry+rry, PT_EMBR);
-								if (nb!=-1) {
-									parts[nb].tmp = 0;
-									parts[nb].life = 50;
-									parts[nb].temp = parts[i].temp*0.8f;
-									parts[nb].vx = float(sim->rng.between(-10, 10));
-									parts[nb].vy = float(sim->rng.between(-10, 10));
-								}
-							}
-					sim->kill_part(i);
-					return 1;
-				case PT_LCRY:
-					parts[ID(r)].tmp2 = sim->rng.between(5, 9);
-					break;
-				case PT_WATR:
-				case PT_DSTW:
-				case PT_SLTW:
-				case PT_CBNW:
-					if (sim->rng.chance(1, 3))
-						sim->create_part(ID(r), x+rx, y+ry, PT_O2);
-					else
-						sim->create_part(ID(r), x+rx, y+ry, PT_H2);
-					sim->kill_part(i);
-					return 1;
-				case PT_PROT: // this is the correct reaction, not NEUT, but leaving NEUT in anyway
-					if (parts[ID(r)].tmp2 & 0x1)
-						break;
-				case PT_NEUT:
-					sim->part_change_type(ID(r), x+rx, y+ry, PT_H2);
-					parts[ID(r)].life = 0;
-					parts[ID(r)].ctype = 0;
-					sim->kill_part(i);
-					break;
-				case PT_DEUT:
-					if(parts[ID(r)].life < 6000)
-						parts[ID(r)].life += 1;
-					parts[ID(r)].temp = 0;
-					sim->kill_part(i);
-					return 1;
-				case PT_EXOT:
-					parts[ID(r)].tmp2 += 5;
-					parts[ID(r)].life = 1000;
-					break;
-				case PT_NONE: //seems to speed up ELEC even if it isn't used
-					break;
-				default:
-					if ((sim->elements[rt].Properties & PROP_CONDUCTS) && (rt!=PT_NBLE||parts[i].temp<2273.15))
+					for (auto rry=-1; rry<=1; rry++)
 					{
-						sim->create_part(-1, x+rx, y+ry, PT_SPRK);
-						sim->kill_part(i);
-						return 1;
+						if (x+rx+rrx>=0 && y+ry+rry>=0 && x+rx+rrx<XRES && y+ry+rry<YRES) {
+							auto nb = sim->create_part(-1, x+rx+rrx, y+ry+rry, PT_EMBR);
+							if (nb!=-1) {
+								parts[nb].tmp = 0;
+								parts[nb].life = 50;
+								parts[nb].temp = parts[i].temp*0.8f;
+								parts[nb].vx = float(sim->rng.between(-10, 10));
+								parts[nb].vy = float(sim->rng.between(-10, 10));
+							}
+						}
 					}
-					break;
 				}
+				sim->kill_part(i);
+				return 1;
+			case PT_LCRY:
+				parts[ID(r)].tmp2 = sim->rng.between(5, 9);
+				break;
+			case PT_WATR:
+			case PT_DSTW:
+			case PT_SLTW:
+			case PT_CBNW:
+				if (sim->rng.chance(1, 3))
+					sim->create_part(ID(r), x+rx, y+ry, PT_O2);
+				else
+					sim->create_part(ID(r), x+rx, y+ry, PT_H2);
+				sim->kill_part(i);
+				return 1;
+			case PT_PROT: // this is the correct reaction, not NEUT, but leaving NEUT in anyway
+				if (parts[ID(r)].tmp2 & 0x1)
+					break;
+			case PT_NEUT:
+				sim->part_change_type(ID(r), x+rx, y+ry, PT_H2);
+				parts[ID(r)].life = 0;
+				parts[ID(r)].ctype = 0;
+				sim->kill_part(i);
+				break;
+			case PT_DEUT:
+				if(parts[ID(r)].life < 6000)
+					parts[ID(r)].life += 1;
+				parts[ID(r)].temp = 0;
+				sim->kill_part(i);
+				return 1;
+			case PT_EXOT:
+				parts[ID(r)].tmp2 += 5;
+				parts[ID(r)].life = 1000;
+				break;
+			case PT_NONE: //seems to speed up ELEC even if it isn't used
+				break;
+			default:
+				if ((sim->elements[rt].Properties & PROP_CONDUCTS) && (rt!=PT_NBLE||parts[i].temp<2273.15))
+				{
+					sim->create_part(-1, x+rx, y+ry, PT_SPRK);
+					sim->kill_part(i);
+					return 1;
+				}
+				break;
 			}
+		}
+	}
 	return 0;
 }
 

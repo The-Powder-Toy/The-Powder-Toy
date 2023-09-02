@@ -49,16 +49,18 @@ void Element::Element_FIRW()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt, np;
-	if (parts[i].tmp<=0) {
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
+	if (parts[i].tmp<=0)
+	{
+		for (auto rx = -1; rx <= 1; rx++)
+		{
+			for (auto ry = -1; ry <= 1; ry++)
+			{
+				if (rx || ry)
 				{
-					r = pmap[y+ry][x+rx];
+					auto r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					rt = TYP(r);
+					auto rt = TYP(r);
 					if (rt==PT_FIRE||rt==PT_PLSM||rt==PT_THDR)
 					{
 						float gx, gy, multiplier;
@@ -77,6 +79,8 @@ static int update(UPDATE_FUNC_ARGS)
 						return 0;
 					}
 				}
+			}
+		}
 	}
 	else if (parts[i].tmp==1) {
 		if (parts[i].life<=0) {
@@ -90,7 +94,7 @@ static int update(UPDATE_FUNC_ARGS)
 		unsigned col = Renderer::firwTableAt(sim->rng.between(0, 199)).Pack();
 		for (int n=0; n<40; n++)
 		{
-			np = sim->create_part(-3, x, y, PT_EMBR);
+			auto np = sim->create_part(-3, x, y, PT_EMBR);
 			if (np>-1)
 			{
 				auto magnitude = sim->rng.between(40, 99) * 0.05f;

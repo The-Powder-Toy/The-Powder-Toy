@@ -50,12 +50,13 @@ void Element::Element_GLOW()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -1; rx <= 1; rx++)
+	{
+		for (auto ry = -1; ry <= 1; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if (TYP(r)==PT_WATR && sim->rng.chance(1, 400))
@@ -66,6 +67,8 @@ static int update(UPDATE_FUNC_ARGS)
 					return 1;
 				}
 			}
+		}
+	}
 	int ctype = int(sim->pv[y/CELL][x/CELL]*16);
 	if (ctype < 0)
 		ctype = 0;

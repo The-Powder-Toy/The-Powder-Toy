@@ -49,7 +49,7 @@ void Element::Element_WIRE()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r,rx,ry,count=0;
+	int count=0;
 	/*
 	  0:  wire
 	  1:  spark head
@@ -67,12 +67,13 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		parts[i].ctype=0;
 	}
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
+	for (auto rx = -1; rx <= 1; rx++)
+	{
+		for (auto ry = -1; ry <= 1; ry++)
 		{
-			if (BOUNDS_CHECK && (rx || ry))
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if (TYP(r)==PT_SPRK && parts[ID(r)].life==3 && parts[ID(r)].ctype==PT_PSCN)
@@ -86,6 +87,7 @@ static int update(UPDATE_FUNC_ARGS)
 					count++;
 			}
 		}
+	}
 	if (count==1 || count==2)
 		parts[i].ctype=1;
 	return 0;

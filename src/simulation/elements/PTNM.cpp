@@ -54,7 +54,7 @@ static void wtrv_reactions(int wtrv1_id, UPDATE_FUNC_ARGS)
 	{
 		for (int ry = -1; ry <= 1; ry++)
 		{
-			if (BOUNDS_CHECK && (rx || ry))
+			if (rx || ry)
 			{
 				int r = pmap[y + ry][x + rx];
 				if (!r || ID(r) == wtrv1_id)
@@ -79,7 +79,7 @@ static void hygn_reactions(int hygn1_id, UPDATE_FUNC_ARGS)
 	{
 		for (int ry = -1; ry <= 1; ry++)
 		{
-			if (BOUNDS_CHECK && (rx || ry))
+			if (rx || ry)
 			{
 				int r = pmap[y + ry][x + rx];
 				if (!r || ID(r) == hygn1_id)
@@ -167,7 +167,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		for (int ry = -1; ry <= 1; ry++)
 		{
-			if (BOUNDS_CHECK && (rx || ry))
+			if (rx || ry)
 			{
 				int r = pmap[y + ry][x + rx];
 				if (!r)

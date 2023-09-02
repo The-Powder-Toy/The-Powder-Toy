@@ -56,8 +56,6 @@ void Element::Element_PHOT()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
-	float rr, rrr;
 	if (!(parts[i].ctype&0x3FFFFFFF)) {
 		sim->kill_part(i);
 		return 1;
@@ -65,54 +63,57 @@ static int update(UPDATE_FUNC_ARGS)
 	if (parts[i].temp > 506)
 		if (sim->rng.chance(1, 10))
 			Element_FIRE_update(UPDATE_FUNC_SUBCALL_ARGS);
-	for (rx=-1; rx<2; rx++)
-		for (ry=-1; ry<2; ry++)
-			if (BOUNDS_CHECK) {
-				r = pmap[y+ry][x+rx];
-				if (!r)
-					continue;
-				if (TYP(r)==PT_ISOZ || TYP(r)==PT_ISZS)
+	for (auto rx = -1; rx <= 1; rx++)
+	{
+		for (auto ry = -1; ry <= 1; ry++)
+		{
+			auto r = pmap[y+ry][x+rx];
+			if (!r)
+				continue;
+			if (TYP(r)==PT_ISOZ || TYP(r)==PT_ISZS)
+			{
+				if (sim->rng.chance(1, 400))
 				{
-					if (sim->rng.chance(1, 400))
-					{
-						parts[i].vx *= 0.90f;
-						parts[i].vy *= 0.90f;
-						sim->create_part(ID(r), x+rx, y+ry, PT_PHOT);
-						rrr = sim->rng.between(0, 359) * 3.14159f / 180.0f;
-						if (TYP(r) == PT_ISOZ)
-							rr = sim->rng.between(128, 255) / 127.0f;
-						else
-							rr = sim->rng.between(128, 355) / 127.0f;
-						parts[ID(r)].vx = rr*cosf(rrr);
-						parts[ID(r)].vy = rr*sinf(rrr);
-						sim->pv[y/CELL][x/CELL] -= 15.0f * CFDS;
-					}
-				}
-				else if((TYP(r) == PT_QRTZ || TYP(r) == PT_PQRT) && !ry && !rx)//if on QRTZ
-				{
-					float a = sim->rng.between(0, 359) * 3.14159f / 180.0f;
-					parts[i].vx = 3.0f*cosf(a);
-					parts[i].vy = 3.0f*sinf(a);
-					if(parts[i].ctype == 0x3FFFFFFF)
-						parts[i].ctype = 0x1F << sim->rng.between(0, 25);
-					if (parts[i].life)
-						parts[i].life++; //Delay death
-				}
-				else if(TYP(r) == PT_BGLA && !ry && !rx)//if on BGLA
-				{
-					float a = sim->rng.between(-50, 50) * 0.001f;
-					float rx = cosf(a), ry = sinf(a), vx, vy;
-					vx = rx * parts[i].vx + ry * parts[i].vy;
-					vy = rx * parts[i].vy - ry * parts[i].vx;
-					parts[i].vx = vx;
-					parts[i].vy = vy;
-				}
-				else if (TYP(r) == PT_FILT && parts[ID(r)].tmp==9)
-				{
-					parts[i].vx += ((float)sim->rng.between(-500, 500))/1000.0f;
-					parts[i].vy += ((float)sim->rng.between(-500, 500))/1000.0f;
+					parts[i].vx *= 0.90f;
+					parts[i].vy *= 0.90f;
+					sim->create_part(ID(r), x+rx, y+ry, PT_PHOT);
+					auto rrr = sim->rng.between(0, 359) * 3.14159f / 180.0f;
+					int rr;
+					if (TYP(r) == PT_ISOZ)
+						rr = sim->rng.between(128, 255) / 127.0f;
+					else
+						rr = sim->rng.between(128, 355) / 127.0f;
+					parts[ID(r)].vx = rr*cosf(rrr);
+					parts[ID(r)].vy = rr*sinf(rrr);
+					sim->pv[y/CELL][x/CELL] -= 15.0f * CFDS;
 				}
 			}
+			else if((TYP(r) == PT_QRTZ || TYP(r) == PT_PQRT) && !ry && !rx)//if on QRTZ
+			{
+				float a = sim->rng.between(0, 359) * 3.14159f / 180.0f;
+				parts[i].vx = 3.0f*cosf(a);
+				parts[i].vy = 3.0f*sinf(a);
+				if(parts[i].ctype == 0x3FFFFFFF)
+					parts[i].ctype = 0x1F << sim->rng.between(0, 25);
+				if (parts[i].life)
+					parts[i].life++; //Delay death
+			}
+			else if(TYP(r) == PT_BGLA && !ry && !rx)//if on BGLA
+			{
+				float a = sim->rng.between(-50, 50) * 0.001f;
+				float rx = cosf(a), ry = sinf(a), vx, vy;
+				vx = rx * parts[i].vx + ry * parts[i].vy;
+				vy = rx * parts[i].vy - ry * parts[i].vx;
+				parts[i].vx = vx;
+				parts[i].vy = vy;
+			}
+			else if (TYP(r) == PT_FILT && parts[ID(r)].tmp==9)
+			{
+				parts[i].vx += ((float)sim->rng.between(-500, 500))/1000.0f;
+				parts[i].vy += ((float)sim->rng.between(-500, 500))/1000.0f;
+			}
+		}
+	}
 	return 0;
 }
 

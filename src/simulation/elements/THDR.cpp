@@ -50,16 +50,17 @@ void Element::Element_THDR()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt;
 	bool kill=false;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -2; rx <= 2; rx++)
+	{
+		for (auto ry = -2; ry <= 2; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = TYP(r);
+				auto rt = TYP(r);
 				if ((sim->elements[TYP(r)].Properties&PROP_CONDUCTS) && parts[ID(r)].life==0 && !(rt==PT_WATR||rt==PT_SLTW) && parts[ID(r)].ctype!=PT_SPRK)
 				{
 					parts[ID(r)].ctype = parts[ID(r)].type;
@@ -79,6 +80,8 @@ static int update(UPDATE_FUNC_ARGS)
 						kill=true;
 				}
 			}
+		}
+	}
 	if (kill) {
 		sim->kill_part(i);
 		return 1;

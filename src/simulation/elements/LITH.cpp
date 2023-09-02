@@ -80,7 +80,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		for (int ry = -2; ry <= 2; ++ry)
 		{
-			if (BOUNDS_CHECK && (rx || ry))
+			if (rx || ry)
 			{
 				int neighborData = pmap[y + ry][x + rx];
 				if (!neighborData)
@@ -198,7 +198,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		int rx = sim->rng.between(-3, 3);
 		int ry = sim->rng.between(-3, 3);
-		if (BOUNDS_CHECK && (rx || ry))
+		if (rx || ry)
 		{
 			int neighborData = pmap[y + ry][x + rx];
 			if (TYP(neighborData) != PT_LITH)

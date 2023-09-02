@@ -52,14 +52,15 @@ void Element::Element_PCLN()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, rt;
 	if (parts[i].life>0 && parts[i].life!=10)
 		parts[i].life--;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -2; rx <= 2; rx++)
+	{
+		for (auto ry = -2; ry <= 2; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				if (TYP(r)==PT_SPRK)
@@ -80,33 +81,40 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[i].life = 10;
 				}
 			}
+		}
+	}
 	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled)
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (BOUNDS_CHECK)
+	{
+		for (auto rx = -1; rx <= 1; rx++)
+		{
+			for (auto ry = -1; ry <= 1; ry++)
+			{
+				auto r = sim->photons[y+ry][x+rx];
+				if (!r)
+					r = pmap[y+ry][x+rx];
+				if (!r)
+					continue;
+				auto rt = TYP(r);
+				if (rt!=PT_CLNE && rt!=PT_PCLN &&
+				    rt!=PT_BCLN &&  rt!=PT_SPRK &&
+				    rt!=PT_NSCN && rt!=PT_PSCN &&
+				    rt!=PT_STKM && rt!=PT_STKM2 &&
+				    rt!=PT_PBCN && rt<PT_NUM)
 				{
-					r = sim->photons[y+ry][x+rx];
-					if (!r)
-						r = pmap[y+ry][x+rx];
-					if (!r)
-						continue;
-					rt = TYP(r);
-					if (rt!=PT_CLNE && rt!=PT_PCLN &&
-					    rt!=PT_BCLN &&  rt!=PT_SPRK &&
-					    rt!=PT_NSCN && rt!=PT_PSCN &&
-					    rt!=PT_STKM && rt!=PT_STKM2 &&
-					    rt!=PT_PBCN && rt<PT_NUM)
-					{
-						parts[i].ctype = rt;
-						if (rt==PT_LIFE || rt==PT_LAVA)
-							parts[i].tmp = parts[ID(r)].ctype;
-					}
+					parts[i].ctype = rt;
+					if (rt==PT_LIFE || rt==PT_LAVA)
+						parts[i].tmp = parts[ID(r)].ctype;
 				}
+			}
+		}
+	}
 	if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && sim->elements[parts[i].ctype].Enabled && parts[i].life==10)
 	{
 		if (parts[i].ctype==PT_PHOT) {//create photons a different way
-			for (rx=-1; rx<2; rx++)
-				for (ry = -1; ry < 2; ry++)
+			for (auto rx = -1; rx <= 1; rx++)
+			{
+				for (auto ry = -1; ry <= 1; ry++)
+				{
 					if (rx || ry)
 					{
 						int r = sim->create_part(-1, x + rx, y + ry, PT_PHOT);
@@ -121,12 +129,19 @@ static int update(UPDATE_FUNC_ARGS)
 							}
 						}
 					}
+				}
+			}
 		}
 		else if (parts[i].ctype==PT_LIFE)//create life a different way
-			for (rx=-1; rx<2; rx++)
-				for (ry=-1; ry<2; ry++)
+		{
+			for (auto rx = -1; rx <= 1; rx++)
+			{
+				for (auto ry = -1; ry <= 1; ry++)
+				{
 					sim->create_part(-1, x+rx, y+ry, PT_LIFE, parts[i].tmp);
-
+				}
+			}
+		}
 		else if (parts[i].ctype != PT_LIGH || sim->rng.chance(1, 30))
 		{
 			int np = sim->create_part(-1, x + sim->rng.between(-1, 1), y + sim->rng.between(-1, 1), TYP(parts[i].ctype));

@@ -53,7 +53,6 @@ void Element::Element_DEUT()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, trade, np;
 	float gravtot = fabs(sim->gravy[(y/CELL)*XCELLS+(x/CELL)])+fabs(sim->gravx[(y/CELL)*XCELLS+(x/CELL)]);
 	// Prevent division by 0
 	float temp = std::max(1.0f, (parts[i].temp + 1));
@@ -65,11 +64,13 @@ static int update(UPDATE_FUNC_ARGS)
 	maxlife = maxlife*int(5.0f - 8.0f/(gravtot+2.0f));
 	if (parts[i].life < maxlife)
 	{
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
+		for (auto rx = -1; rx <= 1; rx++)
+		{
+			for (auto ry = -1; ry <= 1; ry++)
+			{
+				if (rx || ry)
 				{
-					r = pmap[y+ry][x+rx];
+					auto r = pmap[y+ry][x+rx];
 					if (!r || (parts[i].life >=maxlife))
 						continue;
 					if (TYP(r)==PT_DEUT&& sim->rng.chance(1, 3))
@@ -83,33 +84,41 @@ static int update(UPDATE_FUNC_ARGS)
 						}
 					}
 				}
+			}
+		}
 	}
 	else
-		for (rx=-1; rx<2; rx++)
-			for (ry=-1; ry<2; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
+	{
+		for (auto rx = -1; rx <= 1; rx++)
+		{
+			for (auto ry = -1; ry <= 1; ry++)
+			{
+				if (rx || ry)
 				{
 					//Leave if there is nothing to do
 					if (parts[i].life <= maxlife)
 						goto trade;
-					r = pmap[y+ry][x+rx];
+					auto r = pmap[y+ry][x+rx];
 					if ((!r)&&parts[i].life>=1)//if nothing then create deut
 					{
-						np = sim->create_part(-1,x+rx,y+ry,PT_DEUT);
+						auto np = sim->create_part(-1,x+rx,y+ry,PT_DEUT);
 						if (np<0) continue;
 						parts[i].life--;
 						parts[np].temp = parts[i].temp;
 						parts[np].life = 0;
 					}
 				}
+			}
+		}
+	}
 trade:
-	for ( trade = 0; trade<4; trade ++)
+	for (auto trade = 0; trade<4; trade ++)
 	{
-		rx = sim->rng.between(-2, 2);
-		ry = sim->rng.between(-2, 2);
-		if (BOUNDS_CHECK && (rx || ry))
+		auto rx = sim->rng.between(-2, 2);
+		auto ry = sim->rng.between(-2, 2);
+		if (rx || ry)
 		{
-			r = pmap[y+ry][x+rx];
+			auto r = pmap[y+ry][x+rx];
 			if (!r)
 				continue;
 			if (TYP(r)==PT_DEUT&&(parts[i].life>parts[ID(r)].life)&&parts[i].life>0)//diffusion

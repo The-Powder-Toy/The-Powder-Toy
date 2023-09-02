@@ -54,18 +54,20 @@ static bool isRedBRAY(UPDATE_FUNC_ARGS, int xc, int yc)
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rt, rx, ry;
 	if (parts[i].life>0 && parts[i].life!=10)
 		parts[i].life--;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -2; rx <= 2; rx++)
+	{
+		for (auto ry = -2; ry <= 2; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (sim->parts_avg(i,ID(r),PT_INSL)!=PT_INSL) {
-					rt = TYP(r);
+				if (sim->parts_avg(i,ID(r),PT_INSL)!=PT_INSL)
+				{
+					auto rt = TYP(r);
 					if (rt==PT_SWCH)
 					{
 						if (parts[i].life>=10&&parts[ID(r)].life<10&&parts[ID(r)].life>0)
@@ -83,6 +85,8 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 				}
 			}
+		}
+	}
 	//turn SWCH on/off from two red BRAYS. There must be one either above or below, and one either left or right to work, and it can't come from the side, it must be a diagonal beam
 	if (!TYP(pmap[y-1][x-1]) && !TYP(pmap[y-1][x+1]) && (isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x, y-1) || isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x, y+1)) && (isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x+1, y) || isRedBRAY(UPDATE_FUNC_SUBCALL_ARGS, x-1, y)))
 	{

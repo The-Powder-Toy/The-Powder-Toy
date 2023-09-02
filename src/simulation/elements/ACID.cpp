@@ -52,12 +52,13 @@ void Element::Element_ACID()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry, trade;
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -2; rx <= 2; rx++)
+	{
+		for (auto ry = -2; ry <= 2; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
 				int rt = TYP(r);
@@ -108,13 +109,15 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 				}
 			}
-	for (trade = 0; trade<2; trade++)
+		}
+	}
+	for (auto trade = 0; trade<2; trade++)
 	{
-		rx = sim->rng.between(-2, 2);
-		ry = sim->rng.between(-2, 2);
-		if (BOUNDS_CHECK && (rx || ry))
+		auto rx = sim->rng.between(-2, 2);
+		auto ry = sim->rng.between(-2, 2);
+		if (rx || ry)
 		{
-			r = pmap[y+ry][x+rx];
+			auto r = pmap[y+ry][x+rx];
 			if (!r)
 				continue;
 			if (TYP(r) == PT_ACID && (parts[i].life > parts[ID(r)].life) && parts[i].life>0)//diffusion

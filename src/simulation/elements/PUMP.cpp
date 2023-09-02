@@ -52,7 +52,6 @@ void Element::Element_PUMP()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
 	if (parts[i].life != 10)
 	{
 		if (parts[i].life>0)
@@ -65,8 +64,9 @@ static int update(UPDATE_FUNC_ARGS)
 		if (parts[i].temp <= MIN_PRESSURE+273.15f)
 			parts[i].temp = MIN_PRESSURE+273.15f;
 
-		for (rx = -1; rx <= 1; rx++)
-			for (ry = -1; ry <= 1; ry++)
+		for (auto rx = -1; rx <= 1; rx++)
+		{
+			for (auto ry = -1; ry <= 1; ry++)
 			{
 				if (parts[i].tmp != 1)
 				{
@@ -86,11 +86,14 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 				}
 			}
-		for (rx = -2; rx <= 2; rx++)
-			for (ry = -2; ry <= 2; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
+		}
+		for (auto rx = -2; rx <= 2; rx++)
+		{
+			for (auto ry = -2; ry <= 2; ry++)
+			{
+				if (rx || ry)
 				{
-					r = pmap[y+ry][x+rx];
+					auto r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
 					if (TYP(r) == PT_PUMP)
@@ -101,6 +104,8 @@ static int update(UPDATE_FUNC_ARGS)
 							parts[ID(r)].life = 10;
 					}
 				}
+			}
+		}
 	}
 	return 0;
 }

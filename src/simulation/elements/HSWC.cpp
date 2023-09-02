@@ -49,7 +49,6 @@ void Element::Element_HSWC()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int r, rx, ry;
 	if (parts[i].life!=10)
 	{
 		if (parts[i].life>0)
@@ -58,11 +57,13 @@ static int update(UPDATE_FUNC_ARGS)
 	else
 	{
 		bool deserializeTemp = parts[i].tmp == 1;
-		for (rx=-2; rx<3; rx++)
-			for (ry=-2; ry<3; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
+		for (auto rx = -2; rx <= 2; rx++)
+		{
+			for (auto ry = -2; ry <= 2; ry++)
+			{
+				if (rx || ry)
 				{
-					r = pmap[y+ry][x+rx];
+					auto r = pmap[y+ry][x+rx];
 					if (!r)
 						r = sim->photons[y+ry][x+rx];
 					if (!r)
@@ -84,6 +85,8 @@ static int update(UPDATE_FUNC_ARGS)
 						}
 					}
 				}
+			}
+		}
 	}
 	return 0;
 }

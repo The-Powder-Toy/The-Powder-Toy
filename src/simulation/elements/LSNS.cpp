@@ -56,8 +56,10 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		parts[i].life = 0;
 		for (int rx = -2; rx <= 2; rx++)
+		{
 			for (int ry = -2; ry <= 2; ry++)
-				if (BOUNDS_CHECK && (rx || ry))
+			{
+				if (rx || ry)
 				{
 					int r = pmap[y + ry][x + rx];
 					if (!r)
@@ -74,14 +76,17 @@ static int update(UPDATE_FUNC_ARGS)
 							sim->part_change_type(ID(r), x + rx, y + ry, PT_SPRK);
 						}
 					}
-
 				}
+			}
+		}
 	}
 	bool doSerialization = false;
 	bool doDeserialization = false;
 	int life = 0;
 	for (int rx = -rd; rx < rd + 1; rx++)
+	{
 		for (int ry = -rd; ry < rd + 1; ry++)
+		{
 			if (x + rx >= 0 && y + ry >= 0 && x + rx < XRES && y + ry < YRES && (rx || ry))
 			{
 				int r = pmap[y + ry][x + rx];
@@ -120,10 +125,14 @@ static int update(UPDATE_FUNC_ARGS)
 					break;
 				}
 			}
+		}
+	}
 
 	for (int rx = -1; rx <= 1; rx++)
+	{
 		for (int ry = -1; ry <= 1; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+		{
+			if (rx || ry)
 			{
 				int r = pmap[y + ry][x + rx];
 				if (!r)
@@ -152,6 +161,8 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[ID(r)].life = life - 0x10000000;
 				}
 			}
+		}
+	}
 
 	return 0;
 }

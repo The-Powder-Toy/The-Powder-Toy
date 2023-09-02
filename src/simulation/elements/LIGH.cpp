@@ -67,9 +67,7 @@ static int update(UPDATE_FUNC_ARGS)
 	 *
 	 * tmp - angle of lighting, measured in degrees counterclockwise from the positive x direction
 	 */
-	int r,rx,ry,rt, multipler, powderful;
-	float angle, angle2=-1;
-	powderful = int(parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER);
+	auto powderful = int(parts[i].temp*(1+parts[i].life/40)*LIGHTING_POWER);
 	//Element_FIRE::update(UPDATE_FUNC_SUBCALL_ARGS);
 	if (sim->aheat_enable)
 	{
@@ -81,14 +79,16 @@ static int update(UPDATE_FUNC_ARGS)
 			sim->hv[y/CELL][x/CELL] = MAX_TEMP;
 	}
 
-	for (rx=-2; rx<3; rx++)
-		for (ry=-2; ry<3; ry++)
-			if (BOUNDS_CHECK && (rx || ry))
+	for (auto rx = -2; rx <= 2; rx++)
+	{
+		for (auto ry = -2; ry <= 2; ry++)
+		{
+			if (rx || ry)
 			{
-				r = pmap[y+ry][x+rx];
+				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				rt = TYP(r);
+				auto rt = TYP(r);
 				if ((surround_space || sim->elements[rt].Explosive) &&
 				    (rt!=PT_SPNG || parts[ID(r)].life==0) &&
 					sim->elements[rt].Flammable && sim->rng.chance(sim->elements[rt].Flammable + int(sim->pv[(y+ry)/CELL][(x+rx)/CELL] * 10.0f), 1000))
@@ -152,6 +152,8 @@ static int update(UPDATE_FUNC_ARGS)
 				sim->pv[y/CELL][x/CELL] += powderful/400;
 				if (sim->elements[TYP(r)].HeatConduct) parts[ID(r)].temp = restrict_flt(parts[ID(r)].temp+powderful/1.3, MIN_TEMP, MAX_TEMP);
 			}
+		}
+	}
 	// Deferred branch or bend; or in removal countdown stage
 	if (parts[i].tmp2 == 1 || parts[i].tmp2 == 3 || (parts[i].tmp2 >= 6 && parts[i].tmp2 <= 8))
 	{
@@ -167,14 +169,14 @@ static int update(UPDATE_FUNC_ARGS)
 		sim->kill_part(i);
 		return 1;
 	}
-	angle = float((parts[i].tmp + sim->rng.between(-30, 30)) % 360);
-	multipler = int(parts[i].life * 1.5) + sim->rng.between(0, parts[i].life);
-	rx=int(cos(angle*TPT_PI_FLT/180)*multipler);
-	ry=int(-sin(angle*TPT_PI_FLT/180)*multipler);
+	auto angle = float((parts[i].tmp + sim->rng.between(-30, 30)) % 360);
+	auto multipler = int(parts[i].life * 1.5) + sim->rng.between(0, parts[i].life);
+	auto rx=int(cos(angle*TPT_PI_FLT/180)*multipler);
+	auto ry=int(-sin(angle*TPT_PI_FLT/180)*multipler);
 	create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, int(angle), parts[i].tmp2, i);
 	if (parts[i].tmp2 == 2)// && pNear == -1)
 	{
-		angle2 = float(((int)angle + sim->rng.between(-100, 100)) % 360);
+		auto angle2 = float(((int)angle + sim->rng.between(-100, 100)) % 360);
 		rx=int(cos(angle2*TPT_PI_FLT/180)*multipler);
 		ry=int(-sin(angle2*TPT_PI_FLT/180)*multipler);
 		create_line_par(sim, x, y, x+rx, y+ry, PT_LIGH, parts[i].temp, parts[i].life, int(angle2), parts[i].tmp2, i);
