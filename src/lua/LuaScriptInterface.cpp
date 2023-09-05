@@ -1,5 +1,6 @@
 #include "bzip2/bz2wrap.h"
 #include "common/VariantIndex.h"
+#include "Config.h"
 
 #include "LuaScriptInterface.h"
 
@@ -416,6 +417,12 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	lua_setfield(l, tptPropertiesVersion, "snapshot");
 	lua_pushinteger(l, MOD_ID);
 	lua_setfield(l, tptPropertiesVersion, "modid");
+	auto vcsTag = ByteString(VCS_TAG);
+	if (vcsTag.size())
+	{
+		tpt_lua_pushByteString(l, VCS_TAG);
+		lua_setfield(l, tptPropertiesVersion, "vcstag");
+	}
 	lua_setfield(l, tptProperties, "version");
 
 	lua_sethook(l, &luacon_hook, LUA_MASKCOUNT, 200);

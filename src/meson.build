@@ -86,6 +86,23 @@ common_files = files(
 	'Probability.cpp',
 )
 
+resolve_vcs_tag = get_option('resolve_vcs_tag')
+if resolve_vcs_tag == 'yes' or (resolve_vcs_tag == 'static_release_only' and not is_debug and is_static)
+	common_files += vcs_tag(
+		input: 'VcsTag.template.h',
+		output: 'VcsTag.h',
+		fallback: 'unknown',
+	)
+else
+	vcs_tag_conf_data = configuration_data()
+	vcs_tag_conf_data.set('VCS_TAG', '')
+	configure_file(
+		input: 'VcsTag.template.h',
+		output: 'VcsTag.h',
+		configuration: vcs_tag_conf_data
+	)
+endif
+
 if host_platform == 'linux'
 	powder_files += files('WindowIcon.cpp')
 	font_files += files('WindowIcon.cpp')

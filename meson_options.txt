@@ -220,3 +220,10 @@ option(
 	value: 'disabled',
 	description: 'Render icons with Inkscape (inkscape binary needs to be in PATH)'
 )
+option(
+	'resolve_vcs_tag',
+	type: 'combo',
+	choices: [ 'no', 'static_release_only', 'yes' ],
+	value: 'static_release_only',
+	description: 'Enable VCS tag resolution, introduces an always-stale custom target'
+)

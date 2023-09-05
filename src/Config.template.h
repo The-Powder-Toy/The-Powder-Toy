@@ -1,4 +1,5 @@
 #pragma once
+#include "VcsTag.h"
 
 constexpr bool SET_WINDOW_ICON          = @SET_WINDOW_ICON@;
 constexpr bool DEBUG                    = @DEBUG@;
