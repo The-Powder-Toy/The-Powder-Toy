@@ -1,10 +1,11 @@
 #pragma once
-#include <memory>
 #include "common/String.h"
 #include "common/Vec2.h"
 #include "graphics/Pixel.h"
 #include "gui/interface/Point.h"
 #include "simulation/StructProperty.h"
+#include <memory>
+#include <optional>
 
 class Simulation;
 class Brush;
@@ -97,12 +98,18 @@ public:
 
 class PropertyTool: public Tool
 {
+public:
+	struct Configuration
+	{
+		StructProperty::PropertyType propType;
+		PropertyValue propValue;
+		bool changeType;
+		size_t propOffset;
+	};
+
+private:
 	GameModel &gameModel;
-	StructProperty::PropertyType propType;
-	PropertyValue propValue;
-	bool changeType;
-	size_t propOffset;
-	bool validProperty;
+	std::optional<Configuration> configuration;
 
 	friend class PropertyWindow;
 
