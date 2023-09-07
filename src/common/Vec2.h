@@ -391,7 +391,7 @@ public:
 		return *this = *this & other;
 	}
 
-	inline bool Contains(Vec2<T> point) const
+	constexpr bool Contains(Vec2<T> point) const
 	{
 		return point.X >= TopLeft.X && point.X <= BottomRight.X && point.Y >= TopLeft.Y && point.Y <= BottomRight.Y;
 	}

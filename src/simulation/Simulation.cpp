@@ -2877,7 +2877,7 @@ killed:
 				fin_yf = parts[i].y;
 				fin_x = (int)(fin_xf+0.5f);
 				fin_y = (int)(fin_yf+0.5f);
-				bool closedEholeStart = this->InBounds(fin_x, fin_y) && (bmap[fin_y/CELL][fin_x/CELL] == WL_EHOLE && !emap[fin_y/CELL][fin_x/CELL]);
+				bool closedEholeStart = InBounds(fin_x, fin_y) && (bmap[fin_y/CELL][fin_x/CELL] == WL_EHOLE && !emap[fin_y/CELL][fin_x/CELL]);
 				while (1)
 				{
 					mv -= ISTP;
