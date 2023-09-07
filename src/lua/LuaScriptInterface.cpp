@@ -730,13 +730,20 @@ static int beginInput(lua_State* l)
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	auto cb = std::make_shared<LuaSmartRef>(luacon_ci->l); // * Bind to main lua state (might be different from l).
 	cb->Assign(l, 5);
-	auto handle = [cb](const String &input) {
+	auto handle = [cb](std::optional<String> input) {
 		auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 		auto l = luacon_ci->l;
 		cb->Push(l);
 		if (lua_isfunction(l, -1))
 		{
-			tpt_lua_pushString(l, input);
+			if (input)
+			{
+				tpt_lua_pushString(l, *input);
+			}
+			else
+			{
+				lua_pushnil(l);
+			}
 			if (lua_pcall(l, 1, 0, 0))
 			{
 				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
@@ -750,7 +757,7 @@ static int beginInput(lua_State* l)
 	new TextPrompt(title, prompt, text, shadow, false, { [handle](const String &input) {
 		handle(input);
 	}, [handle]() {
-		handle({}); // * Has always returned empty string >_>
+		handle(std::nullopt);
 	} });
 	return 0;
 }
