@@ -13,6 +13,7 @@ struct RasterDrawMethods
 	void DrawPixel(Vec2<int>, RGB<uint8_t>);
 	void BlendPixel(Vec2<int>, RGBA<uint8_t>);
 	void AddPixel(Vec2<int>, RGBA<uint8_t>);
+	void AddFirePixel(Vec2<int>, RGB<uint8_t>, int fireAlpha);
 	void XorPixel(Vec2<int>);
 
 	void DrawLine(Vec2<int>, Vec2<int>, RGB<uint8_t>);

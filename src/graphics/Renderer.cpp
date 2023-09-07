@@ -1161,7 +1161,7 @@ void Renderer::render_fire()
 						a = fire_alpha[y+CELL][x+CELL];
 						if (findingElement)
 							a /= 2;
-						AddPixel({ i*CELL+x, j*CELL+y }, RGBA<uint8_t>(r, g, b, a));
+						AddFirePixel({ i*CELL+x, j*CELL+y }, RGB<uint8_t>(r, g, b), a);
 					}
 			r *= 8;
 			g *= 8;

@@ -64,6 +64,16 @@ struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) 
 		);
 	}
 
+	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
+	constexpr RGB<T> AddFire(RGB<T> other, int fireAlpha) const
+	{
+		return RGB<T>(
+			std::min(0xFF, Red + (fireAlpha * other.Red) / 0xFF),
+			std::min(0xFF, Green + (fireAlpha * other.Green) / 0xFF),
+			std::min(0xFF, Blue + (fireAlpha * other.Blue) / 0xFF)
+		);
+	}
+
 	// Decrement each component that is nonzero.
 	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
 	constexpr RGB<T> Decay() const

@@ -56,6 +56,16 @@ inline void RasterDrawMethods<Derived>::AddPixel(Vec2<int> pos, RGBA<uint8_t> co
 }
 
 template<typename Derived>
+inline void RasterDrawMethods<Derived>::AddFirePixel(Vec2<int> pos, RGB<uint8_t> colour, int fireAlpha)
+{
+	if (clipRect().Contains(pos))
+	{
+		pixel &px = (static_cast<Derived &>(*this).video)[pos];
+		px = RGB<uint8_t>::Unpack(px).AddFire(colour, fireAlpha).Pack();
+	}
+}
+
+template<typename Derived>
 inline void RasterDrawMethods<Derived>::XorPixel(Vec2<int> pos)
 {
 	if (clipRect().Contains(pos))
