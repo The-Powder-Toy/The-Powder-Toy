@@ -1455,9 +1455,7 @@ void GameController::Vote(int direction)
 
 void GameController::ChangeBrush()
 {
-	auto prev_size = gameModel->GetBrush().GetRadius();
 	gameModel->SetBrushID(gameModel->GetBrushID()+1);
-	gameModel->GetBrush().SetRadius(prev_size);
 }
 
 void GameController::ClearSim()
