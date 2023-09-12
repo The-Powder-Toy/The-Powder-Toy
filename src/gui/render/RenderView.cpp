@@ -161,6 +161,10 @@ void RenderView::OnDraw()
 		ren->clearScreen();
 		ren->RenderBegin();
 		ren->RenderEnd();
+		for (auto y = 0; y < YRES; ++y)
+		{
+			std::copy_n(ren->Data() + ren->Size().X * y, ren->Size().X, g->Data() + g->Size().X * y);
+		}
 	}
 	g->DrawLine({ 0, YRES }, { XRES-1, YRES }, 0xC8C8C8_rgb);
 	g->DrawLine({ line1, YRES }, { line1, WINDOWH }, 0xC8C8C8_rgb);
