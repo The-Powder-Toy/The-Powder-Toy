@@ -268,7 +268,7 @@ void SaveButton::OnMouseUnclick(int x, int y, unsigned int button)
 	{
 		return; //left click only!
 	}
-	if (file && !file->GetGameSave())
+	if (file && !file->LazyGetGameSave())
 	{
 		new ErrorMessage("Error loading save", file->GetError());
 		return;
