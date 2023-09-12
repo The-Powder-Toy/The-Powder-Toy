@@ -172,7 +172,6 @@ void Renderer::render_parts()
 {
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y;
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
-	float gradv, flicker;
 	Particle * parts;
 	Element *elements;
 	if(!sim)
@@ -259,7 +258,7 @@ void Renderer::render_parts()
 				}
 				if((elements[t].Properties & PROP_HOT_GLOW) && sim->parts[i].temp>(elements[t].HighTemperature-800.0f))
 				{
-					gradv = 3.1415/(2*elements[t].HighTemperature-(elements[t].HighTemperature-800.0f));
+					auto gradv = 3.1415/(2*elements[t].HighTemperature-(elements[t].HighTemperature-800.0f));
 					auto caddress = int((sim->parts[i].temp>elements[t].HighTemperature)?elements[t].HighTemperature-(elements[t].HighTemperature-800.0f):sim->parts[i].temp-(elements[t].HighTemperature-800.0f));
 					colr += int(sin(gradv*caddress) * 226);
 					colg += int(sin(gradv*caddress*4.55 +TPT_PI_DBL) * 34);
@@ -299,7 +298,7 @@ void Renderer::render_parts()
 				}
 				else if(colour_mode & COLOUR_LIFE)
 				{
-					gradv = 0.4f;
+					auto gradv = 0.4f;
 					if (!(sim->parts[i].life<5))
 						q = int(sqrt((float)sim->parts[i].life));
 					else
@@ -589,20 +588,25 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_SPARK)
 				{
-					flicker = float(rng()%20);
-					gradv = 4*sim->parts[i].life + flicker;
+					auto flicker = float(rng()%20);
+					auto gradv = 4*sim->parts[i].life + flicker;
 					for (x = 0; gradv>0.5; x++) {
-						AddPixel({ nx+x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-						AddPixel({ nx-x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-						AddPixel({ nx, ny+x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-						AddPixel({ nx, ny-x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+						auto col = RGBA<uint8_t>(
+							std::min(0xFF, colr * int(gradv) / 255),
+							std::min(0xFF, colg * int(gradv) / 255),
+							std::min(0xFF, colb * int(gradv) / 255)
+						);
+						AddPixel({ nx+x, ny }, col);
+						AddPixel({ nx-x, ny }, col);
+						AddPixel({ nx, ny+x }, col);
+						AddPixel({ nx, ny-x }, col);
 						gradv = gradv/1.5f;
 					}
 				}
 				if(pixel_mode & PMODE_FLARE)
 				{
-					flicker = float(rng()%20);
-					gradv = flicker + fabs(parts[i].vx)*17 + fabs(sim->parts[i].vy)*17;
+					auto flicker = float(rng()%20);
+					auto gradv = flicker + fabs(parts[i].vx)*17 + fabs(sim->parts[i].vy)*17;
 					BlendPixel({ nx, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) ));
 					BlendPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb,int( (gradv*2)>255?255:(gradv*2)) ));
 					BlendPixel({ nx-1, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
@@ -623,8 +627,8 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_LFLARE)
 				{
-					flicker = float(rng()%20);
-					gradv = flicker + fabs(parts[i].vx)*17 + fabs(parts[i].vy)*17;
+					auto flicker = float(rng()%20);
+					auto gradv = flicker + fabs(parts[i].vx)*17 + fabs(parts[i].vy)*17;
 					BlendPixel({ nx, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) ));
 					BlendPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
 					BlendPixel({ nx-1, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
