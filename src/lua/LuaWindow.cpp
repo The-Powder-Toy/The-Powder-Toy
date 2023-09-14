@@ -35,21 +35,7 @@ Luna<LuaWindow>::RegType LuaWindow::methods[] = {
 	{0, 0}
 };
 
-LuaWindow::LuaWindow(lua_State * l) :
-	onInitializedFunction(l),
-	onExitFunction(l),
-	onTickFunction(l),
-	onDrawFunction(l),
-	onFocusFunction(l),
-	onBlurFunction(l),
-	onTryExitFunction(l),
-	onTryOkayFunction(l),
-	onMouseMoveFunction(l),
-	onMouseDownFunction(l),
-	onMouseUpFunction(l),
-	onMouseWheelFunction(l),
-	onKeyPressFunction(l),
-	onKeyReleaseFunction(l)
+LuaWindow::LuaWindow(lua_State * l)
 {
 	this->l = l;
 	int posX = luaL_optinteger(l, 1, 1);
@@ -122,7 +108,7 @@ int LuaWindow::addComponent(lua_State * l)
 		luaL_typerror(l, 1, "Component");
 	if (luaComponent)
 	{
-		auto ok = grabbed_components.insert(std::make_pair(luaComponent, LuaSmartRef(l)));
+		auto ok = grabbed_components.insert(std::make_pair(luaComponent, LuaSmartRef()));
 		if (ok.second)
 		{
 			auto it = ok.first;

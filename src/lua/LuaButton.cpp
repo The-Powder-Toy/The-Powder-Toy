@@ -16,8 +16,7 @@ Luna<LuaButton>::RegType LuaButton::methods[] = {
 };
 
 LuaButton::LuaButton(lua_State * l) :
-	LuaComponent(l),
-	actionFunction(l)
+	LuaComponent(l)
 {
 	int posX = luaL_optinteger(l, 1, 0);
 	int posY = luaL_optinteger(l, 2, 0);

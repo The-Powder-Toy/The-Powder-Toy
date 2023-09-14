@@ -1,17 +1,14 @@
 #include "LuaSmartRef.h"
+#include "LuaScriptInterface.h"
 
 void LuaSmartRef::Clear()
 {
-	luaL_unref(rootl, LUA_REGISTRYINDEX, ref);
-	ref = LUA_REFNIL;
-}
-
-LuaSmartRef::LuaSmartRef(lua_State *l) :
-	ref(LUA_REFNIL)
-{
-	tpt_lua_getmainthread(l);
-	rootl = lua_tothread(l, -1);
-	lua_pop(l, 1);
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+	if (luacon_ci)
+	{
+		luaL_unref(luacon_ci->l, LUA_REGISTRYINDEX, ref);
+		ref = LUA_REFNIL;
+	}
 }
 
 LuaSmartRef::~LuaSmartRef()

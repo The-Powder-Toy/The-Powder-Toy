@@ -3,11 +3,9 @@
 
 class LuaSmartRef
 {
-	int ref;
-	lua_State *rootl;
+	int ref = LUA_REFNIL;
 
 public:
-	LuaSmartRef(lua_State *l);
 	~LuaSmartRef();
 	void Assign(lua_State *l, int index); // Copies the value before getting reference, stack unchanged.
 	void Clear();

@@ -465,7 +465,7 @@ tpt.partsdata = nil");
 		lua_setmetatable(l, top);
 	}
 
-	tptPart = new LuaSmartRef(l);
+	tptPart = new LuaSmartRef();
 	tptPart->Assign(l, -1);
 	lua_pop(l, 1);
 #endif
@@ -510,14 +510,14 @@ tpt.partsdata = nil");
 	}
 	lua_setfield(l, tptProperties, "eltransition");
 
-	lua_gr_func_v = std::vector<LuaSmartRef>(PT_NUM, l);
+	lua_gr_func_v = std::vector<LuaSmartRef>(PT_NUM);
 	lua_gr_func = &lua_gr_func_v[0];
-	lua_el_func_v = std::vector<LuaSmartRef>(PT_NUM, l);
+	lua_el_func_v = std::vector<LuaSmartRef>(PT_NUM);
 	lua_el_func = &lua_el_func_v[0];
 	lua_el_mode_v = std::vector<int>(PT_NUM, 0);
 	lua_el_mode = &lua_el_mode_v[0];
 
-	gameControllerEventHandlers = std::vector<LuaSmartRef>(std::variant_size<GameControllerEvent>::value, l);
+	gameControllerEventHandlers = std::vector<LuaSmartRef>(std::variant_size<GameControllerEvent>::value);
 	for (auto &ref : gameControllerEventHandlers)
 	{
 		lua_newtable(l);
@@ -525,10 +525,10 @@ tpt.partsdata = nil");
 		lua_pop(l, 1);
 	}
 
-	luaCtypeDrawHandlers = std::vector<LuaSmartRef>(PT_NUM, l);
-	luaCreateHandlers = std::vector<LuaSmartRef>(PT_NUM, l);
-	luaCreateAllowedHandlers = std::vector<LuaSmartRef>(PT_NUM, l);
-	luaChangeTypeHandlers = std::vector<LuaSmartRef>(PT_NUM, l);
+	luaCtypeDrawHandlers = std::vector<LuaSmartRef>(PT_NUM);
+	luaCreateHandlers = std::vector<LuaSmartRef>(PT_NUM);
+	luaCreateAllowedHandlers = std::vector<LuaSmartRef>(PT_NUM);
+	luaChangeTypeHandlers = std::vector<LuaSmartRef>(PT_NUM);
 
 	//make tpt.* a metatable
 	lua_newtable(l);
@@ -697,8 +697,7 @@ static int beginMessageBox(lua_State* l)
 	auto title = PickIfType(l, 1, String("Title"));
 	auto message = PickIfType(l, 2, String("Message"));
 	auto large = PickIfType(l, 3, false);
-	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
-	auto cb = std::make_shared<LuaSmartRef>(luacon_ci->l); // * Bind to main lua state (might be different from l).
+	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from l).
 	cb->Assign(l, lua_gettop(l));
 	new InformationMessage(title, message, large, { [cb]() {
 		auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
@@ -722,8 +721,7 @@ static int beginMessageBox(lua_State* l)
 static int beginThrowError(lua_State* l)
 {
 	auto errorMessage = PickIfType(l, 1, String("Error text"));
-	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
-	auto cb = std::make_shared<LuaSmartRef>(luacon_ci->l); // * Bind to main lua state (might be different from l).
+	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from l).
 	cb->Assign(l, lua_gettop(l));
 	new ErrorMessage("Error", errorMessage, { [cb]() {
 		auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
@@ -750,8 +748,7 @@ static int beginInput(lua_State* l)
 	auto prompt = PickIfType(l, 2, String("Enter some text:"));
 	auto text = PickIfType(l, 3, String(""));
 	auto shadow = PickIfType(l, 4, String(""));
-	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
-	auto cb = std::make_shared<LuaSmartRef>(luacon_ci->l); // * Bind to main lua state (might be different from l).
+	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from l).
 	cb->Assign(l, lua_gettop(l));
 	auto handle = [cb](std::optional<String> input) {
 		auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
@@ -790,8 +787,7 @@ static int beginConfirm(lua_State *l)
 	auto title = PickIfType(l, 1, String("Title"));
 	auto message = PickIfType(l, 2, String("Message"));
 	auto buttonText = PickIfType(l, 3, String("Confirm"));
-	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
-	auto cb = std::make_shared<LuaSmartRef>(luacon_ci->l); // * Bind to main lua state (might be different from l).
+	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from l).
 	cb->Assign(l, lua_gettop(l));
 	auto handle = [cb](int result) {
 		auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
@@ -875,7 +871,7 @@ int LuaScriptInterface::interface_addComponent(lua_State * l)
 		luaL_typerror(l, 1, "Component");
 	if (luacon_ci->Window && luaComponent)
 	{
-		auto ok = luacon_ci->grabbed_components.insert(std::make_pair(luaComponent, LuaSmartRef(l)));
+		auto ok = luacon_ci->grabbed_components.insert(std::make_pair(luaComponent, LuaSmartRef()));
 		if (ok.second)
 		{
 			auto it = ok.first;
@@ -5108,7 +5104,7 @@ int LuaScriptInterface::luatpt_getscript(lua_State* l)
 	auto filename = tpt_lua_checkByteString(l, 2);
 	auto runScript = PickIfType(l, 3, false);
 
-	auto cb = std::make_shared<LuaSmartRef>(luacon_ci->l); // * Bind to main lua state (might be different from l).
+	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from l).
 	cb->Assign(l, lua_gettop(l));
 	luacon_ci->scriptDownloadComplete = [cb](const GetScriptStatus &status) {
 		auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);

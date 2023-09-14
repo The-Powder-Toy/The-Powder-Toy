@@ -16,8 +16,7 @@ Luna<LuaTextbox>::RegType LuaTextbox::methods[] = {
 };
 
 LuaTextbox::LuaTextbox(lua_State * l) :
-	LuaComponent(l),
-	onTextChangedFunction(l)
+	LuaComponent(l)
 {
 	this->l = l;
 	int posX = luaL_optinteger(l, 1, 0);
