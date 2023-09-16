@@ -38,11 +38,11 @@ int RNG::between(int lower, int upper)
 	return static_cast<int>(r % ((unsigned int)(upper) - (unsigned int)(lower) + 1U)) + lower;
 }
 
-bool RNG::chance(int nominator, unsigned int denominator)
+bool RNG::chance(int numerator, unsigned int denominator)
 {
-	if (nominator < 0)
+	if (numerator < 0)
 		return false;
-	return next() % denominator < static_cast<unsigned int>(nominator);
+	return next() % denominator < static_cast<unsigned int>(numerator);
 }
 
 float RNG::uniform01()
