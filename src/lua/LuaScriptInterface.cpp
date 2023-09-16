@@ -4276,7 +4276,7 @@ int LuaScriptInterface::fileSystem_makeDirectory(lua_State * l)
 
 	int ret = 0;
 	ret = Platform::MakeDirectory(dirname);
-	lua_pushboolean(l, ret == 0);
+	lua_pushboolean(l, ret);
 	return 1;
 }
 
