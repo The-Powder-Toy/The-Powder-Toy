@@ -1,6 +1,7 @@
 #pragma once
 #include "common/String.h"
 #include <cstdint>
+#include <variant>
 
 struct StructProperty
 {
@@ -36,13 +37,20 @@ struct StructProperty
 	{
 
 	}
+
+	bool operator ==(const StructProperty &other) const
+	{
+		return Name == other.Name &&
+		       Type == other.Type &&
+		       Offset == other.Offset;
+	}
 };
 
-union PropertyValue {
-	int Integer;
-	unsigned int UInteger;
-	float Float;
-};
+using PropertyValue = std::variant<
+	int,
+	unsigned int,
+	float
+>;
 
 struct StructPropertyAlias
 {

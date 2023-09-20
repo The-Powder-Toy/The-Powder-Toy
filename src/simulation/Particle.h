@@ -22,6 +22,7 @@ struct Particle
 };
 
 // important: these are indices into the vector returned by Particle::GetProperties, not indices into Particle
+constexpr unsigned int FIELD_TYPE  =  0;
 constexpr unsigned int FIELD_LIFE  =  1;
 constexpr unsigned int FIELD_CTYPE =  2;
 constexpr unsigned int FIELD_TMP   =  9;

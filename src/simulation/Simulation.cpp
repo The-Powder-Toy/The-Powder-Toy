@@ -489,7 +489,7 @@ CoordStack& Simulation::getCoordStackSingleton()
 	return cs;
 }
 
-int Simulation::flood_prop(int x, int y, size_t propoffset, PropertyValue propvalue, StructProperty::PropertyType proptype)
+int Simulation::flood_prop(int x, int y, StructProperty prop, PropertyValue propvalue)
 {
 	int i, x1, x2, dy = 1;
 	int did_something = 0;
@@ -531,18 +531,18 @@ int Simulation::flood_prop(int x, int y, size_t propoffset, PropertyValue propva
 					i = photons[y][x];
 				if (!i)
 					continue;
-				switch (proptype) {
+				switch (prop.Type) {
 					case StructProperty::Float:
-						*((float*)(((char*)&parts[ID(i)])+propoffset)) = propvalue.Float;
+						*((float*)(((char*)&parts[ID(i)])+prop.Offset)) = std::get<float>(propvalue);
 						break;
 
 					case StructProperty::ParticleType:
 					case StructProperty::Integer:
-						*((int*)(((char*)&parts[ID(i)])+propoffset)) = propvalue.Integer;
+						*((int*)(((char*)&parts[ID(i)])+prop.Offset)) = std::get<int>(propvalue);
 						break;
 
 					case StructProperty::UInteger:
-						*((unsigned int*)(((char*)&parts[ID(i)])+propoffset)) = propvalue.UInteger;
+						*((unsigned int*)(((char*)&parts[ID(i)])+prop.Offset)) = std::get<unsigned int>(propvalue);
 						break;
 
 					default:

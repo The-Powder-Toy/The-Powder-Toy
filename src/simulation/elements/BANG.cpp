@@ -75,9 +75,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		if ((ID(pmap[y][x]) == i))
 		{
-			PropertyValue value;
-			value.Integer = 2;
-			sim->flood_prop(x, y, offsetof(Particle, tmp), value, StructProperty::Integer);
+			sim->flood_prop(x, y, Particle::GetProperties()[FIELD_TMP], 2);
 		}
 		parts[i].tmp = 2;
 	}

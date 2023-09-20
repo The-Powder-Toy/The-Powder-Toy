@@ -235,7 +235,6 @@ Renderer::Renderer(Simulation * sim):
 	blackDecorations(false),
 	debugLines(false),
 	sampleColor(0xFFFFFFFF),
-	findingElement(0),
     foundElements(0),
 	mousePos(0, 0),
 	zoomWindowPosition(0, 0),

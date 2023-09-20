@@ -101,10 +101,9 @@ class PropertyTool: public Tool
 public:
 	struct Configuration
 	{
-		StructProperty::PropertyType propType;
+		StructProperty prop;
 		PropertyValue propValue;
 		bool changeType;
-		size_t propOffset;
 	};
 
 private:
@@ -131,6 +130,11 @@ public:
 	void DrawLine(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2, bool dragging = false) override;
 	void DrawRect(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2) override;
 	void DrawFill(Simulation * sim, Brush const &brush, ui::Point position) override;
+
+	std::optional<Configuration> GetConfiguration() const
+	{
+		return configuration;
+	}
 };
 
 class GOLTool: public Tool

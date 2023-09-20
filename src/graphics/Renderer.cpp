@@ -368,10 +368,41 @@ void Renderer::render_parts()
 				if(firea>255) firea = 255;
 				else if(firea<0) firea = 0;
 
+				auto matchesFindingElement = false;
 				if (findingElement)
 				{
-					if (TYP(findingElement) == parts[i].type &&
-							(parts[i].type != PT_LIFE || (ID(findingElement) == parts[i].ctype)))
+					if (findingElement->property.Offset == offsetof(Particle, type))
+					{
+						auto ft = std::get<int>(findingElement->value);
+						matchesFindingElement = parts[i].type == TYP(ft);
+						if (ID(ft))
+						{
+							matchesFindingElement &= parts[i].ctype == ID(ft);
+						}
+					}
+					else
+					{
+						switch (findingElement->property.Type)
+						{
+						case StructProperty::Float:
+							matchesFindingElement = *((float*)(((char*)&sim->parts[i])+findingElement->property.Offset)) == std::get<float>(findingElement->value);
+							break;
+
+						case StructProperty::ParticleType:
+						case StructProperty::Integer:
+							matchesFindingElement = *((int*)(((char*)&sim->parts[i])+findingElement->property.Offset)) == std::get<int>(findingElement->value);
+							break;
+
+						case StructProperty::UInteger:
+							matchesFindingElement = *((unsigned int*)(((char*)&sim->parts[i])+findingElement->property.Offset)) == std::get<unsigned int>(findingElement->value);
+							break;
+
+						default:
+							break;
+						}
+					}
+
+					if (matchesFindingElement)
 					{
 						colr = firer = 255;
 						colg = fireg = colb = fireb = 0;
@@ -416,7 +447,7 @@ void Renderer::render_parts()
 						BlendText(mousePos + Vec2{ -8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), -12 }, hp, 0xFFFFFF_rgb .WithAlpha(255));
 					}
 
-					if (findingElement == t)
+					if (matchesFindingElement)
 					{
 						colr = 255;
 						colg = colb = 0;
@@ -445,7 +476,7 @@ void Renderer::render_parts()
 						}
 					}
 
-					if (findingElement && findingElement == t)
+					if (matchesFindingElement)
 					{
 						legr = 255;
 						legg = legb = 0;
@@ -469,7 +500,7 @@ void Renderer::render_parts()
 						legb = 255;
 					}
 
-					if (findingElement && findingElement != t)
+					if (matchesFindingElement)
 					{
 						colr /= 10;
 						colg /= 10;

@@ -60,7 +60,7 @@ void ParticleDebug::Debug(int mode, int x, int y)
 
 bool ParticleDebug::KeyPress(int key, int scan, bool shift, bool ctrl, bool alt, ui::Point currentMouse)
 {
-	if (key == 'f')
+	if (key == 'f' && !ctrl)
 	{
 		model->SetPaused(1);
 		if (alt)
