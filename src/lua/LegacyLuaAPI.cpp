@@ -249,7 +249,8 @@ int luacon_elementwrite(lua_State* l)
 	LuaScriptInterface::LuaSetProperty(l, prop, propertyAddress, 3);
 
 	luacon_model->BuildMenus();
-	luacon_sim->init_can_move();
+	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
+	luacon_ci->custom_init_can_move();
 	std::fill(&luacon_ren->graphicscache[0], &luacon_ren->graphicscache[0] + PT_NUM, gcache_item());
 
 	return 0;
