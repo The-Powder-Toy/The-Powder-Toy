@@ -222,6 +222,8 @@ void PropertyWindow::CheckProperty()
 				return;
 		}
 		newConfiguration.prop = properties[property->GetOption().second];
+		newConfiguration.propertyIndex = property->GetOption().second;
+		newConfiguration.propertyValueStr = value;
 		newConfiguration.changeType = properties[property->GetOption().second].Name == "type";
 	}
 	catch (const std::exception& ex)
@@ -231,15 +233,21 @@ void PropertyWindow::CheckProperty()
 	configuration = newConfiguration;
 }
 
-void PropertyWindow::SetProperty()
+void PropertyTool::SetConfiguration(std::optional<Configuration> newConfiguration)
 {
-	tool->configuration = configuration;
+	configuration = newConfiguration;
+	if (configuration)
 	{
 		auto &prefs = GlobalPrefs::Ref();
 		Prefs::DeferWrite dw(prefs);
-		prefs.Set("Prop.Type", property->GetOption().second);
-		prefs.Set("Prop.Value", textField->GetText());
+		prefs.Set("Prop.Type", configuration->propertyIndex);
+		prefs.Set("Prop.Value", configuration->propertyValueStr);
 	}
+}
+
+void PropertyWindow::SetProperty()
+{
+	tool->SetConfiguration(configuration);
 }
 
 void PropertyWindow::OnTryExit(ExitMethod method)
@@ -300,6 +308,39 @@ void PropertyTool::SetProperty(Simulation *sim, ui::Point position)
 		default:
 			break;
 	}
+}
+
+void PropertyTool::UpdateConfigurationFromParticle(const Particle &part)
+{
+	auto configuration = GetConfiguration();
+	switch (configuration->prop.Type)
+	{
+	case StructProperty::Float:
+		{
+			auto value = *((float*)(((char*)&part)+configuration->prop.Offset));;
+			configuration->propValue = value;
+			configuration->propertyValueStr = String::Build(value);
+		}
+		break;
+	case StructProperty::ParticleType:
+	case StructProperty::Integer:
+		{
+			auto value = *((int*)(((char*)&part)+configuration->prop.Offset));;
+			configuration->propValue = value;
+			configuration->propertyValueStr = String::Build(value);
+		}
+		break;
+	case StructProperty::UInteger:
+		{
+			auto value = *((unsigned int*)(((char*)&part)+configuration->prop.Offset));;
+			configuration->propValue = value;
+			configuration->propertyValueStr = String::Build(value);
+		}
+		break;
+	default:
+		break;
+	}
+	SetConfiguration(configuration);
 }
 
 void PropertyTool::Draw(Simulation *sim, Brush const &cBrush, ui::Point position)

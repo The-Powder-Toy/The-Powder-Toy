@@ -10,6 +10,7 @@
 class Simulation;
 class Brush;
 class VideoBuffer;
+class Particle;
 
 class Tool
 {
@@ -104,6 +105,8 @@ public:
 		StructProperty prop;
 		PropertyValue propValue;
 		bool changeType;
+		int propertyIndex;
+		String propertyValueStr;
 	};
 
 private:
@@ -124,12 +127,15 @@ public:
 	{}
 
 	void OpenWindow(Simulation *sim);
-	virtual void SetProperty(Simulation *sim, ui::Point position);
+	void SetProperty(Simulation *sim, ui::Point position);
+	void UpdateConfigurationFromParticle(const Particle &part);
 	void Click(Simulation * sim, Brush const &brush, ui::Point position) override { }
 	void Draw(Simulation *sim, Brush const &brush, ui::Point position) override;
 	void DrawLine(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2, bool dragging = false) override;
 	void DrawRect(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2) override;
 	void DrawFill(Simulation * sim, Brush const &brush, ui::Point position) override;
+
+	void SetConfiguration(std::optional<Configuration> newConfiguration);
 
 	std::optional<Configuration> GetConfiguration() const
 	{

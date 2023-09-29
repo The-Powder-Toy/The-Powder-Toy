@@ -40,7 +40,13 @@ void SampleTool::Draw(Simulation * sim, Brush const &brush, ui::Point position)
 		}
 		if (part)
 		{
-			if (part->type == PT_LIFE)
+			auto *propTool = static_cast<PropertyTool *>(gameModel.GetToolFromIdentifier("DEFAULT_UI_PROPERTY"));
+			if (gameModel.GetActiveTool(0) == propTool && propTool->GetConfiguration())
+			{
+				propTool->UpdateConfigurationFromParticle(*part);
+				gameModel.SetActiveTool(0, propTool); // trigger change so Renderer::findingElement is updated
+			}
+			else if (part->type == PT_LIFE)
 			{
 				bool found = false;
 				for (auto *elementTool : gameModel.GetMenuList()[SC_LIFE]->GetToolList())
