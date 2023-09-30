@@ -191,6 +191,8 @@ simulation_elem_names = [
 	'VSNS',
 	'ROCK',
 	'LITH',
+	'RSST',
+	'RSSS'
 ]
 
 simulation_elem_src = []

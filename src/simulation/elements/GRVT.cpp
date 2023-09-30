@@ -59,6 +59,25 @@ static int update(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp <= -100)
 		parts[i].tmp = -100;
 
+	int under = pmap[y][x];
+	int utype = TYP(under);
+	int uID = ID(under);
+
+	if(utype == PT_RSST)
+	{
+		sim->part_change_type(uID, x, y, PT_SWCH);
+		sim->kill_part(i);
+
+		return 1;
+	}
+	else if(utype == PT_RSSS)
+	{
+		sim->part_change_type(uID, x, y, PT_NSCN);
+		sim->kill_part(i);
+
+		return 1;
+	}
+
 	sim->gravmap[(y/CELL)*XCELLS+(x/CELL)] = 0.2f*parts[i].tmp;
 	return 0;
 }

@@ -164,6 +164,14 @@ static int update(UPDATE_FUNC_ARGS)
 				else
 					sim->create_part(ID(r), x+rx, y+ry, PT_CAUS);
 				break;
+			case PT_RSSS:
+				if(!rx && !ry)
+				{
+					sim->part_change_type(ID(r), x, y, PT_RSST);
+					sim->kill_part(i);
+					return 1;
+				}
+				break;
 			default:
 				break;
 			}
