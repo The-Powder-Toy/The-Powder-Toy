@@ -1197,7 +1197,7 @@ void Simulation::init_can_move()
 		 || destinationType == PT_CLNE || destinationType == PT_PCLN || destinationType == PT_BCLN || destinationType == PT_PBCN
 		 || destinationType == PT_WATR || destinationType == PT_DSTW || destinationType == PT_SLTW || destinationType == PT_GLOW
 		 || destinationType == PT_ISOZ || destinationType == PT_ISZS || destinationType == PT_QRTZ || destinationType == PT_PQRT
-		 || destinationType == PT_H2   || destinationType == PT_BGLA || destinationType == PT_C5)
+		 || destinationType == PT_H2   || destinationType == PT_BGLA || destinationType == PT_C5 || destinationType == PT_RSST)
 			can_move[PT_PHOT][destinationType] = 2;
 		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO)
 		{
@@ -1238,6 +1238,8 @@ void Simulation::init_can_move()
 	can_move[PT_TRON][PT_SWCH] = 3;
 	can_move[PT_SOAP][PT_OIL] = 0;
 	can_move[PT_OIL][PT_SOAP] = 1;
+	can_move[PT_ELEC][PT_RSST] = 2;
+	can_move[PT_ELEC][PT_RSSS] = 2;
 }
 
 /*

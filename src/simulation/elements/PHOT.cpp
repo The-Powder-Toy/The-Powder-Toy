@@ -107,6 +107,13 @@ static int update(UPDATE_FUNC_ARGS)
 				parts[i].vx = vx;
 				parts[i].vy = vy;
 			}
+			else if(TYP(r) == PT_RSST && !ry && !rx)//if on RSST
+			{
+				sim->part_change_type(ID(r),x,y,PT_RSSS);
+				sim->kill_part(i);
+
+				return 1;
+			}
 			else if (TYP(r) == PT_FILT && parts[ID(r)].tmp==9)
 			{
 				parts[i].vx += ((float)sim->rng.between(-500, 500))/1000.0f;
