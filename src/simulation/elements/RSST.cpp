@@ -1,5 +1,7 @@
 #include "simulation/ElementCommon.h"
 
+int update(UPDATE_FUNC_ARGS);
+
 void Element::Element_RSST()
 {
 	Identifier = "DEFAULT_PT_RSST";
@@ -24,7 +26,7 @@ void Element::Element_RSST()
 	Meltable = 0;
 	Hardness = 50;
 
-	Weight = 40;
+	Weight = 34;
 
 	DefaultProperties.temp = R_TEMP + 20.0f + 273.15f;
 	HeatConduct = 44;
@@ -40,4 +42,29 @@ void Element::Element_RSST()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+
+	Update = &update;
+}
+
+int update(UPDATE_FUNC_ARGS)
+{
+	for(int rx = -1; rx < 2; rx++)
+	{
+		for(int ry = -1; ry < 2; ry++)
+		{
+			auto r = pmap[y+ry][x+rx];
+
+			if (!r)
+				continue;
+
+			if(TYP(r) == PT_GUNP)
+			{
+				sim->part_change_type(i, x, y, PT_FIRW);
+				sim->kill_part(ID(r));
+				return 1;
+			}
+		}
+	}
+
+	return 0;
 }
