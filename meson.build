@@ -18,6 +18,7 @@ if get_option('prepare')
 	subdir_done()
 endif
 
+fs = import('fs')
 to_array = generator(
 	executable('toarray', sources: 'resources/ToArray.cpp', native: true),
 	output: [ '@PLAINNAME@.cpp', '@PLAINNAME@.h' ],
@@ -342,7 +343,7 @@ if host_platform == 'windows'
 				do_copy = true
 			endif
 			if do_copy
-				configure_file(input: dll_input, output: dll_output, copy: true)
+				fs.copyfile(dll_input, dll_output)
 			endif
 		endforeach
 	endif

@@ -17,6 +17,7 @@ constexpr bool INSTALL_CHECK            = @INSTALL_CHECK@;
 constexpr bool IGNORE_UPDATES           = @IGNORE_UPDATES@;
 constexpr bool ENFORCE_HTTPS            = @ENFORCE_HTTPS@;
 constexpr bool SECURE_CIPHERS_ONLY      = @SECURE_CIPHERS_ONLY@;
+constexpr bool USE_SYSTEM_CERT_PROVIDER = @USE_SYSTEM_CERT_PROVIDER@;
 constexpr bool FFTW_PLAN_MEASURE        = @FFTW_PLAN_MEASURE@;
 constexpr bool ALLOW_QUIT               = @ALLOW_QUIT@;
 constexpr bool ALLOW_WINDOW_FRAME_OPS   = @ALLOW_WINDOW_FRAME_OPS@;
