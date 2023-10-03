@@ -88,7 +88,7 @@ tpt_libs_debug = is_debug ? 'debug' : 'release'
 tpt_libs_variant = '@0@-@1@-@2@-@3@'.format(host_arch, host_platform, host_libc, tpt_libs_static)
 tpt_libs_vtag = get_option('tpt_libs_vtag')
 if tpt_libs_vtag == ''
-	tpt_libs_vtag = 'v20230819222922'
+	tpt_libs_vtag = 'v20231003175140'
 endif
 if tpt_libs_static != 'none'
 	if tpt_libs_variant not in [
