@@ -1,6 +1,7 @@
 #include "bzip2/bz2wrap.h"
 #include "common/VariantIndex.h"
 #include "Config.h"
+#include "prefs/GlobalPrefs.h"
 
 #include "LuaScriptInterface.h"
 
@@ -272,6 +273,8 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	currentCommand(false),
 	textInputRefcount(0)
 {
+	auto &prefs = GlobalPrefs::Ref();
+	luaHookTimeout = prefs.Get("LuaHookTimeout", 3000);
 	luacon_model = m;
 	luacon_controller = c;
 	luacon_sim = m->GetSimulation();

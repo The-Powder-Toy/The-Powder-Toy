@@ -259,7 +259,7 @@ int luacon_elementwrite(lua_State* l)
 void luacon_hook(lua_State * l, lua_Debug * ar)
 {
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
-	if (ar->event == LUA_HOOKCOUNT && Platform::GetTime() - luacon_ci->luaExecutionStart > 3000)
+	if (ar->event == LUA_HOOKCOUNT && int(Platform::GetTime() - luacon_ci->luaExecutionStart) > luacon_ci->luaHookTimeout)
 	{
 		luaL_error(l, "Error: Script not responding");
 		luacon_ci->luaExecutionStart = Platform::GetTime();
