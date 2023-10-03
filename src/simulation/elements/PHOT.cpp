@@ -80,9 +80,9 @@ static int update(UPDATE_FUNC_ARGS)
 					auto rrr = sim->rng.between(0, 359) * 3.14159f / 180.0f;
 					int rr;
 					if (TYP(r) == PT_ISOZ)
-						rr = sim->rng.between(128, 255) / 127.0f;
+						rr = int(sim->rng.between(128, 255) / 127.0f);
 					else
-						rr = sim->rng.between(128, 355) / 127.0f;
+						rr = int(sim->rng.between(128, 355) / 127.0f);
 					parts[ID(r)].vx = rr*cosf(rrr);
 					parts[ID(r)].vy = rr*sinf(rrr);
 					sim->pv[y/CELL][x/CELL] -= 15.0f * CFDS;
