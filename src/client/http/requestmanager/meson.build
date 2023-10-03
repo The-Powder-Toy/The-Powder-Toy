@@ -13,6 +13,10 @@ else
 		use_system_cert_provider = true
 		client_files += files('WindowsCertProvider.cpp')
 	endif
+	if host_platform == 'android'
+		use_system_cert_provider = true
+		client_files += files('AndroidCertProvider.cpp')
+	endif
 endif
 conf_data.set('NOHTTP', (not enable_http).to_string())
 conf_data.set('USE_SYSTEM_CERT_PROVIDER', use_system_cert_provider.to_string())

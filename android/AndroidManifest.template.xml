@@ -33,7 +33,7 @@
 		android:name="android.hardware.type.pc"
 		android:required="false"
 	/>
-	<uses-permission android:name="android.permission.VIBRATE" />
+	@ANDROID_PERMISSIONS@
 	<application
 		android:label="@string/app_name"
 		android:icon="@mipmap/ic_launcher"
@@ -43,6 +43,7 @@
 	>
 		<activity
 			android:name=".PowderActivity"
+			android:screenOrientation="landscape"
 			android:label="@string/app_name"
 			android:alwaysRetainTaskState="true"
 			android:launchMode="singleInstance"

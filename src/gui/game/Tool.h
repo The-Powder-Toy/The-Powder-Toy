@@ -10,7 +10,7 @@
 class Simulation;
 class Brush;
 class VideoBuffer;
-class Particle;
+struct Particle;
 
 class Tool
 {

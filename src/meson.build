@@ -49,6 +49,18 @@ conf_data.set('APPID', app_id)
 conf_data.set('APPDATA', get_option('app_data'))
 conf_data.set('APPVENDOR', get_option('app_vendor'))
 
+if host_platform == 'android'
+	android_permissions = [
+		'<uses-permission android:name="android.permission.VIBRATE" />',
+	]
+	if enable_http
+		android_permissions += [
+			'<uses-permission android:name="android.permission.INTERNET" />',
+		]
+	endif
+	conf_data.set('ANDROID_PERMISSIONS', '\n'.join(android_permissions))
+endif
+
 powder_files = files(
 	'SDLCompat.cpp',
 	'PowderToySDL.cpp',

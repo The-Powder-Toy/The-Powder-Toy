@@ -174,9 +174,6 @@ endif
 
 enable_http = get_option('http')
 if host_platform == 'android'
-	enable_http = false
-endif
-if host_platform == 'android'
 	android_ndk_toolchain_prefix = meson.get_external_property('android_ndk_toolchain_prefix')
 	android_platform = meson.get_external_property('android_platform')
 	tpt_libs_android_toolchain_prefix = tpt_libs.get_variable('android_toolchain_prefix')

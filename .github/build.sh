@@ -369,7 +369,6 @@ zipalign = andriod_sdk_build_tools / 'zipalign'
 apksigner = andriod_sdk_build_tools / 'apksigner'
 ANDROID_INI
 	meson_configure+=$'\t'--cross-file=.github/android-ghactions.ini
-	meson_configure+=$'\t'-Dhttp=false
 fi
 meson_configure+=$'\t'-Dc_args=[$c_args]
 meson_configure+=$'\t'-Dcpp_args=[$c_args]
