@@ -77,9 +77,9 @@ void OptionsController::SetFullscreen(bool fullscreen)
 	model->SetFullscreen(fullscreen);
 }
 
-void OptionsController::SetAltFullscreen(bool altFullscreen)
+void OptionsController::SetChangeResolution(bool newChangeResolution)
 {
-	model->SetAltFullscreen(altFullscreen);
+	model->SetChangeResolution(newChangeResolution);
 }
 
 void OptionsController::SetForceIntegerScaling(bool forceIntegerScaling)

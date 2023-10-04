@@ -29,7 +29,7 @@ class OptionsView: public ui::Window
 	ui::DropDown * scale;
 	ui::Checkbox * resizable;
 	ui::Checkbox * fullscreen;
-	ui::Checkbox * altFullscreen;
+	ui::Checkbox * changeResolution;
 	ui::Checkbox * forceIntegerScaling;
 	ui::Checkbox * fastquit = nullptr;
 	ui::DropDown * decoSpace;

@@ -15,8 +15,6 @@ Engine::Engine():
 	Scale(1),
 	Fullscreen(false),
 	FrameIndex(0),
-	altFullscreen(false),
-	resizable(false),
 	state_(NULL),
 	windowTargetPosition(0, 0),
 	FastQuit(1),

@@ -22,19 +22,25 @@ conf_data.set('USE_UPDATESERVER', (update_server != '').to_string())
 
 enforce_https = get_option('enforce_https')
 allow_quit = true
-allow_window_frame_ops = true
+force_window_frame_ops = 'forceWindowFrameOpsNone'
 allow_data_folder = true
 if host_platform == 'emscripten'
 	allow_quit = false
-	allow_window_frame_ops = false
+	force_window_frame_ops = 'forceWindowFrameOpsEmbedded'
 	allow_data_folder = false
+endif
+default_touch_ui = false
+if host_platform == 'android'
+	default_touch_ui = true # TODO: some more sophisticated heuristic at runtime instead
+	force_window_frame_ops = 'forceWindowFrameOpsHandheld'
 endif
 secure_ciphers_only = get_option('secure_ciphers_only')
 if not is_debug and not enforce_https
 	error('refusing to build a release binary without enforcing HTTPS, configure with -Denforce_https=true to fix this error')
 endif
 conf_data.set('ALLOW_QUIT', allow_quit.to_string())
-conf_data.set('ALLOW_WINDOW_FRAME_OPS', allow_window_frame_ops.to_string())
+conf_data.set('FORCE_WINDOW_FRAME_OPS', force_window_frame_ops)
+conf_data.set('DEFAULT_TOUCH_UI', default_touch_ui.to_string())
 conf_data.set('ALLOW_DATA_FOLDER', allow_data_folder.to_string())
 conf_data.set('ENFORCE_HTTPS', enforce_https.to_string())
 conf_data.set('SECURE_CIPHERS_ONLY', secure_ciphers_only.to_string())
@@ -58,7 +64,12 @@ if host_platform == 'android'
 			'<uses-permission android:name="android.permission.INTERNET" />',
 		]
 	endif
+	android_properties = []
+	if is_debug
+		android_properties += [ 'android:debuggable="true"' ]
+	endif
 	conf_data.set('ANDROID_PERMISSIONS', '\n'.join(android_permissions))
+	conf_data.set('ANDROID_PROPERTIES', '\n'.join(android_properties))
 endif
 
 powder_files = files(

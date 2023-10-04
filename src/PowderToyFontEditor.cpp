@@ -51,10 +51,6 @@ int main(int argc, char * argv[])
 			scale = buf;
 		}
 	}
-	resizable = false;
-	fullscreen = false;
-	altFullscreen = false;
-	forceIntegerScaling = true;
 
 	// TODO: maybe bind the maximum allowed scale to screen size somehow
 	if(scale < 1 || scale > 10)
@@ -69,10 +65,7 @@ int main(int argc, char * argv[])
 	auto &engine = ui::Engine::Ref();
 	engine.g = new Graphics();
 	engine.Scale = scale;
-	engine.SetResizable(resizable);
-	engine.Fullscreen = fullscreen;
-	engine.SetAltFullscreen(altFullscreen);
-	engine.SetForceIntegerScaling(forceIntegerScaling);
+	engine.SetWindowFrameOps({ false, false, false, false });
 
 	engine.Begin();
 	engine.SetFastQuit(true);

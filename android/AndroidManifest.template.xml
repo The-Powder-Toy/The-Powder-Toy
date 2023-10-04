@@ -40,6 +40,7 @@
 		android:allowBackup="true"
 		android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
 		android:hardwareAccelerated="true"
+		@ANDROID_PROPERTIES@
 	>
 		<activity
 			android:name=".PowderActivity"

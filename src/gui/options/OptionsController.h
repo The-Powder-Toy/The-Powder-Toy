@@ -25,7 +25,7 @@ public:
 	void SetEdgeMode(int edgeMode);
 	void SetTemperatureScale(int temperatureScale);
 	void SetFullscreen(bool fullscreen);
-	void SetAltFullscreen(bool altFullscreen);
+	void SetChangeResolution(bool newChangeResolution);
 	void SetForceIntegerScaling(bool forceIntegerScaling);
 	void SetScale(int scale);
 	void SetGraveExitsConsole(bool graveExitsConsole);

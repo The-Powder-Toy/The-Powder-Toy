@@ -5,6 +5,7 @@
 #include "common/ExplicitSingleton.h"
 #include "graphics/Pixel.h"
 #include "gui/interface/Point.h"
+#include "gui/WindowFrameOps.h"
 #include <climits>
 #include "FpsLimit.h"
 
@@ -47,16 +48,8 @@ namespace ui
 
 		void SetDrawingFrequencyLimit(int limit) {drawingFrequencyLimit = limit;}
 		inline int GetDrawingFrequencyLimit() {return drawingFrequencyLimit;}
-		void SetFullscreen(bool fullscreen) { Fullscreen = fullscreen; }
-		inline bool GetFullscreen() { return Fullscreen; }
-		void SetAltFullscreen(bool altFullscreen) { this->altFullscreen = altFullscreen; }
-		inline bool GetAltFullscreen() { return altFullscreen; }
-		void SetForceIntegerScaling(bool forceIntegerScaling) { this->forceIntegerScaling = forceIntegerScaling; }
-		inline bool GetForceIntegerScaling() { return forceIntegerScaling; }
 		void SetScale(int scale) { Scale = scale; }
 		inline int GetScale() { return Scale; }
-		void SetResizable(bool resizable) { this->resizable = resizable; }
-		inline bool GetResizable() { return resizable; }
 		void SetFastQuit(bool fastquit) { FastQuit = fastquit; }
 		inline bool GetFastQuit() {return FastQuit; }
 
@@ -93,9 +86,6 @@ namespace ui
 		unsigned int FrameIndex;
 	private:
 		FpsLimit fpsLimit;
-		bool altFullscreen;
-		bool forceIntegerScaling = true;
-		bool resizable;
 
 		bool textInput = false;
 		int lastTextEditingStart = INT_MAX;
@@ -131,9 +121,31 @@ namespace ui
 
 		String textEditingBuf;
 
+		WindowFrameOps windowFrameOps = { false, false, false, false };
+
 	public:
 		bool MomentumScroll = true;
 		bool ShowAvatars = true;
+		bool TouchUI = false;
+
+		inline WindowFrameOps GetWindowFrameOps() const
+		{
+			return windowFrameOps;
+		}
+
+		inline void SetWindowFrameOps(WindowFrameOps newWindowFrameOps)
+		{
+			windowFrameOps = newWindowFrameOps;
+		}
+
+		void SetFullscreen         (bool newFullscreen         ) { windowFrameOps.fullscreen          = newFullscreen;          }
+		void SetChangeResolution   (bool setChangeResolution   ) { windowFrameOps.changeResolution    = setChangeResolution;    }
+		void SetForceIntegerScaling(bool newForceIntegerScaling) { windowFrameOps.forceIntegerScaling = newForceIntegerScaling; }
+		void SetResizable          (bool newResizable          ) { windowFrameOps.resizable           = newResizable;           }
+		inline bool GetFullscreen         () const { return windowFrameOps.fullscreen;          }
+		inline bool GetChangeResolution   () const { return windowFrameOps.changeResolution;    }
+		inline bool GetForceIntegerScaling() const { return windowFrameOps.forceIntegerScaling; }
+		inline bool GetResizable          () const { return windowFrameOps.resizable;           }
 	};
 
 }

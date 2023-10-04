@@ -287,10 +287,6 @@ int Main(int argc, char *argv[])
 	auto &prefs = GlobalPrefs::Ref();
 	scale = prefs.Get("Scale", 1);
 	auto graveExitsConsole = prefs.Get("GraveExitsConsole", true);
-	resizable = prefs.Get("Resizable", false);
-	fullscreen = prefs.Get("Fullscreen", false);
-	altFullscreen = prefs.Get("AltFullscreen", false);
-	forceIntegerScaling = prefs.Get("ForceIntegerScaling", true);
 	momentumScroll = prefs.Get("MomentumScroll", true);
 	showAvatars = prefs.Get("ShowAvatars", true);
 
@@ -311,8 +307,8 @@ int Main(int argc, char *argv[])
 	auto kioskArg = arguments["kiosk"];
 	if (kioskArg.has_value())
 	{
-		fullscreen = true_string(kioskArg.value());
-		prefs.Set("Fullscreen", fullscreen);
+		currentFrameOps.fullscreen = true_string(kioskArg.value());
+		prefs.Set("Fullscreen", currentFrameOps.fullscreen);
 	}
 
 	if (true_arg(arguments["redirect"]))
@@ -375,31 +371,35 @@ int Main(int argc, char *argv[])
 
 	SDLOpen();
 
-	if (Client::Ref().IsFirstRun())
-	{
-		scale = GuessBestScale();
-		if (scale > 1)
-		{
-			prefs.Set("Scale", scale);
-			SDL_SetWindowSize(sdl_window, WINDOWW * scale, WINDOWH * scale);
-			showLargeScreenDialog = true;
-		}
-	}
-
 	StopTextInput();
 
 	auto &engine = ui::Engine::Ref();
 	engine.g = new Graphics();
 	engine.Scale = scale;
 	engine.GraveExitsConsole = graveExitsConsole;
-	engine.SetResizable(resizable);
-	engine.Fullscreen = fullscreen;
-	engine.SetAltFullscreen(altFullscreen);
-	engine.SetForceIntegerScaling(forceIntegerScaling);
+	engine.SetWindowFrameOps(currentFrameOps);
 	engine.MomentumScroll = momentumScroll;
 	engine.ShowAvatars = showAvatars;
 	engine.Begin();
 	engine.SetFastQuit(prefs.Get("FastQuit", true));
+	engine.TouchUI = prefs.Get("TouchUI", DEFAULT_TOUCH_UI);
+
+	if (Client::Ref().IsFirstRun() && FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsNone)
+	{
+		scale = GuessBestScale();
+		if (scale > 1)
+		{
+			prefs.Set("Scale", scale);
+			showLargeScreenDialog = true;
+		}
+	}
+
+	SDLSetScreen(scale, {
+		prefs.Get("Resizable", false),
+		prefs.Get("Fullscreen", false),
+		prefs.Get("AltFullscreen", false),
+		prefs.Get("ForceIntegerScaling", true),
+	}, vsyncHint);
 
 	bool enableBluescreen = USE_BLUESCREEN && !true_arg(arguments["disable-bluescreen"]);
 	if (enableBluescreen)

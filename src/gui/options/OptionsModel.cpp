@@ -191,15 +191,15 @@ void OptionsModel::SetFullscreen(bool fullscreen)
 	notifySettingsChanged();
 }
 
-bool OptionsModel::GetAltFullscreen()
+bool OptionsModel::GetChangeResolution()
 {
-	return ui::Engine::Ref().GetAltFullscreen();
+	return ui::Engine::Ref().GetChangeResolution();
 }
 
-void OptionsModel::SetAltFullscreen(bool altFullscreen)
+void OptionsModel::SetChangeResolution(bool newChangeResolution)
 {
-	ui::Engine::Ref().SetAltFullscreen(altFullscreen);
-	GlobalPrefs::Ref().Set("AltFullscreen", altFullscreen);
+	ui::Engine::Ref().SetChangeResolution(newChangeResolution);
+	GlobalPrefs::Ref().Set("AltFullscreen", newChangeResolution);
 	notifySettingsChanged();
 }
 

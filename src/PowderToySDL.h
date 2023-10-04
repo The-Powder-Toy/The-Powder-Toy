@@ -1,6 +1,7 @@
 #pragma once
 #include "common/String.h"
 #include "graphics/Pixel.h"
+#include "gui/WindowFrameOps.h"
 #include "FpsLimit.h"
 #include <cstdint>
 #include <SDL.h>
@@ -12,10 +13,8 @@ extern SDL_Window *sdl_window;
 extern SDL_Renderer *sdl_renderer;
 extern SDL_Texture *sdl_texture;
 extern int scale;
-extern bool fullscreen;
-extern bool altFullscreen;
-extern bool forceIntegerScaling;
-extern bool resizable;
+extern bool vsyncHint;
+extern WindowFrameOps currentFrameOps;
 extern bool momentumScroll;
 extern bool showAvatars;
 extern uint64_t lastTick;
@@ -41,7 +40,7 @@ void CalculateMousePosition(int *x, int *y);
 void blit(pixel *vid);
 void SDLOpen();
 void SDLClose();
-void SDLSetScreen(int scale_, bool resizable_, bool fullscreen_, bool altFullscreen_, bool forceIntegerScaling_);
+void SDLSetScreen(int scale_, WindowFrameOps newFrameOps, bool vsyncHint_);
 void SetFpsLimit(FpsLimit newFpsLimit);
 bool RecreateWindow();
 void LoadWindowPosition();

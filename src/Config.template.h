@@ -20,9 +20,17 @@ constexpr bool SECURE_CIPHERS_ONLY      = @SECURE_CIPHERS_ONLY@;
 constexpr bool USE_SYSTEM_CERT_PROVIDER = @USE_SYSTEM_CERT_PROVIDER@;
 constexpr bool FFTW_PLAN_MEASURE        = @FFTW_PLAN_MEASURE@;
 constexpr bool ALLOW_QUIT               = @ALLOW_QUIT@;
-constexpr bool ALLOW_WINDOW_FRAME_OPS   = @ALLOW_WINDOW_FRAME_OPS@;
+constexpr bool DEFAULT_TOUCH_UI         = @DEFAULT_TOUCH_UI@;
 constexpr bool ALLOW_DATA_FOLDER        = @ALLOW_DATA_FOLDER@;
 constexpr char PATH_SEP_CHAR            = '@PATH_SEP_CHAR@';
+
+enum ForceWindowFrameOps
+{
+	forceWindowFrameOpsNone, // usual behaviour
+	forceWindowFrameOpsEmbedded, // e.g. into a webpage; this sweeps a few emscripten limitations under the rug
+	forceWindowFrameOpsHandheld, // e.g. the system doesn't support windowed mode; includes odd setups like chromebooks
+};
+constexpr ForceWindowFrameOps FORCE_WINDOW_FRAME_OPS = @FORCE_WINDOW_FRAME_OPS@;
 
 constexpr char SERVER[]         = "@SERVER@";
 constexpr char STATICSERVER[]   = "@STATICSERVER@";
