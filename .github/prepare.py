@@ -51,16 +51,23 @@ if int(build_options['mod_id']) == 0 and os.path.exists('.github/mod_id.txt'):
 		build_options['mod_id'] = f.read()
 
 if int(build_options['mod_id']) == 0:
-	if release_type == 'beta':
+	if release_type == 'stable':
+		pass
+	elif release_type == 'beta':
 		build_options['app_name'   ] += ' Beta'
 		build_options['app_comment'] += ' - Beta'
 		build_options['app_exe'    ] += 'beta'
 		build_options['app_id'     ] += 'beta'
-	if release_type == 'snapshot':
+	elif release_type == 'snapshot':
 		build_options['app_name'   ] += ' Snapshot'
 		build_options['app_comment'] += ' - Snapshot'
 		build_options['app_exe'    ] += 'snapshot'
 		build_options['app_id'     ] += 'snapshot'
+	else:
+		build_options['app_name'   ] += ' Dev'
+		build_options['app_comment'] += ' - Dev'
+		build_options['app_exe'    ] += 'dev'
+		build_options['app_id'     ] += 'dev'
 
 set_output('mod_id'     , build_options['mod_id'     ])
 set_output('app_name'   , build_options['app_name'   ])
