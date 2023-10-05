@@ -331,6 +331,5 @@ void Engine::StopTextInput()
 
 void Engine::TextInputRect(Point position, Point size)
 {
-	auto scale = windowFrameOps.scale;
-	::SetTextInputRect(position.X * scale, position.Y * scale, size.X * scale, size.Y * scale);
+	::SetTextInputRect(position.X, position.Y, size.X, size.Y);
 }

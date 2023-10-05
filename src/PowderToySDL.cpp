@@ -42,11 +42,15 @@ void StopTextInput()
 
 void SetTextInputRect(int x, int y, int w, int h)
 {
+	// Why does SDL_SetTextInputRect not take logical coordinates???
+	int wx, wy, wwx, why;
+	SDL_RenderLogicalToWindow(sdl_renderer, x, y, &wx, &wy);
+	SDL_RenderLogicalToWindow(sdl_renderer, x + w, y + h, &wwx, &why);
 	SDL_Rect rect;
-	rect.x = x;
-	rect.y = y;
-	rect.w = w;
-	rect.h = h;
+	rect.x = wx;
+	rect.y = wy;
+	rect.w = wwx - wx;
+	rect.h = why - wy;
 	SDL_SetTextInputRect(&rect);
 }
 
@@ -241,13 +245,12 @@ void SDLSetScreen()
 		//Uncomment this to enable resizing
 		//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 		//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
-
-		LoadWindowPosition();
-		UpdateFpsLimit();
 	}
 
 	SDL_SetWindowSize(sdl_window, size.X, size.Y);
 	SDL_RenderSetIntegerScale(sdl_renderer, newFrameOpsNorm.forceIntegerScaling ? SDL_TRUE : SDL_FALSE);
+	LoadWindowPosition();
+	UpdateFpsLimit();
 	if (newFrameOpsNorm.fullscreen)
 	{
 		SDL_RaiseWindow(sdl_window);
