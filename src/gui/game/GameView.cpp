@@ -1459,6 +1459,9 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		else
 			introText = 0;
 		break;
+	case SDL_SCANCODE_F11:
+		ui::Engine::Ref().SetFullscreen(!ui::Engine::Ref().GetFullscreen());
+		break;
 	case SDL_SCANCODE_H:
 		if(ctrl)
 		{
