@@ -43,14 +43,23 @@ void StopTextInput()
 void SetTextInputRect(int x, int y, int w, int h)
 {
 	// Why does SDL_SetTextInputRect not take logical coordinates???
+	SDL_Rect rect;
+#if SDL_VERSION_ATLEAST(2, 0, 18)
 	int wx, wy, wwx, why;
 	SDL_RenderLogicalToWindow(sdl_renderer, x, y, &wx, &wy);
 	SDL_RenderLogicalToWindow(sdl_renderer, x + w, y + h, &wwx, &why);
-	SDL_Rect rect;
 	rect.x = wx;
 	rect.y = wy;
 	rect.w = wwx - wx;
 	rect.h = why - wy;
+#else
+	// TODO: use SDL_RenderLogicalToWindow when ubuntu deigns to update to sdl 2.0.18
+	auto scale = ui::Engine::Ref().windowFrameOps.scale;
+	rect.x = x * scale;
+	rect.y = y * scale;
+	rect.w = w * scale;
+	rect.h = h * scale;
+#endif
 	SDL_SetTextInputRect(&rect);
 }
 
