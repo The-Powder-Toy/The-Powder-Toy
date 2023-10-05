@@ -12,8 +12,6 @@ using namespace ui;
 
 Engine::Engine():
 	drawingFrequencyLimit(0),
-	Scale(1),
-	Fullscreen(false),
 	FrameIndex(0),
 	state_(NULL),
 	windowTargetPosition(0, 0),
@@ -333,5 +331,6 @@ void Engine::StopTextInput()
 
 void Engine::TextInputRect(Point position, Point size)
 {
-	::SetTextInputRect(position.X * Scale, position.Y * Scale, size.X * Scale, size.Y * Scale);
+	auto scale = windowFrameOps.scale;
+	::SetTextInputRect(position.X * scale, position.Y * scale, size.X * scale, size.Y * scale);
 }

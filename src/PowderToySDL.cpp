@@ -12,9 +12,8 @@ int desktopHeight = 1024;
 SDL_Window *sdl_window = NULL;
 SDL_Renderer *sdl_renderer = NULL;
 SDL_Texture *sdl_texture = NULL;
-int scale = 1;
 bool vsyncHint = false;
-WindowFrameOps currentFrameOps = { false, false, false, false };
+WindowFrameOps currentFrameOps;
 bool momentumScroll = true;
 bool showAvatars = true;
 uint64_t lastTick = 0;
@@ -71,7 +70,7 @@ unsigned int GetTicks()
 	return SDL_GetTicks();
 }
 
-void CalculateMousePosition(int *x, int *y)
+static void CalculateMousePosition(int *x, int *y)
 {
 	int globalMx, globalMy;
 	SDL_GetGlobalMouseState(&globalMx, &globalMy);
@@ -79,9 +78,9 @@ void CalculateMousePosition(int *x, int *y)
 	SDL_GetWindowPosition(sdl_window, &windowX, &windowY);
 
 	if (x)
-		*x = (globalMx - windowX) / scale;
+		*x = (globalMx - windowX) / currentFrameOps.scale;
 	if (y)
-		*y = (globalMy - windowY) / scale;
+		*y = (globalMy - windowY) / currentFrameOps.scale;
 }
 
 void blit(pixel *vid)
@@ -102,11 +101,7 @@ void SDLOpen()
 		Platform::Exit(-1);
 	}
 
-	if (!RecreateWindow())
-	{
-		fprintf(stderr, "Creating SDL window: %s\n", SDL_GetError());
-		Platform::Exit(-1);
-	}
+	SDLSetScreen();
 
 	int displayIndex = SDL_GetWindowDisplayIndex(sdl_window);
 	if (displayIndex >= 0)
@@ -123,6 +118,8 @@ void SDLOpen()
 	{
 		WindowIcon(sdl_window);
 	}
+
+	StopTextInput();
 }
 
 void SDLClose()
@@ -141,8 +138,10 @@ void SDLClose()
 	SDL_Quit();
 }
 
-void SDLSetScreen(int scale_, WindowFrameOps newFrameOps, bool vsyncHint_)
+void SDLSetScreen()
 {
+	auto newFrameOps = ui::Engine::Ref().windowFrameOps;
+	auto newVsyncHint = std::holds_alternative<FpsLimitVsync>(ui::Engine::Ref().GetFpsLimit());
 	if (FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsEmbedded)
 	{
 		newFrameOps.resizable = false;
@@ -157,95 +156,107 @@ void SDLSetScreen(int scale_, WindowFrameOps newFrameOps, bool vsyncHint_)
 		newFrameOps.changeResolution = false;
 		newFrameOps.forceIntegerScaling = false;
 	}
-//	bool changingScale = scale != scale_;
-	bool changingFullscreen = newFrameOps.fullscreen != currentFrameOps.fullscreen || (newFrameOps.changeResolution != currentFrameOps.changeResolution && currentFrameOps.fullscreen);
-	bool changingResizable = currentFrameOps.resizable != newFrameOps.resizable;
-	bool changingVsync = vsyncHint != vsyncHint_;
-	scale = scale_;
-	currentFrameOps.fullscreen = newFrameOps.fullscreen;
-	currentFrameOps.changeResolution = newFrameOps.changeResolution;
-	currentFrameOps.resizable = newFrameOps.resizable;
-	currentFrameOps.forceIntegerScaling = newFrameOps.forceIntegerScaling;
-	vsyncHint = vsyncHint_;
-	// Recreate the window when toggling fullscreen, due to occasional issues
-	// Also recreate it when enabling resizable windows, to fix bugs on windows,
-	//  see https://github.com/jacob1/The-Powder-Toy/issues/24
-	if (changingFullscreen || currentFrameOps.changeResolution || (changingResizable && currentFrameOps.resizable && !currentFrameOps.fullscreen) || changingVsync)
+
+	auto currentFrameOpsNorm = currentFrameOps.Normalize();
+	auto newFrameOpsNorm = newFrameOps.Normalize();
+	auto recreate = !sdl_window ||
+	                // Recreate the window when toggling fullscreen, due to occasional issues
+	                newFrameOpsNorm.fullscreen       != currentFrameOpsNorm.fullscreen       ||
+	                // Also recreate it when enabling resizable windows, to fix bugs on windows,
+	                //  see https://github.com/jacob1/The-Powder-Toy/issues/24
+	                newFrameOpsNorm.resizable        != currentFrameOpsNorm.resizable        ||
+	                newFrameOpsNorm.changeResolution != currentFrameOpsNorm.changeResolution ||
+	                newVsyncHint != vsyncHint;
+
+	if (!(recreate ||
+	      newFrameOpsNorm.scale               != currentFrameOpsNorm.scale               ||
+	      newFrameOpsNorm.forceIntegerScaling != currentFrameOpsNorm.forceIntegerScaling))
 	{
-		RecreateWindow();
 		return;
 	}
-	if (changingResizable)
-		SDL_RestoreWindow(sdl_window);
 
-	SDL_SetWindowSize(sdl_window, WINDOWW * scale, WINDOWH * scale);
-	SDL_RenderSetIntegerScale(sdl_renderer, currentFrameOps.forceIntegerScaling && currentFrameOps.fullscreen ? SDL_TRUE : SDL_FALSE);
-	unsigned int flags = 0;
-	if (currentFrameOps.fullscreen)
-		flags = currentFrameOps.changeResolution ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
-	SDL_SetWindowFullscreen(sdl_window, flags);
-	if (currentFrameOps.fullscreen)
-		SDL_RaiseWindow(sdl_window);
-	SDL_SetWindowResizable(sdl_window, currentFrameOps.resizable ? SDL_TRUE : SDL_FALSE);
-}
+	auto size = WINDOW * newFrameOpsNorm.scale;
 
-bool RecreateWindow()
-{
-	unsigned int flags = 0;
-	unsigned int rendererFlags = 0;
-	if (currentFrameOps.fullscreen)
-		flags = currentFrameOps.changeResolution ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
-	if (currentFrameOps.resizable && !currentFrameOps.fullscreen)
-		flags |= SDL_WINDOW_RESIZABLE;
-	if (vsyncHint)
-		rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
-
-	if (sdl_texture)
-		SDL_DestroyTexture(sdl_texture);
-	if (sdl_renderer)
-		SDL_DestroyRenderer(sdl_renderer);
-	if (sdl_window)
+	if (recreate)
 	{
-		SaveWindowPosition();
-		SDL_DestroyWindow(sdl_window);
-	}
-
-	sdl_window = SDL_CreateWindow(APPNAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOWW * scale, WINDOWH * scale,
-	                              flags);
-	if (!sdl_window)
-	{
-		return false;
-	}
-	sdl_renderer = SDL_CreateRenderer(sdl_window, -1, rendererFlags);
-	if (!sdl_renderer)
-	{
-		fprintf(stderr, "SDL_CreateRenderer failed; available renderers:\n");
-		int num = SDL_GetNumRenderDrivers();
-		for (int i = 0; i < num; ++i)
+		if (sdl_texture)
 		{
-			SDL_RendererInfo info;
-			SDL_GetRenderDriverInfo(i, &info);
-			fprintf(stderr, " - %s\n", info.name);
+			SDL_DestroyTexture(sdl_texture);
+			sdl_texture = NULL;
 		}
-		return false;
+		if (sdl_renderer)
+		{
+			SDL_DestroyRenderer(sdl_renderer);
+			sdl_renderer = NULL;
+		}
+		if (sdl_window)
+		{
+			SaveWindowPosition();
+			SDL_DestroyWindow(sdl_window);
+			sdl_window = NULL;
+		}
+
+		unsigned int flags = 0;
+		unsigned int rendererFlags = 0;
+		if (newFrameOpsNorm.fullscreen)
+		{
+			flags = newFrameOpsNorm.changeResolution ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
+		}
+		if (newFrameOpsNorm.resizable)
+		{
+			flags |= SDL_WINDOW_RESIZABLE;
+		}
+		if (vsyncHint)
+		{
+			rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
+		}
+		sdl_window = SDL_CreateWindow(APPNAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, size.X, size.Y, flags);
+		if (!sdl_window)
+		{
+			fprintf(stderr, "SDL_CreateWindow failed: %s\n", SDL_GetError());
+			Platform::Exit(-1);
+		}
+		sdl_renderer = SDL_CreateRenderer(sdl_window, -1, rendererFlags);
+		if (!sdl_renderer)
+		{
+			fprintf(stderr, "SDL_CreateRenderer failed; available renderers:\n");
+			int num = SDL_GetNumRenderDrivers();
+			for (int i = 0; i < num; ++i)
+			{
+				SDL_RendererInfo info;
+				SDL_GetRenderDriverInfo(i, &info);
+				fprintf(stderr, " - %s\n", info.name);
+			}
+			Platform::Exit(-1);
+		}
+		SDL_RenderSetLogicalSize(sdl_renderer, WINDOWW, WINDOWH);
+		sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOWW, WINDOWH);
+		if (!sdl_texture)
+		{
+			fprintf(stderr, "SDL_CreateTexture failed: %s\n", SDL_GetError());
+			Platform::Exit(-1);
+		}
+		SDL_RaiseWindow(sdl_window);
+		SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
+		//Uncomment this to enable resizing
+		//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+		//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
+
+		LoadWindowPosition();
+		UpdateFpsLimit();
 	}
-	SDL_RenderSetLogicalSize(sdl_renderer, WINDOWW, WINDOWH);
-	if (currentFrameOps.forceIntegerScaling && currentFrameOps.fullscreen)
-		SDL_RenderSetIntegerScale(sdl_renderer, SDL_TRUE);
-	sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOWW, WINDOWH);
-	SDL_RaiseWindow(sdl_window);
-	SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
-	//Uncomment this to enable resizing
-	//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-	//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
 
-	LoadWindowPosition();
-	UpdateFpsLimit();
-
-	return true;
+	SDL_SetWindowSize(sdl_window, size.X, size.Y);
+	SDL_RenderSetIntegerScale(sdl_renderer, newFrameOpsNorm.forceIntegerScaling ? SDL_TRUE : SDL_FALSE);
+	if (newFrameOpsNorm.fullscreen)
+	{
+		SDL_RaiseWindow(sdl_window);
+	}
+	currentFrameOps = newFrameOps;
+	vsyncHint = newVsyncHint;
 }
 
-void EventProcess(const SDL_Event &event)
+static void EventProcess(const SDL_Event &event)
 {
 	auto &engine = ui::Engine::Ref();
 	switch (event.type)
@@ -399,13 +410,7 @@ void EngineProcess()
 	{
 		engine.Draw();
 		drawingTimer = 0;
-
-		auto wantVsync = bool(std::get_if<FpsLimitVsync>(&fpsLimit));
-		if (scale != engine.Scale || currentFrameOps != engine.GetWindowFrameOps() || vsyncHint != wantVsync)
-		{
-			SDLSetScreen(engine.Scale, engine.GetWindowFrameOps(), wantVsync);
-		}
-
+		SDLSetScreen();
 		blit(engine.g->Data());
 	}
 	auto now = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);

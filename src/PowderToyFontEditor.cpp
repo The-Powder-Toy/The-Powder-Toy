@@ -41,31 +41,30 @@ int main(int argc, char * argv[])
 	});
 	explicitSingletons = std::make_unique<ExplicitSingletons>();
 	
-	scale = 1;
+	WindowFrameOps windowFrameOps;
 	if (argc >= 3)
 	{
 		std::istringstream ss(argv[2]);
 		int buf;
 		if (ss >> buf)
 		{
-			scale = buf;
+			windowFrameOps.scale = buf;
 		}
 	}
 
 	// TODO: maybe bind the maximum allowed scale to screen size somehow
-	if(scale < 1 || scale > 10)
-		scale = 1;
+	if (windowFrameOps.scale < 1 || windowFrameOps.scale > 10)
+	{
+		windowFrameOps.scale = 1;
+	}
 
 	explicitSingletons->engine = std::make_unique<ui::Engine>();
 
-	SDLOpen();
-
-	StopTextInput();
-
 	auto &engine = ui::Engine::Ref();
 	engine.g = new Graphics();
-	engine.Scale = scale;
-	engine.SetWindowFrameOps({ false, false, false, false });
+	engine.windowFrameOps = windowFrameOps;
+
+	SDLOpen();
 
 	engine.Begin();
 	engine.SetFastQuit(true);

@@ -48,8 +48,6 @@ namespace ui
 
 		void SetDrawingFrequencyLimit(int limit) {drawingFrequencyLimit = limit;}
 		inline int GetDrawingFrequencyLimit() {return drawingFrequencyLimit;}
-		void SetScale(int scale) { Scale = scale; }
-		inline int GetScale() { return Scale; }
 		void SetFastQuit(bool fastquit) { FastQuit = fastquit; }
 		inline bool GetFastQuit() {return FastQuit; }
 
@@ -79,9 +77,7 @@ namespace ui
 
 		int drawingFrequencyLimit;
 		Graphics * g;
-		int Scale;
 		bool GraveExitsConsole;
-		bool Fullscreen;
 
 		unsigned int FrameIndex;
 	private:
@@ -121,31 +117,21 @@ namespace ui
 
 		String textEditingBuf;
 
-		WindowFrameOps windowFrameOps = { false, false, false, false };
-
 	public:
 		bool MomentumScroll = true;
 		bool ShowAvatars = true;
 		bool TouchUI = false;
+		WindowFrameOps windowFrameOps;
 
-		inline WindowFrameOps GetWindowFrameOps() const
-		{
-			return windowFrameOps;
-		}
-
-		inline void SetWindowFrameOps(WindowFrameOps newWindowFrameOps)
-		{
-			windowFrameOps = newWindowFrameOps;
-		}
-
+		void SetScale              (int newScale               ) { windowFrameOps.scale               = newScale;               }
 		void SetFullscreen         (bool newFullscreen         ) { windowFrameOps.fullscreen          = newFullscreen;          }
 		void SetChangeResolution   (bool setChangeResolution   ) { windowFrameOps.changeResolution    = setChangeResolution;    }
 		void SetForceIntegerScaling(bool newForceIntegerScaling) { windowFrameOps.forceIntegerScaling = newForceIntegerScaling; }
 		void SetResizable          (bool newResizable          ) { windowFrameOps.resizable           = newResizable;           }
-		inline bool GetFullscreen         () const { return windowFrameOps.fullscreen;          }
-		inline bool GetChangeResolution   () const { return windowFrameOps.changeResolution;    }
-		inline bool GetForceIntegerScaling() const { return windowFrameOps.forceIntegerScaling; }
-		inline bool GetResizable          () const { return windowFrameOps.resizable;           }
+		int  GetScale              () const { return windowFrameOps.scale;               }
+		bool GetFullscreen         () const { return windowFrameOps.fullscreen;          }
+		bool GetChangeResolution   () const { return windowFrameOps.changeResolution;    }
+		bool GetForceIntegerScaling() const { return windowFrameOps.forceIntegerScaling; }
+		bool GetResizable          () const { return windowFrameOps.resizable;           }
 	};
-
 }
