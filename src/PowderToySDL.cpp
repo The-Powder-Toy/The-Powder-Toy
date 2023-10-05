@@ -255,10 +255,12 @@ void SDLSetScreen()
 		//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 		//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
 	}
-
-	SDL_SetWindowSize(sdl_window, size.X, size.Y);
 	SDL_RenderSetIntegerScale(sdl_renderer, newFrameOpsNorm.forceIntegerScaling ? SDL_TRUE : SDL_FALSE);
-	LoadWindowPosition();
+	if (!(newFrameOpsNorm.resizable && SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_MAXIMIZED))
+	{
+		SDL_SetWindowSize(sdl_window, size.X, size.Y);
+		LoadWindowPosition();
+	}
 	UpdateFpsLimit();
 	if (newFrameOpsNorm.fullscreen)
 	{
