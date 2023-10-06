@@ -51,7 +51,7 @@ GameModel::GameModel():
 	activeColourPreset(0),
 	colourSelector(false),
 	colour(255, 0, 0, 255),
-	edgeMode(0),
+	edgeMode(EDGE_VOID),
 	ambientAirTemp(R_TEMP + 273.15f),
 	decoSpace(0)
 {
@@ -91,7 +91,7 @@ GameModel::GameModel():
 	ren->decorations_enable = prefs.Get("Renderer.Decorations", true);
 
 	//Load config into simulation
-	edgeMode = prefs.Get("Simulation.EdgeMode", 0); // TODO: EdgeMode enum
+	edgeMode = prefs.Get("Simulation.EdgeMode", (int)EDGE_VOID);
 	sim->SetEdgeMode(edgeMode);
 	ambientAirTemp = float(R_TEMP) + 273.15f;
 	{
@@ -1332,10 +1332,10 @@ void GameModel::FrameStep(int frames)
 void GameModel::ClearSimulation()
 {
 	//Load defaults
-	sim->gravityMode = 0;
+	sim->gravityMode = GRAV_VERTICAL;
 	sim->customGravityX = 0.0f;
 	sim->customGravityY = 0.0f;
-	sim->air->airMode = 0;
+	sim->air->airMode = AIR_ON;
 	sim->legacy_enable = false;
 	sim->water_equal_test = false;
 	sim->SetEdgeMode(edgeMode);

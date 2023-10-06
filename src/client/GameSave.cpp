@@ -1251,8 +1251,8 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	auto partP = blockP * CELL;
 
 	if (ver<46) {
-		gravityMode = 0;
-		airMode = 0;
+		gravityMode = GRAV_VERTICAL;
+		airMode = AIR_ON;
 	}
 
 	PlaneAdapter<std::vector<int>> particleIDMap(RES, 0);
@@ -2295,7 +2295,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	bson_append_string(&b, "platform", IDENT_PLATFORM);
 	bson_append_string(&b, "ident", IDENT);
 	bson_append_finish_object(&b);
-	if (gravityMode == 3)
+	if (gravityMode == GRAV_CUSTOM)
 	{
 		bson_append_double(&b, "customGravityX", double(customGravityX));
 		bson_append_double(&b, "customGravityY", double(customGravityY));

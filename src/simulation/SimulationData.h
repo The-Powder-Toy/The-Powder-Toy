@@ -133,6 +133,21 @@ constexpr int NGT_BRAN = 23;
 constexpr auto REPLACE_MODE    = UINT32_C(0x00000001);
 constexpr auto SPECIFIC_DELETE = UINT32_C(0x00000002);
 
+enum EdgeMode
+{
+	EDGE_VOID, EDGE_SOLID, EDGE_LOOP, NUM_EDGE_MODES
+};
+
+enum AirMode
+{
+	AIR_ON, AIR_PRESSURE_OFF, AIR_VELOCITY_OFF, AIR_OFF, AIR_NO_UPDATE, NUM_AIR_MODES
+};
+
+enum GravityMode
+{
+	GRAV_VERTICAL, GRAV_OFF, GRAV_RADIAL, GRAV_CUSTOM, NUM_GRAV_MODES
+};
+
 struct part_type;
 struct part_transition;
 
