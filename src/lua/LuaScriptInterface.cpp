@@ -1280,28 +1280,18 @@ void LuaScriptInterface::initSimulationAPI()
 	SETCONST(l, NUM_GRAV_MODES);
 
 	lua_newtable(l);
-	SETCONST(l, WL_ERASE);
-	SETCONST(l, WL_WALLELEC);
-	SETCONST(l, WL_EWALL);
-	SETCONST(l, WL_DETECT);
-	SETCONST(l, WL_STREAM);
-	SETCONST(l, WL_FAN);
-	SETCONST(l, WL_ALLOWLIQUID);
-	SETCONST(l, WL_DESTROYALL);
-	SETCONST(l, WL_WALL);
-	SETCONST(l, WL_ALLOWAIR);
-	SETCONST(l, WL_ALLOWPOWDER);
-	SETCONST(l, WL_ALLOWALLELEC);
-	SETCONST(l, WL_EHOLE);
-	SETCONST(l, WL_ALLOWGAS);
-	SETCONST(l, WL_GRAV);
-	SETCONST(l, WL_ALLOWENERGY);
-	SETCONST(l, WL_BLOCKAIR);
-	SETCONST(l, WL_ERASEALL);
-	SETCONST(l, WL_STASIS);
-	SETCONST(l, WL_FLOODHELPER);
-	SETCONST(l, UI_WALLCOUNT);
+	for (int i = 0; i < UI_WALLCOUNT; i++)
+	{
+		tpt_lua_pushByteString(l, luacon_sim->wtypes[i].identifier);
+		lua_pushinteger(l, i);
+		lua_settable(l, -3);
+
+		lua_pushinteger(l, i);
+		tpt_lua_pushByteString(l, luacon_sim->wtypes[i].identifier);
+		lua_settable(l, -3);
+	}
 	lua_setfield(l, -2, "walls");
+	SETCONST(l, UI_WALLCOUNT);
 
 	//Declare FIELD_BLAH constants
 	{
