@@ -293,6 +293,7 @@ int Main(int argc, char *argv[])
 		prefs.Get("Fullscreen", false),
 		prefs.Get("AltFullscreen", false),
 		prefs.Get("ForceIntegerScaling", true),
+		prefs.Get("BlurryScaling", false),
 	};
 	auto graveExitsConsole = prefs.Get("GraveExitsConsole", true);
 	momentumScroll = prefs.Get("MomentumScroll", true);

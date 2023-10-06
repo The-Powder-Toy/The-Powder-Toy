@@ -31,6 +31,7 @@ class OptionsView: public ui::Window
 	ui::Checkbox *fullscreen{};
 	ui::Checkbox *changeResolution{};
 	ui::Checkbox *forceIntegerScaling{};
+	ui::Checkbox *blurryScaling{};
 	ui::Checkbox *fastquit{};
 	ui::DropDown *decoSpace{};
 	ui::Checkbox *showAvatars{};

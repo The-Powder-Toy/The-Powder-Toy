@@ -215,6 +215,18 @@ void OptionsModel::SetForceIntegerScaling(bool forceIntegerScaling)
 	notifySettingsChanged();
 }
 
+bool OptionsModel::GetBlurryScaling()
+{
+	return ui::Engine::Ref().GetBlurryScaling();
+}
+
+void OptionsModel::SetBlurryScaling(bool newBlurryScaling)
+{
+	ui::Engine::Ref().SetBlurryScaling(newBlurryScaling);
+	GlobalPrefs::Ref().Set("BlurryScaling", newBlurryScaling);
+	notifySettingsChanged();
+}
+
 bool OptionsModel::GetFastQuit()
 {
 	return ui::Engine::Ref().GetFastQuit();

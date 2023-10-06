@@ -127,11 +127,6 @@ void SDLOpen()
 		}
 	}
 
-	if constexpr (SET_WINDOW_ICON)
-	{
-		WindowIcon(sdl_window);
-	}
-
 	StopTextInput();
 }
 
@@ -179,6 +174,7 @@ void SDLSetScreen()
 	                //  see https://github.com/jacob1/The-Powder-Toy/issues/24
 	                newFrameOpsNorm.resizable        != currentFrameOpsNorm.resizable        ||
 	                newFrameOpsNorm.changeResolution != currentFrameOpsNorm.changeResolution ||
+	                newFrameOpsNorm.blurryScaling    != currentFrameOpsNorm.blurryScaling    ||
 	                newVsyncHint != vsyncHint;
 
 	if (!(recreate ||
@@ -189,6 +185,10 @@ void SDLSetScreen()
 	}
 
 	auto size = WINDOW * newFrameOpsNorm.scale;
+	if (sdl_window && newFrameOpsNorm.resizable)
+	{
+		SDL_GetWindowSize(sdl_window, &size.X, &size.Y);
+	}
 
 	if (recreate)
 	{
@@ -229,6 +229,12 @@ void SDLSetScreen()
 			fprintf(stderr, "SDL_CreateWindow failed: %s\n", SDL_GetError());
 			Platform::Exit(-1);
 		}
+		if constexpr (SET_WINDOW_ICON)
+		{
+			WindowIcon(sdl_window);
+		}
+		SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, newFrameOpsNorm.blurryScaling ? "linear" : "nearest");
 		sdl_renderer = SDL_CreateRenderer(sdl_window, -1, rendererFlags);
 		if (!sdl_renderer)
 		{
@@ -250,10 +256,6 @@ void SDLSetScreen()
 			Platform::Exit(-1);
 		}
 		SDL_RaiseWindow(sdl_window);
-		SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
-		//Uncomment this to enable resizing
-		//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-		//SDL_SetWindowResizable(sdl_window, SDL_TRUE);
 	}
 	SDL_RenderSetIntegerScale(sdl_renderer, newFrameOpsNorm.forceIntegerScaling ? SDL_TRUE : SDL_FALSE);
 	if (!(newFrameOpsNorm.resizable && SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_MAXIMIZED))

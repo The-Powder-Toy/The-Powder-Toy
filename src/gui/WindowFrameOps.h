@@ -8,6 +8,7 @@ struct WindowFrameOps
 	bool fullscreen = false;
 	bool changeResolution = false;
 	bool forceIntegerScaling = false;
+	bool blurryScaling = false;
 
 	WindowFrameOps Normalize() const
 	{
@@ -17,6 +18,7 @@ struct WindowFrameOps
 			fullscreen                              ,
 			fullscreen ? changeResolution    : false,
 			fullscreen ? forceIntegerScaling : false,
+			blurryScaling                           ,
 		};
 	}
 };
