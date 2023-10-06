@@ -82,6 +82,7 @@ Controls
 | I                       | Invert Pressure and Velocity map                                |
 | W                       | Cycle gravity modes (use with Ctrl when STK2 is out)            |
 | Y                       | Cycle air modes                                                 |
+| Ctrl + E                | Cycle edge modes                                                |
 | B                       | Enter decoration editor menu                                    |
 | Ctrl + B                | Toggle decorations on/off                                       |
 | N                       | Toggle Newtonian Gravity on/off                                 |

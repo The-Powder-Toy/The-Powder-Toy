@@ -116,6 +116,8 @@ public:
 	bool GetDebugHUD();
 	void SetTemperatureScale(int temperatureScale);
 	int GetTemperatureScale();
+	int GetEdgeMode();
+	void SetEdgeMode(int edgeMode);
 	void SetDebugFlags(unsigned int flags) { debugFlags = flags; }
 	void SetActiveMenu(int menuID);
 	std::vector<Menu*> GetMenuList();

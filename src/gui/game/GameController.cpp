@@ -1012,6 +1012,32 @@ int GameController::GetTemperatureScale()
 	return gameModel->GetTemperatureScale();
 }
 
+int GameController::GetEdgeMode()
+{
+	return gameModel->GetEdgeMode();
+}
+
+void GameController::SetEdgeMode(int edgeMode)
+{
+	if (edgeMode < 0 || edgeMode >= NUM_EDGE_MODES)
+		edgeMode = 0;
+
+	gameModel->SetEdgeMode(edgeMode);
+
+	switch (edgeMode)
+	{
+		case EDGE_VOID:
+			gameModel->SetInfoTip("Edge Mode: Void");
+			break;
+		case EDGE_SOLID:
+			gameModel->SetInfoTip("Edge Mode: Solid");
+			break;
+		case EDGE_LOOP:
+			gameModel->SetInfoTip("Edge Mode: Loop");
+			break;
+	}
+}
+
 void GameController::SetActiveColourPreset(int preset)
 {
 	gameModel->SetActiveColourPreset(preset);
