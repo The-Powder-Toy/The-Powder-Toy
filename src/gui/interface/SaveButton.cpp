@@ -231,7 +231,7 @@ void SaveButton::Draw(const Point& screenPos)
 			g->BlendText({ x, y }, votesBackground2, 0xC0C0C0_rgb .WithAlpha(255));
 			g->BlendText({ x+3, y }, votesString, 0xFFFFFF_rgb .WithAlpha(255));
 		}
-		if (isMouseInsideHistory && showVotes)
+		if (isMouseInside)
 		{
 			int x = screenPos.X;
 			int y = screenPos.Y-15+(Size.Y-thumbBoxSize.Y)/2+thumbBoxSize.Y;
