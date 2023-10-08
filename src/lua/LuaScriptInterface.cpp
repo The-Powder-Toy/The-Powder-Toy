@@ -1233,7 +1233,7 @@ void LuaScriptInterface::initSimulationAPI()
 	SETCONSTF(l, MIN_PRESSURE);
 	SETCONST(l, ISTP);
 	SETCONSTF(l, CFDS);
-	SETCONSTF(l, SIM_MAXVELOCITY);
+	SETCONSTF(l, MAX_VELOCITY);
 
 	SETCONST(l, TOOL_HEAT);
 	SETCONST(l, TOOL_COOL);
@@ -1370,7 +1370,7 @@ void LuaScriptInterface::set_map(int x, int y, int width, int height, float valu
 int LuaScriptInterface::simulation_partNeighbours(lua_State * l)
 {
 	lua_newtable(l);
-	int id = 0;
+	int id = 1;
 	int x = lua_tointeger(l, 1), y = lua_tointeger(l, 2), r = lua_tointeger(l, 3), rx, ry, n;
 	if(lua_gettop(l) == 5) // this is one more than the number of arguments because a table has just been pushed onto the stack with lua_newtable(l);
 	{

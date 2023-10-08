@@ -31,7 +31,7 @@ constexpr int MAXSIGNS = 16;
 
 constexpr int   ISTP            = CELL / 2;
 constexpr float CFDS            = 4.0f / CELL;
-constexpr float SIM_MAXVELOCITY = 1e4f;
+constexpr float MAX_VELOCITY = 1e4f;
 
 //Air constants
 constexpr float AIR_TSTEPP = 0.3f;
