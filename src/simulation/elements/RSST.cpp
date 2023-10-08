@@ -30,7 +30,7 @@ void Element::Element_RSST()
 
 	DefaultProperties.temp = R_TEMP + 20.0f + 273.15f;
 	HeatConduct = 44;
-	Description = "Resist.";
+	Description = "Resist. Solidifies on contact with PHOT, and reacts with other energy particles.";
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 

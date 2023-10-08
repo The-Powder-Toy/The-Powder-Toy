@@ -30,7 +30,7 @@ void Element::Element_RSSS()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Solidified resist.";
+	Description = "Solidified resist. Blocks pressure and insulates SPRK. Liquefies on contact with NEUT.";
 
 	Properties = TYPE_SOLID|PROP_NEUTPASS;
 
