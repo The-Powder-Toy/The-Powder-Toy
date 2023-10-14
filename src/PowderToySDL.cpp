@@ -46,8 +46,8 @@ void SetTextInputRect(int x, int y, int w, int h)
 	SDL_Rect rect;
 #if SDL_VERSION_ATLEAST(2, 0, 18)
 	int wx, wy, wwx, why;
-	SDL_RenderLogicalToWindow(sdl_renderer, x, y, &wx, &wy);
-	SDL_RenderLogicalToWindow(sdl_renderer, x + w, y + h, &wwx, &why);
+	SDL_RenderLogicalToWindow(sdl_renderer, float(x), float(y), &wx, &wy);
+	SDL_RenderLogicalToWindow(sdl_renderer, float(x + w), float(y + h), &wwx, &why);
 	rect.x = wx;
 	rect.y = wy;
 	rect.w = wwx - wx;

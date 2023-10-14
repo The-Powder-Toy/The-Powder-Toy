@@ -388,9 +388,10 @@ int Main(int argc, char *argv[])
 	engine.TouchUI = prefs.Get("TouchUI", DEFAULT_TOUCH_UI);
 	if (Client::Ref().IsFirstRun() && FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsNone)
 	{
-		windowFrameOps.scale = GuessBestScale();
-		if (windowFrameOps.scale)
+		auto guessed = GuessBestScale();
+		if (windowFrameOps.scale != guessed)
 		{
+			windowFrameOps.scale = guessed;
 			prefs.Set("Scale", windowFrameOps.scale);
 			showLargeScreenDialog = true;
 		}
