@@ -19,7 +19,6 @@
  */
 
 #pragma once
-#include "common/tpt-inline.h"
 #include <ctime>
 #include <cstdlib>
 #include <cstring>
@@ -1183,7 +1182,7 @@ bson_bool_t bson_check_string( bson *b, const char *string,
 #define bson_big_endian32(out, in) ( bson_swap_endian32(out, in) )
 //#endif
 
-static TPT_INLINE void bson_swap_endian64( void *outp, const void *inp ) {
+static inline void bson_swap_endian64( void *outp, const void *inp ) {
 	const char *in = ( const char * )inp;
 	char *out = ( char * )outp;
 
@@ -1197,7 +1196,7 @@ static TPT_INLINE void bson_swap_endian64( void *outp, const void *inp ) {
 	out[7] = in[0];
 
 }
-static TPT_INLINE void bson_swap_endian32( void *outp, const void *inp ) {
+static inline void bson_swap_endian32( void *outp, const void *inp ) {
 	const char *in = ( const char * )inp;
 	char *out = ( char * )outp;
 

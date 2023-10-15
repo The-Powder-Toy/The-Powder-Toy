@@ -32,10 +32,6 @@
 #include "SimulationConfig.h"
 #include <SDL.h>
 
-#ifdef GetUserName
-# undef GetUserName // dammit windows
-#endif
-
 PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+210, (YRES/2)+150)),
 	submitCommentButton(NULL),

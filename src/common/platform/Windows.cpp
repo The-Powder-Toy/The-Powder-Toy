@@ -1,9 +1,6 @@
 #include "Platform.h"
 #include "resource.h"
 #include "Config.h"
-#ifndef NOMINMAX
-# define NOMINMAX
-#endif
 #include <iostream>
 #include <sys/stat.h>
 #include <io.h>

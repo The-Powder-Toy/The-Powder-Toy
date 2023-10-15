@@ -9,7 +9,7 @@
 
 #include "graphics/Graphics.h"
 
-#include "common/tpt-minmax.h"
+#include <algorithm>
 
 TaskWindow::TaskWindow(String title_, Task * task_, bool closeOnDone):
 	ui::Window(ui::Point(-1, -1), ui::Point(240, 60)),

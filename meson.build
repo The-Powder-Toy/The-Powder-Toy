@@ -321,7 +321,7 @@ else
 endif
 
 if host_platform == 'windows'
-	args_ccomp_win = [ '-D_WIN32_WINNT=0x0501' ]
+	args_ccomp_win = [ '-D_WIN32_WINNT=0x0501', '-DNOMINMAX' ]
 	windows_mod = import('windows')
 	if is_static
 		args_ccomp_win += [ '-DCURL_STATICLIB' ]

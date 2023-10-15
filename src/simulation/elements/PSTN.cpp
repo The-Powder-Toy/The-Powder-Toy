@@ -1,5 +1,5 @@
-#include "common/tpt-minmax.h"
 #include "simulation/ElementCommon.h"
+#include <algorithm>
 
 struct StackData;
 static int update(UPDATE_FUNC_ARGS);

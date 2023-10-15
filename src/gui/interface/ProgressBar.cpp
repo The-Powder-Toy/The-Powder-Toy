@@ -4,7 +4,7 @@
 
 #include "gui/Style.h"
 
-#include "common/tpt-minmax.h"
+#include <algorithm>
 
 using namespace ui;
 

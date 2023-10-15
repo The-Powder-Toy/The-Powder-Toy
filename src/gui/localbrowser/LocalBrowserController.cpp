@@ -12,7 +12,7 @@
 
 #include "Controller.h"
 
-#include "common/tpt-minmax.h"
+#include <algorithm>
 
 LocalBrowserController::LocalBrowserController(std::function<void ()> onDone_):
 	HasDone(false)

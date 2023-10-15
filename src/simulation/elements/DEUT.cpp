@@ -1,5 +1,5 @@
 #include "simulation/ElementCommon.h"
-#include "common/tpt-minmax.h"
+#include <algorithm>
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);

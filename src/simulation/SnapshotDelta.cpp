@@ -1,5 +1,5 @@
 #include "SnapshotDelta.h"
-#include "common/tpt-minmax.h"
+#include <algorithm>
 #include <utility>
 
 // * A SnapshotDelta is a bidirectional difference type between Snapshots, defined such

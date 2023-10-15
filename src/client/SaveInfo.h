@@ -4,10 +4,6 @@
 #include <memory>
 #include <ctime>
 
-#ifdef GetUserName
-# undef GetUserName // dammit windows
-#endif
-
 class GameSave;
 
 class SaveInfo

@@ -1,6 +1,6 @@
 #include "BitmapBrush.h"
-#include "common/tpt-minmax.h"
 #include "Misc.h"
+#include <algorithm>
 #include <cmath>
 
 BitmapBrush::BitmapBrush(ui::Point inputSize, unsigned char const *inputBitmap)

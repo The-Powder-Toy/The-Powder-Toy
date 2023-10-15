@@ -6,7 +6,7 @@
 #include "client/Client.h"
 #include "client/http/SearchSavesRequest.h"
 #include "client/http/SearchTagsRequest.h"
-#include "common/tpt-minmax.h"
+#include <algorithm>
 #include <thread>
 #include <cmath>
 

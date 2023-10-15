@@ -3,7 +3,6 @@
 #include "Format.h"
 #include "simulation/Simulation.h"
 #include "simulation/ElementClasses.h"
-#include "common/tpt-minmax.h"
 #include "common/tpt-compat.h"
 #include "bson/BSON.h"
 #include "graphics/Renderer.h"
@@ -14,6 +13,7 @@
 #include <memory>
 #include <set>
 #include <cmath>
+#include <algorithm>
 
 static void ConvertJsonToBson(bson *b, Json::Value j, int depth = 0);
 static void ConvertBsonToJson(bson_iterator *b, Json::Value *j, int depth = 0);

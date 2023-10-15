@@ -40,10 +40,6 @@
 #include <iostream>
 #include <SDL.h>
 
-#ifdef GetUserName
-# undef GetUserName // dammit windows
-#endif
-
 class SplitButton : public ui::Button
 {
 	bool rightDown;

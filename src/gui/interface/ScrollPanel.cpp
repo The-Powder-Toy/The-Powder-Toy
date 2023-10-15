@@ -3,7 +3,7 @@
 
 #include "graphics/Graphics.h"
 
-#include "common/tpt-minmax.h"
+#include <algorithm>
 
 using namespace ui;
 

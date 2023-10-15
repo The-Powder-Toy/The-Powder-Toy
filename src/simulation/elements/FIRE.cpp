@@ -1,5 +1,5 @@
-#include "common/tpt-minmax.h"
 #include "simulation/ElementCommon.h"
+#include <algorithm>
 
 int Element_FIRE_update(UPDATE_FUNC_ARGS);
 static int updateLegacy(UPDATE_FUNC_ARGS);

@@ -65,10 +65,6 @@
 #include <SDL.h>
 #include <iostream>
 
-#ifdef GetUserName
-# undef GetUserName // dammit windows
-#endif
-
 GameController::GameController():
 	firstTick(true),
 	foundSignID(-1),

@@ -1,7 +1,7 @@
 #include "ContextMenu.h"
 #include "graphics/Graphics.h"
-#include "common/tpt-minmax.h"
 #include "SimulationConfig.h"
+#include <algorithm>
 
 using namespace ui;
 

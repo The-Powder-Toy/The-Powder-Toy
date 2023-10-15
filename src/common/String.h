@@ -1,5 +1,5 @@
 #pragma once
-#include "tpt-minmax.h"
+#include <algorithm>
 #include <stdexcept>
 #include <sstream>
 #include <vector>

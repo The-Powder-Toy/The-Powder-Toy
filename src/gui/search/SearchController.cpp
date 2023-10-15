@@ -14,7 +14,6 @@
 #include "client/http/SearchSavesRequest.h"
 #include "client/http/SearchTagsRequest.h"
 #include "common/platform/Platform.h"
-#include "common/tpt-minmax.h"
 #include "graphics/Graphics.h"
 #include "tasks/Task.h"
 #include "tasks/TaskWindow.h"
@@ -23,6 +22,7 @@
 #include "gui/preview/PreviewController.h"
 #include "gui/preview/PreviewView.h"
 #include "SimulationConfig.h"
+#include <algorithm>
 
 SearchController::SearchController(std::function<void ()> onDone_):
 	activePreview(NULL),

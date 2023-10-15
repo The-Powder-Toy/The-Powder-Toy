@@ -29,9 +29,3 @@ constexpr double TPT_PI_DBL = double(M_PI);
 constexpr float  TPT_PI_FLT = 3.14159265f;
 constexpr double TPT_PI_DBL = 3.14159265358979323846;
 #endif
-
-typedef unsigned short Uint16;
-
-#ifndef NULL
-# define NULL 0
-#endif

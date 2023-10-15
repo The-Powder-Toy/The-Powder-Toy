@@ -3,13 +3,13 @@
 #include "Misc.h"
 #include "common/tpt-rand.h"
 #include "common/tpt-compat.h"
-#include "common/tpt-minmax.h"
 #include "ElementDefs.h"
 #include "ElementClasses.h"
 #include "Particle.h"
 #include "ElementGraphics.h"
 #include "Simulation.h"
 #include "graphics/Renderer.h"
+#include <algorithm>
 #include <cmath>
 
 constexpr float IPL = MIN_PRESSURE - 1;

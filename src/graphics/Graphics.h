@@ -4,7 +4,6 @@
 #include <vector>
 #include "common/Plane.h"
 #include "common/String.h"
-#include "common/tpt-inline.h"
 #include "Icons.h"
 #include "Pixel.h"
 #include "RasterDrawMethods.h"
