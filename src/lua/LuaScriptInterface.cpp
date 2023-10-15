@@ -708,7 +708,7 @@ static int beginMessageBox(lua_State* l)
 		cb->Push(l);
 		if (lua_isfunction(l, -1))
 		{
-			if (lua_pcall(l, 0, 0, 0))
+			if (tpt_lua_pcall(l, 0, 0, 0, false))
 			{
 				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 			}
@@ -732,7 +732,7 @@ static int beginThrowError(lua_State* l)
 		cb->Push(l);
 		if (lua_isfunction(l, -1))
 		{
-			if (lua_pcall(l, 0, 0, 0))
+			if (tpt_lua_pcall(l, 0, 0, 0, false))
 			{
 				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 			}
@@ -767,7 +767,7 @@ static int beginInput(lua_State* l)
 			{
 				lua_pushnil(l);
 			}
-			if (lua_pcall(l, 1, 0, 0))
+			if (tpt_lua_pcall(l, 1, 0, 0, false))
 			{
 				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 			}
@@ -799,7 +799,7 @@ static int beginConfirm(lua_State *l)
 		if (lua_isfunction(l, -1))
 		{
 			lua_pushboolean(l, result);
-			if (lua_pcall(l, 1, 0, 0))
+			if (tpt_lua_pcall(l, 1, 0, 0, false))
 			{
 				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 			}
@@ -5181,7 +5181,7 @@ int LuaScriptInterface::luatpt_getscript(lua_State* l)
 				tpt_lua_pushString(l, runFailed->error);
 				nargs = 2;
 			}
-			if (lua_pcall(l, nargs, 0, 0))
+			if (tpt_lua_pcall(l, nargs, 0, 0, false))
 			{
 				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 			}
