@@ -32,6 +32,10 @@ std::vector<ByteString> Simulation::Load(const GameSave *save, bool includePress
 	}
 	if(save->palette.size())
 	{
+		for(int i = 0; i < PT_NUM; i++)
+		{
+			partMap[i] = 0;
+		}
 		for(auto &pi : save->palette)
 		{
 			if (pi.second > 0 && pi.second < PT_NUM)
@@ -40,19 +44,17 @@ std::vector<ByteString> Simulation::Load(const GameSave *save, bool includePress
 				for (int i = 0; i < PT_NUM; i++)
 				{
 					if (elements[i].Enabled && elements[i].Identifier == pi.first)
+					{
 						myId = i;
+					}
 				}
-				// if this is a custom element, set the ID to the ID we found when comparing identifiers in the palette map
-				// set type to 0 if we couldn't find an element with that identifier present when loading,
-				//  unless this is a default element, in which case keep the current ID, because otherwise when an element is renamed it wouldn't show up anymore in older saves
-				if (myId != 0)
+				if (myId)
 				{
 					partMap[pi.second] = myId;
 				}
-				else if (!pi.first.BeginsWith("DEFAULT_PT_"))
+				else
 				{
 					missingElementTypes.push_back(pi.first);
-					partMap[pi.second] = myId;
 				}
 			}
 		}
