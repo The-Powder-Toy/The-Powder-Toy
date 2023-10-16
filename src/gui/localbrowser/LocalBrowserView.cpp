@@ -201,7 +201,7 @@ void LocalBrowserView::OnKeyPress(int key, int scan, bool repeat, bool shift, bo
 {
 	if (repeat)
 		return;
-	if (key == SDLK_ESCAPE)
+	if (key == SDLK_ESCAPE || key == SDLK_AC_BACK)
 		c->Exit();
 	else if (key == SDLK_LCTRL || key == SDLK_RCTRL)
 		c->SetMoveToFront(false);

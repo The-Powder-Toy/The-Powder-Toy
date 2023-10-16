@@ -25,7 +25,7 @@ ConsoleView::ConsoleView():
 
 void ConsoleView::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	if ((ui::Engine::Ref().GraveExitsConsole && scan == SDL_SCANCODE_GRAVE && key != '~') || key == SDLK_ESCAPE)
+	if ((ui::Engine::Ref().GraveExitsConsole && scan == SDL_SCANCODE_GRAVE && key != '~') || key == SDLK_ESCAPE || key == SDLK_AC_BACK)
 	{
 		if (!repeat)
 			doClose = true;

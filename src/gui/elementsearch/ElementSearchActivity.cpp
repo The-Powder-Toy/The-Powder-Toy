@@ -254,6 +254,7 @@ void ElementSearchActivity::OnKeyPress(int key, int scan, bool repeat, bool shif
 		if(firstResult)
 			gameController->SetActiveTool(0, firstResult);
 	case SDLK_ESCAPE:
+	case SDLK_AC_BACK:
 		exit = true;
 		break;
 	case SDLK_LSHIFT:

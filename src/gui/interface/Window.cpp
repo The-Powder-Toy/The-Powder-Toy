@@ -366,7 +366,7 @@ void Window::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, b
 	if (!stop)
 		OnKeyPress(key, scan, repeat, shift, ctrl, alt);
 
-	if (key == SDLK_ESCAPE)
+	if (key == SDLK_ESCAPE || key == SDLK_AC_BACK)
 		OnTryExit(Escape);
 
 	if (key == SDLK_KP_ENTER || key == SDLK_RETURN)

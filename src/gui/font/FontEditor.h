@@ -16,6 +16,8 @@ namespace ui
 constexpr int MAX_WIDTH = 64;
 class FontEditor: public ui::Window
 {
+	void HandleExit();
+
 private:
 	ByteString dataFile;
 	std::map<String::value_type, unsigned char> fontWidths;
