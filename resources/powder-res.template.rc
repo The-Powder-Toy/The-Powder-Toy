@@ -1,3 +1,5 @@
+#pragma code_page(65001) // UTF-8
+
 #include "@RESOUCE_H@"
 #include <winuser.h>
 #include <winver.h>
@@ -16,11 +18,11 @@ PRODUCTVERSION @DISPLAY_VERSION_MAJOR@,@DISPLAY_VERSION_MINOR@,0,@BUILD_NUM@
 		BLOCK "040904b0"
 		{
 			VALUE "CompanyName",      "https://powdertoy.co.uk/\0"
-			VALUE "FileDescription",  "@APPCOMMENT@\0"
+			VALUE "FileDescription",  "@APPNAME@\0"
 			VALUE "FileVersion",      "@DISPLAY_VERSION_MAJOR@.@DISPLAY_VERSION_MINOR@.0.@BUILD_NUM@\0"
 			VALUE "OriginalFilename", "@APPEXE@.exe\0"
 			VALUE "LegalCopyright",   "@MANIFEST_COPYRIGHT@\0"
-			VALUE "ProductName",      "@APPNAME@\0"
+			VALUE "ProductName",      "@APPCOMMENT@\0"
 			VALUE "ProductVersion",   "@DISPLAY_VERSION_MAJOR@.@DISPLAY_VERSION_MINOR@.0.@BUILD_NUM@\0"
 			VALUE "InternalName",     "@APPID@\0"
 		}
