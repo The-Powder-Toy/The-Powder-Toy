@@ -325,8 +325,8 @@ ByteString Client::AddStamp(std::unique_ptr<GameSave> saveData)
 	}
 	saveData->authors = stampInfo;
 
-	auto [ fromNewerVersion, gameData ] = saveData->Serialise();
-	(void)fromNewerVersion;
+	std::vector<char> gameData;
+	std::tie(std::ignore, gameData) = saveData->Serialise();
 	if (!gameData.size())
 		return "";
 

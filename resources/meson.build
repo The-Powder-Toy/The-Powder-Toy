@@ -52,8 +52,18 @@ if host_platform == 'windows'
 			command: command,
 		) }
 	endforeach
+	rc_conf_data = configuration_data()
+	rc_conf_data.merge_from(conf_data)
+	rc_conf_data.set('RESOUCE_H', join_paths(meson.current_source_dir(), 'resource.h'))
+	rc_conf_data.set('WINUTF8_XML', join_paths(meson.current_source_dir(), 'winutf8.xml'))
+	rc_conf_data.set('ICON_EXE_ICO', join_paths(meson.current_build_dir(), 'icon_exe.ico'))
+	rc_conf_data.set('ICON_CPS_ICO', join_paths(meson.current_build_dir(), 'icon_cps.ico'))
 	powder_files += windows_mod.compile_resources(
-		'powder-res.rc',
+		configure_file(
+			input: 'powder-res.template.rc',
+			output: 'powder-res.rc',
+			configuration: rc_conf_data,
+		),
 		depends: [
 			generated_win_icos['icon_exe'],
 			generated_win_icos['icon_cps'],

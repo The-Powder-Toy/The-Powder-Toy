@@ -82,12 +82,12 @@ namespace http
 				else
 				{
 					parseUpdate("Stable", UpdateInfo::channelStable, [](int build) -> bool {
-						return build > BUILD_NUM;
+						return size_t(build) > APP_VERSION.build;
 					});
 					if (!startupInfo.updateInfo.has_value())
 					{
 						parseUpdate("Beta", UpdateInfo::channelBeta, [](int build) -> bool {
-							return build > BUILD_NUM;
+							return size_t(build) > APP_VERSION.build;
 						});
 					}
 				}

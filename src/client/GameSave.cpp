@@ -4,7 +4,6 @@
 #include "simulation/Simulation.h"
 #include "simulation/ElementClasses.h"
 #include "common/tpt-compat.h"
-#include "common/Version.h"
 #include "bson/BSON.h"
 #include "graphics/Renderer.h"
 #include "Config.h"
@@ -15,6 +14,9 @@
 #include <set>
 #include <cmath>
 #include <algorithm>
+
+constexpr auto currentVersionMajor = 97;
+constexpr auto nextVersionMajor = currentVersionMajor + 1;
 
 static void ConvertJsonToBson(bson *b, Json::Value j, int depth = 0);
 static void ConvertBsonToJson(bson_iterator *b, Json::Value *j, int depth = 0);
@@ -326,6 +328,9 @@ static void CheckBsonFieldFloat(bson_iterator iter, const char *field, float *se
 
 void GameSave::readOPS(const std::vector<char> &data)
 {
+	constexpr auto currentVersion = Version(currentVersionMajor, 0);
+	constexpr auto nextVersion = Version(nextVersionMajor, 0);
+
 	Renderer::PopulateTables();
 
 	unsigned char *inputData = (unsigned char*)&data[0], *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
@@ -333,9 +338,8 @@ void GameSave::readOPS(const std::vector<char> &data)
 	unsigned int inputDataLen = data.size(), bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, soapLinkDataLen;
 	unsigned int pressDataLen, vxDataLen, vyDataLen, ambientDataLen, blockAirDataLen;
 	unsigned partsCount = 0;
-	int savedVersion = inputData[4];
-	majorVersion = savedVersion;
-	minorVersion = 0;
+	unsigned int savedVersion = inputData[4];
+	version = { savedVersion, 0 };
 	bool fakeNewerVersion = false; // used for development builds only
 
 	bson b;
@@ -354,7 +358,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	auto partS = blockS * CELL;
 
 	//From newer version
-	if (savedVersion > SAVE_VERSION)
+	if (savedVersion > currentVersion[0])
 	{
 		fromNewerVersion = true;
 		//throw ParseException(ParseException::WrongVersion, "Save from newer version");
@@ -470,7 +474,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 								if (!strcmp(bson_iterator_key(&signiter), "text") && bson_iterator_type(&signiter) == BSON_STRING)
 								{
 									tempSign.text = format::CleanString(ByteString(bson_iterator_string(&signiter)).FromUtf8(), true, true, true).Substr(0, 45);
-									if (majorVersion < 94 || (majorVersion == 94 && minorVersion < 2))
+									if (version < Version(94, 2))
 									{
 										if (tempSign.text == "{t}")
 										{
@@ -582,7 +586,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 					{
 						if (!strcmp(bson_iterator_key(&subiter), "minorVersion"))
 						{
-							minorVersion = bson_iterator_int(&subiter);
+							version[1] = bson_iterator_int(&subiter);
 						}
 					}
 				}
@@ -596,27 +600,30 @@ void GameSave::readOPS(const std::vector<char> &data)
 		{
 			if (bson_iterator_type(&iter) == BSON_OBJECT)
 			{
-				int major = INT_MAX, minor = INT_MAX;
-				bson_iterator subiter;
-				bson_iterator_subiterator(&iter, &subiter);
-				while (bson_iterator_next(&subiter))
+				Version<2> version;
 				{
-					if (bson_iterator_type(&subiter) == BSON_INT)
+					int major = INT_MAX, minor = INT_MAX;
+					bson_iterator subiter;
+					bson_iterator_subiterator(&iter, &subiter);
+					while (bson_iterator_next(&subiter))
 					{
-						if (!strcmp(bson_iterator_key(&subiter), "major"))
-							major = bson_iterator_int(&subiter);
-						else if (!strcmp(bson_iterator_key(&subiter), "minor"))
-							minor = bson_iterator_int(&subiter);
+						if (bson_iterator_type(&subiter) == BSON_INT)
+						{
+							if (!strcmp(bson_iterator_key(&subiter), "major"))
+								major = bson_iterator_int(&subiter);
+							else if (!strcmp(bson_iterator_key(&subiter), "minor"))
+								minor = bson_iterator_int(&subiter);
+						}
 					}
+					version = Version(major, minor);
 				}
-				auto majorToCheck = ALLOW_FAKE_NEWER_VERSION ? FUTURE_SAVE_VERSION : SAVE_VERSION;
-				auto minorToCheck = ALLOW_FAKE_NEWER_VERSION ? FUTURE_MINOR_VERSION : MINOR_VERSION;
-				if (major > majorToCheck || (major == majorToCheck && minor > minorToCheck))
+				auto versionToCheck = ALLOW_FAKE_NEWER_VERSION ? nextVersion : currentVersion;
+				if (versionToCheck < version)
 				{
-					String errorMessage = String::Build("Save from a newer version: Requires version ", major, ".", minor);
+					String errorMessage = String::Build("Save from a newer version: Requires version ", version[0], ".", version[1]);
 					throw ParseException(ParseException::WrongVersion, errorMessage);
 				}
-				else if (ALLOW_FAKE_NEWER_VERSION && (major > SAVE_VERSION || (major == SAVE_VERSION && minor > MINOR_VERSION)))
+				else if (ALLOW_FAKE_NEWER_VERSION && currentVersion < version)
 				{
 					fakeNewerVersion = true;
 				}
@@ -642,8 +649,8 @@ void GameSave::readOPS(const std::vector<char> &data)
 		}
 	}
 
-	auto paletteRemap = [this, saveVersion = Version(majorVersion, minorVersion)](auto maxVersion, ByteString from, ByteString to) {
-		if (saveVersion <= maxVersion)
+	auto paletteRemap = [this](auto maxVersion, ByteString from, ByteString to) {
+		if (version <= maxVersion)
 		{
 			auto it = std::find_if(palette.begin(), palette.end(), [&from](auto &item) {
 				return item.first == from;
@@ -1182,7 +1189,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 
 	unsigned char * saveData = (unsigned char *)&dataVec[0];
 	auto dataLength = int(dataVec.size());
-	int q,p=0, ver, pty, ty, legacy_beta=0;
+	int q,p=0, pty, ty, legacy_beta=0;
 	Vec2<int> blockP = { 0, 0 };
 	int new_format = 0, ttv = 0;
 
@@ -1202,11 +1209,10 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	if (saveData[2]==0x76 && saveData[1]==0x53 && saveData[0]==0x50) {
 		new_format = 1;
 	}
-	if (saveData[4]>SAVE_VERSION)
+	if (saveData[4]>97) // this used to respect currentVersion but no valid PSv will ever have a version > 97 so it's ok to hardcode
 		throw ParseException(ParseException::WrongVersion, "Save from newer version");
-	ver = saveData[4];
-	majorVersion = saveData[4];
-	minorVersion = 0;
+	version = { saveData[4], 0 };
+	auto ver = version[0];
 
 	if (ver<34)
 	{
@@ -1818,16 +1824,18 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 
 std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 {
+	constexpr auto currentVersion = Version(currentVersionMajor, 0);
+
 	// minimum version this save is compatible with
 	// when building, this number may be increased depending on what elements are used
 	// or what properties are detected
-	int minimumMajorVersion = 90, minimumMinorVersion = 2;
-	auto RESTRICTVERSION = [&minimumMajorVersion, &minimumMinorVersion](int major, int minor) {
+	auto minimumVersion = Version(90, 2);
+	auto RESTRICTVERSION = [&minimumVersion](auto major, auto minor = 0) {
 		// restrict the minimum version this save can be opened with
-		if (major > minimumMajorVersion || ((major == minimumMajorVersion && minor > minimumMinorVersion)))
+		auto version = Version(major, minor);
+		if (minimumVersion < version)
 		{
-			minimumMajorVersion = major;
-			minimumMinorVersion = minor;
+			minimumVersion = version;
 		}
 	};
 
@@ -2295,7 +2303,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	}
 
 	// Mark save as incompatible with latest release
-	bool fakeFromNewerVersion = ALLOW_FAKE_NEWER_VERSION && (minimumMajorVersion > SAVE_VERSION || (minimumMajorVersion == SAVE_VERSION && minimumMinorVersion > MINOR_VERSION));
+	bool fakeFromNewerVersion = ALLOW_FAKE_NEWER_VERSION && currentVersion < minimumVersion;
 
 	bson b;
 	b.data = NULL;
@@ -2306,9 +2314,9 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	set_bson_err_handler([](const char* err) { throw BuildException("BSON error when parsing save: " + ByteString(err).FromUtf8()); });
 	bson_init(&b);
 	bson_append_start_object(&b, "origin");
-	bson_append_int(&b, "majorVersion", SAVE_VERSION);
-	bson_append_int(&b, "minorVersion", MINOR_VERSION);
-	bson_append_int(&b, "buildNum", BUILD_NUM);
+	bson_append_int(&b, "majorVersion", int(currentVersion[0]));
+	bson_append_int(&b, "minorVersion", int(currentVersion[1]));
+	bson_append_int(&b, "buildNum", APP_VERSION.build);
 	bson_append_int(&b, "snapshotId", SNAPSHOT_ID);
 	bson_append_int(&b, "modId", MOD_ID);
 	bson_append_string(&b, "releaseType", ByteString(1, IDENT_RELTYPE).c_str());
@@ -2322,8 +2330,8 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 		RESTRICTVERSION(97, 0);
 	}
 	bson_append_start_object(&b, "minimumVersion");
-	bson_append_int(&b, "major", minimumMajorVersion);
-	bson_append_int(&b, "minor", minimumMinorVersion);
+	bson_append_int(&b, "major", int(minimumVersion[0]));
+	bson_append_int(&b, "minor", int(minimumVersion[1]));
 	bson_append_finish_object(&b);
 
 
@@ -2467,7 +2475,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	header[1] = 'P';
 	header[2] = 'S';
 	header[3] = '1';
-	header[4] = SAVE_VERSION;
+	header[4] = currentVersion[0];
 	header[5] = CELL;
 	header[6] = blockS.X;
 	header[7] = blockS.Y;

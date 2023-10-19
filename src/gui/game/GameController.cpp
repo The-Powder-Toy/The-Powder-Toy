@@ -1204,10 +1204,10 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			gameSave->authors = localSaveInfo;
 
 			Platform::MakeDirectory(LOCAL_SAVE_DIR);
-			auto [ fromNewerVersion, saveData ] = gameSave->Serialise();
+			std::vector<char> saveData;
+			std::tie(std::ignore, saveData) = gameSave->Serialise();
 			tempSave->SetGameSave(std::move(gameSave));
 			gameModel->SetSaveFile(std::move(tempSave), gameView->ShiftBehaviour());
-			(void)fromNewerVersion;
 			if (saveData.size() == 0)
 				new ErrorMessage("Error", "Unable to serialize game data.");
 			else if (!Platform::WriteFile(saveData, gameModel->GetSaveFile()->GetName()))
@@ -1611,11 +1611,11 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 			}
 			else if constexpr (BETA)
 			{
-				updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Beta, Build " << BUILD_NUM;
+				updateMessage << DISPLAY_VERSION[0] << "." << DISPLAY_VERSION[1] << " Beta, Build " << APP_VERSION.build;
 			}
 			else
 			{
-				updateMessage << SAVE_VERSION << "." << MINOR_VERSION << " Stable, Build " << BUILD_NUM;
+				updateMessage << DISPLAY_VERSION[0] << "." << DISPLAY_VERSION[1] << " Stable, Build " << APP_VERSION.build;
 			}
 
 			updateMessage << "\nNew version:\n ";

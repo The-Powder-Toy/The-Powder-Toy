@@ -26,6 +26,16 @@ struct Version
 	{
 		return *this < other || *this == other;
 	}
+
+	constexpr size_t operator [](size_t index) const
+	{
+		return components[index];
+	}
+
+	size_t &operator [](size_t index)
+	{
+		return components[index];
+	}
 };
 
 template<class ...Args>

@@ -87,18 +87,6 @@ function inplace_sed() {
 	fi
 }
 
-function subst_version() {
-	local path=$1
-	if [[ $BSH_HOST_PLATFORM == darwin ]]; then
-		inplace_sed "s|SUBST_MACOS_MIN_VER|$macos_min_ver|g" $path
-	else
-		inplace_sed "s|SUBST_DATE|$(date --iso-8601)|g" $path
-	fi
-	inplace_sed "s|SUBST_SAVE_VERSION|$save_version|g" $path
-	inplace_sed "s|SUBST_MINOR_VERSION|$minor_version|g" $path
-	inplace_sed "s|SUBST_BUILD_NUM|$build_num|g" $path
-}
-
 if [[ $BSH_HOST_PLATFORM == android ]]; then
 	android_platform=android-30
 	if [[ -z "${JAVA_HOME_8_X64-}" ]]; then
@@ -189,6 +177,11 @@ meson_configure=meson$'\t'setup
 if [[ $BSH_DEBUG_RELEASE == release ]]; then
 	meson_configure+=$'\t'-Dbuildtype=debugoptimized
 fi
+if [[ $BSH_HOST_PLATFORM == darwin ]]; then
+	meson_configure+=$'\t'-Dmanifest_macos_min_ver=$macos_min_ver
+else
+	meson_configure+=$'\t'-Dmanifest_date=$(date --iso-8601)
+fi
 meson_configure+=$'\t'-Dapp_name=$APP_NAME
 meson_configure+=$'\t'-Dapp_comment=$APP_COMMENT
 meson_configure+=$'\t'-Dapp_exe=$APP_EXE
@@ -251,19 +244,10 @@ fi
 if [[ $RELEASE_TYPE == stable ]]; then
 	stable_or_beta=yes
 fi
-set +e
-save_version=$(cat src/Config.template.h | sed -n 's/constexpr int SAVE_VERSION * = \([^;]*\);/\1/p')
-minor_version=$(cat src/Config.template.h | sed -n 's/constexpr int MINOR_VERSION * = \([^;]*\);/\1/p')
-build_num=$(cat src/Config.template.h | sed -n 's/constexpr int BUILD_NUM * = \([^;]*\);/\1/p')
-if [[ -z ${save_version-} ]] || [[ -z ${minor_version-} ]] || [[ -z ${build_num-} ]]; then
-	>&2 echo "failed to extract version from Config.template.h"
-	exit 1
-fi
-set -e
-if [[ $stable_or_beta == yes ]] && [[ $MOD_ID != 0 ]]; then
-	save_version=$(echo $RELEASE_NAME | cut -d '.' -f 1)
-	minor_version=$(echo $RELEASE_NAME | cut -d '.' -f 2)
-	build_num=$(echo $RELEASE_NAME | cut -d '.' -f 3)
+if [[ $stable_or_beta == yes ]]; then
+	meson_configure+=$'\t'-Ddisplay_version_major=$(echo $RELEASE_NAME | cut -d '.' -f 1)
+	meson_configure+=$'\t'-Ddisplay_version_minor=$(echo $RELEASE_NAME | cut -d '.' -f 2)
+	meson_configure+=$'\t'-Dbuild_num=$(echo $RELEASE_NAME | cut -d '.' -f 3)
 fi
 if [[ $RELEASE_TYPE == snapshot ]]; then
 	meson_configure+=$'\t'-Dsnapshot=true
@@ -426,7 +410,6 @@ if [[ $PACKAGE_MODE == dmg ]]; then
 	mkdir $appdir
 	mkdir $appdir/Contents
 	cp resources/Info.plist $appdir/Contents/Info.plist
-	subst_version $appdir/Contents/Info.plist
 	mkdir $appdir/Contents/MacOS
 	cp $APP_EXE $appdir/Contents/MacOS/$APP_EXE
 	mkdir $appdir/Contents/Resources
@@ -471,7 +454,6 @@ elif [[ $PACKAGE_MODE == appimage ]]; then
 	cp ../resources/icon_exe.svg $appdir/$APP_VENDOR-$APP_EXE.svg
 	cp resources/powder.desktop $appdir/$APP_ID.desktop
 	cp resources/appdata.xml $appdir/usr/share/metainfo/$APP_ID.appdata.xml
-	subst_version $appdir/usr/share/metainfo/$APP_ID.appdata.xml
 	cp $appdir/$APP_VENDOR-$APP_EXE.svg $appdir/usr/share/icons/$APP_VENDOR-$APP_EXE.svg
 	cp $appdir/$APP_ID.desktop $appdir/usr/share/applications/$APP_ID.desktop
 	./appimagetool $appdir $ASSET_PATH

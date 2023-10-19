@@ -10,13 +10,14 @@ namespace http
 		capath(newCapath),
 		disableNetwork(newDisableNetwork)
 	{
+		auto apiVersion = Version(97, 0);
 		userAgent = ByteString::Build(
-			"PowderToy/", SAVE_VERSION, ".", MINOR_VERSION,
+			"PowderToy/", DISPLAY_VERSION[0], ".", DISPLAY_VERSION[1],
 			" (", IDENT_PLATFORM,
 			"; NO", // Unused, used to be SSE level.
 			"; M", MOD_ID,
 			"; ", IDENT,
-			") TPTPP/", SAVE_VERSION, ".", MINOR_VERSION, ".", BUILD_NUM, IDENT_RELTYPE, ".", SNAPSHOT_ID
+			") TPTPP/", apiVersion[0], ".", apiVersion[1], ".", APP_VERSION.build, IDENT_RELTYPE, ".", SNAPSHOT_ID
 		);
 	}
 

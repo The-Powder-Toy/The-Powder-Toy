@@ -5,7 +5,7 @@
 inline ByteString VersionInfo()
 {
 	ByteStringBuilder sb;
-	sb << SAVE_VERSION << "." << MINOR_VERSION << "." << BUILD_NUM << " " << IDENT;
+	sb << DISPLAY_VERSION[0] << "." << DISPLAY_VERSION[1] << "." << APP_VERSION.build << " " << IDENT;
 	if constexpr (SNAPSHOT)
 	{
 		sb << " SNAPSHOT " << SNAPSHOT_ID;
@@ -39,7 +39,7 @@ inline ByteString VersionInfo()
 inline ByteString IntroText()
 {
 	ByteStringBuilder sb;
-	sb << "\bl\bU" << APPNAME << "\bU - Version " << SAVE_VERSION << "." << MINOR_VERSION << " - https://powdertoy.co.uk, irc.libera.chat #powder, https://tpt.io/discord\n"
+	sb << "\bl\bU" << APPNAME << "\bU - Version " << DISPLAY_VERSION[0] << "." << DISPLAY_VERSION[1] << " - https://powdertoy.co.uk, irc.libera.chat #powder, https://tpt.io/discord\n"
 	      "\n"
 	      "\n"
 	      "\bgControl+C/V/X are Copy, Paste and cut respectively.\n"

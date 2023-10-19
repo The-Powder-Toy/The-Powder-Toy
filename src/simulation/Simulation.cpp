@@ -151,8 +151,8 @@ std::vector<ByteString> Simulation::Load(const GameSave *save, bool includePress
 			player.spwn = 1;
 			player.elem = PT_DUST;
 
-			if ((save->majorVersion < 93 && parts[i].ctype == SPC_AIR) ||
-			        (save->majorVersion < 88 && parts[i].ctype == OLD_SPC_AIR))
+			if ((save->version < Version(93, 0) && parts[i].ctype == SPC_AIR) ||
+			        (save->version < Version(88, 0) && parts[i].ctype == OLD_SPC_AIR))
 			{
 				player.fan = true;
 			}
@@ -165,8 +165,8 @@ std::vector<ByteString> Simulation::Load(const GameSave *save, bool includePress
 			Element_STKM_init_legs(this, &player2, i);
 			player2.spwn = 1;
 			player2.elem = PT_DUST;
-			if ((save->majorVersion < 93 && parts[i].ctype == SPC_AIR) ||
-			        (save->majorVersion < 88 && parts[i].ctype == OLD_SPC_AIR))
+			if ((save->version < Version(93, 0) && parts[i].ctype == SPC_AIR) ||
+			        (save->version < Version(88, 0) && parts[i].ctype == OLD_SPC_AIR))
 			{
 				player2.fan = true;
 			}
@@ -189,8 +189,8 @@ std::vector<ByteString> Simulation::Load(const GameSave *save, bool includePress
 			if (parts[i].tmp >= 0)
 			{
 				bool fan = false;
-				if ((save->majorVersion < 93 && parts[i].ctype == SPC_AIR)
-						|| (save->majorVersion < 88 && parts[i].ctype == OLD_SPC_AIR))
+				if ((save->version < Version(93, 0) && parts[i].ctype == SPC_AIR)
+						|| (save->version < Version(88, 0) && parts[i].ctype == OLD_SPC_AIR))
 				{
 					fan = true;
 					parts[i].ctype = 0;

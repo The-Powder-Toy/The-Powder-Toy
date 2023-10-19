@@ -1,5 +1,6 @@
 #pragma once
 #include "VcsTag.h"
+#include "common/Version.h"
 
 constexpr bool SET_WINDOW_ICON          = @SET_WINDOW_ICON@;
 constexpr bool DEBUG                    = @DEBUG@;
@@ -44,13 +45,18 @@ constexpr char APPID[]          = "@APPID@";
 constexpr char APPDATA[]        = "@APPDATA@";
 constexpr char APPVENDOR[]      = "@APPVENDOR@";
 
-constexpr int SAVE_VERSION         = 97;
-constexpr int MINOR_VERSION        = 0;
-constexpr int BUILD_NUM            = 352;
 constexpr int SNAPSHOT_ID          = @SNAPSHOT_ID@;
 constexpr int MOD_ID               = @MOD_ID@;
-constexpr int FUTURE_SAVE_VERSION  = 98;
-constexpr int FUTURE_MINOR_VERSION = 0;
+
+struct DisplayVersionWithBuild
+{
+	Version<2> displayVersion;
+	size_t build;
+};
+constexpr DisplayVersionWithBuild APP_VERSION = { { @DISPLAY_VERSION_MAJOR@, @DISPLAY_VERSION_MINOR@ }, @BUILD_NUM@ };
+constexpr DisplayVersionWithBuild UPSTREAM_VERSION = { { @UPSTREAM_VERSION_MAJOR@, @UPSTREAM_VERSION_MINOR@ }, @UPSTREAM_BUILD_NUM@ };
+
+constexpr auto DISPLAY_VERSION = APP_VERSION.displayVersion;
 
 constexpr char IDENT_RELTYPE    = SNAPSHOT ? 'S' : (BETA ? 'B' : 'R');
 

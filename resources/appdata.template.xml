@@ -29,6 +29,6 @@
 	<url type="bugtracker">https://github.com/The-Powder-Toy/The-Powder-Toy/issues</url>
 	<url type="help">https://powdertoy.co.uk/Wiki/W/Main_Page.html</url>
 	<releases>
-		<release date="SUBST_DATE" version="SUBST_SAVE_VERSION.SUBST_MINOR_VERSION.SUBST_BUILD_NUM" />
+		<release date="@MANIFEST_DATE@" version="@DISPLAY_VERSION_MAJOR@.@DISPLAY_VERSION_MINOR@.@BUILD_NUM@" />
 	</releases>
 </component>

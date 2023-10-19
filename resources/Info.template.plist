@@ -18,7 +18,7 @@
 		<key>CFBundleIconFile</key>
 		<string>icon_exe.icns</string>
 		<key>NSHumanReadableCopyright</key>
-		<string>Copyright © 2008-2011 Stanislaw K Skowrenek, Copyright © 2011-2023 Simon Robertshaw, Copyright © 2016-2023 jacob1</string>
+		<string>@MANIFEST_COPYRIGHT@</string>
 		<key>CFBundleDevelopmentRegion</key>
 		<string>English</string>
 		<key>CFBundleDocumentTypes</key>
@@ -57,13 +57,13 @@
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleShortVersionString</key>
-		<string>SUBST_SAVE_VERSION.SUBST_MINOR_VERSION</string>
+		<string>@DISPLAY_VERSION_MAJOR@.@DISPLAY_VERSION_MINOR@</string>
 		<key>CFBundleSignature</key>
 		<string>????</string>
 		<key>CFBundleVersion</key>
-		<string>SUBST_SAVE_VERSION.SUBST_MINOR_VERSION (build SUBST_BUILD_NUM)</string>
+		<string>@DISPLAY_VERSION_MAJOR@.@DISPLAY_VERSION_MINOR@ (build @BUILD_NUM@)</string>
 		<key>LSMinimumSystemVersion</key>
-		<string>SUBST_MACOS_MIN_VER</string>
+		<string>@MANIFEST_MACOS_MIN_VER@</string>
 		<key>NSPrincipalClass</key>
 		<string>NSApplication</string>
 	</dict>

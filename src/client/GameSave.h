@@ -2,6 +2,7 @@
 #include "common/Plane.h"
 #include "common/String.h"
 #include "common/tpt-rand.h"
+#include "common/Version.h"
 #include "simulation/Sign.h"
 #include "simulation/Particle.h"
 #include "Misc.h"
@@ -64,8 +65,7 @@ class GameSave
 public:
 	Vec2<int> blockSize = { 0, 0 };
 	bool fromNewerVersion = false;
-	int majorVersion = 0;
-	int minorVersion = 0;
+	Version<2> version{};
 	bool hasPressure = false;
 	bool hasAmbientHeat = false;
 	bool hasBlockAirMaps = false; // only written by readOPS, never read

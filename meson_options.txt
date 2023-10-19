@@ -44,6 +44,48 @@ option(
 	description: 'Snapshot ID, only relevant if \'snapshot\' is true'
 )
 option(
+	'display_version_major',
+	type: 'integer',
+	min: 0,
+	value: 97,
+	description: 'Major component of the display version, should more or less map to the MINOR version in semantic versioning'
+)
+option(
+	'display_version_minor',
+	type: 'integer',
+	min: 0,
+	value: 0,
+	description: 'Minor component of the display version, should more or less map to the PATCH version in semantic versioning'
+)
+option(
+	'build_num',
+	type: 'integer',
+	min: 0,
+	value: 352,
+	description: 'Build number, should be strictly monotonously increasing across public releases'
+)
+option(
+	'upstream_version_major',
+	type: 'integer',
+	min: 0,
+	value: 97,
+	description: 'Major component of the upstream display version, mod owners should not change this but merge upstream changes to it'
+)
+option(
+	'upstream_version_minor',
+	type: 'integer',
+	min: 0,
+	value: 0,
+	description: 'Minor component of the upstream display version, mod owners should not change this but merge upstream changes to it'
+)
+option(
+	'upstream_build_num',
+	type: 'integer',
+	min: 0,
+	value: 352,
+	description: 'Upstream build number, mod owners should not change this but merge upstream changes to it'
+)
+option(
 	'mod_id',
 	type: 'integer',
 	min: 0,
@@ -226,4 +268,22 @@ option(
 	choices: [ 'no', 'static_release_only', 'yes' ],
 	value: 'static_release_only',
 	description: 'Enable VCS tag resolution, introduces an always-stale custom target'
+)
+option(
+	'manifest_copyright',
+	type: 'string',
+	value: 'Copyright © 2008-2011 Stanislaw K Skowrenek, Copyright © 2011-2023 Simon Robertshaw, Copyright © 2016-2023 jacob1',
+	description: 'Copyright string, don\'t take too seriously, subject to change'
+)
+option(
+	'manifest_macos_min_ver',
+	type: 'string',
+	value: '',
+	description: 'MacOS minimum allowed platform version string, used by ghactions workflows, not useful otherwise'
+)
+option(
+	'manifest_date',
+	type: 'string',
+	value: '',
+	description: 'Build date string, used by ghactions workflows, not useful otherwise'
 )
