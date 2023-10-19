@@ -415,14 +415,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	lua_setfield(l, tptPropertiesVersion, "upstream_minor");
 	lua_pushinteger(l, UPSTREAM_VERSION.build);
 	lua_setfield(l, tptPropertiesVersion, "upstream_build");
-	if constexpr (SNAPSHOT || MOD)
-	{
-		lua_pushinteger(l, SNAPSHOT_ID);
-	}
-	else
-	{
-		lua_pushinteger(l, 0);
-	}
+	lua_pushboolean(l, SNAPSHOT);
 	lua_setfield(l, tptPropertiesVersion, "snapshot");
 	lua_pushinteger(l, MOD_ID);
 	lua_setfield(l, tptPropertiesVersion, "modid");

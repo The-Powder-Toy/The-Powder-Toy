@@ -5,14 +5,19 @@
 inline ByteString VersionInfo()
 {
 	ByteStringBuilder sb;
-	sb << DISPLAY_VERSION[0] << "." << DISPLAY_VERSION[1] << "." << APP_VERSION.build << " " << IDENT;
+	sb << DISPLAY_VERSION[0] << "." << DISPLAY_VERSION[1];
+	if constexpr (!SNAPSHOT)
+	{
+		sb << "." << APP_VERSION.build;
+	}
+	sb << " " << IDENT;
+	if constexpr (MOD)
+	{
+		sb << " MOD " << MOD_ID << " UPSTREAM " << UPSTREAM_VERSION.build;
+	}
 	if constexpr (SNAPSHOT)
 	{
-		sb << " SNAPSHOT " << SNAPSHOT_ID;
-	}
-	else if constexpr (MOD)
-	{
-		sb << " MODVER " << SNAPSHOT_ID;
+		sb << " SNAPSHOT " << APP_VERSION.build;
 	}
 	if constexpr (LUACONSOLE)
 	{

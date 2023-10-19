@@ -45,7 +45,6 @@ constexpr char APPID[]          = "@APPID@";
 constexpr char APPDATA[]        = "@APPDATA@";
 constexpr char APPVENDOR[]      = "@APPVENDOR@";
 
-constexpr int SNAPSHOT_ID          = @SNAPSHOT_ID@;
 constexpr int MOD_ID               = @MOD_ID@;
 
 struct DisplayVersionWithBuild

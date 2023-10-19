@@ -1601,13 +1601,13 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 				updateMessage << "Click \"Continue\" to download the latest version from our website.\n\nCurrent version:\n ";
 			}
 
+			if constexpr (MOD)
+			{
+				updateMessage << "Mod " << MOD_ID << " ";
+			}
 			if constexpr (SNAPSHOT)
 			{
-				updateMessage << "Snapshot " << SNAPSHOT_ID;
-			}
-			else if constexpr (MOD)
-			{
-				updateMessage << "Mod version " << SNAPSHOT_ID;
+				updateMessage << "Snapshot " << APP_VERSION.build;
 			}
 			else if constexpr (BETA)
 			{

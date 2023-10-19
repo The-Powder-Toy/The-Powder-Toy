@@ -251,15 +251,11 @@ if [[ $stable_or_beta == yes ]]; then
 fi
 if [[ $RELEASE_TYPE == snapshot ]]; then
 	meson_configure+=$'\t'-Dsnapshot=true
-	meson_configure+=$'\t'-Dsnapshot_id=$(echo $RELEASE_NAME | cut -d '-' -f 2) # $RELEASE_NAME is snapshot-X
+	meson_configure+=$'\t'-Dbuild_num=$(echo $RELEASE_NAME | cut -d '-' -f 2) # $RELEASE_NAME is snapshot-X
 fi
 if [[ $RELEASE_TYPE == snapshot ]] && [[ $MOD_ID != 0 ]]; then
 	>&2 echo "mods and snapshots do not mix"
 	exit 1
-fi
-if [[ $stable_or_beta == yes ]] && [[ $MOD_ID != 0 ]]; then
-	# mods and snapshots both check their snapshot_id against whatever version starcatcher.us/TPT has
-	meson_configure+=$'\t'-Dsnapshot_id=$(echo $RELEASE_NAME | cut -d '.' -f 3) # $RELEASE_NAME is vX.Y.Z
 fi
 if [[ $RELEASE_TYPE == snapshot ]] || [[ $MOD_ID != 0 ]]; then
 	meson_configure+=$'\t'-Dupdate_server=starcatcher.us/TPT

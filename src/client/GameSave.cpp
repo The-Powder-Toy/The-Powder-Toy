@@ -2317,7 +2317,6 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	bson_append_int(&b, "majorVersion", int(currentVersion[0]));
 	bson_append_int(&b, "minorVersion", int(currentVersion[1]));
 	bson_append_int(&b, "buildNum", APP_VERSION.build);
-	bson_append_int(&b, "snapshotId", SNAPSHOT_ID);
 	bson_append_int(&b, "modId", MOD_ID);
 	bson_append_string(&b, "releaseType", ByteString(1, IDENT_RELTYPE).c_str());
 	bson_append_string(&b, "platform", IDENT_PLATFORM);

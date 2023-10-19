@@ -76,7 +76,7 @@ namespace http
 				if constexpr (SNAPSHOT || MOD)
 				{
 					parseUpdate("Snapshot", UpdateInfo::channelSnapshot, [](int build) -> bool {
-						return build > SNAPSHOT_ID;
+						return size_t(build) > APP_VERSION.build;
 					});
 				}
 				else
