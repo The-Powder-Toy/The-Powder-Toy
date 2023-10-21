@@ -27,6 +27,8 @@
 
 class PropertyWindow: public ui::Window
 {
+	void HandlePropertyChange();
+
 public:
 	ui::DropDown * property;
 	ui::Textbox * textField;
@@ -71,8 +73,7 @@ sim(sim_)
 
 	property = new ui::DropDown(ui::Point(8, 25), ui::Point(Size.X-16, 16));
 	property->SetActionCallback({ [this] {
-		FocusComponent(textField);
-		Update();
+		HandlePropertyChange();
 	} });
 	AddComponent(property);
 	for (int i = 0; i < int(properties.size()); i++)
@@ -95,6 +96,12 @@ sim(sim_)
 	Update();
 
 	MakeActiveWindow();
+}
+
+void PropertyWindow::HandlePropertyChange()
+{
+	FocusComponent(textField);
+	Update();
 }
 
 void PropertyWindow::Update()
@@ -267,9 +274,15 @@ void PropertyWindow::OnDraw()
 void PropertyWindow::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 	if (key == SDLK_UP)
+	{
 		property->SetOption(property->GetOption().second-1);
+		HandlePropertyChange();
+	}
 	else if (key == SDLK_DOWN)
+	{
 		property->SetOption(property->GetOption().second+1);
+		HandlePropertyChange();
+	}
 }
 
 void PropertyTool::OpenWindow(Simulation *sim)
