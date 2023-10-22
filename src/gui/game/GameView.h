@@ -175,6 +175,7 @@ public:
 	bool GetDrawSnap() { return drawSnap; }
 	ui::Point GetLineStartCoords() { return drawPoint1; }
 	ui::Point GetLineFinishCoords() { return currentMouse; }
+	ui::Point GetCurrentMouse() { return currentMouse; }
 	ui::Point lineSnapCoords(ui::Point point1, ui::Point point2);
 	ui::Point rectSnapCoords(ui::Point point1, ui::Point point2);
 

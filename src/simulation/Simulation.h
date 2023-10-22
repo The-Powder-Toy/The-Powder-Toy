@@ -219,8 +219,14 @@ public:
 	void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
 	void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
 	int get_wavelength_bin(int *wm);
-	int get_normal(int pt, int x, int y, float dx, float dy, float *nx, float *ny);
-	int get_normal_interp(int pt, float x0, float y0, float dx, float dy, float *nx, float *ny);
+	struct GetNormalResult
+	{
+		bool success;
+		float nx, ny;
+		int lx, ly, rx, ry;
+	};
+	GetNormalResult get_normal(int pt, int x, int y, float dx, float dy);
+	GetNormalResult get_normal_interp(int pt, float x0, float y0, float dx, float dy);
 	void clear_sim();
 	Simulation();
 	~Simulation();

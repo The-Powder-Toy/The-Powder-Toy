@@ -3,4 +3,5 @@ powder_files += files(
 	'DebugParts.cpp',
 	'ElementPopulation.cpp',
 	'ParticleDebug.cpp',
+	'SurfaceNormals.cpp',
 )

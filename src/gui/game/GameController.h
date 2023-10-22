@@ -15,6 +15,7 @@ constexpr auto DEBUG_PARTS      = 0x0001;
 constexpr auto DEBUG_ELEMENTPOP = 0x0002;
 constexpr auto DEBUG_LINES      = 0x0004;
 constexpr auto DEBUG_PARTICLE   = 0x0008;
+constexpr auto DEBUG_SURFNORM   = 0x0010;
 
 class DebugInfo;
 class SaveFile;

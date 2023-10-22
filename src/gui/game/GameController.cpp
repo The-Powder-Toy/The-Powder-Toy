@@ -24,6 +24,7 @@
 #include "debug/DebugParts.h"
 #include "debug/ElementPopulation.h"
 #include "debug/ParticleDebug.h"
+#include "debug/SurfaceNormals.h"
 #include "graphics/Renderer.h"
 #include "simulation/Air.h"
 #include "simulation/ElementClasses.h"
@@ -96,6 +97,7 @@ GameController::GameController():
 	debugInfo.push_back(std::make_unique<ElementPopulationDebug>(DEBUG_ELEMENTPOP, gameModel->GetSimulation()));
 	debugInfo.push_back(std::make_unique<DebugLines            >(DEBUG_LINES     , gameView, this));
 	debugInfo.push_back(std::make_unique<ParticleDebug         >(DEBUG_PARTICLE  , gameModel->GetSimulation(), gameModel));
+	debugInfo.push_back(std::make_unique<SurfaceNormals        >(DEBUG_SURFNORM  , gameModel->GetSimulation(), gameView, this));
 }
 
 GameController::~GameController()

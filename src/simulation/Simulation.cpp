@@ -1793,7 +1793,7 @@ int Simulation::find_next_boundary(int pt, int *x, int *y, int dm, int *em, bool
 	return 0;
 }
 
-int Simulation::get_normal(int pt, int x, int y, float dx, float dy, float *nx, float *ny)
+Simulation::GetNormalResult Simulation::get_normal(int pt, int x, int y, float dx, float dy)
 {
 	int ldm, rdm, lm, rm;
 	int lx, ly, lv, rx, ry, rv;
@@ -1801,10 +1801,10 @@ int Simulation::get_normal(int pt, int x, int y, float dx, float dy, float *nx, 
 	float r, ex, ey;
 
 	if (!dx && !dy)
-		return 0;
+		return { false };
 
 	if (!is_boundary(pt, x, y))
-		return 0;
+		return { false };
 
 	ldm = 0xFF;
 	rdm = 0xFF;
@@ -1825,20 +1825,20 @@ int Simulation::get_normal(int pt, int x, int y, float dx, float dy, float *nx, 
 	}
 
 	if (j < NORMAL_MIN_EST)
-		return 0;
+		return { false };
 
 	if ((lx == rx) && (ly == ry))
-		return 0;
+		return { false };
 	ex = float(rx - lx);
 	ey = float(ry - ly);
 	r = 1.0f/hypot(ex, ey);
-	*nx =  ey * r;
-	*ny = -ex * r;
+	auto nx =  ey * r;
+	auto ny = -ex * r;
 
-	return 1;
+	return { true, nx, ny, lx, ly, rx, ry };
 }
 
-int Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy, float *nx, float *ny)
+Simulation::GetNormalResult Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy)
 {
 	int x, y, i;
 
@@ -1850,7 +1850,7 @@ int Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy
 		y = (int)(y0 + 0.5f);
 		if (x < 0 || y < 0 || x >= XRES || y >= YRES)
 		{
-			return 0;
+			return { false };
 		}
 		if (is_boundary(pt, x, y))
 			break;
@@ -1858,12 +1858,12 @@ int Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy
 		y0 += dy;
 	}
 	if (i >= NORMAL_INTERP)
-		return 0;
+		return { false };
 
 	if (pt == PT_PHOT)
 		photoelectric_effect(x, y);
 
-	return get_normal(pt, x, y, dx, dy, nx, ny);
+	return get_normal(pt, x, y, dx, dy);
 }
 
 void Simulation::kill_part(int i)//kills particle number i
@@ -3074,12 +3074,13 @@ killed:
 						int lt_glas = (lt == PT_GLAS) || (lt == PT_BGLA);
 						if ((rt_glas && !lt_glas) || (lt_glas && !rt_glas))
 						{
-							float nrx, nry;
-							if (!get_normal_interp(REFRACT|t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy, &nrx, &nry)) {
+							auto gn = get_normal_interp(REFRACT|t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy);
+							if (!gn.success) {
 								kill_part(i);
 								continue;
 							}
-
+							auto nrx = gn.nx;
+							auto nry = gn.ny;
 							auto r = get_wavelength_bin(&parts[i].ctype);
 							if (r == -1 || !(parts[i].ctype&0x3FFFFFFF))
 							{
@@ -3157,9 +3158,11 @@ killed:
 						parts[i].ctype &= mask;
 					}
 
-					float nrx, nry;
-					if (get_normal_interp(t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy, &nrx, &nry))
+					auto gn = get_normal_interp(t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy);
+					if (gn.success)
 					{
+						auto nrx = gn.nx;
+						auto nry = gn.ny;
 						if (TYP(r) == PT_CRMC)
 						{
 							float r = rng.between(-50, 50) * 0.01f, rx, ry, anrx, anry;
