@@ -1090,7 +1090,7 @@ void Simulation::clear_sim(void)
 	SetEdgeMode(edgeMode);
 }
 
-bool Simulation::IsWallBlocking(int x, int y, int type)
+bool Simulation::IsWallBlocking(int x, int y, int type) const
 {
 	if (bmap[y/CELL][x/CELL])
 	{
@@ -1258,7 +1258,7 @@ void Simulation::init_can_move()
 0 = No move/Bounce
 2 = Both particles occupy the same space.
  */
-int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr)
+int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr) const
 {
 	unsigned r;
 	int result;
@@ -2227,6 +2227,115 @@ void Simulation::delete_part(int x, int y)//calls kill_part with the particle lo
 	kill_part(ID(i));
 }
 
+Simulation::PlanMoveResult Simulation::PlanMove(int i, int x, int y, bool update_emap)
+{
+	// This function would be const if not for calling set_emap if update_emap is true,
+	// and users of this function *expect* it to be const if update_emap is false. So
+	// whenever you change something here, make sure it compiles *as const* if you
+	// remove the set_emap call.
+	auto t = parts[i].type;
+	int fin_x, fin_y, clear_x, clear_y;
+	float fin_xf, fin_yf, clear_xf, clear_yf;
+	auto vx = parts[i].vx;
+	auto vy = parts[i].vy;
+	auto mv = fmaxf(fabsf(vx), fabsf(vy));
+	if (mv < ISTP)
+	{
+		clear_x = x;
+		clear_y = y;
+		clear_xf = parts[i].x;
+		clear_yf = parts[i].y;
+		fin_xf = clear_xf + vx;
+		fin_yf = clear_yf + vy;
+		fin_x = (int)(fin_xf+0.5f);
+		fin_y = (int)(fin_yf+0.5f);
+	}
+	else
+	{
+		if (mv > MAX_VELOCITY)
+		{
+			vx *= MAX_VELOCITY/mv;
+			vy *= MAX_VELOCITY/mv;
+			mv = MAX_VELOCITY;
+		}
+		// interpolate to see if there is anything in the way
+		auto dx = vx*ISTP/mv;
+		auto dy = vy*ISTP/mv;
+		fin_xf = parts[i].x;
+		fin_yf = parts[i].y;
+		fin_x = (int)(fin_xf+0.5f);
+		fin_y = (int)(fin_yf+0.5f);
+		bool closedEholeStart = InBounds(fin_x, fin_y) && (bmap[fin_y/CELL][fin_x/CELL] == WL_EHOLE && !emap[fin_y/CELL][fin_x/CELL]);
+		while (1)
+		{
+			mv -= ISTP;
+			fin_xf += dx;
+			fin_yf += dy;
+			fin_x = (int)(fin_xf+0.5f);
+			fin_y = (int)(fin_yf+0.5f);
+			if (edgeMode == EDGE_LOOP)
+			{
+				bool x_ok = (fin_xf >= CELL-.5f && fin_xf < XRES-CELL-.5f);
+				bool y_ok = (fin_yf >= CELL-.5f && fin_yf < YRES-CELL-.5f);
+				if (!x_ok)
+					fin_xf = remainder_p(fin_xf-CELL+.5f, XRES-CELL*2.0f)+CELL-.5f;
+				if (!y_ok)
+					fin_yf = remainder_p(fin_yf-CELL+.5f, YRES-CELL*2.0f)+CELL-.5f;
+				fin_x = (int)(fin_xf+0.5f);
+				fin_y = (int)(fin_yf+0.5f);
+			}
+			if (mv <= 0.0f)
+			{
+				// nothing found
+				fin_xf = parts[i].x + vx;
+				fin_yf = parts[i].y + vy;
+				if (edgeMode == EDGE_LOOP)
+				{
+					bool x_ok = (fin_xf >= CELL-.5f && fin_xf < XRES-CELL-.5f);
+					bool y_ok = (fin_yf >= CELL-.5f && fin_yf < YRES-CELL-.5f);
+					if (!x_ok)
+						fin_xf = remainder_p(fin_xf-CELL+.5f, XRES-CELL*2.0f)+CELL-.5f;
+					if (!y_ok)
+						fin_yf = remainder_p(fin_yf-CELL+.5f, YRES-CELL*2.0f)+CELL-.5f;
+				}
+				fin_x = (int)(fin_xf+0.5f);
+				fin_y = (int)(fin_yf+0.5f);
+				clear_xf = fin_xf-dx;
+				clear_yf = fin_yf-dy;
+				clear_x = (int)(clear_xf+0.5f);
+				clear_y = (int)(clear_yf+0.5f);
+				break;
+			}
+			//block if particle can't move (0), or some special cases where it returns 1 (can_move = 3 but returns 1 meaning particle will be eaten)
+			//also photons are still blocked (slowed down) by any particle (even ones it can move through), and absorb wall also blocks particles
+			int eval = eval_move(t, fin_x, fin_y, NULL);
+			if (!eval || (can_move[t][TYP(pmap[fin_y][fin_x])] == 3 && eval == 1) || (t == PT_PHOT && pmap[fin_y][fin_x]) || bmap[fin_y/CELL][fin_x/CELL]==WL_DESTROYALL || closedEholeStart!=(bmap[fin_y/CELL][fin_x/CELL] == WL_EHOLE && !emap[fin_y/CELL][fin_x/CELL]))
+			{
+				// found an obstacle
+				clear_xf = fin_xf-dx;
+				clear_yf = fin_yf-dy;
+				clear_x = (int)(clear_xf+0.5f);
+				clear_y = (int)(clear_yf+0.5f);
+				break;
+			}
+			if (update_emap && bmap[fin_y/CELL][fin_x/CELL]==WL_DETECT && emap[fin_y/CELL][fin_x/CELL]<8)
+				set_emap(fin_x/CELL, fin_y/CELL);
+		}
+	}
+	return {
+		fin_x,
+		fin_y,
+		clear_x,
+		clear_y,
+		fin_xf,
+		fin_yf,
+		clear_xf,
+		clear_yf,
+		vx,
+		vy,
+	};
+}
+
 void Simulation::UpdateParticles(int start, int end)
 {
 	//the main particle loop function, goes over all particles.
@@ -2868,90 +2977,17 @@ killed:
 			int fin_x, fin_y, clear_x, clear_y;
 			float fin_xf, fin_yf, clear_xf, clear_yf;
 			{
-				auto mv = fmaxf(fabsf(parts[i].vx), fabsf(parts[i].vy));
-				if (mv < ISTP)
-				{
-					clear_x = x;
-					clear_y = y;
-					clear_xf = parts[i].x;
-					clear_yf = parts[i].y;
-					fin_xf = clear_xf + parts[i].vx;
-					fin_yf = clear_yf + parts[i].vy;
-					fin_x = (int)(fin_xf+0.5f);
-					fin_y = (int)(fin_yf+0.5f);
-				}
-				else
-				{
-					if (mv > MAX_VELOCITY)
-					{
-						parts[i].vx *= MAX_VELOCITY/mv;
-						parts[i].vy *= MAX_VELOCITY/mv;
-						mv = MAX_VELOCITY;
-					}
-					// interpolate to see if there is anything in the way
-					auto dx = parts[i].vx*ISTP/mv;
-					auto dy = parts[i].vy*ISTP/mv;
-					fin_xf = parts[i].x;
-					fin_yf = parts[i].y;
-					fin_x = (int)(fin_xf+0.5f);
-					fin_y = (int)(fin_yf+0.5f);
-					bool closedEholeStart = InBounds(fin_x, fin_y) && (bmap[fin_y/CELL][fin_x/CELL] == WL_EHOLE && !emap[fin_y/CELL][fin_x/CELL]);
-					while (1)
-					{
-						mv -= ISTP;
-						fin_xf += dx;
-						fin_yf += dy;
-						fin_x = (int)(fin_xf+0.5f);
-						fin_y = (int)(fin_yf+0.5f);
-						if (edgeMode == EDGE_LOOP)
-						{
-							bool x_ok = (fin_xf >= CELL-.5f && fin_xf < XRES-CELL-.5f);
-							bool y_ok = (fin_yf >= CELL-.5f && fin_yf < YRES-CELL-.5f);
-							if (!x_ok)
-								fin_xf = remainder_p(fin_xf-CELL+.5f, XRES-CELL*2.0f)+CELL-.5f;
-							if (!y_ok)
-								fin_yf = remainder_p(fin_yf-CELL+.5f, YRES-CELL*2.0f)+CELL-.5f;
-							fin_x = (int)(fin_xf+0.5f);
-							fin_y = (int)(fin_yf+0.5f);
-						}
-						if (mv <= 0.0f)
-						{
-							// nothing found
-							fin_xf = parts[i].x + parts[i].vx;
-							fin_yf = parts[i].y + parts[i].vy;
-							if (edgeMode == EDGE_LOOP)
-							{
-								bool x_ok = (fin_xf >= CELL-.5f && fin_xf < XRES-CELL-.5f);
-								bool y_ok = (fin_yf >= CELL-.5f && fin_yf < YRES-CELL-.5f);
-								if (!x_ok)
-									fin_xf = remainder_p(fin_xf-CELL+.5f, XRES-CELL*2.0f)+CELL-.5f;
-								if (!y_ok)
-									fin_yf = remainder_p(fin_yf-CELL+.5f, YRES-CELL*2.0f)+CELL-.5f;
-							}
-							fin_x = (int)(fin_xf+0.5f);
-							fin_y = (int)(fin_yf+0.5f);
-							clear_xf = fin_xf-dx;
-							clear_yf = fin_yf-dy;
-							clear_x = (int)(clear_xf+0.5f);
-							clear_y = (int)(clear_yf+0.5f);
-							break;
-						}
-						//block if particle can't move (0), or some special cases where it returns 1 (can_move = 3 but returns 1 meaning particle will be eaten)
-						//also photons are still blocked (slowed down) by any particle (even ones it can move through), and absorb wall also blocks particles
-						int eval = eval_move(t, fin_x, fin_y, NULL);
-						if (!eval || (can_move[t][TYP(pmap[fin_y][fin_x])] == 3 && eval == 1) || (t == PT_PHOT && pmap[fin_y][fin_x]) || bmap[fin_y/CELL][fin_x/CELL]==WL_DESTROYALL || closedEholeStart!=(bmap[fin_y/CELL][fin_x/CELL] == WL_EHOLE && !emap[fin_y/CELL][fin_x/CELL]))
-						{
-							// found an obstacle
-							clear_xf = fin_xf-dx;
-							clear_yf = fin_yf-dy;
-							clear_x = (int)(clear_xf+0.5f);
-							clear_y = (int)(clear_yf+0.5f);
-							break;
-						}
-						if (bmap[fin_y/CELL][fin_x/CELL]==WL_DETECT && emap[fin_y/CELL][fin_x/CELL]<8)
-							set_emap(fin_x/CELL, fin_y/CELL);
-					}
-				}
+				auto mr = PlanMove(i, x, y, true);
+				fin_x    = mr.fin_x;
+				fin_y    = mr.fin_y;
+				clear_x  = mr.clear_x;
+				clear_y  = mr.clear_y;
+				fin_xf   = mr.fin_xf;
+				fin_yf   = mr.fin_yf;
+				clear_xf = mr.clear_xf;
+				clear_yf = mr.clear_yf;
+				parts[i].vx = mr.vx;
+				parts[i].vy = mr.vy;
 			}
 
 			auto stagnant = parts[i].flags & FLAG_STAGNANT;

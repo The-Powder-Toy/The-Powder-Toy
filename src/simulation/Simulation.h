@@ -136,9 +136,16 @@ public:
 	int do_move(int i, int x, int y, float nxf, float nyf);
 	bool move(int i, int x, int y, float nxf, float nyf);
 	int try_move(int i, int x, int y, int nx, int ny);
-	int eval_move(int pt, int nx, int ny, unsigned *rr);
+	int eval_move(int pt, int nx, int ny, unsigned *rr) const;
+	struct PlanMoveResult
+	{
+		int fin_x, fin_y, clear_x, clear_y;
+		float fin_xf, fin_yf, clear_xf, clear_yf;
+		float vx, vy;
+	};
+	PlanMoveResult PlanMove(int i, int x, int y, bool update_emap);
 	void init_can_move();
-	bool IsWallBlocking(int x, int y, int type);
+	bool IsWallBlocking(int x, int y, int type) const;
 	bool IsElement(int type) const {
 		return (type > 0 && type < PT_NUM && elements[type].Enabled);
 	}
