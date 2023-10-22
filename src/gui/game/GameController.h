@@ -11,6 +11,11 @@
 #include <utility>
 #include <memory>
 
+constexpr auto DEBUG_PARTS      = 0x0001;
+constexpr auto DEBUG_ELEMENTPOP = 0x0002;
+constexpr auto DEBUG_LINES      = 0x0004;
+constexpr auto DEBUG_PARTICLE   = 0x0008;
+
 class DebugInfo;
 class SaveFile;
 class Notification;
@@ -47,7 +52,7 @@ private:
 	TagsController * tagsWindow;
 	LocalBrowserController * localBrowser;
 	OptionsController * options;
-	std::vector<DebugInfo*> debugInfo;
+	std::vector<std::unique_ptr<DebugInfo>> debugInfo;
 	std::unique_ptr<Snapshot> beforeRestore;
 	unsigned int debugFlags;
 	

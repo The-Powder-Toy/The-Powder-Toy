@@ -512,6 +512,12 @@ tpt.partsdata = nil");
 	}
 	lua_setfield(l, tptProperties, "eltransition");
 
+	SETCONST(l, DEBUG_PARTS);
+	SETCONST(l, DEBUG_ELEMENTPOP);
+	SETCONST(l, DEBUG_LINES);
+	SETCONST(l, DEBUG_PARTICLE);
+	SETCONST(l, DEBUG_SURFNORM);
+
 	lua_gr_func_v = std::vector<LuaSmartRef>(PT_NUM);
 	lua_gr_func = &lua_gr_func_v[0];
 	lua_el_func_v = std::vector<LuaSmartRef>(PT_NUM);
