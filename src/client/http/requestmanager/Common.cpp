@@ -17,7 +17,7 @@ namespace http
 			"; NO", // Unused, used to be SSE level.
 			"; M", MOD_ID,
 			"; ", IDENT,
-			") TPTPP/", apiVersion[0], ".", apiVersion[1], ".", APP_VERSION.build, IDENT_RELTYPE, ".", 0
+			") TPTPP/", apiVersion[0], ".", apiVersion[1], ".", APP_VERSION.build, IDENT_RELTYPE, ".", APP_VERSION.build
 		);
 	}
 
