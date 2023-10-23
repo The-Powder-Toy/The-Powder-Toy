@@ -245,9 +245,10 @@ if [[ $RELEASE_TYPE == stable ]]; then
 	stable_or_beta=yes
 fi
 if [[ $stable_or_beta == yes ]]; then
-	meson_configure+=$'\t'-Ddisplay_version_major=$(echo $RELEASE_NAME | cut -d '.' -f 1)
-	meson_configure+=$'\t'-Ddisplay_version_minor=$(echo $RELEASE_NAME | cut -d '.' -f 2)
-	meson_configure+=$'\t'-Dbuild_num=$(echo $RELEASE_NAME | cut -d '.' -f 3)
+	xyz=$(echo $RELEASE_NAME | cut -d 'v' -f 2 | cut -d 'b' -f 1) # $RELEASE_NAME is vX.Y.Z or vX.Y.Zb
+	meson_configure+=$'\t'-Ddisplay_version_major=$(echo $xyz | cut -d '.' -f 1)
+	meson_configure+=$'\t'-Ddisplay_version_minor=$(echo $xyz | cut -d '.' -f 2)
+	meson_configure+=$'\t'-Dbuild_num=$(echo $xyz | cut -d '.' -f 3)
 fi
 if [[ $RELEASE_TYPE == snapshot ]]; then
 	meson_configure+=$'\t'-Dsnapshot=true
