@@ -125,7 +125,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug' ),
 	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None,  'arm64-and-gcc-static', 'release' ),
 	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-20.04', '.tar',   False,    False,      None,         None,                    None,   'debug' ),
-	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-20.04', '.tar',    True,     True,      None, 'emscripten',                    None, 'release' ), # I have no idea how to separate debug info on emscripten
+	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-20.04', '.tar',    True,     True,      None, 'emscripten',     'wasm32-ems-static', 'release' ), # I have no idea how to separate debug info on emscripten
 ]:
 	if not mode:
 		mode = 'default'
