@@ -14,6 +14,9 @@
 #if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 61, 0)
 # define REQUEST_USE_CURL_TLSV13CL
 #endif
+#if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 68, 0)
+# define REQUEST_USE_CURL_MULTI_POLL
+#endif
 
 constexpr long curlMaxHostConnections   = 1;
 constexpr long curlMaxConcurrentStreams = httpMaxConcurrentStreams;
@@ -137,6 +140,32 @@ namespace http
 
 		bool curlGlobalInit = false;
 		CURLM *curlMulti = NULL;
+
+		void Wake()
+		{
+#ifdef REQUEST_USE_CURL_MULTI_POLL
+			curl_multi_wakeup(curlMulti);
+#endif
+		}
+
+		void Wait()
+		{
+			int dontcare;
+#ifdef REQUEST_USE_CURL_MULTI_POLL
+			HandleCURLMcode(curl_multi_poll(curlMulti, NULL, 0, 100000, &dontcare));
+#else
+			constexpr auto TickMs = 100;
+			if (requestHandles.size())
+			{
+				HandleCURLMcode(curl_multi_wait(curlMulti, NULL, 0, TickMs, &dontcare));
+			}
+			else
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(TickMs));
+				return;
+			}
+#endif
+		}
 	};
 
 	RequestManagerImpl::RequestManagerImpl(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork) :
@@ -153,6 +182,7 @@ namespace http
 			std::lock_guard lk(sharedStateMx);
 			running = false;
 		}
+		Wake();
 		worker.join();
 	}
 
@@ -175,8 +205,8 @@ namespace http
 	void RequestManagerImpl::WorkerPerform()
 	{
 		auto manager = static_cast<RequestManagerImpl *>(this);
+		manager->Wait();
 		int dontcare;
-		HandleCURLMcode(curl_multi_poll(manager->curlMulti, NULL, 0, 1000, &dontcare));
 		HandleCURLMcode(curl_multi_perform(manager->curlMulti, &dontcare));
 		while (auto msg = curl_multi_info_read(manager->curlMulti, &dontcare))
 		{
@@ -313,7 +343,7 @@ namespace http
 			std::lock_guard lk(manager->sharedStateMx);
 			manager->requestHandlesToRegister.push_back(request.handle);
 		}
-		curl_multi_wakeup(manager->curlMulti);
+		manager->Wake();
 	}
 
 	void RequestManager::UnregisterRequestImpl(Request &request)
@@ -323,7 +353,7 @@ namespace http
 			std::lock_guard lk(manager->sharedStateMx);
 			manager->requestHandlesToUnregister.push_back(request.handle);
 		}
-		curl_multi_wakeup(manager->curlMulti);
+		manager->Wake();
 	}
 
 	void RequestManagerImpl::RegisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle)
