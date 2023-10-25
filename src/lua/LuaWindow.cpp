@@ -53,10 +53,7 @@ LuaWindow::LuaWindow(lua_State * l)
 	if (sizeY < 10)
 		sizeY = 10;
 
-	lua_pushliteral(l, "Luacon_ci");
-	lua_gettable(l, LUA_REGISTRYINDEX);
-	ci = (LuaScriptInterface*)lua_touserdata(l, -1);
-	lua_pop(l, 1);
+	ci = static_cast<LuaScriptInterface *>(commandInterface);
 
 	class DrawnWindow : public ui::Window
 	{

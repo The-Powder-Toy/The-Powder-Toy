@@ -297,10 +297,6 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	luaopen_bit(l);
 	lua_pop(l, 1);
 
-	lua_pushliteral(l, "Luacon_ci");
-	lua_pushlightuserdata(l, this);
-	lua_settable(l, LUA_REGISTRYINDEX);
-
 	initSimulationAPI();
 	initInterfaceAPI();
 	SetWindow(c->GetView());
