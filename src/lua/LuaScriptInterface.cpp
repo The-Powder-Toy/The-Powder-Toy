@@ -406,11 +406,11 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	lua_pushinteger(l, APP_VERSION.build);
 	lua_setfield(l, tptPropertiesVersion, "build");
 	lua_pushinteger(l, UPSTREAM_VERSION.displayVersion[0]);
-	lua_setfield(l, tptPropertiesVersion, "upstream_major");
+	lua_setfield(l, tptPropertiesVersion, "upstreamMajor");
 	lua_pushinteger(l, UPSTREAM_VERSION.displayVersion[1]);
-	lua_setfield(l, tptPropertiesVersion, "upstream_minor");
+	lua_setfield(l, tptPropertiesVersion, "upstreamMinor");
 	lua_pushinteger(l, UPSTREAM_VERSION.build);
-	lua_setfield(l, tptPropertiesVersion, "upstream_build");
+	lua_setfield(l, tptPropertiesVersion, "upstreamBuild");
 	lua_pushboolean(l, SNAPSHOT);
 	lua_setfield(l, tptPropertiesVersion, "snapshot");
 	lua_pushinteger(l, MOD_ID);
