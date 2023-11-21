@@ -22,6 +22,7 @@ class LocalBrowserView: public ui::Window {
 	ui::Label * pageCountLabel;
 	ui::Textbox * pageTextbox;
 	ui::Button * removeSelected;
+	ui::Button *renameSelected;
 
 	void textChanged();
 	bool changed;
