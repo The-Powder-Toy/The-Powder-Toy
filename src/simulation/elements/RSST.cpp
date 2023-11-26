@@ -26,13 +26,13 @@ void Element::Element_RSST()
 	Meltable = 0;
 	Hardness = 50;
 
-	Weight = 34;
+	Weight = 33;
 
 	DefaultProperties.temp = R_TEMP + 20.0f + 273.15f;
-	HeatConduct = 44;
-	Description = "Resist. Solidifies on contact with PHOT, and reacts with other energy particles.";
+	HeatConduct = 55;
+	Description = "Resist. Solidifies on contact with photons, is destroyed by electrons and spark.";
 
-	Properties = TYPE_LIQUID|PROP_NEUTPASS;
+	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPASS;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -62,6 +62,11 @@ int update(UPDATE_FUNC_ARGS)
 				sim->part_change_type(i, x, y, PT_FIRW);
 				sim->kill_part(ID(r));
 				return 1;
+			}
+
+			if((TYP(r) == PT_CLNE) || (TYP(r) == PT_PCLN))
+			{
+				parts[i].ctype = parts[ID(r)].ctype;
 			}
 		}
 	}

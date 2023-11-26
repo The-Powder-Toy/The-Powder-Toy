@@ -69,6 +69,12 @@ static int update(UPDATE_FUNC_ARGS)
 			parts[i].life = 54;
 		else if (ct == PT_SWCH)
 			parts[i].life = 14;
+		else if (ct == PT_RSST)
+		{
+			sim->kill_part(i);
+			return 1;
+		}
+
 		if (sim->part_change_type(i,x,y,ct))
 			return 1;
 		return 0;
@@ -355,6 +361,14 @@ static int update(UPDATE_FUNC_ARGS)
 					if (parts[ID(r)].life==0 && parts[i].life<4)
 					{
 						sim->FloodINST(x+rx,y+ry);//spark the wire
+					}
+				}
+				else if (receiver==PT_RSST) {
+					if (parts[ID(r)].life==0 && parts[i].life<4)
+					{
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
+						parts[ID(r)].life = 5;
+						parts[ID(r)].ctype = receiver;
 					}
 				}
 				else if (parts[ID(r)].life==0 && parts[i].life<4) {

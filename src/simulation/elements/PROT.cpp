@@ -101,16 +101,11 @@ static int update(UPDATE_FUNC_ARGS)
 		else change = 0.0f;
 		parts[uID].temp = restrict_flt(parts[uID].temp + change, MIN_TEMP, MAX_TEMP);
 		break;
-	case PT_RSST:
-		{
-			sim->part_change_type(uID, x, y, PT_METL);
-			sim->kill_part(i);
-		}
-		break;
 	case PT_RSSS:
 		{
-			sim->part_change_type(uID, x, y, PT_PSCN);
+			sim->kill_part(uID);
 			sim->kill_part(i);
+			return 1;
 		}
 		break;
 	case PT_NONE:

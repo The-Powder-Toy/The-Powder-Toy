@@ -61,20 +61,10 @@ static int update(UPDATE_FUNC_ARGS)
 
 	int under = pmap[y][x];
 	int utype = TYP(under);
-	int uID = ID(under);
 
-	if(utype == PT_RSST)
+	if((utype == PT_RSSS) && sim->rng.chance(1, 5))
 	{
-		sim->part_change_type(uID, x, y, PT_SWCH);
 		sim->kill_part(i);
-
-		return 1;
-	}
-	else if(utype == PT_RSSS)
-	{
-		sim->part_change_type(uID, x, y, PT_NSCN);
-		sim->kill_part(i);
-
 		return 1;
 	}
 
