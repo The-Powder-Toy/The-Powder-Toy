@@ -143,9 +143,9 @@ elif [[ $BSH_HOST_PLATFORM == darwin ]]; then
 elif [[ $BSH_HOST_PLATFORM == android ]]; then
 	case $BSH_HOST_ARCH in
 	x86_64)  android_toolchain_prefix=x86_64-linux-android    ; android_system_version=21; android_arch_abi=x86_64     ;;
-	x86)     android_toolchain_prefix=i686-linux-android      ; android_system_version=19; android_arch_abi=x86        ;;
+	x86)     android_toolchain_prefix=i686-linux-android      ; android_system_version=21; android_arch_abi=x86        ;;
 	aarch64) android_toolchain_prefix=aarch64-linux-android   ; android_system_version=21; android_arch_abi=arm64-v8a  ;;
-	arm)     android_toolchain_prefix=armv7a-linux-androideabi; android_system_version=19; android_arch_abi=armeabi-v7a;;
+	arm)     android_toolchain_prefix=armv7a-linux-androideabi; android_system_version=21; android_arch_abi=armeabi-v7a;;
 	esac
 	android_toolchain_dir=$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64
 	CC=$android_toolchain_dir/bin/$android_toolchain_prefix$android_system_version-clang
@@ -369,7 +369,6 @@ zipalign = andriod_sdk_build_tools / 'zipalign'
 apksigner = andriod_sdk_build_tools / 'apksigner'
 ANDROID_INI
 	meson_configure+=$'\t'--cross-file=.github/android-ghactions.ini
-	meson_configure+=$'\t'-Dhttp=false
 fi
 meson_configure+=$'\t'-Dc_args=[$c_args]
 meson_configure+=$'\t'-Dcpp_args=[$c_args]

@@ -89,6 +89,16 @@ namespace http
 			return disableNetwork;
 		}
 
+		const ByteString &Cafile() const
+		{
+			return cafile;
+		}
+
+		const ByteString &Capath() const
+		{
+			return capath;
+		}
+
 		static RequestManagerPtr Create(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork);
 	};
 }

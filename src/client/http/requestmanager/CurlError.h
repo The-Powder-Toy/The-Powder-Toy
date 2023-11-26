@@ -9,6 +9,7 @@ namespace http
 		using runtime_error::runtime_error;
 	};
 
+	void UseSystemCertProvider(CURL *easy);
 	void SetupCurlEasyCiphers(CURL *easy);
 	void HandleCURLcode(CURLcode code);
 	void HandleCURLMcode(CURLMcode code);

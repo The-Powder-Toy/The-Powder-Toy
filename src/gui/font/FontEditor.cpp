@@ -529,7 +529,7 @@ void FontEditor::Translate(std::array<std::array<char, MAX_WIDTH>, FONT_H> &pixe
 	std::array<std::array<char, MAX_WIDTH>, FONT_H> old = pixels;
 	for(int j = 0; j < FONT_H; j++)
 		for(int i = 0; i < MAX_WIDTH; i++)
-			if(i - dx >= 0 && i - dx + 1 < MAX_WIDTH && j - dy >= 0 && j - dy + 1 < FONT_H)
+			if(i - dx >= 0 && i - dx < MAX_WIDTH && j - dy >= 0 && j - dy < FONT_H)
 				pixels[j][i] = old[j - dy][i - dx];
 			else
 				pixels[j][i] = 0;

@@ -119,7 +119,7 @@ void Air::update_air(void)
 {
 	const float advDistanceMult = 0.7f;
 
-	if (airMode != 4) //airMode 4 is no air/pressure update
+	if (airMode != AIR_NO_UPDATE) //airMode 4 is no air/pressure update
 	{
 		for (auto i=0; i<YCELLS; i++) //reduces pressure/velocity on the edges every frame
 		{
@@ -309,21 +309,21 @@ void Air::update_air(void)
 				switch (airMode)
 				{
 				default:
-				case 0:  //Default
+				case AIR_ON:  //Default
 					break;
-				case 1:  //0 Pressure
+				case AIR_PRESSURE_OFF:  //0 Pressure
 					dp = 0.0f;
 					break;
-				case 2:  //0 Velocity
+				case AIR_VELOCITY_OFF:  //0 Velocity
 					dx = 0.0f;
 					dy = 0.0f;
 					break;
-				case 3: //0 Air
+				case AIR_OFF: //0 Air
 					dx = 0.0f;
 					dy = 0.0f;
 					dp = 0.0f;
 					break;
-				case 4: //No Update
+				case AIR_NO_UPDATE: //No Update
 					break;
 				}
 
@@ -383,7 +383,7 @@ void Air::ApproximateBlockAirMaps()
 
 Air::Air(Simulation & simulation):
 	sim(simulation),
-	airMode(0),
+	airMode(AIR_ON),
 	ambientAirTemp(R_TEMP + 273.15f)
 {
 	//Simulation should do this.

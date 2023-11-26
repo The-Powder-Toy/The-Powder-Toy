@@ -45,10 +45,12 @@ public:
 	void SetResizable(bool resizable);
 	bool GetFullscreen();
 	void SetFullscreen(bool fullscreen);
-	bool GetAltFullscreen();
-	void SetAltFullscreen(bool oldFullscreen);
+	bool GetChangeResolution();
+	void SetChangeResolution(bool newChangeResolution);
 	bool GetForceIntegerScaling();
 	void SetForceIntegerScaling(bool forceIntegerScaling);
+	bool GetBlurryScaling();
+	void SetBlurryScaling(bool newBlurryScaling);
 	bool GetFastQuit();
 	void SetFastQuit(bool fastquit);
 	int GetDecoSpace();

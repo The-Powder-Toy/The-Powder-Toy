@@ -2,6 +2,40 @@
 #include "Config.h"
 #include "common/String.h"
 
+inline ByteString VersionInfo()
+{
+	ByteStringBuilder sb;
+	sb << SAVE_VERSION << "." << MINOR_VERSION << "." << BUILD_NUM << " " << IDENT;
+	if constexpr (SNAPSHOT)
+	{
+		sb << " SNAPSHOT " << SNAPSHOT_ID;
+	}
+	else if constexpr (MOD)
+	{
+		sb << " MODVER " << SNAPSHOT_ID;
+	}
+	if constexpr (LUACONSOLE)
+	{
+		sb << " LUACONSOLE";
+	}
+#ifdef REALISTIC
+	sb << " REALISTIC";
+#endif
+	if constexpr (NOHTTP)
+	{
+		sb << " NOHTTP";
+	}
+	else if constexpr (ENFORCE_HTTPS)
+	{
+		sb << " HTTPS";
+	}
+	if constexpr (DEBUG)
+	{
+		sb << " DEBUG";
+	}
+	return sb.Build();
+}
+
 inline ByteString IntroText()
 {
 	ByteStringBuilder sb;
@@ -37,34 +71,6 @@ inline ByteString IntroText()
 	{
 		sb << "\bgTo use online features such as saving, you need to register at: \brhttps://powdertoy.co.uk/Register.html\n";
 	}
-	sb << "\n"
-	   << "\bt" << SAVE_VERSION << "." << MINOR_VERSION << "." << BUILD_NUM << " " << IDENT;
-	if constexpr (SNAPSHOT)
-	{
-		sb << " SNAPSHOT " << SNAPSHOT_ID;
-	}
-	else if constexpr (MOD)
-	{
-		sb << " MODVER " << SNAPSHOT_ID;
-	}
-	if constexpr (LUACONSOLE)
-	{
-		sb << " LUACONSOLE";
-	}
-#ifdef REALISTIC
-	sb << " REALISTIC";
-#endif
-	if constexpr (NOHTTP)
-	{
-		sb << " NOHTTP";
-	}
-	else if constexpr (ENFORCE_HTTPS)
-	{
-		sb << " HTTPS";
-	}
-	if constexpr (DEBUG)
-	{
-		sb << " DEBUG";
-	}
+	sb << "\n\bt" << VersionInfo();
 	return sb.Build();
 }

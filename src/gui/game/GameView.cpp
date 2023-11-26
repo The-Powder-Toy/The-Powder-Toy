@@ -1427,7 +1427,10 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			c->ReloadSim();
 		break;
 	case SDL_SCANCODE_E:
-		c->OpenElementSearch();
+		if (ctrl)
+			c->SetEdgeMode(c->GetEdgeMode() + 1);
+		else
+			c->OpenElementSearch();
 		break;
 	case SDL_SCANCODE_F:
 		if (ctrl)
@@ -1458,6 +1461,9 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			introText = 8047;
 		else
 			introText = 0;
+		break;
+	case SDL_SCANCODE_F11:
+		ui::Engine::Ref().SetFullscreen(!ui::Engine::Ref().GetFullscreen());
 		break;
 	case SDL_SCANCODE_H:
 		if(ctrl)
