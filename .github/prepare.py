@@ -6,6 +6,7 @@ import subprocess
 import sys
 
 ref = os.getenv('GITHUB_REF')
+event_name = os.getenv('GITHUB_EVENT_NAME')
 publish_hostport = os.getenv('PUBLISH_HOSTPORT')
 
 def set_output(key, value):
@@ -17,21 +18,28 @@ match_beta       = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)b', ref
 match_snapshot   = re.fullmatch(r'refs/tags/snapshot-([0-9]+)', ref)
 match_tptlibsdev = re.fullmatch(r'refs/heads/tptlibsdev-(.*)', ref)
 do_release       = False
+do_priority      = 10
+if event_name == 'pull_request':
+	do_priority = 0
 if match_stable:
 	release_type = 'stable'
 	release_name = 'v%s.%s.%s' % (match_stable.group(1), match_stable.group(2), match_stable.group(3))
 	do_release = True
+	do_priority = 0
 elif match_beta:
 	release_type = 'beta'
 	release_name = 'v%s.%s.%sb' % (match_beta.group(1), match_beta.group(2), match_beta.group(3))
 	do_release = True
+	do_priority = 0
 elif match_snapshot:
 	release_type = 'snapshot'
 	release_name = 'snapshot-%s' % match_snapshot.group(1)
 	do_release = True
+	do_priority = 0
 elif match_tptlibsdev:
 	release_type = 'tptlibsdev'
 	release_name = 'tptlibsdev-%s' % match_tptlibsdev.group(1)
+	do_priority = 0
 else:
 	release_type = 'dev'
 	release_name = 'dev'
@@ -84,50 +92,52 @@ app_name_slug = re.sub('[^A-Za-z0-9]', '_', app_name)
 build_matrix = []
 publish_matrix = []
 # consider disabling line wrapping to edit this monstrosity
-for        arch,     platform,         libc,   statdyn, bplatform,         runson, suffix, publish, artifact, dbgsuffix,         mode,             starcatcher,    dbgrel in [
-	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None,   'debug' ),
-	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-20.04',     '',    True,     True,    '.dbg',         None, 'x86_64-lin-gcc-static', 'release' ),
-	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-20.04',     '',   False,     True,    '.dbg',   'appimage',                    None, 'release' ),
-	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None,   'debug' ),
-	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,     'nohttp',                    None,   'debug' ),
-	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,      'nolua',                    None,   'debug' ),
-	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None, 'release' ),
-#	(  'x86_64',    'windows',      'mingw',  'static',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None,   'debug' ), # ubuntu-20.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them
-#	(  'x86_64',    'windows',      'mingw',  'static',   'linux', 'ubuntu-20.04',     '',   False,     True,    '.dbg',         None,                    None, 'release' ), # ubuntu-20.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them
-	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None,   'debug' ),
-	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None, 'release' ),
-	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug' ),
-	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2019', '.exe',   False,     True,    '.dbg',         None,                    None, 'release' ),
-	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug' ),
-	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None, 'release' ),
-	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug' ),
-	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',    True,     True,    '.pdb',         None,'x86_64-win-msvc-static', 'release' ),
-	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug' ),
-	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,  'backendvs',                    None,   'debug' ),
-	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None, 'release' ),
-	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug' ),
-	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',    True,     True,    '.pdb',         None,  'i686-win-msvc-static', 'release' ),
-	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug' ),
-	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None, 'release' ),
-	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',   'macos-11.0', '.dmg',   False,    False,      None,        'dmg',                    None,   'debug' ),
-	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',   'macos-11.0', '.dmg',    True,     True,      None,        'dmg', 'x86_64-mac-gcc-static', 'release' ), # I have no idea how to separate debug info on macos
-	(  'x86_64',     'darwin',      'macos', 'dynamic',  'darwin',   'macos-11.0', '.dmg',   False,    False,      None,        'dmg',                    None,   'debug' ),
-	(  'x86_64',     'darwin',      'macos', 'dynamic',  'darwin',   'macos-11.0', '.dmg',   False,    False,      None,        'dmg',                    None, 'release' ),
-	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',   'macos-11.0', '.dmg',   False,    False,      None,        'dmg',                    None,   'debug' ),
-	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',   'macos-11.0', '.dmg',    True,     True,      None,        'dmg',  'arm64-mac-gcc-static', 'release' ),
-#	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',   'macos-11.0', '.dmg',   False,    False,      None,        'dmg',                    None,   'debug' ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
-#	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',   'macos-11.0', '.dmg',   False,    False,      None,        'dmg',                    None, 'release' ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
-	(     'x86',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug' ),
-	(     'x86',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None,   'i686-and-gcc-static', 'release' ),
-	(  'x86_64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug' ),
-	(  'x86_64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None, 'x86_64-and-gcc-static', 'release' ),
-	(     'arm',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug' ),
-	(     'arm',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None,    'arm-and-gcc-static', 'release' ),
-	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug' ),
-	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None,  'arm64-and-gcc-static', 'release' ),
-	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-20.04', '.tar',   False,    False,      None,         None,                    None,   'debug' ),
-	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-20.04', '.tar',    True,     True,      None, 'emscripten',     'wasm32-ems-static', 'release' ), # I have no idea how to separate debug info on emscripten
+for        arch,     platform,         libc,   statdyn, bplatform,         runson, suffix, publish, artifact, dbgsuffix,         mode,             starcatcher,    dbgrel, priority in [
+	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: static debug build
+	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-20.04',     '',    True,     True,    '.dbg',         None, 'x86_64-lin-gcc-static', 'release',       10 ),
+	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-20.04',     '',   False,     True,    '.dbg',   'appimage',                    None, 'release',        0 ), # priority = 0: appimage release
+	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None,   'debug',       10 ),
+	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,     'nohttp',                    None,   'debug',       10 ),
+	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,      'nolua',                    None,   'debug',       10 ),
+	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None, 'release',       10 ),
+#	(  'x86_64',    'windows',      'mingw',  'static',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None,   'debug',       10 ), # ubuntu-20.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them
+#	(  'x86_64',    'windows',      'mingw',  'static',   'linux', 'ubuntu-20.04',     '',   False,     True,    '.dbg',         None,                    None, 'release',       10 ), # ubuntu-20.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them
+	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None,   'debug',       10 ),
+	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None, 'release',       10 ),
+	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: static debug build
+	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2019', '.exe',   False,     True,    '.dbg',         None,                    None, 'release',       10 ),
+	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',       10 ),
+	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None, 'release',       10 ),
+	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: static debug build
+	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',    True,     True,    '.pdb',         None,'x86_64-win-msvc-static', 'release',       10 ),
+	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',       10 ),
+	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,  'backendvs',                    None,   'debug',        0 ), # priority = 0: backend=vs build
+	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None, 'release',       10 ),
+	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: static debug build
+	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',    True,     True,    '.pdb',         None,  'i686-win-msvc-static', 'release',       10 ),
+	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',       10 ),
+	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None, 'release',       10 ),
+	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',   'macos-11.0', '.dmg',   False,    False,      None,        'dmg',                    None,   'debug',        0 ), # priority = 0: static debug build
+	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',   'macos-11.0', '.dmg',    True,     True,      None,        'dmg', 'x86_64-mac-gcc-static', 'release',       10 ), # I have no idea how to separate debug info on macos
+	(  'x86_64',     'darwin',      'macos', 'dynamic',  'darwin',   'macos-11.0', '.dmg',   False,    False,      None,        'dmg',                    None,   'debug',       10 ),
+	(  'x86_64',     'darwin',      'macos', 'dynamic',  'darwin',   'macos-11.0', '.dmg',   False,    False,      None,        'dmg',                    None, 'release',       10 ),
+	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',   'macos-11.0', '.dmg',   False,    False,      None,        'dmg',                    None,   'debug',        0 ), # priority = 0: static debug build
+	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',   'macos-11.0', '.dmg',    True,     True,      None,        'dmg',  'arm64-mac-gcc-static', 'release',       10 ),
+#	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',   'macos-11.0', '.dmg',   False,    False,      None,        'dmg',                    None,   'debug',       10 ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
+#	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',   'macos-11.0', '.dmg',   False,    False,      None,        'dmg',                    None, 'release',       10 ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
+	(     'x86',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: rarely used debug build
+	(     'x86',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None,   'i686-and-gcc-static', 'release',       10 ),
+	(  'x86_64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: rarely used debug build
+	(  'x86_64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None, 'x86_64-and-gcc-static', 'release',       10 ),
+	(     'arm',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: rarely used debug build
+	(     'arm',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None,    'arm-and-gcc-static', 'release',       10 ),
+	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: rarely used debug build
+	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None,  'arm64-and-gcc-static', 'release',       10 ),
+	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-20.04', '.tar',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: rarely used debug build
+	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-20.04', '.tar',    True,     True,      None, 'emscripten',     'wasm32-ems-static', 'release',       10 ), # I have no idea how to separate debug info on emscripten
 ]:
+	if priority < do_priority:
+		continue
 	if not mode:
 		mode = 'default'
 	separate_debug = True
