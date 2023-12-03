@@ -206,6 +206,26 @@ fi
 if [[ $PACKAGE_MODE == nolua ]]; then
 	meson_configure+=$'\t'-Dlua=none
 fi
+if [[ $PACKAGE_MODE == backendvs ]]; then
+	meson_configure+=$'\t'-Dbackend=vs
+	echo "NOTE: patching CREATEPROCESS_MANIFEST_RESOURCE_ID out of powder-res.template.rc"
+	echo "TODO: remove this patch once https://github.com/mesonbuild/meson/pull/12472 makes it into a release"
+	echo "TODO: also remove the relevant note from the building guide"
+	git apply <<PATCH
+diff --git a/resources/powder-res.template.rc b/resources/powder-res.template.rc
+index 1dc26c78..2094049f 100644
+--- a/resources/powder-res.template.rc
++++ b/resources/powder-res.template.rc
+@@ -7,7 +7,6 @@
+ 
+ IDI_ICON ICON DISCARDABLE "@ICON_EXE_ICO@"
+ IDI_DOC_ICON ICON DISCARDABLE "@ICON_CPS_ICO@"
+-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "@WINUTF8_XML@"
+ 
+ VS_VERSION_INFO VERSIONINFO
+ FILEVERSION @DISPLAY_VERSION_MAJOR@,@DISPLAY_VERSION_MINOR@,0,@BUILD_NUM@
+PATCH
+fi
 if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 	meson_configure+=$'\t'-Dstatic=prebuilt
 	if [[ $BSH_HOST_PLATFORM == windows ]]; then
@@ -401,9 +421,12 @@ if [[ $PACKAGE_MODE == appimage ]]; then
 	meson configure -Dcan_install=no -Dignore_updates=true -Dbuild_render=false -Dbuild_font=false
 	strip_target=$APP_EXE
 fi
-if [[ $BSH_BUILD_PLATFORM == windows ]]; then
+meson_compile=meson$'\t'compile
+meson_compile+=$'\t'-v
+if [[ $BSH_BUILD_PLATFORM == windows ]] && [[ $PACKAGE_MODE != backendvs ]]; then
 	set +e
-	ninja -v -d keeprsp
+	meson_compile+=$'\t'--ninja-args='["-d","keeprsp"]'
+	$meson_compile
 	ninja_code=$?
 	set -e
 	cat $APP_EXE.exe.rsp
@@ -417,7 +440,7 @@ if [[ $BSH_BUILD_PLATFORM == windows ]]; then
 		fi
 	fi
 else
-	ninja -v
+	$meson_compile
 fi
 
 if [[ $SEPARATE_DEBUG == yes ]] && [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC != windows-msvc ]]; then

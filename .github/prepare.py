@@ -103,6 +103,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug' ),
 	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',    True,     True,    '.pdb',         None,'x86_64-win-msvc-static', 'release' ),
 	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug' ),
+	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,  'backendvs',                    None,   'debug' ),
 	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None, 'release' ),
 	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug' ),
 	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',    True,     True,    '.pdb',         None,  'i686-win-msvc-static', 'release' ),
