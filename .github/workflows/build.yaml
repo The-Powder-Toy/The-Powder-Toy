@@ -54,6 +54,7 @@ jobs:
           prerelease: false
   build:
     runs-on: ${{ matrix.runs_on }}
+    name: ${{ matrix.job_name }}
     needs: [prepare]
     strategy:
       fail-fast: false

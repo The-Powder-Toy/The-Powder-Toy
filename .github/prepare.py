@@ -138,6 +138,15 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 ]:
 	if priority < do_priority:
 		continue
+	job_name = f'build'
+	if starcatcher:
+		job_name += f'+target=starcatcher-{starcatcher}'
+	else:
+		job_name += f'+target={arch}-{platform}-{libc}-{statdyn}-{dbgrel}'
+		if mode:
+			job_name += f'+mode={mode}'
+		if bplatform != platform:
+			job_name += f'+bplatform={bplatform}'
 	if not mode:
 		mode = 'default'
 	separate_debug = True
@@ -178,6 +187,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 		'asset_name': asset_name,
 		'debug_asset_path': debug_asset_path,
 		'debug_asset_name': debug_asset_name,
+		'job_name': job_name,
 	})
 	if publish:
 		publish_matrix.append({
