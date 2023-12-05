@@ -11,6 +11,7 @@
 #include "common/tpt-rand.h"
 #include "Element.h"
 #include "SimulationConfig.h"
+#include "MissingElements.h"
 #include <cstring>
 #include <cstddef>
 #include <vector>
@@ -121,7 +122,7 @@ public:
 	uint64_t frameCount;
 	bool ensureDeterminism;
 
-	std::vector<ByteString> Load(const GameSave *save, bool includePressure, Vec2<int> blockP); // block coordinates
+	MissingElements Load(const GameSave *save, bool includePressure, Vec2<int> blockP); // block coordinates
 	std::unique_ptr<GameSave> Save(bool includePressure, Rect<int> partR); // particle coordinates
 	void SaveSimOptions(GameSave &gameSave);
 	SimulationSample GetSample(int x, int y);

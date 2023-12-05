@@ -4,6 +4,7 @@
 #include <vector>
 #include "common/String.h"
 #include "gui/interface/Window.h"
+#include "simulation/MissingElements.h"
 
 namespace http
 {
@@ -27,7 +28,7 @@ class PreviewController;
 class PreviewView: public ui::Window
 {
 	PreviewController *c{};
-	std::vector<ByteString> missingElementTypes;
+	MissingElements missingElements;
 	std::unique_ptr<VideoBuffer> savePreview;
 	ui::Button *openButton{};
 	ui::Button *browserOpenButton{};

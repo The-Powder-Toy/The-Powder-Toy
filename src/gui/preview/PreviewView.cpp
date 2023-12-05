@@ -488,10 +488,24 @@ void PreviewView::ShowLoadError()
 void PreviewView::ShowMissingCustomElements()
 {
 	StringBuilder sb;
-	sb << "This save uses custom elements that are not currently available. Make sure that you use the mod and/or have all the scripts the save requires to fully load. A list of identifiers of missing custom elements follows, which may help you determine how to fix this problem.\n";
-	for (auto &identifier : missingElementTypes)
+	sb << "This save uses custom elements that are not currently available. Make sure that you use the mod and/or have all the scripts the save requires to fully load.";
+	auto remainingIds = missingElements.ids;
+	if (missingElements.identifiers.size())
 	{
-		sb << "\n - " << identifier.FromUtf8();
+		sb << "\n\nA list of identifiers of missing custom elements follows, which may help you determine how to fix this problem.\n";
+		for (auto &[ identifier, id ] : missingElements.identifiers)
+		{
+			sb << "\n - " << identifier.FromUtf8();
+			remainingIds.erase(id); // remove ids from the missing id set that are already covered by unknown identifiers
+		}
+	}
+	if (remainingIds.size())
+	{
+		sb << "\n\nA list of element IDs of missing custom elements with no identifier associated follows. This can only be fixed by the author of the save.\n";
+		for (auto id : remainingIds)
+		{
+			sb << "\n - " << id;
+		}
 	}
 	new InformationMessage("Missing custom elements", sb.Build(), true);
 }
@@ -556,10 +570,10 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 
 		if(save->GetGameSave())
 		{
-			std::tie(savePreview, missingElementTypes) = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
+			std::tie(savePreview, missingElements) = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
 			if (savePreview)
 				savePreview->ResizeToFit(RES / 2, true);
-			missingElementsButton->Visible = missingElementTypes.size();
+			missingElementsButton->Visible = missingElements.identifiers.size() || missingElements.ids.size();
 			UpdateLoadStatus();
 		}
 		else if (!sender->GetCanOpen())

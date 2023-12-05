@@ -19,9 +19,9 @@ extern int Element_LOLZ_lolz[XRES/9][YRES/9];
 extern int Element_LOVE_RuleTable[9][9];
 extern int Element_LOVE_love[XRES/9][YRES/9];
 
-std::vector<ByteString> Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> blockP) // block coordinates
+MissingElements Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> blockP) // block coordinates
 {
-	std::vector<ByteString> missingElementTypes;
+	MissingElements missingElements;
 	auto partP = blockP * CELL;
 	unsigned int pmapmask = (1<<save->pmapbits)-1;
 
@@ -54,11 +54,23 @@ std::vector<ByteString> Simulation::Load(const GameSave *save, bool includePress
 				}
 				else
 				{
-					missingElementTypes.push_back(pi.first);
+					missingElements.identifiers.insert(pi);
 				}
 			}
 		}
 	}
+	auto paletteLookup = [&partMap, &missingElements](int type) {
+		if (type > 0 && type < PT_NUM)
+		{
+			auto carriedType = partMap[type];
+			if (!carriedType) // type is not 0 so this shouldn't be 0 either
+			{
+				missingElements.ids.insert(type);
+			}
+			type = carriedType;
+		}
+		return type;
+	};
 
 	RecalcFreeParticles(false);
 
@@ -86,7 +98,7 @@ std::vector<ByteString> Simulation::Load(const GameSave *save, bool includePress
 			continue;
 		}
 
-		tempPart.type = partMap[tempPart.type];
+		tempPart.type = paletteLookup(tempPart.type);
 		for (auto index : possiblyCarriesType)
 		{
 			if (elements[tempPart.type].CarriesTypeIn & (1U << index))
@@ -94,10 +106,7 @@ std::vector<ByteString> Simulation::Load(const GameSave *save, bool includePress
 				auto *prop = reinterpret_cast<int *>(reinterpret_cast<char *>(&tempPart) + properties[index].Offset);
 				auto carriedType = *prop & int(pmapmask);
 				auto extra = *prop >> save->pmapbits;
-				if (carriedType >= 0 && carriedType < PT_NUM)
-				{
-					carriedType = partMap[carriedType];
-				}
+				carriedType = paletteLookup(carriedType);
 				*prop = PMAP(extra, carriedType);
 			}
 		}
@@ -329,7 +338,7 @@ std::vector<ByteString> Simulation::Load(const GameSave *save, bool includePress
 		air->ApproximateBlockAirMaps();
 	}
 
-	return missingElementTypes;
+	return missingElements;
 }
 
 std::unique_ptr<GameSave> Simulation::Save(bool includePressure, Rect<int> partR) // particle coordinates
