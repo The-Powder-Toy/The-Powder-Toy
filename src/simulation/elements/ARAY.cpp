@@ -165,6 +165,32 @@ static int update(UPDATE_FUNC_ARGS)
 								{
 									parts[r].life = 10;
 								}
+							}
+							else if (rt == PT_EPPR)
+							{
+								// In reading/writing state?
+								if (parts[r].tmp)
+								{
+									if (parts[r].tmp & 0x10) // Reading state
+									{
+										// End reading state early
+										parts[r].tmp = 0;
+										if (parts[r].life)
+										{
+											break;
+										}
+									}
+									else // Writing state
+									{
+										parts[r].life = 1;
+										parts[r].dcolour = 0xFF1A2222;
+									}
+								}
+								else
+								{
+									// Enter writing state
+									parts[r].tmp = 0x03;
+								}
 							// this if prevents BRAY from stopping on certain materials
 							}
 							else if (rt != PT_INWR && (rt != PT_SPRK || parts[r].ctype != PT_INWR) && rt != PT_ARAY && rt != PT_WIFI && !(rt == PT_SWCH && parts[r].life >= 10))
@@ -189,7 +215,7 @@ static int update(UPDATE_FUNC_ARGS)
 									parts[r].dcolour = 0xFF000000;
 							//this if prevents red BRAY from stopping on certain materials
 							}
-							else if (rt==PT_STOR || rt==PT_INWR || (rt==PT_SPRK && parts[r].ctype==PT_INWR) || rt==PT_ARAY || rt==PT_WIFI || rt==PT_FILT || (rt==PT_SWCH && parts[r].life>=10))
+							else if (rt==PT_STOR || rt==PT_INWR || (rt==PT_SPRK && parts[r].ctype==PT_INWR) || rt==PT_ARAY || rt==PT_WIFI || rt==PT_FILT || (rt==PT_SWCH && parts[r].life>=10) || rt==PT_PAPR)
 							{
 								if (rt == PT_STOR)
 								{
@@ -200,6 +226,32 @@ static int update(UPDATE_FUNC_ARGS)
 								{
 									isBlackDeco = (parts[r].dcolour==0xFF000000);
 									parts[r].life = 2;
+								}
+								else if (rt == PT_PAPR)
+								{
+									// In reading/writing state?
+									if (parts[r].tmp)
+									{
+										if (parts[r].tmp & 0x10) // Reading state
+										{
+											// End reading state early
+											parts[r].tmp = 0;
+											if (parts[r].life)
+											{
+												break;
+											}
+										}
+										else // Writing state
+										{
+											parts[r].life = 0;
+											parts[r].dcolour = 0;
+										}
+									}
+									else
+									{
+										// Enter reading state
+										parts[r].tmp = 0x13;
+									}
 								}
 								docontinue = 1;
 							}

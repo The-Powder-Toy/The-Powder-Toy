@@ -300,6 +300,11 @@ static int update(UPDATE_FUNC_ARGS)
 					auto na = int(ta*BLEND);
 					parts[ID(r)].dcolour = nr<<16 | ng<<8 | nb | na<<24;
 				}
+				// Remove mark from PAPR
+				if (TYP(r)==PT_PAPR)
+				{
+					parts[ID(r)].life = 0;
+				}
 			}
 		}
 	}
