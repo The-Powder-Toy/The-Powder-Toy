@@ -222,6 +222,12 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 				}
 				break;
+			case PT_PAPR:
+				if (sim->rng.chance(1, 20))
+				{
+					sim->create_part(ID(r), x+rx, y+ry, PT_INVIS);
+				}
+				break;
 			default:
 				break;
 			}
