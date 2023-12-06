@@ -25,7 +25,6 @@ void Element::Element_URAN()
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	PhotonReflectWavelengths = 0x003FC000;
 
 	Weight = 90;
 

@@ -60,14 +60,13 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 			*colr = 0;
 			for (x=0; x<12; x++) {
 				*colr += (cpart->ctype >> (x+18)) & 1;
+				*colg += (cpart->ctype >> (x+9))  & 1;
 				*colb += (cpart->ctype >>  x)	 & 1;
 			}
-			for (x=0; x<12; x++)
-				*colg += (cpart->ctype >> (x+9))  & 1;
-			x = 624/(*colr+*colg+*colb+1);
-			*colr *= x;
-			*colg *= x;
-			*colb *= x;
+			double xl = 255.0 / std::max(std::max(*colr,*colg),*colb);
+			*colr *= xl;
+			*colg *= xl;
+			*colb *= xl;
 		}
 	}
 	else if(cpart->tmp==1)
@@ -80,14 +79,13 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 			*colr = 0;
 			for (x=0; x<12; x++) {
 				*colr += (cpart->ctype >> (x+18)) & 1;
+				*colg += (cpart->ctype >> (x+9))  & 1;
 				*colb += (cpart->ctype >>  x)	 & 1;
 			}
-			for (x=0; x<12; x++)
-				*colg += (cpart->ctype >> (x+9))  & 1;
-			x = 624/(*colr+*colg+*colb+1);
-			*colr *= x;
-			*colg *= x;
-			*colb *= x;
+			double xl = 255.0 / std::max(std::max(*colr,*colg),*colb);
+			*colr *= xl;
+			*colg *= xl;
+			*colb *= xl;
 		}
 	}
 	else if(cpart->tmp==2)

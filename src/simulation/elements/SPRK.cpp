@@ -27,7 +27,6 @@ void Element::Element_SPRK()
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 1;
-	PhotonReflectWavelengths = 0x00000000;
 
 	Weight = 100;
 

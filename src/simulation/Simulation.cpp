@@ -1242,12 +1242,12 @@ void Simulation::init_can_move()
 	can_move[PT_PHOT][PT_LCRY] = 3; //varies according to LCRY life
 	can_move[PT_PHOT][PT_GPMP] = 3;
 
-	can_move[PT_PHOT][PT_BIZR] = 2;
-	can_move[PT_ELEC][PT_BIZR] = 2;
-	can_move[PT_PHOT][PT_BIZRG] = 2;
-	can_move[PT_ELEC][PT_BIZRG] = 2;
-	can_move[PT_PHOT][PT_BIZRS] = 2;
-	can_move[PT_ELEC][PT_BIZRS] = 2;
+	can_move[PT_PHOT][PT_BIZR] = 3;
+	can_move[PT_ELEC][PT_BIZR] = 3;
+	can_move[PT_PHOT][PT_BIZRG] = 3;
+	can_move[PT_ELEC][PT_BIZRG] = 3;
+	can_move[PT_PHOT][PT_BIZRS] = 3;
+	can_move[PT_ELEC][PT_BIZRS] = 3;
 	can_move[PT_BIZR][PT_FILT] = 2;
 	can_move[PT_BIZRG][PT_FILT] = 2;
 
@@ -1289,7 +1289,7 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr) const
 		{
 		case PT_LCRY:
 			if (pt==PT_PHOT)
-				result = (parts[ID(r)].life > 5)? 2 : 0;
+				result = (parts[ID(r)].life > 5) ? 2 : 0;
 			break;
 		case PT_GPMP:
 			if (pt == PT_PHOT)
@@ -1333,6 +1333,11 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr) const
 				else
 					return 0;
 			}
+			break;
+		case PT_BIZR:
+		case PT_BIZRG:
+		case PT_BIZRS:
+			result = (parts[ID(r)].tmp != 2) ? 2 : 0;
 			break;
 		default:
 			// This should never happen
@@ -1483,8 +1488,11 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			case PT_BIZR:
 			case PT_BIZRG:
 			case PT_BIZRS:
-				part_change_type(i, x, y, PT_ELEC);
-				parts[i].ctype = 0;
+				if (parts[ID(r)].tmp != 1)
+				{
+					part_change_type(i, x, y, PT_ELEC);
+					parts[i].ctype = 0;
+				}
 				break;
 			case PT_H2:
 				if (!(parts[i].tmp&0x1))
@@ -3156,15 +3164,96 @@ killed:
 
 					if (t == PT_PHOT)
 					{
-						auto mask = elements[TYP(r)].PhotonReflectWavelengths;
-						if (TYP(r) == PT_LITH)
+						unsigned int mask = 0;
+						if (TYP(r) != PT_LITH && ((elements[TYP(r)].MenuSection != SC_SPECIAL && elements[TYP(r)].MenuSection > SC_FORCE) || (elements[TYP(r)].Properties & PROP_CONDUCTS) || TYP(r) == PT_SPRK) && (!(TYP(r) == PT_BRAY || TYP(r) == PT_BIZR || TYP(r) == PT_BIZRG || TYP(r) == PT_BIZRS) || parts[ID(r)].dcolour))
+						{
+							int cr = PIXR(elements[TYP(r)].Colour);
+							int cg = PIXG(elements[TYP(r)].Colour);
+							int cb = PIXB(elements[TYP(r)].Colour);
+							if(TYP(r) == PT_SPRK)
+							{
+								cr = PIXR(elements[parts[ID(r)].ctype].Colour);
+								cg = PIXG(elements[parts[ID(r)].ctype].Colour);
+								cb = PIXB(elements[parts[ID(r)].ctype].Colour);
+							}
+							if(parts[ID(r)].dcolour)
+							{
+								int da = (parts[ID(r)].dcolour>>24)&0xFF;
+								int dr = (parts[ID(r)].dcolour>>16)&0xFF;
+								int dg = (parts[ID(r)].dcolour>>8)&0xFF;
+								int db = (parts[ID(r)].dcolour)&0xFF;
+								cr = (da*dr + (256-da)*cr) >> 8;
+								cg = (da*dg + (256-da)*cg) >> 8;
+								cb = (da*db + (256-da)*cb) >> 8;
+							}
+							float vl = std::max(std::max(cr, cg), cb);
+							if (vl == 0.0f)
+							{
+								kill_part(i);
+								continue;
+							}
+							int mt = 5;
+							int best = 1000;
+							int bestmt = mt;
+							int vr, vg, vb;
+							for (; mt < 13; mt++)
+							{
+								vr = (int)(cr / vl * mt + 0.5f);
+								vg = (int)(cg / vl * mt + 0.5f);
+								vb = (int)(cb / vl * mt + 0.5f);
+								if ((mt < 7 || vr + vb >= mt - 6) && (mt < 10 || vg >= std::max(vr - 9, 0) + std::max(vb - 9, 0)))
+								{
+									int diff = std::abs(cr - vr * vl / mt) + std::abs(cg - vg * vl / mt) + std::abs(cb - vb * vl / mt);
+									if (diff <= best)
+									{
+										best = diff;
+										bestmt = mt;
+									}
+								}
+							}
+							mt = bestmt;
+							vr = (int)(cr / vl * mt + 0.5f);
+							vg = (int)(cg / vl * mt + 0.5f);
+							vb = (int)(cb / vl * mt + 0.5f);
+							int shg = 0;
+							if (vg > 6)
+							{
+								shg = std::min(std::max(std::max(std::min(vr - vb, vg - 6), 6 - vg), -3), 3);
+								vr -= std::max(shg, 0);
+								vb += std::min(shg, 0);
+							}
+							else
+							{
+								if (vb > 9)
+									vg -= vb - 9;
+								if (vr > 9)
+									vg -= vr - 9;
+							}
+							mask = ((1 << vr) - 1) << (30 - vr);
+							mask |= ((1 << vg) - 1) << (12 + shg);
+							mask |= ((1 << vb) - 1);
+							mask &= 0x3FFFFFFF;
+							parts[i].ctype &= mask;
+							if (parts[i].life > 0)
+							{
+								parts[i].life /= (255 / vl);
+								if (parts[i].life < 2)
+								{
+									kill_part(i);
+									continue;
+								}
+							}
+						}
+						else if (TYP(r) == PT_LITH)
 						{
 							int wl_bin = parts[ID(r)].ctype / 4;
 							if (wl_bin < 0) wl_bin = 0;
 							if (wl_bin > 25) wl_bin = 25;
 							mask = (0x1F << wl_bin);
+							parts[i].ctype &= mask;
 						}
-						parts[i].ctype &= mask;
+						else if ((TYP(r) == PT_BRAY || TYP(r) == PT_BIZR || TYP(r) == PT_BIZRG || TYP(r) == PT_BIZRS) && !parts[ID(r)].dcolour)
+							parts[i].ctype &= parts[ID(r)].ctype;
 					}
 
 					auto gn = get_normal_interp(t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy);

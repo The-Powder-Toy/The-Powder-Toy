@@ -26,7 +26,6 @@ void Element::Element_ACID()
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 0;
-	PhotonReflectWavelengths = 0x1FE001FE;
 
 	Weight = 10;
 

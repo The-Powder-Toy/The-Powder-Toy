@@ -27,7 +27,6 @@ void Element::Element_GOLD()
 	Explosive = 0;
 	Meltable = 1;
 	Hardness = 0;
-	PhotonReflectWavelengths = 0x3C038100;
 
 	Weight = 100;
 

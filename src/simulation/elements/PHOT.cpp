@@ -119,23 +119,29 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	int x = 0;
-	*colr = *colg = *colb = 0;
-	for (x=0; x<12; x++) {
+	int x;
+	for (x=*colr=*colg=*colb=0; x<12; x++) {
 		*colr += (cpart->ctype >> (x+18)) & 1;
+		*colg += (cpart->ctype >> (x+9))  & 1;
 		*colb += (cpart->ctype >>  x)     & 1;
 	}
-	for (x=0; x<12; x++)
-		*colg += (cpart->ctype >> (x+9))  & 1;
-	x = 624/(*colr+*colg+*colb+1);
-	*colr *= x;
-	*colg *= x;
-	*colb *= x;
+	
+	bool tozero = false;
+	if (cpart->life <= 0)
+	{
+		tozero = true;
+		cpart->life = 680;
+	}
 
-	*firea = 100;
-	*firer = *colr;
-	*fireg = *colg;
-	*fireb = *colb;
+	double lm = std::min(cpart->life, 680) / 680.0;
+	double xl = 255.0 / std::max(std::max(*colr,*colg),*colb) * lm;
+	*firer = *colr = round(*colr * xl);
+	*fireg = *colg = round(*colg * xl);
+	*fireb = *colb = round(*colb * xl);
+	*firea = round(100.0 * lm);
+
+	if (tozero)
+		cpart->life = 0;
 
 	*pixel_mode &= ~PMODE_FLAT;
 	*pixel_mode |= FIRE_ADD | PMODE_ADD | NO_DECO;

@@ -27,7 +27,6 @@ void Element::Element_LAVA()
 	Explosive = 0;
 	Meltable = 0;
 	Hardness = 2;
-	PhotonReflectWavelengths = 0x3FF00000;
 
 	Weight = 45;
 
