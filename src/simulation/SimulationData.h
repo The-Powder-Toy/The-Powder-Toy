@@ -174,7 +174,6 @@ class SimulationData : public ExplicitSingleton<SimulationData>
 public:
 	std::array<Element, PT_NUM> elements;
 	std::vector<SimTool> tools;
-	std::vector<unsigned int> platent;
 	std::vector<wall_type> wtypes;
 	std::vector<menu_section> msections;
 	char can_move[PT_NUM][PT_NUM];

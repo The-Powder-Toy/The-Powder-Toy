@@ -1,5 +1,6 @@
 #pragma once
 #include "Config.h"
+#include "SimulationConfig.h"
 #include "common/String.h"
 
 inline ByteString VersionInfo()
@@ -23,9 +24,10 @@ inline ByteString VersionInfo()
 	{
 		sb << " LUACONSOLE";
 	}
-#ifdef REALISTIC
-	sb << " REALISTIC";
-#endif
+	if constexpr (LATENTHEAT)
+	{
+		sb << " LATENTHEAT";
+	}
 	if constexpr (NOHTTP)
 	{
 		sb << " NOHTTP";

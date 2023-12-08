@@ -38,6 +38,7 @@ public:
 	unsigned int PhotonReflectWavelengths;
 	int Weight;
 	unsigned char HeatConduct;
+	unsigned int LatentHeat;
 	String Description;
 	unsigned int Properties;
 	unsigned int CarriesTypeIn;

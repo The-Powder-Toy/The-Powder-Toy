@@ -2376,14 +2376,17 @@ void Simulation::UpdateParticles(int start, int end)
 
 			if (elements[t].Diffusion)//the random diffusion that gasses have
 			{
-#ifdef REALISTIC
-				//The magic number controls diffusion speed
-				parts[i].vx += 0.05*sqrtf(parts[i].temp)*elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
-				parts[i].vy += 0.05*sqrtf(parts[i].temp)*elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
-#else
-				parts[i].vx += elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
-				parts[i].vy += elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
-#endif
+				if constexpr (LATENTHEAT)
+				{
+					//The magic number controls diffusion speed
+					parts[i].vx += 0.05*sqrtf(parts[i].temp)*elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
+					parts[i].vy += 0.05*sqrtf(parts[i].temp)*elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
+				}
+				else
+				{
+					parts[i].vx += elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
+					parts[i].vy += elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
+				}
 			}
 
 			auto transitionOccurred = false;
@@ -2434,35 +2437,41 @@ void Simulation::UpdateParticles(int start, int end)
 				}
 
 				//heat transfer code
-#ifdef REALISTIC
-				if (t&&(t!=PT_HSWC||parts[i].life==10)&&(elements[t].HeatConduct*gel_scale))
-#else
 				auto h_count = 0;
-				if (t && (t!=PT_HSWC||parts[i].life==10) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250))
-#endif
+				bool cond;
+				if constexpr (LATENTHEAT)
+				{
+					cond = t && (t!=PT_HSWC||parts[i].life==10) && elements[t].HeatConduct*gel_scale > 0;
+				}
+				else
+				{
+					cond = t && (t!=PT_HSWC||parts[i].life==10) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250);
+				}
+				if (cond)
 				{
 					if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
 					{
-#ifdef REALISTIC
-						auto c_heat = parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight) + hv[y/CELL][x/CELL]*100*(pv[y/CELL][x/CELL]-MIN_PRESSURE)/(MAX_PRESSURE-MIN_PRESSURE)*2;
-						float c_Cm = 96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight) + 100*(pv[y/CELL][x/CELL]-MIN_PRESSURE)/(MAX_PRESSURE-MIN_PRESSURE)*2;
-						auto pt = c_heat/c_Cm;
-						pt = restrict_flt(pt, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
-						parts[i].temp = pt;
-						//Pressure increase from heat (temporary)
-						pv[y/CELL][x/CELL] += (pt-hv[y/CELL][x/CELL])*0.004;
-						hv[y/CELL][x/CELL] = pt;
-#else
-						auto c_heat = (hv[y/CELL][x/CELL]-parts[i].temp)*0.04;
-						c_heat = restrict_flt(c_heat, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
-						parts[i].temp += c_heat;
-						hv[y/CELL][x/CELL] -= c_heat;
-#endif
+						if constexpr (LATENTHEAT)
+						{
+							auto c_heat = parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*std::fabs(elements[t].Weight) + hv[y/CELL][x/CELL]*100*(pv[y/CELL][x/CELL]-MIN_PRESSURE)/(MAX_PRESSURE-MIN_PRESSURE)*2;
+							float c_Cm = 96.645/elements[t].HeatConduct*gel_scale*std::fabs(elements[t].Weight) + 100*(pv[y/CELL][x/CELL]-MIN_PRESSURE)/(MAX_PRESSURE-MIN_PRESSURE)*2;
+							auto pt = c_heat/c_Cm;
+							pt = restrict_flt(pt, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
+							parts[i].temp = pt;
+							//Pressure increase from heat (temporary)
+							pv[y/CELL][x/CELL] += (pt-hv[y/CELL][x/CELL])*0.004;
+							hv[y/CELL][x/CELL] = pt;
+						}
+						else
+						{
+							auto c_heat = (hv[y/CELL][x/CELL]-parts[i].temp)*0.04;
+							c_heat = restrict_flt(c_heat, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
+							parts[i].temp += c_heat;
+							hv[y/CELL][x/CELL] -= c_heat;
+						}
 					}
 					auto c_heat = 0.0f;
-#ifdef REALISTIC
 					float c_Cm = 0.0f;
-#endif
 					int surround_hconduct[8];
 					for (auto j=0; j<8; j++)
 					{
@@ -2480,41 +2489,47 @@ void Simulation::UpdateParticles(int start, int end)
 						        && (t!=PT_FILT || rt!=PT_HSWC || parts[ID(r)].tmp != 1))
 						{
 							surround_hconduct[j] = ID(r);
-#ifdef REALISTIC
-							if (rt==PT_GEL)
-								gel_scale = parts[ID(r)].tmp*2.55f;
-							else gel_scale = 1.0f;
+							if constexpr (LATENTHEAT)
+							{
+								if (rt==PT_GEL)
+									gel_scale = parts[ID(r)].tmp*2.55f;
+								else gel_scale = 1.0f;
 
-							c_heat += parts[ID(r)].temp*96.645/elements[rt].HeatConduct*gel_scale*fabs(elements[rt].Weight);
-							c_Cm += 96.645/elements[rt].HeatConduct*gel_scale*fabs(elements[rt].Weight);
-#else
-							c_heat += parts[ID(r)].temp;
-#endif
+								c_heat += parts[ID(r)].temp*96.645/elements[rt].HeatConduct*gel_scale*std::fabs(elements[rt].Weight);
+								c_Cm += 96.645/elements[rt].HeatConduct*gel_scale*std::fabs(elements[rt].Weight);
+							}
+							else
+							{
+								c_heat += parts[ID(r)].temp;
+							}
 							h_count++;
 						}
 					}
 					float pt = R_TEMP;
-#ifdef REALISTIC
-					if (t==PT_GEL)
-						gel_scale = parts[i].tmp*2.55f;
-					else gel_scale = 1.0f;
-
-					if (t == PT_PHOT)
-						pt = (c_heat+parts[i].temp*96.645)/(c_Cm+96.645);
-					else
-						pt = (c_heat+parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight))/(c_Cm+96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight));
-
-					c_heat += parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight);
-					c_Cm += 96.645/elements[t].HeatConduct*gel_scale*fabs(elements[t].Weight);
-					parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
-#else
-					pt = (c_heat+parts[i].temp)/(h_count+1);
-					pt = parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
-					for (auto j=0; j<8; j++)
+					if constexpr (LATENTHEAT)
 					{
-						parts[surround_hconduct[j]].temp = pt;
+						if (t==PT_GEL)
+							gel_scale = parts[i].tmp*2.55f;
+						else gel_scale = 1.0f;
+
+						if (t == PT_PHOT)
+							pt = (c_heat+parts[i].temp*96.645)/(c_Cm+96.645);
+						else
+							pt = (c_heat+parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*std::fabs(elements[t].Weight))/(c_Cm+96.645/elements[t].HeatConduct*gel_scale*std::fabs(elements[t].Weight));
+
+						c_heat += parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*std::fabs(elements[t].Weight);
+						c_Cm += 96.645/elements[t].HeatConduct*gel_scale*std::fabs(elements[t].Weight);
+						parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
 					}
-#endif
+					else
+					{
+						pt = (c_heat+parts[i].temp)/(h_count+1);
+						pt = parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
+						for (auto j=0; j<8; j++)
+						{
+							parts[surround_hconduct[j]].temp = pt;
+						}
+					}
 
 					auto ctemph = pt;
 					auto ctempl = pt;
@@ -2534,25 +2549,27 @@ void Simulation::UpdateParticles(int start, int end)
 					if (elements[t].HighTemperatureTransition>-1 && ctemph>=elements[t].HighTemperature)
 					{
 						// particle type change due to high temperature
-#ifdef REALISTIC
 						float dbt = ctempl - pt;
 						if (elements[t].HighTemperatureTransition != PT_NUM)
 						{
-							if (platent[t] <= (c_heat - (elements[t].HighTemperature - dbt)*c_Cm))
+							if constexpr (LATENTHEAT)
 							{
-								pt = (c_heat - platent[t])/c_Cm;
-								t = elements[t].HighTemperatureTransition;
+								if (elements[t].LatentHeat <= (c_heat - (elements[t].HighTemperature - dbt)*c_Cm))
+								{
+									pt = (c_heat - elements[t].LatentHeat)/c_Cm;
+									t = elements[t].HighTemperatureTransition;
+								}
+								else
+								{
+									parts[i].temp = restrict_flt(elements[t].HighTemperature - dbt, MIN_TEMP, MAX_TEMP);
+									s = 0;
+								}
 							}
 							else
 							{
-								parts[i].temp = restrict_flt(elements[t].HighTemperature - dbt, MIN_TEMP, MAX_TEMP);
-								s = 0;
+								t = elements[t].HighTemperatureTransition;
 							}
 						}
-#else
-						if (elements[t].HighTemperatureTransition != PT_NUM)
-							t = elements[t].HighTemperatureTransition;
-#endif
 						else if (t == PT_ICEI || t == PT_SNOW)
 						{
 							if (parts[i].ctype > 0 && parts[i].ctype < PT_NUM && parts[i].ctype != t)
@@ -2567,25 +2584,28 @@ void Simulation::UpdateParticles(int start, int end)
 
 								if (s)
 								{
-#ifdef REALISTIC
-									//One ice table value for all it's kinds
-									if (platent[t] <= (c_heat - (elements[parts[i].ctype].LowTemperature - dbt)*c_Cm))
+									if constexpr (LATENTHEAT)
 									{
-										pt = (c_heat - platent[t])/c_Cm;
+										//One ice table value for all it's kinds
+										if (elements[t].LatentHeat <= (c_heat - (elements[parts[i].ctype].LowTemperature - dbt)*c_Cm))
+										{
+											pt = (c_heat - elements[t].LatentHeat)/c_Cm;
+											t = parts[i].ctype;
+											parts[i].ctype = PT_NONE;
+											parts[i].life = 0;
+										}
+										else
+										{
+											parts[i].temp = restrict_flt(elements[parts[i].ctype].LowTemperature - dbt, MIN_TEMP, MAX_TEMP);
+											s = 0;
+										}
+									}
+									else
+									{
 										t = parts[i].ctype;
 										parts[i].ctype = PT_NONE;
 										parts[i].life = 0;
 									}
-									else
-									{
-										parts[i].temp = restrict_flt(elements[parts[i].ctype].LowTemperature - dbt, MIN_TEMP, MAX_TEMP);
-										s = 0;
-									}
-#else
-									t = parts[i].ctype;
-									parts[i].ctype = PT_NONE;
-									parts[i].life = 0;
-#endif
 								}
 							}
 							else
@@ -2593,21 +2613,24 @@ void Simulation::UpdateParticles(int start, int end)
 						}
 						else if (t == PT_SLTW)
 						{
-#ifdef REALISTIC
-							if (platent[t] <= (c_heat - (elements[t].HighTemperature - dbt)*c_Cm))
+							if constexpr (LATENTHEAT)
 							{
-								pt = (c_heat - platent[t])/c_Cm;
+								if (elements[t].LatentHeat <= (c_heat - (elements[t].HighTemperature - dbt)*c_Cm))
+								{
+									pt = (c_heat - elements[t].LatentHeat)/c_Cm;
 
-								t = rng.chance(1, 4) ? PT_SALT : PT_WTRV;
+									t = rng.chance(1, 4) ? PT_SALT : PT_WTRV;
+								}
+								else
+								{
+									parts[i].temp = restrict_flt(elements[t].HighTemperature - dbt, MIN_TEMP, MAX_TEMP);
+									s = 0;
+								}
 							}
 							else
 							{
-								parts[i].temp = restrict_flt(elements[t].HighTemperature - dbt, MIN_TEMP, MAX_TEMP);
-								s = 0;
+								t = rng.chance(1, 4) ? PT_SALT : PT_WTRV;
 							}
-#else
-							t = rng.chance(1, 4) ? PT_SALT : PT_WTRV;
-#endif
 						}
 						else if (t == PT_BRMT)
 						{
@@ -2640,25 +2663,27 @@ void Simulation::UpdateParticles(int start, int end)
 					else if (elements[t].LowTemperatureTransition > -1 && ctempl<elements[t].LowTemperature)
 					{
 						// particle type change due to low temperature
-#ifdef REALISTIC
 						float dbt = ctempl - pt;
 						if (elements[t].LowTemperatureTransition != PT_NUM)
 						{
-							if (platent[elements[t].LowTemperatureTransition] >= (c_heat - (elements[t].LowTemperature - dbt)*c_Cm))
+							if constexpr (LATENTHEAT)
 							{
-								pt = (c_heat + platent[elements[t].LowTemperatureTransition])/c_Cm;
-								t = elements[t].LowTemperatureTransition;
+								if (elements[elements[t].LowTemperatureTransition].LatentHeat >= (c_heat - (elements[t].LowTemperature - dbt)*c_Cm))
+								{
+									pt = (c_heat + elements[elements[t].LowTemperatureTransition].LatentHeat)/c_Cm;
+									t = elements[t].LowTemperatureTransition;
+								}
+								else
+								{
+									parts[i].temp = restrict_flt(elements[t].LowTemperature - dbt, MIN_TEMP, MAX_TEMP);
+									s = 0;
+								}
 							}
 							else
 							{
-								parts[i].temp = restrict_flt(elements[t].LowTemperature - dbt, MIN_TEMP, MAX_TEMP);
-								s = 0;
+								t = elements[t].LowTemperatureTransition;
 							}
 						}
-#else
-						if (elements[t].LowTemperatureTransition != PT_NUM)
-							t = elements[t].LowTemperatureTransition;
-#endif
 						else if (t == PT_WTRV)
 						{
 							t = (pt < 273.0f) ? PT_RIME : PT_DSTW;
@@ -2717,13 +2742,14 @@ void Simulation::UpdateParticles(int start, int end)
 					}
 					else
 						s = 0;
-#ifdef REALISTIC
-					pt = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
-					for (auto j=0; j<8; j++)
+					if constexpr (LATENTHEAT)
 					{
-						parts[surround_hconduct[j]].temp = pt;
+						pt = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
+						for (auto j=0; j<8; j++)
+						{
+							parts[surround_hconduct[j]].temp = pt;
+						}
 					}
-#endif
 					if (s) // particle type change occurred
 					{
 						if (t==PT_ICEI || t==PT_LAVA || t==PT_SNOW)

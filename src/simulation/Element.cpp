@@ -29,6 +29,7 @@ Element::Element():
 	Weight(50),
 
 	HeatConduct(128),
+	LatentHeat(0),
 	Description("No description"),
 
 	Properties(TYPE_SOLID),
@@ -80,6 +81,7 @@ std::vector<StructProperty> const &Element::GetProperties()
 		{ "Weight",                    StructProperty::Integer,  offsetof(Element, Weight                   ) },
 		{ "Temperature",               StructProperty::Float,    offsetof(Element, DefaultProperties.temp   ) },
 		{ "HeatConduct",               StructProperty::UChar,    offsetof(Element, HeatConduct              ) },
+		{ "LatentHeat",                StructProperty::UInteger, offsetof(Element, LatentHeat               ) },
 		{ "Description",               StructProperty::String,   offsetof(Element, Description              ) },
 		{ "State",                     StructProperty::Removed,  0                                            },
 		{ "Properties",                StructProperty::Integer,  offsetof(Element, Properties               ) },

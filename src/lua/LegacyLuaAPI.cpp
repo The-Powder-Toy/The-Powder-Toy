@@ -26,11 +26,14 @@ void initLegacyProps()
 	std::vector<StructProperty> properties = Element::GetProperties();
 	for (auto prop : properties)
 	{
+		// TODO: move aliases to the property table in Element.cpp?
 		if (prop.Name == "MenuVisible")
 			legacyPropNames.insert(std::pair<ByteString, StructProperty>("menu", prop));
 		else if (prop.Name == "PhotonReflectWavelengths")
 			continue;
 		else if (prop.Name == "CarriesTypeIn")
+			continue;
+		else if (prop.Name == "LatentHeat")
 			continue;
 		else if (prop.Name == "Temperature")
 			legacyPropNames.insert(std::pair<ByteString, StructProperty>("heat", prop));
