@@ -18,6 +18,11 @@ extern int Element_LOLZ_lolz[XRES/9][YRES/9];
 extern int Element_LOVE_RuleTable[9][9];
 extern int Element_LOVE_love[XRES/9][YRES/9];
 
+static float remainder_p(float x, float y)
+{
+	return std::fmod(x, y) + (x>=0 ? 0 : y);
+}
+
 MissingElements Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> blockP) // block coordinates
 {
 	MissingElements missingElements;
@@ -1620,7 +1625,7 @@ void Simulation::photoelectric_effect(int nx, int ny)//create sparks from PHOT w
 	}
 }
 
-int Simulation::is_blocking(int t, int x, int y)
+int Simulation::is_blocking(int t, int x, int y) const
 {
 	if (t & REFRACT) {
 		if (x<0 || y<0 || x>=XRES || y>=YRES)
@@ -1633,7 +1638,7 @@ int Simulation::is_blocking(int t, int x, int y)
 	return !eval_move(t, x, y, NULL);
 }
 
-int Simulation::is_boundary(int pt, int x, int y)
+int Simulation::is_boundary(int pt, int x, int y) const
 {
 	if (!is_blocking(pt,x,y))
 		return 0;
@@ -1642,7 +1647,7 @@ int Simulation::is_boundary(int pt, int x, int y)
 	return 1;
 }
 
-int Simulation::find_next_boundary(int pt, int *x, int *y, int dm, int *em, bool reverse)
+int Simulation::find_next_boundary(int pt, int *x, int *y, int dm, int *em, bool reverse) const
 {
 	static int dx[8] = {1,1,0,-1,-1,-1,0,1};
 	static int dy[8] = {0,1,1,1,0,-1,-1,-1};
@@ -1681,7 +1686,7 @@ int Simulation::find_next_boundary(int pt, int *x, int *y, int dm, int *em, bool
 	return 0;
 }
 
-Simulation::GetNormalResult Simulation::get_normal(int pt, int x, int y, float dx, float dy)
+Simulation::GetNormalResult Simulation::get_normal(int pt, int x, int y, float dx, float dy) const
 {
 	int ldm, rdm, lm, rm;
 	int lx, ly, lv, rx, ry, rv;
@@ -1726,7 +1731,24 @@ Simulation::GetNormalResult Simulation::get_normal(int pt, int x, int y, float d
 	return { true, nx, ny, lx, ly, rx, ry };
 }
 
-Simulation::GetNormalResult Simulation::get_normal_interp(int pt, float x0, float y0, float dx, float dy)
+
+
+template<bool PhotoelectricEffect, class Sim>
+void PhotoelectricEffectHelper(Sim &sim, int x, int y);
+
+template<>
+void PhotoelectricEffectHelper<false, const Simulation>(const Simulation &sim, int x, int y)
+{
+}
+
+template<>
+void PhotoelectricEffectHelper<true, Simulation>(Simulation &sim, int x, int y)
+{
+	sim.photoelectric_effect(x, y);
+}
+
+template<bool PhotoelectricEffect, class Sim>
+Simulation::GetNormalResult Simulation::get_normal_interp(Sim &sim, int pt, float x0, float y0, float dx, float dy)
 {
 	int x, y, i;
 
@@ -1740,7 +1762,7 @@ Simulation::GetNormalResult Simulation::get_normal_interp(int pt, float x0, floa
 		{
 			return { false };
 		}
-		if (is_boundary(pt, x, y))
+		if (sim.is_boundary(pt, x, y))
 			break;
 		x0 += dx;
 		y0 += dy;
@@ -1749,10 +1771,13 @@ Simulation::GetNormalResult Simulation::get_normal_interp(int pt, float x0, floa
 		return { false };
 
 	if (pt == PT_PHOT)
-		photoelectric_effect(x, y);
+		PhotoelectricEffectHelper<PhotoelectricEffect, Sim>(sim, x, y);
 
-	return get_normal(pt, x, y, dx, dy);
+	return sim.get_normal(pt, x, y, dx, dy);
 }
+
+template
+Simulation::GetNormalResult Simulation::get_normal_interp<false, const Simulation>(const Simulation &sim, int pt, float x0, float y0, float dx, float dy);
 
 void Simulation::kill_part(int i)//kills particle number i
 {
@@ -2122,14 +2147,31 @@ void Simulation::delete_part(int x, int y)//calls kill_part with the particle lo
 	kill_part(ID(i));
 }
 
-Simulation::PlanMoveResult Simulation::PlanMove(int i, int x, int y, bool update_emap)
+template<bool UpdateEmap, class Sim>
+void UpdateEmapHelper(Sim &sim, int fin_x, int fin_y);
+
+template<>
+void UpdateEmapHelper<false, const Simulation>(const Simulation &sim, int fin_x, int fin_y)
 {
+}
+
+template<>
+void UpdateEmapHelper<true, Simulation>(Simulation &sim, int fin_x, int fin_y)
+{
+	if (sim.bmap[fin_y/CELL][fin_x/CELL]==WL_DETECT && sim.emap[fin_y/CELL][fin_x/CELL]<8)
+		sim.set_emap(fin_x/CELL, fin_y/CELL);
+}
+
+template<bool UpdateEmap, class Sim>
+Simulation::PlanMoveResult Simulation::PlanMove(Sim &sim, int i, int x, int y)
+{
+	auto &parts = sim.parts;
+	auto &bmap = sim.bmap;
+	auto &emap = sim.emap;
+	auto &pmap = sim.pmap;
+	auto edgeMode = sim.edgeMode;
 	auto &sd = SimulationData::CRef();
 	auto &can_move = sd.can_move;
-	// This function would be const if not for calling set_emap if update_emap is true,
-	// and users of this function *expect* it to be const if update_emap is false. So
-	// whenever you change something here, make sure it compiles *as const* if you
-	// remove the set_emap call.
 	auto t = parts[i].type;
 	int fin_x, fin_y, clear_x, clear_y;
 	float fin_xf, fin_yf, clear_xf, clear_yf;
@@ -2205,7 +2247,7 @@ Simulation::PlanMoveResult Simulation::PlanMove(int i, int x, int y, bool update
 			}
 			//block if particle can't move (0), or some special cases where it returns 1 (can_move = 3 but returns 1 meaning particle will be eaten)
 			//also photons are still blocked (slowed down) by any particle (even ones it can move through), and absorb wall also blocks particles
-			int eval = eval_move(t, fin_x, fin_y, NULL);
+			int eval = sim.eval_move(t, fin_x, fin_y, NULL);
 			if (!eval || (can_move[t][TYP(pmap[fin_y][fin_x])] == 3 && eval == 1) || (t == PT_PHOT && pmap[fin_y][fin_x]) || bmap[fin_y/CELL][fin_x/CELL]==WL_DESTROYALL || closedEholeStart!=(bmap[fin_y/CELL][fin_x/CELL] == WL_EHOLE && !emap[fin_y/CELL][fin_x/CELL]))
 			{
 				// found an obstacle
@@ -2215,8 +2257,7 @@ Simulation::PlanMoveResult Simulation::PlanMove(int i, int x, int y, bool update
 				clear_y = (int)(clear_yf+0.5f);
 				break;
 			}
-			if (update_emap && bmap[fin_y/CELL][fin_x/CELL]==WL_DETECT && emap[fin_y/CELL][fin_x/CELL]<8)
-				set_emap(fin_x/CELL, fin_y/CELL);
+			UpdateEmapHelper<UpdateEmap, Sim>(sim, fin_x, fin_y);
 		}
 	}
 	return {
@@ -2232,6 +2273,9 @@ Simulation::PlanMoveResult Simulation::PlanMove(int i, int x, int y, bool update
 		vy,
 	};
 }
+
+template
+Simulation::PlanMoveResult Simulation::PlanMove<false, const Simulation>(const Simulation &sim, int i, int x, int y);
 
 void Simulation::UpdateParticles(int start, int end)
 {
@@ -2876,7 +2920,7 @@ killed:
 			int fin_x, fin_y, clear_x, clear_y;
 			float fin_xf, fin_yf, clear_xf, clear_yf;
 			{
-				auto mr = PlanMove(i, x, y, true);
+				auto mr = PlanMove<true>(*this, i, x, y);
 				fin_x    = mr.fin_x;
 				fin_y    = mr.fin_y;
 				clear_x  = mr.clear_x;
@@ -2973,7 +3017,7 @@ killed:
 						int lt_glas = (lt == PT_GLAS) || (lt == PT_BGLA);
 						if ((rt_glas && !lt_glas) || (lt_glas && !rt_glas))
 						{
-							auto gn = get_normal_interp(REFRACT|t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy);
+							auto gn = get_normal_interp<true>(*this, REFRACT|t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy);
 							if (!gn.success) {
 								kill_part(i);
 								continue;
@@ -3057,7 +3101,7 @@ killed:
 						parts[i].ctype &= mask;
 					}
 
-					auto gn = get_normal_interp(t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy);
+					auto gn = get_normal_interp<true>(*this, t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy);
 					if (gn.success)
 					{
 						auto nrx = gn.nx;
@@ -3960,16 +4004,6 @@ Simulation::Simulation():
 	clear_sim();
 
 	grav->gravity_mask();
-}
-
-int Simulation::remainder_p(int x, int y)
-{
-	return (x % y) + (x>=0 ? 0 : y);
-}
-
-float Simulation::remainder_p(float x, float y)
-{
-	return std::fmod(x, y) + (x>=0 ? 0 : y);
 }
 
 constexpr size_t ce_log2(size_t n)

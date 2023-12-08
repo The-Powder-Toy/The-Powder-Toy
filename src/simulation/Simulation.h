@@ -122,21 +122,24 @@ public:
 	std::unique_ptr<Snapshot> CreateSnapshot() const;
 	void Restore(const Snapshot &snap);
 
-	int is_blocking(int t, int x, int y);
-	int is_boundary(int pt, int x, int y);
-	int find_next_boundary(int pt, int *x, int *y, int dm, int *em, bool reverse);
+	int is_blocking(int t, int x, int y) const;
+	int is_boundary(int pt, int x, int y) const;
+	int find_next_boundary(int pt, int *x, int *y, int dm, int *em, bool reverse) const;
 	void photoelectric_effect(int nx, int ny);
 	int do_move(int i, int x, int y, float nxf, float nyf);
 	bool move(int i, int x, int y, float nxf, float nyf);
 	int try_move(int i, int x, int y, int nx, int ny);
 	int eval_move(int pt, int nx, int ny, unsigned *rr) const;
+
 	struct PlanMoveResult
 	{
 		int fin_x, fin_y, clear_x, clear_y;
 		float fin_xf, fin_yf, clear_xf, clear_yf;
 		float vx, vy;
 	};
-	PlanMoveResult PlanMove(int i, int x, int y, bool update_emap);
+	template<bool UpdateEmap, class Sim>
+	static PlanMoveResult PlanMove(Sim &sim, int i, int x, int y);
+
 	bool IsWallBlocking(int x, int y, int type) const;
 	void create_cherenkov_photon(int pp);
 	void create_gain_photon(int pp);
@@ -207,15 +210,12 @@ public:
 		float nx, ny;
 		int lx, ly, rx, ry;
 	};
-	GetNormalResult get_normal(int pt, int x, int y, float dx, float dy);
-	GetNormalResult get_normal_interp(int pt, float x0, float y0, float dx, float dy);
+	GetNormalResult get_normal(int pt, int x, int y, float dx, float dy) const;
+	template<bool PhotoelectricEffect, class Sim>
+	static GetNormalResult get_normal_interp(Sim &sim, int pt, float x0, float y0, float dx, float dy);
 	void clear_sim();
 	Simulation();
 	~Simulation();
-
-	// These don't really belong anywhere at the moment, so go here for loop edge mode
-	static int remainder_p(int x, int y);
-	static float remainder_p(float x, float y);
 
 private:
 	CoordStack& getCoordStackSingleton();
