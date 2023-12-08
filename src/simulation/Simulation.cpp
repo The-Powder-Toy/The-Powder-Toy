@@ -4,7 +4,6 @@
 #include "gravity/Gravity.h"
 #include "ToolClasses.h"
 #include "SimulationData.h"
-#include "GOLString.h"
 #include "client/GameSave.h"
 #include "common/tpt-compat.h"
 #include "common/tpt-rand.h"
@@ -30,6 +29,9 @@ MissingElements Simulation::Load(const GameSave *save, bool includePressure, Vec
 	{
 		partMap[i] = i;
 	}
+
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if(save->palette.size())
 	{
 		for(int i = 0; i < PT_NUM; i++)
@@ -359,6 +361,9 @@ std::unique_ptr<GameSave> Simulation::Save(bool includePressure, Rect<int> partR
 	// Now stores all particles, not just SOAP (but still only used for soap)
 	std::map<unsigned int, unsigned int> particleMap;
 	std::set<int> paletteSet;
+
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	for (int i = 0; i < NPART; i++)
 	{
 		int x, y;
@@ -493,8 +498,10 @@ void Simulation::SaveSimOptions(GameSave &gameSave)
 	gameSave.aheatEnable = aheat_enable;
 }
 
-bool Simulation::FloodFillPmapCheck(int x, int y, int type)
+bool Simulation::FloodFillPmapCheck(int x, int y, int type) const
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (type == 0)
 		return !pmap[y][x] && !photons[y][x];
 	if (elements[type].Properties&TYPE_ENERGY)
@@ -711,6 +718,8 @@ bool Simulation::flood_water(int x, int y, int i)
 	char *bitmap = bitmapPtr.get();
 	std::fill(&bitmap[0], &bitmap[0] + XRES * YRES, 0);
 
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	try
 	{
 		CoordStack& cs = getCoordStackSingleton();
@@ -1101,6 +1110,8 @@ void Simulation::clear_sim(void)
 
 bool Simulation::IsWallBlocking(int x, int y, int type) const
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (bmap[y/CELL][x/CELL])
 	{
 		int wall = bmap[y/CELL][x/CELL];
@@ -1120,145 +1131,6 @@ bool Simulation::IsWallBlocking(int x, int y, int type) const
 			return true;
 	}
 	return false;
-}
-
-void Simulation::init_can_move()
-{
-	int movingType, destinationType;
-	// can_move[moving type][type at destination]
-	//  0 = No move/Bounce
-	//  1 = Swap
-	//  2 = Both particles occupy the same space.
-	//  3 = Varies, go run some extra checks
-
-	//particles that don't exist shouldn't move...
-	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
-		can_move[0][destinationType] = 0;
-
-	//initialize everything else to swapping by default
-	for (movingType = 1; movingType < PT_NUM; movingType++)
-		for (destinationType = 0; destinationType < PT_NUM; destinationType++)
-			can_move[movingType][destinationType] = 1;
-
-	//photons go through everything by default
-	for (destinationType = 1; destinationType < PT_NUM; destinationType++)
-		can_move[PT_PHOT][destinationType] = 2;
-
-	for (movingType = 1; movingType < PT_NUM; movingType++)
-	{
-		for (destinationType = 1; destinationType < PT_NUM; destinationType++)
-		{
-			//weight check, also prevents particles of same type displacing each other
-			if (elements[movingType].Weight <= elements[destinationType].Weight || destinationType == PT_GEL)
-				can_move[movingType][destinationType] = 0;
-
-			//other checks for NEUT and energy particles
-			if (movingType == PT_NEUT && (elements[destinationType].Properties&PROP_NEUTPASS))
-				can_move[movingType][destinationType] = 2;
-			if (movingType == PT_NEUT && (elements[destinationType].Properties&PROP_NEUTABSORB))
-				can_move[movingType][destinationType] = 1;
-			if (movingType == PT_NEUT && (elements[destinationType].Properties&PROP_NEUTPENETRATE))
-				can_move[movingType][destinationType] = 1;
-			if (destinationType == PT_NEUT && (elements[movingType].Properties&PROP_NEUTPENETRATE))
-				can_move[movingType][destinationType] = 0;
-			if ((elements[movingType].Properties&TYPE_ENERGY) && (elements[destinationType].Properties&TYPE_ENERGY))
-				can_move[movingType][destinationType] = 2;
-		}
-	}
-	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
-	{
-		//set what stickmen can move through
-		int stkm_move = 0;
-		if (elements[destinationType].Properties & (TYPE_LIQUID | TYPE_GAS))
-			stkm_move = 2;
-		if (!destinationType || destinationType == PT_PRTO || destinationType == PT_SPAWN || destinationType == PT_SPAWN2)
-			stkm_move = 2;
-		can_move[PT_STKM][destinationType] = stkm_move;
-		can_move[PT_STKM2][destinationType] = stkm_move;
-		can_move[PT_FIGH][destinationType] = stkm_move;
-
-		//spark shouldn't move
-		can_move[PT_SPRK][destinationType] = 0;
-	}
-	for (movingType = 1; movingType < PT_NUM; movingType++)
-	{
-		//everything "swaps" with VACU and BHOL to make them eat things
-		can_move[movingType][PT_BHOL] = 1;
-		can_move[movingType][PT_NBHL] = 1;
-		//nothing goes through stickmen
-		can_move[movingType][PT_STKM] = 0;
-		can_move[movingType][PT_STKM2] = 0;
-		can_move[movingType][PT_FIGH] = 0;
-		//INVS behaviour varies with pressure
-		can_move[movingType][PT_INVIS] = 3;
-		//stop CNCT from being displaced by other particles
-		can_move[movingType][PT_CNCT] = 0;
-		//VOID and PVOD behaviour varies with powered state and ctype
-		can_move[movingType][PT_PVOD] = 3;
-		can_move[movingType][PT_VOID] = 3;
-		//nothing moves through EMBR (not sure why, but it's killed when it touches anything)
-		can_move[movingType][PT_EMBR] = 0;
-		can_move[PT_EMBR][movingType] = 0;
-		//Energy particles move through VIBR and BVBR, so it can absorb them
-		if (elements[movingType].Properties & TYPE_ENERGY)
-		{
-			can_move[movingType][PT_VIBR] = 1;
-			can_move[movingType][PT_BVBR] = 1;
-		}
-
-		//SAWD cannot be displaced by other powders
-		if (elements[movingType].Properties & TYPE_PART)
-			can_move[movingType][PT_SAWD] = 0;
-	}
-	//a list of lots of things PHOT can move through
-	// TODO: replace with property
-	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
-	{
-		if (destinationType == PT_GLAS || destinationType == PT_PHOT || destinationType == PT_FILT || destinationType == PT_INVIS
-		 || destinationType == PT_CLNE || destinationType == PT_PCLN || destinationType == PT_BCLN || destinationType == PT_PBCN
-		 || destinationType == PT_WATR || destinationType == PT_DSTW || destinationType == PT_SLTW || destinationType == PT_GLOW
-		 || destinationType == PT_ISOZ || destinationType == PT_ISZS || destinationType == PT_QRTZ || destinationType == PT_PQRT
-		 || destinationType == PT_H2   || destinationType == PT_BGLA || destinationType == PT_C5)
-			can_move[PT_PHOT][destinationType] = 2;
-		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO)
-		{
-			can_move[PT_PROT][destinationType] = 2;
-			can_move[PT_GRVT][destinationType] = 2;
-		}
-	}
-
-	//other special cases that weren't covered above
-	can_move[PT_DEST][PT_DMND] = 0;
-	can_move[PT_DEST][PT_CLNE] = 0;
-	can_move[PT_DEST][PT_PCLN] = 0;
-	can_move[PT_DEST][PT_BCLN] = 0;
-	can_move[PT_DEST][PT_PBCN] = 0;
-	can_move[PT_DEST][PT_ROCK] = 0;
-
-	can_move[PT_NEUT][PT_INVIS] = 2;
-	can_move[PT_ELEC][PT_LCRY] = 2;
-	can_move[PT_ELEC][PT_EXOT] = 2;
-	can_move[PT_ELEC][PT_GLOW] = 2;
-	can_move[PT_PHOT][PT_LCRY] = 3; //varies according to LCRY life
-	can_move[PT_PHOT][PT_GPMP] = 3;
-
-	can_move[PT_PHOT][PT_BIZR] = 2;
-	can_move[PT_ELEC][PT_BIZR] = 2;
-	can_move[PT_PHOT][PT_BIZRG] = 2;
-	can_move[PT_ELEC][PT_BIZRG] = 2;
-	can_move[PT_PHOT][PT_BIZRS] = 2;
-	can_move[PT_ELEC][PT_BIZRS] = 2;
-	can_move[PT_BIZR][PT_FILT] = 2;
-	can_move[PT_BIZRG][PT_FILT] = 2;
-
-	can_move[PT_ANAR][PT_WHOL] = 1; //WHOL eats ANAR
-	can_move[PT_ANAR][PT_NWHL] = 1;
-	can_move[PT_ELEC][PT_DEUT] = 1;
-	can_move[PT_THDR][PT_THDR] = 2;
-	can_move[PT_EMBR][PT_EMBR] = 2;
-	can_move[PT_TRON][PT_SWCH] = 3;
-	can_move[PT_SOAP][PT_OIL] = 0;
-	can_move[PT_OIL][PT_SOAP] = 1;
 }
 
 /*
@@ -1282,6 +1154,9 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr) const
 		*rr = r;
 	if (pt>=PT_NUM || TYP(r)>=PT_NUM)
 		return 0;
+	auto &sd = SimulationData::CRef();
+	auto &can_move = sd.can_move;
+	auto &elements = sd.elements;
 	result = can_move[pt][TYP(r)];
 	if (result == 3)
 	{
@@ -1365,6 +1240,8 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 	if (!e && parts[i].type==PT_PHOT && ((TYP(r)==PT_BMTL && rng.chance(1, 2)) || TYP(pmap[y][x])==PT_BMTL))
 		e = 2;
 
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (!e) //if no movement
 	{
 		int rt = TYP(r);
@@ -1700,6 +1577,8 @@ int Simulation::do_move(int i, int x, int y, float nxf, float nyf)
 
 bool Simulation::move(int i, int x, int y, float nxf, float nyf)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int nx = (int)(nxf+0.5f), ny = (int)(nyf+0.5f);
 	int t = parts[i].type;
 	parts[i].x = nxf;
@@ -1883,6 +1762,8 @@ void Simulation::kill_part(int i)//kills particle number i
 	int x = (int)(parts[i].x + 0.5f);
 	int y = (int)(parts[i].y + 0.5f);
 
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int t = parts[i].type;
 	if (t && elements[t].ChangeType)
 	{
@@ -1914,6 +1795,9 @@ bool Simulation::part_change_type(int i, int x, int y, int t)
 {
 	if (x<0 || y<0 || x>=XRES || y>=YRES || i>=NPART || t<0 || t>=PT_NUM || !parts[i].type)
 		return false;
+
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (!elements[t].Enabled || t == PT_NONE)
 	{
 		kill_part(i);
@@ -1956,6 +1840,8 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 {
 	int i, oldType = PT_NONE;
 
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (x<0 || y<0 || x>=XRES || y>=YRES || t<=0 || t>=PT_NUM || !elements[t].Enabled)
 		return -1;
 
@@ -2238,6 +2124,8 @@ void Simulation::delete_part(int x, int y)//calls kill_part with the particle lo
 
 Simulation::PlanMoveResult Simulation::PlanMove(int i, int x, int y, bool update_emap)
 {
+	auto &sd = SimulationData::CRef();
+	auto &can_move = sd.can_move;
 	// This function would be const if not for calling set_emap if update_emap is true,
 	// and users of this function *expect* it to be const if update_emap is false. So
 	// whenever you change something here, make sure it compiles *as const* if you
@@ -2348,6 +2236,8 @@ Simulation::PlanMoveResult Simulation::PlanMove(int i, int x, int y, bool update
 void Simulation::UpdateParticles(int start, int end)
 {
 	//the main particle loop function, goes over all particles.
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	for (auto i = start; i < end && i <= parts_lastActiveIndex; i++)
 	{
 		if (parts[i].type)
@@ -2585,16 +2475,16 @@ void Simulation::UpdateParticles(int start, int end)
 					auto ctemph = pt;
 					auto ctempl = pt;
 					// change boiling point with pressure
-					if (((elements[t].Properties&TYPE_LIQUID) && IsElementOrNone(elements[t].HighTemperatureTransition) && (elements[elements[t].HighTemperatureTransition].Properties&TYPE_GAS))
+					if (((elements[t].Properties&TYPE_LIQUID) && sd.IsElementOrNone(elements[t].HighTemperatureTransition) && (elements[elements[t].HighTemperatureTransition].Properties&TYPE_GAS))
 					        || t==PT_LNTG || t==PT_SLTW)
 						ctemph -= 2.0f*pv[y/CELL][x/CELL];
-					else if (((elements[t].Properties&TYPE_GAS) && IsElementOrNone(elements[t].LowTemperatureTransition) && (elements[elements[t].LowTemperatureTransition].Properties&TYPE_LIQUID))
+					else if (((elements[t].Properties&TYPE_GAS) && sd.IsElementOrNone(elements[t].LowTemperatureTransition) && (elements[elements[t].LowTemperatureTransition].Properties&TYPE_LIQUID))
 					         || t==PT_WTRV)
 						ctempl -= 2.0f*pv[y/CELL][x/CELL];
 					auto s = 1;
 
 					//A fix for ice with ctype = 0
-					if ((t==PT_ICEI || t==PT_SNOW) && (!IsElement(parts[i].ctype) || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW))
+					if ((t==PT_ICEI || t==PT_SNOW) && (!sd.IsElement(parts[i].ctype) || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW))
 						parts[i].ctype = PT_WATR;
 
 					if (elements[t].HighTemperatureTransition>-1 && ctemph>=elements[t].HighTemperature)
@@ -3470,6 +3360,8 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 	memset(photons, 0, sizeof(photons));
 
 	NUM_PARTS = 0;
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	//the particle loop that resets the pmap/photon maps every frame, to update them.
 	for (int i = 0; i <= parts_lastActiveIndex; i++)
 	{
@@ -3552,6 +3444,7 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 
 void Simulation::SimulateGoL()
 {
+	auto &builtinGol = SimulationData::builtinGol;
 	CGOL = 0;
 	for (int i = 0; i <= parts_lastActiveIndex; ++i)
 	{
@@ -3728,6 +3621,8 @@ void Simulation::SimulateGoL()
 
 void Simulation::CheckStacking()
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	bool excessive_stacking_found = false;
 	force_stacking_check = false;
 	for (int y = 0; y < YRES; y++)
@@ -3997,10 +3892,7 @@ void Simulation::AfterSim()
 	frameCount += 1;
 }
 
-Simulation::~Simulation()
-{
-	delete air;
-}
+Simulation::~Simulation() = default;
 
 Simulation::Simulation():
 	replaceModeSelected(0),
@@ -4050,7 +3942,7 @@ Simulation::Simulation():
 	gravmap = &grav->gravmap[0];
 
 	//Create and attach air simulation
-	air = new Air(*this);
+	air = std::make_unique<Air>(*this);
 	//Give air sim references to our data
 	air->bmap = bmap;
 	air->emap = emap;
@@ -4062,86 +3954,12 @@ Simulation::Simulation():
 	pv = air->pv;
 	hv = air->hv;
 
-	msections = LoadMenus();
-	wtypes = LoadWalls();
-	platent = LoadLatent();
-	std::copy(GetElements().begin(), GetElements().end(), elements.begin());
-	tools = GetTools();
-
 	player.comm = 0;
 	player2.comm = 0;
 
-	init_can_move();
 	clear_sim();
 
 	grav->gravity_mask();
-}
-
-const Simulation::CustomGOLData *Simulation::GetCustomGOLByRule(int rule) const
-{
-	// * Binary search. customGol is already sorted, see SetCustomGOL.
-	auto it = std::lower_bound(customGol.begin(), customGol.end(), rule, [](const CustomGOLData &item, int rule) {
-		return item.rule < rule;
-	});
-	if (it != customGol.end() && !(rule < it->rule))
-	{
-		return &*it;
-	}
-	return nullptr;
-}
-
-void Simulation::SetCustomGOL(std::vector<CustomGOLData> newCustomGol)
-{
-	std::sort(newCustomGol.begin(), newCustomGol.end());
-	customGol = newCustomGol;
-}
-
-String Simulation::ElementResolve(int type, int ctype) const
-{
-	if (type == PT_LIFE)
-	{
-		if (ctype >= 0 && ctype < NGOL)
-		{
-			return builtinGol[ctype].name; 
-		}
-		auto *cgol = GetCustomGOLByRule(ctype);
-		if (cgol)
-		{
-			return cgol->nameString;
-		}
-		return SerialiseGOLRule(ctype);
-	}
-	else if (type >= 0 && type < PT_NUM)
-		return elements[type].Name;
-	return "Empty";
-}
-
-String Simulation::BasicParticleInfo(Particle const &sample_part) const
-{
-	StringBuilder sampleInfo;
-	int type = sample_part.type;
-	int ctype = sample_part.ctype;
-	int storedCtype = sample_part.tmp4;
-	if (type == PT_LAVA && IsElement(ctype))
-	{
-		sampleInfo << "Molten " << ElementResolve(ctype, -1);
-	}
-	else if ((type == PT_PIPE || type == PT_PPIP) && IsElement(ctype))
-	{
-		if (ctype == PT_LAVA && IsElement(storedCtype))
-		{
-			sampleInfo << ElementResolve(type, -1) << " with molten " << ElementResolve(storedCtype, -1);
-		}
-		else
-		{
-			sampleInfo << ElementResolve(type, -1) << " with " << ElementResolve(ctype, storedCtype);
-		}
-	}
-	else
-	{
-		sampleInfo << ElementResolve(type, ctype);
-	}
-	return sampleInfo.Build();
 }
 
 int Simulation::remainder_p(int x, int y)

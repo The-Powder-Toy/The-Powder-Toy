@@ -4,7 +4,7 @@
 #include "client/Client.h"
 #include "common/tpt-rand.h"
 #include "simulation/GOLString.h"
-#include "simulation/Simulation.h"
+#include "simulation/SimulationData.h"
 
 #include "gui/Style.h"
 #include "gui/interface/Button.h"
@@ -135,6 +135,7 @@ void GOLWindow::updateGradient()
 
 void GOLWindow::validate()
 {
+	auto &sd = SimulationData::CRef();
 	auto nameString = nameField->GetText();
 	auto ruleString = ruleField->GetText();
 	if (!ValidateGOLName(nameString))
@@ -149,7 +150,7 @@ void GOLWindow::validate()
 		new ErrorMessage("Could not add GOL type", "Invalid rule provided");
 		return;
 	}
-	if (sim->GetCustomGOLByRule(rule))
+	if (sd.GetCustomGOLByRule(rule))
 	{
 		new ErrorMessage("Could not add GOL type", "This Custom GoL rule already exists");
 		return;

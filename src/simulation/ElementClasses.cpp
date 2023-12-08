@@ -1,12 +1,12 @@
 #include "ElementCommon.h"
 
-std::vector<Element> const &GetElements()
+std::array<Element, PT_NUM> const &GetElements()
 {
 	struct DoOnce
 	{
-		std::vector<Element> elements;
+		std::array<Element, PT_NUM> elements;
 
-		DoOnce() : elements(PT_NUM)
+		DoOnce()
 		{
 #define ELEMENT_NUMBERS_CALL
 #include "ElementNumbers.h"

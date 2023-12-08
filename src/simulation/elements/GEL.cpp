@@ -50,6 +50,8 @@ void Element::Element_GEL()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (parts[i].tmp > 100)
 		parts[i].tmp = 100;
 	if (parts[i].tmp < 0)
@@ -133,17 +135,17 @@ static int update(UPDATE_FUNC_ARGS)
 				dy = parts[i].y - parts[ID(r)].y;
 
 				//Stickiness
-				if ((dx*dx + dy*dy)>1.5 && (gel || !sim->elements[rt].Falldown || (fabs((float)rx)<2 && fabs((float)ry)<2)))
+				if ((dx*dx + dy*dy)>1.5 && (gel || !elements[rt].Falldown || (fabs((float)rx)<2 && fabs((float)ry)<2)))
 				{
 					float per, nd;
 					nd = dx*dx + dy*dy - 0.5;
 					per = 5*(1 - parts[i].tmp/100)*(nd/(dx*dx + dy*dy + nd) - 0.5);
-					if (sim->elements[rt].Properties&TYPE_LIQUID)
+					if (elements[rt].Properties&TYPE_LIQUID)
 						per *= 0.1f;
 					dx *= per; dy *= per;
 					parts[i].vx += dx;
 					parts[i].vy += dy;
-					if ((sim->elements[rt].Properties&TYPE_PART) || rt==PT_GOO)
+					if ((elements[rt].Properties&TYPE_PART) || rt==PT_GOO)
 					{
 						parts[ID(r)].vx -= dx;
 						parts[ID(r)].vy -= dy;

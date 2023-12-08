@@ -216,14 +216,16 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 
 int Element::defaultGraphics(GRAPHICS_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int t = cpart->type;
 	//Property based defaults
-	if(ren->sim->elements[t].Properties & PROP_RADIOACTIVE) *pixel_mode |= PMODE_GLOW;
-	if(ren->sim->elements[t].Properties & TYPE_LIQUID)
+	if(elements[t].Properties & PROP_RADIOACTIVE) *pixel_mode |= PMODE_GLOW;
+	if(elements[t].Properties & TYPE_LIQUID)
 	{
 		*pixel_mode |= PMODE_BLUR;
 	}
-	if(ren->sim->elements[t].Properties & TYPE_GAS)
+	if(elements[t].Properties & TYPE_GAS)
 	{
 		*pixel_mode &= ~PMODE;
 		*pixel_mode |= FIRE_BLEND;
@@ -238,7 +240,9 @@ int Element::defaultGraphics(GRAPHICS_FUNC_ARGS)
 
 bool Element::basicCtypeDraw(CTYPEDRAW_FUNC_ARGS)
 {
-	if (sim->parts[i].type == t || sim->elements[t].Properties & PROP_NOCTYPEDRAW)
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	if (sim->parts[i].type == t || elements[t].Properties & PROP_NOCTYPEDRAW)
 	{
 		return false;
 	}

@@ -328,6 +328,7 @@ static void CheckBsonFieldFloat(bson_iterator iter, const char *field, float *se
 
 void GameSave::readOPS(const std::vector<char> &data)
 {
+	auto &builtinGol = SimulationData::builtinGol;
 	constexpr auto currentVersion = Version(currentVersionMajor, 0);
 	constexpr auto nextVersion = Version(nextVersionMajor, 0);
 
@@ -1185,6 +1186,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 #define MTOS(str) MTOS_EXPAND(str)
 void GameSave::readPSv(const std::vector<char> &dataVec)
 {
+	auto &builtinGol = SimulationData::builtinGol;
 	Renderer::PopulateTables();
 
 	unsigned char * saveData = (unsigned char *)&dataVec[0];
@@ -1197,7 +1199,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	char tempSignText[255];
 	sign tempSign("", 0, 0, sign::Left);
 
-	auto &elements = GetElements();
+	auto &builtinElements = GetElements();
 
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
@@ -1607,7 +1609,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 			}
 			else
 			{
-				particles[i-1].temp = elements[particles[i-1].type].DefaultProperties.temp;
+				particles[i-1].temp = builtinElements[particles[i-1].type].DefaultProperties.temp;
 			}
 		}
 	}
@@ -1970,7 +1972,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	 That way, if we ever need a 25th bit, we won't have to change the save format
 	 */
 
-	auto &elements = GetElements();
+	auto &builtinElements = GetElements();
 	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
 	auto &properties = Particle::GetProperties();
 	// Allocate enough space to store all Particles and 3 bytes on top of that per Particle, for the field descriptors.
@@ -2200,7 +2202,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			{
 				for (auto index : possiblyCarriesType)
 				{
-					if (elements[particles[i].type].CarriesTypeIn & (1U << index))
+					if (builtinElements[particles[i].type].CarriesTypeIn & (1U << index))
 					{
 						auto *prop = reinterpret_cast<const int *>(reinterpret_cast<const char *>(&particles[i]) + properties[index].Offset);
 						if (TYP(*prop) > 0xFF)

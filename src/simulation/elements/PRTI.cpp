@@ -59,6 +59,8 @@ void Element::Element_PRTI()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int fe = 0;
 
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
@@ -76,7 +78,7 @@ static int update(UPDATE_FUNC_ARGS)
 			int r = pmap[y+ry][x+rx];
 			if (!r || TYP(r) == PT_STOR)
 				fe = 1;
-			if (!r || (!(sim->elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)) && TYP(r)!=PT_SPRK && TYP(r)!=PT_STOR))
+			if (!r || (!(elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)) && TYP(r)!=PT_SPRK && TYP(r)!=PT_STOR))
 			{
 				r = sim->photons[y+ry][x+rx];
 				if (!r)
@@ -94,7 +96,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					if (TYP(r) == PT_STOR)
 					{
-						if (sim->IsElement(parts[ID(r)].tmp) && (sim->elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
+						if (sd.IsElement(parts[ID(r)].tmp) && (elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 						{
 							// STOR uses same format as PIPE, so we can use this function to do the transfer
 							Element_PIPE_transfer_pipe_to_part(sim, parts+(ID(r)), &sim->portalp[parts[i].tmp][count][nnx], true);

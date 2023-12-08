@@ -48,16 +48,18 @@ void Element::Element_FWRK()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (parts[i].life == 0 && ((surround_space && parts[i].temp>400 && sim->rng.chance(int(9+parts[i].temp/40), 100000)) || parts[i].ctype == PT_DUST))
 	{
 		float gx, gy, multiplier, gmax;
 		int randTmp;
-		sim->GetGravityField(x, y, sim->elements[PT_FWRK].Gravity, 1.0f, gx, gy);
+		sim->GetGravityField(x, y, elements[PT_FWRK].Gravity, 1.0f, gx, gy);
 		if (gx*gx+gy*gy < 0.001f)
 		{
 			float angle = sim->rng.between(0, 6283) * 0.001f;//(in radians, between 0 and 2*pi)
-			gx += sinf(angle)*sim->elements[PT_FWRK].Gravity*0.5f;
-			gy += cosf(angle)*sim->elements[PT_FWRK].Gravity*0.5f;
+			gx += sinf(angle)*elements[PT_FWRK].Gravity*0.5f;
+			gy += cosf(angle)*elements[PT_FWRK].Gravity*0.5f;
 		}
 		gmax = std::max(fabsf(gx), fabsf(gy));
 		if (sim->eval_move(PT_FWRK, (int)(x-(gx/gmax)+0.5f), (int)(y-(gy/gmax)+0.5f), NULL))

@@ -6,6 +6,7 @@
 #include "graphics/Renderer.h"
 
 #include "Simulation.h"
+#include "SimulationData.h"
 
 SaveRenderer::SaveRenderer(){
 	sim = new Simulation();
@@ -22,6 +23,9 @@ void SaveRenderer::Flush(int begin, int end)
 
 std::pair<std::unique_ptr<VideoBuffer>, MissingElements> SaveRenderer::Render(const GameSave *save, bool decorations, bool fire, Renderer *renderModeSource)
 {
+	// this function usually runs on a thread different from where element info in SimulationData may be written, so we acquire a read-only lock on it
+	auto &sd = SimulationData::CRef();
+	std::shared_lock lk(sd.elementGraphicsMx);
 	std::lock_guard<std::mutex> gx(renderMutex);
 
 	ren->ResetModes();

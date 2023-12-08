@@ -123,7 +123,9 @@ static unsigned int nextColor(unsigned int flags)
 
 int Element_PIPE_update(UPDATE_FUNC_ARGS)
 {
-	if (parts[i].ctype && !sim->elements[TYP(parts[i].ctype)].Enabled)
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	if (parts[i].ctype && !elements[TYP(parts[i].ctype)].Enabled)
 		parts[i].ctype = 0;
 	if (parts[i].tmp & PPIP_TMPFLAG_TRIGGERS)
 	{
@@ -259,14 +261,14 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 					}
 				}
 				//try eating particle at entrance
-				else if (!TYP(parts[i].ctype) && (sim->elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
+				else if (!TYP(parts[i].ctype) && (elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 				{
 					if (TYP(r)==PT_SOAP)
 						Element_SOAP_detach(sim, ID(r));
 					transfer_part_to_pipe(parts+(ID(r)), parts+i);
 					sim->kill_part(ID(r));
 				}
-				else if (!TYP(parts[i].ctype) && TYP(r)==PT_STOR && sim->IsElement(parts[ID(r)].tmp) && (sim->elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
+				else if (!TYP(parts[i].ctype) && TYP(r)==PT_STOR && sd.IsElement(parts[ID(r)].tmp) && (elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 				{
 					// STOR stores properties in the same places as PIPE does
 					transfer_pipe_to_pipe(parts+(ID(r)), parts+i, true);
@@ -344,8 +346,10 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 
 int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int t = TYP(cpart->ctype);
-	if (t>0 && t<PT_NUM && ren->sim->elements[t].Enabled)
+	if (t>0 && t<PT_NUM && elements[t].Enabled)
 	{
 		if (t == PT_STKM || t == PT_STKM2 || t == PT_FIGH)
 			return 0;
@@ -374,13 +378,13 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 			cpart->tmp = tpart.tmp3;
 			cpart->ctype = tpart.tmp4;
 
-			RGB<uint8_t> colour = ren->sim->elements[t].Colour;
+			RGB<uint8_t> colour = elements[t].Colour;
 			*colr = colour.Red;
 			*colg = colour.Green;
 			*colb = colour.Blue;
-			if (ren->sim->elements[t].Graphics)
+			if (elements[t].Graphics)
 			{
-				(*(ren->sim->elements[t].Graphics))(ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
+				(*(elements[t].Graphics))(ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
 			}
 			else
 			{
@@ -419,6 +423,8 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 
 void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	// STOR also calls this function to move particles from STOR to PRTI
 	// PIPE was changed, so now PIPE and STOR don't use the same particle storage format
 	if (STOR)
@@ -436,7 +442,7 @@ void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Partic
 	part->tmp = pipe->tmp3;
 	part->ctype = pipe->tmp4;
 
-	if (!(sim->elements[part->type].Properties & TYPE_ENERGY))
+	if (!(elements[part->type].Properties & TYPE_ENERGY))
 	{
 		part->vx = 0.0f;
 		part->vy = 0.0f;

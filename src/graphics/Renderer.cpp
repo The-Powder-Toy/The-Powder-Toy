@@ -11,7 +11,8 @@
 
 std::unique_ptr<VideoBuffer> Renderer::WallIcon(int wallID, Vec2<int> size)
 {
-	auto wtypes = LoadWalls();
+	auto &sd = SimulationData::CRef();
+	auto &wtypes = sd.wtypes;
 	if (wallID < 0 || wallID >= int(wtypes.size()))
 		return nullptr;
 	wall_type const &wtype = wtypes[wallID];
@@ -170,14 +171,14 @@ void Renderer::DrawSigns()
 
 void Renderer::render_parts()
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y;
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
 	Particle * parts;
-	Element *elements;
 	if(!sim)
 		return;
 	parts = sim->parts;
-	elements = sim->elements.data();
 	if (gridSize)//draws the grid
 	{
 		for (ny=0; ny<YRES; ny++)
@@ -199,7 +200,7 @@ void Renderer::render_parts()
 
 			if(nx >= XRES || nx < 0 || ny >= YRES || ny < 0)
 				continue;
-			if(TYP(sim->photons[ny][nx]) && !(sim->elements[t].Properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
+			if(TYP(sim->photons[ny][nx]) && !(elements[t].Properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
 				continue;
 
 			//Defaults
@@ -242,7 +243,8 @@ void Renderer::render_parts()
 				}
 				else if(!(colour_mode & COLOUR_BASC))
 				{
-					if (!elements[t].Graphics || (*(elements[t].Graphics))(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
+					auto *graphics = useGraphicsFunction ? elements[t].Graphics : nullptr;
+					if (!graphics || graphics(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
 					{
 						graphicscache[t].isready = 1;
 						graphicscache[t].pixel_mode = pixel_mode;
@@ -927,6 +929,8 @@ void Renderer::draw_air()
 
 void Renderer::DrawWalls()
 {
+	auto &sd = SimulationData::CRef();
+	auto &wtypes = sd.wtypes;
 	for (int y = 0; y < YCELLS; y++)
 		for (int x =0; x < XCELLS; x++)
 			if (sim->bmap[y][x])
@@ -935,8 +939,8 @@ void Renderer::DrawWalls()
 				if (wt >= UI_WALLCOUNT)
 					continue;
 				unsigned char powered = sim->emap[y][x];
-				RGB<uint8_t> prgb = sim->wtypes[wt].colour;
-				RGB<uint8_t> grgb = sim->wtypes[wt].eglow;
+				RGB<uint8_t> prgb = wtypes[wt].colour;
+				RGB<uint8_t> grgb = wtypes[wt].eglow;
 
 				if (findingElement)
 				{
@@ -951,7 +955,7 @@ void Renderer::DrawWalls()
 				pixel pc = prgb.Pack();
 				pixel gc = grgb.Pack();
 
-				switch (sim->wtypes[wt].drawstyle)
+				switch (wtypes[wt].drawstyle)
 				{
 				case 0:
 					if (wt == WL_EWALL || wt == WL_STASIS)
@@ -1075,7 +1079,7 @@ void Renderer::DrawWalls()
 				// when in blob view, draw some blobs...
 				if (render_mode & PMODE_BLOB)
 				{
-					switch (sim->wtypes[wt].drawstyle)
+					switch (wtypes[wt].drawstyle)
 					{
 					case 0:
 						if (wt == WL_EWALL || wt == WL_STASIS)
@@ -1156,10 +1160,10 @@ void Renderer::DrawWalls()
 					}
 				}
 
-				if (sim->wtypes[wt].eglow.Pack() && powered)
+				if (wtypes[wt].eglow.Pack() && powered)
 				{
 					// glow if electrified
-					RGB<uint8_t> glow = sim->wtypes[wt].eglow;
+					RGB<uint8_t> glow = wtypes[wt].eglow;
 					int alpha = 255;
 					int cr = (alpha*glow.Red   + (255-alpha)*fire_r[y/CELL][x/CELL]) >> 8;
 					int cg = (alpha*glow.Green + (255-alpha)*fire_g[y/CELL][x/CELL]) >> 8;

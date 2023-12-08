@@ -167,6 +167,8 @@ public:
 #undef RENDERER_TABLE
 	static void PopulateTables();
 
+	bool useGraphicsFunction = false;
+
 private:
 	int gridSize;
 };

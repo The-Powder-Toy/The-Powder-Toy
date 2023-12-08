@@ -99,6 +99,8 @@ static int update(UPDATE_FUNC_ARGS)
 	//0x02 - first mate yes/no
 	//0x04 - "back" mate yes/no
 
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (parts[i].ctype&1)
 	{
 		// reset invalid SOAP links
@@ -171,7 +173,7 @@ static int update(UPDATE_FUNC_ARGS)
 							if (parts[i].temp>FREEZING)
 							{
 								if (sim->bmap[(y+ry)/CELL][(x+rx)/CELL]
-									|| (r && !(sim->elements[TYP(r)].Properties&TYPE_GAS)
+									|| (r && !(elements[TYP(r)].Properties&TYPE_GAS)
 								    && TYP(r) != PT_SOAP && TYP(r) != PT_GLAS))
 								{
 									Element_SOAP_detach(sim, i);

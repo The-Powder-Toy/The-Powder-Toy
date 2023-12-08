@@ -50,6 +50,8 @@ void Element::Element_DMG()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int rad = 25;
 	for (auto rx = -1; rx <= 1; rx++)
 	{
@@ -84,8 +86,8 @@ static int update(UPDATE_FUNC_ARGS)
 										sim->vy[(y+nxj)/CELL][(x+nxi)/CELL] += fy;
 										sim->pv[(y+nxj)/CELL][(x+nxi)/CELL] += 1.0f;
 										auto t = TYP(rr);
-										if (t && sim->elements[t].HighPressureTransition>-1 && sim->elements[t].HighPressureTransition<PT_NUM)
-											sim->part_change_type(ID(rr), x+nxi, y+nxj, sim->elements[t].HighPressureTransition);
+										if (t && elements[t].HighPressureTransition>-1 && elements[t].HighPressureTransition<PT_NUM)
+											sim->part_change_type(ID(rr), x+nxi, y+nxj, elements[t].HighPressureTransition);
 										else if (t == PT_BMTL)
 											sim->part_change_type(ID(rr), x+nxi, y+nxj, PT_BRMT);
 										else if (t == PT_GLAS)

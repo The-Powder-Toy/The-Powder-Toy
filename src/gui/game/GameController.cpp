@@ -757,11 +757,12 @@ void GameController::ResetAir()
 
 void GameController::ResetSpark()
 {
+	auto &sd = SimulationData::CRef();
 	Simulation * sim = gameModel->GetSimulation();
 	for (int i = 0; i < NPART; i++)
 		if (sim->parts[i].type == PT_SPRK)
 		{
-			if (sim->parts[i].ctype >= 0 && sim->parts[i].ctype < PT_NUM && sim->elements[sim->parts[i].ctype].Enabled)
+			if (sim->parts[i].ctype >= 0 && sim->parts[i].ctype < PT_NUM && sd.elements[sim->parts[i].ctype].Enabled)
 			{
 				sim->parts[i].type = sim->parts[i].ctype;
 				sim->parts[i].ctype = sim->parts[i].life = 0;
@@ -849,6 +850,7 @@ void GameController::LoadRenderPreset(int presetNum)
 
 void GameController::Update()
 {
+	auto &sd = SimulationData::CRef();
 	ui::Point pos = gameView->GetMousePosition();
 	gameModel->GetRenderer()->mousePos = PointTranslate(pos);
 	if (pos.X < XRES && pos.Y < YRES)
@@ -875,7 +877,7 @@ void GameController::Update()
 		if (activeTool->Identifier.BeginsWith("DEFAULT_PT_"))
 		{
 			int sr = activeTool->ToolID;
-			if (sr && sim->IsElementOrNone(sr))
+			if (sr && sd.IsElementOrNone(sr))
 				rightSelected = sr;
 		}
 
@@ -1497,20 +1499,14 @@ String GameController::ElementResolve(int type, int ctype)
 	// "NONE" should never be displayed in the HUD
 	if (!type)
 		return "";
-	if (gameModel && gameModel->GetSimulation())
-	{
-		return gameModel->GetSimulation()->ElementResolve(type, ctype);
-	}
-	return "";
+	auto &sd = SimulationData::CRef();
+	return sd.ElementResolve(type, ctype);
 }
 
 String GameController::BasicParticleInfo(Particle const &sample_part)
 {
-	if (gameModel && gameModel->GetSimulation())
-	{
-		return gameModel->GetSimulation()->BasicParticleInfo(sample_part);
-	}
-	return "";
+	auto &sd = SimulationData::CRef();
+	return sd.BasicParticleInfo(sample_part);
 }
 
 void GameController::ReloadSim()
@@ -1529,18 +1525,15 @@ void GameController::ReloadSim()
 
 bool GameController::IsValidElement(int type)
 {
-	if (gameModel && gameModel->GetSimulation())
-	{
-		return (type && gameModel->GetSimulation()->IsElement(type));
-	}
-	else
-		return false;
+	auto &sd = SimulationData::CRef();
+	return type && sd.IsElement(type);
 }
 
 String GameController::WallName(int type)
 {
-	if(gameModel && gameModel->GetSimulation() && type >= 0 && type < UI_WALLCOUNT)
-		return gameModel->GetSimulation()->wtypes[type].name;
+	auto &sd = SimulationData::CRef();
+	if(type >= 0 && type < UI_WALLCOUNT)
+		return sd.wtypes[type].name;
 	else
 		return String();
 }

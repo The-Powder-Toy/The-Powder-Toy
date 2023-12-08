@@ -54,6 +54,8 @@ void Element::Element_PROT()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	sim->pv[y/CELL][x/CELL] -= .003f;
 	int under = pmap[y][x];
 	int utype = TYP(under);
@@ -111,14 +113,14 @@ static int update(UPDATE_FUNC_ARGS)
 		break;
 	default:
 		//set off explosives (only when hot because it wasn't as fun when it made an entire save explode)
-		if (parts[i].temp > 273.15f + 500.0f && (sim->elements[utype].Flammable || sim->elements[utype].Explosive || utype == PT_BANG))
+		if (parts[i].temp > 273.15f + 500.0f && (elements[utype].Flammable || elements[utype].Explosive || utype == PT_BANG))
 		{
 			sim->create_part(uID, x, y, PT_FIRE);
-			parts[uID].temp += restrict_flt(float(sim->elements[utype].Flammable * 5), MIN_TEMP, MAX_TEMP);
+			parts[uID].temp += restrict_flt(float(elements[utype].Flammable * 5), MIN_TEMP, MAX_TEMP);
 			sim->pv[y / CELL][x / CELL] += 1.00f;
 		}
 		//prevent inactive sparkable elements from being sparked
-		else if ((sim->elements[utype].Properties&PROP_CONDUCTS) && parts[uID].life <= 4)
+		else if ((elements[utype].Properties&PROP_CONDUCTS) && parts[uID].life <= 4)
 		{
 			parts[uID].life = 40 + parts[uID].life;
 		}

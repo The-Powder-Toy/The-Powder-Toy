@@ -48,6 +48,8 @@ void Element::Element_FRAY()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int curlen;
 	if (parts[i].tmp > 0)
 		curlen = parts[i].tmp;
@@ -73,7 +75,7 @@ static int update(UPDATE_FUNC_ARGS)
 						r = pmap[y+nyi+nyy][x+nxi+nxx];
 						if (!r)
 							r = sim->photons[y+nyi+nyy][x+nxi+nxx];
-						if (r && !(sim->elements[TYP(r)].Properties & TYPE_SOLID)){
+						if (r && !(elements[TYP(r)].Properties & TYPE_SOLID)){
 							parts[ID(r)].vx += nxi*((parts[i].temp-273.15f)/10.0f);
 							parts[ID(r)].vy += nyi*((parts[i].temp-273.15f)/10.0f);
 						}

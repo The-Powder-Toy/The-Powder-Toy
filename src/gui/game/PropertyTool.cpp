@@ -114,6 +114,8 @@ void PropertyWindow::Update()
 
 void PropertyWindow::CheckProperty()
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	configuration.reset();
 	PropertyTool::Configuration newConfiguration;
 	if (!(property->GetOption().second!=-1 && textField->GetText().length() > 0))
@@ -142,7 +144,7 @@ void PropertyWindow::CheckProperty()
 				else
 				{
 					// Try to parse as particle name
-					v = sim->GetParticleType(value.ToUtf8());
+					v = sd.GetParticleType(value.ToUtf8());
 
 					// Try to parse special GoL rules
 					if (v == -1 && properties[property->GetOption().second].Name == "ctype")
@@ -160,7 +162,7 @@ void PropertyWindow::CheckProperty()
 						}
 						else
 						{
-							v = sim->GetParticleType(value.ToUtf8());
+							v = sd.GetParticleType(value.ToUtf8());
 							if (v == -1)
 							{
 								for (auto *elementTool : tool->gameModel.GetMenuList()[SC_LIFE]->GetToolList())
@@ -182,7 +184,7 @@ void PropertyWindow::CheckProperty()
 					}
 				}
 
-				if (properties[property->GetOption().second].Name == "type" && (v < 0 || v >= PT_NUM || !sim->elements[v].Enabled))
+				if (properties[property->GetOption().second].Name == "type" && (v < 0 || v >= PT_NUM || !elements[v].Enabled))
 				{
 					return;
 				}

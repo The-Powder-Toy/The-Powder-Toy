@@ -12,6 +12,7 @@
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "simulation/SaveRenderer.h"
+#include "simulation/SimulationData.h"
 #include "common/tpt-rand.h"
 #include "gui/game/Favorite.h"
 #include "gui/Style.h"
@@ -180,6 +181,7 @@ struct ExplicitSingletons
 	std::unique_ptr<SaveRenderer> saveRenderer;
 	std::unique_ptr<Favorite> favorite;
 	std::unique_ptr<ui::Engine> engine;
+	std::unique_ptr<SimulationData> simulationData;
 	std::unique_ptr<GameController> gameController;
 };
 static std::unique_ptr<ExplicitSingletons> explicitSingletons;
@@ -416,6 +418,7 @@ int Main(int argc, char *argv[])
 	}
 
 	auto wrapWithBluescreen = [&]() {
+		explicitSingletons->simulationData = std::make_unique<SimulationData>();
 		explicitSingletons->gameController = std::make_unique<GameController>();
 		auto *gameController = explicitSingletons->gameController.get();
 		engine.ShowWindow(gameController->GetView());

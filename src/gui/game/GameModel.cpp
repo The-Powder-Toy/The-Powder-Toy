@@ -57,6 +57,7 @@ GameModel::GameModel():
 {
 	sim = new Simulation();
 	ren = new Renderer(sim);
+	ren->useGraphicsFunction = true;
 
 	activeTools = regularToolset;
 
@@ -219,6 +220,9 @@ void GameModel::BuildQuickOptionMenu(GameController * controller)
 
 void GameModel::BuildMenus()
 {
+	auto &sd = SimulationData::Ref();
+	auto &elements = sd.elements;
+	auto &builtinGol = SimulationData::builtinGol;
 	int lastMenu = -1;
 	if(activeMenu != -1)
 		lastMenu = activeMenu;
@@ -253,35 +257,35 @@ void GameModel::BuildMenus()
 	//Create menus
 	for (int i = 0; i < SC_TOTAL; i++)
 	{
-		menuList.push_back(new Menu(sim->msections[i].icon, sim->msections[i].name, sim->msections[i].doshow));
+		menuList.push_back(new Menu(sd.msections[i].icon, sd.msections[i].name, sd.msections[i].doshow));
 	}
 
 	//Build menus from Simulation elements
 	for(int i = 0; i < PT_NUM; i++)
 	{
-		if(sim->elements[i].Enabled)
+		if(elements[i].Enabled)
 		{
 			Tool * tempTool;
 			if(i == PT_LIGH)
 			{
-				tempTool = new Element_LIGH_Tool(i, sim->elements[i].Name, sim->elements[i].Description, sim->elements[i].Colour, sim->elements[i].Identifier, sim->elements[i].IconGenerator);
+				tempTool = new Element_LIGH_Tool(i, elements[i].Name, elements[i].Description, elements[i].Colour, elements[i].Identifier, elements[i].IconGenerator);
 			}
 			else if(i == PT_TESC)
 			{
-				tempTool = new Element_TESC_Tool(i, sim->elements[i].Name, sim->elements[i].Description, sim->elements[i].Colour, sim->elements[i].Identifier, sim->elements[i].IconGenerator);
+				tempTool = new Element_TESC_Tool(i, elements[i].Name, elements[i].Description, elements[i].Colour, elements[i].Identifier, elements[i].IconGenerator);
 			}
 			else if(i == PT_STKM || i == PT_FIGH || i == PT_STKM2)
 			{
-				tempTool = new PlopTool(i, sim->elements[i].Name, sim->elements[i].Description, sim->elements[i].Colour, sim->elements[i].Identifier, sim->elements[i].IconGenerator);
+				tempTool = new PlopTool(i, elements[i].Name, elements[i].Description, elements[i].Colour, elements[i].Identifier, elements[i].IconGenerator);
 			}
 			else
 			{
-				tempTool = new ElementTool(i, sim->elements[i].Name, sim->elements[i].Description, sim->elements[i].Colour, sim->elements[i].Identifier, sim->elements[i].IconGenerator);
+				tempTool = new ElementTool(i, elements[i].Name, elements[i].Description, elements[i].Colour, elements[i].Identifier, elements[i].IconGenerator);
 			}
 
-			if (sim->elements[i].MenuSection >= 0 && sim->elements[i].MenuSection < SC_TOTAL && sim->elements[i].MenuVisible)
+			if (elements[i].MenuSection >= 0 && elements[i].MenuSection < SC_TOTAL && elements[i].MenuVisible)
 			{
-				menuList[sim->elements[i].MenuSection]->AddTool(tempTool);
+				menuList[elements[i].MenuSection]->AddTool(tempTool);
 			}
 			else
 			{
@@ -301,7 +305,7 @@ void GameModel::BuildMenus()
 		auto &prefs = GlobalPrefs::Ref();
 		auto customGOLTypes = prefs.Get("CustomGOL.Types", std::vector<ByteString>{});
 		std::vector<ByteString> validatedCustomLifeTypes;
-		std::vector<Simulation::CustomGOLData> newCustomGol;
+		std::vector<CustomGOLData> newCustomGol;
 		bool removedAny = false;
 		for (auto gol : customGOLTypes)
 		{
@@ -311,7 +315,7 @@ void GameModel::BuildMenus()
 				removedAny = true;
 				continue;
 			}
-			Simulation::CustomGOLData gd;
+			CustomGOLData gd;
 			gd.nameString = parts[0];
 			gd.ruleString = parts[1];
 			auto &colour1String = parts[2];
@@ -350,26 +354,25 @@ void GameModel::BuildMenus()
 			Tool * tempTool = new ElementTool(PT_LIFE|PMAPID(gd.rule), gd.nameString, "Custom GOL type: " + gd.ruleString, RGB<uint8_t>::Unpack(gd.colour1), "DEFAULT_PT_LIFECUST_"+gd.nameString.ToAscii(), NULL);
 			menuList[SC_LIFE]->AddTool(tempTool);
 		}
-		sim->SetCustomGOL(newCustomGol);
+		sd.SetCustomGOL(newCustomGol);
 	}
 
 	//Build other menus from wall data
 	for(int i = 0; i < UI_WALLCOUNT; i++)
 	{
-		Tool * tempTool = new WallTool(i, sim->wtypes[i].descs, sim->wtypes[i].colour, sim->wtypes[i].identifier, sim->wtypes[i].textureGen);
+		Tool * tempTool = new WallTool(i, sd.wtypes[i].descs, sd.wtypes[i].colour, sd.wtypes[i].identifier, sd.wtypes[i].textureGen);
 		menuList[SC_WALL]->AddTool(tempTool);
-		//sim->wtypes[i]
 	}
 
 	//Build menu for tools
-	for (size_t i = 0; i < sim->tools.size(); i++)
+	for (size_t i = 0; i < sd.tools.size(); i++)
 	{
 		Tool *tempTool = new Tool(
 			i,
-			sim->tools[i].Name,
-			sim->tools[i].Description,
-			sim->tools[i].Colour,
-			sim->tools[i].Identifier
+			sd.tools[i].Name,
+			sd.tools[i].Description,
+			sd.tools[i].Colour,
+			sd.tools[i].Identifier
 		);
 		menuList[SC_TOOL]->AddTool(tempTool);
 	}

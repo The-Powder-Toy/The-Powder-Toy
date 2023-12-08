@@ -22,7 +22,6 @@
 constexpr int CHANNELS = int(MAX_TEMP - 73) / 100 + 2;
 
 class Snapshot;
-class SimTool;
 class Brush;
 class SimulationSample;
 struct matrix2d;
@@ -37,24 +36,17 @@ class GameSave;
 class Simulation
 {
 public:
-
 	GravityPtr grav;
-	Air * air;
+	std::unique_ptr<Air> air;
 	RNG rng;
 
 	std::vector<sign> signs;
-	std::array<Element, PT_NUM> elements;
 	//Element * elements;
-	std::vector<SimTool> tools;
-	std::vector<unsigned int> platent;
-	std::vector<wall_type> wtypes;
-	std::vector<menu_section> msections;
 
 	int currentTick;
 	int replaceModeSelected;
 	int replaceModeFlags;
 
-	char can_move[PT_NUM][PT_NUM];
 	int debug_nextToUpdate;
 	int debug_mostRecentlyUpdated = -1; // -1 when between full update loops
 	int parts_lastActiveIndex;
@@ -127,7 +119,7 @@ public:
 	void SaveSimOptions(GameSave &gameSave);
 	SimulationSample GetSample(int x, int y);
 
-	std::unique_ptr<Snapshot> CreateSnapshot();
+	std::unique_ptr<Snapshot> CreateSnapshot() const;
 	void Restore(const Snapshot &snap);
 
 	int is_blocking(int t, int x, int y);
@@ -145,18 +137,11 @@ public:
 		float vx, vy;
 	};
 	PlanMoveResult PlanMove(int i, int x, int y, bool update_emap);
-	void init_can_move();
 	bool IsWallBlocking(int x, int y, int type) const;
-	bool IsElement(int type) const {
-		return (type > 0 && type < PT_NUM && elements[type].Enabled);
-	}
-	bool IsElementOrNone(int type) const {
-		return (type >= 0 && type < PT_NUM && elements[type].Enabled);
-	}
 	void create_cherenkov_photon(int pp);
 	void create_gain_photon(int pp);
 	void kill_part(int i);
-	bool FloodFillPmapCheck(int x, int y, int type);
+	bool FloodFillPmapCheck(int x, int y, int type) const;
 	int flood_prop(int x, int y, StructProperty prop, PropertyValue propvalue);
 	bool flood_water(int x, int y, int i);
 	int FloodINST(int x, int y);
@@ -177,7 +162,6 @@ public:
 	void CheckStacking();
 	void BeforeSim();
 	void AfterSim();
-	void rotate_area(int area_x, int area_y, int area_w, int area_h, int invert);
 	void clear_area(int area_x, int area_y, int area_w, int area_h);
 
 	void SetEdgeMode(int newEdgeMode);
@@ -212,10 +196,7 @@ public:
 	void CreateBox(int x1, int y1, int x2, int y2, int c, int flags = -1);
 	int FloodParts(int x, int y, int c, int cm, int flags = -1);
 
-
 	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY);
-
-	int GetParticleType(ByteString type);
 
 	void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
 	void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
@@ -235,29 +216,6 @@ public:
 	// These don't really belong anywhere at the moment, so go here for loop edge mode
 	static int remainder_p(int x, int y);
 	static float remainder_p(float x, float y);
-
-	String ElementResolve(int type, int ctype) const;
-	String BasicParticleInfo(Particle const &sample_part) const;
-
-
-	struct CustomGOLData
-	{
-		int rule, colour1, colour2;
-		String nameString, ruleString;
-
-		inline bool operator <(const CustomGOLData &other) const
-		{
-			return rule < other.rule;
-		}
-	};
-
-private:
-	std::vector<CustomGOLData> customGol;
-
-public:
-	const CustomGOLData *GetCustomGOLByRule(int rule) const;
-	const std::vector<CustomGOLData> GetCustomGol() { return customGol; }
-	void SetCustomGOL(std::vector<CustomGOLData> newCustomGol);
 
 private:
 	CoordStack& getCoordStackSingleton();

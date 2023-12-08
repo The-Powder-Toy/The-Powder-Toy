@@ -49,8 +49,10 @@ void Element::Element_CONV()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int ctype = TYP(parts[i].ctype);
-	if (ctype<=0 || ctype>=PT_NUM || !sim->elements[ctype].Enabled || ctype==PT_CONV)
+	if (ctype<=0 || ctype>=PT_NUM || !elements[ctype].Enabled || ctype==PT_CONV)
 	{
 		for (auto rx = -1; rx <= 1; rx++)
 		{
@@ -76,7 +78,7 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	else
 	{
-		int restrictElement = sim->IsElement(parts[i].tmp) ? parts[i].tmp : 0;
+		int restrictElement = sd.IsElement(parts[i].tmp) ? parts[i].tmp : 0;
 		for (auto rx = -1; rx <= 1; rx++)
 		{
 			for (auto ry = -1; ry <= 1; ry++)

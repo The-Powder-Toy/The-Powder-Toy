@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+#include <array>
 
 #include "SimulationData.h"
 #include "Element.h"
@@ -8,4 +8,4 @@
 #include "ElementNumbers.h"
 #undef ELEMENT_NUMBERS_ENUMERATE
 
-std::vector<Element> const &GetElements();
+std::array<Element, PT_NUM> const &GetElements();

@@ -49,6 +49,8 @@ void Element::Element_DEST()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int rx = sim->rng.between(-2, 2);
 	int ry = sim->rng.between(-2, 2);
 	int r = pmap[y+ry][x+rx];
@@ -81,11 +83,11 @@ static int update(UPDATE_FUNC_ARGS)
 	else if (sim->rng.chance(1, 3))
 	{
 		sim->kill_part(ID(r));
-		parts[i].life -= 4*((sim->elements[rt].Properties&TYPE_SOLID)?3:1);
+		parts[i].life -= 4*((elements[rt].Properties&TYPE_SOLID)?3:1);
 		if (parts[i].life<=0)
 			parts[i].life=1;
 	}
-	else if (sim->elements[rt].HeatConduct)
+	else if (elements[rt].HeatConduct)
 		parts[ID(r)].temp = MAX_TEMP;
 	parts[i].temp=MAX_TEMP;
 	sim->pv[y/CELL][x/CELL]+=80.0f;

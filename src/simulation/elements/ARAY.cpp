@@ -47,6 +47,8 @@ void Element::Element_ARAY()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int short_bray_life = parts[i].life > 0 ? parts[i].life : 30;
 	int long_bray_life = parts[i].life > 0 ? parts[i].life : 1020;
 	for (int rx = -1; rx <= 1; rx++)
@@ -170,7 +172,7 @@ static int update(UPDATE_FUNC_ARGS)
 								if (nyy!=0 || nxx!=0)
 									sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, PT_SPRK);
 
-								if (!(nostop && parts[r].type==PT_SPRK && parts[r].ctype >= 0 && parts[r].ctype < PT_NUM && (sim->elements[parts[r].ctype].Properties&PROP_CONDUCTS)))
+								if (!(nostop && parts[r].type==PT_SPRK && parts[r].ctype >= 0 && parts[r].ctype < PT_NUM && (elements[parts[r].ctype].Properties&PROP_CONDUCTS)))
 									docontinue = 0;
 								else
 									docontinue = 1;

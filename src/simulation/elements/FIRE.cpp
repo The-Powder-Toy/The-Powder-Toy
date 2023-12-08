@@ -54,6 +54,8 @@ void Element::Element_FIRE()
 
 int Element_FIRE_update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int t = parts[i].type;
 	switch (t)
 	{
@@ -131,7 +133,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 				}
 			}
 		}
-		else if ((parts[i].ctype == PT_STNE || !parts[i].ctype) && pres >= 30.0f && (parts[i].temp > sim->elements[PT_ROCK].HighTemperature || pres < sim->elements[PT_ROCK].HighPressure)) // Form ROCK with pressure, if it will stay molten or not immediately break
+		else if ((parts[i].ctype == PT_STNE || !parts[i].ctype) && pres >= 30.0f && (parts[i].temp > elements[PT_ROCK].HighTemperature || pres < elements[PT_ROCK].HighPressure)) // Form ROCK with pressure, if it will stay molten or not immediately break
 		{
 			parts[i].tmp2 = sim->rng.between(0, 10); // Provide tmp2 for color noise
 			parts[i].ctype = PT_ROCK;
@@ -202,7 +204,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 					if (parts[i].ctype == PT_QRTZ && rt == PT_LAVA && parts[ID(r)].ctype == PT_CLST)
 					{
 						float pres = std::max(sim->pv[y/CELL][x/CELL]*10.0f, 0.0f);
-						if (parts[i].temp >= pres+sim->elements[PT_CRMC].HighTemperature+50.0f)
+						if (parts[i].temp >= pres+elements[PT_CRMC].HighTemperature+50.0f)
 						{
 							parts[i].ctype = PT_CRMC;
 							parts[ID(r)].ctype = PT_CRMC;
@@ -219,7 +221,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 						case 1:
 							parts[i].ctype = PT_CLST;
 							// avoid creating CRMC.
-							if (parts[i].temp >= sim->elements[PT_PQRT].HighTemperature * 3)
+							if (parts[i].temp >= elements[PT_PQRT].HighTemperature * 3)
 							{
 								parts[i].ctype = PT_PQRT;
 							}
@@ -241,7 +243,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 					}
 					else if (rt == PT_HEAC && parts[i].ctype == PT_HEAC)
 					{
-						if (parts[ID(r)].temp > sim->elements[PT_HEAC].HighTemperature)
+						if (parts[ID(r)].temp > elements[PT_HEAC].HighTemperature)
 						{
 							sim->part_change_type(ID(r), x+rx, y+ry, PT_LAVA);
 							parts[ID(r)].ctype = PT_HEAC;
@@ -260,18 +262,18 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 					}
 				}
 
-				if ((surround_space || sim->elements[rt].Explosive) &&
-				    sim->elements[rt].Flammable && sim->rng.chance(int(sim->elements[rt].Flammable + (sim->pv[(y+ry)/CELL][(x+rx)/CELL] * 10.0f)), 1000) &&
+				if ((surround_space || elements[rt].Explosive) &&
+				    elements[rt].Flammable && sim->rng.chance(int(elements[rt].Flammable + (sim->pv[(y+ry)/CELL][(x+rx)/CELL] * 10.0f)), 1000) &&
 				    //exceptions, t is the thing causing the spark and rt is what's burning
 				    (t != PT_SPRK || (rt != PT_RBDM && rt != PT_LRBD && rt != PT_INSL)) &&
 				    (t != PT_PHOT || rt != PT_INSL) &&
 				    (rt != PT_SPNG || parts[ID(r)].life == 0))
 				{
 					sim->part_change_type(ID(r), x+rx, y+ry, PT_FIRE);
-					parts[ID(r)].temp = restrict_flt(sim->elements[PT_FIRE].DefaultProperties.temp + (sim->elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
+					parts[ID(r)].temp = restrict_flt(elements[PT_FIRE].DefaultProperties.temp + (elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
 					parts[ID(r)].life = sim->rng.between(180, 259);
 					parts[ID(r)].tmp = parts[ID(r)].ctype = 0;
-					if (sim->elements[rt].Explosive)
+					if (elements[rt].Explosive)
 						sim->pv[y/CELL][x/CELL] += 0.25f * CFDS;
 				}
 			}
@@ -284,6 +286,8 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 
 static int updateLegacy(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int t = parts[i].type;
 	for (auto rx = -2; rx <= 2; rx++)
 	{
@@ -300,10 +304,10 @@ static int updateLegacy(UPDATE_FUNC_ARGS)
 
 				auto lpv = (int)sim->pv[(y+ry)/CELL][(x+rx)/CELL];
 				if (lpv < 1) lpv = 1;
-				if (sim->elements[rt].Meltable &&
+				if (elements[rt].Meltable &&
 				        ((rt!=PT_RBDM && rt!=PT_LRBD) || t!=PT_SPRK)
 				        && ((t!=PT_FIRE&&t!=PT_PLSM) || (rt!=PT_METL && rt!=PT_IRON && rt!=PT_ETRD && rt!=PT_PSCN && rt!=PT_NSCN && rt!=PT_NTCT && rt!=PT_PTCT && rt!=PT_BMTL && rt!=PT_BRMT && rt!=PT_SALT && rt!=PT_INWR))
-				        && sim->rng.chance(sim->elements[rt].Meltable*lpv, 1000))
+				        && sim->rng.chance(elements[rt].Meltable*lpv, 1000))
 				{
 					if (t!=PT_LAVA || parts[i].life>0)
 					{

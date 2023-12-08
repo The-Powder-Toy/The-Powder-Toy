@@ -244,6 +244,7 @@ String TPTScriptInterface::FormatCommand(String command)
 
 AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 {
+	auto &sd = SimulationData::CRef();
 	//Arguments from stack
 	StringType property = eval(words);
 	AnyType selector = eval(words);
@@ -300,7 +301,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 		}
 		else
 		{
-			newValue = m->GetSimulation()->GetParticleType(((StringType)value).Value().ToUtf8());
+			newValue = sd.GetParticleType(((StringType)value).Value().ToUtf8());
 			if (newValue < 0 || newValue >= PT_NUM)
 			{
 				// TODO: add element CAKE to invalidate this
@@ -312,7 +313,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 	}
 	else
 		throw GeneralException("Invalid value for assignment");
-	if (property.Value() == "type" && (newValue < 0 || newValue >= PT_NUM || !sim->elements[newValue].Enabled))
+	if (property.Value() == "type" && (newValue < 0 || newValue >= PT_NUM || !sd.elements[newValue].Enabled))
 		throw GeneralException("Invalid element");
 
 	if (selector.GetType() == TypePoint || selector.GetType() == TypeNumber)
@@ -390,7 +391,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 		if (selector.GetType() == TypeNumber)
 			type = ((NumberType)selector).Value();
 		else if (selector.GetType() == TypeString)
-			type = m->GetSimulation()->GetParticleType(((StringType)selector).Value().ToUtf8());
+			type = sd.GetParticleType(((StringType)selector).Value().ToUtf8());
 
 		if (type<0 || type>=PT_NUM)
 			throw GeneralException("Invalid particle type");
@@ -439,6 +440,7 @@ AnyType TPTScriptInterface::tptS_set(std::deque<String> * words)
 
 AnyType TPTScriptInterface::tptS_create(std::deque<String> * words)
 {
+	auto &sd = SimulationData::CRef();
 	//Arguments from stack
 	AnyType createType = eval(words);
 	PointType position = eval(words);
@@ -449,7 +451,7 @@ AnyType TPTScriptInterface::tptS_create(std::deque<String> * words)
 	if(createType.GetType() == TypeNumber)
 		type = ((NumberType)createType).Value();
 	else if(createType.GetType() == TypeString)
-		type = m->GetSimulation()->GetParticleType(((StringType)createType).Value().ToUtf8());
+		type = sd.GetParticleType(((StringType)createType).Value().ToUtf8());
 	else
 		throw GeneralException("Invalid type");
 
@@ -549,6 +551,7 @@ AnyType TPTScriptInterface::tptS_bubble(std::deque<String> * words)
 
 AnyType TPTScriptInterface::tptS_reset(std::deque<String> * words)
 {
+	auto &sd = SimulationData::CRef();
 	//Arguments from stack
 	StringType reset = eval(words);
 	String resetStr = reset.Value();
@@ -582,7 +585,7 @@ AnyType TPTScriptInterface::tptS_reset(std::deque<String> * words)
 		{
 			if (sim->parts[i].type)
 			{
-				sim->parts[i].temp = sim->elements[sim->parts[i].type].DefaultProperties.temp;
+				sim->parts[i].temp = sd.elements[sim->parts[i].type].DefaultProperties.temp;
 			}
 		}
 	}
