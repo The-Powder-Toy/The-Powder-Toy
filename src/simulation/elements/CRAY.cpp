@@ -116,7 +116,6 @@ static int update(UPDATE_FUNC_ARGS)
 									colored = 0xFF000000;
 								else if (parts[ID(r)].tmp==0)
 								{
-									int Element_FILT_getWavelengths(Particle* cpart);
 									colored = wavelengthToDecoColour(Element_FILT_getWavelengths(&parts[ID(r)]));
 								}
 								else if (colored==0xFF000000)

@@ -13,6 +13,17 @@
 
 class RenderPreset;
 class Simulation;
+class Renderer;
+struct Particle;
+
+struct GraphicsFuncContext
+{
+	const Renderer *ren;
+	const Simulation *sim;
+	RNG rng;
+	const Particle *pipeSubcallCpart;
+	Particle *pipeSubcallTpart;
+};
 
 int HeatToColour(float temp);
 
@@ -43,7 +54,7 @@ public:
 
 	RNG rng;
 
-	Simulation * sim;
+	const Simulation *sim;
 
 	std::vector<unsigned int> render_modes;
 	unsigned int render_mode;
@@ -125,7 +136,7 @@ public:
 
 	static std::unique_ptr<VideoBuffer> WallIcon(int wallID, Vec2<int> size);
 
-	Renderer(Simulation * sim);
+	Renderer(Simulation *newSim);
 
 #define RENDERER_TABLE(name) \
 	static std::vector<RGB<uint8_t>> name; \
@@ -143,8 +154,6 @@ public:
 	RENDERER_TABLE(firwTable)
 #undef RENDERER_TABLE
 	static void PopulateTables();
-
-	bool useGraphicsFunction = false;
 
 private:
 	int gridSize;

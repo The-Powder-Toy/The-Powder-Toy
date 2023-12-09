@@ -8,12 +8,15 @@
 #include "Simulation.h"
 #include "SimulationData.h"
 
-SaveRenderer::SaveRenderer(){
-	sim = new Simulation();
-	ren = new Renderer(sim);
+SaveRenderer::SaveRenderer()
+{
+	sim = std::make_unique<Simulation>();
+	ren = std::make_unique<Renderer>(sim.get());
 	ren->decorations_enable = true;
 	ren->blackDecorations = true;
 }
+
+SaveRenderer::~SaveRenderer() = default;
 
 std::pair<std::unique_ptr<VideoBuffer>, MissingElements> SaveRenderer::Render(const GameSave *save, bool decorations, bool fire, Renderer *renderModeSource)
 {
@@ -57,10 +60,4 @@ std::pair<std::unique_ptr<VideoBuffer>, MissingElements> SaveRenderer::Render(co
 	tempThumb->BlendImage(ren->Data(), 0xFF, ren->Size().OriginRect());
 
 	return { std::move(tempThumb), missingElementTypes };
-}
-
-SaveRenderer::~SaveRenderer()
-{
-	delete ren;
-	delete sim;
 }

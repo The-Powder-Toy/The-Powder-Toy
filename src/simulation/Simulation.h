@@ -201,8 +201,6 @@ public:
 
 	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY);
 
-	void orbitalparts_get(int block1, int block2, int resblock1[], int resblock2[]);
-	void orbitalparts_set(int *block1, int *block2, int resblock1[], int resblock2[]);
 	int get_wavelength_bin(int *wm);
 	struct GetNormalResult
 	{
@@ -216,6 +214,8 @@ public:
 	void clear_sim();
 	Simulation();
 	~Simulation();
+
+	bool useLuaCallbacks = false;
 
 private:
 	CoordStack& getCoordStackSingleton();

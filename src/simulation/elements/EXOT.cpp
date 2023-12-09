@@ -196,7 +196,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	auto c = cpart->tmp2;
 	if (cpart->life < 1001)
 	{
-		if (ren->rng.chance(cpart->tmp2 - 1, 1000))
+		if (gfctx.rng.chance(cpart->tmp2 - 1, 1000))
 		{
 			float frequency = 0.04045f;
 			*colr = int(sin(frequency*c + 4) * 127 + 150);

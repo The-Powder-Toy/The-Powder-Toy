@@ -56,8 +56,8 @@ GameModel::GameModel():
 	decoSpace(0)
 {
 	sim = new Simulation();
+	sim->useLuaCallbacks = true;
 	ren = new Renderer(sim);
-	ren->useGraphicsFunction = true;
 
 	activeTools = regularToolset;
 

@@ -224,8 +224,8 @@ void Renderer::PopulateTables()
 	}
 }
 
-Renderer::Renderer(Simulation * sim):
-	sim(NULL),
+Renderer::Renderer(Simulation *newSim):
+	sim(newSim),
 	render_mode(0),
 	colour_mode(0),
 	display_mode(0),
@@ -245,8 +245,6 @@ Renderer::Renderer(Simulation * sim):
 	gridSize(0)
 {
 	PopulateTables();
-
-	this->sim = sim;
 
 	memset(fire_r, 0, sizeof(fire_r));
 	memset(fire_g, 0, sizeof(fire_g));

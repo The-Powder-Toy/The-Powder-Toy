@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "simulation/orbitalparts.h"
 
 void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR);
 static int update(UPDATE_FUNC_ARGS);
@@ -123,7 +124,7 @@ static int update(UPDATE_FUNC_ARGS)
 		int orbl[4] = {0, 0, 0, 0};	//Orbital locations
 		if (!sim->parts[i].life) parts[i].life = sim->rng.gen();
 		if (!sim->parts[i].ctype) parts[i].ctype = sim->rng.gen();
-		sim->orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
+		orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
 		for (int r = 0; r < 4; r++) {
 			if (orbd[r]>1) {
 				orbd[r] -= 12;
@@ -139,7 +140,7 @@ static int update(UPDATE_FUNC_ARGS)
 				orbl[r] = sim->rng.between(0, 254);
 			}
 		}
-		sim->orbitalparts_set(&parts[i].life, &parts[i].ctype, orbd, orbl);
+		orbitalparts_set(&parts[i].life, &parts[i].ctype, orbd, orbl);
 	} else {
 		parts[i].life = 0;
 		parts[i].ctype = 0;

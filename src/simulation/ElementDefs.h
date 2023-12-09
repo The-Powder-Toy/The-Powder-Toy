@@ -42,8 +42,8 @@ constexpr auto FLAG_PHOTDECO      = UINT32_C(0x00000008); // compatibility with 
 #define UPDATE_FUNC_ARGS Simulation* sim, int i, int x, int y, int surround_space, int nt, Particle *parts, int pmap[YRES][XRES]
 #define UPDATE_FUNC_SUBCALL_ARGS sim, i, x, y, surround_space, nt, parts, pmap
 
-#define GRAPHICS_FUNC_ARGS Renderer * ren, Particle *cpart, int nx, int ny, int *pixel_mode, int* cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb
-#define GRAPHICS_FUNC_SUBCALL_ARGS ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb
+#define GRAPHICS_FUNC_ARGS GraphicsFuncContext &gfctx, const Particle *cpart, int nx, int ny, int *pixel_mode, int* cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb
+#define GRAPHICS_FUNC_SUBCALL_ARGS gfctx, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb
 
 #define ELEMENT_CREATE_FUNC_ARGS Simulation *sim, int i, int x, int y, int t, int v
 

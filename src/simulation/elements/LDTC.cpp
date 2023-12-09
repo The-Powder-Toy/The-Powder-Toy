@@ -151,7 +151,6 @@ static int update(UPDATE_FUNC_ARGS)
 							continue;
 
 						int nx = x + rx, ny = y + ry;
-						int Element_FILT_getWavelengths(Particle* cpart);
 						int photonWl = TYP(rr) == PT_FILT ?
 							Element_FILT_getWavelengths(&parts[ID(rr)]) :
 							parts[ID(rr)].ctype;

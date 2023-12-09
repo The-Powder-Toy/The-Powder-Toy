@@ -99,7 +99,7 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	int rndstore = ren->rng.gen();
+	int rndstore = gfctx.rng.gen();
 	*colr += (rndstore % 10) - 5;
 	rndstore >>= 4;
 	*colg += (rndstore % 10)- 5;

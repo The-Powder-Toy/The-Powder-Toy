@@ -3491,11 +3491,21 @@ static int luaUpdateWrapper(UPDATE_FUNC_ARGS)
 
 static int luaGraphicsWrapper(GRAPHICS_FUNC_ARGS)
 {
+	if (!gfctx.sim->useLuaCallbacks)
+	{
+		return Element::defaultGraphics(GRAPHICS_FUNC_SUBCALL_ARGS);
+	}
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	if (lua_gr_func[cpart->type])
 	{
+		auto *pipeSubcallWcpart = gfctx.pipeSubcallCpart ? luacon_sim->parts + (gfctx.pipeSubcallCpart - gfctx.sim->parts) : nullptr;
+		if (pipeSubcallWcpart)
+		{
+			std::swap(*pipeSubcallWcpart, *gfctx.pipeSubcallTpart);
+			cpart = pipeSubcallWcpart;
+		}
 		int cache = 0, callret;
-		int i = cpart - ren->sim->parts; // pointer arithmetic be like
+		int i = cpart - gfctx.sim->parts; // pointer arithmetic be like
 		lua_rawgeti(luacon_ci->l, LUA_REGISTRYINDEX, lua_gr_func[cpart->type]);
 		lua_pushinteger(luacon_ci->l, i);
 		lua_pushinteger(luacon_ci->l, *colr);
@@ -3530,6 +3540,10 @@ static int luaGraphicsWrapper(GRAPHICS_FUNC_ARGS)
 				*fireb = luaL_optint(luacon_ci->l, -1, *fireb);
 			}
 			lua_pop(luacon_ci->l, 10);
+		}
+		if (pipeSubcallWcpart)
+		{
+			std::swap(*pipeSubcallWcpart, *gfctx.pipeSubcallTpart);
 		}
 		return cache;
 	}

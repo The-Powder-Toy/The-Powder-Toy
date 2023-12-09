@@ -257,7 +257,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	// Charged lith
 	else if (cpart->ctype > 0)
 	{
-		int mult = ren->rng.between(cpart->ctype / 3, cpart->ctype) / 15;
+		int mult = gfctx.rng.between(cpart->ctype / 3, cpart->ctype) / 15;
 		mult = std::min(6, mult);
 		*colr -= 30 * mult;
 		*colb += 20 * mult;

@@ -90,7 +90,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	*colg = int(restrict_flt(64.0f+cpart->ctype, 0, 255));
 	*colb = int(restrict_flt(64.0f+cpart->tmp, 0, 255));
 
-	int rng = ren->rng.between(1, 32); //
+	int rng = gfctx.rng.between(1, 32); //
 	if(((*colr) + (*colg) + (*colb)) > (256 + rng)) {
 		*colr -= 54;
 		*colg -= 54;

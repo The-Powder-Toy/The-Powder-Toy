@@ -3,7 +3,6 @@
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
 int Element_FILT_interactWavelengths(Simulation *sim, Particle* cpart, int origWl);
-int Element_FILT_getWavelengths(Particle* cpart);
 
 void Element::Element_FILT()
 {
@@ -135,7 +134,7 @@ int Element_FILT_interactWavelengths(Simulation *sim, Particle* cpart, int origW
 	}
 }
 
-int Element_FILT_getWavelengths(Particle* cpart)
+int Element_FILT_getWavelengths(const Particle* cpart)
 {
 	if (cpart->ctype&0x3FFFFFFF)
 	{

@@ -8,6 +8,7 @@
 
 class Simulation;
 class Renderer;
+struct GraphicsFuncContext;
 class VideoBuffer;
 struct Particle;
 class Element

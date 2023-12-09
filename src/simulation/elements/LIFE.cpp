@@ -58,10 +58,10 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		colour1 = 0xFFFFFF_rgb;
 	}
 	auto ruleset = cpart->ctype;
-	bool renderDeco = !ren->blackDecorations;
+	bool renderDeco = !gfctx.ren->blackDecorations;
 	if (ruleset >= 0 && ruleset < NGOL)
 	{
-		if (!renderDeco || !ren->decorations_enable)
+		if (!renderDeco || !gfctx.ren->decorations_enable)
 		{
 			colour1 = builtinGol[ruleset].colour;
 			colour2 = builtinGol[ruleset].colour2;

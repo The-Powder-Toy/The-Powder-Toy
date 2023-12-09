@@ -4,6 +4,7 @@ extern const std::array<Vec2<int>, 8> Element_PIPE_offsets;
 void Element_PIPE_transformPatchOffsets(Particle &part, const std::array<int, 8> &offsetMap);
 int Element_PIPE_update(UPDATE_FUNC_ARGS);
 int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS);
+static void props_pipe_to_part(const Particle *pipe, Particle *part, bool STOR);
 void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR);
 static void transfer_part_to_pipe(Particle *part, Particle *pipe);
 static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR);
@@ -368,32 +369,38 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 		}
 		else
 		{
-			// Temp particle used for graphics.
-			Particle tpart = *cpart;
-
-			// Emulate the graphics of stored particle.
-			memset(cpart, 0, sizeof(Particle));
-			cpart->type = t;
-			cpart->temp = tpart.temp;
-			cpart->life = tpart.tmp2;
-			cpart->tmp = tpart.tmp3;
-			cpart->ctype = tpart.tmp4;
-
+			// We emulate the graphics of the stored particle. We need a const Particle *cpart to pass to the graphics function,
+			// but we don't have a Particle that is populated the way the graphics function expects, so we construct a temporary
+			// one and present that to it.
+			//
+			// Native graphics functions are well-behaved and use the cpart we give them, no questions asked, so we can just have
+			// the Particle on stack. Swapping the pointers in cpart with tpart takes care of passing the particle on stack to the
+			// native graphics function. Lua graphics functions are more complicated to appease: they access particle data through the
+			// particle ID, so not only do we have to give them a correctly populated Particle, it also has to be somewhere in Simulation.
+			// luaGraphicsWrapper takes care of this.
 			RGB<uint8_t> colour = elements[t].Colour;
 			*colr = colour.Red;
 			*colg = colour.Green;
 			*colb = colour.Blue;
-			if (elements[t].Graphics)
+			auto *graphics = elements[t].Graphics;
+			if (graphics)
 			{
-				(*(elements[t].Graphics))(ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
+				Particle tpart;
+				props_pipe_to_part(cpart, &tpart, false);
+				auto *prevPipeSubcallCpart = gfctx.pipeSubcallCpart;
+				auto *prevPipeSubcallTpart = gfctx.pipeSubcallTpart;
+				gfctx.pipeSubcallCpart = cpart;
+				gfctx.pipeSubcallTpart = &tpart;
+				cpart = gfctx.pipeSubcallTpart;
+				graphics(GRAPHICS_FUNC_SUBCALL_ARGS);
+				cpart = gfctx.pipeSubcallCpart;
+				gfctx.pipeSubcallCpart = prevPipeSubcallCpart;
+				gfctx.pipeSubcallTpart = prevPipeSubcallTpart;
 			}
 			else
 			{
-				Element::defaultGraphics(ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
+				Element::defaultGraphics(GRAPHICS_FUNC_SUBCALL_ARGS);
 			}
-
-			// Restore original particle data.
-			*cpart = tpart;
 		}
 	}
 	else
@@ -422,7 +429,7 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR)
+static void props_pipe_to_part(const Particle *pipe, Particle *part, bool STOR)
 {
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
@@ -431,12 +438,10 @@ void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Partic
 	if (STOR)
 	{
 		part->type = TYP(pipe->tmp);
-		pipe->tmp = 0;
 	}
 	else
 	{
 		part->type = TYP(pipe->ctype);
-		pipe->ctype = 0;
 	}
 	part->temp = pipe->temp;
 	part->life = pipe->tmp2;
@@ -451,6 +456,19 @@ void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Partic
 	part->tmp2 = 0;
 	part->flags = 0;
 	part->dcolour = 0;
+}
+
+void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR)
+{
+	props_pipe_to_part(pipe, part, STOR);
+	if (STOR)
+	{
+		pipe->tmp = 0;
+	}
+	else
+	{
+		pipe->ctype = 0;
+	}
 }
 
 static void transfer_part_to_pipe(Particle *part, Particle *pipe)
