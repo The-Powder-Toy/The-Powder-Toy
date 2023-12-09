@@ -18,7 +18,7 @@ SaveRenderer::SaveRenderer()
 
 SaveRenderer::~SaveRenderer() = default;
 
-std::pair<std::unique_ptr<VideoBuffer>, MissingElements> SaveRenderer::Render(const GameSave *save, bool decorations, bool fire, Renderer *renderModeSource)
+std::unique_ptr<VideoBuffer> SaveRenderer::Render(const GameSave *save, bool decorations, bool fire, Renderer *renderModeSource)
 {
 	// this function usually runs on a thread different from where element info in SimulationData may be written, so we acquire a read-only lock on it
 	auto &sd = SimulationData::CRef();
@@ -35,7 +35,7 @@ std::pair<std::unique_ptr<VideoBuffer>, MissingElements> SaveRenderer::Render(co
 
 	sim->clear_sim();
 
-	auto missingElementTypes = sim->Load(save, true, { 0, 0 });
+	sim->Load(save, true, { 0, 0 });
 	ren->decorations_enable = true;
 	ren->blackDecorations = !decorations;
 	ren->ClearAccumulation();
@@ -59,5 +59,5 @@ std::pair<std::unique_ptr<VideoBuffer>, MissingElements> SaveRenderer::Render(co
 	auto tempThumb = std::make_unique<VideoBuffer>(save->blockSize * CELL);
 	tempThumb->BlendImage(ren->Data(), 0xFF, ren->Size().OriginRect());
 
-	return { std::move(tempThumb), missingElementTypes };
+	return tempThumb;
 }

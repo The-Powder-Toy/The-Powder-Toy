@@ -5,7 +5,6 @@
 #include <vector>
 #include "common/ExplicitSingleton.h"
 #include "common/String.h"
-#include "MissingElements.h"
 
 class GameSave;
 class VideoBuffer;
@@ -21,5 +20,5 @@ class SaveRenderer: public ExplicitSingleton<SaveRenderer>
 public:
 	SaveRenderer();
 	~SaveRenderer();
-	std::pair<std::unique_ptr<VideoBuffer>, MissingElements> Render(const GameSave *save, bool decorations = true, bool fire = true, Renderer *renderModeSource = nullptr);
+	std::unique_ptr<VideoBuffer> Render(const GameSave *save, bool decorations = true, bool fire = true, Renderer *renderModeSource = nullptr);
 };

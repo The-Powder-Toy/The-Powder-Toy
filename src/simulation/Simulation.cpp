@@ -22,66 +22,14 @@ static float remainder_p(float x, float y)
 	return std::fmod(x, y) + (x>=0 ? 0 : y);
 }
 
-MissingElements Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> blockP) // block coordinates
+void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> blockP) // block coordinates
 {
-	MissingElements missingElements;
 	auto partP = blockP * CELL;
-	unsigned int pmapmask = (1<<save->pmapbits)-1;
-
-	int partMap[PT_NUM];
-	for(int i = 0; i < PT_NUM; i++)
-	{
-		partMap[i] = i;
-	}
 
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
-	if(save->palette.size())
-	{
-		for(int i = 0; i < PT_NUM; i++)
-		{
-			partMap[i] = 0;
-		}
-		for(auto &pi : save->palette)
-		{
-			if (pi.second > 0 && pi.second < PT_NUM)
-			{
-				int myId = 0;
-				for (int i = 0; i < PT_NUM; i++)
-				{
-					if (elements[i].Enabled && elements[i].Identifier == pi.first)
-					{
-						myId = i;
-					}
-				}
-				if (myId)
-				{
-					partMap[pi.second] = myId;
-				}
-				else
-				{
-					missingElements.identifiers.insert(pi);
-				}
-			}
-		}
-	}
-	auto paletteLookup = [&partMap, &missingElements](int type) {
-		if (type > 0 && type < PT_NUM)
-		{
-			auto carriedType = partMap[type];
-			if (!carriedType) // type is not 0 so this shouldn't be 0 either
-			{
-				missingElements.ids.insert(type);
-			}
-			type = carriedType;
-		}
-		return type;
-	};
 
 	RecalcFreeParticles(false);
-
-	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
-	auto &properties = Particle::GetProperties();
 
 	std::map<unsigned int, unsigned int> soapList;
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
@@ -97,24 +45,10 @@ MissingElements Simulation::Load(const GameSave *save, bool includePressure, Vec
 		int x = int(tempPart.x + 0.5f);
 		int y = int(tempPart.y + 0.5f);
 
-
 		// Check various scenarios where we are unable to spawn the element, and set type to 0 to block spawning later
 		if (!InBounds(x, y))
 		{
 			continue;
-		}
-
-		tempPart.type = paletteLookup(tempPart.type);
-		for (auto index : possiblyCarriesType)
-		{
-			if (elements[tempPart.type].CarriesTypeIn & (1U << index))
-			{
-				auto *prop = reinterpret_cast<int *>(reinterpret_cast<char *>(&tempPart) + properties[index].Offset);
-				auto carriedType = *prop & int(pmapmask);
-				auto extra = *prop >> save->pmapbits;
-				carriedType = paletteLookup(carriedType);
-				*prop = PMAP(extra, carriedType);
-			}
 		}
 
 		// Ensure we can spawn this element
@@ -339,8 +273,6 @@ MissingElements Simulation::Load(const GameSave *save, bool includePressure, Vec
 	{
 		air->ApproximateBlockAirMaps();
 	}
-
-	return missingElements;
 }
 
 std::unique_ptr<GameSave> Simulation::Save(bool includePressure, Rect<int> partR) // particle coordinates
@@ -349,8 +281,6 @@ std::unique_ptr<GameSave> Simulation::Save(bool includePressure, Rect<int> partR
 	auto blockP = blockR.TopLeft;
 
 	auto newSave = std::make_unique<GameSave>(blockR.Size());
-	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
-	auto &properties = Particle::GetProperties();
 	newSave->frameCount = frameCount;
 	newSave->rngState = rng.state();
 
@@ -360,7 +290,6 @@ std::unique_ptr<GameSave> Simulation::Save(bool includePressure, Rect<int> partR
 	// Map of soap particles loaded into this save, old ID -> new ID
 	// Now stores all particles, not just SOAP (but still only used for soap)
 	std::map<unsigned int, unsigned int> particleMap;
-	std::set<int> paletteSet;
 
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
@@ -381,21 +310,9 @@ std::unique_ptr<GameSave> Simulation::Save(bool includePressure, Rect<int> partR
 				storedParts++;
 				elementCount[tempPart.type]++;
 
-				paletteSet.insert(tempPart.type);
-				for (auto index : possiblyCarriesType)
-				{
-					if (elements[tempPart.type].CarriesTypeIn & (1U << index))
-					{
-						auto *prop = reinterpret_cast<const int *>(reinterpret_cast<const char *>(&tempPart) + properties[index].Offset);
-						paletteSet.insert(TYP(*prop));
-					}
-				}
 			}
 		}
 	}
-
-	for (int ID : paletteSet)
-		newSave->palette.push_back(GameSave::PaletteItem(elements[ID].Identifier, ID));
 
 	if (storedParts && elementCount[PT_SOAP])
 	{

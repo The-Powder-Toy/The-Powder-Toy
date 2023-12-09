@@ -29,7 +29,7 @@ ThumbnailRendererTask::~ThumbnailRendererTask()
 
 bool ThumbnailRendererTask::doWork()
 {
-	std::tie(thumbnail, std::ignore) = SaveRenderer::Ref().Render(save.get(), decorations, fire);
+	thumbnail = SaveRenderer::Ref().Render(save.get(), decorations, fire);
 	if (thumbnail)
 	{
 		thumbnail->ResizeToFit(size, true);

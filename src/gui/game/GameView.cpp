@@ -1964,7 +1964,7 @@ void GameView::NotifyTransformedPlaceSaveChanged(GameModel *sender)
 {
 	if (sender->GetTransformedPlaceSave())
 	{
-		std::tie(placeSaveThumb, std::ignore) = SaveRenderer::Ref().Render(sender->GetTransformedPlaceSave(), true, true, sender->GetRenderer());
+		placeSaveThumb = SaveRenderer::Ref().Render(sender->GetTransformedPlaceSave(), true, true, sender->GetRenderer());
 		selectMode = PlaceSave;
 		selectPoint2 = mousePosition;
 	}

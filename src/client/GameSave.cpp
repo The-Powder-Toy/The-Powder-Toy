@@ -47,6 +47,83 @@ GameSave::GameSave(const std::vector<char> &data, bool newWantAuthors)
 	}
 }
 
+void GameSave::MapPalette()
+{
+	int partMap[PT_NUM];
+	for(int i = 0; i < PT_NUM; i++)
+	{
+		partMap[i] = i;
+	}
+
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	if(palette.size())
+	{
+		for(int i = 0; i < PT_NUM; i++)
+		{
+			partMap[i] = 0;
+		}
+		for(auto &pi : palette)
+		{
+			if (pi.second > 0 && pi.second < PT_NUM)
+			{
+				int myId = 0;
+				for (int i = 0; i < PT_NUM; i++)
+				{
+					if (elements[i].Enabled && elements[i].Identifier == pi.first)
+					{
+						myId = i;
+					}
+				}
+				if (myId)
+				{
+					partMap[pi.second] = myId;
+				}
+				else
+				{
+					missingElements.identifiers.insert(pi);
+				}
+			}
+		}
+	}
+	auto paletteLookup = [this, &partMap](int type) {
+		if (type > 0 && type < PT_NUM)
+		{
+			auto carriedType = partMap[type];
+			if (!carriedType) // type is not 0 so this shouldn't be 0 either
+			{
+				missingElements.ids.insert(type);
+			}
+			type = carriedType;
+		}
+		return type;
+	};
+
+	unsigned int pmapmask = (1<<pmapbits)-1;
+	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
+	auto &properties = Particle::GetProperties();
+	for (int n = 0; n < NPART && n < particlesCount; n++)
+	{
+		Particle &tempPart = particles[n];
+		if (tempPart.type <= 0 || tempPart.type >= PT_NUM)
+		{
+			continue;
+		}
+		tempPart.type = paletteLookup(tempPart.type);
+		for (auto index : possiblyCarriesType)
+		{
+			if (elements[tempPart.type].CarriesTypeIn & (1U << index))
+			{
+				auto *prop = reinterpret_cast<int *>(reinterpret_cast<char *>(&tempPart) + properties[index].Offset);
+				auto carriedType = *prop & int(pmapmask);
+				auto extra = *prop >> pmapbits;
+				carriedType = paletteLookup(carriedType);
+				*prop = PMAP(extra, carriedType);
+			}
+		}
+	}
+}
+
 void GameSave::Expand(const std::vector<char> &data)
 {
 	try
@@ -68,6 +145,7 @@ void GameSave::Expand(const std::vector<char> &data)
 			std::cerr << "Got Magic number '" << data[0] << data[1] << data[2] << "'" << std::endl;
 			throw ParseException(ParseException::Corrupt, "Invalid save format");
 		}
+		MapPalette();
 	}
 	else
 	{
@@ -1980,6 +2058,9 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	std::vector<unsigned> partsSaveIndex(NPART);
 	unsigned int partsCount = 0;
 	std::fill(&partsSaveIndex[0], &partsSaveIndex[0] + NPART, 0);
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	std::set<int> paletteSet;
 	for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
 		//Find the first particle in this position
@@ -1996,6 +2077,16 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 
 			//Store saved particle index+1 for this partsptr index (0 means not saved)
 			partsSaveIndex[i] = (partsCount++) + 1;
+
+			paletteSet.insert(particles[i].type);
+			for (auto index : possiblyCarriesType)
+			{
+				if (elements[particles[i].type].CarriesTypeIn & (1U << index))
+				{
+					auto *prop = reinterpret_cast<const int *>(reinterpret_cast<const char *>(&particles[i]) + properties[index].Offset);
+					paletteSet.insert(TYP(*prop));
+				}
+			}
 
 			//Type (required)
 			partsData[partsDataLen++] = particles[i].type;
@@ -2250,6 +2341,12 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 		}
 	}
 
+	std::vector<PaletteItem> paletteData;
+	for (int ID : paletteSet)
+	{
+		paletteData.push_back(GameSave::PaletteItem(elements[ID].Identifier, ID));
+	}
+
 	unsigned int soapLinkDataLen = 0;
 	std::vector<unsigned char> soapLinkData(3*soapCount);
 	if (soapCount)
@@ -2381,10 +2478,10 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	{
 		bson_append_binary(&b, "parts", (char)BSON_BIN_USER, (const char *)&partsData[0], partsDataLen);
 
-		if (palette.size())
+		if (paletteData.size())
 		{
 			bson_append_start_array(&b, "palette");
-			for(auto iter = palette.begin(), end = palette.end(); iter != end; ++iter)
+			for(auto iter = paletteData.begin(), end = paletteData.end(); iter != end; ++iter)
 			{
 				bson_append_int(&b, (*iter).first.c_str(), (*iter).second);
 			}
