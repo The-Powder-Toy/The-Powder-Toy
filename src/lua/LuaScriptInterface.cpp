@@ -3287,6 +3287,8 @@ void LuaScriptInterface::LuaSetParticleProperty(lua_State* l, int particleID, St
 int LuaScriptInterface::elements_loadDefault(lua_State * l)
 {
 	auto &sd = SimulationData::Ref();
+	std::unique_lock lk(sd.elementGraphicsMx);
+	auto &elements = sd.elements;
 	auto &builtinElements = GetElements();
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	{
@@ -3304,14 +3306,10 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 			lua_pushnil(l);
 			lua_settable(l, -3);
 
-			{
-				std::unique_lock lk(sd.elementGraphicsMx);
-				auto &elements = sd.elements;
-				if (id < (int)builtinElements.size())
-					elements[id] = builtinElements[id];
-				else
-					elements[id] = Element();
-			}
+			if (id < (int)builtinElements.size())
+				elements[id] = builtinElements[id];
+			else
+				elements[id] = Element();
 
 			tpt_lua_pushByteString(l, identifier);
 			lua_pushinteger(l, id);
@@ -3320,17 +3318,14 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 		}
 		else
 		{
+			for (int i = 0; i < PT_NUM; i++)
 			{
-				std::unique_lock lk(sd.elementGraphicsMx);
-				auto &elements = sd.elements;
-				for (int i = 0; i < PT_NUM; i++)
-				{
-					if (i < (int)builtinElements.size())
-						elements[i] = builtinElements[i];
-					else
-						elements[i] = Element();
-				}
+				if (i < (int)builtinElements.size())
+					elements[i] = builtinElements[i];
+				else
+					elements[i] = Element();
 			}
+
 			lua_pushnil(l);
 			lua_setglobal(l, "elements");
 			lua_pushnil(l);
@@ -3446,6 +3441,10 @@ int LuaScriptInterface::elements_allocate(lua_State * l)
 
 static int luaUpdateWrapper(UPDATE_FUNC_ARGS)
 {
+	if (!sim->useLuaCallbacks)
+	{
+		return 0;
+	}
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	auto &builtinElements = GetElements();
 	auto *builtinUpdate = builtinElements[parts[i].type].Update;
@@ -3552,6 +3551,10 @@ static int luaGraphicsWrapper(GRAPHICS_FUNC_ARGS)
 
 static void luaCreateWrapper(ELEMENT_CREATE_FUNC_ARGS)
 {
+	if (!sim->useLuaCallbacks)
+	{
+		return;
+	}
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	if (luaCreateHandlers[sim->parts[i].type])
 	{
@@ -3571,6 +3574,13 @@ static void luaCreateWrapper(ELEMENT_CREATE_FUNC_ARGS)
 
 static bool luaCreateAllowedWrapper(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
 {
+	if (!sim->useLuaCallbacks)
+	{
+		// Nothing really bad can happen, no callbacks are allowed anyway. The worst thing that can happen
+		// is that a well-crafted save looks odd in previews because it has multiple Element::defaultGraphics-rendered
+		// instances of something that should be limited to one instance.
+		return 1;
+	}
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	bool ret = false;
 	if (luaCreateAllowedHandlers[t])
@@ -3597,6 +3607,10 @@ static bool luaCreateAllowedWrapper(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
 
 static void luaChangeTypeWrapper(ELEMENT_CHANGETYPE_FUNC_ARGS)
 {
+	if (!sim->useLuaCallbacks)
+	{
+		return;
+	}
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	if (luaChangeTypeHandlers[sim->parts[i].type])
 	{
@@ -3616,6 +3630,10 @@ static void luaChangeTypeWrapper(ELEMENT_CHANGETYPE_FUNC_ARGS)
 
 static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 {
+	if (!sim->useLuaCallbacks)
+	{
+		return false;
+	}
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	bool ret = false;
 	if (luaCtypeDrawHandlers[sim->parts[i].type])
@@ -3651,8 +3669,8 @@ int LuaScriptInterface::elements_element(lua_State * l)
 
 	if (lua_gettop(l) > 1)
 	{
-		auto &sd = SimulationData::Ref();
 		{
+			auto &sd = SimulationData::Ref();
 			std::unique_lock lk(sd.elementGraphicsMx);
 			auto &elements = sd.elements;
 			luaL_checktype(l, 2, LUA_TTABLE);
@@ -3748,15 +3766,15 @@ int LuaScriptInterface::elements_element(lua_State * l)
 				elements[id].CtypeDraw = builtinElements[id].CtypeDraw;
 			}
 			lua_pop(l, 1);
+
+			lua_getfield(l, -1, "DefaultProperties");
+			SetDefaultProperties(l, id, lua_gettop(l));
+			lua_pop(l, 1);
+
+			sd.graphicscache[id].isready = 0;
 		}
-
-		lua_getfield(l, -1, "DefaultProperties");
-		SetDefaultProperties(l, id, lua_gettop(l));
-		lua_pop(l, 1);
-
 		luacon_model->BuildMenus();
 		luacon_ci->custom_init_can_move();
-		sd.graphicscache[id].isready = 0;
 
 		return 0;
 	}
@@ -3855,9 +3873,11 @@ int LuaScriptInterface::elements_property(lua_State * l)
 
 	if (lua_gettop(l) > 2)
 	{
+		auto &sd = SimulationData::Ref();
+		std::unique_lock lk(sd.elementGraphicsMx);
+		auto &elements = sd.elements;
 		if (prop != properties.end())
 		{
-			auto &sd = SimulationData::Ref();
 			if (lua_type(l, 3) != LUA_TNIL)
 			{
 				if (prop->Type == StructProperty::TransitionType)
@@ -3868,22 +3888,15 @@ int LuaScriptInterface::elements_property(lua_State * l)
 						return luaL_error(l, "Invalid element");
 					}
 				}
-				{
-					std::unique_lock lk(sd.elementGraphicsMx);
-					auto &elements = sd.elements;
-					intptr_t propertyAddress = (intptr_t)(((unsigned char*)&elements[id]) + prop->Offset);
-					LuaSetProperty(l, *prop, propertyAddress, 3);
-				}
+				intptr_t propertyAddress = (intptr_t)(((unsigned char*)&elements[id]) + prop->Offset);
+				LuaSetProperty(l, *prop, propertyAddress, 3);
+				luacon_model->BuildMenus();
+				luacon_ci->custom_init_can_move();
+				sd.graphicscache[id].isready = 0;
 			}
-
-			luacon_model->BuildMenus();
-			luacon_ci->custom_init_can_move();
-			sd.graphicscache[id].isready = 0;
 		}
 		else if (propertyName == "Update")
 		{
-			auto &sd = SimulationData::Ref();
-			auto &elements = sd.elements;
 			if (lua_type(l, 3) == LUA_TFUNCTION)
 			{
 				switch (luaL_optint(l, 4, 0))
@@ -3912,8 +3925,6 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		}
 		else if (propertyName == "Graphics")
 		{
-			auto &sd = SimulationData::Ref();
-			auto &elements = sd.elements;
 			if (lua_type(l, 3) == LUA_TFUNCTION)
 			{
 				lua_gr_func[id].Assign(l, 3);
@@ -3928,8 +3939,6 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		}
 		else if (propertyName == "Create")
 		{
-			auto &sd = SimulationData::Ref();
-			auto &elements = sd.elements;
 			if (lua_type(l, 3) == LUA_TFUNCTION)
 			{
 				luaCreateHandlers[id].Assign(l, 3);
@@ -3943,8 +3952,6 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		}
 		else if (propertyName == "CreateAllowed")
 		{
-			auto &sd = SimulationData::Ref();
-			auto &elements = sd.elements;
 			if (lua_type(l, 3) == LUA_TFUNCTION)
 			{
 				luaCreateAllowedHandlers[id].Assign(l, 3);
@@ -3958,8 +3965,6 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		}
 		else if (propertyName == "ChangeType")
 		{
-			auto &sd = SimulationData::Ref();
-			auto &elements = sd.elements;
 			if (lua_type(l, 3) == LUA_TFUNCTION)
 			{
 				luaChangeTypeHandlers[id].Assign(l, 3);
@@ -3973,8 +3978,6 @@ int LuaScriptInterface::elements_property(lua_State * l)
 		}
 		else if (propertyName == "CtypeDraw")
 		{
-			auto &sd = SimulationData::Ref();
-			auto &elements = sd.elements;
 			if (lua_type(l, 3) == LUA_TFUNCTION)
 			{
 				luaCtypeDrawHandlers[id].Assign(l, 3);
