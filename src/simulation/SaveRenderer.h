@@ -20,6 +20,5 @@ class SaveRenderer: public ExplicitSingleton<SaveRenderer> {
 public:
 	SaveRenderer();
 	std::pair<std::unique_ptr<VideoBuffer>, MissingElements> Render(const GameSave *save, bool decorations = true, bool fire = true, Renderer *renderModeSource = nullptr);
-	void Flush(int begin, int end);
 	virtual ~SaveRenderer();
 };

@@ -3286,6 +3286,7 @@ void LuaScriptInterface::LuaSetParticleProperty(lua_State* l, int particleID, St
 
 int LuaScriptInterface::elements_loadDefault(lua_State * l)
 {
+	auto &sd = SimulationData::Ref();
 	auto &builtinElements = GetElements();
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	{
@@ -3304,7 +3305,6 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 			lua_settable(l, -3);
 
 			{
-				auto &sd = SimulationData::Ref();
 				std::unique_lock lk(sd.elementGraphicsMx);
 				auto &elements = sd.elements;
 				if (id < (int)builtinElements.size())
@@ -3321,7 +3321,6 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 		else
 		{
 			{
-				auto &sd = SimulationData::Ref();
 				std::unique_lock lk(sd.elementGraphicsMx);
 				auto &elements = sd.elements;
 				for (int i = 0; i < PT_NUM; i++)
@@ -3355,8 +3354,7 @@ int LuaScriptInterface::elements_loadDefault(lua_State * l)
 		}
 	}
 	luacon_ci->custom_init_can_move();
-	std::fill(luacon_ren->graphicscache, luacon_ren->graphicscache+PT_NUM, gcache_item());
-	SaveRenderer::Ref().Flush(0, PT_NUM);
+	sd.graphicscache = std::array<gcache_item, PT_NUM>();
 	return 0;
 }
 
@@ -3639,8 +3637,8 @@ int LuaScriptInterface::elements_element(lua_State * l)
 
 	if (lua_gettop(l) > 1)
 	{
+		auto &sd = SimulationData::Ref();
 		{
-			auto &sd = SimulationData::Ref();
 			std::unique_lock lk(sd.elementGraphicsMx);
 			auto &elements = sd.elements;
 			luaL_checktype(l, 2, LUA_TTABLE);
@@ -3744,8 +3742,7 @@ int LuaScriptInterface::elements_element(lua_State * l)
 
 		luacon_model->BuildMenus();
 		luacon_ci->custom_init_can_move();
-		luacon_ren->graphicscache[id].isready = 0;
-		SaveRenderer::Ref().Flush(id, id + 1);
+		sd.graphicscache[id].isready = 0;
 
 		return 0;
 	}
@@ -3846,6 +3843,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 	{
 		if (prop != properties.end())
 		{
+			auto &sd = SimulationData::Ref();
 			if (lua_type(l, 3) != LUA_TNIL)
 			{
 				if (prop->Type == StructProperty::TransitionType)
@@ -3857,7 +3855,6 @@ int LuaScriptInterface::elements_property(lua_State * l)
 					}
 				}
 				{
-					auto &sd = SimulationData::Ref();
 					std::unique_lock lk(sd.elementGraphicsMx);
 					auto &elements = sd.elements;
 					intptr_t propertyAddress = (intptr_t)(((unsigned char*)&elements[id]) + prop->Offset);
@@ -3867,8 +3864,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 
 			luacon_model->BuildMenus();
 			luacon_ci->custom_init_can_move();
-			luacon_ren->graphicscache[id].isready = 0;
-			SaveRenderer::Ref().Flush(id, id + 1);
+			sd.graphicscache[id].isready = 0;
 		}
 		else if (propertyName == "Update")
 		{
@@ -3914,8 +3910,7 @@ int LuaScriptInterface::elements_property(lua_State * l)
 				lua_gr_func[id].Clear();
 				elements[id].Graphics = builtinElements[id].Graphics;
 			}
-			luacon_ren->graphicscache[id].isready = 0;
-			SaveRenderer::Ref().Flush(id, id + 1);
+			sd.graphicscache[id].isready = 0;
 		}
 		else if (propertyName == "Create")
 		{

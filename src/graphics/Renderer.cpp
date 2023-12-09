@@ -173,6 +173,7 @@ void Renderer::render_parts()
 {
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
+	auto &graphicscache = sd.graphicscache;
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y;
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
 	Particle * parts;
@@ -244,18 +245,21 @@ void Renderer::render_parts()
 				else if(!(colour_mode & COLOUR_BASC))
 				{
 					auto *graphics = useGraphicsFunction ? elements[t].Graphics : nullptr;
-					if (!graphics || graphics(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
+					auto makeReady = !graphics || graphics(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb); //That's a lot of args, a struct might be better
+					if (makeReady && useGraphicsFunction)
 					{
-						graphicscache[t].isready = 1;
-						graphicscache[t].pixel_mode = pixel_mode;
-						graphicscache[t].cola = cola;
-						graphicscache[t].colr = colr;
-						graphicscache[t].colg = colg;
-						graphicscache[t].colb = colb;
-						graphicscache[t].firea = firea;
-						graphicscache[t].firer = firer;
-						graphicscache[t].fireg = fireg;
-						graphicscache[t].fireb = fireb;
+						// I sure hope we locked sd.elementGraphicsMx exclusively
+						auto &wgraphicscache = SimulationData::Ref().graphicscache;
+						wgraphicscache[t].isready = 1;
+						wgraphicscache[t].pixel_mode = pixel_mode;
+						wgraphicscache[t].cola = cola;
+						wgraphicscache[t].colr = colr;
+						wgraphicscache[t].colg = colg;
+						wgraphicscache[t].colb = colb;
+						wgraphicscache[t].firea = firea;
+						wgraphicscache[t].firer = firer;
+						wgraphicscache[t].fireg = fireg;
+						wgraphicscache[t].fireb = fireb;
 					}
 				}
 				if((elements[t].Properties & PROP_HOT_GLOW) && sim->parts[i].temp>(elements[t].HighTemperature-800.0f))

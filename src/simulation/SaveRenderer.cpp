@@ -15,12 +15,6 @@ SaveRenderer::SaveRenderer(){
 	ren->blackDecorations = true;
 }
 
-void SaveRenderer::Flush(int begin, int end)
-{
-	std::lock_guard<std::mutex> gx(renderMutex);
-	std::fill(ren->graphicscache + begin, ren->graphicscache + end, gcache_item());
-}
-
 std::pair<std::unique_ptr<VideoBuffer>, MissingElements> SaveRenderer::Render(const GameSave *save, bool decorations, bool fire, Renderer *renderModeSource)
 {
 	// this function usually runs on a thread different from where element info in SimulationData may be written, so we acquire a read-only lock on it

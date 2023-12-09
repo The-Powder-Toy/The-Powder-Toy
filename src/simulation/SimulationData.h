@@ -9,6 +9,7 @@
 #include "Element.h"
 #include "Particle.h"
 #include "WallType.h"
+#include "graphics/gcache_item.h"
 #include <cstdint>
 #include <vector>
 #include <array>
@@ -173,6 +174,7 @@ class SimulationData : public ExplicitSingleton<SimulationData>
 {
 public:
 	std::array<Element, PT_NUM> elements;
+	std::array<gcache_item, PT_NUM> graphicscache;
 	std::vector<SimTool> tools;
 	std::vector<wall_type> wtypes;
 	std::vector<menu_section> msections;

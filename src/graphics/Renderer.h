@@ -1,5 +1,6 @@
 #pragma once
 #include "Graphics.h"
+#include "gui/game/RenderPreset.h"
 #include "gui/interface/Point.h"
 #include "common/tpt-rand.h"
 #include "SimulationConfig.h"
@@ -12,28 +13,6 @@
 
 class RenderPreset;
 class Simulation;
-
-struct gcache_item
-{
-	int isready;
-	int pixel_mode;
-	int cola, colr, colg, colb;
-	int firea, firer, fireg, fireb;
-	gcache_item() :
-	isready(0),
-	pixel_mode(0),
-	cola(0),
-	colr(0),
-	colg(0),
-	colb(0),
-	firea(0),
-	firer(0),
-	fireg(0),
-	fireb(0)
-	{
-	}
-};
-typedef struct gcache_item gcache_item;
 
 int HeatToColour(float temp);
 
@@ -65,7 +44,6 @@ public:
 	RNG rng;
 
 	Simulation * sim;
-	gcache_item *graphicscache;
 
 	std::vector<unsigned int> render_modes;
 	unsigned int render_mode;
@@ -148,7 +126,6 @@ public:
 	static std::unique_ptr<VideoBuffer> WallIcon(int wallID, Vec2<int> size);
 
 	Renderer(Simulation * sim);
-	~Renderer();
 
 #define RENDERER_TABLE(name) \
 	static std::vector<RGB<uint8_t>> name; \

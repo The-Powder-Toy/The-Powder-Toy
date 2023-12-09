@@ -263,7 +263,7 @@ int luacon_elementwrite(lua_State* l)
 	luacon_model->BuildMenus();
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	luacon_ci->custom_init_can_move();
-	std::fill(&luacon_ren->graphicscache[0], &luacon_ren->graphicscache[0] + PT_NUM, gcache_item());
+	sd.graphicscache = std::array<gcache_item, PT_NUM>();
 
 	return 0;
 }

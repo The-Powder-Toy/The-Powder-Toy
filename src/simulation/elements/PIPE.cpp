@@ -348,22 +348,23 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 {
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
+	auto &graphicscache = sd.graphicscache;
 	int t = TYP(cpart->ctype);
 	if (t>0 && t<PT_NUM && elements[t].Enabled)
 	{
 		if (t == PT_STKM || t == PT_STKM2 || t == PT_FIGH)
 			return 0;
-		if (ren->graphicscache[t].isready)
+		if (graphicscache[t].isready)
 		{
-			*pixel_mode = ren->graphicscache[t].pixel_mode;
-			*cola = ren->graphicscache[t].cola;
-			*colr = ren->graphicscache[t].colr;
-			*colg = ren->graphicscache[t].colg;
-			*colb = ren->graphicscache[t].colb;
-			*firea = ren->graphicscache[t].firea;
-			*firer = ren->graphicscache[t].firer;
-			*fireg = ren->graphicscache[t].fireg;
-			*fireb = ren->graphicscache[t].fireb;
+			*pixel_mode = graphicscache[t].pixel_mode;
+			*cola = graphicscache[t].cola;
+			*colr = graphicscache[t].colr;
+			*colg = graphicscache[t].colg;
+			*colb = graphicscache[t].colb;
+			*firea = graphicscache[t].firea;
+			*firer = graphicscache[t].firer;
+			*fireg = graphicscache[t].fireg;
+			*fireb = graphicscache[t].fireb;
 		}
 		else
 		{
