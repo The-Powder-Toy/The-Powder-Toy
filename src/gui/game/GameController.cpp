@@ -31,6 +31,7 @@
 #include "simulation/Simulation.h"
 #include "simulation/SimulationData.h"
 #include "simulation/Snapshot.h"
+#include "simulation/elements/STKM.h"
 
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
@@ -881,7 +882,6 @@ void GameController::Update()
 				rightSelected = sr;
 		}
 
-		void Element_STKM_set_element(Simulation *sim, playerst *playerp, int element);
 		if (!sim->player.spwn)
 			Element_STKM_set_element(sim, &sim->player, rightSelected);
 		if (!sim->player2.spwn)

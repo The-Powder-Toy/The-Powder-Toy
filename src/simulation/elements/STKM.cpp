@@ -1,14 +1,10 @@
 #include "simulation/ElementCommon.h"
+#include "STKM.h"
 
 static int update(UPDATE_FUNC_ARGS);
-int Element_STKM_graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
 static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS);
 static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
-void Element_STKM_init_legs(Simulation * sim, playerst *playerp, int i);
-int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS);
-void Element_STKM_set_element(Simulation *sim, playerst *playerp, int element);
-void Element_STKM_interact(Simulation *sim, playerst *playerp, int i, int x, int y);
 
 void Element::Element_STKM()
 {

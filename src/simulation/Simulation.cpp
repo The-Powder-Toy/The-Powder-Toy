@@ -9,14 +9,13 @@
 #include "common/tpt-rand.h"
 #include "common/tpt-thread-local.h"
 #include "gui/game/Brush.h"
+#include "elements/EMP.h"
+#include "elements/LOLZ.h"
+#include "elements/STKM.h"
+#include "elements/PIPE.h"
+#include "elements/FILT.h"
 #include <iostream>
 #include <set>
-
-extern int Element_PPIP_ppip_changed;
-extern int Element_LOLZ_RuleTable[9][9];
-extern int Element_LOLZ_lolz[XRES/9][YRES/9];
-extern int Element_LOVE_RuleTable[9][9];
-extern int Element_LOVE_love[XRES/9][YRES/9];
 
 static float remainder_p(float x, float y)
 {
@@ -127,7 +126,6 @@ MissingElements Simulation::Load(const GameSave *save, bool includePressure, Vec
 		{
 			continue;
 		}
-		bool Element_FIGH_CanAlloc(Simulation *sim);
 		if (tempPart.type == PT_FIGH && !Element_FIGH_CanAlloc(this))
 		{
 			continue;
@@ -159,7 +157,6 @@ MissingElements Simulation::Load(const GameSave *save, bool includePressure, Vec
 		elementCount[tempPart.type]++;
 
 
-		void Element_STKM_init_legs(Simulation * sim, playerst *playerp, int i);
 		switch (parts[i].type)
 		{
 		case PT_STKM:
@@ -200,7 +197,6 @@ MissingElements Simulation::Load(const GameSave *save, bool includePressure, Vec
 		case PT_FIGH:
 		{
 			unsigned int oldTmp = parts[i].tmp;
-			int Element_FIGH_Alloc(Simulation *sim);
 			parts[i].tmp = Element_FIGH_Alloc(this);
 			if (parts[i].tmp >= 0)
 			{
@@ -212,7 +208,6 @@ MissingElements Simulation::Load(const GameSave *save, bool includePressure, Vec
 					parts[i].ctype = 0;
 				}
 				fighters[parts[i].tmp].elem = PT_DUST;
-				void Element_FIGH_NewFighter(Simulation *sim, int fighterID, int i, int elem);
 				Element_FIGH_NewFighter(this, parts[i].tmp, i, parts[i].ctype);
 				if (fan)
 					fighters[parts[i].tmp].fan = true;
@@ -1262,7 +1257,6 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		return 0;
 	}
 
-	int Element_FILT_interactWavelengths(Simulation *sim, Particle* cpart, int origWl);
 	if (e == 2) //if occupy same space
 	{
 		switch (parts[i].type)
@@ -3922,7 +3916,6 @@ void Simulation::AfterSim()
 	if (emp_trigger_count)
 	{
 		// pitiful attempt at trying to keep code relating to a given element in the same file
-		void Element_EMP_Trigger(Simulation *sim, int triggerCount);
 		Element_EMP_Trigger(this, emp_trigger_count);
 		emp_trigger_count = 0;
 	}

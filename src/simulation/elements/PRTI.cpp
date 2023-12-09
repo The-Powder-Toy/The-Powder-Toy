@@ -1,10 +1,10 @@
 #include "simulation/ElementCommon.h"
 #include "simulation/orbitalparts.h"
+#include "PIPE.h"
+#include "SOAP.h"
 
-void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR);
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
-void Element_SOAP_detach(Simulation * sim, int i);
 
 void Element::Element_PRTI()
 {

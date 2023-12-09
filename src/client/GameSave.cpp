@@ -3,6 +3,7 @@
 #include "Format.h"
 #include "simulation/Simulation.h"
 #include "simulation/ElementClasses.h"
+#include "simulation/elements/PIPE.h"
 #include "common/tpt-compat.h"
 #include "bson/BSON.h"
 #include "graphics/Renderer.h"
@@ -113,9 +114,6 @@ std::pair<bool, std::vector<char>> GameSave::Serialise() const
 	}
 	return { false, {} };
 }
-
-extern const std::array<Vec2<int>, 8> Element_PIPE_offsets;
-void Element_PIPE_transformPatchOffsets(Particle &part, const std::array<int, 8> &offsetMap);
 
 void GameSave::Transform(Mat2<int> transform, Vec2<int> nudge)
 {

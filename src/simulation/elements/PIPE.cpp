@@ -1,15 +1,11 @@
 #include "simulation/ElementCommon.h"
+#include "PIPE.h"
+#include "SOAP.h"
 
-extern const std::array<Vec2<int>, 8> Element_PIPE_offsets;
-void Element_PIPE_transformPatchOffsets(Particle &part, const std::array<int, 8> &offsetMap);
-int Element_PIPE_update(UPDATE_FUNC_ARGS);
-int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS);
 static void props_pipe_to_part(const Particle *pipe, Particle *part, bool STOR);
-void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR);
 static void transfer_part_to_pipe(Particle *part, Particle *pipe);
 static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR);
 static void pushParticle(Simulation * sim, int i, int count, int original);
-void Element_SOAP_detach(Simulation * sim, int i);
 
 void Element::Element_PIPE()
 {

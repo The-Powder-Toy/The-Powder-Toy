@@ -1,5 +1,5 @@
 #include "simulation/ElementCommon.h"
-#include <iostream>
+#include "FILT.h"
 
 static int update(UPDATE_FUNC_ARGS);
 

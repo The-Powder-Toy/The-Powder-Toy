@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
+#include "SOAP.h"
 
-void Element_SOAP_detach(Simulation * sim, int i);
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);

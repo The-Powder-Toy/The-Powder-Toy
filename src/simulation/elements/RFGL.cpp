@@ -1,6 +1,5 @@
 #include "simulation/ElementCommon.h"
-
-int Element_RFRG_update(UPDATE_FUNC_ARGS);
+#include "RFRG.h"
 
 void Element::Element_RFGL()
 {

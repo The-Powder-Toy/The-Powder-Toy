@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "FILT.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);

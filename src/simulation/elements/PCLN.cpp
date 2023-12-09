@@ -1,8 +1,8 @@
 #include "simulation/ElementCommon.h"
+#include "PCLN.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
-bool Element_PCLN_ctypeDraw(CTYPEDRAW_FUNC_ARGS);
 
 void Element::Element_PCLN()
 {

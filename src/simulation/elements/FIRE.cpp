@@ -1,7 +1,7 @@
 #include "simulation/ElementCommon.h"
+#include "FIRE.h"
 #include <algorithm>
 
-int Element_FIRE_update(UPDATE_FUNC_ARGS);
 static int updateLegacy(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);

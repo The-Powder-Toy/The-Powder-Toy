@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "FILT.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -130,7 +131,6 @@ static int update(UPDATE_FUNC_ARGS)
 							{
 								if (parts[r].tmp != 6)
 								{
-									int Element_FILT_interactWavelengths(Simulation *sim, Particle* cpart, int origWl);
 									colored = Element_FILT_interactWavelengths(sim, &parts[r], colored);
 									if (!colored)
 										break;

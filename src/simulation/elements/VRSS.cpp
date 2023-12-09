@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
+#include "VIRS.h"
 
-int Element_VIRS_update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 
 void Element::Element_VRSS()

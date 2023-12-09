@@ -1,6 +1,7 @@
 #include "simulation/ElementCommon.h"
+#include "FIRE.h"
+#include "FILT.h"
 
-int Element_FIRE_update(UPDATE_FUNC_ARGS);
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
@@ -151,7 +152,6 @@ static void create(ELEMENT_CREATE_FUNC_ARGS)
 	float a = sim->rng.between(0, 7) * 0.78540f;
 	sim->parts[i].vx = 3.0f * cosf(a);
 	sim->parts[i].vy = 3.0f * sinf(a);
-	int Element_FILT_interactWavelengths(Simulation *sim, Particle* cpart, int origWl);
 	if (TYP(sim->pmap[y][x]) == PT_FILT)
 		sim->parts[i].ctype = Element_FILT_interactWavelengths(sim, &sim->parts[ID(sim->pmap[y][x])], sim->parts[i].ctype);
 }

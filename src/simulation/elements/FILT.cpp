@@ -1,8 +1,8 @@
 #include "simulation/ElementCommon.h"
+#include "FILT.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
-int Element_FILT_interactWavelengths(Simulation *sim, Particle* cpart, int origWl);
 
 void Element::Element_FILT()
 {

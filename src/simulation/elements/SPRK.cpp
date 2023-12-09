@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
+#include "NTCT.h"
+#include "PIPE.h"
+#include "FIRE.h"
+#include "ETRD.h"
 
-int Element_FIRE_update(UPDATE_FUNC_ARGS);
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 
@@ -83,13 +86,11 @@ static int update(UPDATE_FUNC_ARGS)
 		return 1;
 	case PT_NTCT:
 	case PT_PTCT:
-		int Element_NTCT_update(UPDATE_FUNC_ARGS);
 		Element_NTCT_update(UPDATE_FUNC_SUBCALL_ARGS);
 		break;
 	case PT_ETRD:
 		if (parts[i].life==1)
 		{
-			int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId);
 			auto nearp = Element_ETRD_nearestSparkablePart(sim, i);
 			if (nearp!=-1 && sim->parts_avg(i, nearp, PT_INSL)!=PT_INSL)
 			{
@@ -247,7 +248,6 @@ static int update(UPDATE_FUNC_ARGS)
 				case PT_PPIP:
 					if (parts[i].life == 3 && pavg!=PT_INSL)
 					{
-						void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy);
 						if (sender == PT_NSCN || sender == PT_PSCN || sender == PT_INST)
 							Element_PPIP_flood_trigger(sim, x+rx, y+ry, sender);
 					}
