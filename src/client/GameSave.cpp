@@ -59,9 +59,12 @@ void GameSave::MapPalette()
 	auto &elements = sd.elements;
 	if(palette.size())
 	{
-		for(int i = 0; i < PT_NUM; i++)
+		if (version >= Version(98, 0))
 		{
-			partMap[i] = 0;
+			for(int i = 0; i < PT_NUM; i++)
+			{
+				partMap[i] = 0;
+			}
 		}
 		for(auto &pi : palette)
 		{
