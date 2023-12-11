@@ -187,7 +187,7 @@ void SimulationData::init_can_move()
 			can_move[movingType][PT_SAWD] = 0;
 
 		// Let most non-solids pass through PAPR
-        if (elements[movingType].Properties & (TYPE_GAS | TYPE_PART | TYPE_LIQUID))
+        if (elements[movingType].Properties & (TYPE_GAS | TYPE_PART | TYPE_LIQUID) && (movingType != PT_FIRE && movingType != PT_SMKE))
             can_move[movingType][PT_PAPR] = 2;
 	}
 	//a list of lots of things PHOT can move through

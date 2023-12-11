@@ -3330,9 +3330,9 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 					photons[y][x] = PMAP(i, t);
 				else
 				{
-					// Particles are sometimes allowed to go inside INVS and FILT
+					// Particles are sometimes allowed to go inside INVS, FILT, and PAPR
 					// To make particles collide correctly when inside these elements, these elements must not overwrite an existing pmap entry from particles inside them
-					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT))
+					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT && t != PT_PAPR))
 						pmap[y][x] = PMAP(i, t);
 					// (there are a few exceptions, including energy particles - currently no limit on stacking those)
 					if (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH && t!=PT_PLSM)
