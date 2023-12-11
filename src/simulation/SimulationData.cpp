@@ -185,6 +185,10 @@ void SimulationData::init_can_move()
 		//SAWD cannot be displaced by other powders
 		if (elements[movingType].Properties & TYPE_PART)
 			can_move[movingType][PT_SAWD] = 0;
+
+		// Let most non-solids pass through PAPR
+        if (elements[movingType].Properties & (TYPE_GAS | TYPE_PART | TYPE_LIQUID))
+            can_move[movingType][PT_PAPR] = 2;
 	}
 	//a list of lots of things PHOT can move through
 	// TODO: replace with property

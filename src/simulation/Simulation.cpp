@@ -1094,6 +1094,10 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr) const
 					return 0;
 			}
 			break;
+		case PT_PAPR:
+			// May allow PAPR to block particles when marked? Or would that be too contrived?
+			result = 2;
+			break;
 		default:
 			// This should never happen
 			// If it were to happen, try_move would interpret a 3 as a 1

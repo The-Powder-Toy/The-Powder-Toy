@@ -8,8 +8,8 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 // Additionally, it can be read and written to by ARAY.
 
 // Property usage:
-// life: Temporary read/write state for ARAY interaction
-// tmp: Written color value. If dcolour is not black, it gets copied here. 1 bit alpha
+// life: Written color value. If dcolour is not black, it gets copied here. 1 bit alpha
+// tmp: Temporary read/write state for ARAY interaction
 // tmp2: Singe level
 
 void Element::Element_PAPR()
@@ -58,6 +58,7 @@ void Element::Element_PAPR()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	// Char when above burning temperature
 	if (parts[i].temp > 450 && parts[i].temp >= parts[i].tmp2)
 	{
 		parts[i].tmp2 = (int)parts[i].temp;
@@ -73,7 +74,6 @@ static int update(UPDATE_FUNC_ARGS)
 			if (np >= 0)
 			{
 				parts[np].life = 70;
-				// parts[np].temp = parts[i].temp;
 			}
 		}
 	}
@@ -82,6 +82,7 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
+	// Darken when burnt
 	float maxtemp = std::max((float)cpart->tmp2, cpart->temp);
 	if (maxtemp > 450)
 	{
