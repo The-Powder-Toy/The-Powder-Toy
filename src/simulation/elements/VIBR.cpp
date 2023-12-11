@@ -1,7 +1,5 @@
 #include "simulation/ElementCommon.h"
-
-int Element_VIBR_update(UPDATE_FUNC_ARGS);
-int Element_VIBR_graphics(GRAPHICS_FUNC_ARGS);
+#include "VIBR.h"
 
 void Element::Element_VIBR()
 {
@@ -50,6 +48,8 @@ void Element::Element_VIBR()
 
 int Element_VIBR_update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int rndstore = 0;
 	if (!parts[i].life) //if not exploding
 	{
@@ -89,7 +89,7 @@ int Element_VIBR_update(UPDATE_FUNC_ARGS)
 			auto ry = (rndstore>>2)%3-1;
 			rndstore = rndstore >> 4;
 			auto r = pmap[y+ry][x+rx];
-			if (TYP(r) && TYP(r) != PT_BREC && (sim->elements[TYP(r)].Properties&PROP_CONDUCTS) && !parts[ID(r)].life)
+			if (TYP(r) && TYP(r) != PT_BREC && (elements[TYP(r)].Properties&PROP_CONDUCTS) && !parts[ID(r)].life)
 			{
 				parts[ID(r)].life = 4;
 				parts[ID(r)].ctype = TYP(r);
@@ -102,7 +102,7 @@ int Element_VIBR_update(UPDATE_FUNC_ARGS)
 			auto rx = rndstore%7-3;
 			auto ry = (rndstore>>3)%7-3;
 			auto r = pmap[y+ry][x+rx];
-			if (TYP(r) && TYP(r)!=PT_VIBR  && TYP(r)!=PT_BVBR && sim->elements[TYP(r)].HeatConduct && (TYP(r)!=PT_HSWC||parts[ID(r)].life==10))
+			if (TYP(r) && TYP(r)!=PT_VIBR  && TYP(r)!=PT_BVBR && elements[TYP(r)].HeatConduct && (TYP(r)!=PT_HSWC||parts[ID(r)].life==10))
 			{
 				parts[ID(r)].temp += parts[i].tmp*3;
 				parts[i].tmp = 0;

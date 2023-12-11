@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
+#include "NTCT.h"
+#include "PIPE.h"
+#include "FIRE.h"
+#include "ETRD.h"
 
-int Element_FIRE_update(UPDATE_FUNC_ARGS);
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 
@@ -52,6 +55,8 @@ void Element::Element_SPRK()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int ct = parts[i].ctype;
 	Element_FIRE_update(UPDATE_FUNC_SUBCALL_ARGS);
 
@@ -59,7 +64,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		if (ct==PT_WATR||ct==PT_SLTW||ct==PT_PSCN||ct==PT_NSCN||ct==PT_ETRD||ct==PT_INWR)
 			parts[i].temp = R_TEMP + 273.15f;
-		if (ct<=0 || ct>=PT_NUM || !sim->elements[parts[i].ctype].Enabled)
+		if (ct<=0 || ct>=PT_NUM || !elements[parts[i].ctype].Enabled)
 			ct = PT_METL;
 		parts[i].ctype = PT_NONE;
 		parts[i].life = 4;
@@ -81,13 +86,11 @@ static int update(UPDATE_FUNC_ARGS)
 		return 1;
 	case PT_NTCT:
 	case PT_PTCT:
-		int Element_NTCT_update(UPDATE_FUNC_ARGS);
 		Element_NTCT_update(UPDATE_FUNC_SUBCALL_ARGS);
 		break;
 	case PT_ETRD:
 		if (parts[i].life==1)
 		{
-			int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId);
 			auto nearp = Element_ETRD_nearestSparkablePart(sim, i);
 			if (nearp!=-1 && sim->parts_avg(i, nearp, PT_INSL)!=PT_INSL)
 			{
@@ -245,7 +248,6 @@ static int update(UPDATE_FUNC_ARGS)
 				case PT_PPIP:
 					if (parts[i].life == 3 && pavg!=PT_INSL)
 					{
-						void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy);
 						if (sender == PT_NSCN || sender == PT_PSCN || sender == PT_INST)
 							Element_PPIP_flood_trigger(sim, x+rx, y+ry, sender);
 					}
@@ -271,7 +273,7 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 
 				if (pavg == PT_INSL) continue; //Insulation blocks everything past here
-				if (!((sim->elements[receiver].Properties&PROP_CONDUCTS)||receiver==PT_INST||receiver==PT_QRTZ)) continue; //Stop non-conducting receivers, allow INST and QRTZ as special cases
+				if (!((elements[receiver].Properties&PROP_CONDUCTS)||receiver==PT_INST||receiver==PT_QRTZ)) continue; //Stop non-conducting receivers, allow INST and QRTZ as special cases
 				if (abs(rx)+abs(ry)>=4 &&sender!=PT_SWCH&&receiver!=PT_SWCH) continue; //Only switch conducts really far
 				if (receiver==sender && receiver!=PT_INST && receiver!=PT_QRTZ) goto conduct; //Everything conducts to itself, except INST.
 

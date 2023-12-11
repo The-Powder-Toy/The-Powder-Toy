@@ -224,8 +224,8 @@ void Renderer::PopulateTables()
 	}
 }
 
-Renderer::Renderer(Simulation * sim):
-	sim(NULL),
+Renderer::Renderer(Simulation *newSim):
+	sim(newSim),
 	render_mode(0),
 	colour_mode(0),
 	display_mode(0),
@@ -245,8 +245,6 @@ Renderer::Renderer(Simulation * sim):
 	gridSize(0)
 {
 	PopulateTables();
-
-	this->sim = sim;
 
 	memset(fire_r, 0, sizeof(fire_r));
 	memset(fire_g, 0, sizeof(fire_g));
@@ -322,10 +320,6 @@ Renderer::Renderer(Simulation * sim):
 		{ },
 		COLOUR_LIFE
 	});
-
-	//Prepare the graphics cache
-	graphicscache = new gcache_item[PT_NUM];
-	std::fill(&graphicscache[0], &graphicscache[0] + PT_NUM, gcache_item());
 
 	prepare_alpha(CELL, 1.0f);
 }
@@ -464,11 +458,6 @@ VideoBuffer Renderer::DumpFrame()
 	VideoBuffer newBuffer(RES);
 	newBuffer.BlendImage(video.data(), 0xFF, Size().OriginRect());
 	return newBuffer;
-}
-
-Renderer::~Renderer()
-{
-	delete[] graphicscache;
 }
 
 template struct RasterDrawMethods<Renderer>;

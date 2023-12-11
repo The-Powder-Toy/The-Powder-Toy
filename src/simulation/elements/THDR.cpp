@@ -50,6 +50,8 @@ void Element::Element_THDR()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	bool kill=false;
 	for (auto rx = -2; rx <= 2; rx++)
 	{
@@ -61,7 +63,7 @@ static int update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 				auto rt = TYP(r);
-				if ((sim->elements[TYP(r)].Properties&PROP_CONDUCTS) && parts[ID(r)].life==0 && !(rt==PT_WATR||rt==PT_SLTW) && parts[ID(r)].ctype!=PT_SPRK)
+				if ((elements[TYP(r)].Properties&PROP_CONDUCTS) && parts[ID(r)].life==0 && !(rt==PT_WATR||rt==PT_SLTW) && parts[ID(r)].ctype!=PT_SPRK)
 				{
 					parts[ID(r)].ctype = parts[ID(r)].type;
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);

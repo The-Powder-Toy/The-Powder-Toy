@@ -61,3 +61,5 @@ constexpr float GLASS_IOR  = 1.9f;
 constexpr float GLASS_DISP = 0.07f;
 
 constexpr float R_TEMP = 22;
+
+constexpr bool LATENTHEAT = false;

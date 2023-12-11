@@ -1,14 +1,11 @@
 #include "simulation/ElementCommon.h"
+#include "PIPE.h"
+#include "SOAP.h"
 
-extern const std::array<Vec2<int>, 8> Element_PIPE_offsets;
-void Element_PIPE_transformPatchOffsets(Particle &part, const std::array<int, 8> &offsetMap);
-int Element_PIPE_update(UPDATE_FUNC_ARGS);
-int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS);
-void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR);
+static void props_pipe_to_part(const Particle *pipe, Particle *part, bool STOR);
 static void transfer_part_to_pipe(Particle *part, Particle *pipe);
 static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR);
 static void pushParticle(Simulation * sim, int i, int count, int original);
-void Element_SOAP_detach(Simulation * sim, int i);
 
 void Element::Element_PIPE()
 {
@@ -123,7 +120,9 @@ static unsigned int nextColor(unsigned int flags)
 
 int Element_PIPE_update(UPDATE_FUNC_ARGS)
 {
-	if (parts[i].ctype && !sim->elements[TYP(parts[i].ctype)].Enabled)
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	if (parts[i].ctype && !elements[TYP(parts[i].ctype)].Enabled)
 		parts[i].ctype = 0;
 	if (parts[i].tmp & PPIP_TMPFLAG_TRIGGERS)
 	{
@@ -259,14 +258,14 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 					}
 				}
 				//try eating particle at entrance
-				else if (!TYP(parts[i].ctype) && (sim->elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
+				else if (!TYP(parts[i].ctype) && (elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 				{
 					if (TYP(r)==PT_SOAP)
 						Element_SOAP_detach(sim, ID(r));
 					transfer_part_to_pipe(parts+(ID(r)), parts+i);
 					sim->kill_part(ID(r));
 				}
-				else if (!TYP(parts[i].ctype) && TYP(r)==PT_STOR && sim->IsElement(parts[ID(r)].tmp) && (sim->elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
+				else if (!TYP(parts[i].ctype) && TYP(r)==PT_STOR && sd.IsElement(parts[ID(r)].tmp) && (elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 				{
 					// STOR stores properties in the same places as PIPE does
 					transfer_pipe_to_pipe(parts+(ID(r)), parts+i, true);
@@ -344,51 +343,60 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 
 int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	auto &graphicscache = sd.graphicscache;
 	int t = TYP(cpart->ctype);
-	if (t>0 && t<PT_NUM && ren->sim->elements[t].Enabled)
+	if (t>0 && t<PT_NUM && elements[t].Enabled)
 	{
 		if (t == PT_STKM || t == PT_STKM2 || t == PT_FIGH)
 			return 0;
-		if (ren->graphicscache[t].isready)
+		if (graphicscache[t].isready)
 		{
-			*pixel_mode = ren->graphicscache[t].pixel_mode;
-			*cola = ren->graphicscache[t].cola;
-			*colr = ren->graphicscache[t].colr;
-			*colg = ren->graphicscache[t].colg;
-			*colb = ren->graphicscache[t].colb;
-			*firea = ren->graphicscache[t].firea;
-			*firer = ren->graphicscache[t].firer;
-			*fireg = ren->graphicscache[t].fireg;
-			*fireb = ren->graphicscache[t].fireb;
+			*pixel_mode = graphicscache[t].pixel_mode;
+			*cola = graphicscache[t].cola;
+			*colr = graphicscache[t].colr;
+			*colg = graphicscache[t].colg;
+			*colb = graphicscache[t].colb;
+			*firea = graphicscache[t].firea;
+			*firer = graphicscache[t].firer;
+			*fireg = graphicscache[t].fireg;
+			*fireb = graphicscache[t].fireb;
 		}
 		else
 		{
-			// Temp particle used for graphics.
-			Particle tpart = *cpart;
-
-			// Emulate the graphics of stored particle.
-			memset(cpart, 0, sizeof(Particle));
-			cpart->type = t;
-			cpart->temp = tpart.temp;
-			cpart->life = tpart.tmp2;
-			cpart->tmp = tpart.tmp3;
-			cpart->ctype = tpart.tmp4;
-
-			RGB<uint8_t> colour = ren->sim->elements[t].Colour;
+			// We emulate the graphics of the stored particle. We need a const Particle *cpart to pass to the graphics function,
+			// but we don't have a Particle that is populated the way the graphics function expects, so we construct a temporary
+			// one and present that to it.
+			//
+			// Native graphics functions are well-behaved and use the cpart we give them, no questions asked, so we can just have
+			// the Particle on stack. Swapping the pointers in cpart with tpart takes care of passing the particle on stack to the
+			// native graphics function. Lua graphics functions are more complicated to appease: they access particle data through the
+			// particle ID, so not only do we have to give them a correctly populated Particle, it also has to be somewhere in Simulation.
+			// luaGraphicsWrapper takes care of this.
+			RGB<uint8_t> colour = elements[t].Colour;
 			*colr = colour.Red;
 			*colg = colour.Green;
 			*colb = colour.Blue;
-			if (ren->sim->elements[t].Graphics)
+			auto *graphics = elements[t].Graphics;
+			if (graphics)
 			{
-				(*(ren->sim->elements[t].Graphics))(ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
+				Particle tpart;
+				props_pipe_to_part(cpart, &tpart, false);
+				auto *prevPipeSubcallCpart = gfctx.pipeSubcallCpart;
+				auto *prevPipeSubcallTpart = gfctx.pipeSubcallTpart;
+				gfctx.pipeSubcallCpart = cpart;
+				gfctx.pipeSubcallTpart = &tpart;
+				cpart = gfctx.pipeSubcallTpart;
+				graphics(GRAPHICS_FUNC_SUBCALL_ARGS);
+				cpart = gfctx.pipeSubcallCpart;
+				gfctx.pipeSubcallCpart = prevPipeSubcallCpart;
+				gfctx.pipeSubcallTpart = prevPipeSubcallTpart;
 			}
 			else
 			{
-				Element::defaultGraphics(ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb);
+				Element::defaultGraphics(GRAPHICS_FUNC_SUBCALL_ARGS);
 			}
-
-			// Restore original particle data.
-			*cpart = tpart;
 		}
 	}
 	else
@@ -417,26 +425,26 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR)
+static void props_pipe_to_part(const Particle *pipe, Particle *part, bool STOR)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	// STOR also calls this function to move particles from STOR to PRTI
 	// PIPE was changed, so now PIPE and STOR don't use the same particle storage format
 	if (STOR)
 	{
 		part->type = TYP(pipe->tmp);
-		pipe->tmp = 0;
 	}
 	else
 	{
 		part->type = TYP(pipe->ctype);
-		pipe->ctype = 0;
 	}
 	part->temp = pipe->temp;
 	part->life = pipe->tmp2;
 	part->tmp = pipe->tmp3;
 	part->ctype = pipe->tmp4;
 
-	if (!(sim->elements[part->type].Properties & TYPE_ENERGY))
+	if (!(elements[part->type].Properties & TYPE_ENERGY))
 	{
 		part->vx = 0.0f;
 		part->vy = 0.0f;
@@ -444,6 +452,19 @@ void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Partic
 	part->tmp2 = 0;
 	part->flags = 0;
 	part->dcolour = 0;
+}
+
+void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR)
+{
+	props_pipe_to_part(pipe, part, STOR);
+	if (STOR)
+	{
+		pipe->tmp = 0;
+	}
+	else
+	{
+		pipe->ctype = 0;
+	}
 }
 
 static void transfer_part_to_pipe(Particle *part, Particle *pipe)

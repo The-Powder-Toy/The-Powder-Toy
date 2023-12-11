@@ -26,11 +26,14 @@ void initLegacyProps()
 	std::vector<StructProperty> properties = Element::GetProperties();
 	for (auto prop : properties)
 	{
+		// TODO: move aliases to the property table in Element.cpp?
 		if (prop.Name == "MenuVisible")
 			legacyPropNames.insert(std::pair<ByteString, StructProperty>("menu", prop));
 		else if (prop.Name == "PhotonReflectWavelengths")
 			continue;
 		else if (prop.Name == "CarriesTypeIn")
+			continue;
+		else if (prop.Name == "LatentHeat")
 			continue;
 		else if (prop.Name == "Temperature")
 			legacyPropNames.insert(std::pair<ByteString, StructProperty>("heat", prop));
@@ -152,6 +155,8 @@ int luacon_partswrite(lua_State* l)
 
 int luacon_transitionread(lua_State* l)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	ByteString key = tpt_lua_optByteString(l, 2, "");
 	if (legacyTransitionNames.find(key) == legacyTransitionNames.end())
 		return luaL_error(l, "Invalid property");
@@ -162,12 +167,12 @@ int luacon_transitionread(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (!luacon_sim->IsElement(i))
+	if (!sd.IsElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
 
-	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[i]) + prop.Offset);
+	intptr_t propertyAddress = (intptr_t)(((const unsigned char*)&elements[i]) + prop.Offset);
 	LuaScriptInterface::LuaGetProperty(l, prop, propertyAddress);
 
 	return 1;
@@ -175,6 +180,8 @@ int luacon_transitionread(lua_State* l)
 
 int luacon_transitionwrite(lua_State* l)
 {
+	auto &sd = SimulationData::Ref();
+	auto &elements = sd.elements;
 	ByteString key = tpt_lua_optByteString(l, 2, "");
 	if (legacyTransitionNames.find(key) == legacyTransitionNames.end())
 		return luaL_error(l, "Invalid property");
@@ -185,7 +192,7 @@ int luacon_transitionwrite(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (!luacon_sim->IsElement(i))
+	if (!sd.IsElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
@@ -193,13 +200,13 @@ int luacon_transitionwrite(lua_State* l)
 	if (prop.Type == StructProperty::TransitionType)
 	{
 		int type = luaL_checkinteger(l, 3);
-		if (!luacon_sim->IsElementOrNone(type) && type != NT && type != ST)
+		if (!sd.IsElementOrNone(type) && type != NT && type != ST)
 		{
 			return luaL_error(l, "Invalid element");
 		}
 	}
 
-	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[i]) + prop.Offset);
+	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&elements[i]) + prop.Offset);
 	LuaScriptInterface::LuaSetProperty(l, prop, propertyAddress, 3);
 
 	return 0;
@@ -207,6 +214,8 @@ int luacon_transitionwrite(lua_State* l)
 
 int luacon_elementread(lua_State* l)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	ByteString key = tpt_lua_optByteString(l, 2, "");
 	if (legacyPropNames.find(key) == legacyPropNames.end())
 		return luaL_error(l, "Invalid property");
@@ -217,12 +226,12 @@ int luacon_elementread(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (!luacon_sim->IsElement(i))
+	if (!sd.IsElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
 
-	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[i]) + prop.Offset);
+	intptr_t propertyAddress = (intptr_t)(((const unsigned char*)&elements[i]) + prop.Offset);
 	LuaScriptInterface::LuaGetProperty(l, prop, propertyAddress);
 
 	return 1;
@@ -230,6 +239,9 @@ int luacon_elementread(lua_State* l)
 
 int luacon_elementwrite(lua_State* l)
 {
+	auto &sd = SimulationData::Ref();
+	std::unique_lock lk(sd.elementGraphicsMx);
+	auto &elements = sd.elements;
 	ByteString key = tpt_lua_optByteString(l, 2, "");
 	if (legacyPropNames.find(key) == legacyPropNames.end())
 		return luaL_error(l, "Invalid property");
@@ -240,18 +252,18 @@ int luacon_elementwrite(lua_State* l)
 	lua_rawget(l, 1);
 	int i = lua_tointeger (l, lua_gettop(l));
 	lua_pop(l, 1);
-	if (!luacon_sim->IsElement(i))
+	if (!sd.IsElement(i))
 	{
 		return luaL_error(l, "Invalid index");
 	}
 
-	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&luacon_sim->elements[i]) + prop.Offset);
+	intptr_t propertyAddress = (intptr_t)(((unsigned char*)&elements[i]) + prop.Offset);
 	LuaScriptInterface::LuaSetProperty(l, prop, propertyAddress, 3);
 
 	luacon_model->BuildMenus();
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	luacon_ci->custom_init_can_move();
-	std::fill(&luacon_ren->graphicscache[0], &luacon_ren->graphicscache[0] + PT_NUM, gcache_item());
+	sd.graphicscache = std::array<gcache_item, PT_NUM>();
 
 	return 0;
 }
@@ -278,21 +290,23 @@ String luacon_geterror()
 //tpt. api methods
 int luatpt_getelement(lua_State *l)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int t;
 	if (lua_isnumber(l, 1))
 	{
 		t = luaL_optint(l, 1, 1);
-		if (!luacon_sim->IsElementOrNone(t))
+		if (!sd.IsElementOrNone(t))
 		{
 			return luaL_error(l, "Unrecognised element number '%d'", t);
 		}
-		tpt_lua_pushString(l, luacon_sim->elements[t].Name);
+		tpt_lua_pushString(l, elements[t].Name);
 	}
 	else
 	{
 		luaL_checktype(l, 1, LUA_TSTRING);
 		auto name = tpt_lua_optByteString(l, 1, "");
-		if ((t = luacon_sim->GetParticleType(name))==-1)
+		if ((t = sd.GetParticleType(name))==-1)
 			return luaL_error(l, "Unrecognised element '%s'", name.c_str());
 		lua_pushinteger(l, t);
 	}
@@ -326,6 +340,7 @@ int luatpt_drawtext(lua_State* l)
 
 int luatpt_create(lua_State* l)
 {
+	auto &sd = SimulationData::CRef();
 	int x, y, retid, t = -1;
 	x = abs(luaL_optint(l, 1, 0));
 	y = abs(luaL_optint(l, 2, 0));
@@ -334,13 +349,13 @@ int luatpt_create(lua_State* l)
 		if (lua_isnumber(l, 3))
 		{
 			t = luaL_optint(l, 3, 0);
-			if (!luacon_sim->IsElement(t))
+			if (!sd.IsElement(t))
 			{
 				return luaL_error(l, "Unrecognised element number '%d'", t);
 			}
 		} else {
 			auto name = tpt_lua_optByteString(l, 3, "dust");
-			if ((t = luacon_sim->GetParticleType(name)) == -1)
+			if ((t = sd.GetParticleType(name)) == -1)
 				return luaL_error(l,"Unrecognised element '%s'", name.c_str());
 		}
 		retid = luacon_sim->create_part(-1, x, y, t);
@@ -547,6 +562,7 @@ int luatpt_reset_spark(lua_State* l)
 
 int luatpt_set_property(lua_State* l)
 {
+	auto &sd = SimulationData::CRef();
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	int r, i, x, y, w, h, t = 0, nx, ny, partsel = 0;
 	float f = 0;
@@ -565,7 +581,7 @@ int luatpt_set_property(lua_State* l)
 		if(!lua_isnumber(l, acount) && lua_isstring(l, acount))
 		{
 			auto name = tpt_lua_optByteString(l, acount, "none");
-			if ((partsel = luacon_sim->GetParticleType(name)) == -1)
+			if ((partsel = sd.GetParticleType(name)) == -1)
 				return luaL_error(l, "Unrecognised element '%s'", name.c_str());
 		}
 	}
@@ -576,13 +592,13 @@ int luatpt_set_property(lua_State* l)
 		else
 			t = luaL_optint(l, 2, 0);
 
-		if (byteStringEqualsLiteral(prop, "type") && !luacon_sim->IsElementOrNone(t))
+		if (byteStringEqualsLiteral(prop, "type") && !sd.IsElementOrNone(t))
 			return luaL_error(l, "Unrecognised element number '%d'", t);
 	}
 	else if (lua_isstring(l, 2))
 	{
 		auto name = tpt_lua_checkByteString(l, 2);
-		if ((t = luacon_sim->GetParticleType(name))==-1)
+		if ((t = sd.GetParticleType(name))==-1)
 			return luaL_error(l, "Unrecognised element '%s'", name.c_str());
 	}
 	else
@@ -1141,12 +1157,15 @@ int luatpt_menu_enabled(lua_State* l)
 	int acount = lua_gettop(l);
 	if (acount == 1)
 	{
-		lua_pushboolean(l, luacon_sim->msections[menusection].doshow);
+		lua_pushboolean(l, SimulationData::CRef().msections[menusection].doshow);
 		return 1;
 	}
 	luaL_checktype(l, 2, LUA_TBOOLEAN);
 	int enabled = lua_toboolean(l, 2);
-	luacon_sim->msections[menusection].doshow = enabled;
+	{
+		auto &sd = SimulationData::Ref();
+		sd.msections[menusection].doshow = enabled;
+	}
 	luacon_model->BuildMenus();
 	return 0;
 }

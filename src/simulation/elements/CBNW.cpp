@@ -31,6 +31,7 @@ void Element::Element_CBNW()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
+	LatentHeat = 7500;
 	Description = "Carbonated water. Slowly releases CO2.";
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
@@ -50,6 +51,8 @@ void Element::Element_CBNW()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (sim->pv[y/CELL][x/CELL]<=3)
 	{
 		if (sim->pv[y/CELL][x/CELL] <= -0.5 || sim->rng.chance(1, 4000))
@@ -87,12 +90,12 @@ static int update(UPDATE_FUNC_ARGS)
 				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((sim->elements[TYP(r)].Properties&TYPE_PART) && parts[i].tmp == 0 && sim->rng.chance(1, 83))
+				if ((elements[TYP(r)].Properties&TYPE_PART) && parts[i].tmp == 0 && sim->rng.chance(1, 83))
 				{
 					//Start explode
 					parts[i].tmp = sim->rng.between(0, 24);
 				}
-				else if((sim->elements[TYP(r)].Properties&TYPE_SOLID) && TYP(r)!=PT_DMND && TYP(r)!=PT_GLAS && parts[i].tmp == 0 && sim->rng.chance(int(2 - sim->pv[y/CELL][x/CELL]), 6667))
+				else if((elements[TYP(r)].Properties&TYPE_SOLID) && TYP(r)!=PT_DMND && TYP(r)!=PT_GLAS && parts[i].tmp == 0 && sim->rng.chance(int(2 - sim->pv[y/CELL][x/CELL]), 6667))
 				{
 					sim->part_change_type(i,x,y,PT_CO2);
 					parts[i].ctype = 5;

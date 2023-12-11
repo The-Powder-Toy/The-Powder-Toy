@@ -5,6 +5,7 @@
 #include "common/Version.h"
 #include "simulation/Sign.h"
 #include "simulation/Particle.h"
+#include "simulation/MissingElements.h"
 #include "Misc.h"
 #include "SimulationConfig.h"
 #include <vector>
@@ -62,6 +63,8 @@ class GameSave
 	void readPSv(const std::vector<char> &data);
 	std::pair<bool, std::vector<char>> serialiseOPS() const;
 
+	void MapPalette();
+
 public:
 	Vec2<int> blockSize = { 0, 0 };
 	bool fromNewerVersion = false;
@@ -100,6 +103,8 @@ public:
 	float ambientAirTemp = R_TEMP + 273.15f;
 	int edgeMode = 0;
 	bool wantAuthors = true;
+
+	MissingElements missingElements;
 
 	//Signs
 	std::vector<sign> signs;

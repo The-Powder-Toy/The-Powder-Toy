@@ -1,6 +1,7 @@
 #include "RenderView.h"
 
 #include "simulation/ElementGraphics.h"
+#include "simulation/SimulationData.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
@@ -158,6 +159,9 @@ void RenderView::OnDraw()
 	g->DrawFilledRect(WINDOW.OriginRect(), 0x000000_rgb);
 	if(ren)
 	{
+		// we're the main thread, we may write graphicscache
+		auto &sd = SimulationData::Ref();
+		std::unique_lock lk(sd.elementGraphicsMx);
 		ren->clearScreen();
 		ren->RenderBegin();
 		ren->RenderEnd();

@@ -4,6 +4,7 @@
 
 #include "client/Client.h"
 #include "client/SaveInfo.h"
+#include "client/GameSave.h"
 #include "client/http/AddCommentRequest.h"
 #include "client/http/ReportSaveRequest.h"
 
@@ -570,7 +571,8 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 
 		if(save->GetGameSave())
 		{
-			std::tie(savePreview, missingElements) = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
+			missingElements = save->GetGameSave()->missingElements;
+			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
 			if (savePreview)
 				savePreview->ResizeToFit(RES / 2, true);
 			missingElementsButton->Visible = missingElements.identifiers.size() || missingElements.ids.size();

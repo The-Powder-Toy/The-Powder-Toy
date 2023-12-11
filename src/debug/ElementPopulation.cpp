@@ -1,9 +1,7 @@
 #include "ElementPopulation.h"
-
 #include "gui/interface/Engine.h"
-
 #include "simulation/Simulation.h"
-
+#include "simulation/SimulationData.h"
 #include "graphics/Graphics.h"
 
 ElementPopulationDebug::ElementPopulationDebug(unsigned int id, Simulation * sim):
@@ -16,6 +14,8 @@ ElementPopulationDebug::ElementPopulationDebug(unsigned int id, Simulation * sim
 
 void ElementPopulationDebug::Draw()
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	Graphics * g = ui::Engine::Ref().g;
 
 	int yBottom = YRES-10;
@@ -30,7 +30,7 @@ void ElementPopulationDebug::Draw()
 	int bars = 0;
 	for(int i = 0; i < PT_NUM; i++)
 	{
-		if(sim->elements[i].Enabled)
+		if(elements[i].Enabled)
 		{
 			if(maxVal < sim->elementCount[i])
 				maxVal = float(sim->elementCount[i]);
@@ -49,13 +49,13 @@ void ElementPopulationDebug::Draw()
 	bars = 0;
 	for(int i = 0; i < PT_NUM; i++)
 	{
-		if(sim->elements[i].Enabled)
+		if(elements[i].Enabled)
 		{
 			auto count = sim->elementCount[i];
 			auto barSize = int(count * scale - 0.5f);
 			int barX = bars;//*2;
 
-			RGB<uint8_t> colour = sim->elements[i].Colour;
+			RGB<uint8_t> colour = elements[i].Colour;
 
 			g->DrawLine({ xStart+barX, yBottom+3 }, { xStart+barX, yBottom+2 }, colour);
 			if(sim->elementCount[i])

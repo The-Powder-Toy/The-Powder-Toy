@@ -49,6 +49,8 @@ void Element::Element_RPEL()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int r, rx, ry, ri;
 	for(ri = 0; ri <= 10; ri++)
 	{
@@ -60,7 +62,7 @@ static int update(UPDATE_FUNC_ARGS)
 			if (!r)
 				r = sim->photons[y+ry][x+rx];
 
-			if (r && !(sim->elements[TYP(r)].Properties & TYPE_SOLID)) {
+			if (r && !(elements[TYP(r)].Properties & TYPE_SOLID)) {
 				if (!parts[i].ctype || parts[i].ctype == parts[ID(r)].type) {
 					parts[ID(r)].vx += isign(rx)*((parts[i].temp-273.15)/10.0f);
 					parts[ID(r)].vy += isign(ry)*((parts[i].temp-273.15)/10.0f);

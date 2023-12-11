@@ -6,6 +6,7 @@
 #include "gui/interface/Engine.h"
 #include "client/GameSave.h"
 #include "simulation/Simulation.h"
+#include "simulation/SimulationData.h"
 #include "common/platform/Platform.h"
 #include <ctime>
 #include <iostream>
@@ -39,6 +40,7 @@ int main(int argc, char *argv[])
 			throw e;
 	}
 
+	auto simulationData = std::make_unique<SimulationData>();
 	Simulation * sim = new Simulation();
 	Renderer * ren = new Renderer(sim);
 

@@ -1,9 +1,10 @@
 #include "simulation/ElementCommon.h"
+#include "simulation/orbitalparts.h"
+#include "PIPE.h"
+#include "SOAP.h"
 
-void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR);
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
-void Element_SOAP_detach(Simulation * sim, int i);
 
 void Element::Element_PRTI()
 {
@@ -59,6 +60,8 @@ void Element::Element_PRTI()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int fe = 0;
 
 	parts[i].tmp = (int)((parts[i].temp-73.15f)/100+1);
@@ -76,7 +79,7 @@ static int update(UPDATE_FUNC_ARGS)
 			int r = pmap[y+ry][x+rx];
 			if (!r || TYP(r) == PT_STOR)
 				fe = 1;
-			if (!r || (!(sim->elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)) && TYP(r)!=PT_SPRK && TYP(r)!=PT_STOR))
+			if (!r || (!(elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)) && TYP(r)!=PT_SPRK && TYP(r)!=PT_STOR))
 			{
 				r = sim->photons[y+ry][x+rx];
 				if (!r)
@@ -94,7 +97,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					if (TYP(r) == PT_STOR)
 					{
-						if (sim->IsElement(parts[ID(r)].tmp) && (sim->elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
+						if (sd.IsElement(parts[ID(r)].tmp) && (elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 						{
 							// STOR uses same format as PIPE, so we can use this function to do the transfer
 							Element_PIPE_transfer_pipe_to_part(sim, parts+(ID(r)), &sim->portalp[parts[i].tmp][count][nnx], true);
@@ -121,7 +124,7 @@ static int update(UPDATE_FUNC_ARGS)
 		int orbl[4] = {0, 0, 0, 0};	//Orbital locations
 		if (!sim->parts[i].life) parts[i].life = sim->rng.gen();
 		if (!sim->parts[i].ctype) parts[i].ctype = sim->rng.gen();
-		sim->orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
+		orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
 		for (int r = 0; r < 4; r++) {
 			if (orbd[r]>1) {
 				orbd[r] -= 12;
@@ -137,7 +140,7 @@ static int update(UPDATE_FUNC_ARGS)
 				orbl[r] = sim->rng.between(0, 254);
 			}
 		}
-		sim->orbitalparts_set(&parts[i].life, &parts[i].ctype, orbd, orbl);
+		orbitalparts_set(&parts[i].life, &parts[i].ctype, orbd, orbl);
 	} else {
 		parts[i].life = 0;
 		parts[i].ctype = 0;

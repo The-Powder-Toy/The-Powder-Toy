@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "simulation/orbitalparts.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -144,7 +145,7 @@ static int update(UPDATE_FUNC_ARGS)
 		int orbl[4] = {0, 0, 0, 0};	//Orbital locations
 		if (!sim->parts[i].life) parts[i].life = sim->rng.gen();
 		if (!sim->parts[i].ctype) parts[i].ctype = sim->rng.gen();
-		sim->orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
+		orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
 		for (auto r = 0; r < 4; r++)
 		{
 			if (orbd[r]<254)
@@ -166,7 +167,7 @@ static int update(UPDATE_FUNC_ARGS)
 				orbl[r] = sim->rng.between(0, 254);
 			}
 		}
-		sim->orbitalparts_set(&parts[i].life, &parts[i].ctype, orbd, orbl);
+		orbitalparts_set(&parts[i].life, &parts[i].ctype, orbd, orbl);
 	}
 	else
 	{

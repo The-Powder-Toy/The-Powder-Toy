@@ -6,7 +6,7 @@
 #include "simulation/ElementClasses.h"
 #include "graphics/Graphics.h"
 
-SurfaceNormals::SurfaceNormals(unsigned int id, Simulation *newSim, GameView *newView, GameController *newController) :
+SurfaceNormals::SurfaceNormals(unsigned int id, const Simulation *newSim, GameView *newView, GameController *newController) :
 	DebugInfo(id), sim(newSim), view(newView), controller(newController)
 {
 }
@@ -29,7 +29,7 @@ void SurfaceNormals::Draw()
 	auto &parts = sim->parts;
 	auto x = int(parts[i].x + 0.5f);
 	auto y = int(parts[i].y + 0.5f);
-	auto mr = sim->PlanMove(i, x, y, false);
+	auto mr = Simulation::PlanMove<false>(*sim, i, x, y);
 	if (t == PT_PHOT)
 	{
 		if (parts[i].flags & FLAG_SKIPMOVE)
@@ -48,7 +48,7 @@ void SurfaceNormals::Draw()
 			}
 		}
 	}
-	auto gn = sim->get_normal_interp(t, parts[i].x, parts[i].y, mr.vx, mr.vy);
+	auto gn = sim->get_normal_interp<false>(*sim, t, parts[i].x, parts[i].y, mr.vx, mr.vy);
 	if (!gn.success)
 	{
 		return;

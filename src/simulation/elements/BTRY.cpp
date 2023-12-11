@@ -47,6 +47,8 @@ void Element::Element_BTRY()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	for (auto rx = -2; rx <= 2; rx++)
 	{
 		for (auto ry = -2; ry <= 2; ry++)
@@ -59,7 +61,7 @@ static int update(UPDATE_FUNC_ARGS)
 				auto rt = TYP(r);
 				if (sim->parts_avg(i,ID(r),PT_INSL) != PT_INSL)
 				{
-					if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[ID(r)].life==0)
+					if ((elements[rt].Properties&PROP_CONDUCTS) && !(rt==PT_WATR||rt==PT_SLTW||rt==PT_NTCT||rt==PT_PTCT||rt==PT_INWR) && parts[ID(r)].life==0)
 					{
 						parts[ID(r)].life = 4;
 						parts[ID(r)].ctype = rt;

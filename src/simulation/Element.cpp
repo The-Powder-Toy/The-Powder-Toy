@@ -29,6 +29,7 @@ Element::Element():
 	Weight(50),
 
 	HeatConduct(128),
+	LatentHeat(0),
 	Description("No description"),
 
 	Properties(TYPE_SOLID),
@@ -54,45 +55,58 @@ Element::Element():
 
 std::vector<StructProperty> const &Element::GetProperties()
 {
-	static std::vector<StructProperty> properties = {
-		{ "Name",                      StructProperty::String,   offsetof(Element, Name                     ) },
-		{ "Colour",                    StructProperty::Colour,   offsetof(Element, Colour                   ) },
-		{ "Color",                     StructProperty::Colour,   offsetof(Element, Colour                   ) },
-		{ "MenuVisible",               StructProperty::Integer,  offsetof(Element, MenuVisible              ) },
-		{ "MenuSection",               StructProperty::Integer,  offsetof(Element, MenuSection              ) },
-		{ "Enabled",                   StructProperty::Integer,  offsetof(Element, Enabled                  ) },
-		{ "Advection",                 StructProperty::Float,    offsetof(Element, Advection                ) },
-		{ "AirDrag",                   StructProperty::Float,    offsetof(Element, AirDrag                  ) },
-		{ "AirLoss",                   StructProperty::Float,    offsetof(Element, AirLoss                  ) },
-		{ "Loss",                      StructProperty::Float,    offsetof(Element, Loss                     ) },
-		{ "Collision",                 StructProperty::Float,    offsetof(Element, Collision                ) },
-		{ "Gravity",                   StructProperty::Float,    offsetof(Element, Gravity                  ) },
-		{ "NewtonianGravity",          StructProperty::Float,    offsetof(Element, NewtonianGravity         ) },
-		{ "Diffusion",                 StructProperty::Float,    offsetof(Element, Diffusion                ) },
-		{ "HotAir",                    StructProperty::Float,    offsetof(Element, HotAir                   ) },
-		{ "Falldown",                  StructProperty::Integer,  offsetof(Element, Falldown                 ) },
-		{ "Flammable",                 StructProperty::Integer,  offsetof(Element, Flammable                ) },
-		{ "Explosive",                 StructProperty::Integer,  offsetof(Element, Explosive                ) },
-		{ "Meltable",                  StructProperty::Integer,  offsetof(Element, Meltable                 ) },
-		{ "Hardness",                  StructProperty::Integer,  offsetof(Element, Hardness                 ) },
-		{ "PhotonReflectWavelengths",  StructProperty::UInteger, offsetof(Element, PhotonReflectWavelengths ) },
-		{ "CarriesTypeIn",             StructProperty::UInteger, offsetof(Element, CarriesTypeIn            ) },
-		{ "Weight",                    StructProperty::Integer,  offsetof(Element, Weight                   ) },
-		{ "Temperature",               StructProperty::Float,    offsetof(Element, DefaultProperties.temp   ) },
-		{ "HeatConduct",               StructProperty::UChar,    offsetof(Element, HeatConduct              ) },
-		{ "Description",               StructProperty::String,   offsetof(Element, Description              ) },
-		{ "State",                     StructProperty::Removed,  0                                            },
-		{ "Properties",                StructProperty::Integer,  offsetof(Element, Properties               ) },
-		{ "LowPressure",               StructProperty::Float,    offsetof(Element, LowPressure              ) },
-		{ "LowPressureTransition",     StructProperty::TransitionType,  offsetof(Element, LowPressureTransition    ) },
-		{ "HighPressure",              StructProperty::Float,    offsetof(Element, HighPressure             ) },
-		{ "HighPressureTransition",    StructProperty::TransitionType,  offsetof(Element, HighPressureTransition   ) },
-		{ "LowTemperature",            StructProperty::Float,    offsetof(Element, LowTemperature           ) },
-		{ "LowTemperatureTransition",  StructProperty::TransitionType,  offsetof(Element, LowTemperatureTransition ) },
-		{ "HighTemperature",           StructProperty::Float,    offsetof(Element, HighTemperature          ) },
-		{ "HighTemperatureTransition", StructProperty::TransitionType,  offsetof(Element, HighTemperatureTransition) }
+	struct DoOnce
+	{
+		std::vector<StructProperty> properties;
+
+		DoOnce()
+		{
+			properties = {
+				{ "Name",                      StructProperty::String,   offsetof(Element, Name                     ) },
+				{ "Colour",                    StructProperty::Colour,   offsetof(Element, Colour                   ) },
+				{ "Color",                     StructProperty::Colour,   offsetof(Element, Colour                   ) },
+				{ "MenuVisible",               StructProperty::Integer,  offsetof(Element, MenuVisible              ) },
+				{ "MenuSection",               StructProperty::Integer,  offsetof(Element, MenuSection              ) },
+				{ "Enabled",                   StructProperty::Integer,  offsetof(Element, Enabled                  ) },
+				{ "Advection",                 StructProperty::Float,    offsetof(Element, Advection                ) },
+				{ "AirDrag",                   StructProperty::Float,    offsetof(Element, AirDrag                  ) },
+				{ "AirLoss",                   StructProperty::Float,    offsetof(Element, AirLoss                  ) },
+				{ "Loss",                      StructProperty::Float,    offsetof(Element, Loss                     ) },
+				{ "Collision",                 StructProperty::Float,    offsetof(Element, Collision                ) },
+				{ "Gravity",                   StructProperty::Float,    offsetof(Element, Gravity                  ) },
+				{ "NewtonianGravity",          StructProperty::Float,    offsetof(Element, NewtonianGravity         ) },
+				{ "Diffusion",                 StructProperty::Float,    offsetof(Element, Diffusion                ) },
+				{ "HotAir",                    StructProperty::Float,    offsetof(Element, HotAir                   ) },
+				{ "Falldown",                  StructProperty::Integer,  offsetof(Element, Falldown                 ) },
+				{ "Flammable",                 StructProperty::Integer,  offsetof(Element, Flammable                ) },
+				{ "Explosive",                 StructProperty::Integer,  offsetof(Element, Explosive                ) },
+				{ "Meltable",                  StructProperty::Integer,  offsetof(Element, Meltable                 ) },
+				{ "Hardness",                  StructProperty::Integer,  offsetof(Element, Hardness                 ) },
+				{ "PhotonReflectWavelengths",  StructProperty::UInteger, offsetof(Element, PhotonReflectWavelengths ) },
+				{ "CarriesTypeIn",             StructProperty::UInteger, offsetof(Element, CarriesTypeIn            ) },
+				{ "Weight",                    StructProperty::Integer,  offsetof(Element, Weight                   ) },
+				{ "Temperature",               StructProperty::Float,    offsetof(Element, DefaultProperties.temp   ) },
+				{ "HeatConduct",               StructProperty::UChar,    offsetof(Element, HeatConduct              ) },
+				{ "Description",               StructProperty::String,   offsetof(Element, Description              ) },
+				{ "State",                     StructProperty::Removed,  0                                            },
+				{ "Properties",                StructProperty::Integer,  offsetof(Element, Properties               ) },
+				{ "LowPressure",               StructProperty::Float,    offsetof(Element, LowPressure              ) },
+				{ "LowPressureTransition",     StructProperty::TransitionType,  offsetof(Element, LowPressureTransition    ) },
+				{ "HighPressure",              StructProperty::Float,    offsetof(Element, HighPressure             ) },
+				{ "HighPressureTransition",    StructProperty::TransitionType,  offsetof(Element, HighPressureTransition   ) },
+				{ "LowTemperature",            StructProperty::Float,    offsetof(Element, LowTemperature           ) },
+				{ "LowTemperatureTransition",  StructProperty::TransitionType,  offsetof(Element, LowTemperatureTransition ) },
+				{ "HighTemperature",           StructProperty::Float,    offsetof(Element, HighTemperature          ) },
+				{ "HighTemperatureTransition", StructProperty::TransitionType,  offsetof(Element, HighTemperatureTransition) }
+			};
+			if constexpr (LATENTHEAT)
+			{
+				properties.push_back({ "LatentHeat", StructProperty::UInteger, offsetof(Element, LatentHeat) });
+			}
+		}
 	};
-	return properties;
+	static DoOnce doOnce;
+	return doOnce.properties;
 }
 
 int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
@@ -216,14 +230,16 @@ int Element::legacyUpdate(UPDATE_FUNC_ARGS) {
 
 int Element::defaultGraphics(GRAPHICS_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int t = cpart->type;
 	//Property based defaults
-	if(ren->sim->elements[t].Properties & PROP_RADIOACTIVE) *pixel_mode |= PMODE_GLOW;
-	if(ren->sim->elements[t].Properties & TYPE_LIQUID)
+	if(elements[t].Properties & PROP_RADIOACTIVE) *pixel_mode |= PMODE_GLOW;
+	if(elements[t].Properties & TYPE_LIQUID)
 	{
 		*pixel_mode |= PMODE_BLUR;
 	}
-	if(ren->sim->elements[t].Properties & TYPE_GAS)
+	if(elements[t].Properties & TYPE_GAS)
 	{
 		*pixel_mode &= ~PMODE;
 		*pixel_mode |= FIRE_BLEND;
@@ -238,7 +254,9 @@ int Element::defaultGraphics(GRAPHICS_FUNC_ARGS)
 
 bool Element::basicCtypeDraw(CTYPEDRAW_FUNC_ARGS)
 {
-	if (sim->parts[i].type == t || sim->elements[t].Properties & PROP_NOCTYPEDRAW)
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	if (sim->parts[i].type == t || elements[t].Properties & PROP_NOCTYPEDRAW)
 	{
 		return false;
 	}

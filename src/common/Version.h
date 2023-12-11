@@ -27,6 +27,21 @@ struct Version
 		return *this < other || *this == other;
 	}
 
+	constexpr bool operator >=(const Version &other) const
+	{
+		return !(*this < other);
+	}
+
+	constexpr bool operator >(const Version &other) const
+	{
+		return !(*this <= other);
+	}
+
+	constexpr bool operator !=(const Version &other) const
+	{
+		return !(*this == other);
+	}
+
 	constexpr size_t operator [](size_t index) const
 	{
 		return components[index];

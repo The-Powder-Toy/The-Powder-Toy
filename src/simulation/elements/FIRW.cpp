@@ -49,6 +49,8 @@ void Element::Element_FIRW()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (parts[i].tmp<=0)
 	{
 		for (auto rx = -1; rx <= 1; rx++)
@@ -64,12 +66,12 @@ static int update(UPDATE_FUNC_ARGS)
 					if (rt==PT_FIRE||rt==PT_PLSM||rt==PT_THDR)
 					{
 						float gx, gy, multiplier;
-						sim->GetGravityField(x, y, sim->elements[PT_FIRW].Gravity, 1.0f, gx, gy);
+						sim->GetGravityField(x, y, elements[PT_FIRW].Gravity, 1.0f, gx, gy);
 						if (gx*gx+gy*gy < 0.001f)
 						{
 							float angle = sim->rng.between(0, 6283) * 0.001f;//(in radians, between 0 and 2*pi)
-							gx += sinf(angle)*sim->elements[PT_FIRW].Gravity*0.5f;
-							gy += cosf(angle)*sim->elements[PT_FIRW].Gravity*0.5f;
+							gx += sinf(angle)*elements[PT_FIRW].Gravity*0.5f;
+							gy += cosf(angle)*elements[PT_FIRW].Gravity*0.5f;
 						}
 						parts[i].tmp = 1;
 						parts[i].life = sim->rng.between(20, 29);

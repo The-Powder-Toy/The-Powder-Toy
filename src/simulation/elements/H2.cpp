@@ -47,6 +47,8 @@ void Element::Element_H2()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &can_move = sd.can_move;
 	for (auto rx = -2; rx <= 2; rx++)
 	{
 		for (auto ry = -2; ry <= 2; ry++)
@@ -119,7 +121,7 @@ static int update(UPDATE_FUNC_ARGS)
 				parts[j].tmp = 0x1;
 			}
 			auto rx = x + sim->rng.between(-1, 1), ry = y + sim->rng.between(-1, 1), rt = TYP(pmap[ry][rx]);
-			if (sim->can_move[PT_PLSM][rt] || rt == PT_H2)
+			if (can_move[PT_PLSM][rt] || rt == PT_H2)
 			{
 				j = sim->create_part(-3,rx,ry,PT_PLSM);
 				if (j>-1)

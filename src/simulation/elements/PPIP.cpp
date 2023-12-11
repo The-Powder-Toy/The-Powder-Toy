@@ -1,7 +1,5 @@
 #include "simulation/ElementCommon.h"
-
-int Element_PIPE_update(UPDATE_FUNC_ARGS);
-int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS);
+#include "PIPE.h"
 
 void Element::Element_PPIP()
 {

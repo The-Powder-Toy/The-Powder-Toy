@@ -50,6 +50,8 @@ void Element::Element_DRAY()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int ctype = TYP(parts[i].ctype), ctypeExtra = ID(parts[i].ctype), copyLength = parts[i].tmp, copySpaces = parts[i].tmp2;
 	if (copySpaces < 0)
 		copySpaces = parts[i].tmp2 = 0;
@@ -98,7 +100,7 @@ static int update(UPDATE_FUNC_ARGS)
 								foundParticle = true;
 						}
 						// now that it knows what kind of particle it is copying, do some extra stuff here so we can determine when to stop
-						if ((ctype && sim->elements[ctype].Properties&TYPE_ENERGY) || isEnergy)
+						if ((ctype && elements[ctype].Properties&TYPE_ENERGY) || isEnergy)
 							rr = sim->photons[yCurrent][xCurrent];
 						else
 							rr = pmap[yCurrent][xCurrent];

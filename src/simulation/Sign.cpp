@@ -1,7 +1,8 @@
 #include "Sign.h"
 
 #include "graphics/Graphics.h"
-#include "simulation/Simulation.h"
+#include "Simulation.h"
+#include "SimulationData.h"
 
 sign::sign(String text_, int x_, int y_, Justification justification_):
 	x(x_),
@@ -11,8 +12,9 @@ sign::sign(String text_, int x_, int y_, Justification justification_):
 {
 }
 
-String sign::getDisplayText(Simulation *sim, int &x0, int &y0, int &w, int &h, bool colorize, bool *v95) const
+String sign::getDisplayText(const Simulation *sim, int &x0, int &y0, int &w, int &h, bool colorize, bool *v95) const
 {
+	auto &sd = SimulationData::CRef();
 	String drawable_text;
 	auto si = std::make_pair(0, Type::Normal);
 	if (text.find('{') == text.npos)
@@ -79,13 +81,13 @@ String sign::getDisplayText(Simulation *sim, int &x0, int &y0, int &w, int &h, b
 					}
 					else if (between_curlies == "type")
 					{
-						formatted_text << (part ? sim->BasicParticleInfo(*part) : (formatted_text.Size() ? String::Build("empty") : String::Build("Empty")));
+						formatted_text << (part ? sd.BasicParticleInfo(*part) : (formatted_text.Size() ? String::Build("empty") : String::Build("Empty")));
 						if (v95)
 							*v95 = true;
 					}
 					else if (between_curlies == "ctype")
 					{
-						formatted_text << (part ? (sim->IsElementOrNone(part->ctype) ? sim->ElementResolve(part->ctype, -1) : String::Build(part->ctype)) : (formatted_text.Size() ? String::Build("empty") : String::Build("Empty")));
+						formatted_text << (part ? (sd.IsElementOrNone(part->ctype) ? sd.ElementResolve(part->ctype, -1) : String::Build(part->ctype)) : (formatted_text.Size() ? String::Build("empty") : String::Build("Empty")));
 						if (v95)
 							*v95 = true;
 					}

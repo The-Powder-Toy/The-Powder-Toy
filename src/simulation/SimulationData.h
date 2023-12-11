@@ -1,8 +1,19 @@
 #pragma once
 #include "SimulationConfig.h"
+#include "ElementDefs.h"
+#include "common/ExplicitSingleton.h"
+#include "common/String.h"
+#include "MenuSection.h"
+#include "BuiltinGOL.h"
+#include "SimTool.h"
+#include "Element.h"
+#include "Particle.h"
+#include "WallType.h"
+#include "graphics/gcache_item.h"
 #include <cstdint>
 #include <vector>
 #include <array>
+#include <shared_mutex>
 
 constexpr int SC_WALL      =  0;
 constexpr int SC_ELEC      =  1;
@@ -148,20 +159,61 @@ enum GravityMode
 	GRAV_VERTICAL, GRAV_OFF, GRAV_RADIAL, GRAV_CUSTOM, NUM_GRAV_MODES
 };
 
-struct part_type;
-struct part_transition;
+struct CustomGOLData
+{
+	int rule, colour1, colour2;
+	String nameString, ruleString;
 
-struct wall_type;
-struct BuiltinGOL;
-struct menu_section;
+	inline bool operator <(const CustomGOLData &other) const
+	{
+		return rule < other.rule;
+	}
+};
 
-class SimTool;
-class Element;
+class SimulationData : public ExplicitSingleton<SimulationData>
+{
+public:
+	std::array<Element, PT_NUM> elements;
+	std::array<gcache_item, PT_NUM> graphicscache;
+	std::vector<SimTool> tools;
+	std::vector<wall_type> wtypes;
+	std::vector<menu_section> msections;
+	char can_move[PT_NUM][PT_NUM];
+	static const std::array<BuiltinGOL, NGOL> builtinGol;
 
-extern const BuiltinGOL builtinGol[];
+	// Element properties that enable basic graphics (i.e. every property that has to do with graphics other than
+	// the graphics callback itself) are only ever written by the main thread, but they are read by some other
+	// threads that use Renderer to render thumbnails and such. Take this std::shared_mutex with an std::unique_lock
+	// when writing such properties in the main thread, and with an std::shared_lock when reading such properties
+	// in these secondary Renderer threads. Don't take it with an std::shared_lock when reading such properties in
+	// the main thread; the main thread doesn't race with itself.
+	mutable std::shared_mutex elementGraphicsMx;
 
-std::vector<wall_type> LoadWalls();
+private:
+	std::vector<CustomGOLData> customGol;
 
-std::vector<menu_section> LoadMenus();
+public:
+	SimulationData();
+	void InitElements();
 
-std::vector<unsigned int> LoadLatent();
+	void init_can_move();
+
+	const CustomGOLData *GetCustomGOLByRule(int rule) const;
+	const std::vector<CustomGOLData> &GetCustomGol() const { return customGol; }
+	void SetCustomGOL(std::vector<CustomGOLData> newCustomGol);
+
+	String ElementResolve(int type, int ctype) const;
+	String BasicParticleInfo(Particle const &sample_part) const;
+	int GetParticleType(ByteString type) const;
+
+	bool IsElement(int type) const
+	{
+		return (type > 0 && type < PT_NUM && elements[type].Enabled);
+	}
+
+	bool IsElementOrNone(int type) const
+	{
+		return (type >= 0 && type < PT_NUM && elements[type].Enabled);
+	}
+
+};

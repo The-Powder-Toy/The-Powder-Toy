@@ -354,6 +354,8 @@ void Air::Invert()
 // called when loading saves / stamps to ensure nothing "leaks" the first frame
 void Air::ApproximateBlockAirMaps()
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	for (int i = 0; i <= sim.parts_lastActiveIndex; i++)
 	{
 		int type = sim.parts[i].type;
@@ -372,7 +374,7 @@ void Air::ApproximateBlockAirMaps()
 			}
 		}
 		// mostly accurate insulator blocking, besides checking GEL
-		else if ((type == PT_HSWC && sim.parts[i].life != 10) || sim.elements[type].HeatConduct <= (sim.rng()%250))
+		else if ((type == PT_HSWC && sim.parts[i].life != 10) || elements[type].HeatConduct <= (sim.rng()%250))
 		{
 			int x = ((int)(sim.parts[i].x+0.5f))/CELL, y = ((int)(sim.parts[i].y+0.5f))/CELL;
 			if (InBounds(x, y) && !(bmap_blockairh[y][x]&0x8))

@@ -1,16 +1,16 @@
 #include "SimulationData.h"
-
 #include "ElementGraphics.h"
 #include "ElementDefs.h"
 #include "ElementClasses.h"
-
+#include "GOLString.h"
 #include "BuiltinGOL.h"
 #include "WallType.h"
 #include "MenuSection.h"
-
+#include "ToolClasses.h"
+#include "Misc.h"
 #include "graphics/Renderer.h"
 
-const BuiltinGOL builtinGol[NGOL] = {
+const std::array<BuiltinGOL, NGOL> SimulationData::builtinGol = {{
 	// * Ruleset:
 	//   * bits x = 8..0: stay if x neighbours present
 	//   * bits x = 16..9: begin if x-8 neighbours present
@@ -45,9 +45,9 @@ const BuiltinGOL builtinGol[NGOL] = {
 	{ "STAR", GT_STAR, 0x98478, 0x000040_rgb, 0x0000E6_rgb, NGT_STAR, String("Like Star Wars rule: B278/S3456/6") },
 	{ "FROG", GT_FROG, 0x21806, 0x006400_rgb, 0x00FF00_rgb, NGT_FROG, String("Frogs: B34/S12/3") },
 	{ "BRAN", GT_BRAN, 0x25440, 0xFFFF00_rgb, 0x969600_rgb, NGT_BRAN, String("Brian 6: B246/S6/3" )}
-};
+}};
 
-std::vector<wall_type> LoadWalls()
+static std::vector<wall_type> LoadWalls()
 {
 	return
 	std::vector<wall_type>{
@@ -73,7 +73,7 @@ std::vector<wall_type> LoadWalls()
 	};
 }
 
-std::vector<menu_section> LoadMenus()
+static std::vector<menu_section> LoadMenus()
 {
 	return
 	std::vector<menu_section>{
@@ -98,170 +98,244 @@ std::vector<menu_section> LoadMenus()
 	};
 }
 
-std::vector<unsigned int> LoadLatent()
+void SimulationData::init_can_move()
 {
-	return
-	std::vector<unsigned int>{
-		/* NONE */ 0,
-		/* DUST */ 0,
-		/* WATR */ 7500,
-		/* OIL  */ 0,
-		/* FIRE */ 0,
-		/* STNE */ 0,
-		/* LAVA */ 0,
-		/* GUN  */ 0,
-		/* NITR */ 0,
-		/* CLNE */ 0,
-		/* GAS  */ 0,
-		/* C-4  */ 0,
-		/* GOO  */ 0,
-		/* ICE  */ 1095,
-		/* METL */ 919,
-		/* SPRK */ 0,
-		/* SNOW */ 1095,
-		/* WOOD */ 0,
-		/* NEUT */ 0,
-		/* PLUT */ 0,
-		/* PLNT */ 0,
-		/* ACID */ 0,
-		/* VOID */ 0,
-		/* WTRV */ 0,
-		/* CNCT */ 0,
-		/* DSTW */ 7500,
-		/* SALT */ 0,
-		/* SLTW */ 7500,
-		/* DMND */ 0,
-		/* BMTL */ 0,
-		/* BRMT */ 0,
-		/* PHOT */ 0,
-		/* URAN */ 0,
-		/* WAX  */ 0,
-		/* MWAX */ 0,
-		/* PSCN */ 0,
-		/* NSCN */ 0,
-		/* LN2  */ 0,
-		/* INSL */ 0,
-		/* VACU */ 0,
-		/* VENT */ 0,
-		/* RBDM */ 0,
-		/* LRBD */ 0,
-		/* NTCT */ 0,
-		/* SAND */ 0,
-		/* GLAS */ 0,
-		/* PTCT */ 0,
-		/* BGLA */ 0,
-		/* THDR */ 0,
-		/* PLSM */ 0,
-		/* ETRD */ 0,
-		/* NICE */ 0,
-		/* NBLE */ 0,
-		/* BTRY */ 0,
-		/* LCRY */ 0,
-		/* STKM */ 0,
-		/* SWCH */ 0,
-		/* SMKE */ 0,
-		/* DESL */ 0,
-		/* COAL */ 0,
-		/* LO2  */ 0,
-		/* O2   */ 0,
-		/* INWR */ 0,
-		/* YEST */ 0,
-		/* DYST */ 0,
-		/* THRM */ 0,
-		/* GLOW */ 0,
-		/* BRCK */ 0,
-		/* CFLM */ 0,
-		/* FIRW */ 0,
-		/* FUSE */ 0,
-		/* FSEP */ 0,
-		/* AMTR */ 0,
-		/* BCOL */ 0,
-		/* PCLN */ 0,
-		/* HSWC */ 0,
-		/* IRON */ 0,
-		/* MORT */ 0,
-		/* LIFE */ 0,
-		/* DLAY */ 0,
-		/* CO2  */ 0,
-		/* DRIC */ 0,
-		/* CBNW */ 7500,
-		/* STOR */ 0,
-		/* STOR */ 0,
-		/* FREE */ 0,
-		/* FREE */ 0,
-		/* FREE */ 0,
-		/* FREE */ 0,
-		/* FREE */ 0,
-		/* SPNG */ 0,
-		/* RIME */ 0,
-		/* FOG  */ 0,
-		/* BCLN */ 0,
-		/* LOVE */ 0,
-		/* DEUT */ 0,
-		/* WARP */ 0,
-		/* PUMP */ 0,
-		/* FWRK */ 0,
-		/* PIPE */ 0,
-		/* FRZZ */ 0,
-		/* FRZW */ 0,
-		/* GRAV */ 0,
-		/* BIZR */ 0,
-		/* BIZRG*/ 0,
-		/* BIZRS*/ 0,
-		/* INST */ 0,
-		/* ISOZ */ 0,
-		/* ISZS */ 0,
-		/* PRTI */ 0,
-		/* PRTO */ 0,
-		/* PSTE */ 0,
-		/* PSTS */ 0,
-		/* ANAR */ 0,
-		/* VINE */ 0,
-		/* INVS */ 0,
-		/* EQVE */ 0,
-		/* SPWN2*/ 0,
-		/* SPAWN*/ 0,
-		/* SHLD1*/ 0,
-		/* SHLD2*/ 0,
-		/* SHLD3*/ 0,
-		/* SHLD4*/ 0,
-		/* LOlZ */ 0,
-		/* WIFI */ 0,
-		/* FILT */ 0,
-		/* ARAY */ 0,
-		/* BRAY */ 0,
-		/* STKM2*/ 0,
-		/* BOMB */ 0,
-		/* C-5  */ 0,
-		/* SING */ 0,
-		/* QRTZ */ 0,
-		/* PQRT */ 0,
-		/* EMP  */ 0,
-		/* BREL */ 0,
-		/* ELEC */ 0,
-		/* ACEL */ 0,
-		/* DCEL */ 0,
-		/* TNT  */ 0,
-		/* IGNP */ 0,
-		/* BOYL */ 0,
-		/* GEL  */ 0,
-		/* FREE */ 0,
-		/* FREE */ 0,
-		/* FREE */ 0,
-		/* FREE */ 0,
-		/* WIND */ 0,
-		/* H2   */ 0,
-		/* SOAP */ 0,
-		/* NBHL */ 0,
-		/* NWHL */ 0,
-		/* MERC */ 0,
-		/* PBCN */ 0,
-		/* GPMP */ 0,
-		/* CLST */ 0,
-		/* WIRE */ 0,
-		/* GBMB */ 0,
-		/* FIGH */ 0,
-		/* FRAY */ 0,
-		/* REPL */ 0,
-	};
+	int movingType, destinationType;
+	// can_move[moving type][type at destination]
+	//  0 = No move/Bounce
+	//  1 = Swap
+	//  2 = Both particles occupy the same space.
+	//  3 = Varies, go run some extra checks
+
+	//particles that don't exist shouldn't move...
+	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
+		can_move[0][destinationType] = 0;
+
+	//initialize everything else to swapping by default
+	for (movingType = 1; movingType < PT_NUM; movingType++)
+		for (destinationType = 0; destinationType < PT_NUM; destinationType++)
+			can_move[movingType][destinationType] = 1;
+
+	//photons go through everything by default
+	for (destinationType = 1; destinationType < PT_NUM; destinationType++)
+		can_move[PT_PHOT][destinationType] = 2;
+
+	for (movingType = 1; movingType < PT_NUM; movingType++)
+	{
+		for (destinationType = 1; destinationType < PT_NUM; destinationType++)
+		{
+			//weight check, also prevents particles of same type displacing each other
+			if (elements[movingType].Weight <= elements[destinationType].Weight || destinationType == PT_GEL)
+				can_move[movingType][destinationType] = 0;
+
+			//other checks for NEUT and energy particles
+			if (movingType == PT_NEUT && (elements[destinationType].Properties&PROP_NEUTPASS))
+				can_move[movingType][destinationType] = 2;
+			if (movingType == PT_NEUT && (elements[destinationType].Properties&PROP_NEUTABSORB))
+				can_move[movingType][destinationType] = 1;
+			if (movingType == PT_NEUT && (elements[destinationType].Properties&PROP_NEUTPENETRATE))
+				can_move[movingType][destinationType] = 1;
+			if (destinationType == PT_NEUT && (elements[movingType].Properties&PROP_NEUTPENETRATE))
+				can_move[movingType][destinationType] = 0;
+			if ((elements[movingType].Properties&TYPE_ENERGY) && (elements[destinationType].Properties&TYPE_ENERGY))
+				can_move[movingType][destinationType] = 2;
+		}
+	}
+	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
+	{
+		//set what stickmen can move through
+		int stkm_move = 0;
+		if (elements[destinationType].Properties & (TYPE_LIQUID | TYPE_GAS))
+			stkm_move = 2;
+		if (!destinationType || destinationType == PT_PRTO || destinationType == PT_SPAWN || destinationType == PT_SPAWN2)
+			stkm_move = 2;
+		can_move[PT_STKM][destinationType] = stkm_move;
+		can_move[PT_STKM2][destinationType] = stkm_move;
+		can_move[PT_FIGH][destinationType] = stkm_move;
+
+		//spark shouldn't move
+		can_move[PT_SPRK][destinationType] = 0;
+	}
+	for (movingType = 1; movingType < PT_NUM; movingType++)
+	{
+		//everything "swaps" with VACU and BHOL to make them eat things
+		can_move[movingType][PT_BHOL] = 1;
+		can_move[movingType][PT_NBHL] = 1;
+		//nothing goes through stickmen
+		can_move[movingType][PT_STKM] = 0;
+		can_move[movingType][PT_STKM2] = 0;
+		can_move[movingType][PT_FIGH] = 0;
+		//INVS behaviour varies with pressure
+		can_move[movingType][PT_INVIS] = 3;
+		//stop CNCT from being displaced by other particles
+		can_move[movingType][PT_CNCT] = 0;
+		//VOID and PVOD behaviour varies with powered state and ctype
+		can_move[movingType][PT_PVOD] = 3;
+		can_move[movingType][PT_VOID] = 3;
+		//nothing moves through EMBR (not sure why, but it's killed when it touches anything)
+		can_move[movingType][PT_EMBR] = 0;
+		can_move[PT_EMBR][movingType] = 0;
+		//Energy particles move through VIBR and BVBR, so it can absorb them
+		if (elements[movingType].Properties & TYPE_ENERGY)
+		{
+			can_move[movingType][PT_VIBR] = 1;
+			can_move[movingType][PT_BVBR] = 1;
+		}
+
+		//SAWD cannot be displaced by other powders
+		if (elements[movingType].Properties & TYPE_PART)
+			can_move[movingType][PT_SAWD] = 0;
+	}
+	//a list of lots of things PHOT can move through
+	// TODO: replace with property
+	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
+	{
+		if (destinationType == PT_GLAS || destinationType == PT_PHOT || destinationType == PT_FILT || destinationType == PT_INVIS
+		 || destinationType == PT_CLNE || destinationType == PT_PCLN || destinationType == PT_BCLN || destinationType == PT_PBCN
+		 || destinationType == PT_WATR || destinationType == PT_DSTW || destinationType == PT_SLTW || destinationType == PT_GLOW
+		 || destinationType == PT_ISOZ || destinationType == PT_ISZS || destinationType == PT_QRTZ || destinationType == PT_PQRT
+		 || destinationType == PT_H2   || destinationType == PT_BGLA || destinationType == PT_C5)
+			can_move[PT_PHOT][destinationType] = 2;
+		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO)
+		{
+			can_move[PT_PROT][destinationType] = 2;
+			can_move[PT_GRVT][destinationType] = 2;
+		}
+	}
+
+	//other special cases that weren't covered above
+	can_move[PT_DEST][PT_DMND] = 0;
+	can_move[PT_DEST][PT_CLNE] = 0;
+	can_move[PT_DEST][PT_PCLN] = 0;
+	can_move[PT_DEST][PT_BCLN] = 0;
+	can_move[PT_DEST][PT_PBCN] = 0;
+	can_move[PT_DEST][PT_ROCK] = 0;
+
+	can_move[PT_NEUT][PT_INVIS] = 2;
+	can_move[PT_ELEC][PT_LCRY] = 2;
+	can_move[PT_ELEC][PT_EXOT] = 2;
+	can_move[PT_ELEC][PT_GLOW] = 2;
+	can_move[PT_PHOT][PT_LCRY] = 3; //varies according to LCRY life
+	can_move[PT_PHOT][PT_GPMP] = 3;
+
+	can_move[PT_PHOT][PT_BIZR] = 2;
+	can_move[PT_ELEC][PT_BIZR] = 2;
+	can_move[PT_PHOT][PT_BIZRG] = 2;
+	can_move[PT_ELEC][PT_BIZRG] = 2;
+	can_move[PT_PHOT][PT_BIZRS] = 2;
+	can_move[PT_ELEC][PT_BIZRS] = 2;
+	can_move[PT_BIZR][PT_FILT] = 2;
+	can_move[PT_BIZRG][PT_FILT] = 2;
+
+	can_move[PT_ANAR][PT_WHOL] = 1; //WHOL eats ANAR
+	can_move[PT_ANAR][PT_NWHL] = 1;
+	can_move[PT_ELEC][PT_DEUT] = 1;
+	can_move[PT_THDR][PT_THDR] = 2;
+	can_move[PT_EMBR][PT_EMBR] = 2;
+	can_move[PT_TRON][PT_SWCH] = 3;
+	can_move[PT_SOAP][PT_OIL] = 0;
+	can_move[PT_OIL][PT_SOAP] = 1;
+}
+
+const CustomGOLData *SimulationData::GetCustomGOLByRule(int rule) const
+{
+	// * Binary search. customGol is already sorted, see SetCustomGOL.
+	auto it = std::lower_bound(customGol.begin(), customGol.end(), rule, [](const CustomGOLData &item, int rule) {
+		return item.rule < rule;
+	});
+	if (it != customGol.end() && !(rule < it->rule))
+	{
+		return &*it;
+	}
+	return nullptr;
+}
+
+void SimulationData::SetCustomGOL(std::vector<CustomGOLData> newCustomGol)
+{
+	std::sort(newCustomGol.begin(), newCustomGol.end());
+	customGol = newCustomGol;
+}
+
+String SimulationData::ElementResolve(int type, int ctype) const
+{
+	if (type == PT_LIFE)
+	{
+		if (ctype >= 0 && ctype < NGOL)
+		{
+			return builtinGol[ctype].name; 
+		}
+		auto *cgol = GetCustomGOLByRule(ctype);
+		if (cgol)
+		{
+			return cgol->nameString;
+		}
+		return SerialiseGOLRule(ctype);
+	}
+	else if (type >= 0 && type < PT_NUM)
+		return elements[type].Name;
+	return "Empty";
+}
+
+String SimulationData::BasicParticleInfo(Particle const &sample_part) const
+{
+	StringBuilder sampleInfo;
+	int type = sample_part.type;
+	int ctype = sample_part.ctype;
+	int storedCtype = sample_part.tmp4;
+	if (type == PT_LAVA && IsElement(ctype))
+	{
+		sampleInfo << "Molten " << ElementResolve(ctype, -1);
+	}
+	else if ((type == PT_PIPE || type == PT_PPIP) && IsElement(ctype))
+	{
+		if (ctype == PT_LAVA && IsElement(storedCtype))
+		{
+			sampleInfo << ElementResolve(type, -1) << " with molten " << ElementResolve(storedCtype, -1);
+		}
+		else
+		{
+			sampleInfo << ElementResolve(type, -1) << " with " << ElementResolve(ctype, storedCtype);
+		}
+	}
+	else
+	{
+		sampleInfo << ElementResolve(type, ctype);
+	}
+	return sampleInfo.Build();
+}
+
+int SimulationData::GetParticleType(ByteString type) const
+{
+	type = type.ToUpper();
+
+	// alternative names for some elements
+	if (byteStringEqualsLiteral(type, "C4"))
+	{
+		return PT_PLEX;
+	}
+	else if (byteStringEqualsLiteral(type, "C5"))
+	{
+		return PT_C5;
+	}
+	else if (byteStringEqualsLiteral(type, "NONE"))
+	{
+		return PT_NONE;
+	}
+	for (int i = 1; i < PT_NUM; i++)
+	{
+		if (elements[i].Name.size() && elements[i].Enabled && type == elements[i].Name.ToUtf8().ToUpper())
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+SimulationData::SimulationData()
+{
+	init_can_move();
+	msections = LoadMenus();
+	wtypes = LoadWalls();
+	elements = GetElements();
+	tools = GetTools();
 }

@@ -1,8 +1,8 @@
 #include "simulation/ElementCommon.h"
+#include "PCLN.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
-bool Element_PCLN_ctypeDraw(CTYPEDRAW_FUNC_ARGS);
 
 void Element::Element_PCLN()
 {
@@ -52,6 +52,8 @@ void Element::Element_PCLN()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (parts[i].life>0 && parts[i].life!=10)
 		parts[i].life--;
 	for (auto rx = -2; rx <= 2; rx++)
@@ -83,7 +85,7 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 		}
 	}
-	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled)
+	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !elements[parts[i].ctype].Enabled)
 	{
 		for (auto rx = -1; rx <= 1; rx++)
 		{
@@ -108,7 +110,7 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 		}
 	}
-	if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && sim->elements[parts[i].ctype].Enabled && parts[i].life==10)
+	if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && elements[parts[i].ctype].Enabled && parts[i].life==10)
 	{
 		if (parts[i].ctype==PT_PHOT) {//create photons a different way
 			for (auto rx = -1; rx <= 1; rx++)
@@ -147,7 +149,7 @@ static int update(UPDATE_FUNC_ARGS)
 			int np = sim->create_part(-1, x + sim->rng.between(-1, 1), y + sim->rng.between(-1, 1), TYP(parts[i].ctype));
 			if (np>=0)
 			{
-				if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && sim->elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)
+				if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)
 					parts[np].ctype = parts[i].tmp;
 			}
 		}

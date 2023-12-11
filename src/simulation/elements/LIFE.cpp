@@ -50,6 +50,7 @@ void Element::Element_LIFE()
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
+	auto &builtinGol = SimulationData::builtinGol;
 	auto colour1 = RGB<uint8_t>::Unpack(cpart->dcolour);
 	auto colour2 = RGB<uint8_t>::Unpack(cpart->tmp);
 	if (!cpart->dcolour)
@@ -57,10 +58,10 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		colour1 = 0xFFFFFF_rgb;
 	}
 	auto ruleset = cpart->ctype;
-	bool renderDeco = !ren->blackDecorations;
+	bool renderDeco = !gfctx.ren->blackDecorations;
 	if (ruleset >= 0 && ruleset < NGOL)
 	{
-		if (!renderDeco || !ren->decorations_enable)
+		if (!renderDeco || !gfctx.ren->decorations_enable)
 		{
 			colour1 = builtinGol[ruleset].colour;
 			colour2 = builtinGol[ruleset].colour2;
@@ -91,6 +92,8 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &builtinGol = sd.builtinGol;
 	if (v == -1)
 		v = 0;
 	// * 0x200000: No need to look for colours, they'll be set later anyway.
@@ -105,7 +108,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS)
 	}
 	else if (!skipLookup)
 	{
-		auto *cgol = sim->GetCustomGOLByRule(v);
+		auto *cgol = sd.GetCustomGOLByRule(v);
 		if (cgol)
 		{
 			sim->parts[i].dcolour = cgol->colour1;

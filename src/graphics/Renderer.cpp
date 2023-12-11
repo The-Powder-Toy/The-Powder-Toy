@@ -7,11 +7,13 @@
 #include "simulation/ElementClasses.h"
 #include "simulation/Air.h"
 #include "simulation/gravity/Gravity.h"
+#include "simulation/orbitalparts.h"
 #include <cmath>
 
 std::unique_ptr<VideoBuffer> Renderer::WallIcon(int wallID, Vec2<int> size)
 {
-	auto wtypes = LoadWalls();
+	auto &sd = SimulationData::CRef();
+	auto &wtypes = sd.wtypes;
 	if (wallID < 0 || wallID >= int(wtypes.size()))
 		return nullptr;
 	wall_type const &wtype = wtypes[wallID];
@@ -170,14 +172,20 @@ void Renderer::DrawSigns()
 
 void Renderer::render_parts()
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	auto &graphicscache = sd.graphicscache;
+	GraphicsFuncContext gfctx;
+	gfctx.ren = this;
+	gfctx.sim = sim;
+	gfctx.rng.seed(rng());
+	gfctx.pipeSubcallCpart = nullptr;
+	gfctx.pipeSubcallTpart = nullptr;
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y;
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
-	Particle * parts;
-	Element *elements;
 	if(!sim)
 		return;
-	parts = sim->parts;
-	elements = sim->elements.data();
+	auto *parts = sim->parts;
 	if (gridSize)//draws the grid
 	{
 		for (ny=0; ny<YRES; ny++)
@@ -199,7 +207,7 @@ void Renderer::render_parts()
 
 			if(nx >= XRES || nx < 0 || ny >= YRES || ny < 0)
 				continue;
-			if(TYP(sim->photons[ny][nx]) && !(sim->elements[t].Properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
+			if(TYP(sim->photons[ny][nx]) && !(elements[t].Properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
 				continue;
 
 			//Defaults
@@ -242,18 +250,22 @@ void Renderer::render_parts()
 				}
 				else if(!(colour_mode & COLOUR_BASC))
 				{
-					if (!elements[t].Graphics || (*(elements[t].Graphics))(this, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb)) //That's a lot of args, a struct might be better
+					auto *graphics = elements[t].Graphics;
+					auto makeReady = !graphics || graphics(gfctx, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb); //That's a lot of args, a struct might be better
+					if (makeReady && sim->useLuaCallbacks)
 					{
-						graphicscache[t].isready = 1;
-						graphicscache[t].pixel_mode = pixel_mode;
-						graphicscache[t].cola = cola;
-						graphicscache[t].colr = colr;
-						graphicscache[t].colg = colg;
-						graphicscache[t].colb = colb;
-						graphicscache[t].firea = firea;
-						graphicscache[t].firer = firer;
-						graphicscache[t].fireg = fireg;
-						graphicscache[t].fireb = fireb;
+						// useLuaCallbacks is true so we locked sd.elementGraphicsMx exclusively
+						auto &wgraphicscache = SimulationData::Ref().graphicscache;
+						wgraphicscache[t].isready = 1;
+						wgraphicscache[t].pixel_mode = pixel_mode;
+						wgraphicscache[t].cola = cola;
+						wgraphicscache[t].colr = colr;
+						wgraphicscache[t].colg = colg;
+						wgraphicscache[t].colb = colb;
+						wgraphicscache[t].firea = firea;
+						wgraphicscache[t].firer = firer;
+						wgraphicscache[t].fireg = fireg;
+						wgraphicscache[t].fireb = fireb;
 					}
 				}
 				if((elements[t].Properties & PROP_HOT_GLOW) && sim->parts[i].temp>(elements[t].HighTemperature-800.0f))
@@ -431,7 +443,7 @@ void Renderer::render_parts()
 				if(pixel_mode & PSPEC_STICKMAN)
 				{
 					int legr, legg, legb;
-					playerst *cplayer;
+					const playerst *cplayer;
 					if(t==PT_STKM)
 						cplayer = &sim->player;
 					else if(t==PT_STKM2)
@@ -619,7 +631,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_SPARK)
 				{
-					auto flicker = float(rng()%20);
+					auto flicker = float(gfctx.rng()%20);
 					auto gradv = 4*sim->parts[i].life + flicker;
 					for (x = 0; gradv>0.5; x++) {
 						auto col = RGBA<uint8_t>(
@@ -636,7 +648,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_FLARE)
 				{
-					auto flicker = float(rng()%20);
+					auto flicker = float(gfctx.rng()%20);
 					auto gradv = flicker + fabs(parts[i].vx)*17 + fabs(sim->parts[i].vy)*17;
 					BlendPixel({ nx, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) ));
 					BlendPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb,int( (gradv*2)>255?255:(gradv*2)) ));
@@ -658,7 +670,7 @@ void Renderer::render_parts()
 				}
 				if(pixel_mode & PMODE_LFLARE)
 				{
-					auto flicker = float(rng()%20);
+					auto flicker = float(gfctx.rng()%20);
 					auto gradv = flicker + fabs(parts[i].vx)*17 + fabs(parts[i].vy)*17;
 					BlendPixel({ nx, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) ));
 					BlendPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
@@ -685,7 +697,7 @@ void Renderer::render_parts()
 					int r;
 					float drad = 0.0f;
 					float ddist = 0.0f;
-					sim->orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
+					orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
 					for (r = 0; r < 4; r++) {
 						ddist = ((float)orbd[r])/16.0f;
 						drad = (TPT_PI_FLT * ((float)orbl[r]) / 180.0f)*1.41f;
@@ -702,7 +714,7 @@ void Renderer::render_parts()
 					int r;
 					float drad = 0.0f;
 					float ddist = 0.0f;
-					sim->orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
+					orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
 					for (r = 0; r < 4; r++) {
 						ddist = ((float)orbd[r])/16.0f;
 						drad = (TPT_PI_FLT * ((float)orbl[r]) / 180.0f)*1.41f;
@@ -927,6 +939,8 @@ void Renderer::draw_air()
 
 void Renderer::DrawWalls()
 {
+	auto &sd = SimulationData::CRef();
+	auto &wtypes = sd.wtypes;
 	for (int y = 0; y < YCELLS; y++)
 		for (int x =0; x < XCELLS; x++)
 			if (sim->bmap[y][x])
@@ -935,8 +949,8 @@ void Renderer::DrawWalls()
 				if (wt >= UI_WALLCOUNT)
 					continue;
 				unsigned char powered = sim->emap[y][x];
-				RGB<uint8_t> prgb = sim->wtypes[wt].colour;
-				RGB<uint8_t> grgb = sim->wtypes[wt].eglow;
+				RGB<uint8_t> prgb = wtypes[wt].colour;
+				RGB<uint8_t> grgb = wtypes[wt].eglow;
 
 				if (findingElement)
 				{
@@ -951,7 +965,7 @@ void Renderer::DrawWalls()
 				pixel pc = prgb.Pack();
 				pixel gc = grgb.Pack();
 
-				switch (sim->wtypes[wt].drawstyle)
+				switch (wtypes[wt].drawstyle)
 				{
 				case 0:
 					if (wt == WL_EWALL || wt == WL_STASIS)
@@ -1075,7 +1089,7 @@ void Renderer::DrawWalls()
 				// when in blob view, draw some blobs...
 				if (render_mode & PMODE_BLOB)
 				{
-					switch (sim->wtypes[wt].drawstyle)
+					switch (wtypes[wt].drawstyle)
 					{
 					case 0:
 						if (wt == WL_EWALL || wt == WL_STASIS)
@@ -1156,10 +1170,10 @@ void Renderer::DrawWalls()
 					}
 				}
 
-				if (sim->wtypes[wt].eglow.Pack() && powered)
+				if (wtypes[wt].eglow.Pack() && powered)
 				{
 					// glow if electrified
-					RGB<uint8_t> glow = sim->wtypes[wt].eglow;
+					RGB<uint8_t> glow = wtypes[wt].eglow;
 					int alpha = 255;
 					int cr = (alpha*glow.Red   + (255-alpha)*fire_r[y/CELL][x/CELL]) >> 8;
 					int cg = (alpha*glow.Green + (255-alpha)*fire_g[y/CELL][x/CELL]) >> 8;

@@ -8,6 +8,7 @@
 #include "Particle.h"
 #include "ElementGraphics.h"
 #include "Simulation.h"
+#include "SimulationData.h"
 #include "graphics/Renderer.h"
 #include <algorithm>
 #include <cmath>

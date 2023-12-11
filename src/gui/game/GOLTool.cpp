@@ -4,7 +4,7 @@
 #include "client/Client.h"
 #include "common/tpt-rand.h"
 #include "simulation/GOLString.h"
-#include "simulation/Simulation.h"
+#include "simulation/SimulationData.h"
 
 #include "gui/Style.h"
 #include "gui/interface/Button.h"
@@ -23,14 +23,13 @@ class GOLWindow: public ui::Window
 	ui::Button *highColourButton, *lowColourButton;
 	ui::Textbox *nameField, *ruleField;
 	GameModel &gameModel;
-	Simulation *sim;
 	int toolSelection;
 
 	void updateGradient();
 	void validate();
 
 public:
-	GOLWindow(GameModel &gameModel, Simulation *sim, int toolSelection, int rule, RGB<uint8_t> colour1, RGB<uint8_t> colour2);
+	GOLWindow(GameModel &gameModel, int toolSelection, int rule, RGB<uint8_t> colour1, RGB<uint8_t> colour2);
 
 	virtual ~GOLWindow()
 	{}
@@ -39,12 +38,11 @@ public:
 	void OnTryExit(ExitMethod method) override;
 };
 
-GOLWindow::GOLWindow(GameModel &gameModel_, Simulation *sim_, int toolSelection, int rule, RGB<uint8_t> colour1, RGB<uint8_t> colour2):
+GOLWindow::GOLWindow(GameModel &gameModel_, int toolSelection, int rule, RGB<uint8_t> colour1, RGB<uint8_t> colour2):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 108)),
 	highColour(colour1.WithAlpha(0xFF)),
 	lowColour(colour2.WithAlpha(0xFF)),
 	gameModel(gameModel_),
-	sim(sim_),
 	toolSelection(toolSelection)
 {
 	highColour.Alpha = 255;
@@ -135,6 +133,7 @@ void GOLWindow::updateGradient()
 
 void GOLWindow::validate()
 {
+	auto &sd = SimulationData::CRef();
 	auto nameString = nameField->GetText();
 	auto ruleString = ruleField->GetText();
 	if (!ValidateGOLName(nameString))
@@ -149,7 +148,7 @@ void GOLWindow::validate()
 		new ErrorMessage("Could not add GOL type", "Invalid rule provided");
 		return;
 	}
-	if (sim->GetCustomGOLByRule(rule))
+	if (sd.GetCustomGOLByRule(rule))
 	{
 		new ErrorMessage("Could not add GOL type", "This Custom GoL rule already exists");
 		return;
@@ -204,5 +203,5 @@ void GOLWindow::OnDraw()
 
 void GOLTool::OpenWindow(Simulation *sim, int toolSelection, int rule, RGB<uint8_t> colour1, RGB<uint8_t> colour2)
 {
-	new GOLWindow(gameModel, sim, toolSelection, rule, colour1, colour2);
+	new GOLWindow(gameModel, toolSelection, rule, colour1, colour2);
 }

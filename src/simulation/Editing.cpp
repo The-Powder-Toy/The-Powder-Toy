@@ -13,7 +13,7 @@
 #include <iostream>
 #include <cmath>
 
-std::unique_ptr<Snapshot> Simulation::CreateSnapshot()
+std::unique_ptr<Snapshot> Simulation::CreateSnapshot() const
 {
 	auto snap = std::make_unique<Snapshot>();
 	snap->AirPressure    .insert   (snap->AirPressure    .begin(), &pv  [0][0]      , &pv  [0][0] + NCELL);
@@ -188,7 +188,8 @@ int Simulation::Tool(int x, int y, int tool, int brushX, int brushY, float stren
 		cpart = &(parts[ID(r)]);
 	else if ((r = photons[y][x]))
 		cpart = &(parts[ID(r)]);
-	return tools[tool].Perform(this, cpart, x, y, brushX, brushY, strength);
+	auto &sd = SimulationData::CRef();
+	return sd.tools[tool].Perform(this, cpart, x, y, brushX, brushY, strength);
 }
 
 int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush const *cBrush)
@@ -426,27 +427,6 @@ int Simulation::CreatePartFlags(int x, int y, int c, int flags)
 
 	// I'm sure at least one compiler exists that would complain if this wasn't here
 	return 0;
-}
-
-int Simulation::GetParticleType(ByteString type)
-{
-	type = type.ToUpper();
-
-	// alternative names for some elements
-	if (byteStringEqualsLiteral(type, "C4"))
-		return PT_PLEX;
-	else if (byteStringEqualsLiteral(type, "C5"))
-		return PT_C5;
-	else if (byteStringEqualsLiteral(type, "NONE"))
-		return PT_NONE;
-	for (int i = 1; i < PT_NUM; i++)
-	{
-		if (elements[i].Name.size() && elements[i].Enabled && type == elements[i].Name.ToUtf8().ToUpper())
-		{
-			return i;
-		}
-	}
-	return -1;
 }
 
 void Simulation::ApplyDecoration(int x, int y, int colR_, int colG_, int colB_, int colA_, int mode)
@@ -1058,6 +1038,8 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 	coord_stack[coord_stack_size][1] = y;
 	coord_stack_size++;
 
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	do
 	{
 		coord_stack_size--;

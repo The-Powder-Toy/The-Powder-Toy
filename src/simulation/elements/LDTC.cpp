@@ -1,5 +1,5 @@
 #include "simulation/ElementCommon.h"
-#include <iostream>
+#include "FILT.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -74,8 +74,10 @@ static bool phot_data_type(int rt)
  */
 static bool accepted_conductor(Simulation* sim, int r)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int rt = TYP(r);
-	return (sim->elements[rt].Properties & PROP_CONDUCTS) &&
+	return (elements[rt].Properties & PROP_CONDUCTS) &&
 		!(rt == PT_WATR || rt == PT_SLTW || rt == PT_NTCT ||
 		rt == PT_PTCT || rt == PT_INWR) &&
 		sim->parts[ID(r)].life == 0;
@@ -149,7 +151,6 @@ static int update(UPDATE_FUNC_ARGS)
 							continue;
 
 						int nx = x + rx, ny = y + ry;
-						int Element_FILT_getWavelengths(Particle* cpart);
 						int photonWl = TYP(rr) == PT_FILT ?
 							Element_FILT_getWavelengths(&parts[ID(rr)]) :
 							parts[ID(rr)].ctype;

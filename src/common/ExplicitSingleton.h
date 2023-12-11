@@ -28,4 +28,9 @@ public:
 	{
 		return *Instance();
 	}
+
+	static const Type &CRef()
+	{
+		return Ref();
+	}
 };

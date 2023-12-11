@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "FILT.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);
@@ -51,9 +52,11 @@ void Element::Element_CRAY()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int nxx, nyy, docontinue, nxi, nyi;
 	// set ctype to things that touch it if it doesn't have one already
-	if (parts[i].ctype<=0 || !sim->elements[TYP(parts[i].ctype)].Enabled)
+	if (parts[i].ctype<=0 || !elements[TYP(parts[i].ctype)].Enabled)
 	{
 		for (int rx = -1; rx <= 1; rx++)
 		{
@@ -114,7 +117,6 @@ static int update(UPDATE_FUNC_ARGS)
 									colored = 0xFF000000;
 								else if (parts[ID(r)].tmp==0)
 								{
-									int Element_FILT_getWavelengths(Particle* cpart);
 									colored = wavelengthToDecoColour(Element_FILT_getWavelengths(&parts[ID(r)]));
 								}
 								else if (colored==0xFF000000)
@@ -166,6 +168,8 @@ static unsigned int wavelengthToDecoColour(int wavelength)
 
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (!Element::ctypeDrawVInCtype(CTYPEDRAW_FUNC_SUBCALL_ARGS))
 	{
 		return false;
@@ -174,6 +178,6 @@ static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 	{
 		sim->parts[i].ctype |= PMAPID(30);
 	}
-	sim->parts[i].temp = sim->elements[t].DefaultProperties.temp;
+	sim->parts[i].temp = elements[t].DefaultProperties.temp;
 	return true;
 }
