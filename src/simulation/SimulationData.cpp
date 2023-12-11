@@ -337,9 +337,9 @@ int SimulationData::GetParticleType(ByteString type) const
 
 SimulationData::SimulationData()
 {
-	init_can_move();
 	msections = LoadMenus();
 	wtypes = LoadWalls();
 	elements = GetElements();
 	tools = GetTools();
+	init_can_move();
 }
