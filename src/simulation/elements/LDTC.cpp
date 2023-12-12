@@ -104,7 +104,7 @@ static int update(UPDATE_FUNC_ARGS)
 				if (!r)
 					continue;
 				bool boolMode = accepted_conductor(sim, r);
-				bool filtMode = copyColor && TYP(r) == PT_FILT;
+				bool filtMode = copyColor && (TYP(r) == PT_FILT || TYP(r) == PT_PAPR);
 				if (!boolMode && !filtMode)
 					continue;
 
@@ -147,21 +147,59 @@ static int update(UPDATE_FUNC_ARGS)
 
 					if (filtMode)
 					{
-						if (!phot_data_type(TYP(rr)))
+						if (!phot_data_type(TYP(rr)) && TYP(rr) != PT_PAPR)
 							continue;
 
 						int nx = x + rx, ny = y + ry;
 						int photonWl = TYP(rr) == PT_FILT ?
 							Element_FILT_getWavelengths(&parts[ID(rr)]) :
 							parts[ID(rr)].ctype;
-						while (TYP(r) == PT_FILT)
+						if (TYP(rr) == PT_PAPR)
 						{
-							parts[ID(r)].ctype = photonWl;
-							nx += rx;
-							ny += ry;
-							if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
-								break;
-							r = pmap[ny][nx];
+							photonWl = 0x0;
+							int bit = 0x1;
+							while (TYP(rr) == PT_PAPR && bit <= 0x3FFFFFFF)
+							{
+								if ((parts[ID(rr)].life >> 24) & 0x1)
+								{
+									photonWl |= bit;
+								}
+								xCurrent += xStep;
+								yCurrent += yStep;
+								if (xCurrent < 0 || yCurrent < 0 || xCurrent >= XRES || yCurrent >= YRES)
+									break;
+								rr = pmap[yCurrent][xCurrent];
+								bit <<= 1;
+							}
+						}
+						if (TYP(r) == PT_FILT)
+						{
+							while (TYP(r) == PT_FILT)
+							{
+								parts[ID(r)].ctype = photonWl;
+								nx += rx;
+								ny += ry;
+								if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
+									break;
+								r = pmap[ny][nx];
+							}
+						}
+						if (TYP(r) == PT_PAPR)
+						{
+							int bit = 0x1;
+							while (TYP(r) == PT_PAPR && bit <= 0x3FFFFFFF)
+							{
+								if (photonWl & bit)
+								 	parts[ID(r)].life = 0x1080820;
+								else
+								 	parts[ID(r)].life = 0x0;
+								nx += rx;
+								ny += ry;
+								if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
+									break;
+								r = pmap[ny][nx];
+								bit <<= 1; 
+							}
 						}
 						break;
 					}
