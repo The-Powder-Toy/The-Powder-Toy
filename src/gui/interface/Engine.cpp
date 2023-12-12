@@ -41,6 +41,15 @@ void Engine::SetFpsLimit(FpsLimit newFpsLimit)
 {
 	fpsLimit = newFpsLimit;
 	::SetFpsLimit(fpsLimit);
+	// Populate dt with whatever that makes any sort of sense.
+	if (auto *explicitFpsLimit = std::get_if<FpsLimitExplicit>(&fpsLimit))
+	{
+		SetFps(explicitFpsLimit->value);
+	}
+	else
+	{
+		SetFps(1);
+	}
 }
 
 void Engine::Begin()
