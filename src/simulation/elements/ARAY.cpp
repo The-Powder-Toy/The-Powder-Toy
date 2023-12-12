@@ -173,6 +173,8 @@ static int update(UPDATE_FUNC_ARGS)
 									if (parts[r].tmp & 0x10)
 									{
 										// Read
+										// End reading state early
+										parts[r].tmp = 0;
 										if ((parts[r].life >> 24) & 0x1)
 										{
 											break;
@@ -232,6 +234,8 @@ static int update(UPDATE_FUNC_ARGS)
 										if (parts[r].tmp & 0x10)
 										{
 											// Read
+											// End reading state early
+											parts[r].tmp = 0;
 											if ((parts[r].life >> 24) & 0x1)
 											{
 												break;

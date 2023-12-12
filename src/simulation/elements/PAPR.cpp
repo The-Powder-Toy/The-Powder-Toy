@@ -134,5 +134,23 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		*colg -= (int)restrict_flt((maxtemp-450)*1.4f,0,230);
 		*colb -= (int)restrict_flt((maxtemp-450)*1.7f,0,197);
 	}
+	if (cpart->tmp)
+	{
+		*pixel_mode |= PMODE_GLOW;
+		float flash = (cpart->tmp & 0xF) / 15.f;
+		*cola = flash * 200;
+		*colr = int(*colr * (1 - flash));
+		*colg = int(*colg * (1 - flash));
+		*colb = int(*colb * (1 - flash));
+		if (cpart->tmp & 0x10)
+		{
+			*colr += int(255 * flash);
+		}
+		else
+		{
+			*colg += int(255 * flash);
+			*colb += int(255 * flash);
+		}
+	}
 	return 0;
 }
