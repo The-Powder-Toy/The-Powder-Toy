@@ -108,7 +108,10 @@ static int update(UPDATE_FUNC_ARGS)
 		if (parts[i].life)
 		{
 			if (!--parts[i].life)
+			{
 				sim->kill_part(i);
+				return 1;
+			}
 		}
 		break;
 	default:
