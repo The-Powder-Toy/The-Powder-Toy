@@ -1095,8 +1095,12 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr) const
 			}
 			break;
 		case PT_PAPR:
-			// May allow PAPR to block particles when marked? Or would that be too contrived?
-			result = 2;
+			// BCOL can always pass through PAPR in order to color it
+			// Most elements are blocked by marked PAPR, except for certified "weird" elements where it's inverse
+			if ((pt == PT_BCOL) || ((parts[ID(r)].life >> 24) & 0x01 ^ (pt != PT_ANAR && pt != PT_BIZR && pt != PT_BIZRG)))
+				result = 2;
+			else
+				result = 0;
 			break;
 		default:
 			// This should never happen

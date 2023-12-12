@@ -8,7 +8,7 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 // Additionally, it can be read and written to by ARAY.
 
 // Property usage:
-// life: Written color value. If dcolour is not black, it gets copied here. 1 bit alpha
+// life: Written color value. Uses same format as dcolour.
 // tmp: Temporary read/write state for ARAY interaction
 // tmp2: Singe level
 
@@ -77,11 +77,55 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 		}
 	}
+
+	// Get marked by BCOL
+	if (TYP(pmap[y][x]) == PT_BCOL)
+	{
+		parts[i].life = 0x122222A;
+	}
+
+	// Get unmarked by SOAP
+	for (auto rx = -1; rx <= 1; rx++)
+	{
+		for (auto ry = -1; ry <= 1; ry++)
+		{
+			if (rx || ry)
+			{
+				auto r = pmap[y+ry][x+rx];
+				if (!r)
+					continue;
+				if (TYP(r) == PT_SOAP)
+				{
+					parts[i].life = 0;
+				}
+			}
+		}
+	}
+
+	// Decrement tmp counter for laser reading/writing
+	if (parts[i].tmp & 0xF)
+	{
+		parts[i].tmp--;
+	}
+	else
+	{
+		parts[i].tmp = 0;
+	}
 	return 0;
 }
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
+	int ta = (cpart->life >> 24) & 0x01;
+	int tr = (cpart->life >> 16) & 0xFF;
+	int tg = (cpart->life >> 8) & 0xFF;
+	int tb = (cpart->life) & 0xFF;
+	if (ta)
+	{
+		*colr = tr;
+		*colg = tg;
+		*colb = tb;
+	}
 	// Darken when burnt
 	float maxtemp = std::max((float)cpart->tmp2, cpart->temp);
 	if (maxtemp > 450)
