@@ -107,10 +107,20 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	if (cpart->life)
 	{
-		float alpha = ((cpart->dcolour >> 24) & 0xFF) / 255.f;
-		*colr = int(*colr * (1 - alpha) + ((cpart->dcolour >> 16) & 0xFF) * alpha);
-		*colg = int(*colg * (1 - alpha) + ((cpart->dcolour >> 8) & 0xFF) * alpha);
-		*colb = int(*colb * (1 - alpha) + ((cpart->dcolour) & 0xFF) * alpha);
+		// Render deco color when marked
+		if(gfctx.ren->decorations_enable && !gfctx.ren->blackDecorations)
+		{
+			float alpha = ((cpart->dcolour >> 24) & 0xFF) / 255.f;
+			*colr = int(*colr * (1 - alpha) + ((cpart->dcolour >> 16) & 0xFF) * alpha);
+			*colg = int(*colg * (1 - alpha) + ((cpart->dcolour >> 8) & 0xFF) * alpha);
+			*colb = int(*colb * (1 - alpha) + ((cpart->dcolour) & 0xFF) * alpha);
+		}
+		else // If deco is disabled or blackDecorations is on, become a generic dark gray color
+		{
+			*colr = 20;
+			*colg = 20;
+			*colb = 20;
+		}
 	}
 	// Darken when burnt
 	float maxtemp = std::max((float)cpart->tmp2, cpart->temp);
