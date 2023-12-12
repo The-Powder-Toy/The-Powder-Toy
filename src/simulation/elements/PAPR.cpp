@@ -112,16 +112,17 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		if(gfctx.ren->decorations_enable && !gfctx.ren->blackDecorations)
 		{
 			// Burnt paper has more faded colors
-			float alpha = restrict_flt(((cpart->dcolour >> 24) & 0xFF) - (burnAmount - 450) * 1.7f, 0, 255) / 255.f;
+			float alpha = restrict_flt(((cpart->dcolour >> 24) & 0xFF) - restrict_flt((burnAmount - 450) * 1.7f, 0, 255), 0, 255) / 255.f;
 			*colr = int(*colr * (1 - alpha) + ((cpart->dcolour >> 16) & 0xFF) * alpha);
 			*colg = int(*colg * (1 - alpha) + ((cpart->dcolour >> 8) & 0xFF) * alpha);
 			*colb = int(*colb * (1 - alpha) + ((cpart->dcolour) & 0xFF) * alpha);
 		}
 		else // If deco is disabled or blackDecorations is on, become a generic dark gray color
 		{
-			*colr = 20;
-			*colg = 20;
-			*colb = 20;
+			float alpha = 1 - restrict_flt((burnAmount - 450) * 1.7f, 0, 255) / 255.f;
+			*colr = int(*colr * (1 - alpha) + 20 * alpha);
+			*colg = int(*colg * (1 - alpha) + 20 * alpha);
+			*colb = int(*colb * (1 - alpha) + 20 * alpha);
 		}
 	}
 	// Darken when burnt
