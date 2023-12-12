@@ -112,7 +112,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		if(gfctx.ren->decorations_enable && !gfctx.ren->blackDecorations)
 		{
 			// Burnt paper has more faded colors
-			float alpha = (((cpart->dcolour >> 24) & 0xFF) - restrict_flt((burnAmount - 450) * 1.5f, 0, 255)) / 255.f;
+			float alpha = restrict_flt(((cpart->dcolour >> 24) & 0xFF) - (burnAmount - 450) * 1.7f, 0, 255) / 255.f;
 			*colr = int(*colr * (1 - alpha) + ((cpart->dcolour >> 16) & 0xFF) * alpha);
 			*colg = int(*colg * (1 - alpha) + ((cpart->dcolour >> 8) & 0xFF) * alpha);
 			*colb = int(*colb * (1 - alpha) + ((cpart->dcolour) & 0xFF) * alpha);
@@ -127,15 +127,15 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	// Darken when burnt
 	if (burnAmount > 450)
 	{
-		*colr -= (int)restrict_flt((burnAmount - 450) * 1.2f, 0, 230);
-		*colg -= (int)restrict_flt((burnAmount - 450) * 1.4f, 0, 240);
-		*colb -= (int)restrict_flt((burnAmount - 450) * 1.7f, 0, 197);
+		*colr -= (int)restrict_flt((burnAmount - 450) * 1.2f, 0, 220);
+		*colg -= (int)restrict_flt((burnAmount - 450) * 1.4f, 0, 230);
+		*colb -= (int)restrict_flt((burnAmount - 450) * 1.6f, 0, 197);
 	}
 	if (cpart->tmp)
 	{
 		*pixel_mode |= PMODE_GLOW;
 		float flash = (cpart->tmp & 0xF) / 3.f;
-		*cola = flash * 200;
+		*cola = int(flash * 200);
 		*colr = int(*colr * (1 - flash));
 		*colg = int(*colg * (1 - flash));
 		*colb = int(*colb * (1 - flash));
