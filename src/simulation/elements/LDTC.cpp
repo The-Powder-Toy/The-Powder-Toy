@@ -160,7 +160,7 @@ static int update(UPDATE_FUNC_ARGS)
 							int bit = 0x1;
 							while (TYP(rr) == PT_PAPR && bit <= 0x3FFFFFFF)
 							{
-								if ((parts[ID(rr)].life >> 24) & 0x1)
+								if (parts[ID(rr)].life)
 								{
 									photonWl |= bit;
 								}
@@ -190,9 +190,15 @@ static int update(UPDATE_FUNC_ARGS)
 							while (TYP(r) == PT_PAPR && bit <= 0x3FFFFFFF)
 							{
 								if (photonWl & bit)
-								 	parts[ID(r)].life = 0x1080820;
+								{
+								 	parts[ID(r)].life = 1;
+								 	parts[ID(r)].dcolour = 0x1080820;
+								}
 								else
-								 	parts[ID(r)].life = 0x0;
+								{
+								 	parts[ID(r)].life = 0;
+								 	parts[ID(r)].dcolour = 0;
+								}
 								nx += rx;
 								ny += ry;
 								if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)

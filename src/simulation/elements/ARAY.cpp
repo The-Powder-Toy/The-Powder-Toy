@@ -175,7 +175,7 @@ static int update(UPDATE_FUNC_ARGS)
 										// Read
 										// End reading state early
 										parts[r].tmp = 0;
-										if ((parts[r].life >> 24) & 0x1)
+										if (parts[r].life)
 										{
 											break;
 										}
@@ -183,13 +183,14 @@ static int update(UPDATE_FUNC_ARGS)
 									else
 									{
 										// Write
-										parts[r].life = 0x11A2222;
+										parts[r].life = 1;
+										parts[r].dcolour = 0xFF1A2222;
 									}
 								}
 								else
 								{
 									// Enter writing state
-									parts[r].tmp = 0x0A;
+									parts[r].tmp = 0x03;
 								}
 							// this if prevents BRAY from stopping on certain materials
 							}
@@ -236,7 +237,7 @@ static int update(UPDATE_FUNC_ARGS)
 											// Read
 											// End reading state early
 											parts[r].tmp = 0;
-											if ((parts[r].life >> 24) & 0x1)
+											if (parts[r].life)
 											{
 												break;
 											}
@@ -244,13 +245,14 @@ static int update(UPDATE_FUNC_ARGS)
 										else
 										{
 											// Write
-											parts[r].life = 0x0;
+											parts[r].life = 0;
+											parts[r].dcolour = 0;
 										}
 									}
 									else
 									{
 										// Enter reading state
-										parts[r].tmp = 0x1A;
+										parts[r].tmp = 0x13;
 									}
 								}
 								docontinue = 1;

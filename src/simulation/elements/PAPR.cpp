@@ -50,7 +50,7 @@ void Element::Element_PAPR()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 700.0f;
-	HighTemperatureTransition = PT_NONE; // Add ash or broken paper element?
+	HighTemperatureTransition = PT_NONE;
 
 	Update = &update;
 	Graphics = &graphics;
@@ -81,25 +81,14 @@ static int update(UPDATE_FUNC_ARGS)
 	// Get marked by BCOL
 	if (TYP(pmap[y][x]) == PT_BCOL)
 	{
-		parts[i].life = 0x122222A;
+		parts[i].life = 1;
+		parts[i].dcolour = 0xFF22222A;
 	}
 
-	// Get unmarked by SOAP
-	for (auto rx = -1; rx <= 1; rx++)
+	// Generally, these should correspond, but correct if they don't.
+	if (!parts[i].life != !parts[i].dcolour)
 	{
-		for (auto ry = -1; ry <= 1; ry++)
-		{
-			if (rx || ry)
-			{
-				auto r = pmap[y+ry][x+rx];
-				if (!r)
-					continue;
-				if (TYP(r) == PT_SOAP)
-				{
-					parts[i].life = 0;
-				}
-			}
-		}
+		parts[i].life = parts[i].dcolour ? 1 : 0;
 	}
 
 	// Decrement tmp counter for laser reading/writing
@@ -116,15 +105,12 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	int ta = (cpart->life >> 24) & 0x01;
-	int tr = (cpart->life >> 16) & 0xFF;
-	int tg = (cpart->life >> 8) & 0xFF;
-	int tb = (cpart->life) & 0xFF;
-	if (ta)
+	if (cpart->life)
 	{
-		*colr = tr;
-		*colg = tg;
-		*colb = tb;
+		float alpha = ((cpart->dcolour >> 24) & 0xFF) / 255.f;
+		*colr = int(*colr * (1 - alpha) + ((cpart->dcolour >> 16) & 0xFF) * alpha);
+		*colg = int(*colg * (1 - alpha) + ((cpart->dcolour >> 8) & 0xFF) * alpha);
+		*colb = int(*colb * (1 - alpha) + ((cpart->dcolour) & 0xFF) * alpha);
 	}
 	// Darken when burnt
 	float maxtemp = std::max((float)cpart->tmp2, cpart->temp);
@@ -137,7 +123,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	if (cpart->tmp)
 	{
 		*pixel_mode |= PMODE_GLOW;
-		float flash = (cpart->tmp & 0xF) / 15.f;
+		float flash = (cpart->tmp & 0xF) / 3.f;
 		*cola = flash * 200;
 		*colr = int(*colr * (1 - flash));
 		*colg = int(*colg * (1 - flash));
@@ -152,5 +138,6 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 			*colb += int(255 * flash);
 		}
 	}
+	*pixel_mode |= NO_DECO;
 	return 0;
 }
