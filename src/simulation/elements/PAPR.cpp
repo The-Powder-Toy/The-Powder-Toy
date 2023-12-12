@@ -105,12 +105,14 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
+	float burnAmount = std::max((float)cpart->tmp2, cpart->temp);
 	if (cpart->life)
 	{
 		// Render deco color when marked
 		if(gfctx.ren->decorations_enable && !gfctx.ren->blackDecorations)
 		{
-			float alpha = ((cpart->dcolour >> 24) & 0xFF) / 255.f;
+			// Burnt paper has more faded colors
+			float alpha = (((cpart->dcolour >> 24) & 0xFF) - restrict_flt((burnAmount - 450) * 1.5f, 0, 255)) / 255.f;
 			*colr = int(*colr * (1 - alpha) + ((cpart->dcolour >> 16) & 0xFF) * alpha);
 			*colg = int(*colg * (1 - alpha) + ((cpart->dcolour >> 8) & 0xFF) * alpha);
 			*colb = int(*colb * (1 - alpha) + ((cpart->dcolour) & 0xFF) * alpha);
@@ -123,12 +125,11 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		}
 	}
 	// Darken when burnt
-	float maxtemp = std::max((float)cpart->tmp2, cpart->temp);
-	if (maxtemp > 450)
+	if (burnAmount > 450)
 	{
-		*colr -= (int)restrict_flt((maxtemp-450)*1.2f,0,230);
-		*colg -= (int)restrict_flt((maxtemp-450)*1.4f,0,230);
-		*colb -= (int)restrict_flt((maxtemp-450)*1.7f,0,197);
+		*colr -= (int)restrict_flt((burnAmount - 450) * 1.2f, 0, 230);
+		*colg -= (int)restrict_flt((burnAmount - 450) * 1.4f, 0, 240);
+		*colb -= (int)restrict_flt((burnAmount - 450) * 1.7f, 0, 197);
 	}
 	if (cpart->tmp)
 	{
