@@ -1411,7 +1411,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			return 1;
 		}
 
-		if (ID(pmap[ny][nx]) == ri)
+		if (pmap[ny][nx] && ID(pmap[ny][nx]) == ri)
 			pmap[ny][nx] = 0;
 		parts[ri].x += float(x - nx);
 		parts[ri].y += float(y - ny);
@@ -1469,9 +1469,9 @@ bool Simulation::move(int i, int x, int y, float nxf, float nyf)
 	parts[i].y = nyf;
 	if (ny != y || nx != x)
 	{
-		if (ID(pmap[y][x]) == i)
+		if (pmap[y][x] && ID(pmap[y][x]) == i)
 			pmap[y][x] = 0;
-		if (ID(photons[y][x]) == i)
+		if (photons[y][x] && ID(photons[y][x]) == i)
 			photons[y][x] = 0;
 		// kill_part if particle is out of bounds
 		if (nx < CELL || nx >= XRES - CELL || ny < CELL || ny >= YRES - CELL)
@@ -1676,9 +1676,9 @@ void Simulation::kill_part(int i)//kills particle number i
 
 	if (x >= 0 && y >= 0 && x < XRES && y < YRES)
 	{
-		if (ID(pmap[y][x]) == i)
+		if (pmap[y][x] && ID(pmap[y][x]) == i)
 			pmap[y][x] = 0;
-		else if (ID(photons[y][x]) == i)
+		else if (photons[y][x] && ID(photons[y][x]) == i)
 			photons[y][x] = 0;
 	}
 
@@ -1726,13 +1726,13 @@ bool Simulation::part_change_type(int i, int x, int y, int t)
 	if (elements[t].Properties & TYPE_ENERGY)
 	{
 		photons[y][x] = PMAP(i, t);
-		if (ID(pmap[y][x]) == i)
+		if (pmap[y][x] && ID(pmap[y][x]) == i)
 			pmap[y][x] = 0;
 	}
 	else
 	{
 		pmap[y][x] = PMAP(i, t);
-		if (ID(photons[y][x]) == i)
+		if (photons[y][x] && ID(photons[y][x]) == i)
 			photons[y][x] = 0;
 	}
 	return false;
@@ -1828,9 +1828,9 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	{
 		int oldX = (int)(parts[p].x + 0.5f);
 		int oldY = (int)(parts[p].y + 0.5f);
-		if (ID(pmap[oldY][oldX]) == p)
+		if (pmap[oldY][oldX] && ID(pmap[oldY][oldX]) == p)
 			pmap[oldY][oldX] = 0;
-		if (ID(photons[oldY][oldX]) == p)
+		if (photons[oldY][oldX] && ID(photons[oldY][oldX]) == p)
 			photons[oldY][oldX] = 0;
 
 		oldType = parts[p].type;
@@ -2889,9 +2889,9 @@ killed:
 				}
 				if (ny!=y || nx!=x)
 				{
-					if (ID(pmap[y][x]) == i)
+					if (pmap[y][x] && ID(pmap[y][x]) == i)
 						pmap[y][x] = 0;
-					else if (ID(photons[y][x]) == i)
+					else if (photons[y][x] && ID(photons[y][x]) == i)
 						photons[y][x] = 0;
 					if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)
 					{
