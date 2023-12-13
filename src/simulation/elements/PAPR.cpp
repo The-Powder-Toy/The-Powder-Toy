@@ -5,10 +5,10 @@ static int graphics(GRAPHICS_FUNC_ARGS);
 
 // Element overview:
 // PAPR (Paper) is a flammable solid element that can be colored by certain other elements.
-// Additionally, it can be read and written to by ARAY.
+// Additionally, it can be read and written to by ARAY and LDTC.
 
 // Property usage:
-// life: Written color value. Uses same format as dcolour.
+// life: Whether or not the particle is marked
 // tmp: Temporary read/write state for ARAY interaction
 // tmp2: Singe level
 
@@ -39,7 +39,7 @@ void Element::Element_PAPR()
 	Weight = 100;
 
 	HeatConduct = 80;
-	Description = "Paper. Flammable, readable, writable.";
+	Description = "Paper. Flammable, can be marked by BCOL or deco. Lets non-solids through when unmarked.";
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 

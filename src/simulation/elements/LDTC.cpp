@@ -158,6 +158,7 @@ static int update(UPDATE_FUNC_ARGS)
 						{
 							photonWl = 0x0;
 							int bit = 0x1;
+							// Read one bit of the wavelength from successive particles
 							while (TYP(rr) == PT_PAPR && bit <= 0x3FFFFFFF)
 							{
 								if (parts[ID(rr)].life)
@@ -186,6 +187,7 @@ static int update(UPDATE_FUNC_ARGS)
 						}
 						if (TYP(r) == PT_PAPR)
 						{
+							// Write each bit of the wavelength to successive particles
 							int bit = 0x1;
 							while (TYP(r) == PT_PAPR && bit <= 0x3FFFFFFF)
 							{

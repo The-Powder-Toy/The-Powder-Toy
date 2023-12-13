@@ -168,11 +168,11 @@ static int update(UPDATE_FUNC_ARGS)
 							}
 							else if (rt == PT_PAPR)
 							{
+								// In reading/writing state?
 								if (parts[r].tmp)
 								{
-									if (parts[r].tmp & 0x10)
+									if (parts[r].tmp & 0x10) // Reading state
 									{
-										// Read
 										// End reading state early
 										parts[r].tmp = 0;
 										if (parts[r].life)
@@ -180,9 +180,8 @@ static int update(UPDATE_FUNC_ARGS)
 											break;
 										}
 									}
-									else
+									else // Writing state
 									{
-										// Write
 										parts[r].life = 1;
 										parts[r].dcolour = 0xFF1A2222;
 									}
@@ -230,11 +229,11 @@ static int update(UPDATE_FUNC_ARGS)
 								}
 								else if (rt == PT_PAPR)
 								{
+									// In reading/writing state?
 									if (parts[r].tmp)
 									{
-										if (parts[r].tmp & 0x10)
+										if (parts[r].tmp & 0x10) // Reading state
 										{
-											// Read
 											// End reading state early
 											parts[r].tmp = 0;
 											if (parts[r].life)
@@ -242,9 +241,8 @@ static int update(UPDATE_FUNC_ARGS)
 												break;
 											}
 										}
-										else
+										else // Writing state
 										{
-											// Write
 											parts[r].life = 0;
 											parts[r].dcolour = 0;
 										}
