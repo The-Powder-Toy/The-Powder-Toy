@@ -105,6 +105,13 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
+	// Don't render if there's a particle above you
+	int onTopOfMe = gfctx.sim->pmap[ny][nx];
+	if (onTopOfMe && &gfctx.sim->parts[ID(onTopOfMe)] != cpart)
+	{
+		*pixel_mode = PMODE_NONE;
+		return 0;
+	}
 	float burnAmount = std::max((float)cpart->tmp2, cpart->temp);
 	if (cpart->life)
 	{
