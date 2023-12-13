@@ -192,7 +192,7 @@ static int update(UPDATE_FUNC_ARGS)
 								if (photonWl & bit)
 								{
 								 	parts[ID(r)].life = 1;
-								 	parts[ID(r)].dcolour = 0xFF0F0820;
+								 	parts[ID(r)].dcolour = 0xFF1B133F;
 								}
 								else
 								{
