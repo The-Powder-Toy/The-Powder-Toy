@@ -97,7 +97,8 @@ void Label::OnMouseClick(int x, int y, unsigned button)
 	else
 	{
 		selecting = true;
-		selectionIndex0 = textWrapper.Point2Index(x - textPosition.X, y - textPosition.Y);
+		auto tp = textPosition - Vec2{ scrollX, 0 };
+		selectionIndex0 = textWrapper.Point2Index(x - tp.X, y - tp.Y);
 		selectionIndexL = selectionIndex0;
 		selectionIndexH = selectionIndex0;
 
@@ -143,7 +144,8 @@ void Label::OnMouseMoved(int localx, int localy, int dx, int dy)
 {
 	if (selecting)
 	{
-		selectionIndex1 = textWrapper.Point2Index(localx - textPosition.X, localy - textPosition.Y);
+		auto tp = textPosition - Vec2{ scrollX, 0 };
+		selectionIndex1 = textWrapper.Point2Index(localx - tp.X, localy - tp.Y);
 		if (selectionIndex1.raw_index < selectionIndex0.raw_index)
 		{
 			selectionIndexL = selectionIndex1;
@@ -160,6 +162,10 @@ void Label::OnMouseMoved(int localx, int localy, int dx, int dy)
 
 void Label::Tick(float dt)
 {
+	if (multiline)
+	{
+		scrollX = 0;
+	}
 	if (!this->IsFocused() && (HasSelection() || selecting))
 	{
 		ClearSelection();
@@ -244,13 +250,16 @@ void Label::Draw(const Point& screenPos)
 	int selectionYH;
 	int selectionLineH = displayTextWrapper.Index2Point(indexH, selectionXH, selectionYH);
 
+	auto clip = RectSized(screenPos + Vec2{ 1, 1 }, Size - Vec2{ 2, 2 }) & g->GetClipRect();
+	g->SwapClipRect(clip);
+	auto tp = textPosition - Vec2{ scrollX, 0 };
 	if (HasSelection())
 	{
 		if (selectionLineH == selectionLineL)
 		{
 			g->DrawFilledRect(
 				RectSized(
-					screenPos + textPosition + Vec2{ selectionXL - 1, selectionYL - 2 },
+					screenPos + tp + Vec2{ selectionXL - 1, selectionYL - 2 },
 					Vec2{ selectionXH - selectionXL + 1, FONT_H }
 				),
 				0xFFFFFF_rgb
@@ -260,7 +269,7 @@ void Label::Draw(const Point& screenPos)
 		{
 			g->DrawFilledRect(
 				RectSized(
-					screenPos + textPosition + Vec2{ selectionXL - 1, selectionYL - 2 },
+					screenPos + tp + Vec2{ selectionXL - 1, selectionYL - 2 },
 					Vec2{ textSize.X - selectionXL + 1, FONT_H }
 				),
 				0xFFFFFF_rgb
@@ -269,7 +278,7 @@ void Label::Draw(const Point& screenPos)
 			{
 				g->DrawFilledRect(
 					RectSized(
-						screenPos + textPosition + Vec2{ -1, selectionYL - 2 + i * FONT_H },
+						screenPos + tp + Vec2{ -1, selectionYL - 2 + i * FONT_H },
 						Vec2{ textSize.X + 1, FONT_H }
 					),
 					0xFFFFFF_rgb
@@ -277,18 +286,18 @@ void Label::Draw(const Point& screenPos)
 			}
 			g->DrawFilledRect(
 				RectSized(
-					screenPos + textPosition + Vec2{ -1, selectionYH - 2 },
+					screenPos + tp + Vec2{ -1, selectionYH - 2 },
 					Vec2{ selectionXH + 1, FONT_H }
 				),
 				0xFFFFFF_rgb
 			);
 		}
 	}
-
 	g->BlendText(
-		screenPos + textPosition,
+		screenPos + tp,
 		displayTextWithSelection,
 		textColour.NoAlpha().WithAlpha(255)
 	);
+	g->SwapClipRect(clip);
 }
 

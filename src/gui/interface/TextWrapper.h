@@ -27,6 +27,7 @@ namespace ui
 			Index index;
 		};
 		int wrapped_lines;
+		int wrappedWidth;
 		std::vector<clickmap_region> regions;
 
 	public:
@@ -53,6 +54,11 @@ namespace ui
 		Index IndexEnd() const
 		{
 			return Index{ raw_text_size, (int)wrapped_text.size(), clear_text_size };
+		}
+
+		int WrappedWidth() const
+		{
+			return wrappedWidth;
 		}
 	};
 }

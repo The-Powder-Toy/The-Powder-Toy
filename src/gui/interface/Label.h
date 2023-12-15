@@ -35,6 +35,7 @@ namespace ui
 		int getLowerSelectionBound();
 		int getHigherSelectionBound();
 
+		int scrollX = 0;
 
 		void copySelection();
 	public:
