@@ -1358,6 +1358,10 @@ void GameModel::SetPlaceSave(std::unique_ptr<GameSave> save)
 	transformedPlaceSave.reset();
 	placeSave = std::move(save);
 	notifyPlaceSaveChanged();
+	if (placeSave && placeSave->missingElements)
+	{
+		Log("Paste content has missing custom elements", false);
+	}
 }
 
 void GameModel::TransformPlaceSave(Mat2<int> transform, Vec2<int> nudge)
