@@ -2185,6 +2185,7 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 	};
 	auto hflip = lua_toboolean(l, 4);
 	auto rotation = luaL_optint(l, 5, 0) & 3; // [0, 3] rotations
+	bool includePressure = luaL_optint(l, 6, !luacon_controller->GetView()->ShiftBehaviour());
 	auto &client = Client::Ref();
 	if (lua_isstring(l, 1)) //Load from 10 char name, or full filename
 	{
@@ -2218,7 +2219,7 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 			}
 			gameSave->Transform(transform, { remX, remY });
 		}
-		luacon_sim->Load(gameSave.get(), !luacon_controller->GetView()->ShiftBehaviour(), { quoX, quoY });
+		luacon_sim->Load(gameSave.get(), includePressure, { quoX, quoY });
 		lua_pushinteger(l, 1);
 
 		if (gameSave->authors.size())
