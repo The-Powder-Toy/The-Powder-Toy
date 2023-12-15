@@ -103,14 +103,26 @@ namespace Clipboard
 
 	class ExternalClipboardImpl : public ClipboardImpl
 	{
+		bool initialized = false;
+
 	public:
 		ExternalClipboardImpl()
 		{
-			signal(SIGPIPE, SIG_IGN); // avoids problems with popen
+			if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) // avoids problems with popen
+			{
+				std::cerr << "failed to initialize clipboard driver: signal: " << strerror(errno) << std::endl;
+				return;
+			}
+			initialized = true;
 		}
 
 		void SetClipboardData() final override
 		{
+			if (!initialized)
+			{
+				std::cerr << "failed to set clipboard data: clipboard driver not initialized" << std::endl;
+				return;
+			}
 			auto preset = GetPreset();
 			if (!preset)
 			{
@@ -149,6 +161,11 @@ namespace Clipboard
 
 		GetClipboardDataResult GetClipboardData() final override
 		{
+			if (!initialized)
+			{
+				std::cerr << "cannot get save from clipboard: clipboard driver not initialized" << std::endl;
+				return GetClipboardDataUnknown{};
+			}
 			auto getTarget = [](ByteString command) -> std::optional<std::vector<char>> {
 				if (!command.size())
 				{
