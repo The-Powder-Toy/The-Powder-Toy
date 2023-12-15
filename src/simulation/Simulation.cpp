@@ -42,8 +42,8 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 
 		tempPart.x += (float)partP.X;
 		tempPart.y += (float)partP.Y;
-		int x = int(tempPart.x + 0.5f);
-		int y = int(tempPart.y + 0.5f);
+		int x = int(std::floor(tempPart.x + 0.5f));
+		int y = int(std::floor(tempPart.y + 0.5f));
 
 		// Check various scenarios where we are unable to spawn the element, and set type to 0 to block spawning later
 		if (!InBounds(x, y))
