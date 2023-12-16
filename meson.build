@@ -69,8 +69,8 @@ if static_variant != 'prebuilt' and host_platform == 'android'
 	warning('only prebuilt libs are supported for android')
 	static_variant = 'prebuilt'
 endif
-if static_variant == 'system' and host_platform == 'windows'
-	warning('no way to find system libs on windows')
+if static_variant == 'system' and host_platform == 'windows' and host_libc == 'msvc'
+	warning('no way to find system libs for msvc on windows')
 	static_variant = 'prebuilt'
 endif
 
@@ -82,20 +82,19 @@ tpt_libs_static = 'none'
 if static_variant == 'prebuilt'
 	tpt_libs_static = 'static'
 endif
-if static_variant == 'none' and host_platform == 'windows'
+if static_variant == 'none' and host_platform == 'windows' and host_libc == 'msvc'
 	tpt_libs_static = 'dynamic'
 endif
 tpt_libs_debug = is_debug ? 'debug' : 'release'
 tpt_libs_variant = '@0@-@1@-@2@-@3@'.format(host_arch, host_platform, host_libc, tpt_libs_static)
 tpt_libs_vtag = get_option('tpt_libs_vtag')
 if tpt_libs_vtag == ''
-	tpt_libs_vtag = 'v20231003175140'
+	tpt_libs_vtag = 'v20240112165024'
 endif
 if tpt_libs_static != 'none'
 	if tpt_libs_variant not in [
 		'x86_64-linux-gnu-static',
 		'x86_64-windows-mingw-static',
-		'x86_64-windows-mingw-dynamic',
 		'x86_64-windows-msvc-static',
 		'x86_64-windows-msvc-dynamic',
 		'x86-windows-msvc-static',
@@ -329,7 +328,8 @@ if host_platform == 'windows'
 		if host_arch == 'x86_64'
 			args_ccomp_win += [ '-DZLIB_WINAPI' ]
 		endif
-	else
+	endif
+	if tpt_libs_static == 'dynamic'
 		foreach input_output_condition : tpt_libs.get_variable('config_dlls')
 			dll_input = input_output_condition[0]
 			dll_output = input_output_condition[1]

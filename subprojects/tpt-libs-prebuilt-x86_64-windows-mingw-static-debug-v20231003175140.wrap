@@ -1,6 +1,0 @@
-[wrap-file]
-directory = tpt-libs-prebuilt-x86_64-windows-mingw-static-debug-v20231003175140
-
-source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20231003175140/tpt-libs-prebuilt-x86_64-windows-mingw-static-debug-v20231003175140.zip
-source_filename = tpt-libs-prebuilt-x86_64-windows-mingw-static-debug-v20231003175140.zip
-source_hash = c22edbee65046a45b1e157c28cfca7d875374add7d7d70e62e82a29258e532ac

@@ -17,6 +17,7 @@ match_stable     = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)', ref)
 match_beta       = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)b', ref)
 match_snapshot   = re.fullmatch(r'refs/tags/snapshot-([0-9]+)', ref)
 match_tptlibsdev = re.fullmatch(r'refs/heads/tptlibsdev-(.*)', ref)
+match_alljobs    = re.fullmatch(r'refs/heads/(.*)-alljobs', ref)
 do_release       = False
 do_priority      = 10
 if event_name == 'pull_request':
@@ -43,6 +44,8 @@ elif match_tptlibsdev:
 else:
 	release_type = 'dev'
 	release_name = 'dev'
+	if match_alljobs:
+		do_priority = 0
 do_publish = publish_hostport and do_release
 
 set_output('release_type', release_type)
@@ -100,10 +103,10 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,     'nohttp',                    None,   'debug',       10 ),
 	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,      'nolua',                    None,   'debug',       10 ),
 	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None, 'release',       10 ),
-#	(  'x86_64',    'windows',      'mingw',  'static',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None,   'debug',       10 ), # ubuntu-20.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them
-#	(  'x86_64',    'windows',      'mingw',  'static',   'linux', 'ubuntu-20.04',     '',   False,     True,    '.dbg',         None,                    None, 'release',       10 ), # ubuntu-20.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them
-	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None,   'debug',       10 ),
-	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None, 'release',       10 ),
+#	(  'x86_64',    'windows',      'mingw',  'static',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None,   'debug',       10 ), # ubuntu-20.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them; worse, it's a different toolchain
+#	(  'x86_64',    'windows',      'mingw',  'static',   'linux', 'ubuntu-20.04',     '',   False,     True,    '.dbg',         None,                    None, 'release',       10 ), # ubuntu-20.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them; worse, it's a different toolchain
+#	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None,   'debug',       10 ), # ubuntu-20.04 doesn't have ucrt64-capable mingw >_>
+#	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-20.04',     '',   False,    False,      None,         None,                    None, 'release',       10 ), # ubuntu-20.04 doesn't have ucrt64-capable mingw >_>
 	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: static debug build
 	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2019', '.exe',   False,     True,    '.dbg',         None,                    None, 'release',       10 ),
 	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',       10 ),
@@ -178,6 +181,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 		'bsh_static_dynamic': statdyn, # part of the unique portion of the matrix
 		'bsh_debug_release': dbgrel, # part of the unique portion of the matrix
 		'runs_on': runson,
+		'force_msys2_bash': (bplatform == 'windows' and libc == 'mingw') and 'yes' or 'no',
 		'package_suffix': suffix,
 		'package_mode': mode,
 		'publish': publish and 'yes' or 'no',
