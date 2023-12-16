@@ -4,7 +4,6 @@
 #include <limits>
 #include <stdexcept>
 
-#include "common/tpt-thread-local.h"
 #include "String.h"
 
 ByteString ConversionError::formatError(ByteString::value_type const *at, ByteString::value_type const *upto)
@@ -376,7 +375,7 @@ struct LocaleImpl
 
 static LocaleImpl *getLocaleImpl()
 {
-	static THREAD_LOCAL(LocaleImpl, li);
+	thread_local LocaleImpl li;
 	return &li;
 }
 

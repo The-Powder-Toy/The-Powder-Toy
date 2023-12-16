@@ -7,7 +7,6 @@
 #include "client/GameSave.h"
 #include "common/tpt-compat.h"
 #include "common/tpt-rand.h"
-#include "common/tpt-thread-local.h"
 #include "gui/game/Brush.h"
 #include "elements/EMP.h"
 #include "elements/LOLZ.h"
@@ -452,7 +451,7 @@ bool Simulation::FloodFillPmapCheck(int x, int y, int type) const
 CoordStack& Simulation::getCoordStackSingleton()
 {
 	// Future-proofing in case Simulation is later multithreaded
-	static THREAD_LOCAL(CoordStack, cs);
+	thread_local CoordStack cs;
 	return cs;
 }
 
