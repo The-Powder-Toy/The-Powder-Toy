@@ -63,6 +63,7 @@ namespace ui
 			switch (*it) // set sequence_length if *it starts a sequence that should be forwarded as-is
 			{
 			case   '\b': sequence_length = 2; break;
+			case '\x0e': sequence_length = 1; break;
 			case '\x0f': sequence_length = 4; break;
 			}
 			

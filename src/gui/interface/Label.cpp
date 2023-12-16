@@ -18,7 +18,10 @@ Label::Label(Point position, Point size, String labelText):
 	selecting(false),
 	autoHeight(size.Y==-1?true:false)
 {
-	SetText(labelText);
+	if (labelText.size()) // Don't call virtual function in ctor unless absolutely necessary. Deriveds set labelText to "".
+	{
+		SetText(labelText);
+	}
 
 	menu = new ContextMenu(this);
 	menu->AddItem(ContextMenuItem("Copy", 0, true));

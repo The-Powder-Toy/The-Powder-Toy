@@ -58,7 +58,7 @@ namespace ui
 		void SetTextColour(Colour textColour) { this->textColour = textColour; }
 
 		void OnContextMenuAction(int item) override;
-		void OnMouseClick(int x, int y, unsigned button) override;
+		virtual void OnMouseClick(int x, int y, unsigned button) override;
 		void OnMouseUp(int x, int y, unsigned button) override;
 		void OnMouseMoved(int localx, int localy, int dx, int dy) override;
 		void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;

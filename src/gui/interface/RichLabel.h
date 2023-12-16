@@ -1,41 +1,29 @@
 #pragma once
-
-#include "common/String.h"
-#include "Component.h"
-#include "TextWrapper.h"
+#include "Label.h"
+#include <vector>
+#include <variant>
 
 namespace ui
 {
-	class RichLabel : public Component
+	class RichLabel : public Label
 	{
-	public:
 		struct RichTextRegion
 		{
-			int start;
-			int finish;
-			int action;
-			String actionData;
+			int begin;
+			int end;
+			struct LinkAction
+			{
+				ByteString uri;
+			};
+			using Action = std::variant<LinkAction>;
+			Action action;
 		};
-
-		TextWrapper displayTextWrapper;
-
-		RichLabel(Point position, Point size, String richText);
-
-		virtual ~RichLabel();
-
-		void SetText(String text);
-		String GetDisplayText();
-		String GetText();
-
-		void Draw(const Point& screenPos) override;
-		void OnMouseClick(int x, int y, unsigned button) override;
-
-	protected:
-		String textSource;
-		String displayText;
-
 		std::vector<RichTextRegion> regions;
 
-		void updateRichText();
+	public:
+		RichLabel(Point position, Point size, String text);
+
+		void SetText(String newText) override;
+		void OnMouseClick(int x, int y, unsigned button) override;
 	};
 }

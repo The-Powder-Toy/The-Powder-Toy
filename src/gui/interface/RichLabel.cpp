@@ -1,185 +1,67 @@
 #include "RichLabel.h"
-#include "Colour.h"
 #include "common/platform/Platform.h"
-#include "graphics/FontReader.h"
-#include "graphics/Graphics.h"
-#include "gui/interface/Component.h"
-#include "gui/interface/Point.h"
-#include <vector>
-#include <exception>
+#include "Format.h"
 
 using namespace ui;
 
-struct RichTextParseException: public std::exception {
-	ByteString message;
-public:
-	RichTextParseException(String message = String("Parse error")): message(message.ToUtf8()) {}
-	const char * what() const throw() override
-	{
-		return message.c_str();
-	}
-	~RichTextParseException() throw() {};
-};
-
-RichLabel::RichLabel(Point position, Point size, String labelText):
-	Component(position, size),
-	textSource(labelText),
-	displayText("")
+RichLabel::RichLabel(Point position, Point size, String text) : Label(position, size, "")
 {
-	updateRichText();
+	SetText(text);
 }
 
-RichLabel::~RichLabel()
+void RichLabel::SetText(String newText)
 {
-
-}
-
-void RichLabel::updateRichText()
-{
-	regions.clear();
-	displayText = "";
-
-	if(textSource.length())
+	Label::SetText(newText);
+	std::vector<RichTextRegion> newRegions;
+	StringBuilder sb;
+	auto it = newText.begin();
+	while (it != newText.end())
 	{
-
-		enum State { ReadText, ReadData, ReadRegion, ReadDataStart };
-		State state = ReadText;
-
-		int currentDataPos = 0;
-		String::value_type * currentData = new String::value_type[textSource.length()+1];
-		std::fill(currentData, currentData+textSource.length()+1, 0);
-
-		int finalTextPos = 0;
-		String::value_type * finalText = new String::value_type[textSource.length()+1];
-		std::fill(finalText, finalText+textSource.length()+1, 0);
-
-		int originalTextPos = 0;
-		String::value_type * originalText = new String::value_type[textSource.length()+1];
-		std::copy(textSource.begin(), textSource.end(), originalText);
-		originalText[textSource.length()] = 0;
-
-		int stackPos = -1;
-		RichTextRegion * regionsStack = new RichTextRegion[256];
-
-		try
-		{
-			while(originalText[originalTextPos])
+		auto find = [&newText](auto it, String::value_type ch) {
+			while (it != newText.end())
 			{
-				char current = originalText[originalTextPos];
-
-				if(state == ReadText)
+				if (*it == ch)
 				{
-					if(current == '{')
-					{
-						if(stackPos > 255)
-							throw RichTextParseException("Too many nested regions");
-						stackPos++;
-						regionsStack[stackPos].start = finalTextPos;
-						regionsStack[stackPos].finish = finalTextPos;
-						state = ReadRegion;
-					}
-					else if(current == '}')
-					{
-						if(stackPos >= 0)
-						{
-							currentData[currentDataPos] = 0;
-							regionsStack[stackPos].actionData = String(currentData);
-							regions.push_back(regionsStack[stackPos]);
-							stackPos--;
-						}
-						else
-						{
-							throw RichTextParseException("Unexpected '}'");
-						}
-					}
-					else
-					{
-						finalText[finalTextPos++] = current;
-						finalText[finalTextPos] = 0;
-						if(stackPos >= 0)
-						{
-							regionsStack[stackPos].finish = finalTextPos;
-						}
-					}
+					break;
 				}
-				else if(state == ReadData)
-				{
-					if(current == '|')
-					{
-						state = ReadText;
-					}
-					else
-					{
-						currentData[currentDataPos++] = current;
-						currentData[currentDataPos] = 0;
-					}
-				}
-				else if(state == ReadDataStart)
-				{
-					if(current != ':')
-					{
-						throw RichTextParseException("Expected ':'");
-					}
-					state = ReadData;
-					currentDataPos = 0;
-				}
-				else if(state == ReadRegion)
-				{
-					if(stackPos >= 0)
-					{
-						regionsStack[stackPos].action = current;
-						state = ReadDataStart;
-					}
-					else
-					{
-						throw RichTextParseException();
-					}
-				}
-
-				originalTextPos++;
+				++it;
 			}
-
-			if(stackPos != -1)
-				throw RichTextParseException("Unclosed region");
-
-			finalText[finalTextPos] = 0;
-			displayText = String(finalText);
-		}
-		catch (const RichTextParseException & e)
+			return it;
+		};
+		auto beginRegionIt = find(it, '{');
+		auto beginDataIt = find(beginRegionIt, ':');
+		auto beginTextIt = find(beginDataIt, '|');
+		auto endRegionIt = find(beginTextIt, '}');
+		if (endRegionIt == newText.end())
 		{
-			displayText = "\br[Parse exception: " + ByteString(e.what()).FromUtf8() + "]";
-			regions.clear();
+			break;
 		}
-		delete[] currentData;
-		delete[] finalText;
-		delete[] originalText;
-		delete[] regionsStack;
+		auto action = String(beginRegionIt + 1, beginDataIt);
+		auto data = String(beginDataIt + 1, beginTextIt);
+		auto text = String(beginTextIt + 1, endRegionIt);
+		sb << String(it, beginRegionIt);
+		auto good = false;
+		if (action == "a" || data.size() || text.size())
+		{
+			RichTextRegion region;
+			region.begin = sb.Size();
+			sb << text;
+			region.end = sb.Size();
+			region.action = RichTextRegion::LinkAction{ data.ToUtf8() };
+			newRegions.push_back(region);
+			good = true;
+		}
+		if (!good)
+		{
+			sb << String(beginRegionIt, endRegionIt + 1);
+		}
+		it = endRegionIt + 1;
 	}
-	TextPosition(displayText);
-	displayTextWrapper.Update(displayText, false, 0);
-}
-
-void RichLabel::SetText(String text)
-{
-	textSource = text;
-	updateRichText();
-}
-
-String RichLabel::GetDisplayText()
-{
-	return displayText;
-}
-
-String RichLabel::GetText()
-{
-	return textSource;
-}
-
-void RichLabel::Draw(const Point& screenPos)
-{
-	Graphics * g = GetGraphics();
-	ui::Colour textColour = Appearance.TextInactive;
-	g->BlendText(screenPos + textPosition, displayText, textColour.NoAlpha().WithAlpha(255));
+	sb << String(it, newText.end());
+	auto newDisplayText = sb.Build();
+	Label::SetText(format::CleanString(newDisplayText, false, true, false));
+	Label::SetDisplayText(newDisplayText);
+	regions = newRegions;
 }
 
 void RichLabel::OnMouseClick(int x, int y, unsigned button)
@@ -187,14 +69,14 @@ void RichLabel::OnMouseClick(int x, int y, unsigned button)
 	int cursorPosition = displayTextWrapper.Point2Index(x - textPosition.X, y - textPosition.Y).raw_index;
 	for (auto const &region : regions)
 	{
-		if (region.start <= cursorPosition && region.finish >= cursorPosition)
+		if (region.begin <= cursorPosition && region.end > cursorPosition)
 		{
-			switch (region.action)
+			if (auto *linkAction = std::get_if<RichTextRegion::LinkAction>(&region.action))
 			{
-			case 'a':
-				Platform::OpenURI(region.actionData.ToUtf8());
-				break;
+				Platform::OpenURI(linkAction->uri);
+				return;
 			}
 		}
 	}
+	Label::OnMouseClick(x, y, button);
 }
