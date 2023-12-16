@@ -32,6 +32,7 @@ void LoginModel::Logout()
 void LoginModel::AddObserver(LoginView * observer)
 {
 	observers.push_back(observer);
+	notifyStatusChanged();
 }
 
 String LoginModel::GetStatusText()

@@ -1,29 +1,32 @@
 #include "LoginView.h"
+#include "Config.h"
 #include "LoginModel.h"
 #include "LoginController.h"
 #include "graphics/Graphics.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
+#include "gui/interface/RichLabel.h"
 #include "gui/interface/Textbox.h"
 #include "gui/Style.h"
 #include "client/Client.h"
 #include "Misc.h"
 #include <SDL.h>
 
+constexpr auto defaultSize = ui::Point(200, 87);
+
 LoginView::LoginView():
-	ui::Window(ui::Point(-1, -1), ui::Point(200, 87)),
+	ui::Window(ui::Point(-1, -1), defaultSize),
 	loginButton(new ui::Button(ui::Point(200-100, 87-17), ui::Point(100, 17), "Sign in")),
 	cancelButton(new ui::Button(ui::Point(0, 87-17), ui::Point(101, 17), "Sign Out")),
 	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), "Server login")),
-	infoLabel(new ui::Label(ui::Point(8, 67), ui::Point(200-16, 16), "")),
+	infoLabel(new ui::RichLabel(ui::Point(6, 67), ui::Point(200-12, 16), "")),
 	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), Client::Ref().GetAuthUser().Username.FromUtf8(), "[username]")),
 	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", "[password]")),
-	targetSize(0, 0)
+	targetSize(defaultSize)
 {
-	targetSize = Size;
 	FocusComponent(usernameField);
 
-	infoLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	infoLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	infoLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	infoLabel->SetMultiline(true);
 	infoLabel->Visible = false;
@@ -80,19 +83,24 @@ void LoginView::OnTryExit(ExitMethod method)
 
 void LoginView::NotifyStatusChanged(LoginModel * sender)
 {
-	if (infoLabel->Visible)
-		targetSize.Y = 87;
-	infoLabel->SetText(sender->GetStatusText());
-	infoLabel->AutoHeight();
+	auto statusText = sender->GetStatusText();
 	auto notWorking = sender->GetStatus() != loginWorking;
+	auto userID = Client::Ref().GetAuthUser().UserID;
+	if (!statusText.size() && !userID && notWorking)
+	{
+		statusText = String::Build("Don't have an account? {a:https://", SERVER, "/Register.html", "|\btRegister here\x0E}.");
+	}
+	infoLabel->Visible = statusText.size();
+	infoLabel->SetText(statusText);
+	infoLabel->AutoHeight();
 	loginButton->Enabled = notWorking;
-	cancelButton->Enabled = notWorking && Client::Ref().GetAuthUser().UserID;
+	cancelButton->Enabled = notWorking && userID;
 	usernameField->Enabled = notWorking;
 	passwordField->Enabled = notWorking;
-	if (sender->GetStatusText().length())
+	targetSize = defaultSize;
+	if (infoLabel->Visible)
 	{
-		targetSize.Y += infoLabel->Size.Y+2;
-		infoLabel->Visible = true;
+		targetSize.Y += infoLabel->Size.Y;
 	}
 	if (sender->GetStatus() == loginSucceeded)
 	{
@@ -132,19 +140,3 @@ void LoginView::OnDraw()
 	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
 	g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 }
-
-LoginView::~LoginView() {
-	RemoveComponent(titleLabel);
-	RemoveComponent(loginButton);
-	RemoveComponent(cancelButton);
-	RemoveComponent(usernameField);
-	RemoveComponent(passwordField);
-	RemoveComponent(infoLabel);
-	delete cancelButton;
-	delete loginButton;
-	delete titleLabel;
-	delete usernameField;
-	delete passwordField;
-	delete infoLabel;
-}
-
