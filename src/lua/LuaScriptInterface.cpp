@@ -4761,11 +4761,6 @@ void LuaScriptInterface::OnTick()
 				complete({ GetScriptStatus::GetFailed{ ByteString(http::StatusText(ret)).FromUtf8() } });
 				return;
 			}
-			if (Platform::FileExists(scriptDownloadFilename))
-			{
-				complete({ GetScriptStatus::GetFailed{ "File already exists" } });
-				return;
-			}
 			if (!Platform::WriteFile(std::vector<char>(scriptData.begin(), scriptData.end()), scriptDownloadFilename))
 			{
 				complete({ GetScriptStatus::GetFailed{ "Unable to write to file" } });
