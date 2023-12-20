@@ -239,3 +239,10 @@ function tpt.graphics_func(f, element)
 	if f == nil then f = false end
 	elem.property(element, "Graphics", f)
 end
+
+function tpt.getscript(id, name, run)
+	if not (id == 1 and name == "autorun.lua" and run == 1) then
+		error("only use tpt.getscript to install the script manager")
+	end
+	tpt.installScriptManager()
+end
