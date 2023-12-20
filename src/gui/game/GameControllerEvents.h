@@ -4,16 +4,19 @@
 
 struct TextInputEvent
 {
+	static constexpr bool simEvent = false;
 	String text;
 };
 
 struct TextEditingEvent
 {
+	static constexpr bool simEvent = false;
 	String text;
 };
 
 struct KeyEvent
 {
+	static constexpr bool simEvent = false;
 	int key;
 	int scan;
 	bool repeat;
@@ -24,14 +27,17 @@ struct KeyEvent
 
 struct KeyPressEvent : public KeyEvent
 {
+	static constexpr bool simEvent = false;
 };
 
 struct KeyReleaseEvent : public KeyEvent
 {
+	static constexpr bool simEvent = false;
 };
 
 struct MouseDownEvent
 {
+	static constexpr bool simEvent = false;
 	int x;
 	int y;
 	unsigned int button;
@@ -39,6 +45,7 @@ struct MouseDownEvent
 
 struct MouseUpEvent
 {
+	static constexpr bool simEvent = false;
 	int x;
 	int y;
 	unsigned int button;
@@ -47,6 +54,7 @@ struct MouseUpEvent
 
 struct MouseMoveEvent
 {
+	static constexpr bool simEvent = false;
 	int x;
 	int y;
 	int dx;
@@ -55,6 +63,7 @@ struct MouseMoveEvent
 
 struct MouseWheelEvent
 {
+	static constexpr bool simEvent = false;
 	int x;
 	int y;
 	int d;
@@ -62,22 +71,27 @@ struct MouseWheelEvent
 
 struct TickEvent
 {
+	static constexpr bool simEvent = false;
 };
 
 struct BlurEvent
 {
+	static constexpr bool simEvent = false;
 };
 
 struct CloseEvent
 {
+	static constexpr bool simEvent = false;
 };
 
 struct BeforeSimEvent
 {
+	static constexpr bool simEvent = true;
 };
 
 struct AfterSimEvent
 {
+	static constexpr bool simEvent = true;
 };
 
 using GameControllerEvent = std::variant<

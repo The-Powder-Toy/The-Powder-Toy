@@ -4672,8 +4672,9 @@ bool LuaScriptInterface::HandleEvent(const GameControllerEvent &event)
 	{
 		lua_rawgeti(l, -1, i);
 		int numArgs = PushGameControllerEvent(l, event);
-		auto simEvent = std::get_if<BeforeSimEvent>(&event) ||
-		                std::get_if<AfterSimEvent>(&event);
+		auto simEvent = std::visit([](auto &event) {
+			return event.simEvent;
+		}, event);
 		int callret = tpt_lua_pcall(l, numArgs, 1, 0, simEvent);
 		if (callret)
 		{
