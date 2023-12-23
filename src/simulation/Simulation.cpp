@@ -1526,6 +1526,35 @@ void Simulation::photoelectric_effect(int nx, int ny)//create sparks from PHOT w
 	}
 }
 
+unsigned static direction_to_map(float dx, float dy, int t)
+{
+	// TODO:
+	// Adding extra directions causes some inaccuracies.
+	// Not adding them causes problems with some diagonal surfaces (photons absorbed instead of reflected).
+	// For now, don't add them.
+	// Solution may involve more intelligent setting of initial i0 value in find_next_boundary?
+	// or rewriting normal/boundary finding code
+
+	return (dx >= 0) |
+		   (((dx + dy) >= 0) << 1) |     /*  567  */
+		   ((dy >= 0) << 2) |            /*  4+0  */
+		   (((dy - dx) >= 0) << 3) |     /*  321  */
+		   ((dx <= 0) << 4) |
+		   (((dx + dy) <= 0) << 5) |
+		   ((dy <= 0) << 6) |
+		   (((dy - dx) <= 0) << 7);
+	/*
+	return (dx >= -0.001) |
+		   (((dx + dy) >= -0.001) << 1) |     //  567
+		   ((dy >= -0.001) << 2) |            //  4+0
+		   (((dy - dx) >= -0.001) << 3) |     //  321
+		   ((dx <= 0.001) << 4) |
+		   (((dx + dy) <= 0.001) << 5) |
+		   ((dy <= 0.001) << 6) |
+		   (((dy - dx) <= 0.001) << 7);
+	}*/
+}
+
 int Simulation::is_blocking(int t, int x, int y) const
 {
 	if (t & REFRACT) {
@@ -1567,7 +1596,7 @@ int Simulation::find_next_boundary(int pt, int *x, int *y, int dm, int *em, bool
 	unsigned int mask = 0;
 	for (int i = 0; i < 8; ++i)
 	{
-		if (is_blocking(pt, *x + dx[i], *y + dy[i]))
+		if ((dm & (1U << i)) && is_blocking(pt, *x + dx[i], *y + dy[i]))
 		{
 			mask |= (1U << i);
 		}
@@ -1575,7 +1604,7 @@ int Simulation::find_next_boundary(int pt, int *x, int *y, int dm, int *em, bool
 	for (int i = 0; i < 8; ++i)
 	{
 		int n = (i + (reverse ? 1 : -1)) & 7;
-		if (((dm & mask & (1U << i))) && !(mask & (1U << n)))
+		if (((mask & (1U << i))) && !(mask & (1U << n)))
 		{
 			*x += dx[i];
 			*y += dy[i];
@@ -1600,8 +1629,8 @@ Simulation::GetNormalResult Simulation::get_normal(int pt, int x, int y, float d
 	if (!is_boundary(pt, x, y))
 		return { false };
 
-	ldm = 0xFF;
-	rdm = 0xFF;
+	ldm = (pt & REFRACT) ? 0xFF : direction_to_map(-dy, dx, pt);
+	rdm = (pt & REFRACT) ? 0xFF : direction_to_map(dy, -dx, pt);
 	lx = rx = x;
 	ly = ry = y;
 	lv = rv = 1;
@@ -2959,6 +2988,7 @@ killed:
 							}
 							auto nn = GLASS_IOR - GLASS_DISP*(r-30)/30.0f;
 							nn *= nn;
+
 							auto enter = rt_glas && !lt_glas;
 							nrx = enter ? -nrx : nrx;
 							nry = enter ? -nry : nry;
