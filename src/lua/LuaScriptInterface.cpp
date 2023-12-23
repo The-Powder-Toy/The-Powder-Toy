@@ -1113,6 +1113,8 @@ int simulation_deletesign(lua_State *l)
 
 //// Begin Simulation API
 
+static int simulation_listStamps(lua_State *l);
+
 void LuaScriptInterface::initSimulationAPI()
 {
 	auto &sd = SimulationData::CRef();
@@ -1157,6 +1159,7 @@ void LuaScriptInterface::initSimulationAPI()
 		{"saveStamp", simulation_saveStamp},
 		{"loadStamp", simulation_loadStamp},
 		{"deleteStamp", simulation_deleteStamp},
+		{"listStamps", simulation_listStamps},
 		{"loadSave", simulation_loadSave},
 		{"reloadSave", simulation_reloadSave},
 		{"getSaveID", simulation_getSaveID},
@@ -2263,6 +2266,21 @@ int LuaScriptInterface::simulation_deleteStamp(lua_State * l)
 		return 0;
 	}
 	lua_pushnumber(l, -1);
+	return 1;
+}
+
+static int simulation_listStamps(lua_State *l)
+{
+	lua_newtable(l);
+	auto &client = Client::Ref();
+	auto &stampIDs = client.GetStamps();
+	auto i = 0;
+	for (auto &stampID : stampIDs)
+	{
+		tpt_lua_pushByteString(l, stampID);
+		i += 1;
+		lua_rawseti(l, -2, i);
+	}
 	return 1;
 }
 
