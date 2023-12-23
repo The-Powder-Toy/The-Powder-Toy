@@ -54,7 +54,7 @@ option(
 	'build_num',
 	type: 'integer',
 	min: 0,
-	value: 355,
+	value: 356,
 	description: 'Build number, should be strictly monotonously increasing across public releases'
 )
 option(
@@ -75,7 +75,7 @@ option(
 	'upstream_build_num',
 	type: 'integer',
 	min: 0,
-	value: 355,
+	value: 356,
 	description: 'Upstream build number, mod owners should not change this but merge upstream changes to it'
 )
 option(
