@@ -41,7 +41,7 @@ void RichLabel::SetText(String newText)
 		auto text = String(beginTextIt + 1, endRegionIt);
 		sb << String(it, beginRegionIt);
 		auto good = false;
-		if (action == "a" || data.size() || text.size())
+		if (action == "a" && data.size() && text.size())
 		{
 			RichTextRegion region;
 			region.begin = sb.Size();
