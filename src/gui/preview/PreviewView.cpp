@@ -111,9 +111,9 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	AddComponent(missingElementsButton);
 
 	if(showAvatars)
-		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(100, 16), "");
+		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(180, 16), "");
 	else
-		saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(100, 16), "");
+		saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(200, 16), "");
 	saveNameLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveNameLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(saveNameLabel);
@@ -737,11 +737,11 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 				authorNameFormatted = "\bl" + authorNameFormatted;
 			}
 			if (showAvatars)
-				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13 + 26), 16), authorNameFormatted);
+				tempUsername = new ui::Label(ui::Point(31, currentY+8), ui::Point(Size.X-((XRES/2) + 13 + 26), 14), authorNameFormatted);
 			else
-				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), authorNameFormatted);
+				tempUsername = new ui::Label(ui::Point(5, currentY+8), ui::Point(Size.X-((XRES/2) + 13), 14), authorNameFormatted);
 			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 			currentY += 16;
 
 			commentComponents.push_back(tempUsername);
