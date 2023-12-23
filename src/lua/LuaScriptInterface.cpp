@@ -413,6 +413,8 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	lua_setfield(l, tptPropertiesVersion, "upstreamBuild");
 	lua_pushboolean(l, SNAPSHOT);
 	lua_setfield(l, tptPropertiesVersion, "snapshot");
+	lua_pushboolean(l, BETA);
+	lua_setfield(l, tptPropertiesVersion, "beta");
 	lua_pushinteger(l, MOD_ID);
 	lua_setfield(l, tptPropertiesVersion, "modid");
 	auto vcsTag = ByteString(VCS_TAG);
