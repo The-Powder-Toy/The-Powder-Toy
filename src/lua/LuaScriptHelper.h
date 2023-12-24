@@ -3,6 +3,7 @@
 #include "simulation/ElementDefs.h"
 #include "common/String.h"
 #include "LuaCompat.h"
+#include <variant>
 
 class GameModel;
 class GameController;
@@ -14,8 +15,6 @@ class Renderer;
 extern GameModel * luacon_model;
 extern GameController * luacon_controller;
 extern Simulation * luacon_sim;
-extern Graphics * luacon_g;
-extern Renderer * luacon_ren;
 
 extern bool *luacon_currentCommand;
 extern String *luacon_lastError;
@@ -49,8 +48,6 @@ int luacon_transitionwrite(lua_State* l);
 //tpt. api
 int luatpt_getelement(lua_State *l);
 
-int luatpt_drawtext(lua_State* l);
-
 int luatpt_create(lua_State* l);
 
 int luatpt_setpause(lua_State* l);
@@ -82,14 +79,6 @@ int luatpt_get_wallmap(lua_State* l);
 int luatpt_set_elecmap(lua_State* l);
 
 int luatpt_get_elecmap(lua_State* l);
-
-int luatpt_drawpixel(lua_State* l);
-
-int luatpt_drawrect(lua_State* l);
-
-int luatpt_fillrect(lua_State* l);
-
-int luatpt_drawline(lua_State* l);
 
 int luatpt_textwidth(lua_State* l);
 int luatpt_get_name(lua_State* l);

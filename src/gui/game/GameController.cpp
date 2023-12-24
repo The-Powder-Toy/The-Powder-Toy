@@ -1697,3 +1697,13 @@ void GameController::RemoveCustomGOLType(const ByteString &identifier)
 {
 	gameModel->RemoveCustomGOLType(identifier);
 }
+
+void GameController::BeforeSimDraw()
+{
+	commandInterface->HandleEvent(BeforeSimDrawEvent{});
+}
+
+void GameController::AfterSimDraw()
+{
+	commandInterface->HandleEvent(AfterSimDrawEvent{});
+}

@@ -2119,6 +2119,7 @@ void GameView::OnDraw()
 		auto &sd = SimulationData::Ref();
 		std::unique_lock lk(sd.elementGraphicsMx);
 		ren->clearScreen();
+		c->BeforeSimDraw();
 		ren->RenderBegin();
 		ren->SetSample(c->PointTranslate(currentMouse));
 		if (showBrush && selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
@@ -2224,6 +2225,7 @@ void GameView::OnDraw()
 			}
 		}
 
+		c->AfterSimDraw();
 		ren->RenderEnd();
 
 		std::copy_n(ren->Data(), ren->Size().X * ren->Size().Y, g->Data());

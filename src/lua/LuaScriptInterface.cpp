@@ -75,8 +75,8 @@
 GameModel * luacon_model;
 GameController * luacon_controller;
 Simulation * luacon_sim;
-Graphics * luacon_g;
-Renderer * luacon_ren;
+static Graphics *luacon_g{};
+static Renderer *luacon_ren{};
 
 bool *luacon_currentCommand;
 String *luacon_lastError;
@@ -179,12 +179,12 @@ static int osExit(lua_State *l)
 	return 0;
 }
 
-static bool inSimEvent = false;
+static EventTraits eventTraits = eventTraitNone;
 
 static int mathRandom(lua_State *l)
 {
-	// only thing that matters is that the rng not be luacon_sim->rng when !inSimEvent
-	auto &rng = inSimEvent ? luacon_sim->rng : interfaceRng;
+	// only thing that matters is that the rng not be luacon_sim->rng when !(eventTraits & eventTraitSimRng)
+	auto &rng = (eventTraits & eventTraitSimRng) ? luacon_sim->rng : interfaceRng;
 	int lower, upper;
 	switch (lua_gettop(l))
 	{
@@ -326,7 +326,6 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 	//Old TPT API
 	int currentElementMeta, currentElement;
 	const static struct luaL_Reg tptluaapi [] = {
-		{"drawtext", &luatpt_drawtext},
 		{"create", &luatpt_create},
 		{"set_pause", &luatpt_setpause},
 		{"toggle_pause", &luatpt_togglepause},
@@ -343,10 +342,6 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 		{"get_wallmap", &luatpt_get_wallmap},
 		{"set_elecmap", &luatpt_set_elecmap},
 		{"get_elecmap", &luatpt_get_elecmap},
-		{"drawpixel", &luatpt_drawpixel},
-		{"drawrect", &luatpt_drawrect},
-		{"fillrect", &luatpt_fillrect},
-		{"drawline", &luatpt_drawline},
 		{"textwidth", &luatpt_textwidth},
 		{"get_name", &luatpt_get_name},
 		{"delete", &luatpt_delete},
@@ -531,7 +526,7 @@ LuaScriptInterface::LuaScriptInterface(GameController * c, GameModel * m):
 
 	initLegacyProps();
 
-	if (luaL_loadbuffer(l, (const char *)eventcompat_lua, eventcompat_lua_size, "@[built-in eventcompat.lua]") || tpt_lua_pcall(l, 0, 0, 0, false))
+	if (luaL_loadbuffer(l, (const char *)eventcompat_lua, eventcompat_lua_size, "@[built-in eventcompat.lua]") || tpt_lua_pcall(l, 0, 0, 0, eventTraitNone))
 	{
 		throw std::runtime_error(ByteString("failed to load built-in eventcompat: ") + tpt_lua_toByteString(l, -1));
 	}
@@ -558,7 +553,7 @@ void LuaScriptInterface::Init()
 {
 	if (Platform::FileExists("autorun.lua"))
 	{
-		if(luaL_loadfile(l, "autorun.lua") || tpt_lua_pcall(l, 0, 0, 0, false))
+		if(luaL_loadfile(l, "autorun.lua") || tpt_lua_pcall(l, 0, 0, 0, eventTraitNone))
 			Log(CommandInterface::LogError, luacon_geterror());
 		else
 			Log(CommandInterface::LogWarning, "Loaded autorun.lua");
@@ -697,7 +692,7 @@ static int beginMessageBox(lua_State* l)
 		cb->Push(l);
 		if (lua_isfunction(l, -1))
 		{
-			if (tpt_lua_pcall(l, 0, 0, 0, false))
+			if (tpt_lua_pcall(l, 0, 0, 0, eventTraitNone))
 			{
 				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 			}
@@ -721,7 +716,7 @@ static int beginThrowError(lua_State* l)
 		cb->Push(l);
 		if (lua_isfunction(l, -1))
 		{
-			if (tpt_lua_pcall(l, 0, 0, 0, false))
+			if (tpt_lua_pcall(l, 0, 0, 0, eventTraitNone))
 			{
 				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 			}
@@ -756,7 +751,7 @@ static int beginInput(lua_State* l)
 			{
 				lua_pushnil(l);
 			}
-			if (tpt_lua_pcall(l, 1, 0, 0, false))
+			if (tpt_lua_pcall(l, 1, 0, 0, eventTraitNone))
 			{
 				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 			}
@@ -788,7 +783,7 @@ static int beginConfirm(lua_State *l)
 		if (lua_isfunction(l, -1))
 		{
 			lua_pushboolean(l, result);
-			if (tpt_lua_pcall(l, 1, 0, 0, false))
+			if (tpt_lua_pcall(l, 1, 0, 0, eventTraitNone))
 			{
 				luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 			}
@@ -3485,7 +3480,7 @@ static int luaUpdateWrapper(UPDATE_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, y);
 		lua_pushinteger(luacon_ci->l, surround_space);
 		lua_pushinteger(luacon_ci->l, nt);
-		callret = tpt_lua_pcall(luacon_ci->l, 5, 1, 0, true);
+		callret = tpt_lua_pcall(luacon_ci->l, 5, 1, 0, eventTraitSimRng);
 		if (callret)
 			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 		if(lua_isboolean(luacon_ci->l, -1)){
@@ -3531,7 +3526,7 @@ static int luaGraphicsWrapper(GRAPHICS_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, *colr);
 		lua_pushinteger(luacon_ci->l, *colg);
 		lua_pushinteger(luacon_ci->l, *colb);
-		callret = tpt_lua_pcall(luacon_ci->l, 4, 10, 0, false);
+		callret = tpt_lua_pcall(luacon_ci->l, 4, 10, 0, eventTraitSimGraphics);
 		if (callret)
 		{
 			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
@@ -3585,7 +3580,7 @@ static void luaCreateWrapper(ELEMENT_CREATE_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, y);
 		lua_pushinteger(luacon_ci->l, t);
 		lua_pushinteger(luacon_ci->l, v);
-		if (tpt_lua_pcall(luacon_ci->l, 5, 0, 0, true))
+		if (tpt_lua_pcall(luacon_ci->l, 5, 0, 0, eventTraitSimRng))
 		{
 			luacon_ci->Log(CommandInterface::LogError, "In create func: " + luacon_geterror());
 			lua_pop(luacon_ci->l, 1);
@@ -3611,7 +3606,7 @@ static bool luaCreateAllowedWrapper(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, x);
 		lua_pushinteger(luacon_ci->l, y);
 		lua_pushinteger(luacon_ci->l, t);
-		if (tpt_lua_pcall(luacon_ci->l, 4, 1, 0, true))
+		if (tpt_lua_pcall(luacon_ci->l, 4, 1, 0, eventTraitSimRng))
 		{
 			luacon_ci->Log(CommandInterface::LogError, "In create allowed: " + luacon_geterror());
 			lua_pop(luacon_ci->l, 1);
@@ -3641,7 +3636,7 @@ static void luaChangeTypeWrapper(ELEMENT_CHANGETYPE_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, y);
 		lua_pushinteger(luacon_ci->l, from);
 		lua_pushinteger(luacon_ci->l, to);
-		if (tpt_lua_pcall(luacon_ci->l, 5, 0, 0, true))
+		if (tpt_lua_pcall(luacon_ci->l, 5, 0, 0, eventTraitSimRng))
 		{
 			luacon_ci->Log(CommandInterface::LogError, "In change type: " + luacon_geterror());
 			lua_pop(luacon_ci->l, 1);
@@ -3663,7 +3658,7 @@ static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 		lua_pushinteger(luacon_ci->l, i);
 		lua_pushinteger(luacon_ci->l, t);
 		lua_pushinteger(luacon_ci->l, v);
-		if (tpt_lua_pcall(luacon_ci->l, 3, 1, 0, true))
+		if (tpt_lua_pcall(luacon_ci->l, 3, 1, 0, eventTraitSimRng))
 		{
 			luacon_ci->Log(CommandInterface::LogError, luacon_geterror());
 			lua_pop(luacon_ci->l, 1);
@@ -4088,12 +4083,15 @@ int LuaScriptInterface::elements_exists(lua_State * l)
 	return 1;
 }
 
+static int graphics_drawPixel(lua_State *L);
+
 void LuaScriptInterface::initGraphicsAPI()
 {
 	//Methods
 	struct luaL_Reg graphicsAPIMethods [] = {
 		{"textSize", graphics_textSize},
 		{"drawText", graphics_drawText},
+		{"drawPixel", graphics_drawPixel},
 		{"drawLine", graphics_drawLine},
 		{"drawRect", graphics_drawRect},
 		{"fillRect", graphics_fillRect},
@@ -4126,6 +4124,35 @@ int LuaScriptInterface::graphics_textSize(lua_State * l)
 	return 2;
 }
 
+static std::variant<Graphics *, Renderer *> currentGraphics()
+{
+	if (eventTraits & eventTraitSimGraphics)
+	{
+		return luacon_ren;
+	}
+	return luacon_g;
+}
+
+static int graphics_drawPixel(lua_State *L)
+{
+	auto x = luaL_optint(L, 1, 0);
+	auto y = luaL_optint(L, 2, 0);
+	auto r = luaL_optint(L, 3, 255);
+	auto g = luaL_optint(L, 4, 255);
+	auto b = luaL_optint(L, 5, 255);
+	auto a = luaL_optint(L, 6, 255);
+	if      (r < 0  ) r = 0  ;
+	else if (r > 255) r = 255;
+	if      (g < 0  ) g = 0  ;
+	else if (g > 255) g = 255;
+	if      (b < 0  ) b = 0  ;
+	else if (b > 255) b = 255;
+	if      (a < 0  ) a = 0  ;
+	else if (a > 255) a = 255;
+	luacon_g->BlendPixel({ x, y }, RGBA<uint8_t>(r, g, b, a));
+	return 0;
+}
+
 int LuaScriptInterface::graphics_drawText(lua_State * l)
 {
 	int x = lua_tointeger(l, 1);
@@ -4145,7 +4172,9 @@ int LuaScriptInterface::graphics_drawText(lua_State * l)
 	if (a<0) a = 0;
 	else if (a>255) a = 255;
 
-	luacon_g->BlendText({ x, y }, text, RGBA<uint8_t>(r, g, b, a));
+	std::visit([x, y, r, g, b, a, &text](auto p) {
+		p->BlendText({ x, y }, text, RGBA<uint8_t>(r, g, b, a));
+	}, currentGraphics());
 	return 0;
 }
 
@@ -4169,14 +4198,16 @@ int LuaScriptInterface::graphics_drawLine(lua_State * l)
 	if (a<0) a = 0;
 	else if (a>255) a = 255;
 
-	if (a == 255)
-	{
-		luacon_g->DrawLine({ x1, y1 }, { x2, y2 }, RGB<uint8_t>(r, g, b));
-	}
-	else
-	{
-		luacon_g->BlendLine({ x1, y1 }, { x2, y2 }, RGBA<uint8_t>(r, g, b, a));
-	}
+	std::visit([x1, y1, x2, y2, r, g, b, a](auto p) {
+		if (a == 255)
+		{
+			p->DrawLine({ x1, y1 }, { x2, y2 }, RGB<uint8_t>(r, g, b));
+		}
+		else
+		{
+			p->BlendLine({ x1, y1 }, { x2, y2 }, RGBA<uint8_t>(r, g, b, a));
+		}
+	}, currentGraphics());
 	return 0;
 }
 
@@ -4200,14 +4231,16 @@ int LuaScriptInterface::graphics_drawRect(lua_State * l)
 	if (a<0) a = 0;
 	else if (a>255) a = 255;
 
-	if (a == 255)
-	{
-		luacon_g->DrawRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGB<uint8_t>(r, g, b));
-	}
-	else
-	{
-		luacon_g->BlendRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGBA<uint8_t>(r, g, b, a));
-	}
+	std::visit([x, y, width, height, r, g, b, a](auto p) {
+		if (a == 255)
+		{
+			p->DrawRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGB<uint8_t>(r, g, b));
+		}
+		else
+		{
+			p->BlendRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGBA<uint8_t>(r, g, b, a));
+		}
+	}, currentGraphics());
 	return 0;
 }
 
@@ -4231,14 +4264,16 @@ int LuaScriptInterface::graphics_fillRect(lua_State * l)
 	if (a<0) a = 0;
 	else if (a>255) a = 255;
 
-	if (a == 255)
-	{
-		luacon_g->DrawFilledRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGB<uint8_t>(r, g, b));
-	}
-	else
-	{
-		luacon_g->BlendFilledRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGBA<uint8_t>(r, g, b, a));
-	}
+	std::visit([x, y, width, height, r, g, b, a](auto p) {
+		if (a == 255)
+		{
+			p->DrawFilledRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGB<uint8_t>(r, g, b));
+		}
+		else
+		{
+			p->BlendFilledRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGBA<uint8_t>(r, g, b, a));
+		}
+	}, currentGraphics());
 	return 0;
 }
 
@@ -4262,7 +4297,9 @@ int LuaScriptInterface::graphics_drawCircle(lua_State * l)
 	if (a<0) a = 0;
 	else if (a>255) a = 255;
 
-	luacon_g->BlendEllipse({ x, y }, { abs(rx), abs(ry) }, RGBA<uint8_t>(r, g, b, a));
+	std::visit([x, y, rx, ry, r, g, b, a](auto p) {
+		p->BlendEllipse({ x, y }, { abs(rx), abs(ry) }, RGBA<uint8_t>(r, g, b, a));
+	}, currentGraphics());
 	return 0;
 }
 
@@ -4286,7 +4323,9 @@ int LuaScriptInterface::graphics_fillCircle(lua_State * l)
 	if (a<0) a = 0;
 	else if (a>255) a = 255;
 
-	luacon_g->BlendFilledEllipse({ x, y }, { abs(rx), abs(ry) }, RGBA<uint8_t>(r, g, b, a));
+	std::visit([x, y, rx, ry, r, g, b, a](auto p) {
+		p->BlendFilledEllipse({ x, y }, { abs(rx), abs(ry) }, RGBA<uint8_t>(r, g, b, a));
+	}, currentGraphics());
 	return 0;
 }
 
@@ -4322,6 +4361,10 @@ int LuaScriptInterface::graphics_getHexColor(lua_State * l)
 
 int LuaScriptInterface::graphics_setClipRect(lua_State * l)
 {
+	if (eventTraits & eventTraitSimGraphics)
+	{
+		return luaL_error(l, "simulation graphics do not support clip rects");
+	}
 	int x = luaL_optinteger(l, 1, 0);
 	int y = luaL_optinteger(l, 2, 0);
 	int w = luaL_optinteger(l, 3, WINDOWW);
@@ -4544,19 +4587,21 @@ void LuaScriptInterface::initEventAPI()
 	};
 	luaL_register(l, "event", eventAPIMethods);
 
-	lua_pushinteger(l, VariantIndex<GameControllerEvent, TextInputEvent  >()); lua_setfield(l, -2, "textinput"  );
-	lua_pushinteger(l, VariantIndex<GameControllerEvent, TextEditingEvent>()); lua_setfield(l, -2, "textediting");
-	lua_pushinteger(l, VariantIndex<GameControllerEvent, KeyPressEvent   >()); lua_setfield(l, -2, "keypress"   );
-	lua_pushinteger(l, VariantIndex<GameControllerEvent, KeyReleaseEvent >()); lua_setfield(l, -2, "keyrelease" );
-	lua_pushinteger(l, VariantIndex<GameControllerEvent, MouseDownEvent  >()); lua_setfield(l, -2, "mousedown"  );
-	lua_pushinteger(l, VariantIndex<GameControllerEvent, MouseUpEvent    >()); lua_setfield(l, -2, "mouseup"    );
-	lua_pushinteger(l, VariantIndex<GameControllerEvent, MouseMoveEvent  >()); lua_setfield(l, -2, "mousemove"  );
-	lua_pushinteger(l, VariantIndex<GameControllerEvent, MouseWheelEvent >()); lua_setfield(l, -2, "mousewheel" );
-	lua_pushinteger(l, VariantIndex<GameControllerEvent, TickEvent       >()); lua_setfield(l, -2, "tick"       );
-	lua_pushinteger(l, VariantIndex<GameControllerEvent, BlurEvent       >()); lua_setfield(l, -2, "blur"       );
-	lua_pushinteger(l, VariantIndex<GameControllerEvent, CloseEvent      >()); lua_setfield(l, -2, "close"      );
-	lua_pushinteger(l, VariantIndex<GameControllerEvent, BeforeSimEvent  >()); lua_setfield(l, -2, "beforesim"  );
-	lua_pushinteger(l, VariantIndex<GameControllerEvent, AfterSimEvent   >()); lua_setfield(l, -2, "aftersim"   );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, TextInputEvent    >()); lua_setfield(l, -2, "textinput"    );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, TextEditingEvent  >()); lua_setfield(l, -2, "textediting"  );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, KeyPressEvent     >()); lua_setfield(l, -2, "keypress"     );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, KeyReleaseEvent   >()); lua_setfield(l, -2, "keyrelease"   );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, MouseDownEvent    >()); lua_setfield(l, -2, "mousedown"    );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, MouseUpEvent      >()); lua_setfield(l, -2, "mouseup"      );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, MouseMoveEvent    >()); lua_setfield(l, -2, "mousemove"    );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, MouseWheelEvent   >()); lua_setfield(l, -2, "mousewheel"   );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, TickEvent         >()); lua_setfield(l, -2, "tick"         );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, BlurEvent         >()); lua_setfield(l, -2, "blur"         );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, CloseEvent        >()); lua_setfield(l, -2, "close"        );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, BeforeSimEvent    >()); lua_setfield(l, -2, "beforesim"    );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, AfterSimEvent     >()); lua_setfield(l, -2, "aftersim"     );
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, BeforeSimDrawEvent>()); lua_setfield(l, -2, "beforesimdraw");
+	lua_pushinteger(l, VariantIndex<GameControllerEvent, AfterSimDrawEvent >()); lua_setfield(l, -2, "aftersimdraw" );
 
 	lua_pop(l, 1);
 
@@ -4692,10 +4737,9 @@ bool LuaScriptInterface::HandleEvent(const GameControllerEvent &event)
 	{
 		lua_rawgeti(l, -1, i);
 		int numArgs = PushGameControllerEvent(l, event);
-		auto simEvent = std::visit([](auto &event) {
-			return event.simEvent;
-		}, event);
-		int callret = tpt_lua_pcall(l, numArgs, 1, 0, simEvent);
+		int callret = tpt_lua_pcall(l, numArgs, 1, 0, std::visit([](auto &event) {
+			return event.traits;
+		}, event));
 		if (callret)
 		{
 			if (luacon_geterror() == "Error: Script not responding")
@@ -4842,7 +4886,7 @@ int LuaScriptInterface::Command(String command)
 		else
 		{
 			lastCode = "";
-			ret = tpt_lua_pcall(l, 0, LUA_MULTRET, 0, false);
+			ret = tpt_lua_pcall(l, 0, LUA_MULTRET, 0, eventTraitNone);
 			if (ret)
 			{
 				lastError = luacon_geterror();
@@ -5177,7 +5221,7 @@ int tpt_lua_loadstring(lua_State *L, const ByteString &str)
 
 int tpt_lua_dostring(lua_State *L, const ByteString &str)
 {
-	return tpt_lua_loadstring(L, str) || tpt_lua_pcall(L, 0, LUA_MULTRET, 0, false);
+	return tpt_lua_loadstring(L, str) || tpt_lua_pcall(L, 0, LUA_MULTRET, 0, eventTraitNone);
 }
 
 bool tpt_lua_equalsString(lua_State *L, int index, const char *data, size_t size)
@@ -5185,25 +5229,25 @@ bool tpt_lua_equalsString(lua_State *L, int index, const char *data, size_t size
 	return lua_isstring(L, index) && lua_objlen(L, index) == size && !memcmp(lua_tostring(L, index), data, size);
 }
 
-int tpt_lua_pcall(lua_State *L, int numArgs, int numResults, int errorFunc, bool simEvent)
+int tpt_lua_pcall(lua_State *L, int numArgs, int numResults, int errorFunc, EventTraits newEventTraits)
 {
 	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	luacon_ci->luaExecutionStart = Platform::GetTime();
 	struct AtReturn
 	{
-		bool oldInSimEvent;
+		EventTraits oldEventTraits;
 
-		AtReturn(bool newInSimEvent)
+		AtReturn(EventTraits newEventTraits)
 		{
-			oldInSimEvent = inSimEvent;
-			inSimEvent = newInSimEvent;
+			oldEventTraits = eventTraits;
+			eventTraits = newEventTraits;
 		}
 
 		~AtReturn()
 		{
-			inSimEvent = oldInSimEvent;
+			eventTraits = oldEventTraits;
 		}
-	} atReturn(simEvent);
+	} atReturn(newEventTraits);
 	return lua_pcall(L, numArgs, numResults, errorFunc);
 }
 

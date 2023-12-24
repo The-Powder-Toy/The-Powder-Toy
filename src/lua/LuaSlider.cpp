@@ -71,7 +71,7 @@ void LuaSlider::triggerOnValueChanged()
 		lua_rawgeti(l, LUA_REGISTRYINDEX, onValueChangedFunction);
 		lua_rawgeti(l, LUA_REGISTRYINDEX, owner_ref);
 		lua_pushinteger(l, slider->GetValue());
-		if (tpt_lua_pcall(l, 2, 0, 0, false))
+		if (tpt_lua_pcall(l, 2, 0, 0, eventTraitNone))
 		{
 			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
 		}

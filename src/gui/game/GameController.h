@@ -196,4 +196,7 @@ public:
 	bool GetMouseClickRequired();
 
 	void RemoveCustomGOLType(const ByteString &identifier);
+
+	void BeforeSimDraw();
+	void AfterSimDraw();
 };
