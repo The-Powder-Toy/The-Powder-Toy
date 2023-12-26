@@ -133,6 +133,7 @@ public:
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void SetActiveTool(int toolSelection, ByteString identifier);
 	void SetLastTool(Tool * tool);
+	Tool *GetLastTool();
 	int GetReplaceModeFlags();
 	void SetReplaceModeFlags(int flags);
 	void SetActiveColourPreset(int preset);

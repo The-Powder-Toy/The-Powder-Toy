@@ -396,6 +396,10 @@ void GameController::DrawPoints(int toolSelection, ui::Point oldPos, ui::Point n
 	}
 
 	activeTool->Strength = gameModel->GetToolStrength();
+	// This is a joke, the game mvc has to go >_>
+	activeTool->shiftBehaviour = gameView->ShiftBehaviour();
+	activeTool->ctrlBehaviour = gameView->CtrlBehaviour();
+	activeTool->altBehaviour = gameView->AltBehaviour();
 	if (!held)
 		activeTool->Draw(sim, cBrush, newPos);
 	else
@@ -1105,8 +1109,10 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 		if(gameModel->GetActiveTool(i) == gameModel->GetMenuList().at(SC_WALL)->GetToolList().at(WL_GRAV))
 			gameModel->GetRenderer()->gravityZonesEnabled = true;
 	}
-	if(tool->Identifier == "DEFAULT_UI_PROPERTY")
-		((PropertyTool *)tool)->OpenWindow(gameModel->GetSimulation());
+	if (tool->Identifier == "DEFAULT_UI_PROPERTY")
+	{
+		static_cast<PropertyTool *>(tool)->OpenWindow(gameModel->GetSimulation(), nullptr);
+	}
 	if(tool->Identifier == "DEFAULT_UI_ADDLIFE")
 	{
 		((GOLTool *)tool)->OpenWindow(gameModel->GetSimulation(), toolSelection);
@@ -1124,6 +1130,11 @@ void GameController::SetActiveTool(int toolSelection, ByteString identifier)
 void GameController::SetLastTool(Tool * tool)
 {
 	gameModel->SetLastTool(tool);
+}
+
+Tool *GameController::GetLastTool()
+{
+	return gameModel->GetLastTool();
 }
 
 int GameController::GetReplaceModeFlags()

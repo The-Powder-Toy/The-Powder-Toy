@@ -2086,6 +2086,11 @@ void GameView::UpdateDrawMode()
 		drawMode = DrawLine;
 	else
 		drawMode = DrawPoints;
+	// TODO: have tools decide on draw mode
+	if (c->GetLastTool() && c->GetLastTool()->Identifier == "DEFAULT_UI_SAMPLE")
+	{
+		drawMode = DrawPoints;
+	}
 }
 
 void GameView::UpdateToolStrength()

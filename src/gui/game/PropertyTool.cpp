@@ -28,6 +28,7 @@
 class PropertyWindow: public ui::Window
 {
 	void HandlePropertyChange();
+	std::optional<std::pair<int, String>> TakePropertyFrom(const Particle *takePropertyFrom) const;
 
 public:
 	ui::DropDown * property;
@@ -36,7 +37,7 @@ public:
 	Simulation *sim;
 	std::vector<StructProperty> properties;
 	std::optional<PropertyTool::Configuration> configuration;
-	PropertyWindow(PropertyTool *tool_, Simulation *sim);
+	PropertyWindow(PropertyTool *tool_, Simulation *sim, const Particle *takePropertyFrom);
 	void SetProperty();
 	void CheckProperty();
 	void Update();
@@ -46,7 +47,7 @@ public:
 	virtual ~PropertyWindow() {}
 };
 
-PropertyWindow::PropertyWindow(PropertyTool * tool_, Simulation *sim_):
+PropertyWindow::PropertyWindow(PropertyTool * tool_, Simulation *sim_, const Particle *takePropertyFrom):
 ui::Window(ui::Point(-1, -1), ui::Point(200, 87)),
 tool(tool_),
 sim(sim_)
@@ -81,21 +82,65 @@ sim(sim_)
 		property->AddOption(std::pair<String, int>(properties[i].Name.FromAscii(), i));
 	}
 
-	auto &prefs = GlobalPrefs::Ref();
-	property->SetOption(prefs.Get("Prop.Type", 0));
-
 	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "", "[value]");
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	textField->SetText(prefs.Get("Prop.Value", String("")));
 	textField->SetActionCallback({ [this]() {
 		Update();
 	} });
 	AddComponent(textField);
+
+	{
+		auto &prefs = GlobalPrefs::Ref();
+		auto propertyIndex = prefs.Get("Prop.Type", 0);
+		auto valueString = prefs.Get("Prop.Value", String(""));
+		auto taken = TakePropertyFrom(takePropertyFrom);
+		if (taken)
+		{
+			std::tie(propertyIndex, valueString) = *taken;
+		}
+		property->SetOption(propertyIndex);
+		textField->SetText(valueString);
+	}
+
 	FocusComponent(textField);
 	Update();
 
 	MakeActiveWindow();
+}
+
+std::optional<std::pair<int, String>> PropertyWindow::TakePropertyFrom(const Particle *takePropertyFrom) const
+{
+	auto toolConfiguration = tool->GetConfiguration();
+	if (!toolConfiguration || !takePropertyFrom)
+	{
+		return {};
+	}
+	auto *prop = reinterpret_cast<const char *>(takePropertyFrom) + toolConfiguration->prop.Offset;
+	auto takeValue = [this, toolConfiguration](auto &value) -> std::optional<std::pair<int, String>> {
+		auto it = std::find(properties.begin(), properties.end(), toolConfiguration->prop);
+		if (it != properties.end())
+		{
+			return std::pair{ int(it - properties.begin()), String::Build(value) };
+		}
+		return {};
+	};
+	switch (toolConfiguration->prop.Type)
+	{
+	case StructProperty::Float:
+		return takeValue(*reinterpret_cast<const float *>(prop));
+
+	case StructProperty::ParticleType:
+	case StructProperty::Integer:
+		return takeValue(*reinterpret_cast<const int *>(prop));
+
+	case StructProperty::UInteger:
+		return takeValue(*reinterpret_cast<const unsigned int *>(prop));
+
+	default:
+		break;
+	}
+	return {};
 }
 
 void PropertyWindow::HandlePropertyChange()
@@ -287,9 +332,9 @@ void PropertyWindow::OnKeyPress(int key, int scan, bool repeat, bool shift, bool
 	}
 }
 
-void PropertyTool::OpenWindow(Simulation *sim)
+void PropertyTool::OpenWindow(Simulation *sim, const Particle *takePropertyFrom)
 {
-	new PropertyWindow(this, sim);
+	new PropertyWindow(this, sim, takePropertyFrom);
 }
 
 void PropertyTool::SetProperty(Simulation *sim, ui::Point position)
@@ -323,39 +368,6 @@ void PropertyTool::SetProperty(Simulation *sim, ui::Point position)
 		default:
 			break;
 	}
-}
-
-void PropertyTool::UpdateConfigurationFromParticle(const Particle &part)
-{
-	auto configuration = GetConfiguration();
-	switch (configuration->prop.Type)
-	{
-	case StructProperty::Float:
-		{
-			auto value = *((float*)(((char*)&part)+configuration->prop.Offset));;
-			configuration->propValue = value;
-			configuration->propertyValueStr = String::Build(value);
-		}
-		break;
-	case StructProperty::ParticleType:
-	case StructProperty::Integer:
-		{
-			auto value = *((int*)(((char*)&part)+configuration->prop.Offset));;
-			configuration->propValue = value;
-			configuration->propertyValueStr = String::Build(value);
-		}
-		break;
-	case StructProperty::UInteger:
-		{
-			auto value = *((unsigned int*)(((char*)&part)+configuration->prop.Offset));;
-			configuration->propValue = value;
-			configuration->propertyValueStr = String::Build(value);
-		}
-		break;
-	default:
-		break;
-	}
-	SetConfiguration(configuration);
 }
 
 void PropertyTool::Draw(Simulation *sim, Brush const &cBrush, ui::Point position)

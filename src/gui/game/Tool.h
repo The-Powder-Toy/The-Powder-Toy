@@ -25,6 +25,9 @@ public:
 	RGB<uint8_t> const Colour;
 	bool const Blocky;
 	float Strength = 1.0f;
+	bool shiftBehaviour = false;
+	bool ctrlBehaviour = false;
+	bool altBehaviour = false;
 
 	Tool(int id, String name, String description,
 		RGB<uint8_t> colour, ByteString identifier, std::unique_ptr<VideoBuffer> (*textureGen)(int, Vec2<int>) = NULL, bool blocky = false
@@ -110,6 +113,9 @@ public:
 	};
 
 private:
+	void SetProperty(Simulation *sim, ui::Point position);
+	void SetConfiguration(std::optional<Configuration> newConfiguration);
+
 	GameModel &gameModel;
 	std::optional<Configuration> configuration;
 
@@ -126,16 +132,12 @@ public:
 	virtual ~PropertyTool()
 	{}
 
-	void OpenWindow(Simulation *sim);
-	void SetProperty(Simulation *sim, ui::Point position);
-	void UpdateConfigurationFromParticle(const Particle &part);
+	void OpenWindow(Simulation *sim, const Particle *takePropertyFrom);
 	void Click(Simulation * sim, Brush const &brush, ui::Point position) override { }
 	void Draw(Simulation *sim, Brush const &brush, ui::Point position) override;
 	void DrawLine(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2, bool dragging = false) override;
 	void DrawRect(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2) override;
 	void DrawFill(Simulation * sim, Brush const &brush, ui::Point position) override;
-
-	void SetConfiguration(std::optional<Configuration> newConfiguration);
 
 	std::optional<Configuration> GetConfiguration() const
 	{
