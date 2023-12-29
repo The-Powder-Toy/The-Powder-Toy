@@ -73,6 +73,7 @@ void LocalBrowserModel::SetMoveToFront(bool move)
 
 void LocalBrowserModel::UpdateSavesList(int pageNumber)
 {
+	ClearSelected();
 	savesList.clear();
 	currentPage = pageNumber;
 
