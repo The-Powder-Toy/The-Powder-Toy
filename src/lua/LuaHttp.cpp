@@ -250,12 +250,12 @@ static int http_request(lua_State *l, bool isPost)
 		{
 			postData = http::FormData{};
 			auto &formData = std::get<http::FormData>(postData);
-			auto size = lua_objlen(l, headersIndex);
+			auto size = lua_objlen(l, 2);
 			if (size)
 			{
 				for (auto i = 0U; i < size; ++i)
 				{
-					lua_rawgeti(l, headersIndex, i + 1);
+					lua_rawgeti(l, 2, i + 1);
 					if (!lua_istable(l, -1))
 					{
 						luaL_error(l, "form item %i is not a table", i + 1);
