@@ -223,7 +223,7 @@ static int http_request_finish(lua_State *l)
 			lua_pushlstring(l, headers[i].name.data(), headers[i].name.size());
 			lua_rawseti(l, -2, 1);
 			lua_pushlstring(l, headers[i].value.data(), headers[i].value.size());
-			lua_rawseti(l, -2, 1);
+			lua_rawseti(l, -2, 2);
 			lua_rawseti(l, -2, i + 1);
 		}
 		return 3;
