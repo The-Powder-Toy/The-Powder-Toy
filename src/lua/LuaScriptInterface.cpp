@@ -2185,7 +2185,7 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 	};
 	auto hflip = lua_toboolean(l, 4);
 	auto rotation = luaL_optint(l, 5, 0) & 3; // [0, 3] rotations
-	bool includePressure = luaL_optint(l, 6, !luacon_controller->GetView()->ShiftBehaviour());
+	bool includePressure = luaL_optint(l, 6, 1);
 	auto &client = Client::Ref();
 	if (lua_isstring(l, 1)) //Load from 10 char name, or full filename
 	{
