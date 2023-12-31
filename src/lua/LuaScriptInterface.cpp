@@ -2232,7 +2232,7 @@ int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 	{
 		pushed = 2;
 		lua_pushnil(l);
-		tpt_lua_pushString(l, luacon_ci->GetLastError());
+		tpt_lua_pushString(l, tempfile ? tempfile->GetError() : "does not exist");
 	}
 	return pushed;
 }

@@ -445,7 +445,6 @@ std::unique_ptr<SaveFile> Client::LoadSaveFile(ByteString filename)
 		{
 			file->SetLoadingError(err.FromUtf8());
 		}
-		commandInterface->SetLastError(err.FromUtf8());
 	}
 	return file;
 }
