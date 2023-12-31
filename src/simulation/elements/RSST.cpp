@@ -57,6 +57,7 @@ int update(UPDATE_FUNC_ARGS)
 			if (!r)
 				continue;
 
+			// RSST + GUNP = FIRW
 			if(TYP(r) == PT_GUNP)
 			{
 				sim->part_change_type(i, x, y, PT_FIRW);
@@ -64,6 +65,16 @@ int update(UPDATE_FUNC_ARGS)
 				return 1;
 			}
 
+			// RSST + BCOL = FSEP
+			if(TYP(r) == PT_BCOL)
+			{
+				sim->part_change_type(i, x, y, PT_FSEP);
+				parts[i].life = 50;
+				sim->kill_part(ID(r));
+				return 1;
+			}
+
+			// Set RSST ctype from nearby clone
 			if((TYP(r) == PT_CLNE) || (TYP(r) == PT_PCLN))
 			{
 				parts[i].ctype = parts[ID(r)].ctype;
