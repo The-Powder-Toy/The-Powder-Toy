@@ -2168,14 +2168,14 @@ int LuaScriptInterface::simulation_saveStamp(lua_State * l)
 	int y = luaL_optint(l,2,0);
 	int w = luaL_optint(l,3,XRES-1);
 	int h = luaL_optint(l,4,YRES-1);
-	ByteString name = luacon_controller->StampRegion(ui::Point(x, y), ui::Point(x+w, y+h));
+	bool includePressure = luaL_optint(l, 5, 1);
+	ByteString name = luacon_controller->StampRegion(ui::Point(x, y), ui::Point(x+w, y+h), includePressure);
 	tpt_lua_pushByteString(l, name);
 	return 1;
 }
 
 int LuaScriptInterface::simulation_loadStamp(lua_State * l)
 {
-	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
 	int i = -1;
 	int pushed = 1;
 	std::unique_ptr<SaveFile> tempfile;

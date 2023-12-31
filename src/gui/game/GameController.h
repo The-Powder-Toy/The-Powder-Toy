@@ -106,6 +106,7 @@ public:
 	void DrawLine(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawFill(int toolSelection, ui::Point point);
 	ByteString StampRegion(ui::Point point1, ui::Point point2);
+	ByteString StampRegion(ui::Point point1, ui::Point point2, bool includePressure);
 	void CopyRegion(ui::Point point1, ui::Point point2);
 	void CutRegion(ui::Point point1, ui::Point point2);
 	void Update();

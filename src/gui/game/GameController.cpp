@@ -448,7 +448,12 @@ static Rect<int> SaneSaveRect(Vec2<int> point1, Vec2<int> point2)
 
 ByteString GameController::StampRegion(ui::Point point1, ui::Point point2)
 {
-	auto newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), SaneSaveRect(point1, point2));
+	return StampRegion(point1, point2, gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
+}
+
+ByteString GameController::StampRegion(ui::Point point1, ui::Point point2, bool includePressure)
+{
+	auto newSave = gameModel->GetSimulation()->Save(includePressure, SaneSaveRect(point1, point2));
 	if(newSave)
 	{
 		newSave->paused = gameModel->GetPaused();
