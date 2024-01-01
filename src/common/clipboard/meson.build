@@ -1,4 +1,4 @@
-if get_option('platform_clipboard')
+if platform_clipboard
 	clipboard_impl_factories = []
 	if host_platform == 'windows'
 		powder_files += files('Windows.cpp')

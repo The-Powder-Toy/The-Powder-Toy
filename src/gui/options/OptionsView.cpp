@@ -296,6 +296,12 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	graveExitsConsole = addCheckbox(0, "Key under Esc exits console", "Disable if that key is 0 on your keyboard", [this] {
 		c->SetGraveExitsConsole(graveExitsConsole->GetChecked());
 	});
+	if constexpr (PLATFORM_CLIPBOARD)
+	{
+		nativeClipoard = addCheckbox(0, "Use platform clipboard", "Allows copying and pasting across TPT instances", [this] {
+			c->SetNativeClipoard(nativeClipoard->GetChecked());
+		});
+	}
 	decoSpace = addDropDown("Colour space used by decoration tools", {
 		{ "sRGB", 0 },
 		{ "Linear", 1 },
@@ -458,6 +464,10 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	if (fastquit)
 	{
 		fastquit->SetChecked(sender->GetFastQuit());
+	}
+	if (nativeClipoard)
+	{
+		nativeClipoard->SetChecked(sender->GetNativeClipoard());
 	}
 	showAvatars->SetChecked(sender->GetShowAvatars());
 	mouseClickRequired->SetChecked(sender->GetMouseClickRequired());

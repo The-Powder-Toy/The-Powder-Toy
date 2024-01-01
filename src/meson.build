@@ -28,6 +28,7 @@ update_server = get_option('update_server')
 conf_data.set('UPDATESERVER', update_server)
 conf_data.set('USE_UPDATESERVER', (update_server != '').to_string())
 
+platform_clipboard = get_option('platform_clipboard')
 enforce_https = get_option('enforce_https')
 allow_quit = true
 force_window_frame_ops = 'forceWindowFrameOpsNone'
@@ -52,6 +53,7 @@ conf_data.set('DEFAULT_TOUCH_UI', default_touch_ui.to_string())
 conf_data.set('ALLOW_DATA_FOLDER', allow_data_folder.to_string())
 conf_data.set('ENFORCE_HTTPS', enforce_https.to_string())
 conf_data.set('SECURE_CIPHERS_ONLY', secure_ciphers_only.to_string())
+conf_data.set('PLATFORM_CLIPBOARD', platform_clipboard.to_string())
 
 conf_data.set('IGNORE_UPDATES', get_option('ignore_updates').to_string())
 conf_data.set('SERVER', get_option('server'))
@@ -176,17 +178,19 @@ configure_file(
 	configuration: elements_conf_data
 )
 
-clipboard_impl_defs = []
-foreach impl_subsys_factory : clipboard_impl_factories
-	clipboard_impl_defs += 'IMPL_DEFINE(' + impl_subsys_factory[0] + ', ' + impl_subsys_factory[1] + ')'
-endforeach
-clipboard_impls_data = configuration_data()
-clipboard_impls_data.set('impl_defs', '\n'.join(clipboard_impl_defs))
-configure_file(
-	input: 'common/clipboard/ClipboardImpls.template.h',
-	output: 'ClipboardImpls.h',
-	configuration: clipboard_impls_data
-)
+if platform_clipboard
+	clipboard_impl_defs = []
+	foreach impl_subsys_factory : clipboard_impl_factories
+		clipboard_impl_defs += 'IMPL_DEFINE(' + impl_subsys_factory[0] + ', ' + impl_subsys_factory[1] + ')'
+	endforeach
+	clipboard_impls_data = configuration_data()
+	clipboard_impls_data.set('impl_defs', '\n'.join(clipboard_impl_defs))
+	configure_file(
+		input: 'common/clipboard/ClipboardImpls.template.h',
+		output: 'ClipboardImpls.h',
+		configuration: clipboard_impls_data
+	)
+endif
 
 simulation_tool_defs = []
 foreach tool_name_id : simulation_tool_ids

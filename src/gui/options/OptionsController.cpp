@@ -107,6 +107,11 @@ void OptionsController::SetGraveExitsConsole(bool graveExitsConsole)
 	model->SetGraveExitsConsole(graveExitsConsole);
 }
 
+void OptionsController::SetNativeClipoard(bool nativeClipoard)
+{
+	model->SetNativeClipoard(nativeClipoard);
+}
+
 void OptionsController::SetResizable(bool resizable)
 {
 	model->SetResizable(resizable);

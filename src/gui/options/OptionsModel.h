@@ -41,6 +41,8 @@ public:
 	void SetScale(int scale);
 	bool GetGraveExitsConsole();
 	void SetGraveExitsConsole(bool graveExitsConsole);
+	bool GetNativeClipoard();
+	void SetNativeClipoard(bool nativeClipoard);
 	bool GetResizable();
 	void SetResizable(bool resizable);
 	bool GetFullscreen();

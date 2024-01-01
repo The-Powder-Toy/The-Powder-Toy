@@ -1,13 +1,10 @@
 #include "OptionsModel.h"
-
 #include "OptionsView.h"
-
 #include "simulation/Simulation.h"
 #include "simulation/Air.h"
 #include "simulation/gravity/Gravity.h"
-
 #include "prefs/GlobalPrefs.h"
-
+#include "common/clipboard/Clipboard.h"
 #include "gui/interface/Engine.h"
 #include "gui/game/GameModel.h"
 
@@ -165,6 +162,18 @@ void OptionsModel::SetGraveExitsConsole(bool graveExitsConsole)
 {
 	ui::Engine::Ref().GraveExitsConsole = graveExitsConsole;
 	GlobalPrefs::Ref().Set("GraveExitsConsole", graveExitsConsole);
+	notifySettingsChanged();
+}
+
+bool OptionsModel::GetNativeClipoard()
+{
+	return Clipboard::GetEnabled();
+}
+
+void OptionsModel::SetNativeClipoard(bool nativeClipoard)
+{
+	Clipboard::SetEnabled(nativeClipoard);
+	GlobalPrefs::Ref().Set("NativeClipboard.Enabled", nativeClipoard);
 	notifySettingsChanged();
 }
 

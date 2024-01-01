@@ -16,6 +16,15 @@ namespace Clipboard
 	{
 	}
 
+	bool GetEnabled()
+	{
+		return false;
+	}
+
+	void SetEnabled(bool)
+	{
+	}
+
 	void RecreateWindow()
 	{
 	}

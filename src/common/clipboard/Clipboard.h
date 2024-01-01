@@ -10,5 +10,7 @@ namespace Clipboard
 	void SetClipboardData(std::unique_ptr<GameSave> data);
 	const GameSave *GetClipboardData();
 	void Init();
+	bool GetEnabled();
+	void SetEnabled(bool newEnabled);
 	void RecreateWindow();
 }

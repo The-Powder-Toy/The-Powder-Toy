@@ -30,6 +30,7 @@ public:
 	void SetBlurryScaling(bool newBlurryScaling);
 	void SetScale(int scale);
 	void SetGraveExitsConsole(bool graveExitsConsole);
+	void SetNativeClipoard(bool nativeClipoard);
 	void SetResizable(bool resizable);
 	void SetFastQuit(bool fastquit);
 	void SetDecoSpace(int decoSpace);

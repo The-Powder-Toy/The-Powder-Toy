@@ -1,4 +1,5 @@
 #include "Dynamic.h"
+#include "Clipboard.h"
 #include "client/GameSave.h"
 #include "prefs/GlobalPrefs.h"
 #include "PowderToySDL.h"
@@ -90,8 +91,21 @@ namespace Clipboard
 		return clipboardData.get();
 	}
 
+	static bool enabled = false;
 	void Init()
 	{
+		enabled = GlobalPrefs::Ref().Get<bool>("NativeClipboard.Enabled", true);
+	}
+
+	bool GetEnabled()
+	{
+		return enabled;
+	}
+
+	void SetEnabled(bool newEnabled)
+	{
+		enabled = newEnabled;
+		RecreateWindow();
 	}
 
 	int currentSubsystem;
@@ -104,7 +118,7 @@ namespace Clipboard
 		SDL_GetWindowWMInfo(sdl_window, &info);
 		clipboard.reset();
 		currentSubsystem = info.subsystem;
-		if (GlobalPrefs::Ref().Get<bool>("NativeClipboard.Enabled", true))
+		if (enabled)
 		{
 			for (auto *impl = clipboardImpls; impl->factory; ++impl)
 			{
