@@ -2,7 +2,11 @@ common_files += files(
 	'Common.cpp',
 )
 
-use_bluescreen = not is_debug
+if get_option('use_bluescreen') == 'auto'
+	use_bluescreen = not is_debug
+else
+	use_bluescreen = get_option('use_bluescreen') == 'yes'
+endif
 can_install_enforce_no = false
 set_window_icon = false
 path_sep_char = '/'
@@ -72,6 +76,14 @@ else
 		'MainCommon.cpp',
 		'DdirCommon.cpp',
 	)
+endif
+
+subdir('stacktrace')
+
+if use_bluescreen
+	common_files += stacktrace_files
+else
+	common_files += files('stacktrace/Null.cpp')
 endif
 conf_data.set('SET_WINDOW_ICON', set_window_icon.to_string())
 conf_data.set('PATH_SEP_CHAR', path_sep_char)

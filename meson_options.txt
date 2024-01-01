@@ -286,3 +286,10 @@ option(
 	value: true,
 	description: 'Enable platform clipboard, allows copying simulation data between different windows'
 )
+option(
+	'use_bluescreen',
+	type: 'combo',
+	choices: [ 'no', 'yes', 'auto' ],
+	value: 'auto',
+	description: 'Show blue error screen upon unhandled signals and exceptions'
+)

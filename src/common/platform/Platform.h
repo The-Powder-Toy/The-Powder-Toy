@@ -1,6 +1,8 @@
 #pragma once
 #include "common/String.h"
 #include <string>
+#include <vector>
+#include <optional>
 
 namespace Platform
 {
@@ -66,6 +68,13 @@ namespace Platform
 	ByteString DefaultDdir();
 
 	int InvokeMain(int argc, char *argv[]);
+
+	enum StackTraceType
+	{
+		stackTraceFromHere,
+		stackTraceFromException,
+	};
+	std::optional<std::vector<String>> StackTrace(StackTraceType StackTraceType);
 
 	void MarkPresentable();
 }

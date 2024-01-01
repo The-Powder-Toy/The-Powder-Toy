@@ -361,6 +361,7 @@ else
 	ident_platform = 'UNKNOWN'
 endif
 
+project_deps = []
 data_files = []
 powder_deps = []
 
@@ -378,7 +379,7 @@ if host_platform == 'emscripten'
 endif
 
 if get_option('build_powder')
-	powder_deps += [
+	powder_deps += project_deps + [
 		threads_dep,
 		zlib_dep,
 		png_dep,
@@ -419,7 +420,7 @@ if get_option('build_render')
 	if host_platform == 'emscripten'
 		error('render does not target emscripten')
 	endif
-	render_deps = [
+	render_deps = project_deps + [
 		threads_dep,
 		zlib_dep,
 		bzip2_dep,
@@ -445,7 +446,7 @@ if get_option('build_font')
 	if host_platform == 'emscripten'
 		error('font does not target emscripten')
 	endif
-	font_deps = [
+	font_deps = project_deps + [
 		threads_dep,
 		zlib_dep,
 		png_dep,

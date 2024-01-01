@@ -97,25 +97,46 @@ void TickClient()
 	Client::Ref().Tick();
 }
 
-void BlueScreen(String detailMessage)
+void BlueScreen(String detailMessage, std::optional<std::vector<String>> stackTrace)
 {
 	auto &engine = ui::Engine::Ref();
 	engine.g->BlendFilledRect(engine.g->Size().OriginRect(), 0x1172A9_rgb .WithAlpha(0xD2));
 
-	String errorTitle = "ERROR";
-	String errorDetails = "Details: " + detailMessage;
-	String errorHelp = String("An unrecoverable fault has occurred, please report the error by visiting the website below\n") + SCHEME + SERVER;
-	auto versionInfo = ByteString::Build("Version: ", VersionInfo(), "\nTag: ", VCS_TAG).FromUtf8();
+	String errorText;
+	auto addParapgraph = [&errorText](String str) {
+		errorText += str + "\n\n";
+	};
 
-	// We use the width of errorHelp to center, but heights of the individual texts for vertical spacing
-	auto pos = engine.g->Size() / 2 - Vec2(Graphics::TextSize(errorHelp).X / 2, 100);
-	engine.g->BlendText(pos, errorTitle, 0xFFFFFF_rgb .WithAlpha(0xFF));
-	pos.Y += 4 + Graphics::TextSize(errorTitle).Y;
-	engine.g->BlendText(pos, errorDetails, 0xFFFFFF_rgb .WithAlpha(0xFF));
-	pos.Y += 4 + Graphics::TextSize(errorDetails).Y;
-	engine.g->BlendText(pos, errorHelp, 0xFFFFFF_rgb .WithAlpha(0xFF));
-	pos.Y += 4 + Graphics::TextSize(errorHelp).Y;
-	engine.g->BlendText(pos, versionInfo, 0xFFFFFF_rgb .WithAlpha(0xFF));
+	auto crashPrevLogPath = ByteString("crash.prev.log");
+	auto crashLogPath = ByteString("crash.log");
+	Platform::RenameFile(crashLogPath, crashPrevLogPath, true);
+
+	StringBuilder crashInfo;
+	crashInfo << "ERROR - Details: " << detailMessage << "\n";
+	crashInfo << "An unrecoverable fault has occurred, please report it by visiting the website below\n\n  " << SCHEME << SERVER << "\n\n";
+	crashInfo << "An attempt will be made to save all of this information to " << crashLogPath.FromUtf8() << " in your data folder.\n";
+	crashInfo << "Please attach this file to your report.\n\n";
+	crashInfo << "Version: " << VersionInfo().FromUtf8() << "\n";
+	crashInfo << "Tag: " << VCS_TAG << "\n";
+	crashInfo << "Date: " << format::UnixtimeToDate(time(NULL), "%Y-%m-%dT%H:%M:%SZ", false).FromUtf8() << "\n";
+	if (stackTrace)
+	{
+		crashInfo << "Stack trace:\n";
+		for (auto &item : *stackTrace)
+		{
+			crashInfo << " - " << item << "\n";
+		}
+	}
+	else
+	{
+		crashInfo << "Stack trace not available\n";
+	}
+	addParapgraph(crashInfo.Build());
+
+	engine.g->BlendText(ui::Point((engine.g->Size().X - 440) / 2, 80), errorText, 0xFFFFFF_rgb .WithAlpha(0xFF));
+
+	auto crashLogData = errorText.ToUtf8();
+	Platform::WriteFile(std::vector<char>(crashLogData.begin(), crashLogData.end()), crashLogPath);
 
 	//Death loop
 	SDL_Event event;
@@ -151,7 +172,7 @@ void SigHandler(int signal)
 			break;
 		}
 	}
-	BlueScreen(ByteString(message).FromUtf8());
+	BlueScreen(ByteString(message).FromUtf8(), Platform::StackTrace(Platform::stackTraceFromHere));
 }
 
 constexpr int SCALE_MAXIMUM = 10;
@@ -518,7 +539,7 @@ int Main(int argc, char *argv[])
 		}
 		catch (const std::exception &e)
 		{
-			BlueScreen(ByteString(e.what()).FromUtf8());
+			BlueScreen(ByteString(e.what()).FromUtf8(), Platform::StackTrace(Platform::stackTraceFromException));
 		}
 	}
 	else
