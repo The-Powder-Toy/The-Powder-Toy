@@ -131,7 +131,7 @@ void Client::Tick()
 			{
 				updateInfo = info.updateInfo;
 				applyUpdateInfo = true;
-				messageOfTheDay = info.messageOfTheDay;
+				SetMessageOfTheDay(info.messageOfTheDay);
 			}
 			for (auto &notification : info.notifications)
 			{
@@ -142,7 +142,7 @@ void Client::Tick()
 		{
 			if (!usingAltUpdateServer)
 			{
-				messageOfTheDay = ByteString::Build("Error while fetching MotD: ", ex.what()).FromUtf8();
+				SetMessageOfTheDay(ByteString::Build("Error while fetching MotD: ", ex.what()).FromUtf8());
 			}
 		}
 		versionCheckRequest.reset();
@@ -154,7 +154,7 @@ void Client::Tick()
 			auto info = alternateVersionCheckRequest->Finish();
 			updateInfo = info.updateInfo;
 			applyUpdateInfo = true;
-			messageOfTheDay = info.messageOfTheDay;
+			SetMessageOfTheDay(info.messageOfTheDay);
 			for (auto &notification : info.notifications)
 			{
 				AddServerNotification(notification);
@@ -162,7 +162,7 @@ void Client::Tick()
 		}
 		catch (const http::RequestError &ex)
 		{
-			messageOfTheDay = ByteString::Build("Error while checking for updates: ", ex.what()).FromUtf8();
+			SetMessageOfTheDay(ByteString::Build("Error while checking for updates: ", ex.what()).FromUtf8());
 		}
 		alternateVersionCheckRequest.reset();
 	}

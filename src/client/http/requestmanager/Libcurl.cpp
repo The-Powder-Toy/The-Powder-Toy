@@ -296,13 +296,8 @@ namespace http
 		{
 			{
 				std::lock_guard lk(sharedStateMx);
-				for (auto &requestHandle : requestHandles)
-				{
-					if (requestHandle->statusCode)
-					{
-						requestHandlesToUnregister.push_back(requestHandle);
-					}
-				}
+				// Register new handles first. This always succeeds even if the handle is "failed early" so that
+				// a single MarkDone call could be issued on all handles further down in this block.
 				for (auto &requestHandle : requestHandlesToRegister)
 				{
 					// Must not be present
@@ -311,6 +306,17 @@ namespace http
 					RegisterRequestHandle(requestHandle);
 				}
 				requestHandlesToRegister.clear();
+				// Then unregister done handles. As explained above, registering a new handle may also immediately mark
+				// it done and we won't be coming back here until Wait() returns, so this has to come second.
+				for (auto &requestHandle : requestHandles)
+				{
+					if (requestHandle->statusCode)
+					{
+						requestHandlesToUnregister.push_back(requestHandle);
+					}
+				}
+				// Actually unregister handles queued to be unregistered. They can be queued just above, or from another thread.
+				// Thus, it's ok for them to be in the queue multiple times, but it's not ok to try to unregister them multiple times.
 				for (auto &requestHandle : requestHandlesToUnregister)
 				{
 					auto eraseFrom = std::remove(requestHandles.begin(), requestHandles.end(), requestHandle);
