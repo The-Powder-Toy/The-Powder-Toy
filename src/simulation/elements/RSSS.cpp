@@ -48,6 +48,7 @@ void Element::Element_RSSS()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	//Block air like TTAN
 	sim->air->bmap_blockair[y/CELL][x/CELL] = 1;
 	sim->air->bmap_blockairh[y/CELL][x/CELL] = 0x8;
 

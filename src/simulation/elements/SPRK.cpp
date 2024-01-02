@@ -69,7 +69,7 @@ static int update(UPDATE_FUNC_ARGS)
 			parts[i].life = 54;
 		else if (ct == PT_SWCH)
 			parts[i].life = 14;
-		else if (ct == PT_RSST)
+		else if (ct == PT_RSST) //RSST disappears at the end of its spark cycle
 		{
 			sim->kill_part(i);
 			return 1;

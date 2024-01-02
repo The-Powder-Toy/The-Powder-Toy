@@ -114,7 +114,7 @@ static int update(UPDATE_FUNC_ARGS)
 				ct_under = parts[ID(r)].ctype;
 				tmp_under = parts[ID(r)].tmp;
 
-				//If there's a correct ctype set, use it
+				//If there's a correct ctype set, solidify RSST into it
 				if(ct_under > 0 && ct_under < PT_NUM)
 				{
 					sim->create_part(ID(r), x, y, ct_under);
@@ -124,7 +124,7 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[ID(r)].ctype = tmp_under;
 				}
 				else
-					sim->part_change_type(ID(r), x, y, PT_RSSS);
+					sim->part_change_type(ID(r), x, y, PT_RSSS); //Default to RSSS if no ctype
 
 				sim->kill_part(i);
 

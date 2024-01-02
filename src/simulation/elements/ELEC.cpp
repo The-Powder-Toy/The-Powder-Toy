@@ -115,7 +115,7 @@ static int update(UPDATE_FUNC_ARGS)
 				parts[ID(r)].tmp2 += 5;
 				parts[ID(r)].life = 1000;
 				break;
-			case PT_RSST:
+			case PT_RSST: //Destroy RSST
 				if(!rx && !ry)
 				{
 					sim->kill_part(ID(r));

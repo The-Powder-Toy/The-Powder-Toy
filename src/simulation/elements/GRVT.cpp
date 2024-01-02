@@ -62,6 +62,7 @@ static int update(UPDATE_FUNC_ARGS)
 	int under = pmap[y][x];
 	int utype = TYP(under);
 
+	//Randomly kill GRVT inside RSSS
 	if((utype == PT_RSSS) && sim->rng.chance(1, 5))
 	{
 		sim->kill_part(i);

@@ -101,7 +101,7 @@ static int update(UPDATE_FUNC_ARGS)
 		else change = 0.0f;
 		parts[uID].temp = restrict_flt(parts[uID].temp + change, MIN_TEMP, MAX_TEMP);
 		break;
-	case PT_RSSS:
+	case PT_RSSS: //Destroy RSSS
 		{
 			sim->kill_part(uID);
 			sim->kill_part(i);
