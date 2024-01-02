@@ -8,23 +8,9 @@
 #include <array>
 #include <mutex>
 
-#if defined(_MSC_VER) && _MSC_VER >= 1900
-extern "C" void **__cdecl __current_exception_context();
-#endif
-
-static CONTEXT *CurrentExceptionContext()
-{
-	// TODO: find the corresponding hack for mingw and older msvc; stack traces printed for exceptions are broken without it
-	CONTEXT **pctx = nullptr;
-#if defined(_MSC_VER) && _MSC_VER >= 1900
-	pctx = (CONTEXT **)__current_exception_context();
-#endif
-	return pctx ? *pctx : nullptr;
-}
-
 namespace Platform
 {
-std::optional<std::vector<String>> StackTrace(StackTraceType stackTraceType)
+std::optional<std::vector<String>> StackTrace()
 {
 	static std::mutex mx;
 	std::unique_lock lk(mx);
@@ -38,27 +24,8 @@ std::optional<std::vector<String>> StackTrace(StackTraceType stackTraceType)
 
 	CONTEXT context;
 	memset(&context, 0, sizeof(context));
-	switch (stackTraceType)
-	{
-	case stackTraceFromException:
-		if (auto *ec = CurrentExceptionContext())
-		{
-			if (ec->ContextFlags)
-			{
-				context = *ec;
-			}
-		}
-		if (!context.ContextFlags)
-		{
-			return std::nullopt;
-		}
-		break;
-
-	default:
-		context.ContextFlags = CONTEXT_FULL;
-		RtlCaptureContext(&context);
-		break;
-	}
+	context.ContextFlags = CONTEXT_FULL;
+	RtlCaptureContext(&context);
 
 	STACKFRAME64 frame;
 	memset(&frame, 0, sizeof(frame));

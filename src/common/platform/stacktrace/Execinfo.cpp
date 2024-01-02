@@ -6,7 +6,7 @@
 
 namespace Platform
 {
-std::optional<std::vector<String>> StackTrace(StackTraceType)
+std::optional<std::vector<String>> StackTrace()
 {
 	std::array<void *, 100> buf;
 	auto used = backtrace(&buf[0], buf.size());

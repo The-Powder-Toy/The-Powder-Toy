@@ -2,7 +2,7 @@
 
 namespace Platform
 {
-std::optional<std::vector<String>> StackTrace(StackTraceType)
+std::optional<std::vector<String>> StackTrace()
 {
 	return std::nullopt;
 }
