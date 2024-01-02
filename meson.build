@@ -365,6 +365,8 @@ project_deps = []
 data_files = []
 powder_deps = []
 
+project_export_dynamic = false
+
 subdir('src')
 subdir('resources')
 
@@ -411,6 +413,7 @@ if get_option('build_powder')
 			win_subsystem: is_debug ? 'console' : 'windows',
 			link_args: project_link_args,
 			dependencies: powder_deps,
+			export_dynamic: project_export_dynamic,
 			install: true,
 		)
 	endif
@@ -439,6 +442,7 @@ if get_option('build_render')
 		cpp_args: project_cpp_args,
 		link_args: render_link_args,
 		dependencies: render_deps,
+		export_dynamic: project_export_dynamic,
 	)
 endif
 
@@ -462,5 +466,6 @@ if get_option('build_font')
 		cpp_args: project_cpp_args,
 		link_args: project_link_args,
 		dependencies: font_deps,
+		export_dynamic: project_export_dynamic,
 	)
 endif

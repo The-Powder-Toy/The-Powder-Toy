@@ -22,6 +22,7 @@
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/interface/Engine.h"
+#include "gui/interface/TextWrapper.h"
 #include "Config.h"
 #include "SimulationConfig.h"
 #include <optional>
@@ -104,11 +105,6 @@ static void BlueScreen(String detailMessage, std::optional<std::vector<String>> 
 	auto &engine = ui::Engine::Ref();
 	engine.g->BlendFilledRect(engine.g->Size().OriginRect(), 0x1172A9_rgb .WithAlpha(0xD2));
 
-	String errorText;
-	auto addParapgraph = [&errorText](String str) {
-		errorText += str + "\n\n";
-	};
-
 	auto crashPrevLogPath = ByteString("crash.prev.log");
 	auto crashLogPath = ByteString("crash.log");
 	Platform::RenameFile(crashLogPath, crashPrevLogPath, true);
@@ -133,11 +129,14 @@ static void BlueScreen(String detailMessage, std::optional<std::vector<String>> 
 	{
 		crashInfo << "Stack trace not available\n";
 	}
-	addParapgraph(crashInfo.Build());
-
-	engine.g->BlendText(ui::Point((engine.g->Size().X - 440) / 2, 80), errorText, 0xFFFFFF_rgb .WithAlpha(0xFF));
+	String errorText = crashInfo.Build();
+	constexpr auto width = 440;
+	ui::TextWrapper tw;
+	tw.Update(errorText, true, width);
+	engine.g->BlendText(ui::Point((engine.g->Size().X - width) / 2, 80), tw.WrappedText(), 0xFFFFFF_rgb .WithAlpha(0xFF));
 
 	auto crashLogData = errorText.ToUtf8();
+	std::cerr << crashLogData << std::endl;
 	Platform::WriteFile(std::vector<char>(crashLogData.begin(), crashLogData.end()), crashLogPath);
 
 	//Death loop

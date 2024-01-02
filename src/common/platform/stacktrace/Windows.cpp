@@ -7,9 +7,46 @@
 #include <psapi.h>
 #include <array>
 #include <mutex>
+#include <cstdint>
 
 namespace Platform
 {
+struct SymbolInfo
+{
+	String name;
+	uintptr_t displacement;
+};
+static std::optional<SymbolInfo> GetSymbolInfo(HANDLE process, uintptr_t offset)
+{
+	DWORD64 displacement;
+	std::array<char, sizeof(SYMBOL_INFOW) + 1000> symbolData{};
+	auto &symbol = *reinterpret_cast<SYMBOL_INFOW *>(&symbolData[0]);
+	symbol.SizeOfStruct = sizeof(symbol);
+	symbol.MaxNameLen = symbolData.size() - sizeof(symbol);
+	if (SymFromAddrW(process, offset, &displacement, &symbol))
+	{
+		return SymbolInfo{ WinNarrow(&symbol.Name[0]).FromUtf8(), uintptr_t(displacement) };
+	}
+	return std::nullopt;
+}
+
+struct ModuleInfo
+{
+	String name;
+	uintptr_t displacement;
+};
+static std::optional<ModuleInfo> GetModuleInfo(HANDLE process, uintptr_t offset)
+{
+	IMAGEHLP_MODULEW64 module{};
+	module.SizeOfStruct = sizeof(module);
+	if (SymGetModuleInfoW64(process, offset, &module))
+	{
+		auto displacement = offset - uintptr_t(module.BaseOfImage);
+		return ModuleInfo{ WinNarrow(&module.LoadedImageName[0]).FromUtf8(), displacement };
+	}
+	return std::nullopt;
+}
+
 std::optional<std::vector<String>> StackTrace()
 {
 	static std::mutex mx;
@@ -22,13 +59,11 @@ std::optional<std::vector<String>> StackTrace()
 	});
 	SymInitialize(process, NULL, TRUE);
 
-	CONTEXT context;
-	memset(&context, 0, sizeof(context));
+	CONTEXT context{};
 	context.ContextFlags = CONTEXT_FULL;
 	RtlCaptureContext(&context);
 
-	STACKFRAME64 frame;
-	memset(&frame, 0, sizeof(frame));
+	STACKFRAME64 frame{};
 	DWORD machine;
 #if defined(_M_IX86)
 	machine                 = IMAGE_FILE_MACHINE_I386;
@@ -71,24 +106,29 @@ std::optional<std::vector<String>> StackTrace()
 	std::vector<String> res;
 	for (auto i = 0; i < 100; ++i)
 	{
-		if (!StackWalk64( machine, process, thread, &frame, &context, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL))
+		if (!StackWalk64(machine, process, thread, &frame, &context, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL))
 		{
 			break;
 		}
+		auto offset = uintptr_t(frame.AddrPC.Offset);
 		StringBuilder addr;
-		addr << "0x" << Format::Hex() << uintptr_t(frame.AddrPC.Offset);
-		std::array<wchar_t, 1000> moduleBaseName;
-		HMODULE module;
-		MODULEINFO moduleInfo;
-		if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCWSTR)frame.AddrPC.Offset, &module) &&
-		    GetModuleBaseNameW(process, module, &moduleBaseName[0], moduleBaseName.size()) &&
-		    GetModuleInformation(process, module, &moduleInfo, sizeof(moduleInfo)))
+		addr << Format::Hex();
+		if (auto moduleInfo = GetModuleInfo(process, offset))
 		{
-			auto offset = uintptr_t(frame.AddrPC.Offset) - uintptr_t(moduleInfo.lpBaseOfDll);
-			if (offset < moduleInfo.SizeOfImage)
+			addr << moduleInfo->name << "(";
+			if (auto symbolInfo = GetSymbolInfo(process, offset))
 			{
-				addr << " (" << WinNarrow(&moduleBaseName[0]).FromUtf8() << "+0x" << Format::Hex() << offset << ")";
+				addr << symbolInfo->name << "+0x" << symbolInfo->displacement;
 			}
+			else
+			{
+				addr << "+0x" << moduleInfo->displacement;
+			}
+			addr << ") [0x" << offset << "]";
+		}
+		else
+		{
+			addr << "0x" << offset;
 		}
 		res.push_back(addr.Build());
 	}

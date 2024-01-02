@@ -78,10 +78,15 @@ else
 	)
 endif
 
+bluescreen_export_symbols = false
+
 subdir('stacktrace')
 
 if use_bluescreen
 	common_files += stacktrace_files
+	if bluescreen_export_symbols
+		project_export_dynamic = true
+	endif
 else
 	common_files += files('stacktrace/Null.cpp')
 endif
