@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <optional>
 #include "common/String.h"
 
 class GameSave;
@@ -13,4 +14,5 @@ namespace Clipboard
 	bool GetEnabled();
 	void SetEnabled(bool newEnabled);
 	void RecreateWindow();
+	std::optional<String> Explanation();
 }

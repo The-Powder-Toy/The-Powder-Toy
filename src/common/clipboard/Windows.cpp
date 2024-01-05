@@ -217,6 +217,11 @@ namespace Clipboard
 			auto base = reinterpret_cast<const char *>(data.get());
 			return GetClipboardDataChanged{ std::vector<char>(base, base + size) };
 		}
+
+		std::optional<String> Explanation() final override
+		{
+			return std::nullopt;
+		}
 	};
 
 	std::unique_ptr<ClipboardImpl> WindowsClipboardFactory()

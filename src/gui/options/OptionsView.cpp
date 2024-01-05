@@ -2,6 +2,7 @@
 #include "Format.h"
 #include "OptionsController.h"
 #include "OptionsModel.h"
+#include "common/clipboard/Clipboard.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
@@ -59,7 +60,18 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	AddComponent(scrollPanel);
 
 	int currentY = 8;
-	auto addCheckbox = [this, &currentY, &autoWidth](int indent, String text, String info, std::function<void ()> action) {
+	auto addLabel = [this, &currentY, &autoWidth](int indent, String text) {
+		auto *label = new ui::Label(ui::Point(22 + indent * 15, currentY), ui::Point(1, 16), "");
+		autoWidth(label, 0);
+		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+		label->SetMultiline(true);
+		label->SetText("\bg" + text); // stupid hack because autoWidth just changes Size.X and that doesn't update the text wrapper
+		label->AutoHeight();
+		scrollPanel->AddChild(label);
+		currentY += label->Size.Y - 1;
+	};
+	auto addCheckbox = [this, &currentY, &autoWidth, &addLabel](int indent, String text, String info, std::function<void ()> action) {
 		auto *checkbox = new ui::Checkbox(ui::Point(8 + indent * 15, currentY), ui::Point(1, 16), text, "");
 		autoWidth(checkbox, 0);
 		checkbox->SetActionCallback({ action });
@@ -67,12 +79,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		currentY += 14;
 		if (info.size())
 		{
-			auto *label = new ui::Label(ui::Point(22 + indent * 15, currentY), ui::Point(1, 16), "\bg" + info);
-			autoWidth(label, 0);
-			label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-			label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-			scrollPanel->AddChild(label);
-			currentY += 14;
+			addLabel(indent, info);
 		}
 		currentY += 4;
 		return checkbox;
@@ -298,9 +305,16 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	});
 	if constexpr (PLATFORM_CLIPBOARD)
 	{
-		nativeClipoard = addCheckbox(0, "Use platform clipboard", "Allows copying and pasting across TPT instances", [this] {
+		auto indent = 0;
+		nativeClipoard = addCheckbox(indent, "Use platform clipboard", "Allows copying and pasting across TPT instances", [this] {
 			c->SetNativeClipoard(nativeClipoard->GetChecked());
 		});
+		currentY -= 4; // temporarily undo the currentY += 4 at the end of addCheckbox
+		if (auto extra = Clipboard::Explanation())
+		{
+			addLabel(indent, "\bg" + *extra);
+		}
+		currentY += 4; // and then undo the undo
 	}
 	decoSpace = addDropDown("Colour space used by decoration tools", {
 		{ "sRGB", 0 },

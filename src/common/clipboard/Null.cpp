@@ -28,4 +28,9 @@ namespace Clipboard
 	void RecreateWindow()
 	{
 	}
+
+	std::optional<String> Explanation()
+	{
+		return std::nullopt;
+	}
 }

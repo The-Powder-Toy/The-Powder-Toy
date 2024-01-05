@@ -3,6 +3,7 @@
 #include <vector>
 #include <variant>
 #include <memory>
+#include <optional>
 
 class GameSave;
 
@@ -35,6 +36,8 @@ namespace Clipboard
 			GetClipboardDataUnknown
 		>;
 		virtual GetClipboardDataResult GetClipboardData() = 0;
+
+		virtual std::optional<String> Explanation() = 0;
 	};
 
 	extern std::unique_ptr<GameSave> clipboardData;

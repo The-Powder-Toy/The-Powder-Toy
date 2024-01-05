@@ -24,7 +24,7 @@ namespace Clipboard
 	};
 
 	std::unique_ptr<GameSave> clipboardData;
-	std::unique_ptr<ClipboardImpl> clipboard;
+	static std::unique_ptr<ClipboardImpl> clipboard;
 
 	void InvokeClipboardSetClipboardData()
 	{
@@ -94,7 +94,7 @@ namespace Clipboard
 	static bool enabled = false;
 	void Init()
 	{
-		enabled = GlobalPrefs::Ref().Get<bool>("NativeClipboard.Enabled", true);
+		enabled = GlobalPrefs::Ref().Get("NativeClipboard.Enabled", false);
 	}
 
 	bool GetEnabled()
@@ -130,5 +130,10 @@ namespace Clipboard
 			}
 		}
 		InvokeClipboardSetClipboardData();
+	}
+
+	std::optional<String> Explanation()
+	{
+		return clipboard ? clipboard->Explanation() : std::nullopt;
 	}
 }

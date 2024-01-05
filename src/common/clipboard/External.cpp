@@ -18,6 +18,7 @@ namespace Clipboard
 		ByteString inCommand;
 		ByteString formatsCommand;
 		ByteString outCommand;
+		std::optional<String> explanation;
 		std::optional<int> defaultForSubsystem;
 	};
 	std::map<ByteString, Preset> builtInPresets = {
@@ -25,12 +26,14 @@ namespace Clipboard
 			"xclip -selection clipboard -target %s",
 			"xclip -out -selection clipboard -target TARGETS",
 			"xclip -out -selection clipboard -target %s",
+			"Requires the xclip utility to be installed",
 			SDL_SYSWM_X11,
 		} },
 		{ "wl-clipboard", {
 			"wl-copy --type %s",
 			"wl-paste --list-types",
 			"wl-paste --type %s",
+			"Requires the wl-clipboard utility to be installed",
 			SDL_SYSWM_WAYLAND,
 		} },
 	};
@@ -98,6 +101,7 @@ namespace Clipboard
 			SubstFormat(it->second.inCommand),
 			SubstFormat(it->second.formatsCommand),
 			SubstFormat(it->second.outCommand),
+			it->second.explanation,
 		};
 	}
 
@@ -239,6 +243,12 @@ namespace Clipboard
 				return GetClipboardDataFailed{};
 			}
 			return GetClipboardDataChanged{ std::move(*saveDataOpt) };
+		}
+
+		std::optional<String> Explanation() final override
+		{
+			auto preset = GetPreset();
+			return preset ? preset->explanation : std::nullopt;
 		}
 	};
 

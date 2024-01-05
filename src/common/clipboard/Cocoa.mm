@@ -62,6 +62,11 @@ namespace Clipboard
 			}
 			return gdc;
 		}
+
+		std::optional<String> Explanation() final override
+		{
+			return std::nullopt;
+		}
 	};
 
 	std::unique_ptr<ClipboardImpl> CocoaClipboardFactory()
