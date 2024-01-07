@@ -5,7 +5,7 @@
 namespace http
 {
 	LogoutRequest::LogoutRequest() :
-		APIRequest(ByteString::Build(SCHEME, SERVER, "/Logout.json?Key=" + Client::Ref().GetAuthUser().SessionKey), authRequire, false)
+		APIRequest(ByteString::Build(SCHEME, SERVER, "/Logout.json?Key=" + Client::Ref().GetAuthUser().SessionKey), authRequire, true)
 	{
 	}
 
