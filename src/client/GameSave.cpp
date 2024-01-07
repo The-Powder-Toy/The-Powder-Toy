@@ -1853,26 +1853,26 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		return;
 
 	auto signCount = data[p++];
-	for (auto i=0; i<signCount; i++)
+	for (auto i = 0; i < signCount; i++)
 	{
 		if (p+6 > dataLength)
 			throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 		{
-			auto x = data[p++];
+			int x = data[p++];
 			x |= ((unsigned)data[p++])<<8;
 			tempSign.x = x+partP.X;
 		}
 		{
-			auto y = data[p++];
+			int y = data[p++];
 			y |= ((unsigned)data[p++])<<8;
 			tempSign.y = y+partP.Y;
 		}
 		{
-			auto ju = data[p++];
+			int ju = data[p++];
 			tempSign.ju = (sign::Justification)ju;
 		}
 		{
-			auto l = data[p++];
+			int l = data[p++];
 			if (p+l > dataLength)
 				throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 			if(l>254)
