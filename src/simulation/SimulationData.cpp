@@ -233,8 +233,6 @@ void SimulationData::init_can_move()
 	can_move[PT_THDR][PT_THDR] = 2;
 	can_move[PT_EMBR][PT_EMBR] = 2;
 	can_move[PT_TRON][PT_SWCH] = 3;
-	can_move[PT_SOAP][PT_OIL] = 0;
-	can_move[PT_OIL][PT_SOAP] = 1;
 }
 
 const CustomGOLData *SimulationData::GetCustomGOLByRule(int rule) const

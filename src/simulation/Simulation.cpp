@@ -1365,14 +1365,6 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			return 0;
 		}
 		break;
-	// SOAP slowly floats up inside OIL
-	case PT_SOAP:
-		if (parts[i].type == PT_OIL)
-		{
-			if (rng.chance(19, 20) || std::abs(parts[i].x - nx) > 3 || std::abs(parts[i].y - ny) > 3)
-				return 0;
-		}
-		break;
 	}
 
 	switch (parts[i].type)
