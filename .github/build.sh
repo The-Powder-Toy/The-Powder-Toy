@@ -44,8 +44,30 @@ wasm32-emscripten-emscripten-static) ;;
 *) >&2 echo "configuration $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC is not supported" && exit 1;;
 esac
 
+if [[ $BSH_HOST_PLATFORM == android ]]; then
+	android_platform=android-30
+	if [[ -z "${JAVA_HOME_8_X64-}" ]]; then
+		>&2 echo "JAVA_HOME_8_X64 not set"
+		exit 1
+	fi
+	if [[ -z "${ANDROID_SDK_ROOT-}" ]]; then
+		>&2 echo "ANDROID_SDK_ROOT not set"
+		exit 1
+	fi
+	if [[ -z "${ANDROID_NDK_LATEST_HOME-}" ]]; then
+		>&2 echo "ANDROID_NDK_LATEST_HOME not set"
+		exit 1
+	fi
+fi
+
 if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 	case $BSH_HOST_PLATFORM in
+	android)
+		(
+			export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/tools/bin:$PATH
+			sdkmanager "platforms;$android_platform"
+		)
+		;;
 	windows)
 		if [[ $BSH_BUILD_PLATFORM == linux ]] && [[ $BSH_HOST_LIBC == mingw ]]; then
 			sudo apt update
@@ -86,22 +108,6 @@ function inplace_sed() {
 		sed -i $subst $path
 	fi
 }
-
-if [[ $BSH_HOST_PLATFORM == android ]]; then
-	android_platform=android-30
-	if [[ -z "${JAVA_HOME_8_X64-}" ]]; then
-		>&2 echo "JAVA_HOME_8_X64 not set"
-		exit 1
-	fi
-	if [[ -z "${ANDROID_SDK_ROOT-}" ]]; then
-		>&2 echo "ANDROID_SDK_ROOT not set"
-		exit 1
-	fi
-	if [[ -z "${ANDROID_NDK_LATEST_HOME-}" ]]; then
-		>&2 echo "ANDROID_NDK_LATEST_HOME not set"
-		exit 1
-	fi
-fi
 
 if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == windows-msvc ]]; then
 	case $BSH_HOST_ARCH in
@@ -350,7 +356,11 @@ if [[ $RELEASE_TYPE == tptlibsdev ]] && ([[ $BSH_HOST_PLATFORM == windows ]] || 
 	meson_configure+=$'\t'-Dtpt_libs_vtag=$tpt_libs_vtag
 fi
 if [[ $BSH_HOST_PLATFORM == android ]]; then
-	android_platform=android-30
+	android_platform_jar=$ANDROID_SDK_ROOT/platforms/$android_platform/android.jar
+	if ! [[ -f $android_platform_jar ]]; then
+		>&2 echo "$android_platform_jar not found"
+		exit 1
+	fi
 	meson_configure+=$'\t'--cross-file=android/cross/$BSH_HOST_ARCH.ini
 	cat << ANDROID_INI > .github/android-ghactions.ini
 [constants]
@@ -361,7 +371,7 @@ andriod_sdk_build_tools = '$ANDROID_SDK_ROOT/build-tools/32.0.0'
 # android_ndk_toolchain_prefix comes from the correct cross-file in ./android/cross
 android_ndk_toolchain_prefix = android_ndk_toolchain_prefix
 android_platform = '$android_platform'
-android_platform_jar = '$ANDROID_SDK_ROOT/platforms/' + android_platform + '/android.jar'
+android_platform_jar = '$android_platform_jar'
 java_runtime_jar = '$JAVA_HOME_8_X64/jre/lib/rt.jar'
 
 [binaries]
