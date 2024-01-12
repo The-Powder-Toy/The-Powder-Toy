@@ -5,12 +5,22 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+function get_buildoption() {
+	jq -r '.[] | select(.name == "'$1'") | .value' < meson-info/intro-buildoptions.json
+}
+
 # customize
 default_app_id=uk.co.powdertoy.tpt
+default_app_exe=powder
+in_build_site=no
 if which jq >/dev/null && [[ -f meson-info/intro-buildoptions.json ]]; then
-	default_app_id=$(jq -r '.[] | select(.name == "app_id") | .value' < meson-info/intro-buildoptions.json)
+	# pwd is most likely a build site
+	in_build_site=yes
+	default_app_id=$(get_buildoption app_id)
+	default_app_exe=$(get_buildoption app_exe)
 fi
 app_id=${APP_ID:-$default_app_id}
+app_exe=${APP_EXE:-$default_app_exe}
 lldb_server=${LLDB_SERVER:-/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/17/lib/linux/aarch64/lldb-server}
 lldb_server_port=${LLDB_SERVER_PORT:-9998}
 jdb_port=${JDB_PORT:-13456}
@@ -26,7 +36,7 @@ pidof_retry_count=${PIDOF_RETRY_COUNT:-20}
 pidof_retry_delay=${PIDOF_RETRY_DELAY:-0.1}
 
 function check_which() {
-	if ! which $1; then
+	if ! which $1 >/dev/null; then
 		>&2 echo "[-] can't run $1"
 		return 1
 	fi
@@ -44,6 +54,39 @@ function check_env() {
 
 function check_adb() {
 	$adb shell whoami >/dev/null
+}
+
+function maybe_install_app() {
+	if [[ $in_build_site != yes ]]; then
+		>&2 echo "[+] not in a build site, not adb installing anything"
+		return 0
+	fi
+	android_keystore=$(get_buildoption android_keystore)
+	android_keyalias=$(get_buildoption android_keyalias)
+	if [[ -z ${ANDROID_KEYSTORE_PASS-} ]]; then
+		>&2 cat << HELP
+The current directory seems to be a build site, but ANDROID_KEYSTORE_PASS is not set, so android/$app_exe.apk cannot be invoked. If you don't have a keystore yet, create one with:
+
+  ANDROID_KEYSTORE_PASS=bagelsbagels keytool -genkey \\
+    -keystore $android_keystore \\
+    -alias $android_keyalias \\
+    -storepass:env ANDROID_KEYSTORE_PASS \\
+    -keypass:env ANDROID_KEYSTORE_PASS \\
+    -dname CN=bagels
+
+Then try again with:
+
+  ANDROID_KEYSTORE_PASS=bagelsbagels $0
+
+Naturally, replace bagelsbagels with an appropriate password.
+HELP
+		exit 1
+	fi
+	>&2 echo "[+] adb installing android/$app_exe.apk"
+	if ! $adb install android/$app_exe.apk; then
+		>&2 echo "[-]   failed"
+		return 1
+	fi
 }
 
 function check_debuggable() {
@@ -173,6 +216,7 @@ LLDB_INIT
 
 check_env
 check_adb
+maybe_install_app
 check_debuggable
 maybe_kill_previous_lldb_server
 maybe_undo_previous_adb_forward
