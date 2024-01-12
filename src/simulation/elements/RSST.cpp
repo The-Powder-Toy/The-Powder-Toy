@@ -77,7 +77,8 @@ int update(UPDATE_FUNC_ARGS)
 			// Set RSST ctype from nearby clone
 			if((TYP(r) == PT_CLNE) || (TYP(r) == PT_PCLN))
 			{
-				parts[i].ctype = parts[ID(r)].ctype;
+				if(parts[ID(r)].ctype != PT_RSST)
+					parts[i].ctype = parts[ID(r)].ctype;
 			}
 		}
 	}
