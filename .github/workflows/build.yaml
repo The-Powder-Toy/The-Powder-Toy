@@ -16,7 +16,6 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
       do_release: ${{ steps.prepare.outputs.do_release }}
       build_matrix: ${{ steps.prepare.outputs.build_matrix }}
       publish_matrix: ${{ steps.prepare.outputs.publish_matrix }}
@@ -44,14 +43,10 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
       - if: steps.prepare.outputs.do_release == 'yes'
         id: create_release
-        uses: LBPHacker/create-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ steps.prepare.outputs.release_name }}
-          draft: true
-          prerelease: false
+          RELEASE_NAME: ${{ steps.prepare.outputs.release_name }}
+        run: bash -c './.github/create-release.sh'
   build:
     runs-on: ${{ matrix.runs_on }}
     name: ${{ matrix.job_name }}
@@ -91,24 +86,18 @@ jobs:
           PACKAGE_MODE: ${{ matrix.package_mode }}
           ASSET_PATH: ${{ matrix.asset_path }}
           DEBUG_ASSET_PATH: ${{ matrix.debug_asset_path }}
-      - uses: LBPHacker/upload-release-asset@v2 # TODO-NTL: ship licenses
-        if: needs.prepare.outputs.do_release == 'yes' && matrix.publish == 'yes'
+      - if: needs.prepare.outputs.do_release == 'yes' && matrix.publish == 'yes' # TODO-NTL: ship licenses
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.prepare.outputs.release_upload_url }}
-          asset_path: build/${{ matrix.asset_path }}
-          asset_name: ${{ matrix.asset_name }}
-          asset_content_type: application/zip
-      - uses: LBPHacker/upload-release-asset@v2
-        if: needs.prepare.outputs.do_release == 'yes' && matrix.publish == 'yes' && matrix.separate_debug == 'yes'
+          ASSET_PATH: build/${{ matrix.asset_path }}
+          ASSET_NAME: ${{ matrix.asset_name }}
+        run: bash -c './.github/upload-release-asset.sh'
+      - if: needs.prepare.outputs.do_release == 'yes' && matrix.publish == 'yes' && matrix.separate_debug == 'yes'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.prepare.outputs.release_upload_url }}
-          asset_path: build/${{ matrix.debug_asset_path }}
-          asset_name: ${{ matrix.debug_asset_name }}
-          asset_content_type: application/zip
+          ASSET_PATH: build/${{ matrix.debug_asset_path }}
+          ASSET_NAME: ${{ matrix.debug_asset_name }}
+        run: bash -c './.github/upload-release-asset.sh'
       - uses: actions/upload-artifact@v3
         if: matrix.artifact == 'yes'
         with:
