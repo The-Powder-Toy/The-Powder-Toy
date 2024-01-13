@@ -9,22 +9,52 @@ function get_buildoption() {
 	jq -r '.[] | select(.name == "'$1'") | .value' < meson-info/intro-buildoptions.json
 }
 
+function get_cpp_compiler() {
+	jq -r '.[] | select(.name == "'$1'") | .target_sources.[] | select(.language == "cpp") | .compiler.[]' < meson-info/intro-targets.json
+}
+
 # customize
 default_app_id=uk.co.powdertoy.tpt
 default_app_exe=powder
+default_lldb_server=/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/17/lib/linux/aarch64/lldb-server
+default_lldb_client=/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/lldb.sh
 in_build_site=no
 if which jq >/dev/null && [[ -f meson-info/intro-buildoptions.json ]]; then
-	# pwd is most likely a build site
+	>&2 echo "[+] pwd is a build site, auto-detecting parameters"
 	in_build_site=yes
 	default_app_id=$(get_buildoption app_id)
 	default_app_exe=$(get_buildoption app_exe)
+	found_lldb=no
+	compiler_path=$(get_cpp_compiler $default_app_exe)
+	for line in $compiler_path; do
+		# iterate over the command array (might be for example [ "ccache", "aarch64-linux-android21-clang++" ])
+		if (echo $line | grep toolchains && basename $line | grep android | grep clang++) >/dev/null; then
+			arch=$(basename $line | cut -d '-' -f 1)
+			default_lldb_server=$(realpath $(dirname $line)/../lib/clang/*/lib/linux/$arch/lldb-server)
+			default_lldb_client=$(realpath $(dirname $line)/lldb.sh)
+			found_lldb=yes
+		fi
+	done
+	if [[ $found_lldb != yes ]]; then
+		>&2 echo "[-]   cannot determine LLDB paths from compiler command array:"
+		for line in $compiler_path; do
+			>&2 echo "[-]     - $line"
+		done
+		exit 1
+	fi
+	>&2 echo "[+]   APP_ID: $default_app_id"
+	>&2 echo "[+]   APP_EXE: $default_app_exe"
+	>&2 echo "[+]   LLDB_SERVER: $default_lldb_server"
+	>&2 echo "[+]   LLDB_CLIENT: $default_lldb_client"
+else
+	>&2 echo "[+] pwd is not a build site, not auto-detecting parameters"
 fi
 app_id=${APP_ID:-$default_app_id}
 app_exe=${APP_EXE:-$default_app_exe}
-lldb_server=${LLDB_SERVER:-/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/17/lib/linux/aarch64/lldb-server}
+lldb_server=${LLDB_SERVER:-$default_lldb_server}
 lldb_server_port=${LLDB_SERVER_PORT:-9998}
 jdb_port=${JDB_PORT:-13456}
-lldb_client=${LLDB_CLIENT:-/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/lldb.sh}
+lldb_client=${LLDB_CLIENT:-$default_lldb_client}
 adb=${ADB:-adb}
 jdb=${JDB:-jdb}
 
@@ -58,25 +88,26 @@ function check_adb() {
 
 function maybe_install_app() {
 	if [[ $in_build_site != yes ]]; then
-		>&2 echo "[+] not in a build site, not adb installing anything"
 		return 0
 	fi
 	android_keystore=$(get_buildoption android_keystore)
 	android_keyalias=$(get_buildoption android_keyalias)
 	if [[ -z ${ANDROID_KEYSTORE_PASS-} ]]; then
+		>&2 echo "[-] ANDROID_KEYSTORE_PASS not set"
+		>&2 echo
 		>&2 cat << HELP
 The current directory seems to be a build site, but ANDROID_KEYSTORE_PASS is not set, so android/$app_exe.apk cannot be invoked. If you don't have a keystore yet, create one with:
 
-  ANDROID_KEYSTORE_PASS=bagelsbagels keytool -genkey \\
-    -keystore $android_keystore \\
-    -alias $android_keyalias \\
-    -storepass:env ANDROID_KEYSTORE_PASS \\
-    -keypass:env ANDROID_KEYSTORE_PASS \\
-    -dname CN=bagels
+	ANDROID_KEYSTORE_PASS=bagelsbagels keytool -genkey \\
+		-keystore $android_keystore \\
+		-alias $android_keyalias \\
+		-storepass:env ANDROID_KEYSTORE_PASS \\
+		-keypass:env ANDROID_KEYSTORE_PASS \\
+		-dname CN=bagels
 
 Then try again with:
 
-  ANDROID_KEYSTORE_PASS=bagelsbagels $0
+	ANDROID_KEYSTORE_PASS=bagelsbagels $0
 
 Naturally, replace bagelsbagels with an appropriate password.
 HELP
