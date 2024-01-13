@@ -103,6 +103,13 @@ static int update(UPDATE_FUNC_ARGS)
 		else change = 0.0f;
 		parts[uID].temp = restrict_flt(parts[uID].temp + change, MIN_TEMP, MAX_TEMP);
 		break;
+	case PT_RSSS: //Destroy RSSS
+		{
+			sim->kill_part(uID);
+			sim->kill_part(i);
+			return 1;
+		}
+		break;
 	case PT_NONE:
 		//slowly kill if it's not inside an element
 		if (parts[i].life)

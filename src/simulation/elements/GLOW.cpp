@@ -66,6 +66,12 @@ static int update(UPDATE_FUNC_ARGS)
 					parts[ID(r)].life = 10;
 					return 1;
 				}
+				else if (TYP(r) == PT_GEL) //GLOW + GEL = RSST
+				{
+					sim->kill_part(i);
+					sim->part_change_type(ID(r),x+rx,y+ry,PT_RSST);
+					return 1;
+				}
 			}
 		}
 	}

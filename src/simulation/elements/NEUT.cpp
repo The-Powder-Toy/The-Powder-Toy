@@ -164,6 +164,31 @@ static int update(UPDATE_FUNC_ARGS)
 				else
 					sim->create_part(ID(r), x+rx, y+ry, PT_CAUS);
 				break;
+			case PT_RSSS:
+				if(!rx && !ry)
+				{
+					int ct_under, tmp_under;
+
+					ct_under = parts[ID(r)].ctype;
+					tmp_under = parts[ID(r)].tmp;
+
+					//If there's a correct ctype set, liquefy into it
+					if(ct_under > 0 && ct_under < PT_NUM)
+					{
+						sim->create_part(ID(r), x, y, ct_under);
+
+						//If there's a correct tmp set, use it for ctype
+						if(tmp_under > 0 && ct_under < PT_NUM)
+							parts[ID(r)].ctype = tmp_under;
+					}
+					else
+						sim->part_change_type(ID(r), x, y, PT_RSST); //Default to RSST if no ctype
+
+					sim->kill_part(i);
+
+					return 1;
+				}
+				break;
 			default:
 				break;
 			}

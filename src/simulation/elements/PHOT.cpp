@@ -108,6 +108,29 @@ static int update(UPDATE_FUNC_ARGS)
 				parts[i].vx = vx;
 				parts[i].vy = vy;
 			}
+			else if(TYP(r) == PT_RSST && !ry && !rx)//if on RSST, make it solid
+			{
+				int ct_under, tmp_under;
+
+				ct_under = parts[ID(r)].ctype;
+				tmp_under = parts[ID(r)].tmp;
+
+				//If there's a correct ctype set, solidify RSST into it
+				if(ct_under > 0 && ct_under < PT_NUM)
+				{
+					sim->create_part(ID(r), x, y, ct_under);
+
+					//If there's a correct tmp set, use it for ctype
+					if(tmp_under > 0 && ct_under < PT_NUM)
+						parts[ID(r)].ctype = tmp_under;
+				}
+				else
+					sim->part_change_type(ID(r), x, y, PT_RSSS); //Default to RSSS if no ctype
+
+				sim->kill_part(i);
+
+				return 1;
+			}
 			else if (TYP(r) == PT_FILT && parts[ID(r)].tmp==9)
 			{
 				parts[i].vx += ((float)sim->rng.between(-500, 500))/1000.0f;
