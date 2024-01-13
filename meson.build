@@ -44,9 +44,6 @@ if c_compiler.get_id() in [ 'msvc' ]
 	host_libc = 'msvc'
 elif c_compiler.get_id() in [ 'gcc' ] and host_platform == 'windows'
 	host_libc = 'mingw'
-	if get_option('b_lto')
-		warning('mingw does not like static + lto')
-	endif
 elif host_platform in [ 'darwin' ]
 	host_libc = 'macos'
 elif host_platform in [ 'emscripten' ]
