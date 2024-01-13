@@ -84,7 +84,7 @@ subdir('stacktrace')
 
 if use_bluescreen
 	common_files += stacktrace_files
-	if bluescreen_export_symbols
+	if bluescreen_export_symbols and is_debug
 		project_export_dynamic = true
 	endif
 else
