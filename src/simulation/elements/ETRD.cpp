@@ -85,7 +85,7 @@ static void initDeltaPos()
 		{
 			ui::Point d(rx, ry);
 			if (std::abs(d.X) + std::abs(d.Y) <= maxLength)
-				deltaPos.push_back(ETRD_deltaWithLength(d, std::abs(d.X) + std::abs(d.Y)));
+				deltaPos.push_back(ETRD_deltaWithLength(d, std::hypot(d.X, d.Y)));
 		}
 	std::stable_sort(deltaPos.begin(), deltaPos.end(), [](const ETRD_deltaWithLength &a, const ETRD_deltaWithLength &b) {
 		return a.length < b.length;
@@ -100,7 +100,11 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 		return -1;
 
 	Particle *parts = sim->parts;
-	int foundDistance = XRES + YRES;
+	if (parts[targetId].tmp2 && parts[targetId].tmp > parts[targetId].tmp2) // Invalid range if max is set
+		return -1;
+
+	const int maxDistance = std::hypot(XRES, YRES);
+	int foundDistance = parts[targetId].tmp2 ? std::min(parts[targetId].tmp2, maxDistance) : maxDistance; // tmp2 sets max distance
 	int foundI = -1;
 	ui::Point targetPos = ui::Point(int(parts[targetId].x), int(parts[targetId].y));
 
@@ -118,6 +122,10 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 				ETRD_deltaWithLength delta = (*iter);
 				ui::Point checkPos = targetPos + delta.d;
 				int checkDistance = delta.length;
+				if (parts[targetId].tmp >= checkDistance) // tmp sets min distance
+				{
+					continue;
+				}
 				if (foundDistance < checkDistance)
 				{
 					// deltaPos is sorted in order of ascending length, so foundDistance < checkDistance means all later items are further away.
@@ -142,8 +150,8 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 				if (parts[i].type == PT_ETRD && !parts[i].life)
 				{
 					ui::Point checkPos = ui::Point(int(parts[i].x)-targetPos.X, int(parts[i].y)-targetPos.Y);
-					int checkDistance = std::abs(checkPos.X) + std::abs(checkPos.Y);
-					if (checkDistance < foundDistance && i != targetId)
+					int checkDistance = std::hypot(checkPos.X, checkPos.Y);
+					if (checkDistance < foundDistance && checkDistance > parts[targetId].tmp && i != targetId) // tmp sets min distance
 					{
 						foundDistance = checkDistance;
 						foundI = i;
@@ -162,8 +170,8 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 			{
 				countLife0++;
 				ui::Point checkPos = ui::Point(int(parts[i].x)-targetPos.X, int(parts[i].y)-targetPos.Y);
-				int checkDistance = std::abs(checkPos.X) + std::abs(checkPos.Y);
-				if (checkDistance < foundDistance && i != targetId)
+				int checkDistance = std::hypot(checkPos.X, checkPos.Y);
+				if (checkDistance < foundDistance && checkDistance > parts[targetId].tmp && i != targetId) // tmp sets min distance
 				{
 					foundDistance = checkDistance;
 					foundI = i;
