@@ -155,7 +155,7 @@ static void BlueScreen(String detailMessage, std::optional<std::vector<String>> 
 	}
 
 	// Don't use Platform::Exit, we're practically zombies at this point anyway.
-#if defined(__MINGW32__) || defined(__APPLE__)
+#if defined(__MINGW32__) || defined(__APPLE__) || defined(__EMSCRIPTEN__)
 	// Come on...
 	exit(-1);
 #else
