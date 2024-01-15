@@ -6,6 +6,9 @@
 #include "Config.h"
 #include <cstring>
 #include <ctime>
+#ifdef __FreeBSD__
+# include <sys/sysctl.h>
+#endif
 
 namespace Platform
 {
@@ -26,7 +29,26 @@ long unsigned int GetTime()
 
 ByteString ExecutableNameFirstApprox()
 {
-	return "/proc/self/exe";
+	if (Stat("/proc/self/exe"))
+	{
+		return "/proc/self/exe";
+	}
+#ifdef __FreeBSD__
+	{
+		int mib[4];
+		mib[0] = CTL_KERN;
+		mib[1] = KERN_PROC;
+		mib[2] = KERN_PROC_PATHNAME;
+		mib[3] = -1;
+		std::array<char, 1000> buf;
+		size_t cb = buf.size();
+		if (!sysctl(mib, 4, &buf[0], &cb, NULL, 0))
+		{
+			return ByteString(&buf[0], &buf[0] + cb);
+		}
+	}
+#endif
+	return "";
 }
 
 bool CanUpdate()

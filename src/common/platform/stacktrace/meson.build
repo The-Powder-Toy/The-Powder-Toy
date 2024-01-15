@@ -16,6 +16,11 @@ elif host_platform == 'linux'
 	stacktrace_files = files('Execinfo.cpp')
 	# export symbols so backtrace_symbols works, see above
 	bluescreen_export_symbols = true
+	if host_machine.system() in [ 'freebsd' ]
+		project_deps += [
+			c_compiler.find_library('execinfo'),
+		]
+	endif
 else
 	stacktrace_files = files('Null.cpp')
 endif
