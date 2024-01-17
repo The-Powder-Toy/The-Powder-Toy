@@ -142,9 +142,10 @@ float glow_alphaf[11][11];
 float blur_alphaf[7][7];
 void Renderer::prepare_alpha(int size, float intensity)
 {
+	fireIntensity = intensity;
 	//TODO: implement size
 	int x,y,i,j;
-	float multiplier = 255.0f*intensity;
+	float multiplier = 255.0f*fireIntensity;
 
 	memset(temp, 0, sizeof(temp));
 	for (x=0; x<CELL; x++)

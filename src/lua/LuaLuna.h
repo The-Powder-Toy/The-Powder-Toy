@@ -11,20 +11,14 @@ public:
 
 	static void Register(lua_State *L)
 	{
+		lua_getglobal(L, "interface");
+		int ui = lua_gettop(L);
+
 		lua_newtable(L);
 		int methods = lua_gettop(L);
 
-		// push global table to the stack, so we can add the component APIs to it
-		lua_pushglobaltable(L);
-
 		luaL_newmetatable(L, T::className);
 		int metatable = lua_gettop(L);
-
-		// store method table in globals so that
-		// scripts can add functions written in Lua.
-		lua_pushstring(L, T::className);
-		lua_pushvalue(L, methods);
-		lua_settable(L, -4);
 
 		lua_pushliteral(L, "__metatable");
 		lua_pushvalue(L, methods);
@@ -42,16 +36,6 @@ public:
 		lua_pushcfunction(L, gc_T);
 		lua_settable(L, metatable);
 
-		lua_newtable(L);                // mt for method table
-		int mt = lua_gettop(L);
-		lua_pushliteral(L, "__call");
-		lua_pushcfunction(L, new_T);
-		lua_pushliteral(L, "new");
-		lua_pushvalue(L, -2);           // dup new_T function
-		lua_settable(L, methods);       // add new_T to method table
-		lua_settable(L, mt);            // mt.__call = new_T
-		lua_setmetatable(L, methods);
-
 		// fill method table with methods from class T
 		for (RegType *l = T::methods; l->name; l++)
 		{
@@ -62,7 +46,11 @@ public:
 			lua_settable(L, methods);
 		}
 
-		lua_pop(L, 3);  // pop global table, metatable, and method table
+		lua_pop(L, 2);  // pop metatable, and method table
+
+		lua_pushcfunction(L, new_T);
+		lua_setfield(L, ui, T::className);
+		lua_pop(L, 1);
 	}
 
 	// get userdata from Lua stack and return pointer to T object
@@ -126,7 +114,6 @@ private:
 	{
 		if (!lua_gettop(L))
 			return 0;
-		lua_remove(L, 1);   // use classname:new(), instead of classname.new()
 
 		T *obj = new T(L);  // call constructor for T objects
 		userdataType *ud = static_cast<userdataType*>(lua_newuserdata(L, sizeof(userdataType)));

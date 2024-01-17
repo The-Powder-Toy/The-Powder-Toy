@@ -10,7 +10,7 @@
 #include "gui/interface/Engine.h"
 #include "graphics/Graphics.h"
 
-const char LuaWindow::className[] = "Window";
+const char LuaWindow::className[] = "window";
 
 #define method(class, name) {#name, &class::name}
 Luna<LuaWindow>::RegType LuaWindow::methods[] = {

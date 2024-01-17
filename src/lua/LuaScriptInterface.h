@@ -44,7 +44,6 @@ class LuaScriptInterface: public TPTScriptInterface
 	//Simulation
 
 	void initSimulationAPI();
-	static void set_map(int x, int y, int width, int height, float value, int mapType);
 	static int simulation_partNeighbours(lua_State * l);
 	static int simulation_partChangeType(lua_State * l);
 	static int simulation_partCreate(lua_State * l);
@@ -53,11 +52,6 @@ class LuaScriptInterface: public TPTScriptInterface
 	static int simulation_partID(lua_State * l);
 	static int simulation_partKill(lua_State * l);
 	static int simulation_partExists(lua_State * l);
-	static int simulation_pressure(lua_State * l);
-	static int simulation_velocityX(lua_State * l);
-	static int simulation_velocityY(lua_State * l);
-	static int simulation_gravMap(lua_State * l);
-	static int simulation_ambientHeat(lua_State * l);
 	static int simulation_createParts(lua_State * l);
 	static int simulation_createLine(lua_State * l);
 	static int simulation_createBox(lua_State * l);
@@ -122,7 +116,6 @@ class LuaScriptInterface: public TPTScriptInterface
 	static int renderer_colourMode(lua_State * l);
 	static int renderer_decorations(lua_State * l);
 	static int renderer_grid(lua_State * l);
-	static int renderer_debugHUD(lua_State * l);
 	static int renderer_showBrush(lua_State * l);
 	static int renderer_depth3d(lua_State * l);
 	static int renderer_zoomEnabled(lua_State *l);
@@ -199,9 +192,6 @@ class LuaScriptInterface: public TPTScriptInterface
 	std::vector<LuaSmartRef> gameControllerEventHandlers;
 
 public:
-	int tpt_index(lua_State *l);
-	int tpt_newIndex(lua_State *l);
-
 	static void LuaGetProperty(lua_State* l, StructProperty property, intptr_t propertyAddress);
 	static void LuaSetProperty(lua_State* l, StructProperty property, intptr_t propertyAddress, int stackPos);
 	static void LuaSetParticleProperty(lua_State* l, int particleID, StructProperty property, intptr_t propertyAddress, int stackPos);

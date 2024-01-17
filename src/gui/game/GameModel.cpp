@@ -54,16 +54,16 @@ GameModel::GameModel():
 	colour(255, 0, 0, 255),
 	edgeMode(EDGE_VOID),
 	ambientAirTemp(R_TEMP + 273.15f),
-	decoSpace(0)
+	decoSpace(DECOSPACE_SRGB)
 {
 	sim = new Simulation();
 	sim->useLuaCallbacks = true;
 	ren = new Renderer(sim);
 
-	activeTools = regularToolset;
+	activeTools = &regularToolset[0];
 
-	std::fill(decoToolset, decoToolset+4, (Tool*)NULL);
-	std::fill(regularToolset, regularToolset+4, (Tool*)NULL);
+	std::fill(decoToolset.begin(), decoToolset.end(), nullptr);
+	std::fill(regularToolset.begin(), regularToolset.end(), nullptr);
 
 	//Default render prefs
 	ren->SetRenderMode({
@@ -93,7 +93,7 @@ GameModel::GameModel():
 	ren->decorations_enable = prefs.Get("Renderer.Decorations", true);
 
 	//Load config into simulation
-	edgeMode = prefs.Get("Simulation.EdgeMode", (int)EDGE_VOID);
+	edgeMode = prefs.Get("Simulation.EdgeMode", NUM_EDGEMODES, EDGE_VOID);
 	sim->SetEdgeMode(edgeMode);
 	ambientAirTemp = float(R_TEMP) + 273.15f;
 	{
@@ -104,9 +104,9 @@ GameModel::GameModel():
 		}
 	}
 	sim->air->ambientAirTemp = ambientAirTemp;
-	decoSpace = prefs.Get("Simulation.DecoSpace", 0); // TODO: DecoSpace enum
+	decoSpace = prefs.Get("Simulation.DecoSpace", NUM_DECOSPACES, DECOSPACE_SRGB);
 	sim->SetDecoSpace(decoSpace);
-	int ngrav_enable = prefs.Get("Simulation.NewtonianGravity", 0); // TODO: NewtonianGravity enum
+	int ngrav_enable = prefs.Get("Simulation.NewtonianGravity", NUM_GRAVMODES, GRAV_VERTICAL);
 	if (ngrav_enable)
 		sim->grav->start_grav_async();
 	sim->aheat_enable = prefs.Get("Simulation.AmbientHeat", 0); // TODO: AmbientHeat enum
@@ -228,7 +228,7 @@ void GameModel::BuildMenus()
 	if(activeMenu != -1)
 		lastMenu = activeMenu;
 
-	ByteString activeToolIdentifiers[4];
+	std::array<ByteString, NUM_TOOLINDICES> activeToolIdentifiers;
 	if(regularToolset[0])
 		activeToolIdentifiers[0] = regularToolset[0]->Identifier;
 	if(regularToolset[1])
@@ -881,17 +881,17 @@ void GameModel::SetActiveMenu(int menuID)
 
 	if(menuID == SC_DECO)
 	{
-		if(activeTools != decoToolset)
+		if(activeTools != &decoToolset[0])
 		{
-			activeTools = decoToolset;
+			activeTools = &decoToolset[0];
 			notifyActiveToolsChanged();
 		}
 	}
 	else
 	{
-		if(activeTools != regularToolset)
+		if(activeTools != &regularToolset[0])
 		{
-			activeTools = regularToolset;
+			activeTools = &regularToolset[0];
 			notifyActiveToolsChanged();
 		}
 	}

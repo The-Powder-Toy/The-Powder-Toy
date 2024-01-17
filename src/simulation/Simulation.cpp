@@ -3910,7 +3910,7 @@ Simulation::Simulation():
 	framerender(0),
 	pretty_powder(0),
 	sandcolour_frame(0),
-	deco_space(0)
+	deco_space(DECOSPACE_SRGB)
 {
 	int tportal_rx[] = {-1, 0, 1, 1, 1, 0,-1,-1};
 	int tportal_ry[] = {-1,-1,-1, 0, 1, 1, 1, 0};

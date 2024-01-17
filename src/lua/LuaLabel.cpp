@@ -2,7 +2,7 @@
 #include "LuaLabel.h"
 #include "gui/interface/Label.h"
 
-const char LuaLabel::className[] = "Label";
+const char LuaLabel::className[] = "label";
 
 #define method(class, name) {#name, &class::name}
 Luna<LuaLabel>::RegType LuaLabel::methods[] = {

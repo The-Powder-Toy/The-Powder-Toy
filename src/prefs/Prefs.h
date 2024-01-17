@@ -64,10 +64,10 @@ public:
 	}
 
 	template<class Enum, class EnumBase = int>
-	Enum Get(ByteString path, Enum maxValue, Enum defaultValue) const
+	Enum Get(ByteString path, Enum numValues, Enum defaultValue) const
 	{
 		EnumBase value = Get(path, EnumBase(defaultValue));
-		if (value < 0 || value >= EnumBase(maxValue))
+		if (value < 0 || value >= EnumBase(numValues))
 		{
 			value = EnumBase(defaultValue);
 		}

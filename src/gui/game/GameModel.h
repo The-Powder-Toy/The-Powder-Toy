@@ -6,6 +6,9 @@
 #include <deque>
 #include <memory>
 #include <optional>
+#include <array>
+
+constexpr auto NUM_TOOLINDICES = 4;
 
 class Menu;
 class Tool;
@@ -72,8 +75,8 @@ private:
 	std::unique_ptr<SaveFile> currentFile;
 	Tool * lastTool;
 	Tool ** activeTools;
-	Tool * decoToolset[4];
-	Tool * regularToolset[4];
+	std::array<Tool *, NUM_TOOLINDICES> decoToolset;
+	std::array<Tool *, NUM_TOOLINDICES> regularToolset;
 	User currentUser;
 	float toolStrength;
 	std::deque<HistoryEntry> history;
@@ -192,6 +195,10 @@ public:
 	Brush &GetBrush();
 	Brush *GetBrushByID(int i);
 	int GetBrushID();
+	int BrushListSize() const
+	{
+		return int(brushList.size());
+	}
 	void SetBrushID(int i);
 
 	void SetVote(int direction);

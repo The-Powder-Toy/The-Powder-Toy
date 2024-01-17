@@ -1,1 +1,1 @@
-luaconsole_files += to_array.process('eventcompat.lua', extra_args: 'eventcompat_lua')
+luaconsole_files += to_array.process('compat.lua', extra_args: 'compat_lua')

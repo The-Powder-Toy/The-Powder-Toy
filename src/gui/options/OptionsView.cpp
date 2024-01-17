@@ -8,6 +8,7 @@
 #include "graphics/Renderer.h"
 #include "gui/Style.h"
 #include "simulation/ElementDefs.h"
+#include "simulation/SimulationData.h"
 #include "client/Client.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/InformationMessage.h"
@@ -120,11 +121,11 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		c->SetWaterEqualisation(waterEqualisation->GetChecked());
 	});
 	airMode = addDropDown("Air simulation mode", {
-		{ "On", 0 },
-		{ "Pressure off", 1 },
-		{ "Velocity off", 2 },
-		{ "Off", 3 },
-		{ "No update", 4 },
+		{ "On", AIR_ON },
+		{ "Pressure off", AIR_PRESSUREOFF },
+		{ "Velocity off", AIR_VELOCITYOFF },
+		{ "Off", AIR_OFF },
+		{ "No update", AIR_NOUPDATE },
 	}, [this] {
 		c->SetAirMode(airMode->GetOption().second);
 	});
@@ -210,10 +211,10 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 			}
 	};
 	gravityMode = addDropDown("Gravity simulation mode", {
-		{ "Vertical", 0 },
-		{ "Off", 1 },
-		{ "Radial", 2 },
-		{ "Custom", 3 },
+		{ "Vertical", GRAV_VERTICAL },
+		{ "Off", GRAV_OFF },
+		{ "Radial", GRAV_RADIAL },
+		{ "Custom", GRAV_CUSTOM },
 	}, [this] {
 		c->SetGravityMode(gravityMode->GetOption().second);
 		if (gravityMode->GetOption().second == 3)
@@ -222,9 +223,9 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		}
 	});
 	edgeMode = addDropDown("Edge mode", {
-		{ "Void", 0 },
-		{ "Solid", 1 },
-		{ "Loop", 2 },
+		{ "Void", EDGE_VOID },
+		{ "Solid", EDGE_SOLID },
+		{ "Loop", EDGE_LOOP },
 	}, [this] {
 		c->SetEdgeMode(edgeMode->GetOption().second);
 	});
@@ -317,10 +318,10 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		currentY += 4; // and then undo the undo
 	}
 	decoSpace = addDropDown("Colour space used by decoration tools", {
-		{ "sRGB", 0 },
-		{ "Linear", 1 },
-		{ "Gamma 2.2", 2 },
-		{ "Gamma 1.8", 3 },
+		{ "sRGB", DECOSPACE_SRGB },
+		{ "Linear", DECOSPACE_LINEAR },
+		{ "Gamma 2.2", DECOSPACE_GAMMA22 },
+		{ "Gamma 1.8", DECOSPACE_GAMMA18 },
 	}, [this] {
 		c->SetDecoSpace(decoSpace->GetOption().second);
 	});

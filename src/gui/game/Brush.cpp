@@ -52,6 +52,14 @@ void Brush::InitOutline()
 
 void Brush::SetRadius(ui::Point newRadius)
 {
+	if (newRadius.X < 0)
+		newRadius.X = 0;
+	if (newRadius.Y < 0)
+		newRadius.Y = 0;
+	if (newRadius.X > 200)
+		newRadius.X = 200;
+	if (newRadius.Y > 200)
+		newRadius.Y = 200;
 	radius = newRadius;
 	InitOutline();
 }
@@ -67,14 +75,6 @@ void Brush::AdjustSize(int delta, bool logarithmic, bool keepX, bool keepY)
 		newSize = oldSize + ui::Point(delta * std::max(oldSize.X / 5, 1), delta * std::max(oldSize.Y / 5, 1));
 	else
 		newSize = oldSize + ui::Point(delta, delta);
-	if (newSize.X < 0)
-		newSize.X = 0;
-	if (newSize.Y < 0)
-		newSize.Y = 0;
-	if (newSize.X > 200)
-		newSize.X = 200;
-	if (newSize.Y > 200)
-		newSize.Y = 200;
 
 	if (keepY)
 		SetRadius(ui::Point(newSize.X, oldSize.Y));

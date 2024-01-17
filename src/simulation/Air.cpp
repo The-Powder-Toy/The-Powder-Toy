@@ -119,7 +119,7 @@ void Air::update_air(void)
 {
 	const float advDistanceMult = 0.7f;
 
-	if (airMode != AIR_NO_UPDATE) //airMode 4 is no air/pressure update
+	if (airMode != AIR_NOUPDATE) //airMode 4 is no air/pressure update
 	{
 		for (auto i=0; i<YCELLS; i++) //reduces pressure/velocity on the edges every frame
 		{
@@ -311,10 +311,10 @@ void Air::update_air(void)
 				default:
 				case AIR_ON:  //Default
 					break;
-				case AIR_PRESSURE_OFF:  //0 Pressure
+				case AIR_PRESSUREOFF:  //0 Pressure
 					dp = 0.0f;
 					break;
-				case AIR_VELOCITY_OFF:  //0 Velocity
+				case AIR_VELOCITYOFF:  //0 Velocity
 					dx = 0.0f;
 					dy = 0.0f;
 					break;
@@ -323,7 +323,7 @@ void Air::update_air(void)
 					dy = 0.0f;
 					dp = 0.0f;
 					break;
-				case AIR_NO_UPDATE: //No Update
+				case AIR_NOUPDATE: //No Update
 					break;
 				}
 

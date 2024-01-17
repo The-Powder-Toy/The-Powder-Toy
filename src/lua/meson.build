@@ -1,5 +1,4 @@
 luaconsole_files = files(
-	'LegacyLuaAPI.cpp',
 	'LuaButton.cpp',
 	'LuaCheckbox.cpp',
 	'LuaCompat.c',
