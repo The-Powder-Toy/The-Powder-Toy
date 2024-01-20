@@ -70,7 +70,7 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 		;;
 	windows)
 		if [[ $BSH_BUILD_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
-			pacman -Syu --noconfirm --needed mingw-w64-ucrt-x86_64-gcc
+			pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-gcc
 			if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{cmake,7zip} patch
 			else
