@@ -309,6 +309,9 @@ if [[ $RELEASE_TYPE != dev ]]; then
 fi
 if [[ "$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "windows-mingw" ]]; then
 	meson_configure+=$'\t'--cross-file=.github/mingw-ghactions.ini
+	# there is some mingw bug that only ever manifests on ghactions which makes MakeIco.exe use tons of memory and fail
+	# TODO: remove this hack once we figure out how to fix that
+	meson_configure+=$'\t'-Dwindows_icons=false
 fi
 if [[ $BSH_DEBUG_RELEASE-$BSH_STATIC_DYNAMIC == release-static ]]; then
 	meson_configure+=$'\t'-Db_lto=true

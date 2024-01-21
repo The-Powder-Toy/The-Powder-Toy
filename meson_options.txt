@@ -293,3 +293,9 @@ option(
 	value: 'auto',
 	description: 'Show blue error screen upon unhandled signals and exceptions'
 )
+option(
+	'windows_icons',
+	type: 'boolean',
+	value: true,
+	description: 'Add icon resources to the executable on Windows'
+)
