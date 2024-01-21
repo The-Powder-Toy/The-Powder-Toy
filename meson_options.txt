@@ -299,3 +299,9 @@ option(
 	value: true,
 	description: 'Add icon resources to the executable on Windows'
 )
+option(
+	'windows_utf8cp',
+	type: 'boolean',
+	value: true,
+	description: 'Ask Windows nicely for UTF-8 as the codepage'
+)

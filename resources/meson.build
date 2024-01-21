@@ -33,9 +33,14 @@ endif
 
 if host_platform == 'windows'
 	windows_icons = get_option('windows_icons')
+	windows_utf8cp = get_option('windows_utf8cp')
 	rc_conf_depends = []
+	rc_conf_depend_files = [
+		'resource.h',
+	]
 	icon_exe_ico_path = ''
 	icon_cps_ico_path = ''
+	winutf8_xml_path = ''
 	if windows_icons
 		make_ico = executable('makeico', sources: 'MakeIco.cpp', native: true)
 		generated_win_icos = {}
@@ -64,11 +69,18 @@ if host_platform == 'windows'
 		icon_exe_ico_path = join_paths(meson.current_build_dir(), 'icon_exe.ico')
 		icon_cps_ico_path = join_paths(meson.current_build_dir(), 'icon_cps.ico')
 	endif
+	if windows_utf8cp
+		rc_conf_depend_files += [
+			'winutf8.xml',
+		]
+		winutf8_xml_path = join_paths(meson.current_source_dir(), 'winutf8.xml')
+	endif
 	rc_conf_data = configuration_data()
 	rc_conf_data.merge_from(conf_data)
 	rc_conf_data.set('HAVE_ICONS', windows_icons ? 1 : 0)
+	rc_conf_data.set('HAVE_UTF8CP', windows_utf8cp ? 1 : 0)
 	rc_conf_data.set('RESOUCE_H', join_paths(meson.current_source_dir(), 'resource.h'))
-	rc_conf_data.set('WINUTF8_XML', join_paths(meson.current_source_dir(), 'winutf8.xml'))
+	rc_conf_data.set('WINUTF8_XML', winutf8_xml_path)
 	rc_conf_data.set('ICON_EXE_ICO', icon_exe_ico_path)
 	rc_conf_data.set('ICON_CPS_ICO', icon_cps_ico_path)
 	powder_files += windows_mod.compile_resources(
@@ -78,10 +90,7 @@ if host_platform == 'windows'
 			configuration: rc_conf_data,
 		),
 		depends: rc_conf_depends,
-		depend_files: [
-			'resource.h',
-			'winutf8.xml',
-		],
+		depend_files: rc_conf_depend_files,
 	)
 elif host_platform == 'darwin'
 	configure_file(

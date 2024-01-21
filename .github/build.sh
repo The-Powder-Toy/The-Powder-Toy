@@ -218,23 +218,9 @@ if [[ $PACKAGE_MODE == nolua ]]; then
 fi
 if [[ $PACKAGE_MODE == backendvs ]]; then
 	meson_configure+=$'\t'-Dbackend=vs
-	echo "NOTE: patching CREATEPROCESS_MANIFEST_RESOURCE_ID out of powder-res.template.rc"
-	echo "TODO: remove this patch once https://github.com/mesonbuild/meson/pull/12472 makes it into a release"
-	echo "TODO: also remove the relevant note from the building guide"
-	git apply <<PATCH
-diff --git a/resources/powder-res.template.rc b/resources/powder-res.template.rc
-index 1dc26c78..2094049f 100644
---- a/resources/powder-res.template.rc
-+++ b/resources/powder-res.template.rc
-@@ -7,7 +7,6 @@
- 
- IDI_ICON ICON DISCARDABLE "@ICON_EXE_ICO@"
- IDI_DOC_ICON ICON DISCARDABLE "@ICON_CPS_ICO@"
--CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "@WINUTF8_XML@"
- 
- VS_VERSION_INFO VERSIONINFO
- FILEVERSION @DISPLAY_VERSION_MAJOR@,@DISPLAY_VERSION_MINOR@,0,@BUILD_NUM@
-PATCH
+	# meson 1.2.3 configures vs projects that bring their own manifest, which conflicts with ours
+	# TODO: remove this patch once https://github.com/mesonbuild/meson/pull/12472 makes it into a release that we can use
+	meson_configure+=$'\t'-Dwindows_utf8cp=false
 fi
 if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 	meson_configure+=$'\t'-Dstatic=prebuilt
