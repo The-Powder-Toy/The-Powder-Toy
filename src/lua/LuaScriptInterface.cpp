@@ -1447,7 +1447,7 @@ static int LuaBlockMap(lua_State *L, ItemType minValue, ItemType maxValue, Acces
 template<class Accessor, class ItemType = typename LuaBlockMapHelper<Accessor>::ItemType>
 static int LuaBlockMap(lua_State *L, Accessor accessor)
 {
-	return LuaBlockMapImpl<false>(L, 0, 0, accessor);
+	return LuaBlockMapImpl<false>(L, ItemType(0), ItemType(0), accessor);
 }
 
 static int sim_velocityX(lua_State *L)
