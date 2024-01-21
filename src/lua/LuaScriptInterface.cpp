@@ -1386,7 +1386,7 @@ static int sim_decoSpace(lua_State *L)
 template<class Accessor>
 struct LuaBlockMapHelper
 {
-	using ItemType = std::remove_reference_t<std::result_of_t<Accessor(Vec2<int>)>>;
+	using ItemType = std::remove_reference_t<std::invoke_result_t<Accessor, Vec2<int>>>;
 };
 
 template<bool Clamp, class Accessor, class ItemType = typename LuaBlockMapHelper<Accessor>::ItemType>
