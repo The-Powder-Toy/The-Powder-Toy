@@ -1,5 +1,7 @@
-#include "LuaSocket.h"
-
+#include "LuaScriptInterface.h"
+#include "client/http/requestmanager/CurlError.h"
+#include "client/http/requestmanager/RequestManager.h"
+#include "Misc.h"
 #include "common/String.h"
 #include <curl/curl.h>
 #include <vector>
@@ -7,11 +9,6 @@
 #include <cstring>
 #include <stdint.h>
 #include <algorithm>
-
-#include "LuaScriptInterface.h"
-#include "client/http/requestmanager/RequestManager.h"
-#include "client/http/requestmanager/CurlError.h"
-#include "Misc.h"
 
 namespace LuaSocket
 {
@@ -80,14 +77,14 @@ namespace LuaSocket
 		return false;
 	}
 
-	static int New(lua_State *l)
+	static int New(lua_State *L)
 	{
 		using http::HandleCURLMcode;
 		if (http::RequestManager::Ref().DisableNetwork())
 		{
-			return luaL_error(l, "network disabled");
+			return luaL_error(L, "network disabled");
 		}
-		auto *tcps = (TCPSocket *)lua_newuserdata(l, sizeof(TCPSocket));
+		auto *tcps = (TCPSocket *)lua_newuserdata(L, sizeof(TCPSocket));
 		new(tcps) TCPSocket;
 		tcps->errorBuf[0] = 0;
 		tcps->easy = curl_easy_init();
@@ -100,47 +97,47 @@ namespace LuaSocket
 		if (!tcps->easy)
 		{
 			Reset(tcps);
-			return luaL_error(l, "curl_easy_init failed");
+			return luaL_error(L, "curl_easy_init failed");
 		}
 		tcps->multi = curl_multi_init();
 		if (!tcps->multi)
 		{
 			Reset(tcps);
-			return luaL_error(l, "curl_multi_init failed");
+			return luaL_error(L, "curl_multi_init failed");
 		}
 		HandleCURLMcode(curl_multi_add_handle(tcps->multi, tcps->easy));
-		luaL_newmetatable(l, "TCPSocket");
-		lua_setmetatable(l, -2);
+		luaL_newmetatable(L, "TCPSocket");
+		lua_setmetatable(L, -2);
 		return 1;
 	}
 
-	static int GC(lua_State *l)
+	static int GC(lua_State *L)
 	{
-		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
+		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		Reset(tcps);
 		tcps->~TCPSocket();
 		return 0;
 	}
 
-	static int Close(lua_State *l)
+	static int Close(lua_State *L)
 	{
-		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
+		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		Reset(tcps);
 		return 0;
 	}
 
-	static int Send(lua_State *l)
+	static int Send(lua_State *L)
 	{
-		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
+		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		if (tcps->status != StatusConnected)
 		{
-			return luaL_error(l, "attempt to send on socket while not connected");
+			return luaL_error(L, "attempt to send on socket while not connected");
 		}
 		size_t dlenu;
-		auto *data = luaL_checklstring(l, 2, &dlenu);
+		auto *data = luaL_checklstring(L, 2, &dlenu);
 		auto dlen = int(dlenu);
-		auto first = luaL_optinteger(l, 3, 1);
-		auto last = luaL_optinteger(l, 4, -1);
+		auto first = luaL_optinteger(L, 3, 1);
+		auto last = luaL_optinteger(L, 4, -1);
 		if (first < 0) first += dlen + 1;
 		if (last  < 0) last  += dlen + 1;
 		if (first <    1) first =    1;
@@ -179,9 +176,9 @@ namespace LuaSocket
 			if (tcps->writeClosed)
 			{
 				Reset(tcps);
-				lua_pushnil(l);
-				lua_pushliteral(l, "closed");
-				lua_pushinteger(l, writtenTotal + begin);
+				lua_pushnil(L);
+				lua_pushliteral(L, "closed");
+				lua_pushinteger(L, writtenTotal + begin);
 				return 3;
 			}
 			if (res == CURLE_AGAIN)
@@ -194,22 +191,22 @@ namespace LuaSocket
 					Timeout(0.01);
 					continue;
 				}
-				lua_pushnil(l);
-				lua_pushliteral(l, "timeout");
-				lua_pushinteger(l, writtenTotal + begin);
+				lua_pushnil(L);
+				lua_pushliteral(L, "timeout");
+				lua_pushinteger(L, writtenTotal + begin);
 				return 3;
 			}
 		}
-		lua_pushinteger(l, writtenTotal + begin);
+		lua_pushinteger(L, writtenTotal + begin);
 		return 1;
 	}
 
-	static int ReceiveNoPrefix(lua_State *l)
+	static int ReceiveNoPrefix(lua_State *L)
 	{
-		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
+		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		if (tcps->status != StatusConnected)
 		{
-			return luaL_error(l, "attempt to receive on socket while not connected");
+			return luaL_error(L, "attempt to receive on socket while not connected");
 		}
 		enum
 		{
@@ -218,17 +215,17 @@ namespace LuaSocket
 			readLine,
 		} pattern = readN;
 		size_t len = 4096;
-		if (tpt_lua_equalsLiteral(l, 2, "*a"))
+		if (tpt_lua_equalsLiteral(L, 2, "*a"))
 		{
 			pattern = readAll;
 		}
-		else if (tpt_lua_equalsLiteral(l, 2, "*l"))
+		else if (tpt_lua_equalsLiteral(L, 2, "*L"))
 		{
 			pattern = readLine;
 		}
 		else
 		{
-			len = size_t(luaL_checkinteger(l, 2));
+			len = size_t(luaL_checkinteger(L, 2));
 		}
 		if (pattern == readAll || pattern == readLine)
 		{
@@ -303,11 +300,11 @@ namespace LuaSocket
 					// * Closed "*a" patterns don't return an error.
 					break;
 				}
-				lua_pushnil(l);
-				lua_pushliteral(l, "closed");
+				lua_pushnil(L);
+				lua_pushliteral(L, "closed");
 				if (pattern == readLine)
 				{
-					// * Closed "*l" patterns don't return partial lines.
+					// * Closed "*L" patterns don't return partial lines.
 					returning = 0;
 				}
 				retn = 3;
@@ -331,11 +328,11 @@ namespace LuaSocket
 					Timeout(0.01);
 					continue;
 				}
-				lua_pushnil(l);
-				lua_pushliteral(l, "timeout");
+				lua_pushnil(L);
+				lua_pushliteral(L, "timeout");
 				if (pattern == readLine)
 				{
-					// * Timed-out "*l" patterns don't return partial lines.
+					// * Timed-out "*L" patterns don't return partial lines.
 					returning = 0;
 				}
 				retn = 3;
@@ -356,12 +353,12 @@ namespace LuaSocket
 			}
 			returning = curOut;
 		}
-		lua_pushlstring(l, &tcps->recvBuf[0], returning);
+		lua_pushlstring(L, &tcps->recvBuf[0], returning);
 		// * This copy makes ReceiveNoPrefix quadratic if there's a lot of stuff in
-		//   the stash (as a result of a *very* long line being returned by an "*l"
+		//   the stash (as a result of a *very* long line being returned by an "*L"
 		//   pattern and then whatever was left being stashed) and it's all *very*
 		//   short lines (compared to the previous *very* long one, from the point
-		//   of view of an "*l" pattern). Handling this edge case in a special,
+		//   of view of an "*L" pattern). Handling this edge case in a special,
 		//   sub-quadratic way isn't worth the effort.
 		std::copy(
 			&tcps->recvBuf[0] + readTotal - tcps->stashedLen,
@@ -371,35 +368,35 @@ namespace LuaSocket
 		return retn;
 	}
 
-	static int Receive(lua_State *l)
+	static int Receive(lua_State *L)
 	{
 		bool prefix = false;
-		if (lua_gettop(l) >= 3)
+		if (lua_gettop(L) >= 3)
 		{
 			prefix = true;
-			lua_tostring(l, 3);
+			lua_tostring(L, 3);
 		}
-		int ret = ReceiveNoPrefix(l);
+		int ret = ReceiveNoPrefix(L);
 		if (prefix)
 		{
-			lua_pushvalue(l, 3);
-			lua_insert(l, -2);
-			lua_concat(l, 2);
+			lua_pushvalue(L, 3);
+			lua_insert(L, -2);
+			lua_concat(L, 2);
 		}
 		return ret;
 	}
 
-	static int Connect(lua_State *l)
+	static int Connect(lua_State *L)
 	{
 		using http::HandleCURLcode;
-		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
+		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		if (tcps->status == StatusDead)
 		{
-			return luaL_error(l, "attempt to connect dead socket");
+			return luaL_error(L, "attempt to connect dead socket");
 		}
 		if (tcps->status == StatusConnected)
 		{
-			return luaL_error(l, "attempt to connect connected socket");
+			return luaL_error(L, "attempt to connect connected socket");
 		}
 		auto startedAt = Now();
 		while (true)
@@ -416,11 +413,11 @@ namespace LuaSocket
 					//   the hostnames.
 					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_ERRORBUFFER, tcps->errorBuf));
 					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_CONNECT_ONLY, 1L));
-					ByteString address = tpt_lua_checkByteString(l, 2);
-					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_PORT, long(luaL_checkinteger(l, 3))));
+					ByteString address = tpt_lua_checkByteString(L, 2);
+					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_PORT, long(luaL_checkinteger(L, 3))));
 					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_NOSIGNAL, 1L));
 					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0));
-					if (lua_toboolean(l, 4))
+					if (lua_toboolean(L, 4))
 					{
 #if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 85, 0)
 						HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_PROTOCOLS_STR, "https"));
@@ -447,7 +444,7 @@ namespace LuaSocket
 				}
 				catch (const http::CurlError &ex)
 				{
-					return luaL_error(l, ex.what());
+					return luaL_error(L, ex.what());
 				}
 			}
 
@@ -462,73 +459,73 @@ namespace LuaSocket
 					Timeout(0.01);
 					continue;
 				}
-				lua_pushnil(l);
-				lua_pushliteral(l, "timeout");
+				lua_pushnil(L);
+				lua_pushliteral(L, "timeout");
 				return 2;
 			}
 			if (res != CURLE_OK)
 			{
 				Reset(tcps);
-				lua_pushnil(l);
-				lua_pushstring(l, tcps->errorBuf);
+				lua_pushnil(L);
+				lua_pushstring(L, tcps->errorBuf);
 				return 2;
 			}
 			break;
 		}
 		tcps->status = StatusConnected;
-		lua_pushinteger(l, 1);
+		lua_pushinteger(L, 1);
 		return 1;
 	}
 
-	static int LastError(lua_State *l)
+	static int LastError(lua_State *L)
 	{
-		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
-		lua_pushstring(l, tcps->errorBuf);
+		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
+		lua_pushstring(L, tcps->errorBuf);
 		return 1;
 	}
 
-	static int GetStatus(lua_State *l)
+	static int GetStatus(lua_State *L)
 	{
-		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
+		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		switch (tcps->status)
 		{
-		case StatusReady:      lua_pushliteral(l,      "ready"); break;
-		case StatusConnecting: lua_pushliteral(l, "connecting"); break;
-		case StatusConnected:  lua_pushliteral(l,  "connected"); break;
-		case StatusDead:       lua_pushliteral(l,       "dead"); break;
+		case StatusReady:      lua_pushliteral(L,      "ready"); break;
+		case StatusConnecting: lua_pushliteral(L, "connecting"); break;
+		case StatusConnected:  lua_pushliteral(L,  "connected"); break;
+		case StatusDead:       lua_pushliteral(L,       "dead"); break;
 		}
 		return 1;
 	}
 
-	static int GetPeerName(lua_State *l)
+	static int GetPeerName(lua_State *L)
 	{
 		using http::HandleCURLcode;
-		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
+		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		if (tcps->status != StatusConnected)
 		{
-			return luaL_error(l, "attempt to get remote socket info while not connected");
+			return luaL_error(L, "attempt to get remote socket info while not connected");
 		}
 		char *address;
 		HandleCURLcode(curl_easy_getinfo(tcps->easy, CURLINFO_PRIMARY_IP, &address));
-		lua_pushstring(l, address);
+		lua_pushstring(L, address);
 		long port;
 		HandleCURLcode(curl_easy_getinfo(tcps->easy, CURLINFO_PRIMARY_PORT, &port));
-		lua_pushinteger(l, port);
+		lua_pushinteger(L, port);
 		return 2;
 	}
 
-	static int SetTimeout(lua_State *l)
+	static int SetTimeout(lua_State *L)
 	{
-		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
+		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		tcps->blocking = true;
-		if (lua_isnoneornil(l, 2))
+		if (lua_isnoneornil(L, 2))
 		{
 			tcps->timeoutIndefinite = true;
 		}
 		else
 		{
 			tcps->timeoutIndefinite = false;
-			tcps->timeout = luaL_checknumber(l, 2);
+			tcps->timeout = luaL_checknumber(L, 2);
 			if (int(tcps->timeout) == 0)
 			{
 				tcps->blocking = false;
@@ -537,57 +534,57 @@ namespace LuaSocket
 		return 0;
 	}
 
-	static int GetSockName(lua_State *l)
+	static int GetSockName(lua_State *L)
 	{
 		using http::HandleCURLcode;
-		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
+		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		if (tcps->status != StatusConnected)
 		{
-			return luaL_error(l, "attempt to get local socket info while not connected");
+			return luaL_error(L, "attempt to get local socket info while not connected");
 		}
 		char *address;
 		HandleCURLcode(curl_easy_getinfo(tcps->easy, CURLINFO_LOCAL_IP, &address));
-		lua_pushstring(l, address);
+		lua_pushstring(L, address);
 		long port;
 		HandleCURLcode(curl_easy_getinfo(tcps->easy, CURLINFO_LOCAL_PORT, &port));
-		lua_pushinteger(l, port);
+		lua_pushinteger(L, port);
 		return 2;
 	}
 
-	static int SetOption(lua_State *l)
+	static int SetOption(lua_State *L)
 	{
 		using http::HandleCURLcode;
-		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
-		auto option = tpt_lua_checkByteString(l, 2);
+		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
+		auto option = tpt_lua_checkByteString(L, 2);
 		try
 		{
 			if (byteStringEqualsLiteral(option, "keepalive"))
 			{
-				HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_TCP_KEEPALIVE, long(lua_toboolean(l, 3))));
+				HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_TCP_KEEPALIVE, long(lua_toboolean(L, 3))));
 				return 0;
 			}
 			else if (byteStringEqualsLiteral(option, "tcp-nodelay"))
 			{
-				HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_TCP_NODELAY, long(lua_toboolean(l, 3))));
+				HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_TCP_NODELAY, long(lua_toboolean(L, 3))));
 				return 0;
 			}
 			else if (byteStringEqualsLiteral(option, "verify-peer"))
 			{
-				HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_SSL_VERIFYPEER, long(lua_toboolean(l, 3))));
+				HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_SSL_VERIFYPEER, long(lua_toboolean(L, 3))));
 				return 0;
 			}
 		}
 		catch (const http::CurlError &ex)
 		{
-			return luaL_error(l, ex.what());
+			return luaL_error(L, ex.what());
 		}
-		return luaL_error(l, "unknown option");
+		return luaL_error(L, "unknown option");
 	}
 
-	static int Shutdown(lua_State *l)
+	static int Shutdown(lua_State *L)
 	{
-		auto *tcps = (TCPSocket *)luaL_checkudata(l, 1, "TCPSocket");
-		auto direction = tpt_lua_optByteString(l, 2, "both");
+		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
+		auto direction = tpt_lua_optByteString(L, 2, "both");
 		if (byteStringEqualsLiteral(direction, "receive"))
 		{
 			tcps->readClosed = true;
@@ -604,15 +601,15 @@ namespace LuaSocket
 			tcps->writeClosed = true;
 			return 0;
 		}
-		return luaL_error(l, "unknown direction");
+		return luaL_error(L, "unknown direction");
 	}
 
-	void OpenTCP(lua_State *l)
+	void OpenTCP(lua_State *L)
 	{
-		luaL_newmetatable(l, "TCPSocket");
-		lua_pushcfunction(l, LuaSocket::GC);
-		lua_setfield(l, -2, "__gc");
-		lua_newtable(l);
+		luaL_newmetatable(L, "TCPSocket");
+		lua_pushcfunction(L, LuaSocket::GC);
+		lua_setfield(L, -2, "__gc");
+		lua_newtable(L);
 		struct luaL_Reg tcpSocketIndexMethods[] = {
 			{     "connect", LuaSocket::Connect     },
 			{       "close", LuaSocket::Close       },
@@ -627,12 +624,12 @@ namespace LuaSocket
 			{    "shutdown", LuaSocket::Shutdown    },
 			{          NULL, NULL                      },
 		};
-		luaL_register(l, NULL, tcpSocketIndexMethods);
-		lua_setfield(l, -2, "__index");
-		lua_pop(l, 1);
-		lua_getglobal(l, "socket");
-		lua_pushcfunction(l, LuaSocket::New);
-		lua_setfield(l, -2, "tcp");
-		lua_pop(l, 1);
+		luaL_register(L, NULL, tcpSocketIndexMethods);
+		lua_setfield(L, -2, "__index");
+		lua_pop(L, 1);
+		lua_getglobal(L, "socket");
+		lua_pushcfunction(L, LuaSocket::New);
+		lua_setfield(L, -2, "tcp");
+		lua_pop(L, 1);
 	}
 }

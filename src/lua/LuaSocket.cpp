@@ -1,33 +1,27 @@
-#include "LuaSocket.h"
 #include "LuaScriptInterface.h"
 #include "Misc.h"
-#include <stdint.h>
-#include <algorithm>
 
-namespace LuaSocket
+int LuaSocket::GetTime(lua_State *L)
 {
-	static int GetTime(lua_State *l)
-	{
-		lua_pushnumber(l, Now());
-		return 1;
-	}
+	lua_pushnumber(L, LuaSocket::Now());
+	return 1;
+}
 
-	static int Sleep(lua_State *l)
-	{
-		Timeout(luaL_checknumber(l, 1));
-		return 0;
-	}
+int LuaSocket::Sleep(lua_State *L)
+{
+	LuaSocket::Timeout(luaL_checknumber(L, 1));
+	return 0;
+}
 
-	void Open(lua_State *l)
-	{
-		lua_newtable(l);
-		struct luaL_Reg socketMethods[] = {
-			{   "sleep", LuaSocket::Sleep   },
-			{ "getTime", LuaSocket::GetTime },
-			{      NULL, NULL                  },
-		};
-		luaL_register(l, NULL, socketMethods);
-		lua_setglobal(l, "socket");
-		OpenTCP(l);
-	}
+void LuaSocket::Open(lua_State *L)
+{
+	static const luaL_Reg reg[] = {
+		{ "sleep", LuaSocket::Sleep },
+		{ "getTime", LuaSocket::GetTime },
+		{ NULL, NULL }
+	};
+	lua_newtable(L);
+	luaL_register(L, NULL, reg);
+	lua_setglobal(L, "socket");
+	OpenTCP(L);
 }

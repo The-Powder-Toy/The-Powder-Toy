@@ -15,16 +15,16 @@ Luna<LuaTextbox>::RegType LuaTextbox::methods[] = {
 	{0, 0}
 };
 
-LuaTextbox::LuaTextbox(lua_State * l) :
-	LuaComponent(l)
+LuaTextbox::LuaTextbox(lua_State *L) :
+	LuaComponent(L)
 {
-	this->l = l;
-	int posX = luaL_optinteger(l, 1, 0);
-	int posY = luaL_optinteger(l, 2, 0);
-	int sizeX = luaL_optinteger(l, 3, 10);
-	int sizeY = luaL_optinteger(l, 4, 10);
-	String text = tpt_lua_optString(l, 5, "");
-	String placeholder = tpt_lua_optString(l, 6, "");
+	this->L = L;
+	int posX = luaL_optinteger(L, 1, 0);
+	int posY = luaL_optinteger(L, 2, 0);
+	int sizeX = luaL_optinteger(L, 3, 10);
+	int sizeY = luaL_optinteger(L, 4, 10);
+	String text = tpt_lua_optString(L, 5, "");
+	String placeholder = tpt_lua_optString(L, 6, "");
 
 	textbox = new ui::Textbox(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, placeholder);
 	textbox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -32,51 +32,51 @@ LuaTextbox::LuaTextbox(lua_State * l) :
 	component = textbox;
 }
 
-int LuaTextbox::readonly(lua_State * l)
+int LuaTextbox::readonly(lua_State *L)
 {
-	int args = lua_gettop(l);
+	int args = lua_gettop(L);
 	if(args)
 	{
-		luaL_checktype(l, 1, LUA_TBOOLEAN);
-		textbox->ReadOnly = lua_toboolean(l, 1);
+		luaL_checktype(L, 1, LUA_TBOOLEAN);
+		textbox->ReadOnly = lua_toboolean(L, 1);
 		return 0;
 	}
 	else
 	{
-		lua_pushboolean(l, textbox->ReadOnly);
+		lua_pushboolean(L, textbox->ReadOnly);
 		return 1;
 	}
 }
 
-int LuaTextbox::onTextChanged(lua_State * l)
+int LuaTextbox::onTextChanged(lua_State *L)
 {
-	return onTextChangedFunction.CheckAndAssignArg1(l);
+	return onTextChangedFunction.CheckAndAssignArg1(L);
 }
 
 void LuaTextbox::triggerOnTextChanged()
 {
 	if(onTextChangedFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onTextChangedFunction);
-		lua_rawgeti(l, LUA_REGISTRYINDEX, owner_ref);
-		if (tpt_lua_pcall(l, 1, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onTextChangedFunction);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, owner_ref);
+		if (tpt_lua_pcall(L, 1, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_optString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_optString(L, -1));
 		}
 	}
 }
 
-int LuaTextbox::text(lua_State * l)
+int LuaTextbox::text(lua_State *L)
 {
-	int args = lua_gettop(l);
+	int args = lua_gettop(L);
 	if(args)
 	{
-		textbox->SetText(tpt_lua_checkString(l, 1));
+		textbox->SetText(tpt_lua_checkString(L, 1));
 		return 0;
 	}
 	else
 	{
-		tpt_lua_pushString(l, textbox->GetText());
+		tpt_lua_pushString(L, textbox->GetText());
 		return 1;
 	}
 }

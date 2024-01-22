@@ -58,6 +58,7 @@ ui.MOUSE_UP_NORMAL      = ui.MOUSEUP_NORMAL
 if socket then
 	socket.gettime = socket.getTime
 end
+print = tpt.log
 
 local function fake_boolean_wrapper(func, true_is_1)
 	return function(param)

@@ -15,7 +15,8 @@ class TPTScriptInterface: public CommandInterface {
 	AnyType tptS_quit(std::deque<String> * words);
 	ValueType testType(String word);
 public:
-	TPTScriptInterface(GameController * c, GameModel * m);
+	using CommandInterface::CommandInterface;
+
 	int Command(String command) override;
 	String FormatCommand(String command) override;
 };

@@ -10,12 +10,12 @@
 
 CommandInterface *commandInterface = nullptr;
 
-CommandInterface::CommandInterface(GameController * c, GameModel * m)
+CommandInterface::CommandInterface(GameController *newGameController, GameModel *newGameModel)
 {
 	assert(!commandInterface);
 	commandInterface = this;
-	this->m = m;
-	this->c = c;
+	this->m = newGameModel;
+	this->c = newGameController;
 }
 
 CommandInterface::~CommandInterface()

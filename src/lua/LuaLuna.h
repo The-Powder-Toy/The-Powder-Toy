@@ -54,7 +54,7 @@ public:
 	}
 
 	// get userdata from Lua stack and return pointer to T object
-	static T * check(lua_State * L, int narg)
+	static T * check(lua_State *L, int narg)
 	{
 		userdataType *ud = static_cast<userdataType*>(luaL_checkudata(L, narg, T::className));
 		if(!ud)
@@ -62,7 +62,7 @@ public:
 		return ud->pT;  // pointer to T object
 	}
 
-	static void * tryGet(lua_State * L, int narg)
+	static void * tryGet(lua_State *L, int narg)
 	{
 		if(checkType(L, narg, T::className))
 		{
@@ -77,7 +77,7 @@ public:
 		}
 	}
 
-	static bool checkType (lua_State * L, int idx, const char *name)
+	static bool checkType (lua_State *L, int idx, const char *name)
 	{
 		// returns true if a userdata is of a certain type
 		int res;
@@ -98,7 +98,7 @@ private:
 	Luna();  // hide default constructor
 
 	// member function dispatcher
-	static int thunk(lua_State * L)
+	static int thunk(lua_State *L)
 	{
 		// stack has userdata, followed by method args
 		T *obj = check(L, 1);  // get 'self', or if you prefer, 'this'
@@ -110,7 +110,7 @@ private:
 
 	// create a new T object and
 	// push onto the Lua stack a userdata containing a pointer to T object
-	static int new_T(lua_State * L)
+	static int new_T(lua_State *L)
 	{
 		if (!lua_gettop(L))
 			return 0;
@@ -133,7 +133,7 @@ private:
 		return 0;
 	}
 
-	static int tostring_T (lua_State * L)
+	static int tostring_T (lua_State *L)
 	{
 		char buff[32];
 		userdataType *ud = static_cast<userdataType*>(lua_touserdata(L, 1));

@@ -11,10 +11,6 @@
 #include <cstdlib>
 #include <cmath>
 
-TPTScriptInterface::TPTScriptInterface(GameController * c, GameModel * m): CommandInterface(c, m)
-{
-}
-
 int TPTScriptInterface::Command(String command)
 {
 	lastError = "";

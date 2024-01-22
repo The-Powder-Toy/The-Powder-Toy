@@ -1,8 +1,8 @@
-#include "LuaSocket.h"
+#include "LuaScriptInterface.h"
 
 namespace LuaSocket
 {
-	void OpenTCP(lua_State *l)
+	void OpenTCP(lua_State *L)
 	{
 	}
 }

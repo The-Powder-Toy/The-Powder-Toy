@@ -13,31 +13,31 @@ Luna<LuaLabel>::RegType LuaLabel::methods[] = {
 	{0, 0}
 };
 
-LuaLabel::LuaLabel(lua_State * l) :
-	LuaComponent(l)
+LuaLabel::LuaLabel(lua_State *L) :
+	LuaComponent(L)
 {
-	this->l = l;
-	int posX = luaL_optinteger(l, 1, 0);
-	int posY = luaL_optinteger(l, 2, 0);
-	int sizeX = luaL_optinteger(l, 3, 10);
-	int sizeY = luaL_optinteger(l, 4, 10);
-	String text = tpt_lua_optString(l, 5, "");
+	this->L = L;
+	int posX = luaL_optinteger(L, 1, 0);
+	int posY = luaL_optinteger(L, 2, 0);
+	int sizeX = luaL_optinteger(L, 3, 10);
+	int sizeY = luaL_optinteger(L, 4, 10);
+	String text = tpt_lua_optString(L, 5, "");
 
 	label = new ui::Label(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text);
 	component = label;
 }
 
-int LuaLabel::text(lua_State * l)
+int LuaLabel::text(lua_State *L)
 {
-	int args = lua_gettop(l);
+	int args = lua_gettop(L);
 	if(args)
 	{
-		label->SetText(tpt_lua_checkString(l, 1));
+		label->SetText(tpt_lua_checkString(L, 1));
 		return 0;
 	}
 	else
 	{
-		tpt_lua_pushString(l, label->GetText());
+		tpt_lua_pushString(L, label->GetText());
 		return 1;
 	}
 }

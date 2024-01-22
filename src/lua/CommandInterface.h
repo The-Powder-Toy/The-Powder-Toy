@@ -12,7 +12,7 @@ protected:
 	String lastError;
 	GameModel * m;
 	GameController * c;
-	CommandInterface(GameController * c, GameModel * m);
+	CommandInterface(GameController *newGameController, GameModel *newGameModel);
 
 public:
 	enum LogType { LogError, LogWarning, LogNotice };
@@ -35,7 +35,7 @@ public:
 	String GetLastError();
 	virtual ~CommandInterface();
 
-	static CommandInterface *Create(GameController * c, GameModel * m);
+	static CommandInterface *Create(GameController *newGameController, GameModel *newGameModel);
 };
 
 extern CommandInterface *commandInterface;

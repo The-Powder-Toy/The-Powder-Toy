@@ -15,51 +15,51 @@ Luna<LuaSlider>::RegType LuaSlider::methods[] = {
 	{0, 0}
 };
 
-LuaSlider::LuaSlider(lua_State * l) :
-	LuaComponent(l)
+LuaSlider::LuaSlider(lua_State *L) :
+	LuaComponent(L)
 {
-	int posX = luaL_optinteger(l, 1, 0);
-	int posY = luaL_optinteger(l, 2, 0);
-	int sizeX = luaL_optinteger(l, 3, 10);
-	int sizeY = luaL_optinteger(l, 4, 10);
-	int steps = luaL_optinteger(l, 5, 10);
+	int posX = luaL_optinteger(L, 1, 0);
+	int posY = luaL_optinteger(L, 2, 0);
+	int sizeX = luaL_optinteger(L, 3, 10);
+	int sizeY = luaL_optinteger(L, 4, 10);
+	int steps = luaL_optinteger(L, 5, 10);
 
 	slider = new ui::Slider(ui::Point(posX, posY), ui::Point(sizeX, sizeY), steps);
 	component = slider;
 	slider->SetActionCallback({ [this] { triggerOnValueChanged(); } });
 }
 
-int LuaSlider::steps(lua_State * l)
+int LuaSlider::steps(lua_State *L)
 {
-	int args = lua_gettop(l);
+	int args = lua_gettop(L);
 	if(args)
 	{
-		slider->SetSteps(lua_tointeger(l, 1));
+		slider->SetSteps(lua_tointeger(L, 1));
 		return 0;
 	}
 	else
 	{
-		lua_pushinteger(l, slider->GetSteps());
+		lua_pushinteger(L, slider->GetSteps());
 		return 1;
 	}
 }
 
-int LuaSlider::onValueChanged(lua_State * l)
+int LuaSlider::onValueChanged(lua_State *L)
 {
-	return onValueChangedFunction.CheckAndAssignArg1(l);
+	return onValueChangedFunction.CheckAndAssignArg1(L);
 }
 
-int LuaSlider::value(lua_State * l)
+int LuaSlider::value(lua_State *L)
 {
-	int args = lua_gettop(l);
+	int args = lua_gettop(L);
 	if(args)
 	{
-		slider->SetValue(lua_tointeger(l, 1));
+		slider->SetValue(lua_tointeger(L, 1));
 		return 0;
 	}
 	else
 	{
-		lua_pushinteger(l, slider->GetValue());
+		lua_pushinteger(L, slider->GetValue());
 		return 1;
 	}
 }
@@ -68,12 +68,12 @@ void LuaSlider::triggerOnValueChanged()
 {
 	if(onValueChangedFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onValueChangedFunction);
-		lua_rawgeti(l, LUA_REGISTRYINDEX, owner_ref);
-		lua_pushinteger(l, slider->GetValue());
-		if (tpt_lua_pcall(l, 2, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onValueChangedFunction);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, owner_ref);
+		lua_pushinteger(L, slider->GetValue());
+		if (tpt_lua_pcall(L, 2, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }

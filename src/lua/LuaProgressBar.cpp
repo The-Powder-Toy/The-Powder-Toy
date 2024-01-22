@@ -14,46 +14,46 @@ Luna<LuaProgressBar>::RegType LuaProgressBar::methods[] = {
 	{0, 0}
 };
 
-LuaProgressBar::LuaProgressBar(lua_State * l) :
-	LuaComponent(l)
+LuaProgressBar::LuaProgressBar(lua_State *L) :
+	LuaComponent(L)
 {
-	int posX = luaL_optinteger(l, 1, 0);
-	int posY = luaL_optinteger(l, 2, 0);
-	int sizeX = luaL_optinteger(l, 3, 10);
-	int sizeY = luaL_optinteger(l, 4, 10);
-	int value = luaL_optinteger(l, 5, 0);
-	String status = tpt_lua_optString(l, 6, "");
+	int posX = luaL_optinteger(L, 1, 0);
+	int posY = luaL_optinteger(L, 2, 0);
+	int sizeX = luaL_optinteger(L, 3, 10);
+	int sizeY = luaL_optinteger(L, 4, 10);
+	int value = luaL_optinteger(L, 5, 0);
+	String status = tpt_lua_optString(L, 6, "");
 
 	progressBar = new ui::ProgressBar(ui::Point(posX, posY), ui::Point(sizeX, sizeY), value, status);
 	component = progressBar;
 }
 
-int LuaProgressBar::progress(lua_State * l)
+int LuaProgressBar::progress(lua_State *L)
 {
-	int args = lua_gettop(l);
+	int args = lua_gettop(L);
 	if(args)
 	{
-		progressBar->SetProgress(lua_tointeger(l, 1));
+		progressBar->SetProgress(lua_tointeger(L, 1));
 		return 0;
 	}
 	else
 	{
-		lua_pushinteger(l, progressBar->GetProgress());
+		lua_pushinteger(L, progressBar->GetProgress());
 		return 1;
 	}
 }
 
-int LuaProgressBar::status(lua_State * l)
+int LuaProgressBar::status(lua_State *L)
 {
-	int args = lua_gettop(l);
+	int args = lua_gettop(L);
 	if(args)
 	{
-		progressBar->SetStatus(tpt_lua_checkString(l, 1));
+		progressBar->SetStatus(tpt_lua_checkString(L, 1));
 		return 0;
 	}
 	else
 	{
-		tpt_lua_pushString(l, progressBar->GetStatus());
+		tpt_lua_pushString(L, progressBar->GetStatus());
 		return 1;
 	}
 }

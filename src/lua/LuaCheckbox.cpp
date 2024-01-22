@@ -15,51 +15,51 @@ Luna<LuaCheckbox>::RegType LuaCheckbox::methods[] = {
 	{0, 0}
 };
 
-LuaCheckbox::LuaCheckbox(lua_State * l) :
-	LuaComponent(l)
+LuaCheckbox::LuaCheckbox(lua_State *L) :
+	LuaComponent(L)
 {
-	int posX = luaL_optinteger(l, 1, 0);
-	int posY = luaL_optinteger(l, 2, 0);
-	int sizeX = luaL_optinteger(l, 3, 10);
-	int sizeY = luaL_optinteger(l, 4, 10);
-	String text = tpt_lua_optString(l, 5, "");
+	int posX = luaL_optinteger(L, 1, 0);
+	int posY = luaL_optinteger(L, 2, 0);
+	int sizeX = luaL_optinteger(L, 3, 10);
+	int sizeY = luaL_optinteger(L, 4, 10);
+	String text = tpt_lua_optString(L, 5, "");
 
 	checkbox = new ui::Checkbox(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, "");
 	component = checkbox;
 	checkbox->SetActionCallback({ [this] { triggerAction(); } });
 }
 
-int LuaCheckbox::checked(lua_State * l)
+int LuaCheckbox::checked(lua_State *L)
 {
-	int args = lua_gettop(l);
+	int args = lua_gettop(L);
 	if(args)
 	{
-		checkbox->SetChecked(lua_toboolean(l, 1));
+		checkbox->SetChecked(lua_toboolean(L, 1));
 		return 0;
 	}
 	else
 	{
-		lua_pushboolean(l, checkbox->GetChecked());
+		lua_pushboolean(L, checkbox->GetChecked());
 		return 1;
 	}
 }
 
-int LuaCheckbox::action(lua_State * l)
+int LuaCheckbox::action(lua_State *L)
 {
-	return actionFunction.CheckAndAssignArg1(l);
+	return actionFunction.CheckAndAssignArg1(L);
 }
 
-int LuaCheckbox::text(lua_State * l)
+int LuaCheckbox::text(lua_State *L)
 {
-	int args = lua_gettop(l);
+	int args = lua_gettop(L);
 	if(args)
 	{
-		checkbox->SetText(tpt_lua_checkString(l, 1));
+		checkbox->SetText(tpt_lua_checkString(L, 1));
 		return 0;
 	}
 	else
 	{
-		tpt_lua_pushString(l, checkbox->GetText());
+		tpt_lua_pushString(L, checkbox->GetText());
 		return 1;
 	}
 }
@@ -68,12 +68,12 @@ void LuaCheckbox::triggerAction()
 {
 	if(actionFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, actionFunction);
-		lua_rawgeti(l, LUA_REGISTRYINDEX, owner_ref);
-		lua_pushboolean(l, checkbox->GetChecked());
-		if (tpt_lua_pcall(l, 2, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, actionFunction);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, owner_ref);
+		lua_pushboolean(L, checkbox->GetChecked());
+		if (tpt_lua_pcall(L, 2, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }

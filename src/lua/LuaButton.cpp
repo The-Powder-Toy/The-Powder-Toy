@@ -15,53 +15,53 @@ Luna<LuaButton>::RegType LuaButton::methods[] = {
 	{0, 0}
 };
 
-LuaButton::LuaButton(lua_State * l) :
-	LuaComponent(l)
+LuaButton::LuaButton(lua_State *L) :
+	LuaComponent(L)
 {
-	int posX = luaL_optinteger(l, 1, 0);
-	int posY = luaL_optinteger(l, 2, 0);
-	int sizeX = luaL_optinteger(l, 3, 10);
-	int sizeY = luaL_optinteger(l, 4, 10);
-	String text = tpt_lua_optString(l, 5, "");
-	String toolTip = tpt_lua_optString(l, 6, "");
+	int posX = luaL_optinteger(L, 1, 0);
+	int posY = luaL_optinteger(L, 2, 0);
+	int sizeX = luaL_optinteger(L, 3, 10);
+	int sizeY = luaL_optinteger(L, 4, 10);
+	String text = tpt_lua_optString(L, 5, "");
+	String toolTip = tpt_lua_optString(L, 6, "");
 
 	button = new ui::Button(ui::Point(posX, posY), ui::Point(sizeX, sizeY), text, toolTip);
 	component = button;
 	button->SetActionCallback({ [this] { triggerAction(); } });
 }
 
-int LuaButton::enabled(lua_State * l)
+int LuaButton::enabled(lua_State *L)
 {
-	int args = lua_gettop(l);
+	int args = lua_gettop(L);
 	if(args)
 	{
-		luaL_checktype(l, 1, LUA_TBOOLEAN);
-		button->Enabled = lua_toboolean(l, 1);
+		luaL_checktype(L, 1, LUA_TBOOLEAN);
+		button->Enabled = lua_toboolean(L, 1);
 		return 0;
 	}
 	else
 	{
-		lua_pushboolean(l, button->Enabled);
+		lua_pushboolean(L, button->Enabled);
 		return 1;
 	}
 }
 
-int LuaButton::action(lua_State * l)
+int LuaButton::action(lua_State *L)
 {
-	return actionFunction.CheckAndAssignArg1(l);
+	return actionFunction.CheckAndAssignArg1(L);
 }
 
-int LuaButton::text(lua_State * l)
+int LuaButton::text(lua_State *L)
 {
-	int args = lua_gettop(l);
+	int args = lua_gettop(L);
 	if(args)
 	{
-		button->SetText(tpt_lua_checkString(l, 1));
+		button->SetText(tpt_lua_checkString(L, 1));
 		return 0;
 	}
 	else
 	{
-		tpt_lua_pushString(l, button->GetText());
+		tpt_lua_pushString(L, button->GetText());
 		return 1;
 	}
 }
@@ -70,11 +70,11 @@ void LuaButton::triggerAction()
 {
 	if(actionFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, actionFunction);
-		lua_rawgeti(l, LUA_REGISTRYINDEX, owner_ref);
-		if (tpt_lua_pcall(l, 1, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, actionFunction);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, owner_ref);
+		if (tpt_lua_pcall(L, 1, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }

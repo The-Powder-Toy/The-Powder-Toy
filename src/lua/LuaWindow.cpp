@@ -35,13 +35,13 @@ Luna<LuaWindow>::RegType LuaWindow::methods[] = {
 	{0, 0}
 };
 
-LuaWindow::LuaWindow(lua_State * l)
+LuaWindow::LuaWindow(lua_State *L)
 {
-	this->l = l;
-	int posX = luaL_optinteger(l, 1, 1);
-	int posY = luaL_optinteger(l, 2, 1);
-	int sizeX = luaL_optinteger(l, 3, 10);
-	int sizeY = luaL_optinteger(l, 4, 10);
+	this->L = L;
+	int posX = luaL_optinteger(L, 1, 1);
+	int posY = luaL_optinteger(L, 2, 1);
+	int sizeX = luaL_optinteger(L, 3, 10);
+	int sizeY = luaL_optinteger(L, 4, 10);
 
 	// We should replace this with errors
 	if (posX < 1 && posX != -1)
@@ -85,31 +85,31 @@ LuaWindow::LuaWindow(lua_State * l)
 	window = new DrawnWindow(ui::Point(posX, posY), ui::Point(sizeX, sizeY), this);
 }
 
-int LuaWindow::addComponent(lua_State * l)
+int LuaWindow::addComponent(lua_State *L)
 {
 	void *opaque = nullptr;
 	LuaComponent *luaComponent = nullptr;
-	if ((opaque = Luna<LuaButton>::tryGet(l, 1)))
+	if ((opaque = Luna<LuaButton>::tryGet(L, 1)))
 		luaComponent = Luna<LuaButton>::get(opaque);
-	else if ((opaque = Luna<LuaLabel>::tryGet(l, 1)))
+	else if ((opaque = Luna<LuaLabel>::tryGet(L, 1)))
 		luaComponent = Luna<LuaLabel>::get(opaque);
-	else if ((opaque = Luna<LuaTextbox>::tryGet(l, 1)))
+	else if ((opaque = Luna<LuaTextbox>::tryGet(L, 1)))
 		luaComponent = Luna<LuaTextbox>::get(opaque);
-	else if ((opaque = Luna<LuaCheckbox>::tryGet(l, 1)))
+	else if ((opaque = Luna<LuaCheckbox>::tryGet(L, 1)))
 		luaComponent = Luna<LuaCheckbox>::get(opaque);
-	else if ((opaque = Luna<LuaSlider>::tryGet(l, 1)))
+	else if ((opaque = Luna<LuaSlider>::tryGet(L, 1)))
 		luaComponent = Luna<LuaSlider>::get(opaque);
-	else if ((opaque = Luna<LuaProgressBar>::tryGet(l, 1)))
+	else if ((opaque = Luna<LuaProgressBar>::tryGet(L, 1)))
 		luaComponent = Luna<LuaProgressBar>::get(opaque);
 	else
-		luaL_typerror(l, 1, "Component");
+		luaL_typerror(L, 1, "Component");
 	if (luaComponent)
 	{
-		auto ok = grabbed_components.insert(std::make_pair(luaComponent, LuaSmartRef()));
+		auto ok = grabbedComponents.insert(std::make_pair(luaComponent, LuaSmartRef()));
 		if (ok.second)
 		{
 			auto it = ok.first;
-			it->second.Assign(l, 1);
+			it->second.Assign(L, 1);
 			it->first->owner_ref = it->second;
 		}
 		window->AddComponent(luaComponent->GetComponent());
@@ -118,86 +118,86 @@ int LuaWindow::addComponent(lua_State * l)
 	return 0;
 }
 
-int LuaWindow::removeComponent(lua_State * l)
+int LuaWindow::removeComponent(lua_State *L)
 {
 	void *opaque = nullptr;
 	LuaComponent *luaComponent = nullptr;
-	if ((opaque = Luna<LuaButton>::tryGet(l, 1)))
+	if ((opaque = Luna<LuaButton>::tryGet(L, 1)))
 		luaComponent = Luna<LuaButton>::get(opaque);
-	else if ((opaque = Luna<LuaLabel>::tryGet(l, 1)))
+	else if ((opaque = Luna<LuaLabel>::tryGet(L, 1)))
 		luaComponent = Luna<LuaLabel>::get(opaque);
-	else if ((opaque = Luna<LuaTextbox>::tryGet(l, 1)))
+	else if ((opaque = Luna<LuaTextbox>::tryGet(L, 1)))
 		luaComponent = Luna<LuaTextbox>::get(opaque);
-	else if ((opaque = Luna<LuaCheckbox>::tryGet(l, 1)))
+	else if ((opaque = Luna<LuaCheckbox>::tryGet(L, 1)))
 		luaComponent = Luna<LuaCheckbox>::get(opaque);
-	else if ((opaque = Luna<LuaSlider>::tryGet(l, 1)))
+	else if ((opaque = Luna<LuaSlider>::tryGet(L, 1)))
 		luaComponent = Luna<LuaSlider>::get(opaque);
-	else if ((opaque = Luna<LuaProgressBar>::tryGet(l, 1)))
+	else if ((opaque = Luna<LuaProgressBar>::tryGet(L, 1)))
 		luaComponent = Luna<LuaProgressBar>::get(opaque);
 	else
-		luaL_typerror(l, 1, "Component");
+		luaL_typerror(L, 1, "Component");
 	if (luaComponent)
 	{
 		ui::Component *component = luaComponent->GetComponent();
 		window->RemoveComponent(component);
-		auto it = grabbed_components.find(luaComponent);
-		if (it != grabbed_components.end())
+		auto it = grabbedComponents.find(luaComponent);
+		if (it != grabbedComponents.end())
 		{
 			it->second.Clear();
 			it->first->owner_ref = it->second;
-			grabbed_components.erase(it);
+			grabbedComponents.erase(it);
 			luaComponent->SetParentWindow(nullptr);
 		}
 	}
 	return 0;
 }
 
-int LuaWindow::position(lua_State * l)
+int LuaWindow::position(lua_State *L)
 {
-	int args = lua_gettop(l);
+	int args = lua_gettop(L);
 	if(args)
 	{
-		luaL_checktype(l, 1, LUA_TNUMBER);
-		luaL_checktype(l, 2, LUA_TNUMBER);
-		int posX = lua_tointeger(l, 1);
-		int posY = lua_tointeger(l, 2);
+		luaL_checktype(L, 1, LUA_TNUMBER);
+		luaL_checktype(L, 2, LUA_TNUMBER);
+		int posX = lua_tointeger(L, 1);
+		int posY = lua_tointeger(L, 2);
 
 		if (posX < 1 || posY < 1)
 		{
-			return luaL_error(l, "Invalid position: '%d,%d'", posX, posY);
+			return luaL_error(L, "Invalid position: '%d,%d'", posX, posY);
 		}
 		window->Position = ui::Point(posX, posY);
 		return 0;
 	}
 	else
 	{
-		lua_pushinteger(l, window->Position.X);
-		lua_pushinteger(l, window->Position.Y);
+		lua_pushinteger(L, window->Position.X);
+		lua_pushinteger(L, window->Position.Y);
 		return 2;
 	}
 }
 
-int LuaWindow::size(lua_State * l)
+int LuaWindow::size(lua_State *L)
 {
-	int args = lua_gettop(l);
+	int args = lua_gettop(L);
 	if(args)
 	{
-		luaL_checktype(l, 1, LUA_TNUMBER);
-		luaL_checktype(l, 2, LUA_TNUMBER);
-		int sizeX = lua_tointeger(l, 1);
-		int sizeY = lua_tointeger(l, 2);
+		luaL_checktype(L, 1, LUA_TNUMBER);
+		luaL_checktype(L, 2, LUA_TNUMBER);
+		int sizeX = lua_tointeger(L, 1);
+		int sizeY = lua_tointeger(L, 2);
 
 		if (sizeX < 10 || sizeY < 10)
 		{
-			return luaL_error(l, "Invalid size: '%d,%d'", sizeX, sizeY);
+			return luaL_error(L, "Invalid size: '%d,%d'", sizeX, sizeY);
 		}
 		window->Size = ui::Point(sizeX, sizeY);
 		return 0;
 	}
 	else
 	{
-		lua_pushinteger(l, window->Size.X);
-		lua_pushinteger(l, window->Size.Y);
+		lua_pushinteger(L, window->Size.X);
+		lua_pushinteger(L, window->Size.Y);
 		return 2;
 	}
 }
@@ -206,10 +206,10 @@ void LuaWindow::triggerOnInitialized()
 {
 	if(onInitializedFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onInitializedFunction);
-		if(tpt_lua_pcall(l, 0, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onInitializedFunction);
+		if(tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }
@@ -218,10 +218,10 @@ void LuaWindow::triggerOnExit()
 {
 	if(onExitFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onExitFunction);
-		if(tpt_lua_pcall(l, 0, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onExitFunction);
+		if(tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }
@@ -230,11 +230,11 @@ void LuaWindow::triggerOnTick(float dt)
 {
 	if(onTickFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onTickFunction);
-		lua_pushnumber(l, dt);
-		if(tpt_lua_pcall(l, 1, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onTickFunction);
+		lua_pushnumber(L, dt);
+		if(tpt_lua_pcall(L, 1, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }
@@ -243,10 +243,10 @@ void LuaWindow::triggerOnDraw()
 {
 	if(onDrawFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onDrawFunction);
-		if(tpt_lua_pcall(l, 0, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onDrawFunction);
+		if(tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }
@@ -255,10 +255,10 @@ void LuaWindow::triggerOnFocus()
 {
 	if(onFocusFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onFocusFunction);
-		if(tpt_lua_pcall(l, 0, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onFocusFunction);
+		if(tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }
@@ -267,10 +267,10 @@ void LuaWindow::triggerOnBlur()
 {
 	if(onBlurFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onBlurFunction);
-		if(tpt_lua_pcall(l, 0, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onBlurFunction);
+		if(tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }
@@ -279,10 +279,10 @@ void LuaWindow::triggerOnTryExit()
 {
 	if(onTryExitFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onTryExitFunction);
-		if(tpt_lua_pcall(l, 0, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onTryExitFunction);
+		if(tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }
@@ -291,10 +291,10 @@ void LuaWindow::triggerOnTryOkay()
 {
 	if(onTryOkayFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onTryOkayFunction);
-		if(tpt_lua_pcall(l, 0, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onTryOkayFunction);
+		if(tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }
@@ -303,14 +303,14 @@ void LuaWindow::triggerOnMouseMove(int x, int y, int dx, int dy)
 {
 	if(onMouseMoveFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onMouseMoveFunction);
-		lua_pushinteger(l, x);
-		lua_pushinteger(l, y);
-		lua_pushinteger(l, dx);
-		lua_pushinteger(l, dy);
-		if(tpt_lua_pcall(l, 4, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onMouseMoveFunction);
+		lua_pushinteger(L, x);
+		lua_pushinteger(L, y);
+		lua_pushinteger(L, dx);
+		lua_pushinteger(L, dy);
+		if(tpt_lua_pcall(L, 4, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }
@@ -319,13 +319,13 @@ void LuaWindow::triggerOnMouseDown(int x, int y, unsigned button)
 {
 	if(onMouseDownFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onMouseDownFunction);
-		lua_pushinteger(l, x);
-		lua_pushinteger(l, y);
-		lua_pushinteger(l, button);
-		if(tpt_lua_pcall(l, 3, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onMouseDownFunction);
+		lua_pushinteger(L, x);
+		lua_pushinteger(L, y);
+		lua_pushinteger(L, button);
+		if(tpt_lua_pcall(L, 3, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }
@@ -334,13 +334,13 @@ void LuaWindow::triggerOnMouseUp(int x, int y, unsigned button)
 {
 	if(onMouseUpFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onMouseUpFunction);
-		lua_pushinteger(l, x);
-		lua_pushinteger(l, y);
-		lua_pushinteger(l, button);
-		if(tpt_lua_pcall(l, 3, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onMouseUpFunction);
+		lua_pushinteger(L, x);
+		lua_pushinteger(L, y);
+		lua_pushinteger(L, button);
+		if(tpt_lua_pcall(L, 3, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }
@@ -349,13 +349,13 @@ void LuaWindow::triggerOnMouseWheel(int x, int y, int d)
 {
 	if(onMouseWheelFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onMouseWheelFunction);
-		lua_pushinteger(l, x);
-		lua_pushinteger(l, y);
-		lua_pushinteger(l, d);
-		if(tpt_lua_pcall(l, 3, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onMouseWheelFunction);
+		lua_pushinteger(L, x);
+		lua_pushinteger(L, y);
+		lua_pushinteger(L, d);
+		if(tpt_lua_pcall(L, 3, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }
@@ -364,15 +364,15 @@ void LuaWindow::triggerOnKeyPress(int key, int scan, bool repeat, bool shift, bo
 {
 	if(onKeyPressFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onKeyPressFunction);
-		lua_pushinteger(l, key);
-		lua_pushinteger(l, scan);
-		lua_pushboolean(l, shift);
-		lua_pushboolean(l, ctrl);
-		lua_pushboolean(l, alt);
-		if(tpt_lua_pcall(l, 5, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onKeyPressFunction);
+		lua_pushinteger(L, key);
+		lua_pushinteger(L, scan);
+		lua_pushboolean(L, shift);
+		lua_pushboolean(L, ctrl);
+		lua_pushboolean(L, alt);
+		if(tpt_lua_pcall(L, 5, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }
@@ -381,104 +381,104 @@ void LuaWindow::triggerOnKeyRelease(int key, int scan, bool repeat, bool shift, 
 {
 	if(onKeyReleaseFunction)
 	{
-		lua_rawgeti(l, LUA_REGISTRYINDEX, onKeyReleaseFunction);
-		lua_pushinteger(l, key);
-		lua_pushinteger(l, scan);
-		lua_pushboolean(l, shift);
-		lua_pushboolean(l, ctrl);
-		lua_pushboolean(l, alt);
-		if(tpt_lua_pcall(l, 5, 0, 0, eventTraitNone))
+		lua_rawgeti(L, LUA_REGISTRYINDEX, onKeyReleaseFunction);
+		lua_pushinteger(L, key);
+		lua_pushinteger(L, scan);
+		lua_pushboolean(L, shift);
+		lua_pushboolean(L, ctrl);
+		lua_pushboolean(L, alt);
+		if(tpt_lua_pcall(L, 5, 0, 0, eventTraitNone))
 		{
-			ci->Log(CommandInterface::LogError, tpt_lua_toString(l, -1));
+			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
 	}
 }
 
-int LuaWindow::onInitialized(lua_State * l)
+int LuaWindow::onInitialized(lua_State *L)
 {
-	return onInitializedFunction.CheckAndAssignArg1(l);
+	return onInitializedFunction.CheckAndAssignArg1(L);
 }
 
-int LuaWindow::onExit(lua_State * l)
+int LuaWindow::onExit(lua_State *L)
 {
-	return onExitFunction.CheckAndAssignArg1(l);
+	return onExitFunction.CheckAndAssignArg1(L);
 }
 
-int LuaWindow::onTick(lua_State * l)
+int LuaWindow::onTick(lua_State *L)
 {
-	return onTickFunction.CheckAndAssignArg1(l);
+	return onTickFunction.CheckAndAssignArg1(L);
 }
 
-int LuaWindow::onDraw(lua_State * l)
+int LuaWindow::onDraw(lua_State *L)
 {
-	return onDrawFunction.CheckAndAssignArg1(l);
+	return onDrawFunction.CheckAndAssignArg1(L);
 }
 
-int LuaWindow::onFocus(lua_State * l)
+int LuaWindow::onFocus(lua_State *L)
 {
-	return onFocusFunction.CheckAndAssignArg1(l);
+	return onFocusFunction.CheckAndAssignArg1(L);
 }
 
-int LuaWindow::onBlur(lua_State * l)
+int LuaWindow::onBlur(lua_State *L)
 {
-	return onBlurFunction.CheckAndAssignArg1(l);
+	return onBlurFunction.CheckAndAssignArg1(L);
 }
 
-int LuaWindow::onTryExit(lua_State * l)
+int LuaWindow::onTryExit(lua_State *L)
 {
-	return onTryExitFunction.CheckAndAssignArg1(l);
+	return onTryExitFunction.CheckAndAssignArg1(L);
 }
 
-int LuaWindow::onTryOkay(lua_State * l)
+int LuaWindow::onTryOkay(lua_State *L)
 {
-	return onTryOkayFunction.CheckAndAssignArg1(l);
+	return onTryOkayFunction.CheckAndAssignArg1(L);
 }
 
-int LuaWindow::onMouseMove(lua_State * l)
+int LuaWindow::onMouseMove(lua_State *L)
 {
-	return onMouseMoveFunction.CheckAndAssignArg1(l);
+	return onMouseMoveFunction.CheckAndAssignArg1(L);
 }
 
-int LuaWindow::onMouseDown(lua_State * l)
+int LuaWindow::onMouseDown(lua_State *L)
 {
-	return onMouseDownFunction.CheckAndAssignArg1(l);
+	return onMouseDownFunction.CheckAndAssignArg1(L);
 }
 
-int LuaWindow::onMouseUp(lua_State * l)
+int LuaWindow::onMouseUp(lua_State *L)
 {
-	return onMouseUpFunction.CheckAndAssignArg1(l);
+	return onMouseUpFunction.CheckAndAssignArg1(L);
 }
 
-int LuaWindow::onMouseWheel(lua_State * l)
+int LuaWindow::onMouseWheel(lua_State *L)
 {
-	return onMouseWheelFunction.CheckAndAssignArg1(l);
+	return onMouseWheelFunction.CheckAndAssignArg1(L);
 }
 
-int LuaWindow::onKeyPress(lua_State * l)
+int LuaWindow::onKeyPress(lua_State *L)
 {
-	return onKeyPressFunction.CheckAndAssignArg1(l);
+	return onKeyPressFunction.CheckAndAssignArg1(L);
 }
 
-int LuaWindow::onKeyRelease(lua_State * l)
+int LuaWindow::onKeyRelease(lua_State *L)
 {
-	return onKeyReleaseFunction.CheckAndAssignArg1(l);
+	return onKeyReleaseFunction.CheckAndAssignArg1(L);
 }
 
 void LuaWindow::ClearRef(LuaComponent *luaComponent)
 {
-	auto it = grabbed_components.find(luaComponent);
-	if (it != grabbed_components.end())
+	auto it = grabbedComponents.find(luaComponent);
+	if (it != grabbedComponents.end())
 	{
 		it->second.Clear();
 		it->first->owner_ref = it->second;
 		it->first->SetParentWindow(nullptr);
-		grabbed_components.erase(it);
+		grabbedComponents.erase(it);
 	}
 }
 
 LuaWindow::~LuaWindow()
 {
-	for (auto &component_and_ref : grabbed_components)
+	for (auto &component_and_ref : grabbedComponents)
 	{
 		window->RemoveComponent(component_and_ref.first->GetComponent());
 		component_and_ref.second.Clear();
