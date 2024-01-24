@@ -4,7 +4,7 @@
 
 static int fregister(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int eventType = luaL_checkinteger(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 	if (eventType < 0 || eventType >= int(lsi->gameControllerEventHandlers.size()))
@@ -21,7 +21,7 @@ static int fregister(lua_State *L)
 
 static int unregister(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int eventType = luaL_checkinteger(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
 	if (eventType < 0 || eventType >= int(lsi->gameControllerEventHandlers.size()))

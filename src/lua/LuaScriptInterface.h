@@ -3,7 +3,6 @@
 #include "LuaSmartRef.h"
 #include "CommandInterface.h"
 #include "gui/game/GameControllerEvents.h"
-#include "CommandInterface.h"
 #include "simulation/StructProperty.h"
 #include "simulation/ElementDefs.h"
 #include <cstdint>
@@ -95,13 +94,6 @@ public:
 
 	char customCanMove[PT_NUM][PT_NUM];
 	void InitCustomCanMove();
-
-	void OnTick() override;
-	bool HandleEvent(const GameControllerEvent &event) override;
-
-	void Init() override;
-	int Command(String command) override;
-	String FormatCommand(String command) override;
 };
 
 void tpt_lua_pushByteString(lua_State *L, const ByteString &str);
@@ -197,4 +189,9 @@ namespace LuaSocket
 	void Timeout(double timeout);
 	void Open(lua_State *L);
 	void OpenTCP(lua_State *L);
+}
+
+inline LuaScriptInterface *GetLSI()
+{
+	return static_cast<LuaScriptInterface *>(&CommandInterface::Ref());
 }

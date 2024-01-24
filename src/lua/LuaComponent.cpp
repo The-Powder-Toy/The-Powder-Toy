@@ -18,7 +18,7 @@ LuaComponent::LuaComponent(lua_State *L) : component(nullptr), owner_ref(LUA_REF
 {
 	this->L = L; // I don't get how this doesn't cause crashes later on
 	
-	ci = static_cast<LuaScriptInterface *>(commandInterface);
+	ci = static_cast<LuaScriptInterface *>(&CommandInterface::Ref());
 }
 
 int LuaComponent::position(lua_State *L)

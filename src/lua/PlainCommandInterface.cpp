@@ -1,6 +1,34 @@
 #include "CommandInterface.h"
 
-CommandInterface *CommandInterface::Create(GameController * c, GameModel * m)
+CommandInterfacePtr CommandInterface::Create(GameController *newGameController, GameModel *newGameModel)
 {
-	return new CommandInterface(c, m);
+	return CommandInterfacePtr(new CommandInterface(newGameController, newGameModel));
+}
+
+void CommandInterfaceDeleter::operator ()(CommandInterface *ptr) const
+{
+	delete ptr;
+}
+
+void CommandInterface::OnTick()
+{
+}
+
+void CommandInterface::Init()
+{
+}
+
+bool CommandInterface::HandleEvent(const GameControllerEvent &event)
+{
+	return true;
+}
+
+int CommandInterface::Command(String command)
+{
+	return PlainCommand(command);
+}
+
+String CommandInterface::FormatCommand(String command)
+{
+	return PlainFormatCommand(command);
 }

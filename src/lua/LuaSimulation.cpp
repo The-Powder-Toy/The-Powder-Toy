@@ -18,7 +18,7 @@
 
 static int ambientHeatSim(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -34,7 +34,7 @@ static int ambientHeatSim(lua_State *L)
 
 static int heatSim(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -48,7 +48,7 @@ static int heatSim(lua_State *L)
 
 static int newtonianGravity(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -66,7 +66,7 @@ static int newtonianGravity(lua_State *L)
 
 static int paused(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -80,14 +80,14 @@ static int paused(lua_State *L)
 
 static int partCount(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lua_pushinteger(L, lsi->sim->NUM_PARTS);
 	return 1;
 }
 
 static int decoSpace(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lua_gettop(L) < 1)
 	{
 		lua_pushnumber(L, lsi->gameModel->GetDecoSpace());
@@ -171,7 +171,7 @@ static int LuaBlockMap(lua_State *L, Accessor accessor)
 
 static int velocityX(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	return LuaBlockMap(L, MIN_PRESSURE, MAX_PRESSURE, [lsi](Vec2<int> p) -> float & {
 		return lsi->sim->vx[p.Y][p.X];
 	});
@@ -179,7 +179,7 @@ static int velocityX(lua_State *L)
 
 static int velocityY(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	return LuaBlockMap(L, MIN_PRESSURE, MAX_PRESSURE, [lsi](Vec2<int> p) -> float & {
 		return lsi->sim->vy[p.Y][p.X];
 	});
@@ -187,7 +187,7 @@ static int velocityY(lua_State *L)
 
 static int ambientHeat(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	return LuaBlockMap(L, MIN_TEMP, MAX_TEMP, [lsi](Vec2<int> p) -> float & {
 		return lsi->sim->hv[p.Y][p.X];
 	});
@@ -195,7 +195,7 @@ static int ambientHeat(lua_State *L)
 
 static int pressure(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	return LuaBlockMap(L, MIN_PRESSURE, MAX_PRESSURE, [lsi](Vec2<int> p) -> float & {
 		return lsi->sim->pv[p.Y][p.X];
 	});
@@ -203,7 +203,7 @@ static int pressure(lua_State *L)
 
 static int gravityMass(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	return LuaBlockMap(L, [lsi](Vec2<int> p) -> float & {
 		return lsi->sim->gravmap[p.Y * XCELLS + p.X];
 	});
@@ -211,7 +211,7 @@ static int gravityMass(lua_State *L)
 
 static int gravityField(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto pos = Vec2{ luaL_checkint(L, 1), luaL_checkint(L, 2) };
 	if (!CELLS.OriginRect().Contains(pos))
 	{
@@ -224,7 +224,7 @@ static int gravityField(lua_State *L)
 
 static int elecMap(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	return LuaBlockMap(L, [lsi](Vec2<int> p) -> unsigned char & {
 		return lsi->sim->emap[p.Y][p.X];
 	});
@@ -232,7 +232,7 @@ static int elecMap(lua_State *L)
 
 static int wallMap(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	return LuaBlockMap(L, 0, UI_WALLCOUNT - 1, [lsi](Vec2<int> p) -> unsigned char & {
 		return lsi->sim->bmap[p.Y][p.X];
 	});
@@ -240,14 +240,14 @@ static int wallMap(lua_State *L)
 
 static int fanVelocityX(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	return LuaBlockMap(L, [lsi](Vec2<int> p) -> float & {
 		return lsi->sim->fvx[p.Y][p.X];
 	});
 }
 
 static int fanVelocityY(lua_State *L)
-{	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+{	auto *lsi = GetLSI();
 	return LuaBlockMap(L, [lsi](Vec2<int> p) -> float & {
 		return lsi->sim->fvy[p.Y][p.X];
 	});
@@ -255,7 +255,7 @@ static int fanVelocityY(lua_State *L)
 
 static int partNeighbors(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto *sim = lsi->sim;
 	lua_newtable(L);
 	int id = 1;
@@ -299,7 +299,7 @@ static int partNeighbors(lua_State *L)
 
 static int partChangeType(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int partIndex = lua_tointeger(L, 1);
 	if(partIndex < 0 || partIndex >= NPART || !lsi->sim->parts[partIndex].type)
 		return 0;
@@ -309,7 +309,7 @@ static int partChangeType(lua_State *L)
 
 static int partCreate(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int newID = lua_tointeger(L, 1);
 	if (newID >= NPART || newID < -3)
 	{
@@ -338,7 +338,7 @@ static int partCreate(lua_State *L)
 
 static int partID(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int x = lua_tointeger(L, 1);
 	int y = lua_tointeger(L, 2);
 
@@ -360,7 +360,7 @@ static int partID(lua_State *L)
 
 static int partPosition(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto *sim = lsi->sim;
 	int particleID = lua_tointeger(L, 1);
 	int argCount = lua_gettop(L);
@@ -394,7 +394,7 @@ static int partPosition(lua_State *L)
 
 static int partProperty(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int argCount = lua_gettop(L);
 	int particleID = luaL_checkinteger(L, 1);
 	StructProperty property;
@@ -461,7 +461,7 @@ static int partProperty(lua_State *L)
 
 static int partKill(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if(lua_gettop(L)==2)
 		lsi->sim->delete_part(lua_tointeger(L, 1), lua_tointeger(L, 2));
 	else
@@ -475,7 +475,7 @@ static int partKill(lua_State *L)
 
 static int partExists(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int i = luaL_checkinteger(L, 1);
 	lua_pushboolean(L, i >= 0 && i < NPART && lsi->sim->parts[i].type);
 	return 1;
@@ -483,7 +483,7 @@ static int partExists(lua_State *L)
 
 static int createParts(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int x = luaL_optint(L,1,-1);
 	int y = luaL_optint(L,2,-1);
 	int rx = luaL_optint(L,3,5);
@@ -505,7 +505,7 @@ static int createParts(lua_State *L)
 
 static int createLine(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int x1 = luaL_optint(L,1,-1);
 	int y1 = luaL_optint(L,2,-1);
 	int x2 = luaL_optint(L,3,-1);
@@ -528,7 +528,7 @@ static int createLine(lua_State *L)
 
 static int createBox(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int x1 = luaL_optint(L,1,-1);
 	int y1 = luaL_optint(L,2,-1);
 	int x2 = luaL_optint(L,3,-1);
@@ -542,7 +542,7 @@ static int createBox(lua_State *L)
 
 static int floodParts(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int x = luaL_optint(L,1,-1);
 	int y = luaL_optint(L,2,-1);
 	int c = luaL_optint(L,3,lsi->gameModel->GetActiveTool(0)->ToolID);
@@ -570,7 +570,7 @@ static int createWalls(lua_State *L)
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(L, "Unrecognised wall id '%d'", c);
 
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int ret = lsi->sim->CreateWalls(x, y, rx, ry, c, NULL);
 	lua_pushinteger(L, ret);
 	return 1;
@@ -591,7 +591,7 @@ static int createWallLine(lua_State *L)
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(L, "Unrecognised wall id '%d'", c);
 
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->sim->CreateWallLine(x1, y1, x2, y2, rx, ry, c, NULL);
 	return 0;
 }
@@ -609,7 +609,7 @@ static int createWallBox(lua_State *L)
 	if (c < 0 || c >= UI_WALLCOUNT)
 		return luaL_error(L, "Unrecognised wall id '%d'", c);
 
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->sim->CreateWallBox(x1, y1, x2, y2, c);
 	return 0;
 }
@@ -629,7 +629,7 @@ static int floodWalls(lua_State *L)
 		lua_pushinteger(L, 0);
 		return 1;
 	}
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int ret = lsi->sim->FloodWalls(x, y, c, bm);
 	lua_pushinteger(L, ret);
 	return 1;
@@ -653,7 +653,7 @@ static int toolBrush(lua_State *L)
 	else if (tool < 0 || tool > (int)sd.tools.size())
 		return luaL_error(L, "Invalid tool id '%d'", tool);
 
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
 	if (!brush)
 		return luaL_error(L, "Invalid brush id '%d'", brushID);
@@ -683,7 +683,7 @@ static int toolLine(lua_State *L)
 	if (tool < 0 || tool >= (int)sd.tools.size()+1)
 		return luaL_error(L, "Invalid tool id '%d'", tool);
 
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
 	if (!brush)
 		return luaL_error(L, "Invalid brush id '%d'", brushID);
@@ -722,7 +722,7 @@ static int toolBox(lua_State *L)
 	else if (tool < 0 || tool >= (int)sd.tools.size())
 		return luaL_error(L, "Invalid tool id '%d'", tool);
 
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->sim->ToolBox(x1, y1, x2, y2, tool, strength);
 	return 0;
 }
@@ -740,7 +740,7 @@ static int decoBrush(lua_State *L)
 	int tool = luaL_optint(L,9,DECO_DRAW);
 	int brushID = luaL_optint(L,10,BRUSH_CIRCLE);
 
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
 	if (!brush)
 		return luaL_error(L, "Invalid brush id '%d'", brushID);
@@ -769,7 +769,7 @@ static int decoLine(lua_State *L)
 	if (x1 < 0 || x2 < 0 || x1 >= XRES || x2 >= XRES || y1 < 0 || y2 < 0 || y1 >= YRES || y2 >= YRES)
 		return luaL_error(L, "coordinates out of range (%d,%d),(%d,%d)", x1, y1, x2, y2);
 
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
 	if (!brush)
 		return luaL_error(L, "Invalid brush id '%d'", brushID);
@@ -795,14 +795,14 @@ static int decoBox(lua_State *L)
 	if (x1 < 0 || x2 < 0 || x1 >= XRES || x2 >= XRES || y1 < 0 || y2 < 0 || y1 >= YRES || y2 >= YRES)
 		return luaL_error(L, "coordinates out of range (%d,%d),(%d,%d)", x1, y1, x2, y2);
 
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->sim->ApplyDecorationBox(x1, y1, x2, y2, r, g, b, a, tool);
 	return 0;
 }
 
 static int decoColor(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	RGBA<uint8_t> color(0, 0, 0, 0);
 	if (acount == 0)
@@ -835,7 +835,7 @@ static int floodDeco(lua_State *L)
 	if (x < 0 || x >= XRES || y < 0 || y >= YRES)
 		return luaL_error(L, "coordinates out of range (%d,%d)", x, y);
 
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	// hilariously broken, intersects with console and all Lua graphics
 	auto loc = RGB<uint8_t>::Unpack(lsi->ren->GetPixel({ x, y }));
 	lsi->sim->ApplyDecorationFill(lsi->ren, x, y, r, g, b, a, loc.Red, loc.Green, loc.Blue);
@@ -844,14 +844,14 @@ static int floodDeco(lua_State *L)
 
 static int clearSim(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->gameController->ClearSim();
 	return 0;
 }
 
 static int clearRect(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int x = luaL_checkint(L,1);
 	int y = luaL_checkint(L,2);
 	int w = luaL_checkint(L,3)-1;
@@ -862,7 +862,7 @@ static int clearRect(lua_State *L)
 
 static int resetTemp(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto *sim = lsi->sim;
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
@@ -900,7 +900,7 @@ static int resetPressure(lua_State *L)
 		width = XCELLS-x1;
 	if(y1+height > YCELLS-1)
 		height = YCELLS-y1;
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	for (int nx = x1; nx<x1+width; nx++)
 		for (int ny = y1; ny<y1+height; ny++)
 		{
@@ -916,7 +916,7 @@ static int saveStamp(lua_State *L)
 	int w = luaL_optint(L,3,XRES-1);
 	int h = luaL_optint(L,4,YRES-1);
 	bool includePressure = luaL_optint(L, 5, 1);
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	ByteString name = lsi->gameController->StampRegion(ui::Point(x, y), ui::Point(x+w, y+h), includePressure);
 	tpt_lua_pushByteString(L, name);
 	return 1;
@@ -967,7 +967,7 @@ static int loadStamp(lua_State *L)
 			}
 			gameSave->Transform(transform, { remX, remY });
 		}
-		auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+		auto *lsi = GetLSI();
 		lsi->sim->Load(gameSave.get(), includePressure, { quoX, quoY });
 		lua_pushinteger(L, 1);
 
@@ -1035,21 +1035,21 @@ static int loadSave(lua_State *L)
 	int saveID = luaL_optint(L,1,0);
 	int instant = luaL_optint(L,2,0);
 	int history = luaL_optint(L,3,0); //Exact second a previous save was saved
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->gameController->OpenSavePreview(saveID, history, instant ? savePreviewInstant : savePreviewNormal);
 	return 0;
 }
 
 static int reloadSave(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->gameController->ReloadSim();
 	return 0;
 }
 
 static int getSaveID(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto *tempSave = lsi->gameModel->GetSave();
 	if (tempSave)
 	{
@@ -1062,7 +1062,7 @@ static int getSaveID(lua_State *L)
 
 static int adjustCoords(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int x = luaL_optint(L,1,0);
 	int y = luaL_optint(L,2,0);
 	ui::Point Coords = lsi->gameController->PointTranslate(ui::Point(x, y));
@@ -1073,7 +1073,7 @@ static int adjustCoords(lua_State *L)
 
 static int prettyPowders(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -1088,7 +1088,7 @@ static int prettyPowders(lua_State *L)
 
 static int gravityGrid(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -1103,7 +1103,7 @@ static int gravityGrid(lua_State *L)
 
 static int edgeMode(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -1117,7 +1117,7 @@ static int edgeMode(lua_State *L)
 
 static int gravityMode(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -1131,7 +1131,7 @@ static int gravityMode(lua_State *L)
 
 static int customGravity(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto *sim = lsi->sim;
 	int acount = lua_gettop(L);
 	if (acount == 0)
@@ -1153,7 +1153,7 @@ static int customGravity(lua_State *L)
 
 static int airMode(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -1167,7 +1167,7 @@ static int airMode(lua_State *L)
 
 static int waterEqualization(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -1181,7 +1181,7 @@ static int waterEqualization(lua_State *L)
 
 static int ambientAirTemp(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -1199,14 +1199,14 @@ static int elementCount(lua_State *L)
 	if (element < 0 || element >= PT_NUM)
 		return luaL_error(L, "Invalid element ID (%d)", element);
 
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lua_pushnumber(L, lsi->sim->elementCount[element]);
 	return 1;
 }
 
 static int canMove(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int movingElement = luaL_checkint(L, 1);
 	int destinationElement = luaL_checkint(L, 2);
 	if (movingElement < 0 || movingElement >= PT_NUM)
@@ -1252,7 +1252,7 @@ static int brushClosure(lua_State *L)
 
 static int brush(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int argCount = lua_gettop(L);
 	int positionX = luaL_checkint(L, 1);
 	int positionY = luaL_checkint(L, 2);
@@ -1290,7 +1290,7 @@ static int brush(lua_State *L)
 
 static int partsClosure(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	for (int i = lua_tointeger(L, lua_upvalueindex(1)); i <= lsi->sim->parts_lastActiveIndex; ++i)
 	{
 		if (lsi->sim->parts[i].type)
@@ -1306,7 +1306,7 @@ static int partsClosure(lua_State *L)
 
 static int neighboursClosure(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int cx = lua_tointeger(L, lua_upvalueindex(1));
 	int cy = lua_tointeger(L, lua_upvalueindex(2));
 	int rx = lua_tointeger(L, lua_upvalueindex(3));
@@ -1387,7 +1387,7 @@ static int parts(lua_State *L)
 
 static int pmap(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int x = luaL_checkint(L, 1);
 	int y = luaL_checkint(L, 2);
 	if (x < 0 || x >= XRES || y < 0 || y >= YRES)
@@ -1401,7 +1401,7 @@ static int pmap(lua_State *L)
 
 static int photons(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int x = luaL_checkint(L, 1);
 	int y = luaL_checkint(L, 2);
 	if (x < 0 || x >= XRES || y < 0 || y >= YRES)
@@ -1415,7 +1415,7 @@ static int photons(lua_State *L)
 
 static int frameRender(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lua_gettop(L) == 0)
 	{
 		lua_pushinteger(L, lsi->sim->framerender);
@@ -1430,7 +1430,7 @@ static int frameRender(lua_State *L)
 
 static int golSpeedRatio(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lua_gettop(L) == 0)
 	{
 		lua_pushinteger(L, lsi->sim->GSPEED);
@@ -1445,7 +1445,7 @@ static int golSpeedRatio(lua_State *L)
 
 static int takeSnapshot(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->gameController->HistorySnapshot();
 	return 0;
 }
@@ -1453,7 +1453,7 @@ static int takeSnapshot(lua_State *L)
 
 static int historyRestore(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	bool successful = lsi->gameController->HistoryRestore();
 	lua_pushboolean(L, successful);
 	return 1;
@@ -1461,7 +1461,7 @@ static int historyRestore(lua_State *L)
 
 static int historyForward(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	bool successful = lsi->gameController->HistoryForward();
 	lua_pushboolean(L, successful);
 	return 1;
@@ -1469,7 +1469,7 @@ static int historyForward(lua_State *L)
 
 static int replaceModeFlags(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lua_gettop(L) == 0)
 	{
 		lua_pushinteger(L, lsi->gameController->GetReplaceModeFlags());
@@ -1536,14 +1536,14 @@ static int addCustomGol(lua_State *L)
 
 	if (!AddCustomGol(ruleString, nameString, color1, color2))
 		return luaL_error(L, "Duplicate name, cannot add");
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->gameModel->BuildMenus();
 	return 0;
 }
 
 static int removeCustomGol(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	ByteString nameString = tpt_lua_checkByteString(L, 1);
 	bool removedAny = lsi->gameModel->RemoveCustomGOLType("DEFAULT_PT_LIFECUST_" + nameString);
 	if (removedAny)
@@ -1554,7 +1554,7 @@ static int removeCustomGol(lua_State *L)
 
 static int lastUpdatedID(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lsi->sim->debug_mostRecentlyUpdated != -1)
 	{
 		lua_pushinteger(L, lsi->sim->debug_mostRecentlyUpdated);
@@ -1579,7 +1579,7 @@ static int updateUpTo(lua_State *L)
 	{
 		return luaL_error(L, "ID not in valid range");
 	}
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->sim->framerender = 1;
 	lsi->gameModel->UpdateUpTo(upTo + 1);
 	return 0;
@@ -1587,7 +1587,7 @@ static int updateUpTo(lua_State *L)
 
 static int temperatureScale(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lua_gettop(L) == 0)
 	{
 		lua_pushinteger(L, lsi->gameModel->GetTemperatureScale());
@@ -1614,7 +1614,7 @@ static int signsIndex(lua_State *L)
 		luaL_error(L, "Invalid sign ID (stop messing with things): %i", id);
 		return 0;
 	}
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto *sim = lsi->sim;
 	if (id >= (int)sim->signs.size())
 	{
@@ -1662,7 +1662,7 @@ static int signsIndex(lua_State *L)
 
 static int signsNewIndex(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto *sim = lsi->sim;
 	ByteString key = tpt_lua_checkByteString(L, 2);
 
@@ -1732,7 +1732,7 @@ static int signsNewIndex(lua_State *L)
 // Creates a new sign at the first open index
 static int Sign_new(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lsi->sim->signs.size() >= MAXSIGNS)
 		return lua_pushnil(L), 1;
 
@@ -1756,7 +1756,7 @@ static int Sign_new(lua_State *L)
 // Deletes a sign
 static int Sign_delete(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int signID = luaL_checkinteger(L, 1);
 	if (signID <= 0 || signID > (int)lsi->sim->signs.size())
 		return luaL_error(L, "Sign doesn't exist");
@@ -1781,7 +1781,7 @@ static int resetVelocity(lua_State *L)
 		width = XCELLS-x1;
 	if(y1+height > YCELLS-1)
 		height = YCELLS-y1;
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	for (nx = x1; nx<x1+width; nx++)
 		for (ny = y1; ny<y1+height; ny++)
 		{
@@ -1793,7 +1793,7 @@ static int resetVelocity(lua_State *L)
 
 static int resetSpark(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->gameController->ResetSpark();
 	return 0;
 }
@@ -1814,7 +1814,7 @@ static int resetGravityField(lua_State *L)
 		width = XCELLS-x1;
 	if(y1+height > YCELLS-1)
 		height = YCELLS-y1;
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto *sim = lsi->sim;
 	for (nx = x1; nx<x1+width; nx++)
 		for (ny = y1; ny<y1+height; ny++)
@@ -1828,7 +1828,7 @@ static int resetGravityField(lua_State *L)
 
 static int randomSeed(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lua_gettop(L))
 	{
 		lsi->sim->rng.state({
@@ -1847,14 +1847,14 @@ static int randomSeed(lua_State *L)
 
 static int hash(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lua_pushinteger(L, lsi->sim->CreateSnapshot()->Hash());
 	return 1;
 }
 
 static int ensureDeterminism(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lua_gettop(L))
 	{
 		lsi->sim->ensureDeterminism = lua_toboolean(L, 1);
@@ -1866,7 +1866,7 @@ static int ensureDeterminism(lua_State *L)
 
 void LuaSimulation::Open(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto &sd = SimulationData::CRef();
 	static const luaL_Reg reg[] = {
 #define LFUNC(v) { #v, v }

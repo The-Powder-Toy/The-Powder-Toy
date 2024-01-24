@@ -52,7 +52,7 @@ static int beginMessageBox(lua_State *L)
 	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from L).
 	cb->Assign(L, lua_gettop(L));
 	new InformationMessage(title, message, large, { [cb]() {
-		auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+		auto *lsi = GetLSI();
 		auto L = lsi->L;
 		cb->Push(L);
 		if (lua_isfunction(L, -1))
@@ -76,7 +76,7 @@ static int beginThrowError(lua_State *L)
 	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from L).
 	cb->Assign(L, lua_gettop(L));
 	new ErrorMessage("Error", errorMessage, { [cb]() {
-		auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+		auto *lsi = GetLSI();
 		auto L = lsi->L;
 		cb->Push(L);
 		if (lua_isfunction(L, -1))
@@ -103,7 +103,7 @@ static int beginInput(lua_State *L)
 	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from L).
 	cb->Assign(L, lua_gettop(L));
 	auto handle = [cb](std::optional<String> input) {
-		auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+		auto *lsi = GetLSI();
 		auto L = lsi->L;
 		cb->Push(L);
 		if (lua_isfunction(L, -1))
@@ -142,7 +142,7 @@ static int beginConfirm(lua_State *L)
 	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from L).
 	cb->Assign(L, lua_gettop(L));
 	auto handle = [cb](int result) {
-		auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+		auto *lsi = GetLSI();
 		auto L = lsi->L;
 		cb->Push(L);
 		if (lua_isfunction(L, -1))
@@ -168,7 +168,7 @@ static int beginConfirm(lua_State *L)
 
 static int console(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -184,7 +184,7 @@ static int console(lua_State *L)
 
 static int brushID(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lua_gettop(L) < 1)
 	{
 		lua_pushnumber(L, lsi->gameModel->GetBrushID());
@@ -201,7 +201,7 @@ static int brushID(lua_State *L)
 
 static int brushRadius(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lua_gettop(L) < 1)
 	{
 		auto radius = lsi->gameModel->GetBrush().GetRadius();
@@ -215,7 +215,7 @@ static int brushRadius(lua_State *L)
 
 static int mousePosition(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto pos = lsi->gameController->GetView()->GetMousePosition();
 	lua_pushnumber(L, pos.X);
 	lua_pushnumber(L, pos.Y);
@@ -223,7 +223,7 @@ static int mousePosition(lua_State *L)
 }
 
 static int activeTool(lua_State *L)
-{	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+{	auto *lsi = GetLSI();
 	auto index = luaL_checkint(L, 1);
 	if (index < 0 || index >= NUM_TOOLINDICES)
 	{
@@ -246,7 +246,7 @@ static int activeTool(lua_State *L)
 
 static int addComponent(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	void *opaque = nullptr;
 	LuaComponent *luaComponent = nullptr;
 	if ((opaque = Luna<LuaButton>::tryGet(L, 1)))
@@ -279,7 +279,7 @@ static int addComponent(lua_State *L)
 
 static int removeComponent(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	void *opaque = nullptr;
 	LuaComponent *luaComponent = nullptr;
 	if ((opaque = Luna<LuaButton>::tryGet(L, 1)))
@@ -313,7 +313,7 @@ static int removeComponent(lua_State *L)
 
 static int grabTextInput(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->textInputRefcount += 1;
 	lsi->gameController->GetView()->DoesTextInput = lsi->textInputRefcount > 0;
 	return 0;
@@ -321,7 +321,7 @@ static int grabTextInput(lua_State *L)
 
 static int dropTextInput(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->textInputRefcount -= 1;
 	lsi->gameController->GetView()->DoesTextInput = lsi->textInputRefcount > 0;
 	return 0;
@@ -356,7 +356,7 @@ static int closeWindow(lua_State *L)
 
 static int perfectCircleBrush(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (!lua_gettop(L))
 	{
 		lua_pushboolean(L, lsi->gameModel->GetPerfectCircle());
@@ -369,7 +369,7 @@ static int perfectCircleBrush(lua_State *L)
 
 static int activeMenu(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -401,7 +401,7 @@ static int menuEnabled(lua_State *L)
 		auto &sd = SimulationData::Ref();
 		sd.msections[menusection].doshow = enabled;
 	}
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->gameModel->BuildMenus();
 	return 0;
 }
@@ -415,7 +415,7 @@ static int numMenus(lua_State *L)
 		luaL_checktype(L, 1, LUA_TBOOLEAN);
 		onlyEnabled = lua_toboolean(L, 1);
 	}
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lua_pushinteger(L, lsi->gameController->GetNumMenus(onlyEnabled));
 	return 1;
 }

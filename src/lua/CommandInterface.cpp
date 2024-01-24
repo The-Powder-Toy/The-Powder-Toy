@@ -17,19 +17,10 @@
 #include <cstring>
 #include <deque>
 
-CommandInterface *commandInterface = nullptr;
-
 CommandInterface::CommandInterface(GameController *newGameController, GameModel *newGameModel)
 {
-	assert(!commandInterface);
-	commandInterface = this;
 	this->m = newGameModel;
 	this->c = newGameController;
-}
-
-CommandInterface::~CommandInterface()
-{
-	commandInterface = nullptr;
 }
 
 void CommandInterface::Log(LogType type, String message)
@@ -80,7 +71,7 @@ String CommandInterface::GetLastError()
 	return lastError;
 }
 
-int CommandInterface::Command(String command)
+int CommandInterface::PlainCommand(String command)
 {
 	lastError = "";
 	std::deque<String> words;
@@ -273,7 +264,7 @@ AnyType CommandInterface::eval(std::deque<String> * words)
 	return StringType(word);
 }
 
-String CommandInterface::FormatCommand(String command)
+String CommandInterface::PlainFormatCommand(String command)
 {
 	std::deque<String> words;
 	std::deque<AnyType> commandWords;

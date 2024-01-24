@@ -6,7 +6,7 @@
 
 static int renderModes(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int args = lua_gettop(L);
 	if(args)
 	{
@@ -40,7 +40,7 @@ static int renderModes(lua_State *L)
 
 static int hud(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -54,7 +54,7 @@ static int hud(lua_State *L)
 
 static int debugHud(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -68,7 +68,7 @@ static int debugHud(lua_State *L)
 
 static int useDisplayPreset(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int cmode = luaL_optint(L, 1, 3)+1;
 	if (cmode == 11)
 		cmode = 0;
@@ -81,7 +81,7 @@ static int useDisplayPreset(lua_State *L)
 
 static int fireSize(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lua_gettop(L) < 1)
 	{
 		lua_pushnumber(L, lsi->gameModel->GetRenderer()->GetFireIntensity());
@@ -94,7 +94,7 @@ static int fireSize(lua_State *L)
 
 static int displayModes(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int args = lua_gettop(L);
 	if(args)
 	{
@@ -128,7 +128,7 @@ static int displayModes(lua_State *L)
 
 static int colorMode(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int args = lua_gettop(L);
 	if(args)
 	{
@@ -145,7 +145,7 @@ static int colorMode(lua_State *L)
 
 static int decorations(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -160,7 +160,7 @@ static int decorations(lua_State *L)
 
 static int grid(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -174,7 +174,7 @@ static int grid(lua_State *L)
 
 static int showBrush(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -193,7 +193,7 @@ static int depth3d(lua_State *L)
 
 static int zoomEnabled(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lua_gettop(L) == 0)
 	{
 		lua_pushboolean(L, lsi->ren->zoomEnabled);
@@ -209,7 +209,7 @@ static int zoomEnabled(lua_State *L)
 
 static int zoomWindow(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto *ren = lsi->ren;
 	if (lua_gettop(L) == 0)
 	{
@@ -237,7 +237,7 @@ static int zoomWindow(lua_State *L)
 
 static int zoomScope(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto *ren = lsi->ren;
 	if (lua_gettop(L) == 0)
 	{

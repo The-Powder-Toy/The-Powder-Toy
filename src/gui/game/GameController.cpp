@@ -90,7 +90,7 @@ GameController::GameController():
 
 	gameView->SetDebugHUD(GlobalPrefs::Ref().Get("Renderer.DebugMode", false));
 
-	CommandInterface::Create(this, gameModel);
+	commandInterface = CommandInterface::Create(this, gameModel);
 
 	Client::Ref().AddListener(this);
 
@@ -146,7 +146,7 @@ GameController::~GameController()
 	{
 		delete *iter;
 	}
-	delete commandInterface;
+	commandInterface.reset();
 	delete gameModel;
 	if (gameView->CloseActiveWindow())
 	{
@@ -1386,7 +1386,7 @@ void GameController::OpenOptions()
 void GameController::ShowConsole()
 {
 	if (!console)
-		console = new ConsoleController(NULL, commandInterface);
+		console = new ConsoleController(NULL, commandInterface.get());
 	if (console->GetView() != ui::Engine::Ref().GetWindow())
 		ui::Engine::Ref().ShowWindow(console->GetView());
 }

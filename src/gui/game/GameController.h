@@ -1,4 +1,5 @@
 #pragma once
+#include "lua/CommandInterfacePtr.h"
 #include "client/ClientListener.h"
 #include "client/StartupInfo.h"
 #include "gui/interface/Point.h"
@@ -28,7 +29,6 @@ class LocalBrowserController;
 class SearchController;
 class PreviewController;
 class RenderController;
-class CommandInterface;
 class VideoBuffer;
 class Tool;
 class Menu;
@@ -39,6 +39,8 @@ class TagsController;
 class ConsoleController;
 class GameController: public ClientListener
 {
+	CommandInterfacePtr commandInterface;
+
 private:
 	bool firstTick;
 	int foundSignID;

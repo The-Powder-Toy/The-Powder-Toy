@@ -53,7 +53,7 @@ LuaWindow::LuaWindow(lua_State *L)
 	if (sizeY < 10)
 		sizeY = 10;
 
-	ci = static_cast<LuaScriptInterface *>(commandInterface);
+	ci = static_cast<LuaScriptInterface *>(&CommandInterface::Ref());
 
 	class DrawnWindow : public ui::Window
 	{

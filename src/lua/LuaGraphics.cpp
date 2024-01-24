@@ -13,7 +13,7 @@ static int32_t int32Truncate(double n)
 
 static std::variant<Graphics *, Renderer *> currentGraphics()
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lsi->eventTraits & eventTraitSimGraphics)
 	{
 		return lsi->ren;
@@ -71,7 +71,7 @@ static int drawPixel(lua_State *L)
 	else if (b > 255) b = 255;
 	if      (a < 0  ) a = 0  ;
 	else if (a > 255) a = 255;
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->g->BlendPixel({ x, y }, RGBA<uint8_t>(r, g, b, a));
 	return 0;
 }
@@ -259,7 +259,7 @@ static int getHexColor(lua_State *L)
 
 static int setClipRect(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lsi->eventTraits & eventTraitSimGraphics)
 	{
 		return luaL_error(L, "simulation graphics do not support clip rects");

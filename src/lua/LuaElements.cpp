@@ -102,7 +102,7 @@ static int luaUpdateWrapper(UPDATE_FUNC_ARGS)
 	{
 		return 0;
 	}
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto &builtinElements = GetElements();
 	auto *builtinUpdate = builtinElements[parts[i].type].Update;
 	auto &customElements = lsi->customElements;
@@ -152,7 +152,7 @@ static int luaGraphicsWrapper(GRAPHICS_FUNC_ARGS)
 	{
 		return Element::defaultGraphics(GRAPHICS_FUNC_SUBCALL_ARGS);
 	}
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto &customElements = lsi->customElements;
 	auto *sim = lsi->sim;
 	if (customElements[cpart->type].graphics)
@@ -215,7 +215,7 @@ static void luaCreateWrapper(ELEMENT_CREATE_FUNC_ARGS)
 	{
 		return;
 	}
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto &customElements = lsi->customElements;
 	if (customElements[sim->parts[i].type].create)
 	{
@@ -242,7 +242,7 @@ static bool luaCreateAllowedWrapper(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
 		// instances of something that should be limited to one instance.
 		return 1;
 	}
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto &customElements = lsi->customElements;
 	bool ret = false;
 	if (customElements[t].createAllowed)
@@ -273,7 +273,7 @@ static void luaChangeTypeWrapper(ELEMENT_CHANGETYPE_FUNC_ARGS)
 	{
 		return;
 	}
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto &customElements = lsi->customElements;
 	if (customElements[sim->parts[i].type].changeType)
 	{
@@ -297,7 +297,7 @@ static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 	{
 		return false;
 	}
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto &customElements = lsi->customElements;
 	bool ret = false;
 	if (customElements[sim->parts[i].type].ctypeDraw)
@@ -323,7 +323,7 @@ static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 
 static int allocate(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	luaL_checktype(L, 1, LUA_TSTRING);
 	luaL_checktype(L, 2, LUA_TSTRING);
 	auto group = tpt_lua_toByteString(L, 1).ToUpper();
@@ -410,7 +410,7 @@ static int allocate(lua_State *L)
 static int element(lua_State *L)
 {
 	auto &builtinElements = GetElements();
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto &customElements = lsi->customElements;
 	int id = luaL_checkinteger(L, 1);
 	if (!SimulationData::CRef().IsElementOrNone(id))
@@ -556,7 +556,7 @@ static int element(lua_State *L)
 static int property(lua_State *L)
 {
 	auto &builtinElements = GetElements();
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto &customElements = lsi->customElements;
 	int id = luaL_checkinteger(L, 1);
 	if (!SimulationData::CRef().IsElementOrNone(id))
@@ -750,7 +750,7 @@ static int ffree(lua_State *L)
 		std::unique_lock lk(sd.elementGraphicsMx);
 		sd.elements[id].Enabled = false;
 	}
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->gameModel->BuildMenus();
 
 	lua_getglobal(L, "elements");
@@ -775,7 +775,7 @@ static int loadDefault(lua_State *L)
 	std::unique_lock lk(sd.elementGraphicsMx);
 	auto &elements = sd.elements;
 	auto &builtinElements = GetElements();
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	{
 		auto loadDefaultOne = [L, &elements, &builtinElements](int id) {
 			lua_getglobal(L, "elements");

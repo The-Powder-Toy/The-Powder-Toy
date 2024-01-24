@@ -12,7 +12,7 @@
 
 static int getUserName(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lsi->gameModel->GetUser().UserID)
 	{
 		tpt_lua_pushByteString(L, lsi->gameModel->GetUser().Username);
@@ -24,7 +24,7 @@ static int getUserName(lua_State *L)
 
 static int installScriptManager(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lsi->scriptManagerDownload)
 	{
 		new ErrorMessage("Script download", "A script download is already pending");
@@ -43,7 +43,7 @@ static int installScriptManager(lua_State *L)
 
 void LuaMisc::Tick(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lsi->scriptManagerDownload && lsi->scriptManagerDownload->CheckDone())
 	{
 		struct Status
@@ -117,7 +117,7 @@ void LuaMisc::Tick(lua_State *L)
 
 static int flog(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int args = lua_gettop(L);
 	String text;
 	bool hasText = false;
@@ -154,7 +154,7 @@ static int screenshot(lua_State *L)
 	int captureUI = luaL_optint(L, 1, 0);
 	int fileType = luaL_optint(L, 2, 0);
 
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	ByteString filename = lsi->gameController->TakeScreenshot(captureUI, fileType);
 	if (filename.size())
 	{
@@ -169,7 +169,7 @@ static int record(lua_State *L)
 	if (!lua_isboolean(L, -1))
 		return luaL_typerror(L, 1, lua_typename(L, LUA_TBOOLEAN));
 	bool record = lua_toboolean(L, -1);
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int recordingFolder = lsi->gameController->Record(record);
 	lua_pushinteger(L, recordingFolder);
 	return 1;
@@ -182,7 +182,7 @@ static int compatChunk(lua_State *L)
 }
 static int debug(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{

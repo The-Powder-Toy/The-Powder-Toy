@@ -3,7 +3,7 @@
 
 void LuaSmartRef::Clear()
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (lsi)
 	{
 		luaL_unref(lsi->L, LUA_REGISTRYINDEX, ref);

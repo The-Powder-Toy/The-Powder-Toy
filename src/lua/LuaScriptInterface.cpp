@@ -27,7 +27,7 @@ static int osExit(lua_State *L)
 
 static int mathRandom(lua_State *L)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	// only thing that matters is that the rng not be sim->rng when !(eventTraits & eventTraitSimRng)
 	auto &rng = (lsi->eventTraits & eventTraitSimRng) ? lsi->sim->rng : interfaceRng;
 	int lower, upper;
@@ -72,7 +72,7 @@ static int mathRandomseed(lua_State *L)
 
 static void hook(lua_State *L, lua_Debug * ar)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	if (ar->event == LUA_HOOKCOUNT && int(Platform::GetTime() - lsi->luaExecutionStart) > lsi->luaHookTimeout)
 	{
 		luaL_error(L, "Error: Script not responding");
@@ -107,7 +107,7 @@ int LuaToLoggableString(lua_State *L, int n)
 
 String LuaGetError()
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	LuaToLoggableString(lsi->L, -1);
 	String err = tpt_lua_optString(lsi->L, -1, "failed to execute");
 	lua_pop(lsi->L, 1);
@@ -197,8 +197,10 @@ void LuaScriptInterface::InitCustomCanMove()
 	}
 }
 
-void LuaScriptInterface::Init()
+void CommandInterface::Init()
 {
+	auto *lsi = static_cast<LuaScriptInterface *>(this);
+	auto *L = lsi->L;
 	if (Platform::FileExists("autorun.lua"))
 	{
 		if(luaL_loadfile(L, "autorun.lua") || tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
@@ -287,7 +289,7 @@ void LuaSetProperty(lua_State *L, StructProperty property, intptr_t propertyAddr
 
 void LuaSetParticleProperty(lua_State *L, int particleID, StructProperty property, intptr_t propertyAddress, int stackPos)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	auto *sim = lsi->sim;
 	if (property.Name == "type")
 	{
@@ -373,10 +375,12 @@ static int pushGameControllerEvent(lua_State *L, const GameControllerEvent &even
 	return 0;
 }
 
-bool LuaScriptInterface::HandleEvent(const GameControllerEvent &event)
+bool CommandInterface::HandleEvent(const GameControllerEvent &event)
 {
+	auto *lsi = static_cast<LuaScriptInterface *>(this);
+	auto *L = lsi->L;
 	bool cont = true;
-	gameControllerEventHandlers[event.index()].Push(L);
+	lsi->gameControllerEventHandlers[event.index()].Push(L);
 	int len = lua_objlen(L, -1);
 	for (int i = 1; i <= len && cont; i++)
 	{
@@ -413,35 +417,38 @@ bool LuaScriptInterface::HandleEvent(const GameControllerEvent &event)
 	return cont;
 }
 
-void LuaScriptInterface::OnTick()
+void CommandInterface::OnTick()
 {
-	LuaMisc::Tick(L);
+	auto *lsi = static_cast<LuaScriptInterface *>(this);
+	LuaMisc::Tick(lsi->L);
 	HandleEvent(TickEvent{});
 }
 
-int LuaScriptInterface::Command(String command)
+int CommandInterface::Command(String command)
 {
+	auto *lsi = static_cast<LuaScriptInterface *>(this);
+	auto *L = lsi->L;
 	lastError = "";
-	luacon_hasLastError = false;
+	lsi->luacon_hasLastError = false;
 	if (command[0] == '!')
 	{
-		int ret = CommandInterface::Command(command.Substr(1));
+		int ret = PlainCommand(command.Substr(1));
 		lastError = GetLastError();
 		return ret;
 	}
 	else
 	{
 		int level = lua_gettop(L), ret = -1;
-		currentCommand = true;
-		if (lastCode.length())
-			lastCode += "\n";
-		lastCode += command;
-		ByteString tmp = ("return " + lastCode).ToUtf8();
+		lsi->currentCommand = true;
+		if (lsi->lastCode.length())
+			lsi->lastCode += "\n";
+		lsi->lastCode += command;
+		ByteString tmp = ("return " + lsi->lastCode).ToUtf8();
 		luaL_loadbuffer(L, tmp.data(), tmp.size(), "@console");
 		if (lua_type(L, -1) != LUA_TFUNCTION)
 		{
 			lua_pop(L, 1);
-			ByteString lastCodeUtf8 = lastCode.ToUtf8();
+			ByteString lastCodeUtf8 = lsi->lastCode.ToUtf8();
 			luaL_loadbuffer(L, lastCodeUtf8.data(), lastCodeUtf8.size(), "@console");
 		}
 		if (lua_type(L, -1) != LUA_TFUNCTION)
@@ -451,11 +458,11 @@ int LuaScriptInterface::Command(String command)
 			if (err.Contains("near '<eof>'")) //the idea stolen from lua-5.1.5/lua.c
 				lastError = "...";
 			else
-				lastCode = "";
+				lsi->lastCode = "";
 		}
 		else
 		{
-			lastCode = "";
+			lsi->lastCode = "";
 			ret = tpt_lua_pcall(L, 0, LUA_MULTRET, 0, eventTraitNone);
 			if (ret)
 			{
@@ -489,7 +496,7 @@ int LuaScriptInterface::Command(String command)
 
 			}
 		}
-		currentCommand = false;
+		lsi->currentCommand = false;
 		return ret;
 	}
 }
@@ -670,11 +677,11 @@ static String highlight(String command)
 	return result.Build();
 }
 
-String LuaScriptInterface::FormatCommand(String command)
+String CommandInterface::FormatCommand(String command)
 {
 	if(command.size() && command[0] == '!')
 	{
-		return "!" + CommandInterface::FormatCommand(command.Substr(1));
+		return "!" + PlainFormatCommand(command.Substr(1));
 	}
 	else
 		return highlight(command);
@@ -766,7 +773,7 @@ bool tpt_lua_equalsString(lua_State *L, int index, const char *data, size_t size
 
 int tpt_lua_pcall(lua_State *L, int numArgs, int numResults, int errorFunc, EventTraits newEventTraits)
 {
-	auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+	auto *lsi = GetLSI();
 	lsi->luaExecutionStart = Platform::GetTime();
 	struct AtReturn
 	{
@@ -774,21 +781,26 @@ int tpt_lua_pcall(lua_State *L, int numArgs, int numResults, int errorFunc, Even
 
 		AtReturn(EventTraits newEventTraits)
 		{
-			auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+			auto *lsi = GetLSI();
 			oldEventTraits = lsi->eventTraits;
 			lsi->eventTraits = newEventTraits;
 		}
 
 		~AtReturn()
 		{
-			auto *lsi = static_cast<LuaScriptInterface *>(commandInterface);
+			auto *lsi = GetLSI();
 			lsi->eventTraits = oldEventTraits;
 		}
 	} atReturn(newEventTraits);
 	return lua_pcall(L, numArgs, numResults, errorFunc);
 }
 
-CommandInterface *CommandInterface::Create(GameController *newGameController, GameModel *newGameModel)
+CommandInterfacePtr CommandInterface::Create(GameController *newGameController, GameModel *newGameModel)
 {
-	return new LuaScriptInterface(newGameController, newGameModel);
+	return CommandInterfacePtr(new LuaScriptInterface(newGameController, newGameModel));
+}
+
+void CommandInterfaceDeleter::operator ()(CommandInterface *ptr) const
+{
+	delete static_cast<LuaScriptInterface *>(ptr);
 }
