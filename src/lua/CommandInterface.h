@@ -1,6 +1,8 @@
 #pragma once
 #include "common/String.h"
 #include "gui/game/GameControllerEvents.h"
+#include "TPTSTypes.h"
+#include <deque>
 
 class GameModel;
 class GameController;
@@ -34,6 +36,17 @@ public:
 	}
 	String GetLastError();
 	virtual ~CommandInterface();
+
+	AnyType eval(std::deque<String> * words);
+	int parseNumber(String str);
+	AnyType tptS_set(std::deque<String> * words);
+	AnyType tptS_create(std::deque<String> * words);
+	AnyType tptS_delete(std::deque<String> * words);
+	AnyType tptS_load(std::deque<String> * words);
+	AnyType tptS_reset(std::deque<String> * words);
+	AnyType tptS_bubble(std::deque<String> * words);
+	AnyType tptS_quit(std::deque<String> * words);
+	ValueType testType(String word);
 
 	static CommandInterface *Create(GameController *newGameController, GameModel *newGameModel);
 };

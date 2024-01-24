@@ -87,7 +87,6 @@ powder_files = files(
 	'PowderToySDL.cpp',
 	'PowderToy.cpp',
 	'lua/CommandInterface.cpp',
-	'lua/TPTScriptInterface.cpp',
 	'lua/TPTSTypes.cpp',
 )
 if host_platform == 'emscripten'

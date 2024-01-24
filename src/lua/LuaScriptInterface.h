@@ -3,7 +3,7 @@
 #include "LuaSmartRef.h"
 #include "CommandInterface.h"
 #include "gui/game/GameControllerEvents.h"
-#include "TPTScriptInterface.h"
+#include "CommandInterface.h"
 #include "simulation/StructProperty.h"
 #include "simulation/ElementDefs.h"
 #include <cstdint>
@@ -59,7 +59,7 @@ struct CustomElement
 	LuaSmartRef changeType;
 };
 
-class LuaScriptInterface : public TPTScriptInterface
+class LuaScriptInterface : public CommandInterface
 {
 	LuaStatePtr luaState;
 
