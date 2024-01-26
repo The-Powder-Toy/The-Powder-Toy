@@ -8,10 +8,11 @@ struct sign
 {
 	enum Justification
 	{
-		Left = 0,
-		Middle = 1,
-		Right = 2,
-		None = 3
+		Left,
+		Middle,
+		Right,
+		None,
+		Max,
 	};
 
 	enum Type

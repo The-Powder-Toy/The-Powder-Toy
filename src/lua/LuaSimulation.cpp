@@ -2083,6 +2083,14 @@ void LuaSimulation::Open(lua_State *L)
 		lua_setfield(L, -2, "new");
 		lua_pushcfunction(L, Sign_delete);
 		lua_setfield(L, -2, "delete");
+#define LCONSTAS(k, v) lua_pushinteger(L, int(v)); lua_setfield(L, -2, k)
+		LCONSTAS("JUSTMODE_LEFT"  , sign::Left),
+		LCONSTAS("JUSTMODE_MIDDLE", sign::Middle),
+		LCONSTAS("JUSTMODE_RIGHT" , sign::Right),
+		LCONSTAS("JUSTMODE_NONE"  , sign::None),
+		LCONSTAS("NUM_JUSTMODES"  , sign::Max),
+		LCONSTAS("MAX_SIGNS"      , MAXSIGNS),
+#undef LCONSTAS
 		lua_setfield(L, -2, "signs");
 	}
 	lua_pushvalue(L, -1);
