@@ -43,6 +43,7 @@ namespace ui
 		bool Enabled;
 		bool Visible;
 		bool DoesTextInput;
+		bool MouseInside;
 		bool MouseDownInside;
 
 		ui::Appearance Appearance;
@@ -96,20 +97,8 @@ namespace ui
 		// Params:
 		//	localx: Local mouse X position.
 		//	localy: Local mouse Y position.
-		// 	dx: Mouse X delta.
-		// 	dy: Mouse Y delta.
 		///
-		virtual void OnMouseMoved(int localx, int localy, int dx, int dy);
-
-		///
-		// Called: When the mouse moves.
-		// Params:
-		//	localx: Local mouse X position.
-		//	localy: Local mouse Y position.
-		// 	dx: Mouse X delta.
-		// 	dy: Mouse Y delta.
-		///
-		virtual void OnMouseMovedInside(int localx, int localy, int dx, int dy);
+		virtual void OnMouseMoved(int localx, int localy);
 
 		///
 		// Called: When the mouse moves on top of the item.

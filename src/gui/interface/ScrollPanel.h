@@ -41,6 +41,6 @@ namespace ui
 		void XOnMouseWheelInside(int localx, int localy, int d) override;
 		void XOnMouseDown(int localx, int localy, unsigned int button) override;
 		void XOnMouseUp(int x, int y, unsigned int button) override;
-		void XOnMouseMoved(int localx, int localy, int dx, int dy) override;
+		void XOnMouseMoved(int localx, int localy) override;
 	};
 }

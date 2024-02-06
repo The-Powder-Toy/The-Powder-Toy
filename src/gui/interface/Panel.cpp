@@ -10,8 +10,7 @@ using namespace ui;
 Panel::Panel(Point position, Point size):
 	Component(position, size),
 	InnerSize(size),
-	ViewportPosition(0, 0),
-	mouseInside(false)
+	ViewportPosition(0, 0)
 {
 }
 
@@ -27,6 +26,7 @@ void Panel::AddChild(Component* c)
 {
 	c->SetParent(this);
 	c->SetParentWindow(this->GetParentWindow());
+	c->MouseInside = false;
 	c->MouseDownInside = false;
 }
 
@@ -165,25 +165,26 @@ void Panel::OnMouseHover(int localx, int localy)
 	XOnMouseHover(localx, localy);
 }
 
-void Panel::OnMouseMoved(int localx, int localy, int dx, int dy)
+void Panel::OnMouseMoved(int localx, int localy)
 {
-	XOnMouseMoved(localx, localy, dx, dy);
+	PropagateMouseMove();
+	XOnMouseMoved(localx, localy);
 	for (size_t i = 0; i < children.size(); ++i)
 	{
 		if(children[i]->Enabled)
-			children[i]->OnMouseMoved(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y, dx, dy);
+			children[i]->OnMouseMoved(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y);
 	}
 }
 
-void Panel::OnMouseMovedInside(int localx, int localy, int dx, int dy)
+void Panel::PropagateMouseMove()
 {
-	mouseInside = true;
+	auto localx = ui::Engine::Ref().GetMouseX() - GetScreenPos().X;
+	auto localy = ui::Engine::Ref().GetMouseY() - GetScreenPos().Y;
 	for (size_t i = 0; i < children.size(); ++i)
 	{
 		if (children[i]->Enabled)
 		{
-			Point local	(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y)
-			, prevlocal (local.X - dx, local.Y - dy);
+			Point local	(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y);
 
 			// mouse currently inside?
 			if( local.X >= 0 &&
@@ -191,14 +192,12 @@ void Panel::OnMouseMovedInside(int localx, int localy, int dx, int dy)
 				local.X < children[i]->Size.X &&
 				local.Y < children[i]->Size.Y )
 			{
-				children[i]->OnMouseMovedInside(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y, dx, dy);
+				children[i]->OnMouseMoved(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y);
 
 				// was the mouse outside?
-				if(!(prevlocal.X >= 0 &&
-					 prevlocal.Y >= 0 &&
-					 prevlocal.X < children[i]->Size.X &&
-					 prevlocal.Y < children[i]->Size.Y ) )
+				if (!children[i]->MouseInside)
 				{
+					children[i]->MouseInside = true;
 					children[i]->OnMouseEnter(local.X, local.Y);
 				}
 			}
@@ -206,31 +205,24 @@ void Panel::OnMouseMovedInside(int localx, int localy, int dx, int dy)
 			else
 			{
 				// was the mouse inside?
-				if(	prevlocal.X >= 0 &&
-					prevlocal.Y >= 0 &&
-					prevlocal.X < children[i]->Size.X &&
-					prevlocal.Y < children[i]->Size.Y )
+				if (children[i]->MouseInside)
 				{
+					children[i]->MouseInside = false;
 					children[i]->OnMouseLeave(local.X, local.Y);
 				}
 
 			}
 		}
 	}
-
-	// always allow hover on parent (?)
-	XOnMouseMovedInside(localx, localy, dx, dy);
 }
 
 void Panel::OnMouseEnter(int localx, int localy)
 {
-	mouseInside = true;
 	XOnMouseEnter(localx, localy);
 }
 
 void Panel::OnMouseLeave(int localx, int localy)
 {
-	mouseInside = false;
 	XOnMouseLeave(localx, localy);
 }
 
@@ -332,11 +324,7 @@ void Panel::XOnMouseHover(int localx, int localy)
 {
 }
 
-void Panel::XOnMouseMoved(int localx, int localy, int dx, int dy)
-{
-}
-
-void Panel::XOnMouseMovedInside(int localx, int localy, int dx, int dy)
+void Panel::XOnMouseMoved(int localx, int localy)
 {
 }
 

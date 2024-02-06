@@ -40,7 +40,7 @@ void Slider::updatePosition(int position)
 	}
 }
 
-void Slider::OnMouseMoved(int x, int y, int dx, int dy)
+void Slider::OnMouseMoved(int x, int y)
 {
 	if(isMouseDown)
 	{

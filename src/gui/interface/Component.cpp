@@ -189,11 +189,7 @@ void Component::OnMouseHover(int localx, int localy)
 {
 }
 
-void Component::OnMouseMoved(int localx, int localy, int dx, int dy)
-{
-}
-
-void Component::OnMouseMovedInside(int localx, int localy, int dx, int dy)
+void Component::OnMouseMoved(int localx, int localy)
 {
 }
 

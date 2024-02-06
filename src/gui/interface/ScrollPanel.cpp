@@ -108,10 +108,11 @@ void ScrollPanel::XOnMouseUp(int x, int y, unsigned int button)
 	scrollbarClickLocation = 0;
 }
 
-void ScrollPanel::XOnMouseMoved(int x, int y, int dx, int dy)
+void ScrollPanel::XOnMouseMoved(int x, int y)
 {
 	if(maxOffset.Y>0 && InnerSize.Y>0)
 	{
+		auto oldViewportPositionY = ViewportPosition.Y;
 		float scrollHeight = float(Size.Y)*(float(Size.Y)/float(InnerSize.Y));
 		float scrollPos = 0;
 		if (-ViewportPosition.Y>0)
@@ -155,11 +156,18 @@ void ScrollPanel::XOnMouseMoved(int x, int y, int dx, int dy)
 		}
 		else
 			isMouseInsideScrollbar = false;
+
+		if (oldViewportPositionY != ViewportPosition.Y)
+		{
+			PropagateMouseMove();
+		}
 	}
 }
 
 void ScrollPanel::XTick(float dt)
 {
+	auto oldViewportPositionY = ViewportPosition.Y;
+
 	if (panning)
 	{
 		auto scrollY = initialOffsetY + scrollbarInitialYClick - (Engine::Ref().GetMouseY() - GetScreenPos().Y);
@@ -229,9 +237,9 @@ void ScrollPanel::XTick(float dt)
 		}
 	}
 
-	if (mouseInside && scrollBarWidth < 6)
+	if (MouseInside && scrollBarWidth < 6)
 		scrollBarWidth++;
-	else if (!mouseInside && scrollBarWidth > 0 && !scrollbarSelected)
+	else if (!MouseInside && scrollBarWidth > 0 && !scrollbarSelected)
 		scrollBarWidth--;
 
 	if (isMouseInsideScrollbarArea && scrollbarClickLocation && !scrollbarSelected)
@@ -250,5 +258,10 @@ void ScrollPanel::XTick(float dt)
 
 		offsetY += scrollbarClickLocation*scrollHeight/10;
 		ViewportPosition.Y -= int(scrollbarClickLocation*scrollHeight/10);
+	}
+
+	if (oldViewportPositionY != ViewportPosition.Y)
+	{
+		PropagateMouseMove();
 	}
 }

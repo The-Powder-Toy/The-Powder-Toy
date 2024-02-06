@@ -1055,10 +1055,17 @@ void GameView::updateToolButtonScroll()
 		{
 			for (auto *button : toolButtons)
 			{
-				if (button->Position.X < x && button->Position.X + button->Size.X > x)
+				auto inside = button->Position.X < x && button->Position.X + button->Size.X > x;
+				if (inside && !button->MouseInside)
+				{
+					button->MouseInside = true;
 					button->OnMouseEnter(x, y);
-				else
+				}
+				if (!inside && button->MouseInside)
+				{
+					button->MouseInside = false;
 					button->OnMouseLeave(x, y);
+				}
 			}
 		}
 	}

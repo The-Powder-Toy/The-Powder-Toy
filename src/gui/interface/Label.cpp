@@ -146,7 +146,7 @@ void Label::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bo
 	}
 }
 
-void Label::OnMouseMoved(int localx, int localy, int dx, int dy)
+void Label::OnMouseMoved(int localx, int localy)
 {
 	if (selecting)
 	{

@@ -51,8 +51,7 @@ namespace ui
 		void Draw(const Point& screenPos) override;
 
 		void OnMouseHover(int localx, int localy) override;
-		void OnMouseMoved(int localx, int localy, int dx, int dy) override;
-		void OnMouseMovedInside(int localx, int localy, int dx, int dy) override;
+		void OnMouseMoved(int localx, int localy) override;
 		void OnMouseEnter(int localx, int localy) override;
 		void OnMouseLeave(int localx, int localy) override;
 		void OnMouseDown(int x, int y, unsigned button) override;
@@ -66,7 +65,6 @@ namespace ui
 	protected:
 		// child components
 		std::vector<ui::Component*> children;
-		bool mouseInside;
 
 		// Overridable. Called by XComponent::Tick()
 		virtual void XTick(float dt);
@@ -79,10 +77,7 @@ namespace ui
 		virtual void XOnMouseHover(int localx, int localy);
 
 		// Overridable. Called by XComponent::OnMouseMoved()
-		virtual void XOnMouseMoved(int localx, int localy, int dx, int dy);
-
-		// Overridable. Called by XComponent::OnMouseMovedInside()
-		virtual void XOnMouseMovedInside(int localx, int localy, int dx, int dy);
+		virtual void XOnMouseMoved(int localx, int localy);
 
 		// Overridable. Called by XComponent::OnMouseEnter()
 		virtual void XOnMouseEnter(int localx, int localy);
@@ -110,6 +105,8 @@ namespace ui
 
 		// Overridable. Called by XComponent::OnKeyRelease()
 		virtual void XOnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
+		
+		void PropagateMouseMove();
 	};
 
 }

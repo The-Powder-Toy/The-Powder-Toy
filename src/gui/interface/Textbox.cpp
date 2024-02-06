@@ -592,7 +592,7 @@ void Textbox::OnMouseUp(int x, int y, unsigned button)
 	Label::OnMouseUp(x, y, button);
 }
 
-void Textbox::OnMouseMoved(int localx, int localy, int dx, int dy)
+void Textbox::OnMouseMoved(int localx, int localy)
 {
 	if(mouseDown)
 	{
@@ -601,7 +601,7 @@ void Textbox::OnMouseMoved(int localx, int localy, int dx, int dy)
 		cursor = index.raw_index;
 		resetCursorPosition();
 	}
-	Label::OnMouseMoved(localx, localy, dx, dy);
+	Label::OnMouseMoved(localx, localy);
 }
 
 void Textbox::OnDefocus()

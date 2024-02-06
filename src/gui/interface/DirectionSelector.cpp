@@ -133,7 +133,7 @@ void DirectionSelector::Draw(const ui::Point& screenPos)
 	g->BlendEllipse(center + value.offset, { handleRadius, handleRadius }, borderColor);
 }
 
-void DirectionSelector::OnMouseMoved(int x, int y, int dx, int dy)
+void DirectionSelector::OnMouseMoved(int x, int y)
 {
 	if (mouseDown)
 	{
