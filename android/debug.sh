@@ -55,6 +55,7 @@ lldb_server=${LLDB_SERVER:-$default_lldb_server}
 lldb_server_port=${LLDB_SERVER_PORT:-9998}
 jdb_port=${JDB_PORT:-13456}
 lldb_client=${LLDB_CLIENT:-$default_lldb_client}
+meson=${MESON:-meson}
 adb=${ADB:-adb}
 jdb=${JDB:-jdb}
 
@@ -112,6 +113,11 @@ Then try again with:
 Naturally, replace bagelsbagels with an appropriate password.
 HELP
 		exit 1
+	fi
+	>&2 echo "[+] meson compiling android/$app_exe.apk"
+	if ! $meson compile sign-apk; then
+		>&2 echo "[-]   failed"
+		return 1
 	fi
 	>&2 echo "[+] adb installing android/$app_exe.apk"
 	if ! $adb install android/$app_exe.apk; then

@@ -1,8 +1,9 @@
 #include "ScrollPanel.h"
 #include "Engine.h"
-
 #include "graphics/Graphics.h"
-
+#include "Misc.h"
+#include "PowderToySDL.h"
+#include "Window.h"
 #include <algorithm>
 
 using namespace ui;
@@ -79,6 +80,7 @@ void ScrollPanel::XOnMouseDown(int x, int y, unsigned int button)
 			scrollbarSelected = true;
 			scrollbarInitialYOffset = int(offsetY);
 		}
+		initialOffsetY = offsetY;
 		scrollbarInitialYClick = y - Position.Y;
 		scrollbarClickLocation = 100;
 	}
@@ -87,6 +89,21 @@ void ScrollPanel::XOnMouseDown(int x, int y, unsigned int button)
 void ScrollPanel::XOnMouseUp(int x, int y, unsigned int button)
 {
 	scrollbarSelected = false;
+	panning = false;
+	{
+		auto it = panHistory.end();
+		while (it != panHistory.begin() && *(it - 1))
+		{
+			--it;
+		}
+		if (it < panHistory.end())
+		{
+			auto offsetYDiff = panHistory.back()->offsetY - (*it)->offsetY;
+			auto tickDiff = panHistory.back()->ticks - (*it)->ticks;
+			yScrollVel += offsetYDiff / tickDiff * (1000.f / Engine::Ref().GetFps());
+		}
+	}
+	panHistory = {};
 	isMouseInsideScrollbarArea = false;
 	scrollbarClickLocation = 0;
 }
@@ -116,6 +133,19 @@ void ScrollPanel::XOnMouseMoved(int x, int y, int dx, int dy)
 				offsetY = float(scrollbarInitialYOffset);
 			}
 		}
+		else if (MouseDownInside)
+		{
+			Vec2<int> mouseAt{ x, y };
+			if (Engine::Ref().TouchUI && iabs(scrollbarInitialYClick - mouseAt.Y) > PanOffsetThreshold)
+			{
+				panning = true;
+				for (auto *child : children)
+				{
+					child->MouseDownInside = false;
+				}
+				GetParentWindow()->FocusComponent(NULL);
+			}
+		}
 
 		if (x > (Size.X-scrollBarWidth) && x < (Size.X-scrollBarWidth)+scrollBarWidth)
 		{
@@ -130,6 +160,19 @@ void ScrollPanel::XOnMouseMoved(int x, int y, int dx, int dy)
 
 void ScrollPanel::XTick(float dt)
 {
+	if (panning)
+	{
+		auto scrollY = initialOffsetY + scrollbarInitialYClick - (Engine::Ref().GetMouseY() - GetScreenPos().Y);
+		ViewportPosition.Y = -scrollY;
+		offsetY = float(scrollY);
+		PanPoint p{ offsetY, GetTicks() };
+		if (!(panHistory.back() && panHistory.back()->ticks == p.ticks))
+		{
+			std::copy(panHistory.begin() + 1, panHistory.end(), panHistory.begin());
+			panHistory.back() = p;
+		}
+	}
+
 	if (xScrollVel > 7.0f) xScrollVel = 7.0f;
 	if (xScrollVel < -7.0f) xScrollVel = -7.0f;
 	if (xScrollVel > -0.5f && xScrollVel < 0.5)

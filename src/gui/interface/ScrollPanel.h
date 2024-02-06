@@ -1,6 +1,7 @@
 #pragma once
-
 #include "Panel.h"
+#include <optional>
+#include <array>
 
 namespace ui
 {
@@ -19,6 +20,16 @@ namespace ui
 		int scrollbarInitialYOffset;
 		int scrollbarInitialYClick;
 		int scrollbarClickLocation;
+		int initialOffsetY;
+		bool panning = false;
+		static constexpr int PanOffsetThreshold = 10;
+		static constexpr int PanHistorySize = 5;
+		struct PanPoint
+		{
+			float offsetY;
+			unsigned int ticks;
+		};
+		std::array<std::optional<PanPoint>, PanHistorySize> panHistory;
 	public:
 		ScrollPanel(Point position, Point size);
 
