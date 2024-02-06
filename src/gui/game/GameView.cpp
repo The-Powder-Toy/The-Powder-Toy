@@ -87,7 +87,7 @@ public:
 			}
 		}
 	}
-	void OnMouseUnclick(int x, int y, unsigned int button) override
+	void OnMouseClick(int x, int y, unsigned int button) override
 	{
 		if(isButtonDown)
 		{
@@ -96,7 +96,7 @@ public:
 			else if(rightDown)
 				DoRightAction();
 		}
-		ui::Button::OnMouseUnclick(x, y, button);
+		ui::Button::OnMouseClick(x, y, button);
 
 	}
 	void OnMouseHover(int x, int y) override
@@ -120,15 +120,18 @@ public:
 		toolTip = newToolTip1;
 		toolTip2 = newToolTip2;
 	}
-	void OnMouseClick(int x, int y, unsigned int button) override
+	void OnMouseDown(int x, int y, unsigned int button) override
 	{
-		ui::Button::OnMouseClick(x, y, button);
-		rightDown = false;
-		leftDown = false;
-		if(x >= splitPosition)
-			rightDown = true;
-		else if(x < splitPosition)
-			leftDown = true;
+		ui::Button::OnMouseDown(x, y, button);
+		if (MouseDownInside)
+		{
+			rightDown = false;
+			leftDown = false;
+			if(x - Position.X >= splitPosition)
+				rightDown = true;
+			else if(x - Position.X < splitPosition)
+				leftDown = true;
+		}
 	}
 	void DoRightAction()
 	{

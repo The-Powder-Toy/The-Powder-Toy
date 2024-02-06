@@ -268,14 +268,14 @@ void Engine::onTextEditing(String text, int start)
 	}
 }
 
-void Engine::onMouseClick(int x, int y, unsigned button)
+void Engine::onMouseDown(int x, int y, unsigned button)
 {
 	mouseb_ |= button;
 	if (state_ && !ignoreEvents)
 		state_->DoMouseDown(x, y, button);
 }
 
-void Engine::onMouseUnclick(int x, int y, unsigned button)
+void Engine::onMouseUp(int x, int y, unsigned button)
 {
 	mouseb_ &= ~button;
 	if (state_ && !ignoreEvents)

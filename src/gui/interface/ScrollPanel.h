@@ -28,7 +28,7 @@ namespace ui
 		void Draw(const Point& screenPos) override;
 		void XTick(float dt) override;
 		void XOnMouseWheelInside(int localx, int localy, int d) override;
-		void XOnMouseClick(int localx, int localy, unsigned int button) override;
+		void XOnMouseDown(int localx, int localy, unsigned int button) override;
 		void XOnMouseUp(int x, int y, unsigned int button) override;
 		void XOnMouseMoved(int localx, int localy, int dx, int dy) override;
 	};

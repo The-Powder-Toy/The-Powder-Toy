@@ -43,6 +43,7 @@ namespace ui
 		bool Enabled;
 		bool Visible;
 		bool DoesTextInput;
+		bool MouseDownInside;
 
 		ui::Appearance Appearance;
 		//virtual void SetAppearance(ui::Appearance);
@@ -51,6 +52,7 @@ namespace ui
 
 		void Refresh();
 
+		Point GetContainerPos();
 		Point GetScreenPos();
 
 		/* See the parent of this component.
@@ -146,22 +148,13 @@ namespace ui
 		virtual void OnMouseUp(int x, int y, unsigned button);
 
 		///
-		// Called: When a mouse button is pressed on top of the item.
+		// Called: When a mouse button is pressed and then released on top of the item.
 		// Params:
 		// 	x: X position of the mouse.
 		// 	y: Y position of the mouse.
 		// 	button: The button that is being held down.
 		///
 		virtual void OnMouseClick(int localx, int localy, unsigned button);
-
-		///
-		// Called: When a mouse button is released on top of the item.
-		// Params:
-		// 	x: X position of the mouse.
-		// 	y: Y position of the mouse.
-		// 	button: The button that is being released.
-		///
-		virtual void OnMouseUnclick(int localx, int localy, unsigned button);
 
 		///
 		// Called: When the mouse wheel moves/changes.

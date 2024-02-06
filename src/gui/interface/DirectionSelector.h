@@ -79,7 +79,7 @@ public:
 
 	void Draw(const ui::Point& screenPos) override;
 	void OnMouseMoved(int x, int y, int dx, int dy) override;
-	void OnMouseClick(int x, int y, unsigned int button) override;
+	void OnMouseDown(int x, int y, unsigned int button) override;
 	void OnMouseUp(int x, int y, unsigned button) override;
 	inline void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override { altDown = alt; }
 	inline void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override { altDown = alt; }

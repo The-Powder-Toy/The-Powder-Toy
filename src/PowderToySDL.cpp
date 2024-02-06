@@ -349,7 +349,7 @@ static void EventProcess(const SDL_Event &event)
 			mousey = event.button.y;
 		}
 		mouseButton = event.button.button;
-		engine.onMouseClick(mousex, mousey, mouseButton);
+		engine.onMouseDown(mousex, mousey, mouseButton);
 
 		mouseDown = true;
 		if constexpr (!DEBUG)
@@ -365,7 +365,7 @@ static void EventProcess(const SDL_Event &event)
 			mousey = event.button.y;
 		}
 		mouseButton = event.button.button;
-		engine.onMouseUnclick(mousex, mousey, mouseButton);
+		engine.onMouseUp(mousex, mousey, mouseButton);
 
 		mouseDown = false;
 		if constexpr (!DEBUG)

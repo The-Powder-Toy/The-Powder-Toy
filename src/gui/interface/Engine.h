@@ -30,8 +30,8 @@ namespace ui
 
 		void initialMouse(int x, int y);
 		void onMouseMove(int x, int y);
-		void onMouseClick(int x, int y, unsigned button);
-		void onMouseUnclick(int x, int y, unsigned button);
+		void onMouseDown(int x, int y, unsigned button);
+		void onMouseUp(int x, int y, unsigned button);
 		void onMouseWheel(int x, int y, int delta);
 		void onKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 		void onKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);

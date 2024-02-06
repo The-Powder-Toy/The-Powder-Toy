@@ -25,7 +25,7 @@ public:
 	virtual ~Slider() = default;
 
 	void OnMouseMoved(int x, int y, int dx, int dy) override;
-	void OnMouseClick(int x, int y, unsigned button) override;
+	void OnMouseDown(int x, int y, unsigned button) override;
 	void OnMouseUp(int x, int y, unsigned button) override;
 	void Draw(const Point& screenPos) override;
 	void SetColour(Colour col1, Colour col2);

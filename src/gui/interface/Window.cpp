@@ -43,6 +43,7 @@ void Window::AddComponent(Component* c)
 	if (c->GetParentWindow() == NULL)
 	{
 		c->SetParentWindow(this);
+		c->MouseDownInside = false;
 		Components.push_back(c);
 
 		if (Engine::Ref().GetMouseX() > Position.X + c->Position.X && Engine::Ref().GetMouseX() < Position.X + c->Position.X + c->Size.X &&
@@ -440,7 +441,7 @@ void Window::DoMouseDown(int x_, int y_, unsigned button)
 				FocusComponent(Components[i]);
 				if (!DEBUG || !debugMode)
 				{
-					Components[i]->OnMouseClick(x - Components[i]->Position.X, y - Components[i]->Position.Y, button);
+					Components[i]->MouseDownInside = true;
 				}
 				clickState = true;
 				break;
@@ -537,12 +538,16 @@ void Window::DoMouseUp(int x_, int y_, unsigned button)
 	{
 		if (Components[i]->Enabled && Components[i]->Visible)
 		{
-			if (x >= Components[i]->Position.X && y >= Components[i]->Position.Y && x < Components[i]->Position.X + Components[i]->Size.X && y < Components[i]->Position.Y + Components[i]->Size.Y)
+			if (Components[i]->MouseDownInside && x >= Components[i]->Position.X && y >= Components[i]->Position.Y && x < Components[i]->Position.X + Components[i]->Size.X && y < Components[i]->Position.Y + Components[i]->Size.Y)
 			{
-				Components[i]->OnMouseUnclick(x - Components[i]->Position.X, y - Components[i]->Position.Y, button);
+				Components[i]->OnMouseClick(x - Components[i]->Position.X, y - Components[i]->Position.Y, button);
 				break;
 			}
 		}
+	}
+	for (auto *component : Components)
+	{
+		component->MouseDownInside = false;
 	}
 
 	//on mouse up

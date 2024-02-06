@@ -262,7 +262,7 @@ void SaveButton::Draw(const Point& screenPos)
 	}
 }
 
-void SaveButton::OnMouseUnclick(int x, int y, unsigned int button)
+void SaveButton::OnMouseClick(int x, int y, unsigned int button)
 {
 	if(button != 1)
 	{
@@ -333,22 +333,25 @@ void SaveButton::OnContextMenuAction(int item)
 	}
 }
 
-void SaveButton::OnMouseClick(int x, int y, unsigned int button)
+void SaveButton::OnMouseDown(int x, int y, unsigned int button)
 {
-	if(button == SDL_BUTTON_RIGHT)
+	if (MouseDownInside)
 	{
-		if(menu)
-			menu->Show(GetScreenPos() + ui::Point(x, y));
-	}
-	else
-	{
-		isButtonDown = true;
-		if(button !=1 && selectable)
+		if(button == SDL_BUTTON_RIGHT)
 		{
-			selected = !selected;
-			DoSelection();
+			if(menu)
+				menu->Show(GetContainerPos() + ui::Point(x, y));
 		}
+		else
+		{
+			isButtonDown = true;
+			if(button !=1 && selectable)
+			{
+				selected = !selected;
+				DoSelection();
+			}
 
+		}
 	}
 }
 

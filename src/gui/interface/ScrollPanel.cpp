@@ -70,15 +70,18 @@ void ScrollPanel::Draw(const Point& screenPos)
 	}
 }
 
-void ScrollPanel::XOnMouseClick(int x, int y, unsigned int button)
+void ScrollPanel::XOnMouseDown(int x, int y, unsigned int button)
 {
-	if (isMouseInsideScrollbar)
+	if (MouseDownInside)
 	{
-		scrollbarSelected = true;
-		scrollbarInitialYOffset = int(offsetY);
+		if (isMouseInsideScrollbar)
+		{
+			scrollbarSelected = true;
+			scrollbarInitialYOffset = int(offsetY);
+		}
+		scrollbarInitialYClick = y - Position.Y;
+		scrollbarClickLocation = 100;
 	}
-	scrollbarInitialYClick = y;
-	scrollbarClickLocation = 100;
 }
 
 void ScrollPanel::XOnMouseUp(int x, int y, unsigned int button)

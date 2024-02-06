@@ -58,7 +58,6 @@ namespace ui
 		void OnMouseDown(int x, int y, unsigned button) override;
 		void OnMouseUp(int x, int y, unsigned button) override;
 		void OnMouseClick(int localx, int localy, unsigned button) override;
-		void OnMouseUnclick(int localx, int localy, unsigned button) override;
 		void OnMouseWheel(int localx, int localy, int d) override;
 		void OnMouseWheelInside(int localx, int localy, int d) override;
 		void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
@@ -99,9 +98,6 @@ namespace ui
 
 		// Overridable. Called by XComponent::OnMouseClick()
 		virtual void XOnMouseClick(int localx, int localy, unsigned button);
-
-		// Overridable. Called by XComponent::OnMouseUnclick()
-		virtual void XOnMouseUnclick(int localx, int localy, unsigned button);
 
 		// Overridable. Called by XComponent::OnMouseWheel()
 		virtual void XOnMouseWheel(int localx, int localy, int d);

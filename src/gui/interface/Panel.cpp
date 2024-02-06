@@ -27,6 +27,7 @@ void Panel::AddChild(Component* c)
 {
 	c->SetParent(this);
 	c->SetParentWindow(this->GetParentWindow());
+	c->MouseDownInside = false;
 }
 
 int Panel::GetChildCount()
@@ -108,8 +109,13 @@ void Panel::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, 
 
 void Panel::OnMouseClick(int localx, int localy, unsigned button)
 {
-	bool childclicked = false;
+	XOnMouseClick(localx, localy, button);
+}
 
+void Panel::OnMouseDown(int x, int y, unsigned button)
+{
+	auto localx = x - Position.X;
+	auto localy = y - Position.Y;
 	//check if clicked a child
 	for(int i = children.size()-1; i >= 0 ; --i)
 	{
@@ -122,29 +128,18 @@ void Panel::OnMouseClick(int localx, int localy, unsigned button)
 				localx < children[i]->Position.X + ViewportPosition.X + children[i]->Size.X &&
 				localy < children[i]->Position.Y + ViewportPosition.Y + children[i]->Size.Y )
 			{
-				childclicked = true;
 				GetParentWindow()->FocusComponent(children[i]);
-				children[i]->OnMouseClick(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y, button);
+				children[i]->MouseDownInside = true;
 				break;
 			}
 		}
 	}
 
-	//if a child wasn't clicked, send click to ourself
-	if(!childclicked)
-	{
-		XOnMouseClick(localx, localy, button);
-		GetParentWindow()->FocusComponent(this);
-	}
-}
-
-void Panel::OnMouseDown(int x, int y, unsigned button)
-{
 	XOnMouseDown(x, y, button);
 	for (size_t i = 0; i < children.size(); ++i)
 	{
 		if(children[i]->Enabled)
-			children[i]->OnMouseDown(x, y, button);
+			children[i]->OnMouseDown(x - Position.X - ViewportPosition.X, y - Position.Y - ViewportPosition.Y, button);
 	}
 }
 
@@ -239,43 +234,38 @@ void Panel::OnMouseLeave(int localx, int localy)
 	XOnMouseLeave(localx, localy);
 }
 
-void Panel::OnMouseUnclick(int localx, int localy, unsigned button)
+void Panel::OnMouseUp(int x, int y, unsigned button)
 {
-	bool childunclicked = false;
-
+	auto localx = x - Position.X;
+	auto localy = y - Position.Y;
 	//check if clicked a child
 	for(int i = children.size()-1; i >= 0 ; --i)
 	{
-		//child must be unlocked
+		//child must be enabled
 		if(children[i]->Enabled)
 		{
 			//is mouse inside?
-			if( localx >= children[i]->Position.X + ViewportPosition.X &&
+			if( children[i]->MouseDownInside &&
+				localx >= children[i]->Position.X + ViewportPosition.X &&
 				localy >= children[i]->Position.Y + ViewportPosition.Y &&
 				localx < children[i]->Position.X + ViewportPosition.X + children[i]->Size.X &&
 				localy < children[i]->Position.Y + ViewportPosition.Y + children[i]->Size.Y )
 			{
-				childunclicked = true;
-				children[i]->OnMouseUnclick(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y, button);
+				children[i]->OnMouseClick(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y, button);
 				break;
 			}
 		}
 	}
-
-	//if a child wasn't clicked, send click to ourself
-	if (!childunclicked)
+	for (auto *child : children)
 	{
-		XOnMouseUnclick(localx, localy, button);
+		child->MouseDownInside = false;
 	}
-}
 
-void Panel::OnMouseUp(int x, int y, unsigned button)
-{
 	XOnMouseUp(x, y, button);
 	for (size_t i = 0; i < children.size(); ++i)
 	{
 		if (children[i]->Enabled)
-			children[i]->OnMouseUp(x, y, button);
+			children[i]->OnMouseUp(x - Position.X - ViewportPosition.X, y - Position.Y - ViewportPosition.Y, button);
 	}
 }
 
@@ -355,10 +345,6 @@ void Panel::XOnMouseEnter(int localx, int localy)
 }
 
 void Panel::XOnMouseLeave(int localx, int localy)
-{
-}
-
-void Panel::XOnMouseUnclick(int localx, int localy, unsigned button)
 {
 }
 
