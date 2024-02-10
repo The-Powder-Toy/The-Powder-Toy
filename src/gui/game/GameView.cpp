@@ -2134,6 +2134,7 @@ void GameView::OnDraw()
 		auto &sd = SimulationData::Ref();
 		std::unique_lock lk(sd.elementGraphicsMx);
 		ren->clearScreen();
+		ren->draw_air();
 		c->BeforeSimDraw();
 		ren->RenderBegin();
 		ren->SetSample(c->PointTranslate(currentMouse));

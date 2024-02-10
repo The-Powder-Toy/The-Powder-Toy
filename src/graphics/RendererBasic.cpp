@@ -11,7 +11,6 @@ constexpr auto VIDYRES = WINDOWH;
 
 void Renderer::RenderBegin()
 {
-	draw_air();
 	draw_grav();
 	DrawWalls();
 	render_parts();
