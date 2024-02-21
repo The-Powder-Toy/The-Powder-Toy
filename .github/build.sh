@@ -76,6 +76,7 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 			else
 				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,meson,fftw}
 			fi
+			export PKG_CONFIG=$(which pkg-config.exe)
 		fi
 		;;
 	linux)
