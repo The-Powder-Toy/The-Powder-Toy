@@ -376,6 +376,22 @@ if host_platform == 'emscripten'
 		'-o', app_exe + '.js', # so we get a .wasm, and a .js
 	]
 endif
+if get_option('export_lua_symbols')
+	if is_static and lua_variant != 'none' and not project_export_dynamic
+		if host_platform == 'windows'
+			error('Lua symbols are currently impossible to export correctly on Windows')
+		elif c_compiler.has_link_argument('-Wl,--export-dynamic-symbol')
+			project_link_args += [
+				'-Wl,--export-dynamic-symbol=lua_*',
+				'-Wl,--export-dynamic-symbol=luaL_*',
+				'-Wl,--export-dynamic-symbol=luaopen_*',
+			]
+		else
+			warning('your linker does not support -Wl,--export-dynamic-symbol so Meson will be instructed to export all symbols in order to enable loading Lua shared modules, which may blow up the size of the resulting binary')
+			project_export_dynamic = true
+		endif
+	endif
+endif
 
 if get_option('build_powder')
 	powder_deps += project_deps + [

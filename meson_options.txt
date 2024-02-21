@@ -305,3 +305,9 @@ option(
 	value: true,
 	description: 'Ask Windows nicely for UTF-8 as the codepage'
 )
+option(
+	'export_lua_symbols',
+	type: 'boolean',
+	value: false,
+	description: 'Export Lua symbols to enable loading of Lua shared modules'
+)
