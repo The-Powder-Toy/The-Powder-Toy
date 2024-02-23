@@ -98,8 +98,10 @@ static int update(UPDATE_FUNC_ARGS)
 		if (parts[i].life==1)
 		{
 			auto nearp = Element_ETRD_nearestSparkablePart(sim, i);
+			if (nearp == -1)
+				break;
 			auto pavg = sim->parts_avg(i, nearp, PT_INSL);
-			if (nearp!=-1 && pavg!=PT_INSL && pavg!=PT_RSSS)
+			if (pavg != PT_INSL && pavg != PT_RSSS)
 			{
 				sim->CreateLine(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), PT_PLSM);
 				parts[i].life = 20;
