@@ -46,6 +46,7 @@ void LuaMisc::Tick(lua_State *L)
 	auto *lsi = GetLSI();
 	if (lsi->scriptManagerDownload && lsi->scriptManagerDownload->CheckDone())
 	{
+		auto scriptManagerDownload = std::move(lsi->scriptManagerDownload);
 		struct Status
 		{
 			struct Ok
@@ -82,8 +83,8 @@ void LuaMisc::Tick(lua_State *L)
 		};
 		try
 		{
-			auto ret = lsi->scriptManagerDownload->StatusCode();
-			auto scriptData = lsi->scriptManagerDownload->Finish().second;
+			auto ret = scriptManagerDownload->StatusCode();
+			auto scriptData = scriptManagerDownload->Finish().second;
 			if (!scriptData.size())
 			{
 				complete({ Status::GetFailed{ "Server did not return data" } });
@@ -111,7 +112,6 @@ void LuaMisc::Tick(lua_State *L)
 		{
 			complete({ Status::GetFailed{ ByteString(ex.what()).FromUtf8() } });
 		}
-		lsi->scriptManagerDownload.reset();
 	}
 }
 
