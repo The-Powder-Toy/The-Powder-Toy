@@ -72,9 +72,9 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 		if [[ $BSH_BUILD_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
 			pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-gcc
 			if [[ $BSH_STATIC_DYNAMIC == static ]]; then
-				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{cmake,7zip} patch
+				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{cmake,7zip,jq} patch
 			else
-				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,meson,fftw}
+				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,meson,fftw,jq}
 			fi
 			export PKG_CONFIG=$(which pkg-config.exe)
 		fi

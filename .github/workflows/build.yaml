@@ -84,6 +84,7 @@ jobs:
             mingw-w64-ucrt-x86_64-fftw
             mingw-w64-ucrt-x86_64-cmake
             mingw-w64-ucrt-x86_64-7zip
+            mingw-w64-ucrt-x86_64-jq
             patch
       - run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
