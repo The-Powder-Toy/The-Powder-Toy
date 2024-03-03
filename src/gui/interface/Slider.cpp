@@ -50,8 +50,11 @@ void Slider::OnMouseMoved(int x, int y)
 
 void Slider::OnMouseDown(int x, int y, unsigned button)
 {
-	isMouseDown = true;
-	updatePosition(x - Position.X);
+	if (MouseDownInside)
+	{
+		isMouseDown = true;
+		updatePosition(x - Position.X);
+	}
 }
 
 void Slider::OnMouseUp(int x, int y, unsigned button)
