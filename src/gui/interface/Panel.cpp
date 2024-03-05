@@ -150,12 +150,14 @@ void Panel::OnMouseHover(int localx, int localy)
 	{
 		if (children[i]->Enabled)
 		{
-			if( localx >= children[i]->Position.X &&
-				localy >= children[i]->Position.Y &&
-				localx < children[i]->Position.X + children[i]->Size.X &&
-				localy < children[i]->Position.Y + children[i]->Size.Y )
+			auto px = children[i]->Position.X + ViewportPosition.X;
+			auto py = children[i]->Position.Y + ViewportPosition.Y;
+			if( localx >= px &&
+				localy >= py &&
+				localx < px + children[i]->Size.X &&
+				localy < py + children[i]->Size.Y )
 			{
-				children[i]->OnMouseHover(localx - children[i]->Position.X, localy - children[i]->Position.Y);
+				children[i]->OnMouseHover(localx - px, localy - py);
 				break;
 			}
 		}
