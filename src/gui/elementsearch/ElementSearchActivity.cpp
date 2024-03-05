@@ -192,7 +192,11 @@ void ElementSearchActivity::searchTools(String query)
 		}
 	}
 
-	scrollPanel->InnerSize = ui::Point(scrollPanel->Size.X, current.Y + 1);
+	if (current.X == 0)
+	{
+		current.Y -= 19;
+	}
+	scrollPanel->InnerSize = ui::Point(scrollPanel->Size.X, current.Y + 20);
 }
 
 void ElementSearchActivity::SetActiveTool(int selectionState, Tool * tool)
