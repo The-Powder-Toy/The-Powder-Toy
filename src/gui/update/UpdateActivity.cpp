@@ -151,7 +151,7 @@ void UpdateActivity::NotifyError(Task * sender)
 	new ConfirmPrompt("Autoupdate failed", sb.Build(), { [this] {
 		if constexpr (!USE_UPDATESERVER)
 		{
-			Platform::OpenURI(ByteString(SCHEME) + "powdertoy.co.uk/Download.html");
+			Platform::OpenURI(ByteString::Build(SCHEME, SERVER, "/Download.html"));
 		}
 		Exit();
 	}, [this] { Exit(); } });
