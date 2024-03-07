@@ -361,10 +361,10 @@ void SaveButton::OnMouseMoved(int x, int y)
 	isMouseInsideHistory = false;
 	if (MouseInside)
 	{
-		if(y > Size.Y-11)
+		if (y > Size.Y-11)
 			isMouseInsideAuthor = true;
 
-		if(showVotes && y > Size.Y-29 && y < Size.Y - 18 && x > 0 && x < 9)
+		if (y > Size.Y-29 && y < Size.Y - 18 && x > 0 && x < 9)
 			isMouseInsideHistory = true;
 	}
 }
