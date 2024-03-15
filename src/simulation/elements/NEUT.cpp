@@ -164,6 +164,14 @@ static int update(UPDATE_FUNC_ARGS)
 				else
 					sim->create_part(ID(r), x+rx, y+ry, PT_CAUS);
 				break;
+			case PT_PAPR:
+				if (sim->rng.chance(1, 20))
+				{
+					int dcolour = parts[ID(r)].dcolour;
+					sim->create_part(ID(r), x+rx, y+ry, PT_LCRY);
+					parts[ID(r)].dcolour = dcolour;
+				}
+				break;
 			default:
 				break;
 			}

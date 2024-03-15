@@ -41,7 +41,7 @@ void Element::Element_PAPR()
 	HeatConduct = 80;
 	Description = "Paper. Flammable, can be marked by BCOL or deco. Lets non-solids through when unmarked.";
 
-	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
+	Properties = TYPE_SOLID | PROP_NEUTPASS;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
