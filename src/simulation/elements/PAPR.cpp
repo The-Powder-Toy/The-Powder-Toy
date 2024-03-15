@@ -34,7 +34,7 @@ void Element::Element_PAPR()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 15;
+	Hardness = 60;
 
 	Weight = 100;
 
@@ -83,6 +83,12 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		parts[i].life = 1;
 		parts[i].dcolour = 0xFF22222A;
+	}
+
+	// Doesn't guarantee layering won't happen, but makes it far less likely
+	if (TYP(pmap[y][x]) == PT_SAWD)
+	{
+		parts[ID(pmap[y][x])].tmp = 0;
 	}
 
 	// Generally, these should correspond, but correct if they don't.

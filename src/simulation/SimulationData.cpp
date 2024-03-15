@@ -187,7 +187,7 @@ void SimulationData::init_can_move()
 			can_move[movingType][PT_SAWD] = 0;
 
 		// Let most non-solids pass through unmarked PAPR
-        if (elements[movingType].Properties & (TYPE_GAS | TYPE_PART | TYPE_LIQUID) && (movingType != PT_FIRE && movingType != PT_SMKE))
+        if (elements[movingType].Properties & (TYPE_GAS | TYPE_PART | TYPE_LIQUID) && (movingType != PT_FIRE && movingType != PT_SMKE && movingType != PT_SAWD))
             can_move[movingType][PT_PAPR] = 3;
 	}
 	//a list of lots of things PHOT can move through
@@ -239,6 +239,9 @@ void SimulationData::init_can_move()
 	can_move[PT_TRON][PT_SWCH] = 3;
 	can_move[PT_SOAP][PT_OIL] = 0;
 	can_move[PT_OIL][PT_SOAP] = 1;
+	
+	can_move[PT_MWAX][PT_SAWD] = 0;
+	can_move[PT_SAWD][PT_MWAX] = 0;
 }
 
 const CustomGOLData *SimulationData::GetCustomGOLByRule(int rule) const
