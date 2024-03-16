@@ -199,7 +199,7 @@ meson_configure+=$'\t'-Dapp_exe=$APP_EXE
 meson_configure+=$'\t'-Dapp_id=$APP_ID
 meson_configure+=$'\t'-Dapp_data=$APP_DATA
 meson_configure+=$'\t'-Dapp_vendor=$APP_VENDOR
-meson_configure+=$'\t'-Db_strip=false
+meson_configure+=$'\t'-Dstrip=false
 meson_configure+=$'\t'-Db_staticpic=false
 meson_configure+=$'\t'-Dmod_id=$MOD_ID
 case $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_DEBUG_RELEASE in
