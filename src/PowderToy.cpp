@@ -445,19 +445,20 @@ int Main(int argc, char *argv[])
 	engine.Begin();
 	engine.SetFastQuit(prefs.Get("FastQuit", true));
 	engine.TouchUI = prefs.Get("TouchUI", DEFAULT_TOUCH_UI);
+	engine.windowFrameOps = windowFrameOps;
+
+	SDLOpen();
+
 	if (Client::Ref().IsFirstRun() && FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsNone)
 	{
 		auto guessed = GuessBestScale();
-		if (windowFrameOps.scale != guessed)
+		if (engine.windowFrameOps.scale != guessed)
 		{
-			windowFrameOps.scale = guessed;
+			engine.windowFrameOps.scale = guessed;
 			prefs.Set("Scale", windowFrameOps.scale);
 			showLargeScreenDialog = true;
 		}
 	}
-	engine.windowFrameOps = windowFrameOps;
-
-	SDLOpen();
 
 	bool enableBluescreen = USE_BLUESCREEN && !true_arg(arguments["disable-bluescreen"]);
 	if (enableBluescreen)
