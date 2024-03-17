@@ -644,6 +644,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 		} });
 		addCommentBox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		addCommentBox->SetMultiline(true);
+		addCommentBox->SetLimit(1000);
 		AddComponent(addCommentBox);
 		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), "Submit");
 		submitCommentButton->SetActionCallback({ [this] { submitComment(); } });

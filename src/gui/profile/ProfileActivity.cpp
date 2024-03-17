@@ -108,9 +108,14 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	scrollPanel->AddChild(locationTitle);
 
 	if (editable)
+	{
 		location = new ui::Textbox(ui::Point(8+locationTitle->Size.X, currentY), ui::Point(Size.X-locationTitle->Size.X-16, 17), info.location);
+		((ui::Textbox*)location)->SetLimit(40);
+	}
 	else
+	{
 		location = new ui::Label(ui::Point(4+locationTitle->Size.X, currentY), ui::Point(Size.X-locationTitle->Size.X-14, 17), info.location);
+	}
 	location->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	scrollPanel->AddChild(location);
 	currentY += 2+location->Size.Y;

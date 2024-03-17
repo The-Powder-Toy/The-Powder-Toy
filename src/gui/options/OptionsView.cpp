@@ -137,6 +137,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		ambientAirTemp->SetDefocusCallback({ [this] {
 			UpdateAirTemp(ambientAirTemp->GetText(), true);
 		}});
+		ambientAirTemp->SetLimit(9);
 		scrollPanel->AddChild(ambientAirTemp);
 		ambientAirTempPreview = new ui::Button(ui::Point(Size.X-31, currentY), ui::Point(16, 16), "", "Preview");
 		scrollPanel->AddChild(ambientAirTempPreview);
