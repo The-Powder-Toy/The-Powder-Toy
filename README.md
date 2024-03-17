@@ -1,4 +1,4 @@
-The Powder Toy - January 2023
+The Powder Toy - March 2024
 ==========================
 
 Get the latest version [from the Powder Toy website](https://powdertoy.co.uk/Download.html).
@@ -108,6 +108,7 @@ Controls
 | Shift + R               | Horizontal mirror for selected area when pasting stamps         |
 | Ctrl + Shift + R        | Vertical mirror for selected area when pasting stamps           |
 | R                       | Rotate selected area counterclockwise when pasting stamps       |
+| F11                     | Toggle fullscreen                                               |
 
 Command Line
 ---------------------------------------------------------------------------
