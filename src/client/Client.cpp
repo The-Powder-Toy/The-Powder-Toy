@@ -378,7 +378,6 @@ void Client::RescanStamps()
 			newStampIDs.push_back(stampID);
 		}
 	}
-	auto oldCount = newStampIDs.size();
 	auto stampIDsSet = std::set<ByteString>(stampIDs.begin(), stampIDs.end());
 	for (auto &stampID : stampFilesSet)
 	{
@@ -390,8 +389,6 @@ void Client::RescanStamps()
 	}
 	if (changed)
 	{
-		// Move newly discovered stamps to front.
-		std::rotate(newStampIDs.begin(), newStampIDs.begin() + oldCount, newStampIDs.end());
 		stampIDs = newStampIDs;
 		WriteStamps();
 	}
