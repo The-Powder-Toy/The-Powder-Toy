@@ -22,6 +22,8 @@ int main(int argc, char *argv[])
 	auto inputFilename = ByteString(argv[1]);
 	auto outputFilename = ByteString(argv[2]) + ".png";
 
+	auto simulationData = std::make_unique<SimulationData>();
+
 	std::vector<char> fileData;
 	if (!Platform::ReadFile(fileData, inputFilename))
 	{
@@ -40,7 +42,6 @@ int main(int argc, char *argv[])
 			throw e;
 	}
 
-	auto simulationData = std::make_unique<SimulationData>();
 	Simulation * sim = new Simulation();
 	Renderer * ren = new Renderer(sim);
 
