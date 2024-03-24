@@ -3,7 +3,6 @@
 #include "client/http/StartupRequest.h"
 #include "ClientListener.h"
 #include "Format.h"
-#include "MD5.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
