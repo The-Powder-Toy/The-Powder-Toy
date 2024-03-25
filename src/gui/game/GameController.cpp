@@ -1111,8 +1111,11 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 	gameModel->SetLastTool(tool);
 	for(int i = 0; i < 3; i++)
 	{
-		if(gameModel->GetActiveTool(i) == gameModel->GetMenuList().at(SC_WALL)->GetToolList().at(WL_GRAV))
+		auto *activeTool = gameModel->GetActiveTool(i);
+		if (activeTool && activeTool->Identifier == "DEFAULT_WL_GRVTY")
+		{
 			gameModel->GetRenderer()->gravityZonesEnabled = true;
+		}
 	}
 	if (tool->Identifier == "DEFAULT_UI_PROPERTY")
 	{
