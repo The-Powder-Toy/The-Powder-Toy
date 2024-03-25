@@ -50,7 +50,10 @@ static int beginMessageBox(lua_State *L)
 	auto message = PickIfType(L, 2, String("Message"));
 	auto large = PickIfType(L, 3, false);
 	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from L).
-	cb->Assign(L, lua_gettop(L));
+	if (lua_gettop(L))
+	{
+		cb->Assign(L, lua_gettop(L));
+	}
 	new InformationMessage(title, message, large, { [cb]() {
 		auto *lsi = GetLSI();
 		auto L = lsi->L;
@@ -74,7 +77,10 @@ static int beginThrowError(lua_State *L)
 {
 	auto errorMessage = PickIfType(L, 1, String("Error text"));
 	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from L).
-	cb->Assign(L, lua_gettop(L));
+	if (lua_gettop(L))
+	{
+		cb->Assign(L, lua_gettop(L));
+	}
 	new ErrorMessage("Error", errorMessage, { [cb]() {
 		auto *lsi = GetLSI();
 		auto L = lsi->L;
@@ -101,7 +107,10 @@ static int beginInput(lua_State *L)
 	auto text = PickIfType(L, 3, String(""));
 	auto shadow = PickIfType(L, 4, String(""));
 	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from L).
-	cb->Assign(L, lua_gettop(L));
+	if (lua_gettop(L))
+	{
+		cb->Assign(L, lua_gettop(L));
+	}
 	auto handle = [cb](std::optional<String> input) {
 		auto *lsi = GetLSI();
 		auto L = lsi->L;
@@ -140,7 +149,10 @@ static int beginConfirm(lua_State *L)
 	auto message = PickIfType(L, 2, String("Message"));
 	auto buttonText = PickIfType(L, 3, String("Confirm"));
 	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from L).
-	cb->Assign(L, lua_gettop(L));
+	if (lua_gettop(L))
+	{
+		cb->Assign(L, lua_gettop(L));
+	}
 	auto handle = [cb](int result) {
 		auto *lsi = GetLSI();
 		auto L = lsi->L;
