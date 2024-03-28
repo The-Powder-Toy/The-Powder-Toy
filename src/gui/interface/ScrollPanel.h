@@ -7,6 +7,8 @@ namespace ui
 {
 	class ScrollPanel: public Panel
 	{
+		void CancelPanning();
+
 	protected:
 		int scrollBarWidth;
 		Point maxOffset;
