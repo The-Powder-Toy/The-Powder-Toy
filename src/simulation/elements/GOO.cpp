@@ -1,11 +1,13 @@
 #include "simulation/ElementCommon.h"
 
+#include "audio/AudioEngine.h"
+
 static int update(UPDATE_FUNC_ARGS);
 
 void Element::Element_GOO()
 {
 	Identifier = "DEFAULT_PT_GOO";
-	Name = "GOO";
+	Name = "SQRL";
 	Colour = 0x804000_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_SOLIDS;
@@ -30,7 +32,7 @@ void Element::Element_GOO()
 	Weight = 100;
 
 	HeatConduct = 75;
-	Description = "Deforms and disappears under pressure.";
+	Description = "Squirrels. \"Every time we cut an emoji for a squirrel we have to cut it from tpt as well\" - jacob1";
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 
@@ -50,6 +52,10 @@ constexpr float ADVECTION = 0.1f;
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	if (sim->rng.chance(1, 2400))
+	{
+		sim->ae->Play(194);
+	}
 	if (!parts[i].life && sim->pv[y/CELL][x/CELL]>1.0f)
 		parts[i].life = sim->rng.between(300, 379);
 	if (parts[i].life)

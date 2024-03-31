@@ -1416,7 +1416,7 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			doScreenshot = true;
 		break;
 	case SDL_SCANCODE_F3:
-		SetDebugHUD(!GetDebugHUD());
+		c->SetDebugHUD(!GetDebugHUD());
 		break;
 	case SDL_SCANCODE_F5:
 		c->ReloadSim();
@@ -2484,6 +2484,9 @@ void GameView::OnDraw()
 				fpsInfo << " Parts: " << ren->foundElements << "/" << sample.NumParts;
 			else
 				fpsInfo << " Parts: " << sample.NumParts;
+			fpsInfo << " Sounds: " << sample.SoundsPlaying;
+			if (sample.SoundsPlaying == 69)
+				fpsInfo << " (Nice)";
 		}
 		if (c->GetReplaceModeFlags()&REPLACE_MODE)
 			fpsInfo << " [REPLACE MODE]";

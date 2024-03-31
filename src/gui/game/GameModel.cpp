@@ -998,7 +998,7 @@ void GameModel::SetSave(std::unique_ptr<SaveInfo> newSave, bool invertIncludePre
 		SaveToSimParameters(*saveData);
 		sim->clear_sim();
 		ren->ClearAccumulation();
-		sim->Load(saveData, !invertIncludePressure, { 0, 0 });
+		sim->Load(saveData, !invertIncludePressure, { 0, 0 }, true);
 		// This save was created before logging existed
 		// Add in the correct info
 		if (saveData->authors.size() == 0)

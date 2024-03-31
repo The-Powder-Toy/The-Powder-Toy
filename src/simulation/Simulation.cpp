@@ -16,12 +16,14 @@
 #include <iostream>
 #include <set>
 
+#include "audio/AudioEngine.h"
+
 static float remainder_p(float x, float y)
 {
 	return std::fmod(x, y) + (x>=0 ? 0 : y);
 }
 
-void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> blockP) // block coordinates
+void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> blockP, bool allowMoo) // block coordinates
 {
 	auto partP = blockP * CELL;
 
@@ -76,6 +78,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 		}
 	};
 
+	int protCount = 0;
 	std::map<unsigned int, unsigned int> soapList;
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
@@ -210,6 +213,9 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 		case PT_SOAP:
 			soapList.insert(std::pair<unsigned int, unsigned int>(n, i));
 			break;
+		case PT_PROT:
+			protCount++;
+			break;
 		}
 		if (GameSave::PressureInTmp3(parts[i].type) && !includePressure)
 		{
@@ -293,6 +299,11 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 	if (!save->hasBlockAirMaps)
 	{
 		air->ApproximateBlockAirMaps();
+	}
+
+	if (allowMoo && protCount == 1943)
+	{
+		ae->Play(197);
 	}
 }
 
@@ -1755,6 +1766,11 @@ bool Simulation::part_change_type(int i, int x, int y, int t)
 			return false;
 	}
 
+	if (t <= PT_RSSS)
+	{
+		ae->Play(t);
+	}
+
 	if (elements[parts[i].type].ChangeType)
 		(*(elements[parts[i].type].ChangeType))(this, i, x, y, parts[i].type, t);
 	if (elements[t].ChangeType)
@@ -1883,6 +1899,11 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			elementCount[oldType]--;
 
 		i = p;
+	}
+
+	if (t <= PT_RSSS && (t != PT_EMBR || i == -3)) // Don't play for EMBR creted by fireworks (also bomb, but unintentionally)
+	{
+		ae->Play(t);
 	}
 
 	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
@@ -3886,6 +3907,7 @@ void Simulation::AfterSim()
 Simulation::~Simulation() = default;
 
 Simulation::Simulation():
+	ae(std::make_unique<AudioEngine>()),
 	replaceModeSelected(0),
 	replaceModeFlags(0),
 	debug_nextToUpdate(0),

@@ -128,14 +128,14 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',     'macos-12', '.dmg',    True,     True,      None,        'dmg',  'arm64-mac-gcc-static', 'release',       10 ),
 #	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-12', '.dmg',   False,    False,      None,        'dmg',                    None,   'debug',       10 ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
 #	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-12', '.dmg',   False,    False,      None,        'dmg',                    None, 'release',       10 ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
-	(     'x86',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: rarely used debug build
-	(     'x86',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None,   'i686-and-gcc-static', 'release',       10 ),
-	(  'x86_64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: rarely used debug build
-	(  'x86_64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None, 'x86_64-and-gcc-static', 'release',       10 ),
-	(     'arm',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: rarely used debug build
-	(     'arm',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None,    'arm-and-gcc-static', 'release',       10 ),
-	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: rarely used debug build
-	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None,  'arm64-and-gcc-static', 'release',       10 ),
+#	(     'x86',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: rarely used debug build
+#	(     'x86',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None,   'i686-and-gcc-static', 'release',       10 ),
+#	(  'x86_64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: rarely used debug build
+#	(  'x86_64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None, 'x86_64-and-gcc-static', 'release',       10 ),
+#	(     'arm',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: rarely used debug build
+#	(     'arm',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None,    'arm-and-gcc-static', 'release',       10 ),
+#	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: rarely used debug build
+#	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-20.04', '.apk',    True,     True,    '.dbg',         None,  'arm64-and-gcc-static', 'release',       10 ),
 	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-20.04', '.tar',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: rarely used debug build
 	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-20.04', '.tar',    True,     True,      None, 'emscripten',     'wasm32-ems-static', 'release',       10 ), # I have no idea how to separate debug info on emscripten
 ]:

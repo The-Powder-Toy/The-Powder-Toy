@@ -140,6 +140,7 @@ if host_platform == 'linux'
 	font_files += files('WindowIcon.cpp')
 endif
 
+subdir('audio')
 subdir('bson')
 subdir('bzip2')
 subdir('client')

@@ -1,0 +1,6 @@
+[wrap-file]
+directory = tpt-libs-prebuilt-x86_64-windows-mingw-static-release-v20240330234517
+
+source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20240330234517/tpt-libs-prebuilt-x86_64-windows-mingw-static-release-v20240330234517.zip
+source_filename = tpt-libs-prebuilt-x86_64-windows-mingw-static-release-v20240330234517.zip
+source_hash = e21a1effd7aae800a1db769a6bbbafbd151b1c40115258529886682874b845d3
