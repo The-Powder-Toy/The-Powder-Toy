@@ -41,11 +41,13 @@ class OptionsView: public ui::Window
 	ui::Checkbox *perfectCircle{};
 	ui::Checkbox *graveExitsConsole{};
 	ui::Checkbox *nativeClipoard{};
+	ui::Textbox *maxSounds{};
 	ui::ScrollPanel *scrollPanel{};
 	float customGravityX, customGravityY;
 	void UpdateAmbientAirTempPreview(float airTemp, bool isValid);
 	void AmbientAirTempToTextBox(float airTemp);
 	void UpdateAirTemp(String temp, bool isDefocus);
+	void UpdateMaxSounds(String temp);
 public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);

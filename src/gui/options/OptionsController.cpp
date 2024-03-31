@@ -152,6 +152,16 @@ void OptionsController::SetMomentumScroll(bool momentumScroll)
 	model->SetMomentumScroll(momentumScroll);
 }
 
+int OptionsController::GetMaxSounds()
+{
+	return model->GetMaxSounds();
+}
+
+void OptionsController::SetMaxSounds(int maxSounds)
+{
+	model->SetMaxSounds(maxSounds);
+}
+
 void OptionsController::Exit()
 {
 	view->CloseActiveWindow();

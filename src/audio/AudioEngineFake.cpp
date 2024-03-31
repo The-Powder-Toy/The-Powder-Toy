@@ -31,6 +31,17 @@ int AudioEngine::SoundsPlaying()
 	return 0;
 }
 
+
+int AudioEngine::GetMaxSounds()
+{
+	return 0;
+}
+
+void AudioEngine::SetMaxSounds(int maxSounds)
+{
+
+}
+
 void AudioEngine::Play(int index)
 {
 

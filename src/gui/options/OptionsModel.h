@@ -65,5 +65,7 @@ public:
 	void SetPerfectCircle(bool perfectCircle);
 	bool GetMomentumScroll();
 	void SetMomentumScroll(bool momentumScroll);
+	int GetMaxSounds();
+	void SetMaxSounds(int maxSounds);
 	virtual ~OptionsModel();
 };

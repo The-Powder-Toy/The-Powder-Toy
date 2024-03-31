@@ -16,7 +16,8 @@ class AudioEngine
 	int16_t* audio_buf;
 	uint32_t audio_len;
 
-	std::array<std::unique_ptr<Sound>, 100> sounds;
+	int maxSounds = 100;
+	std::array<std::unique_ptr<Sound>, 1000> sounds;
 	std::array<int, 200> counts;
 	std::atomic<int> playing;
 
@@ -28,6 +29,8 @@ public:
 	static void SDL_AudioCallback(void* userdata, uint8_t* stream, int len);
 
 	int SoundsPlaying();
+	int GetMaxSounds();
+	void SetMaxSounds(int maxSounds);
 
 	void Play(int index);
 

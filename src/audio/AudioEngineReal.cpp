@@ -107,9 +107,19 @@ int AudioEngine::SoundsPlaying()
 	return playing;
 }
 
+int AudioEngine::GetMaxSounds()
+{
+	return maxSounds;
+}
+
+void AudioEngine::SetMaxSounds(int maxSounds)
+{
+	this->maxSounds = maxSounds;
+}
+
 void AudioEngine::Play(int index)
 {
-	if (ready && index >= 0 && index <= 199 && (!counts[index] || index > 193))
+	if (ready && index >= 0 && index <= 199 && (!counts[index] || index > 193) && (playing < maxSounds))
 	{
 		SDL_LockAudioDevice(sdlData->device);
 		for (auto& i : sounds)
