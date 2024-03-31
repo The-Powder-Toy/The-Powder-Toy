@@ -5,6 +5,9 @@
 #include "simulation/ElementClasses.h"
 #include "simulation/ElementGraphics.h"
 #include "simulation/Simulation.h"
+#include "Misc.h"
+#include "cats.data.h"
+#include "resampler/resampler.h"
 
 constexpr auto VIDXRES = WINDOWW;
 constexpr auto VIDYRES = WINDOWH;
@@ -61,38 +64,60 @@ void Renderer::FinaliseParts()
 	}
 }
 
+uint8_t Renderer::SampleSpriteSheet(Vec2<int> spritePos, Vec2<int> samplePos, int scale) {
+	int x = samplePos.X;
+	int y = samplePos.Y;
+
+	if(scale >= kitcatmipmap.size()) {
+		x = int(std::floor((float(samplePos.X)/float(scale)) * kitcatSpriteSize));
+		y = int(std::floor((float(samplePos.Y)/float(scale)) * kitcatSpriteSize));
+		scale = kitcatSpriteSize;
+	}
+
+	return kitcatmipmap[scale][{x + spritePos.X*scale, y + spritePos.Y * scale}];
+}
+
+int xorshift(int x) {
+	x ^= x >> 11;
+	x ^= x << 5;
+	return x;
+}
+
 void Renderer::RenderZoom()
 {
 	if(!zoomEnabled)
 		return;
-	{
-		int x, y, i, j;
-		pixel pix;
 
-		DrawFilledRect(RectSized(zoomWindowPosition, { zoomScopeSize * ZFACTOR, zoomScopeSize * ZFACTOR }), 0x000000_rgb);
-		DrawRect(RectSized(zoomWindowPosition - Vec2{ 2, 2 }, Vec2{ zoomScopeSize*ZFACTOR+3, zoomScopeSize*ZFACTOR+3 }), 0xC0C0C0_rgb);
-		DrawRect(RectSized(zoomWindowPosition - Vec2{ 1, 1 }, Vec2{ zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1 }), 0x000000_rgb);
-		for (j=0; j<zoomScopeSize; j++)
-			for (i=0; i<zoomScopeSize; i++)
-			{
-				pix = video[{ i + zoomScopePosition.X, j + zoomScopePosition.Y }];
-				for (y=0; y<ZFACTOR-1; y++)
-					for (x=0; x<ZFACTOR-1; x++)
-						video[{ i * ZFACTOR + x + zoomWindowPosition.X, j * ZFACTOR + y + zoomWindowPosition.Y }] = pix;
-			}
-		if (zoomEnabled)
+	int x, y, i, j;
+	pixel pix;
+
+	DrawFilledRect(RectSized(zoomWindowPosition, { zoomScopeSize * ZFACTOR, zoomScopeSize * ZFACTOR }), 0x000000_rgb);
+	DrawRect(RectSized(zoomWindowPosition - Vec2{ 2, 2 }, Vec2{ zoomScopeSize*ZFACTOR+3, zoomScopeSize*ZFACTOR+3 }), 0xC0C0C0_rgb);
+	DrawRect(RectSized(zoomWindowPosition - Vec2{ 1, 1 }, Vec2{ zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1 }), 0x000000_rgb);
+	for (j=0; j<zoomScopeSize; j++)
+		for (i=0; i<zoomScopeSize; i++)
 		{
-			for (j=-1; j<=zoomScopeSize; j++)
-			{
-				XorPixel(zoomScopePosition + Vec2{ j, -1 });
-				XorPixel(zoomScopePosition + Vec2{ j, zoomScopeSize });
-			}
-			for (j=0; j<zoomScopeSize; j++)
-			{
-				XorPixel(zoomScopePosition + Vec2{ -1, j });
-				XorPixel(zoomScopePosition + Vec2{ zoomScopeSize, j });
-			}
+			pix = video[{ i + zoomScopePosition.X, j + zoomScopePosition.Y }];
+			int part = ID(sim->pmap[j + zoomScopePosition.Y][i + zoomScopePosition.X]);
+			for (y=0; y<ZFACTOR-1; y++)
+				for (x=0; x<ZFACTOR-1; x++) {
+					bool blink = ((sim->frameCount/10) + (part%51)) %51==0;
+					bool panik = sim->parts[part].temp > 600;
+					auto sample = (part && xorshift(part)%21==0) ? SampleSpriteSheet({ panik ? 2 : (blink ? 1 : 0), part%4 }, { x, y }, ZFACTOR-1) : 0;
+
+					video[{ i * ZFACTOR + x + zoomWindowPosition.X, j * ZFACTOR + y + zoomWindowPosition.Y }] = RGBA<uint8_t>::Unpack(pix).NoAlpha().Blend(RGBA<uint8_t>(0, 0, 0, sample)).Pack();
+				}
 		}
+
+	for (j=-1; j<=zoomScopeSize; j++)
+	{
+		XorPixel(zoomScopePosition + Vec2{ j, -1 });
+		XorPixel(zoomScopePosition + Vec2{ j, zoomScopeSize });
+	}
+	for (j=0; j<zoomScopeSize; j++)
+	{
+		XorPixel(zoomScopePosition + Vec2{ -1, j });
+		XorPixel(zoomScopePosition + Vec2{ zoomScopeSize, j });
 	}
 }
 
@@ -165,11 +190,43 @@ pixel Renderer::GetPixel(Vec2<int> pos) const
 	return video[pos];
 }
 
+PlaneAdapter<std::vector<uint8_t>> Renderer::MakeMipMap(int scale, const char * filterName) {
+	int scaledX = int((kitcatSpriteSize * kitcatSpriteConfig.X) * (float(scale)/kitcatSpriteSize));
+	int scaledY = int((kitcatSpriteSize * kitcatSpriteConfig.Y) * (float(scale)/kitcatSpriteSize));
+	PlaneAdapter<std::vector<uint8_t>> mipmap({scaledX, scaledY});
+	Resampler resampler(
+		kitcatSpriteSize * kitcatSpriteConfig.X, kitcatSpriteSize * kitcatSpriteConfig.Y, // source size
+		scaledX, scaledY,
+		Resampler::BOUNDARY_CLAMP,
+		0.0f, 255.0f,
+		filterName,
+		NULL, NULL,
+		0.75f, 0.75f
+	);
+	auto line = std::make_unique<float []>(kitcatSpriteSize * kitcatSpriteConfig.X);
+	auto destY = 0;
+	for (int y = 0; y < kitcatSpriteConfig.Y * kitcatSpriteSize; y++)
+	{
+		for(int x = 0; x < kitcatSpriteConfig.X * kitcatSpriteSize; x++) {
+			line[x] = cats_data[x + (y * kitcatSpriteConfig.X * kitcatSpriteSize)];
+		}
+		resampler.put_line(line.get());
+		while(auto outLine = resampler.get_line()) {
+			for(int destX = 0; destX < scaledX; destX++) {
+				mipmap.data()[destX + (destY * scaledX)] = uint8_t(outLine[destX]);
+			}
+			destY++;
+		}
+	}
+	return mipmap;
+}
+
 std::vector<RGB<uint8_t>> Renderer::flameTable;
 std::vector<RGB<uint8_t>> Renderer::plasmaTable;
 std::vector<RGB<uint8_t>> Renderer::heatTable;
 std::vector<RGB<uint8_t>> Renderer::clfmTable;
 std::vector<RGB<uint8_t>> Renderer::firwTable;
+std::array<PlaneAdapter<std::vector<uint8_t>>, (Renderer::kitcatSpriteSize*2)-1> Renderer::kitcatmipmap;
 static bool tablesPopulated = false;
 static std::mutex tablesPopulatedMx;
 void Renderer::PopulateTables()
@@ -221,6 +278,17 @@ void Renderer::PopulateTables()
 			{ 0xFFFF00_rgb, 0.80f },
 			{ 0xFF0000_rgb, 1.00f },
 		}, 200);
+
+		for(int scale = 1; scale < kitcatmipmap.size(); scale++) {
+			if(scale == kitcatSpriteSize) {
+				kitcatmipmap[scale] = PlaneAdapter<std::vector<uint8_t>>({kitcatSpriteConfig.X * kitcatSpriteSize, kitcatSpriteConfig.Y * kitcatSpriteSize});
+				std::copy(reinterpret_cast<const uint8_t *>(cats_data), reinterpret_cast<const uint8_t *>(cats_data+cats_data_size), kitcatmipmap[scale].data());
+			} else if(scale > kitcatSpriteSize) {
+				kitcatmipmap[scale] = MakeMipMap(scale, "mitchell");
+			} else {
+				kitcatmipmap[scale] = MakeMipMap(scale, "lanczos4");
+			}
+		}
 	}
 }
 
