@@ -47,14 +47,14 @@ option(
 	'display_version_minor',
 	type: 'integer',
 	min: 0,
-	value: 1,
+	value: 2,
 	description: 'Minor component of the display version, should more or less map to the PATCH version in semantic versioning'
 )
 option(
 	'build_num',
 	type: 'integer',
 	min: 0,
-	value: 364,
+	value: 365,
 	description: 'Build number, should be strictly monotonously increasing across public releases'
 )
 option(
@@ -68,14 +68,14 @@ option(
 	'upstream_version_minor',
 	type: 'integer',
 	min: 0,
-	value: 1,
+	value: 2,
 	description: 'Minor component of the upstream display version, mod owners should not change this but merge upstream changes to it'
 )
 option(
 	'upstream_build_num',
 	type: 'integer',
 	min: 0,
-	value: 364,
+	value: 365,
 	description: 'Upstream build number, mod owners should not change this but merge upstream changes to it'
 )
 option(

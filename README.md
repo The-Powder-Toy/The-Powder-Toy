@@ -1,4 +1,4 @@
-The Powder Toy - April 1st 2024
+The Powder Toy - April 2024
 ==========================
 
 Get the latest version [from the Powder Toy website](https://powdertoy.co.uk/Download.html).
