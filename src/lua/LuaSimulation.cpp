@@ -968,7 +968,7 @@ static int loadStamp(lua_State *L)
 			gameSave->Transform(transform, { remX, remY });
 		}
 		auto *lsi = GetLSI();
-		lsi->sim->Load(gameSave.get(), includePressure, { quoX, quoY }, true);
+		lsi->sim->Load(gameSave.get(), includePressure, { quoX, quoY });
 		lua_pushinteger(L, 1);
 
 		if (gameSave->authors.size())

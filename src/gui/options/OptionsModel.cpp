@@ -1,6 +1,5 @@
 #include "OptionsModel.h"
 #include "OptionsView.h"
-#include "audio/AudioEngine.h"
 #include "simulation/Simulation.h"
 #include "simulation/Air.h"
 #include "simulation/gravity/Gravity.h"
@@ -317,16 +316,6 @@ void OptionsModel::SetMomentumScroll(bool state)
 	GlobalPrefs::Ref().Set("MomentumScroll", state);
 	ui::Engine::Ref().MomentumScroll = state;
 	notifySettingsChanged();
-}
-
-int OptionsModel::GetMaxSounds()
-{
-	return sim->ae->GetMaxSounds();
-}
-
-void OptionsModel::SetMaxSounds(int maxSounds)
-{
-	sim->ae->SetMaxSounds(maxSounds);
 }
 
 void OptionsModel::notifySettingsChanged()

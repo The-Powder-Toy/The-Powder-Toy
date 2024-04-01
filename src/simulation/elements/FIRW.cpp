@@ -1,7 +1,5 @@
 #include "simulation/ElementCommon.h"
 
-#include "audio/AudioEngine.h"
-
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 
@@ -67,7 +65,6 @@ static int update(UPDATE_FUNC_ARGS)
 					auto rt = TYP(r);
 					if (rt==PT_FIRE||rt==PT_PLSM||rt==PT_THDR)
 					{
-						sim->ae->Play(195);
 						float gx, gy, multiplier;
 						sim->GetGravityField(x, y, elements[PT_FIRW].Gravity, 1.0f, gx, gy);
 						if (gx*gx+gy*gy < 0.001f)
@@ -96,7 +93,6 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	else //if (parts[i].tmp>=2)
 	{
-		sim->ae->Play(196);
 		unsigned col = Renderer::firwTableAt(sim->rng.between(0, 199)).Pack();
 		for (int n=0; n<40; n++)
 		{

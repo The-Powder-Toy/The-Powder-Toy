@@ -63,8 +63,6 @@
 #include "gui/tags/TagsController.h"
 #include "gui/tags/TagsView.h"
 
-#include "audio/AudioEngine.h"
-
 #include "Config.h"
 #include <SDL.h>
 #include <iostream>
@@ -241,7 +239,7 @@ void GameController::PlaceSave(ui::Point position)
 	if (placeSave)
 	{
 		HistorySnapshot();
-		gameModel->GetSimulation()->Load(placeSave, !gameView->ShiftBehaviour(), position, true);
+		gameModel->GetSimulation()->Load(placeSave, !gameView->ShiftBehaviour(), position);
 		gameModel->SetPaused(placeSave->paused | gameModel->GetPaused());
 		Client::Ref().MergeStampAuthorInfo(placeSave->authors);
 	}
@@ -648,7 +646,7 @@ bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool c
 				SwitchGravity();
 				break;
 			case SDL_SCANCODE_D:
-				SetDebugHUD(!gameView->GetDebugHUD());
+				gameView->SetDebugHUD(!gameView->GetDebugHUD());
 				break;
 			case SDL_SCANCODE_S:
 				gameView->BeginStampSelection();
@@ -1009,8 +1007,6 @@ bool GameController::GetBrushEnable()
 void GameController::SetDebugHUD(bool hudState)
 {
 	gameView->SetDebugHUD(hudState);
-	gameModel->GetSimulation()->ae->Play(hudState ? 198 : 199);
-	// https://discord.com/channels/311697121914912768/311697121914912768/1165803116030083162
 }
 
 bool GameController::GetDebugHUD()

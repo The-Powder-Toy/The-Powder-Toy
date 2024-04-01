@@ -163,10 +163,4 @@ public:
 
 private:
 	int gridSize;
-
-	static constexpr Vec2<int> kitcatSpriteConfig { 3, 4 };
-	static constexpr int kitcatSpriteSize = 13;
-	static uint8_t SampleSpriteSheet(Vec2<int> spritePos, Vec2<int> samplePos, int scale);
-	static PlaneAdapter<std::vector<uint8_t>> MakeMipMap(int scale, const char * filterName);
-	static std::array<PlaneAdapter<std::vector<uint8_t>>, (kitcatSpriteSize * 2)-1> kitcatmipmap;
 };

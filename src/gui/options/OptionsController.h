@@ -39,8 +39,6 @@ public:
 	void SetIncludePressure(bool includePressure);
 	void SetPerfectCircle(bool perfectCircle);
 	void SetMomentumScroll(bool momentumScroll);
-	int GetMaxSounds();
-	void SetMaxSounds(int maxSounds);
 	
 	void Exit();
 	OptionsView * GetView();

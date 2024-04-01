@@ -10,9 +10,7 @@
 #include "simulation/ElementDefs.h"
 #include "simulation/SimulationData.h"
 #include "client/Client.h"
-#include "prefs/GlobalPrefs.h"
 #include "gui/dialogues/ConfirmPrompt.h"
-#include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Checkbox.h"
@@ -23,7 +21,6 @@
 #include "gui/interface/DirectionSelector.h"
 #include "PowderToySDL.h"
 #include "Config.h"
-#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <cmath>
@@ -329,17 +326,6 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	}, [this] {
 		c->SetDecoSpace(decoSpace->GetOption().second);
 	});
-	maxSounds = new ui::Textbox(ui::Point(Size.X-95, currentY), ui::Point(60, 16));
-	maxSounds->SetDefocusCallback({ [this] {
-		UpdateMaxSounds(maxSounds->GetText());
-	}});
-	maxSounds->SetLimit(3);
-	scrollPanel->AddChild(maxSounds);
-	auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-105, 16), "Max sounds");
-	label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-	label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-	scrollPanel->AddChild(label);
-	currentY += 20;
 
 	currentY += 4;
 	if (ALLOW_DATA_FOLDER)
@@ -447,33 +433,6 @@ void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
 	UpdateAmbientAirTempPreview(airTemp, isValid);
 }
 
-void OptionsView::UpdateMaxSounds(String sounds)
-{
-	int max = -1;
-	try
-	{
-		max = std::clamp(sounds.ToNumber<int>(), 0, 999);
-	}
-	catch (const std::exception &e)
-	{
-		maxSounds->SetText(String::Build(c->GetMaxSounds()));
-		return;
-	}
-
-	if (max < interfaceRng.between(0, 40))
-	{
-		int coins = GlobalPrefs::Ref().Get("Coins.coins", 0);
-		if (coins < 20)
-		{
-			new ErrorMessage("Error", String::Build("This options requires 20 \xEE\x81\xAAowdercoins to change, but you only have ", coins));
-			maxSounds->SetText(String::Build(c->GetMaxSounds()));
-			return;
-		}
-		GlobalPrefs::Ref().Set("Coins.coins", coins - 20);
-	}
-	c->SetMaxSounds(max);
-}
-
 void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 {
 	temperatureScale->SetOption(sender->GetTemperatureScale()); // has to happen before AmbientAirTempToTextBox is called
@@ -532,7 +491,6 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	perfectCircle->SetChecked(sender->GetPerfectCircle());
 	graveExitsConsole->SetChecked(sender->GetGraveExitsConsole());
 	momentumScroll->SetChecked(sender->GetMomentumScroll());
-	maxSounds->SetText(String::Build(sender->GetMaxSounds()));
 }
 
 void OptionsView::AttachController(OptionsController * c_)

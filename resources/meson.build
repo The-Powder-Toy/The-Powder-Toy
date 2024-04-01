@@ -118,5 +118,3 @@ endif
 data_files += to_array.process('save_local.png', extra_args: 'save_local_png')
 data_files += to_array.process('save_online.png', extra_args: 'save_online_png')
 data_files += to_array.process('font.bz2', extra_args: 'compressed_font_data')
-data_files += to_array.process('elements.wav.bz2', extra_args: 'elements_wav_bz2')
-data_files += to_array.process('cats.data', extra_args: 'cats_data')

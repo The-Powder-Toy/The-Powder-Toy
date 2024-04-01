@@ -13,8 +13,6 @@
 #include <iostream>
 #include <cmath>
 
-#include "audio/AudioEngine.h"
-
 std::unique_ptr<Snapshot> Simulation::CreateSnapshot() const
 {
 	auto snap = std::make_unique<Snapshot>();
@@ -156,7 +154,6 @@ SimulationSample Simulation::GetSample(int x, int y)
 		sample.isMouseInSim = false;
 
 	sample.NumParts = NUM_PARTS;
-	sample.SoundsPlaying = ae->SoundsPlaying();
 	return sample;
 }
 

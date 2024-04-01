@@ -32,16 +32,12 @@ class Gravity;
 class Air;
 class GameSave;
 
-class AudioEngine;
-
 class Simulation
 {
 public:
 	GravityPtr grav;
 	std::unique_ptr<Air> air;
 	RNG rng;
-
-	std::unique_ptr<AudioEngine> ae;
 
 	std::vector<sign> signs;
 	//Element * elements;
@@ -117,7 +113,7 @@ public:
 	uint64_t frameCount;
 	bool ensureDeterminism;
 
-	void Load(const GameSave *save, bool includePressure, Vec2<int> blockP, bool allowMoo = false); // block coordinates
+	void Load(const GameSave *save, bool includePressure, Vec2<int> blockP); // block coordinates
 	std::unique_ptr<GameSave> Save(bool includePressure, Rect<int> partR); // particle coordinates
 	void SaveSimOptions(GameSave &gameSave);
 	SimulationSample GetSample(int x, int y);
