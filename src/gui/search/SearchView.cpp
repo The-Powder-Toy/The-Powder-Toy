@@ -490,7 +490,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		loadingSpinner->Visible = false;
 		if (!errorLabel)
 		{
-			errorLabel = new ui::Label(ui::Point((WINDOWW/2)-100, (WINDOWH/2)-6), ui::Point(200, 12), "Error");
+			errorLabel = new ui::Label(ui::Point(0, (WINDOWH/2)-6), ui::Point(WINDOWW, 12), "Error");
 			AddComponent(errorLabel);
 		}
 		if (!sender->GetSavesLoaded())

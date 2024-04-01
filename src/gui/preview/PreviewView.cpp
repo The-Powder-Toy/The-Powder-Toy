@@ -111,9 +111,9 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	AddComponent(missingElementsButton);
 
 	if(showAvatars)
-		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(180, 16), "");
+		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(265, 16), "");
 	else
-		saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(200, 16), "");
+		saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(300, 16), "");
 	saveNameLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveNameLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(saveNameLabel);
