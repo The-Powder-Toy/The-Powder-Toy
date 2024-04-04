@@ -59,17 +59,21 @@ static int update(UPDATE_FUNC_ARGS)
 				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
+
 				if (TYP(r)==PT_WATR && sim->rng.chance(1, 400))
 				{
 					sim->kill_part(i);
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_DEUT);
 					parts[ID(r)].life = 10;
+
 					return 1;
 				}
 				else if (TYP(r) == PT_GEL) //GLOW + GEL = RSST
 				{
 					sim->kill_part(i);
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_RSST);
+					parts[ID(r)].tmp = 0;
+
 					return 1;
 				}
 			}

@@ -33,6 +33,7 @@ void Element::Element_RSST()
 	Description = "Resist. Solidifies on contact with photons, is destroyed by electrons and spark.";
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPASS;
+	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -79,6 +80,13 @@ int update(UPDATE_FUNC_ARGS)
 			{
 				if(parts[ID(r)].ctype != PT_RSST)
 					parts[i].ctype = parts[ID(r)].ctype;
+			}
+
+			// Set RSST tmp from nearby breakable clone
+			if((TYP(r) == PT_BCLN) || (TYP(r) == PT_PBCN))
+			{
+				if(parts[ID(r)].ctype != PT_RSST)
+					parts[i].tmp = parts[ID(r)].ctype;
 			}
 		}
 	}
