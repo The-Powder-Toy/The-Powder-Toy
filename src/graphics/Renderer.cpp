@@ -176,9 +176,10 @@ void Renderer::render_parts()
 	auto &elements = sd.elements;
 	auto &graphicscache = sd.graphicscache;
 	GraphicsFuncContext gfctx;
-	gfctx.ren = this;
 	gfctx.sim = sim;
 	gfctx.rng.seed(rng());
+    gfctx.decorationsEnable = decorations_enable;
+    gfctx.blackDecorations = blackDecorations;
 	gfctx.pipeSubcallCpart = nullptr;
 	gfctx.pipeSubcallTpart = nullptr;
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y;
