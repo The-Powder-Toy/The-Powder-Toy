@@ -18,9 +18,8 @@ struct Particle;
 
 struct GraphicsFuncContext
 {
+	const Renderer *ren;
 	const Simulation *sim;
-	bool decorationsEnable;
-	bool blackDecorations;
 	RNG rng;
 	const Particle *pipeSubcallCpart;
 	Particle *pipeSubcallTpart;
