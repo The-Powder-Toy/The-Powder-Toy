@@ -31,7 +31,7 @@ void Element::Element_BCLN()
 	HeatConduct = 251;
 	Description = "Breakable Clone.";
 
-	Properties = TYPE_SOLID | PROP_LIFE_DEC | PROP_LIFE_KILL_DEC | PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID | PROP_PHOTPASS | PROP_LIFE_DEC | PROP_LIFE_KILL_DEC | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;

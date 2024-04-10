@@ -32,7 +32,7 @@ void Element::Element_RSST()
 	HeatConduct = 55;
 	Description = "Resist. Solidifies on contact with photons, is destroyed by electrons and spark.";
 
-	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPASS;
+	Properties = TYPE_LIQUID | PROP_CONDUCTS | PROP_LIFE_DEC | PROP_NEUTPASS | PROP_PHOTPASS;
 	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);
 
 	LowPressure = IPL;
