@@ -83,6 +83,8 @@ void Engine::ShowWindow(Window * window)
 	{
 		window->Position.Y = (g->Size().Y - window->Size.Y) / 2;
 	}
+	window->Size = window->Size.Min(g->Size());
+	window->Position = window->Position.Clamp(RectBetween<int>({0, 0}, g->Size()));
 	/*if(window->Position.Y > 0)
 	{
 		windowTargetPosition = window->Position;
