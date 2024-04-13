@@ -9,6 +9,7 @@ elem.FLAG_MOVABLE       = sim.FLAG_MOVABLE
 elem.FLAG_PHOTDECO      = sim.FLAG_PHOTDECO
 elem.FLAG_SKIPMOVE      = sim.FLAG_SKIPMOVE
 elem.FLAG_STAGNANT      = sim.FLAG_STAGNANT
+elem.PROP_BLACK         = 0
 elem.PROP_DRAWONCTYPE   = 0
 elem.ST_GAS             = 0
 elem.ST_LIQUID          = 0
