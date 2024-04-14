@@ -114,7 +114,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: static debug build
 	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',    True,     True,    '.pdb',         None,'x86_64-win-msvc-static', 'release',       10 ),
 	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',       10 ),
-	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,  'backendvs',                    None,   'debug',        0 ), # priority = 0: backend=vs build
+	# (  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,  'backendvs',                    None,   'debug',        0 ), # priority = 0: backend=vs build
 	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None, 'release',       10 ),
 	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: static debug build
 	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',    True,     True,    '.pdb',         None,  'i686-win-msvc-static', 'release',       10 ),
