@@ -41,6 +41,13 @@ jobs:
         env:
           PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
           GITHUB_REF: ${{ github.ref }}
+      - if: steps.prepare.outputs.do_publish == 'yes'
+        run: sudo apt update && sudo apt install curlftpfs && bash -c './.github/starcatcher-publish.sh'
+        env:
+          PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
+          PUBLISH_USERNAME: ${{ secrets.STARCATCHER_PUBLISH_USERNAME }}
+          PUBLISH_PASSWORD: ${{ secrets.STARCATCHER_PUBLISH_PASSWORD }}
+          PUBLISH_ACCESSCHECK: yes
       - if: steps.prepare.outputs.do_release == 'yes'
         id: create_release
         env:
