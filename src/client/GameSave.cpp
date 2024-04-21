@@ -59,6 +59,7 @@ void GameSave::MapPalette()
 	}
 	if (version <= Version(98, 2))
 	{
+		ignoreMissingErrors[PT_ICEI] = true;
 		ignoreMissingErrors[PT_SNOW] = true;
 		ignoreMissingErrors[PT_RSST] = true;
 		ignoreMissingErrors[PT_RSSS] = true;
