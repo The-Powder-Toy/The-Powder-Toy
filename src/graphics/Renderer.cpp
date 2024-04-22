@@ -183,6 +183,8 @@ void Renderer::render_parts()
 	gfctx.pipeSubcallTpart = nullptr;
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y;
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
+	int drawing_budget = 1000000; //Serves as an upper bound for costly effects such as SPARK, FLARE and LFLARE
+
 	if(!sim)
 		return;
 	auto *parts = sim->parts;
@@ -633,7 +635,7 @@ void Renderer::render_parts()
 				{
 					auto flicker = float(gfctx.rng()%20);
 					auto gradv = 4*sim->parts[i].life + flicker;
-					for (x = 0; gradv>0.5; x++) {
+					for (x = 0; (gradv>0.5) && (drawing_budget > 0); x++) {
 						auto col = RGBA<uint8_t>(
 							std::min(0xFF, colr * int(gradv) / 255),
 							std::min(0xFF, colg * int(gradv) / 255),
@@ -644,6 +646,7 @@ void Renderer::render_parts()
 						AddPixel({ nx, ny+x }, col);
 						AddPixel({ nx, ny-x }, col);
 						gradv = gradv/1.5f;
+						drawing_budget--;
 					}
 				}
 				if(pixel_mode & PMODE_FLARE)
@@ -660,12 +663,13 @@ void Renderer::render_parts()
 					BlendPixel({ nx-1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 					BlendPixel({ nx+1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 					BlendPixel({ nx-1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-					for (x = 1; gradv>0.5; x++) {
+					for (x = 1; (gradv>0.5) && (drawing_budget > 0); x++) {
 						AddPixel({ nx+x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						AddPixel({ nx-x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						AddPixel({ nx, ny+x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						AddPixel({ nx, ny-x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						gradv = gradv/1.2f;
+						drawing_budget--;
 					}
 				}
 				if(pixel_mode & PMODE_LFLARE)
@@ -682,12 +686,13 @@ void Renderer::render_parts()
 					BlendPixel({ nx-1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 					BlendPixel({ nx+1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 					BlendPixel({ nx-1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-					for (x = 1; gradv>0.5; x++) {
+					for (x = 1; (gradv>0.5) && (drawing_budget > 0); x++) {
 						AddPixel({ nx+x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						AddPixel({ nx-x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						AddPixel({ nx, ny+x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						AddPixel({ nx, ny-x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						gradv = gradv/1.01f;
+						drawing_budget--;
 					}
 				}
 				if (pixel_mode & EFFECT_GRAVIN)
