@@ -3,7 +3,7 @@
 #include "@RESOUCE_H@"
 #include <winuser.h>
 #include <winver.h>
-#include <ntdef.h>
+// #include <ntdef.h> // maybe not needed?
 
 #define HAVE_ICONS @HAVE_ICONS@
 #define HAVE_UTF8CP @HAVE_UTF8CP@

@@ -6,9 +6,6 @@ project(
 		'c_std=c99',
 		'cpp_std=c++17',
 		'cpp_rtti=false',
-		'build.c_std=c99', # used by to_array
-		'build.cpp_std=c++17', # used by to_array
-		'build.cpp_rtti=false', # used by to_array
 	],
 	meson_version: '>=0.64.0',
 )
@@ -20,9 +17,9 @@ endif
 
 fs = import('fs')
 to_array = generator(
-	executable('toarray', sources: 'resources/ToArray.cpp', native: true),
+	find_program('python'),
 	output: [ '@PLAINNAME@.cpp', '@PLAINNAME@.h' ],
-	arguments: [ '@OUTPUT0@', '@OUTPUT1@', '@INPUT@', '@EXTRA_ARGS@' ]
+	arguments: [ join_paths(meson.current_source_dir(), 'resources/to-array.py'), '@OUTPUT0@', '@OUTPUT1@', '@INPUT@', '@EXTRA_ARGS@' ]
 )
 
 render_icons_with_inkscape = get_option('render_icons_with_inkscape')
