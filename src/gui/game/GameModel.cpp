@@ -256,9 +256,9 @@ void GameModel::BuildMenus()
 	elementTools.clear();
 
 	//Create menus
-	for (int i = 0; i < SC_TOTAL; i++)
+	for (auto &section : sd.msections)
 	{
-		menuList.push_back(new Menu(sd.msections[i].icon, sd.msections[i].name, sd.msections[i].doshow));
+		menuList.push_back(new Menu(section.icon, section.name, section.doshow));
 	}
 
 	//Build menus from Simulation elements
@@ -284,7 +284,7 @@ void GameModel::BuildMenus()
 				tempTool = new ElementTool(i, elements[i].Name, elements[i].Description, elements[i].Colour, elements[i].Identifier, elements[i].IconGenerator);
 			}
 
-			if (elements[i].MenuSection >= 0 && elements[i].MenuSection < SC_TOTAL && elements[i].MenuVisible)
+			if (elements[i].MenuSection >= 0 && elements[i].MenuSection < int(sd.msections.size()) && elements[i].MenuVisible)
 			{
 				menuList[elements[i].MenuSection]->AddTool(tempTool);
 			}

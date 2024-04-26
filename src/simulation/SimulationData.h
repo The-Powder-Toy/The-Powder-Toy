@@ -31,9 +31,6 @@ constexpr int SC_LIFE      = 12;
 constexpr int SC_TOOL      = 13;
 constexpr int SC_FAVORITES = 14;
 constexpr int SC_DECO      = 15;
-constexpr int SC_CRACKER   = 16;
-constexpr int SC_CRACKER2  = 17;
-constexpr int SC_TOTAL     = 16;
 
 constexpr int O_WL_WALLELEC     = 122;
 constexpr int O_WL_EWALL        = 123;
