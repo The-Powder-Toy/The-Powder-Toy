@@ -6,7 +6,7 @@ void Element::Element_PSTS()
 	Name = "PSTS";
 	Colour = 0x776677_rgb;
 	MenuVisible = 0;
-	MenuSection = SC_SPECIAL;
+	MenuSection = SC_SOLIDS;
 	Enabled = 1;
 
 	Advection = 0.0f;

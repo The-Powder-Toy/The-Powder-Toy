@@ -7,7 +7,7 @@ void Element::Element_BIZRG()
 	Name = "BIZG";
 	Colour = 0x00FFBB_rgb;
 	MenuVisible = 0;
-	MenuSection = SC_SPECIAL;
+	MenuSection = SC_GAS;
 	Enabled = 1;
 
 	Advection = 1.0f;
