@@ -49,7 +49,7 @@ if host_platform == 'windows'
 		}
 		foreach key, icons : win_icos
 			command = [
-				find_program('python'),
+				python3_prog,
 				join_paths(meson.current_source_dir(), 'make-ico.py'),
 				'@OUTPUT@',
 			]

@@ -15,9 +15,12 @@ if get_option('prepare')
 	subdir_done()
 endif
 
+python = import('python')
+python3_prog = python.find_installation('python3')
+
 fs = import('fs')
 to_array = generator(
-	find_program('python'),
+	python3_prog,
 	output: [ '@PLAINNAME@.cpp', '@PLAINNAME@.h' ],
 	arguments: [ join_paths(meson.current_source_dir(), 'resources/to-array.py'), '@OUTPUT0@', '@OUTPUT1@', '@INPUT@', '@EXTRA_ARGS@' ]
 )
