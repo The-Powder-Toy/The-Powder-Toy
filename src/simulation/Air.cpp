@@ -139,6 +139,11 @@ void Air::update_airh(void)
 				dh += AIR_VADV*(1.0f-tx)*ty*((bmap_blockairh[j+1][i]&0x8) ? odh : hv[j+1][i]);
 				dh += AIR_VADV*tx*ty*((bmap_blockairh[j+1][i+1]&0x8) ? odh : hv[j+1][i+1]);
 			}
+
+			// Temp caps
+			if (dh > MAX_TEMP) dh = MAX_TEMP;
+			if (dh < MIN_TEMP) dh = MIN_TEMP;
+
 			ohv[y][x] = dh;
 
 			// Air convection.
@@ -157,10 +162,6 @@ void Air::update_airh(void)
 				vx[y][x] += weight * convGravX;
 				vy[y][x] += weight * convGravY;
 			}
-
-			// Temp caps
-			if (hv[y][x] > MAX_TEMP) hv[y][x] = MAX_TEMP;
-			if (hv[y][x] < MIN_TEMP) hv[y][x] = MIN_TEMP;
 		}
 	}
 	memcpy(hv, ohv, sizeof(hv));
