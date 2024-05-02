@@ -358,8 +358,8 @@ if [[ $BSH_HOST_PLATFORM == android ]]; then
 	meson_configure+=$'\t'--cross-file=android/cross/$BSH_HOST_ARCH.ini
 	cat << ANDROID_INI > .github/android-ghactions.ini
 [constants]
-andriod_ndk_toolchain_bin = '$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin'
-andriod_sdk_build_tools = '$ANDROID_SDK_ROOT/build-tools/32.0.0'
+android_ndk_toolchain_bin = '$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin'
+android_sdk_build_tools = '$ANDROID_SDK_ROOT/build-tools/32.0.0'
 
 [properties]
 # android_ndk_toolchain_prefix comes from the correct cross-file in ./android/cross
@@ -370,16 +370,16 @@ java_runtime_jar = '$JAVA_HOME_8_X64/jre/lib/rt.jar'
 
 [binaries]
 # android_ndk_toolchain_prefix comes from the correct cross-file in ./android/cross
-c = andriod_ndk_toolchain_bin / (android_ndk_toolchain_prefix + 'clang')
-cpp = andriod_ndk_toolchain_bin / (android_ndk_toolchain_prefix + 'clang++')
-strip = andriod_ndk_toolchain_bin / 'llvm-strip'
+c = android_ndk_toolchain_bin / (android_ndk_toolchain_prefix + 'clang')
+cpp = android_ndk_toolchain_bin / (android_ndk_toolchain_prefix + 'clang++')
+strip = android_ndk_toolchain_bin / 'llvm-strip'
 javac = '$JAVA_HOME_8_X64/bin/javac'
 jar = '$JAVA_HOME_8_X64/bin/jar'
-d8 = andriod_sdk_build_tools / 'd8'
-aapt = andriod_sdk_build_tools / 'aapt'
-aapt2 = andriod_sdk_build_tools / 'aapt2'
-zipalign = andriod_sdk_build_tools / 'zipalign'
-apksigner = andriod_sdk_build_tools / 'apksigner'
+d8 = android_sdk_build_tools / 'd8'
+aapt = android_sdk_build_tools / 'aapt'
+aapt2 = android_sdk_build_tools / 'aapt2'
+zipalign = android_sdk_build_tools / 'zipalign'
+apksigner = android_sdk_build_tools / 'apksigner'
 ANDROID_INI
 	meson_configure+=$'\t'--cross-file=.github/android-ghactions.ini
 fi
