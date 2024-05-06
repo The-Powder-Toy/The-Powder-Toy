@@ -100,6 +100,8 @@ void TickClient()
 	Client::Ref().Tick();
 }
 
+int main(int argc, char *argv[]);
+
 static void BlueScreen(String detailMessage, std::optional<std::vector<String>> stackTrace)
 {
 	auto &engine = ui::Engine::Ref();
@@ -119,7 +121,7 @@ static void BlueScreen(String detailMessage, std::optional<std::vector<String>> 
 	crashInfo << "Date: " << format::UnixtimeToDate(time(NULL), "%Y-%m-%dT%H:%M:%SZ", false).FromUtf8() << "\n";
 	if (stackTrace)
 	{
-		crashInfo << "Stack trace:\n";
+		crashInfo << "Stack trace; main is at 0x" << Format::Hex() << intptr_t(main) << ":\n";
 		for (auto &item : *stackTrace)
 		{
 			crashInfo << " - " << item << "\n";
