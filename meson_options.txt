@@ -95,7 +95,7 @@ option(
 option(
 	'x86_sse',
 	type: 'combo',
-	choices: [ 'none', 'sse', 'sse2', 'sse3', 'auto' ],
+	choices: [ 'none', 'sse', 'sse2', 'sse3', 'sse4.1', 'sse4.2', 'avx', 'avx2', 'avx512', 'auto' ],
 	value: 'auto',
 	description: 'Enable SSE (available only on x86)'
 )
