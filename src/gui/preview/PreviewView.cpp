@@ -427,6 +427,7 @@ void PreviewView::OnTick(float dt)
 	{
 		try
 		{
+			addCommentRequest->Finish();
 			addCommentBox->SetText("");
 			c->CommentAdded();
 		}
@@ -600,6 +601,11 @@ void PreviewView::submitComment()
 	if (addCommentBox)
 	{
 		String comment = addCommentBox->GetText();
+		if (comment.length() == 0)
+		{
+			c->CommentAdded();
+			return;
+		}
 		if (comment.length() < 4)
 		{
 			new ErrorMessage("Error", "Comment is too short");
