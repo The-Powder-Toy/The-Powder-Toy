@@ -30,9 +30,10 @@ void Element::Element_CSNS()
 
 	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Ctype sensor, creates a spark when there's a nearby particle with a ctype higher than its temperature.";
+	Description = "Ctype sensor, creates a spark when there's a nearby particle with a ctype equal to its ctype.";
 
 	Properties = TYPE_SOLID;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -46,6 +47,7 @@ void Element::Element_CSNS()
 	DefaultProperties.tmp2 = 2;
 
 	Update = &update;
+	CtypeDraw = &Element::ctypeDrawVInCtype;
 }
 
 static int update(UPDATE_FUNC_ARGS)
@@ -102,14 +104,14 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 				case 1:
 					// .ctype serialization into FILT
-					if (TYP(r) != PT_LSNS && TYP(r) != PT_FILT && parts[ID(r)].life >= 0)
+					if (TYP(r) != PT_CSNS && TYP(r) != PT_FILT && parts[ID(r)].life >= 0)
 					{
 						doSerialization = true;
 						ctype = parts[ID(r)].ctype;
 					}
 					break;
 				case 3:
-					// .life deserialization
+					// .ctype deserialization
 					if (TYP(r) == PT_FILT)
 					{
 						doDeserialization = true;
@@ -118,12 +120,12 @@ static int update(UPDATE_FUNC_ARGS)
 					break;
 				case 2:
 					// Invert mode
-					if (parts[ID(r)].ctype <= parts[i].temp - 273.15)
+					if (TYP(r) != PT_FILT && parts[ID(r)].ctype != parts[i].ctype)
 						parts[i].life = 1;
 					break;
 				default:
 					// Normal mode
-					if (parts[ID(r)].ctype > parts[i].temp - 273.15)
+					if (TYP(r) != PT_FILT && parts[ID(r)].ctype == parts[i].ctype)
 						parts[i].life = 1;
 					break;
 				}
@@ -144,7 +146,7 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				int nx = x + rx;
 				int ny = y + ry;
-				// .life serialization.
+				// .ctype serialization.
 				if (doSerialization)
 				{
 					while (TYP(r) == PT_FILT)
@@ -157,7 +159,7 @@ static int update(UPDATE_FUNC_ARGS)
 						r = pmap[ny][nx];
 					}
 				}
-				// .life deserialization.
+				// .ctype deserialization.
 				else if (doDeserialization)
 				{
 					if (TYP(r) != PT_FILT)
