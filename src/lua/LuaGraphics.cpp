@@ -71,8 +71,9 @@ static int drawPixel(lua_State *L)
 	else if (b > 255) b = 255;
 	if      (a < 0  ) a = 0  ;
 	else if (a > 255) a = 255;
-	auto *lsi = GetLSI();
-	lsi->g->BlendPixel({ x, y }, RGBA<uint8_t>(r, g, b, a));
+	std::visit([x, y, r, g, b, a](auto p) {
+		p->BlendPixel({ x, y }, RGBA<uint8_t>(r, g, b, a));
+	}, currentGraphics());
 	return 0;
 }
 
