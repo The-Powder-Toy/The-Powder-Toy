@@ -49,6 +49,31 @@ void Element::Element_RSSS()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	for(int rx = -1; rx < 2; rx++)
+	{
+		for(int ry = -1; ry < 2; ry++)
+		{
+			auto r = pmap[y+ry][x+rx];
+
+			if (!r)
+				continue;
+
+			// Set RSSS ctype from nearby clone
+			if((TYP(r) == PT_CLNE) || (TYP(r) == PT_PCLN))
+			{
+				if(parts[ID(r)].ctype != PT_RSSS)
+					parts[i].ctype = parts[ID(r)].ctype;
+			}
+
+			// Set RSSS tmp from nearby breakable clone
+			if((TYP(r) == PT_BCLN) || (TYP(r) == PT_PBCN))
+			{
+				if(parts[ID(r)].ctype != PT_RSSS)
+					parts[i].tmp = parts[ID(r)].ctype;
+			}
+		}
+	}
+
 	//Block air like TTAN
 	sim->air->bmap_blockair[y/CELL][x/CELL] = 1;
 	sim->air->bmap_blockairh[y/CELL][x/CELL] = 0x8;
