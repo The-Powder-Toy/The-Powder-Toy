@@ -457,7 +457,7 @@ int Main(int argc, char *argv[])
 		if (engine.windowFrameOps.scale != guessed)
 		{
 			engine.windowFrameOps.scale = guessed;
-			prefs.Set("Scale", windowFrameOps.scale);
+			prefs.Set("Scale", guessed);
 			showLargeScreenDialog = true;
 		}
 	}
