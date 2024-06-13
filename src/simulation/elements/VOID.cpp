@@ -39,5 +39,5 @@ void Element::Element_VOID()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
-	CtypeDraw = &Element::ctypeDrawVInTmp;
+	CtypeDraw = &Element::basicCtypeDraw;
 }
