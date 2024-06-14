@@ -40,7 +40,7 @@ void Slider::updatePosition(int position)
 	}
 }
 
-void Slider::OnMouseMoved(int x, int y, int dx, int dy)
+void Slider::OnMouseMoved(int x, int y)
 {
 	if(isMouseDown)
 	{
@@ -48,10 +48,13 @@ void Slider::OnMouseMoved(int x, int y, int dx, int dy)
 	}
 }
 
-void Slider::OnMouseClick(int x, int y, unsigned button)
+void Slider::OnMouseDown(int x, int y, unsigned button)
 {
-	isMouseDown = true;
-	updatePosition(x);
+	if (MouseDownInside)
+	{
+		isMouseDown = true;
+		updatePosition(x - Position.X);
+	}
 }
 
 void Slider::OnMouseUp(int x, int y, unsigned button)

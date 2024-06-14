@@ -11,6 +11,7 @@
 #include <cmath>
 
 SearchModel::SearchModel():
+	currentPeriod(http::allSaves),
 	currentSort(http::sortByVotes),
 	currentPage(1),
 	resultCount(0),
@@ -30,11 +31,11 @@ bool SearchModel::GetShowTags()
 	return showTags;
 }
 
-void SearchModel::BeginSearchSaves(int start, int count, String query, http::Sort sort, http::Category category)
+void SearchModel::BeginSearchSaves(int start, int count, String query, http::Period period, http::Sort sort, http::Category category)
 {
 	lastError = "";
 	resultCount = 0;
-	searchSaves = std::make_unique<http::SearchSavesRequest>(start, count, query.ToUtf8(), sort, category);
+	searchSaves = std::make_unique<http::SearchSavesRequest>(start, count, query.ToUtf8(), period, sort, category);
 	searchSaves->Start();
 }
 
@@ -95,7 +96,7 @@ bool SearchModel::UpdateSaveList(int pageNumber, String query)
 		//resultCount = 0;
 		currentPage = pageNumber;
 
-		if(pageNumber == 1 && !showOwn && !showFavourite && currentSort == http::sortByVotes && query == "")
+		if(pageNumber == 1 && !showOwn && !showFavourite && currentPeriod == http::allSaves && currentSort == http::sortByVotes && query == "")
 			SetShowTags(true);
 		else
 			SetShowTags(false);
@@ -120,7 +121,7 @@ bool SearchModel::UpdateSaveList(int pageNumber, String query)
 		{
 			category = http::categoryMyOwn;
 		}
-		BeginSearchSaves((currentPage-1)*20, 20, lastQuery, currentSort, category);
+		BeginSearchSaves((currentPage-1)*20, 20, lastQuery, currentPeriod, currentSort, category);
 		return true;
 	}
 	return false;
@@ -178,6 +179,7 @@ void SearchModel::AddObserver(SearchView * observer)
 	observers.push_back(observer);
 	observer->NotifySaveListChanged(this);
 	observer->NotifyPageChanged(this);
+	observer->NotifyPeriodChanged(this);
 	observer->NotifySortChanged(this);
 	observer->NotifyShowOwnChanged(this);
 	observer->NotifyTagListChanged(this);
@@ -258,6 +260,15 @@ void SearchModel::notifyPageChanged()
 	}
 }
 
+void SearchModel::notifyPeriodChanged()
+{
+	for (size_t i = 0; i < observers.size(); i++)
+	{
+		SearchView* cObserver = observers[i];
+		cObserver->NotifyPeriodChanged(this);
+	}
+}
+
 void SearchModel::notifySortChanged()
 {
 	for (size_t i = 0; i < observers.size(); i++)
@@ -296,7 +307,7 @@ void SearchModel::notifySelectedChanged()
 
 int SearchModel::GetPageCount()
 {
-	if (!showOwn && !showFavourite && currentSort == http::sortByVotes && lastQuery == "")
+	if (!showOwn && !showFavourite && currentPeriod == http::allSaves && currentSort == http::sortByVotes && lastQuery == "")
 		return std::max(1, (int)(ceil(resultCount/20.0f))+1); //add one for front page (front page saves are repeated twice)
 	else
 		return std::max(1, (int)(ceil(resultCount/20.0f)));

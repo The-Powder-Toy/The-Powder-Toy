@@ -51,7 +51,7 @@ void AvatarButton::Draw(const Point& screenPos)
 	}
 }
 
-void AvatarButton::OnMouseUnclick(int x, int y, unsigned int button)
+void AvatarButton::OnMouseClick(int x, int y, unsigned int button)
 {
 	if(button != 1)
 	{
@@ -70,16 +70,19 @@ void AvatarButton::OnContextMenuAction(int item)
 	//Do nothing
 }
 
-void AvatarButton::OnMouseClick(int x, int y, unsigned int button)
+void AvatarButton::OnMouseDown(int x, int y, unsigned int button)
 {
-	if(button == SDL_BUTTON_RIGHT)
+	if (MouseDownInside)
 	{
-		if(menu)
-			menu->Show(GetScreenPos() + ui::Point(x, y));
-	}
-	else
-	{
-		isButtonDown = true;
+		if(button == SDL_BUTTON_RIGHT)
+		{
+			if(menu)
+				menu->Show(GetContainerPos() + ui::Point(x, y));
+		}
+		else
+		{
+			isButtonDown = true;
+		}
 	}
 }
 

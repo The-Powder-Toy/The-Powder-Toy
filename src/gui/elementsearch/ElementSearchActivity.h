@@ -10,6 +10,7 @@ class GameController;
 
 namespace ui
 {
+	class ScrollPanel;
 	class Textbox;
 }
 
@@ -20,6 +21,7 @@ class ElementSearchActivity: public WindowActivity
 	std::vector<Tool*> tools;
 	ui::Textbox * searchField;
 	std::vector<ToolButton*> toolButtons;
+	ui::ScrollPanel *scrollPanel = nullptr;
 	String toolTip;
 	int toolTipPresence;
 	bool shiftPressed;

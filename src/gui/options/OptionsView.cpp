@@ -76,13 +76,13 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		auto *checkbox = new ui::Checkbox(ui::Point(8 + indent * 15, currentY), ui::Point(1, 16), text, "");
 		autoWidth(checkbox, 0);
 		checkbox->SetActionCallback({ action });
-		scrollPanel->AddChild(checkbox);
 		currentY += 14;
 		if (info.size())
 		{
 			addLabel(indent, info);
 		}
 		currentY += 4;
+		scrollPanel->AddChild(checkbox);
 		return checkbox;
 	};
 	auto addDropDown = [this, &currentY, &autoWidth](String info, std::vector<std::pair<String, int>> options, std::function<void ()> action) {
@@ -137,10 +137,11 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		ambientAirTemp->SetDefocusCallback({ [this] {
 			UpdateAirTemp(ambientAirTemp->GetText(), true);
 		}});
+		ambientAirTemp->SetLimit(9);
 		scrollPanel->AddChild(ambientAirTemp);
 		ambientAirTempPreview = new ui::Button(ui::Point(Size.X-31, currentY), ui::Point(16, 16), "", "Preview");
 		scrollPanel->AddChild(ambientAirTempPreview);
-		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-96, 16), "Ambient air temperature");
+		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-105, 16), "Ambient air temperature");
 		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 		scrollPanel->AddChild(label);

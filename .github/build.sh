@@ -72,10 +72,11 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 		if [[ $BSH_BUILD_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
 			pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-gcc
 			if [[ $BSH_STATIC_DYNAMIC == static ]]; then
-				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{cmake,7zip} patch
+				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{cmake,7zip,jq} patch
 			else
-				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,meson,fftw}
+				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,meson,fftw,jq}
 			fi
+			export PKG_CONFIG=$(which pkg-config.exe)
 		fi
 		;;
 	linux)
@@ -198,7 +199,7 @@ meson_configure+=$'\t'-Dapp_exe=$APP_EXE
 meson_configure+=$'\t'-Dapp_id=$APP_ID
 meson_configure+=$'\t'-Dapp_data=$APP_DATA
 meson_configure+=$'\t'-Dapp_vendor=$APP_VENDOR
-meson_configure+=$'\t'-Db_strip=false
+meson_configure+=$'\t'-Dstrip=false
 meson_configure+=$'\t'-Db_staticpic=false
 meson_configure+=$'\t'-Dmod_id=$MOD_ID
 case $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_DEBUG_RELEASE in
@@ -289,6 +290,10 @@ if [[ $RELEASE_TYPE == snapshot ]] && [[ $MOD_ID != 0 ]]; then
 fi
 if [[ $RELEASE_TYPE == snapshot ]] || [[ $MOD_ID != 0 ]]; then
 	meson_configure+=$'\t'-Dupdate_server=starcatcher.us/TPT
+	if [[ $BSH_HOST_PLATFORM == emscripten ]]; then
+		meson_configure+=$'\t'-Dserver=tptserv.starcatcher.us
+		meson_configure+=$'\t'-Dstatic_server=tptserv.starcatcher.us/Static
+	fi
 fi
 if [[ $RELEASE_TYPE != dev ]]; then
 	meson_configure+=$'\t'-Dignore_updates=false
@@ -479,7 +484,9 @@ if [[ $PACKAGE_MODE == dmg ]]; then
 	mv $appdir dmgroot/$appdir
 	cp ../LICENSE dmgroot/LICENSE
 	cp ../README.md dmgroot/README.md
-	hdiutil create -format UDZO -volname $APP_NAME -fs HFS+ -srcfolder dmgroot -o $ASSET_PATH
+	# apparently using sudo here fixes the occasional "resource is busy"
+	# see https://github.com/actions/runner-images/issues/7522
+	sudo hdiutil create -format UDZO -volname $APP_NAME -fs HFS+ -srcfolder dmgroot -o $ASSET_PATH
 elif [[ $PACKAGE_MODE == emscripten ]]; then
 	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.worker.js $APP_EXE.wasm
 elif [[ $PACKAGE_MODE == appimage ]]; then

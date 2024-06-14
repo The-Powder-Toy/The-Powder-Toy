@@ -37,6 +37,7 @@ public:
 	void Refresh();
 	void SetPage(int page);
 	void SetPageRelative(int offset);
+	void ChangePeriod(int period);
 	void ChangeSort();
 	void ShowOwn(bool show);
 	void ShowFavourite(bool show);

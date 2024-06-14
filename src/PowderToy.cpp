@@ -100,6 +100,8 @@ void TickClient()
 	Client::Ref().Tick();
 }
 
+int main(int argc, char *argv[]);
+
 static void BlueScreen(String detailMessage, std::optional<std::vector<String>> stackTrace)
 {
 	auto &engine = ui::Engine::Ref();
@@ -119,7 +121,7 @@ static void BlueScreen(String detailMessage, std::optional<std::vector<String>> 
 	crashInfo << "Date: " << format::UnixtimeToDate(time(NULL), "%Y-%m-%dT%H:%M:%SZ", false).FromUtf8() << "\n";
 	if (stackTrace)
 	{
-		crashInfo << "Stack trace:\n";
+		crashInfo << "Stack trace; main is at 0x" << Format::Hex() << intptr_t(main) << ":\n";
 		for (auto &item : *stackTrace)
 		{
 			crashInfo << " - " << item << "\n";
@@ -445,19 +447,20 @@ int Main(int argc, char *argv[])
 	engine.Begin();
 	engine.SetFastQuit(prefs.Get("FastQuit", true));
 	engine.TouchUI = prefs.Get("TouchUI", DEFAULT_TOUCH_UI);
-	if (Client::Ref().IsFirstRun() && FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsNone)
-	{
-		auto guessed = GuessBestScale();
-		if (windowFrameOps.scale != guessed)
-		{
-			windowFrameOps.scale = guessed;
-			prefs.Set("Scale", windowFrameOps.scale);
-			showLargeScreenDialog = true;
-		}
-	}
 	engine.windowFrameOps = windowFrameOps;
 
 	SDLOpen();
+
+	if (Client::Ref().IsFirstRun() && FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsNone)
+	{
+		auto guessed = GuessBestScale();
+		if (engine.windowFrameOps.scale != guessed)
+		{
+			engine.windowFrameOps.scale = guessed;
+			prefs.Set("Scale", guessed);
+			showLargeScreenDialog = true;
+		}
+	}
 
 	bool enableBluescreen = USE_BLUESCREEN && !true_arg(arguments["disable-bluescreen"]);
 	if (enableBluescreen)

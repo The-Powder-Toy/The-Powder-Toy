@@ -50,7 +50,10 @@ static int beginMessageBox(lua_State *L)
 	auto message = PickIfType(L, 2, String("Message"));
 	auto large = PickIfType(L, 3, false);
 	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from L).
-	cb->Assign(L, lua_gettop(L));
+	if (lua_gettop(L))
+	{
+		cb->Assign(L, lua_gettop(L));
+	}
 	new InformationMessage(title, message, large, { [cb]() {
 		auto *lsi = GetLSI();
 		auto L = lsi->L;
@@ -74,7 +77,10 @@ static int beginThrowError(lua_State *L)
 {
 	auto errorMessage = PickIfType(L, 1, String("Error text"));
 	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from L).
-	cb->Assign(L, lua_gettop(L));
+	if (lua_gettop(L))
+	{
+		cb->Assign(L, lua_gettop(L));
+	}
 	new ErrorMessage("Error", errorMessage, { [cb]() {
 		auto *lsi = GetLSI();
 		auto L = lsi->L;
@@ -101,7 +107,10 @@ static int beginInput(lua_State *L)
 	auto text = PickIfType(L, 3, String(""));
 	auto shadow = PickIfType(L, 4, String(""));
 	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from L).
-	cb->Assign(L, lua_gettop(L));
+	if (lua_gettop(L))
+	{
+		cb->Assign(L, lua_gettop(L));
+	}
 	auto handle = [cb](std::optional<String> input) {
 		auto *lsi = GetLSI();
 		auto L = lsi->L;
@@ -140,7 +149,10 @@ static int beginConfirm(lua_State *L)
 	auto message = PickIfType(L, 2, String("Message"));
 	auto buttonText = PickIfType(L, 3, String("Confirm"));
 	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from L).
-	cb->Assign(L, lua_gettop(L));
+	if (lua_gettop(L))
+	{
+		cb->Assign(L, lua_gettop(L));
+	}
 	auto handle = [cb](int result) {
 		auto *lsi = GetLSI();
 		auto L = lsi->L;
@@ -376,8 +388,9 @@ static int activeMenu(lua_State *L)
 		lua_pushinteger(L, lsi->gameModel->GetActiveMenu());
 		return 1;
 	}
+	auto &sd = SimulationData::CRef();
 	int menuid = luaL_checkint(L, 1);
-	if (menuid >= 0 && menuid < SC_TOTAL)
+	if (menuid >= 0 && menuid < int(sd.msections.size()))
 		lsi->gameController->SetActiveMenu(menuid);
 	else
 		return luaL_error(L, "Invalid menu");
@@ -387,8 +400,11 @@ static int activeMenu(lua_State *L)
 static int menuEnabled(lua_State *L)
 {
 	int menusection = luaL_checkint(L, 1);
-	if (menusection < 0 || menusection >= SC_TOTAL)
-		return luaL_error(L, "Invalid menu");
+	{
+		auto &sd = SimulationData::CRef();
+		if (menusection < 0 || menusection >= int(sd.msections.size()))
+			return luaL_error(L, "Invalid menu");
+	}
 	int acount = lua_gettop(L);
 	if (acount == 1)
 	{

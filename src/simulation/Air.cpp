@@ -38,23 +38,26 @@ void Air::ClearAirH()
 	std::fill(&hv[0][0], &hv[0][0]+NCELL, ambientAirTemp);
 }
 
+// Used when updating temp or velocity from far away
+const float advDistanceMult = 0.7f;
+
 void Air::update_airh(void)
 {
-	for (auto i=0; i<YCELLS; i++) //reduces pressure/velocity on the edges every frame
+	for (auto i=0; i<YCELLS; i++) //sets air temp on the edges every frame
 	{
 		hv[i][0] = ambientAirTemp;
 		hv[i][1] = ambientAirTemp;
 		hv[i][XCELLS-2] = ambientAirTemp;
 		hv[i][XCELLS-1] = ambientAirTemp;
 	}
-	for (auto i=0; i<XCELLS; i++) //reduces pressure/velocity on the edges every frame
+	for (auto i=0; i<XCELLS; i++) //sets air temp on the edges every frame
 	{
 		hv[0][i] = ambientAirTemp;
 		hv[1][i] = ambientAirTemp;
 		hv[YCELLS-2][i] = ambientAirTemp;
 		hv[YCELLS-1][i] = ambientAirTemp;
 	}
-	for (auto y=0; y<YCELLS; y++) //update velocity and pressure
+	for (auto y=0; y<YCELLS; y++) //update air temp and velocity
 	{
 		for (auto x=0; x<XCELLS; x++)
 		{
@@ -65,9 +68,7 @@ void Air::update_airh(void)
 			{
 				for (auto i=-1; i<2; i++)
 				{
-					if (y+j>0 && y+j<YCELLS-2 &&
-					        x+i>0 && x+i<XCELLS-2 &&
-					        !(bmap_blockairh[y+j][x+i]&0x8))
+					if (y+j>0 && y+j<YCELLS-2 && x+i>0 && x+i<XCELLS-2 && !(bmap_blockairh[y+j][x+i]&0x8))
 					{
 						auto f = kernel[i+1+(j+1)*3];
 						dh += hv[y+j][x+i]*f;
@@ -83,13 +84,53 @@ void Air::update_airh(void)
 					}
 				}
 			}
-			auto tx = x - dx*0.7f;
-			auto ty = y - dy*0.7f;
+
+			// Trying to take air temp from far away.
+			// The code is almost identical to the "far away" velocity code from update_air
+			auto tx = x - dx*advDistanceMult;
+			auto ty = y - dy*advDistanceMult;
+			if ((dx*advDistanceMult>1.0f || dy*advDistanceMult>1.0f) && (tx>=2 && tx<XCELLS-2 && ty>=2 && ty<YCELLS-2))
+			{
+				float stepX, stepY;
+				int stepLimit;
+				if (std::abs(dx)>std::abs(dy))
+				{
+					stepX = (dx<0.0f) ? 1.f : -1.f;
+					stepY = -dy/fabsf(dx);
+					stepLimit = (int)(fabsf(dx*advDistanceMult));
+				}
+				else
+				{
+					stepY = (dy<0.0f) ? 1.f : -1.f;
+					stepX = -dx/fabsf(dy);
+					stepLimit = (int)(fabsf(dy*advDistanceMult));
+				}
+				tx = float(x);
+				ty = float(y);
+				auto step = 0;
+				for (; step<stepLimit; ++step)
+				{
+					tx += stepX;
+					ty += stepY;
+					if (bmap_blockairh[(int)(ty+0.5f)][(int)(tx+0.5f)]&0x8)
+					{
+						tx -= stepX;
+						ty -= stepY;
+						break;
+					}
+				}
+				if (step==stepLimit)
+				{
+					// No wall found
+					tx = x - dx*advDistanceMult;
+					ty = y - dy*advDistanceMult;
+				}
+			}
 			auto i = (int)tx;
 			auto j = (int)ty;
 			tx -= i;
 			ty -= j;
-			if (i>=2 && i<XCELLS-3 && j>=2 && j<YCELLS-3)
+			if (!(bmap_blockairh[y][x]&0x8) && i>=2 && i<=XCELLS-3 && j>=2 && j<=YCELLS-3)
 			{
 				auto odh = dh;
 				dh *= 1.0f - AIR_VADV;
@@ -98,17 +139,28 @@ void Air::update_airh(void)
 				dh += AIR_VADV*(1.0f-tx)*ty*((bmap_blockairh[j+1][i]&0x8) ? odh : hv[j+1][i]);
 				dh += AIR_VADV*tx*ty*((bmap_blockairh[j+1][i+1]&0x8) ? odh : hv[j+1][i+1]);
 			}
+
+			// Temp caps
+			if (dh > MAX_TEMP) dh = MAX_TEMP;
+			if (dh < MIN_TEMP) dh = MIN_TEMP;
+
 			ohv[y][x] = dh;
+
+			// Air convection.
+			// We use the Boussinesq approximation, i.e. we assume density to be nonconstant only
+			// near the gravity term of the fluid equation, and we suppose that it depends linearly on the
+			// difference between the current temperature (hv[y][x]) and some "stationary" temperature (ambientAirTemp).
 			if (x>=2 && x<XCELLS-2 && y>=2 && y<YCELLS-2)
 			{
 				float convGravX, convGravY;
 				sim.GetGravityField(x*CELL, y*CELL, -1.0f, -1.0f, convGravX, convGravY);
-				auto weight = ((hv[y][x] - hv[y][x-1]) * convGravX + (hv[y][x] - hv[y-1][x]) * convGravY) / 5000.0f;
-				if (weight > 0 && !(bmap_blockairh[y-1][x]&0x8))
-				{
-					vx[y][x] += weight * convGravX;
-					vy[y][x] += weight * convGravY;
-				}
+				auto weight = (hv[y][x] - ambientAirTemp) / 10000.0f;
+
+				// Our approximation works best when the temperature difference is small, so we cap it from above.
+				if (weight > 0.1f) weight = 0.1f;
+
+				vx[y][x] += weight * convGravX;
+				vy[y][x] += weight * convGravY;
 			}
 		}
 	}
@@ -117,8 +169,6 @@ void Air::update_airh(void)
 
 void Air::update_air(void)
 {
-	const float advDistanceMult = 0.7f;
-
 	if (airMode != AIR_NOUPDATE) //airMode 4 is no air/pressure update
 	{
 		for (auto i=0; i<YCELLS; i++) //reduces pressure/velocity on the edges every frame
@@ -233,7 +283,8 @@ void Air::update_air(void)
 				auto ty = y - dy*advDistanceMult;
 				if ((dx*advDistanceMult>1.0f || dy*advDistanceMult>1.0f) && (tx>=2 && tx<XCELLS-2 && ty>=2 && ty<YCELLS-2))
 				{
-					// Trying to take velocity from far away, check whether there is an intervening wall. Step from current position to desired source location, looking for walls, with either the x or y step size being 1 cell
+					// Trying to take velocity from far away, check whether there is an intervening wall.
+					// Step from current position to desired source location, looking for walls, with either the x or y step size being 1 cell
 					float stepX, stepY;
 					int stepLimit;
 					if (std::abs(dx)>std::abs(dy))
@@ -273,8 +324,7 @@ void Air::update_air(void)
 				auto j = (int)ty;
 				tx -= i;
 				ty -= j;
-				if (!bmap_blockair[y][x] && i>=2 && i<=XCELLS-3 &&
-				        j>=2 && j<=YCELLS-3)
+				if (!bmap_blockair[y][x] && i>=2 && i<=XCELLS-3 && j>=2 && j<=YCELLS-3)
 				{
 					dx *= 1.0f - AIR_VADV;
 					dy *= 1.0f - AIR_VADV;

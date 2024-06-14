@@ -6,9 +6,6 @@ project(
 		'c_std=c99',
 		'cpp_std=c++17',
 		'cpp_rtti=false',
-		'build.c_std=c99', # used by to_array
-		'build.cpp_std=c++17', # used by to_array
-		'build.cpp_rtti=false', # used by to_array
 	],
 	meson_version: '>=0.64.0',
 )
@@ -18,11 +15,14 @@ if get_option('prepare')
 	subdir_done()
 endif
 
+python = import('python')
+python3_prog = python.find_installation('python3')
+
 fs = import('fs')
 to_array = generator(
-	executable('toarray', sources: 'resources/ToArray.cpp', native: true),
+	python3_prog,
 	output: [ '@PLAINNAME@.cpp', '@PLAINNAME@.h' ],
-	arguments: [ '@OUTPUT0@', '@OUTPUT1@', '@INPUT@', '@EXTRA_ARGS@' ]
+	arguments: [ join_paths(meson.current_source_dir(), 'resources/to-array.py'), '@OUTPUT0@', '@OUTPUT1@', '@INPUT@', '@EXTRA_ARGS@' ]
 )
 
 render_icons_with_inkscape = get_option('render_icons_with_inkscape')
@@ -375,6 +375,22 @@ if host_platform == 'emscripten'
 	project_link_args += [
 		'-o', app_exe + '.js', # so we get a .wasm, and a .js
 	]
+endif
+if get_option('export_lua_symbols')
+	if is_static and lua_variant != 'none' and not project_export_dynamic
+		if host_platform == 'windows'
+			error('Lua symbols are currently impossible to export correctly on Windows')
+		elif c_compiler.has_link_argument('-Wl,--export-dynamic-symbol')
+			project_link_args += [
+				'-Wl,--export-dynamic-symbol=lua_*',
+				'-Wl,--export-dynamic-symbol=luaL_*',
+				'-Wl,--export-dynamic-symbol=luaopen_*',
+			]
+		else
+			warning('your linker does not support -Wl,--export-dynamic-symbol so Meson will be instructed to export all symbols in order to enable loading Lua shared modules, which may blow up the size of the resulting binary')
+			project_export_dynamic = true
+		endif
+	endif
 endif
 
 if get_option('build_powder')

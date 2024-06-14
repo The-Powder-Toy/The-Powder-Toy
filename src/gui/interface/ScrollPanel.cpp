@@ -1,8 +1,9 @@
 #include "ScrollPanel.h"
 #include "Engine.h"
-
 #include "graphics/Graphics.h"
-
+#include "Misc.h"
+#include "PowderToySDL.h"
+#include "Window.h"
 #include <algorithm>
 
 using namespace ui;
@@ -70,28 +71,56 @@ void ScrollPanel::Draw(const Point& screenPos)
 	}
 }
 
-void ScrollPanel::XOnMouseClick(int x, int y, unsigned int button)
+void ScrollPanel::XOnMouseDown(int x, int y, unsigned int button)
 {
-	if (isMouseInsideScrollbar)
+	if (MouseDownInside)
 	{
-		scrollbarSelected = true;
-		scrollbarInitialYOffset = int(offsetY);
+		CancelPanning();
+		if (isMouseInsideScrollbar)
+		{
+			scrollbarSelected = true;
+			scrollbarInitialYOffset = int(offsetY);
+		}
+		initialOffsetY = offsetY;
+		scrollbarInitialYClick = y - Position.Y;
+		scrollbarClickLocation = 100;
 	}
-	scrollbarInitialYClick = y;
-	scrollbarClickLocation = 100;
+}
+
+void ScrollPanel::CancelPanning()
+{
+	panning = false;
+	panHistory = {};
+	yScrollVel = 0;
 }
 
 void ScrollPanel::XOnMouseUp(int x, int y, unsigned int button)
 {
 	scrollbarSelected = false;
+	auto oldPanHistory = panHistory;
+	CancelPanning();
+	{
+		auto it = oldPanHistory.end();
+		while (it != oldPanHistory.begin() && *(it - 1))
+		{
+			--it;
+		}
+		if (it < oldPanHistory.end())
+		{
+			auto offsetYDiff = oldPanHistory.back()->offsetY - (*it)->offsetY;
+			auto tickDiff = oldPanHistory.back()->ticks - (*it)->ticks;
+			yScrollVel += offsetYDiff / tickDiff * (1000.f / Engine::Ref().GetFps());
+		}
+	}
 	isMouseInsideScrollbarArea = false;
 	scrollbarClickLocation = 0;
 }
 
-void ScrollPanel::XOnMouseMoved(int x, int y, int dx, int dy)
+void ScrollPanel::XOnMouseMoved(int x, int y)
 {
 	if(maxOffset.Y>0 && InnerSize.Y>0)
 	{
+		auto oldViewportPositionY = ViewportPosition.Y;
 		float scrollHeight = float(Size.Y)*(float(Size.Y)/float(InnerSize.Y));
 		float scrollPos = 0;
 		if (-ViewportPosition.Y>0)
@@ -113,6 +142,19 @@ void ScrollPanel::XOnMouseMoved(int x, int y, int dx, int dy)
 				offsetY = float(scrollbarInitialYOffset);
 			}
 		}
+		else if (MouseDownInside)
+		{
+			Vec2<int> mouseAt{ x, y };
+			if (Engine::Ref().TouchUI && iabs(scrollbarInitialYClick - mouseAt.Y) > PanOffsetThreshold)
+			{
+				panning = true;
+				for (auto *child : children)
+				{
+					child->MouseDownInside = false;
+				}
+				GetParentWindow()->FocusComponent(NULL);
+			}
+		}
 
 		if (x > (Size.X-scrollBarWidth) && x < (Size.X-scrollBarWidth)+scrollBarWidth)
 		{
@@ -122,11 +164,31 @@ void ScrollPanel::XOnMouseMoved(int x, int y, int dx, int dy)
 		}
 		else
 			isMouseInsideScrollbar = false;
+
+		if (oldViewportPositionY != ViewportPosition.Y)
+		{
+			PropagateMouseMove();
+		}
 	}
 }
 
 void ScrollPanel::XTick(float dt)
 {
+	auto oldViewportPositionY = ViewportPosition.Y;
+
+	if (panning)
+	{
+		auto scrollY = initialOffsetY + scrollbarInitialYClick - (Engine::Ref().GetMouseY() - GetScreenPos().Y);
+		ViewportPosition.Y = -scrollY;
+		offsetY = float(scrollY);
+		PanPoint p{ offsetY, GetTicks() };
+		if (!(panHistory.back() && panHistory.back()->ticks == p.ticks))
+		{
+			std::copy(panHistory.begin() + 1, panHistory.end(), panHistory.begin());
+			panHistory.back() = p;
+		}
+	}
+
 	if (xScrollVel > 7.0f) xScrollVel = 7.0f;
 	if (xScrollVel < -7.0f) xScrollVel = -7.0f;
 	if (xScrollVel > -0.5f && xScrollVel < 0.5)
@@ -183,9 +245,9 @@ void ScrollPanel::XTick(float dt)
 		}
 	}
 
-	if (mouseInside && scrollBarWidth < 6)
+	if (MouseInside && scrollBarWidth < 6)
 		scrollBarWidth++;
-	else if (!mouseInside && scrollBarWidth > 0 && !scrollbarSelected)
+	else if (!MouseInside && scrollBarWidth > 0 && !scrollbarSelected)
 		scrollBarWidth--;
 
 	if (isMouseInsideScrollbarArea && scrollbarClickLocation && !scrollbarSelected)
@@ -204,5 +266,10 @@ void ScrollPanel::XTick(float dt)
 
 		offsetY += scrollbarClickLocation*scrollHeight/10;
 		ViewportPosition.Y -= int(scrollbarClickLocation*scrollHeight/10);
+	}
+
+	if (oldViewportPositionY != ViewportPosition.Y)
+	{
+		PropagateMouseMove();
 	}
 }

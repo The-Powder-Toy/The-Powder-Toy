@@ -58,7 +58,7 @@ bool ReadFile(std::vector<char> &fileData, ByteString filename)
 	if (f) f.seekg(0, std::ios::end);
 	if (f) fileData.resize(f.tellg());
 	if (f) f.seekg(0);
-	if (f) f.read(&fileData[0], fileData.size());
+	if (f && fileData.size()) f.read(&fileData[0], fileData.size());
 	if (!f)
 	{
 		std::cerr << "ReadFile: " << filename << ": " << strerror(errno) << std::endl;

@@ -48,12 +48,12 @@ public:
 	virtual ~SaveButton();
 
 	void OnMouseClick(int x, int y, unsigned int button) override;
-	void OnMouseUnclick(int x, int y, unsigned int button) override;
+	void OnMouseDown(int x, int y, unsigned int button) override;
 
 	void OnMouseEnter(int x, int y) override;
 	void OnMouseLeave(int x, int y) override;
 
-	void OnMouseMovedInside(int x, int y, int dx, int dy) override;
+	void OnMouseMoved(int x, int y) override;
 
 	void AddContextMenu(int menuType);
 	void OnContextMenuAction(int item) override;

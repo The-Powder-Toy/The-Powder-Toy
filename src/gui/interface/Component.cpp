@@ -124,15 +124,19 @@ void Component::SetParent(Panel* new_parent)
 	this->_parent = new_parent;
 }
 
-Point Component::GetScreenPos()
+Point Component::GetContainerPos()
 {
 	Point newPos(0,0);
 	if(GetParentWindow())
 		newPos += GetParentWindow()->Position;
 	if(GetParent())
 		newPos += GetParent()->Position + GetParent()->ViewportPosition;
-	newPos += Position;
 	return newPos;
+}
+
+Point Component::GetScreenPos()
+{
+	return GetContainerPos() + Position;
 }
 
 Graphics * Component::GetGraphics()
@@ -185,11 +189,7 @@ void Component::OnMouseHover(int localx, int localy)
 {
 }
 
-void Component::OnMouseMoved(int localx, int localy, int dx, int dy)
-{
-}
-
-void Component::OnMouseMovedInside(int localx, int localy, int dx, int dy)
+void Component::OnMouseMoved(int localx, int localy)
 {
 }
 
@@ -198,10 +198,6 @@ void Component::OnMouseEnter(int localx, int localy)
 }
 
 void Component::OnMouseLeave(int localx, int localy)
-{
-}
-
-void Component::OnMouseUnclick(int localx, int localy, unsigned button)
 {
 }
 

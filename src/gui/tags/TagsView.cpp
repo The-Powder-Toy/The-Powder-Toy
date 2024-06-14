@@ -30,6 +30,7 @@ TagsView::TagsView():
 	tagInput->Appearance.icon = IconTag;
 	tagInput->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tagInput->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	tagInput->SetLimit(16);
 	AddComponent(tagInput);
 	FocusComponent(tagInput);
 

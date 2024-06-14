@@ -569,18 +569,21 @@ void Textbox::OnTextEditing(String text)
 	updateSelection();
 }
 
-void Textbox::OnMouseClick(int x, int y, unsigned button)
+void Textbox::OnMouseDown(int x, int y, unsigned button)
 {
-	if (button != SDL_BUTTON_RIGHT)
+	if (MouseDownInside)
 	{
-		StopTextEditing();
-		mouseDown = true;
-		auto tp = textPosition - Vec2{ scrollX, 0 };
-		auto index = textWrapper.Point2Index(x-tp.X, y-tp.Y);
-		cursor = index.raw_index;
-		resetCursorPosition();
+		if (button != SDL_BUTTON_RIGHT)
+		{
+			StopTextEditing();
+			mouseDown = true;
+			auto tp = textPosition - Vec2{ scrollX, 0 };
+			auto index = textWrapper.Point2Index(x-Position.X-tp.X, y-Position.Y-tp.Y);
+			cursor = index.raw_index;
+			resetCursorPosition();
+		}
 	}
-	Label::OnMouseClick(x, y, button);
+	Label::OnMouseDown(x, y, button);
 }
 
 void Textbox::OnMouseUp(int x, int y, unsigned button)
@@ -589,7 +592,7 @@ void Textbox::OnMouseUp(int x, int y, unsigned button)
 	Label::OnMouseUp(x, y, button);
 }
 
-void Textbox::OnMouseMoved(int localx, int localy, int dx, int dy)
+void Textbox::OnMouseMoved(int localx, int localy)
 {
 	if(mouseDown)
 	{
@@ -598,7 +601,7 @@ void Textbox::OnMouseMoved(int localx, int localy, int dx, int dy)
 		cursor = index.raw_index;
 		resetCursorPosition();
 	}
-	Label::OnMouseMoved(localx, localy, dx, dy);
+	Label::OnMouseMoved(localx, localy);
 }
 
 void Textbox::OnDefocus()

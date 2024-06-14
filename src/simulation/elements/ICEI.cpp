@@ -34,6 +34,7 @@ void Element::Element_ICEI()
 	Description = "Crushes under pressure. Cools down air.";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_NEUTPASS;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

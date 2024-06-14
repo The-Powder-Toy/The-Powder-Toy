@@ -42,7 +42,6 @@ if host_platform == 'windows'
 	icon_cps_ico_path = ''
 	winutf8_xml_path = ''
 	if windows_icons
-		make_ico = executable('makeico', sources: 'MakeIco.cpp', native: true)
 		generated_win_icos = {}
 		win_icos = {
 			'icon_exe': [ 'icon_exe', 'icon_exe_48', 'icon_exe_32', 'icon_exe_16' ],
@@ -50,7 +49,8 @@ if host_platform == 'windows'
 		}
 		foreach key, icons : win_icos
 			command = [
-				make_ico,
+				python3_prog,
+				join_paths(meson.current_source_dir(), 'make-ico.py'),
 				'@OUTPUT@',
 			]
 			foreach ikey : icons

@@ -35,6 +35,7 @@ void Element::Element_SNOW()
 	Description = "Light particles. Created when ICE breaks under pressure.";
 
 	Properties = TYPE_PART|PROP_NEUTPASS;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

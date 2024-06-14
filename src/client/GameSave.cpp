@@ -51,9 +51,18 @@ GameSave::GameSave(const std::vector<char> &data, bool newWantAuthors)
 void GameSave::MapPalette()
 {
 	int partMap[PT_NUM];
+	bool ignoreMissingErrors[PT_NUM];
 	for(int i = 0; i < PT_NUM; i++)
 	{
 		partMap[i] = i;
+		ignoreMissingErrors[i] = false;
+	}
+	if (version <= Version(98, 2))
+	{
+		ignoreMissingErrors[PT_ICEI] = true;
+		ignoreMissingErrors[PT_SNOW] = true;
+		ignoreMissingErrors[PT_RSST] = true;
+		ignoreMissingErrors[PT_RSSS] = true;
 	}
 
 	auto &sd = SimulationData::CRef();
@@ -90,12 +99,14 @@ void GameSave::MapPalette()
 			}
 		}
 	}
-	auto paletteLookup = [this, &partMap](int type) {
+	auto paletteLookup = [this, &partMap](int type, bool ignoreMissingErrors) {
 		if (type > 0 && type < PT_NUM)
 		{
 			auto carriedType = partMap[type];
 			if (!carriedType) // type is not 0 so this shouldn't be 0 either
 			{
+				if (ignoreMissingErrors)
+					return type;
 				missingElements.ids.insert(type);
 			}
 			type = carriedType;
@@ -113,7 +124,7 @@ void GameSave::MapPalette()
 		{
 			continue;
 		}
-		tempPart.type = paletteLookup(tempPart.type);
+		tempPart.type = paletteLookup(tempPart.type, false);
 		for (auto index : possiblyCarriesType)
 		{
 			if (elements[tempPart.type].CarriesTypeIn & (1U << index))
@@ -121,7 +132,7 @@ void GameSave::MapPalette()
 				auto *prop = reinterpret_cast<int *>(reinterpret_cast<char *>(&tempPart) + properties[index].Offset);
 				auto carriedType = *prop & int(pmapmask);
 				auto extra = *prop >> pmapbits;
-				carriedType = paletteLookup(carriedType);
+				carriedType = paletteLookup(carriedType, ignoreMissingErrors[tempPart.type]);
 				*prop = PMAP(extra, carriedType);
 			}
 		}
@@ -2335,6 +2346,14 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			if (particles[i].type == PT_CONV && particles[i].tmp2 != 0)
 			{
 				RESTRICTVERSION(97, 0);
+			}
+			if (particles[i].type == PT_RSST || particles[i].type == PT_RSSS)
+			{
+				RESTRICTVERSION(98, 0);
+			}
+			if (particles[i].type == PT_ETRD && (particles[i].tmp || particles[i].tmp2))
+			{
+				RESTRICTVERSION(98, 0);
 			}
 
 			//Get the pmap entry for the next particle in the same position

@@ -114,7 +114,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: static debug build
 	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',    True,     True,    '.pdb',         None,'x86_64-win-msvc-static', 'release',       10 ),
 	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',       10 ),
-	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,  'backendvs',                    None,   'debug',        0 ), # priority = 0: backend=vs build
+	# (  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,  'backendvs',                    None,   'debug',        0 ), # priority = 0: backend=vs build
 	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None, 'release',       10 ),
 	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: static debug build
 	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',    True,     True,    '.pdb',         None,  'i686-win-msvc-static', 'release',       10 ),
@@ -173,6 +173,10 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 		debug_asset_path = f'{app_name_slug}-{arch}.AppImage.dbg'
 		debug_asset_name = f'{app_name_slug}-{arch}.AppImage.dbg'
 	starcatcher_name = f'powder-{release_name}-{starcatcher}{suffix}'
+	msys2_bash = (bplatform == 'windows' and libc == 'mingw')
+	shell = 'bash'
+	if msys2_bash:
+		shell = 'msys2 {0}'
 	build_matrix.append({
 		'bsh_build_platform': bplatform, # part of the unique portion of the matrix
 		'bsh_host_arch': arch, # part of the unique portion of the matrix
@@ -181,7 +185,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 		'bsh_static_dynamic': statdyn, # part of the unique portion of the matrix
 		'bsh_debug_release': dbgrel, # part of the unique portion of the matrix
 		'runs_on': runson,
-		'force_msys2_bash': (bplatform == 'windows' and libc == 'mingw') and 'yes' or 'no',
+		'force_msys2_bash': msys2_bash and 'yes' or 'no',
 		'package_suffix': suffix,
 		'package_mode': mode,
 		'publish': publish and 'yes' or 'no',
@@ -192,6 +196,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 		'debug_asset_path': debug_asset_path,
 		'debug_asset_name': debug_asset_name,
 		'job_name': job_name,
+		'shell': shell,
 	})
 	if publish:
 		publish_matrix.append({

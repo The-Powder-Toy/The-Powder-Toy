@@ -8,7 +8,7 @@ void Element::Element_SHLD2()
 	Name = "SHD2";
 	Colour = 0x777777_rgb;
 	MenuVisible = 0;
-	MenuSection = SC_CRACKER2;
+	MenuSection = SC_SOLIDS;
 	Enabled = 1;
 
 	Advection = 0.0f;

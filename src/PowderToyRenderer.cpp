@@ -22,6 +22,8 @@ int main(int argc, char *argv[])
 	auto inputFilename = ByteString(argv[1]);
 	auto outputFilename = ByteString(argv[2]) + ".png";
 
+	auto simulationData = std::make_unique<SimulationData>();
+
 	std::vector<char> fileData;
 	if (!Platform::ReadFile(fileData, inputFilename))
 	{
@@ -40,7 +42,6 @@ int main(int argc, char *argv[])
 			throw e;
 	}
 
-	auto simulationData = std::make_unique<SimulationData>();
 	Simulation * sim = new Simulation();
 	Renderer * ren = new Renderer(sim);
 
@@ -63,6 +64,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
+		ren->clearScreen();
 		int w = Graphics::TextSize("Save file invalid").X + 15, x = (XRES-w)/2, y = (YRES-24)/2;
 		ren->DrawRect(RectSized(Vec2{ x, y }, Vec2{ w, 24 }), 0xC0C0C0_rgb);
 		ren->BlendText({ x+8, y+8 }, "Save file invalid", 0xC0C0F0_rgb .WithAlpha(255));

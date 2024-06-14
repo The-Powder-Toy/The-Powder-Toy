@@ -126,10 +126,15 @@ bool PreviewController::PrevCommentPage()
 	return false;
 }
 
+void PreviewController::RefreshComments()
+{
+	previewModel->UpdateComments(1);
+}
+
 void PreviewController::CommentAdded()
 {
 	previewModel->CommentAdded();
-	previewModel->UpdateComments(1);
+	RefreshComments();
 }
 
 void PreviewController::Exit()

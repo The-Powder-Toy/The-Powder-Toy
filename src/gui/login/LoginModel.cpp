@@ -1,5 +1,6 @@
 #include "LoginModel.h"
 #include "LoginView.h"
+#include "Config.h"
 #include "client/Client.h"
 #include "client/http/LoginRequest.h"
 #include "client/http/LogoutRequest.h"
@@ -8,7 +9,7 @@ void LoginModel::Login(ByteString username, ByteString password)
 {
 	if (username.Contains("@"))
 	{
-		statusText = "Use your Powder Toy account to log in, not your email. If you don't have a Powder Toy account, you can create one at https://powdertoy.co.uk/Register.html";
+		statusText = String::Build("Use your Powder Toy account to log in, not your email. If you don't have a Powder Toy account, you can create one at https://", SERVER, "/Register.html");
 		loginStatus = loginIdle;
 		notifyStatusChanged();
 		return;

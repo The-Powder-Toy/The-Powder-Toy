@@ -64,19 +64,22 @@ void RichLabel::SetText(String newText)
 	regions = newRegions;
 }
 
-void RichLabel::OnMouseClick(int x, int y, unsigned button)
+void RichLabel::OnMouseDown(int x, int y, unsigned button)
 {
-	int cursorPosition = displayTextWrapper.Point2Index(x - textPosition.X, y - textPosition.Y).raw_index;
-	for (auto const &region : regions)
+	if (MouseDownInside)
 	{
-		if (region.begin <= cursorPosition && region.end > cursorPosition)
+		int cursorPosition = displayTextWrapper.Point2Index(x - Position.X - textPosition.X, y - Position.Y - textPosition.Y).raw_index;
+		for (auto const &region : regions)
 		{
-			if (auto *linkAction = std::get_if<RichTextRegion::LinkAction>(&region.action))
+			if (region.begin <= cursorPosition && region.end > cursorPosition)
 			{
-				Platform::OpenURI(linkAction->uri);
-				return;
+				if (auto *linkAction = std::get_if<RichTextRegion::LinkAction>(&region.action))
+				{
+					Platform::OpenURI(linkAction->uri);
+					return;
+				}
 			}
 		}
 	}
-	Label::OnMouseClick(x, y, button);
+	Label::OnMouseDown(x, y, button);
 }

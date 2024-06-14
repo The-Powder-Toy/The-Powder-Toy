@@ -54,6 +54,8 @@ void Element::Element_NEUT()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	unsigned int pressureFactor = 3 + (int)sim->pv[y/CELL][x/CELL];
 	for (int rx = -1; rx <= 1; rx++)
 	{
@@ -178,7 +180,7 @@ static int update(UPDATE_FUNC_ARGS)
 						sim->create_part(ID(r), x, y, ct_under);
 
 						//If there's a correct tmp set, use it for ctype
-						if(tmp_under > 0 && ct_under < PT_NUM)
+						if((tmp_under > 0) && (tmp_under < PT_NUM) && (elements[ct_under].CarriesTypeIn & (1U << FIELD_CTYPE)))
 							parts[ID(r)].ctype = tmp_under;
 					}
 					else

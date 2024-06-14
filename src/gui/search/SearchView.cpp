@@ -9,6 +9,7 @@
 #include "gui/interface/RichLabel.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Spinner.h"
+#include "gui/interface/DropDown.h"
 #include "PowderToySDL.h"
 #include "graphics/Graphics.h"
 #include "SimulationConfig.h"
@@ -43,12 +44,24 @@ SearchView::SearchView():
 	AddComponent(pageCountLabel);
 	AddComponent(pageTextbox);
 
-	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point(WINDOWW-238, 17), "", "[search]");
+	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point(WINDOWW-283, 17), "", "[search]");
 	searchField->Appearance.icon = IconSearch;
 	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	searchField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	searchField->SetActionCallback({ [this] { doSearch(); } });
+	searchField->SetLimit(100);
 	FocusComponent(searchField);
+
+	dateRange = new ui::DropDown(ui::Point(WINDOWW-185, 10), ui::Point(36, 17));
+	dateRange->SetActionCallback({ [this] { c->ChangePeriod(dateRange->GetOption().second); } });
+	dateRange->AddOption({"All", 0});
+	dateRange->AddOption({"Day", 1});
+	dateRange->AddOption({"Week", 2});
+	dateRange->AddOption({"Month", 3});
+	dateRange->AddOption({"Year", 4});
+	dateRange->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	dateRange->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	AddComponent(dateRange);
 
 	sortButton = new ui::Button(ui::Point(WINDOWW-140, 10), ui::Point(61, 17), "Sort");
 	sortButton->SetIcon(IconVoteSort);
@@ -199,6 +212,11 @@ void SearchView::Search(String query)
 {
 	searchField->SetText(query);
 	c->DoSearch(query, true);
+}
+
+void SearchView::NotifyPeriodChanged(SearchModel * sender)
+{
+	dateRange->SetOption(sender->GetPeriod());
 }
 
 void SearchView::NotifySortChanged(SearchModel * sender)
@@ -489,7 +507,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		loadingSpinner->Visible = false;
 		if (!errorLabel)
 		{
-			errorLabel = new ui::Label(ui::Point((WINDOWW/2)-100, (WINDOWH/2)-6), ui::Point(200, 12), "Error");
+			errorLabel = new ui::Label(ui::Point(0, (WINDOWH/2)-6), ui::Point(WINDOWW, 12), "Error");
 			AddComponent(errorLabel);
 		}
 		if (!sender->GetSavesLoaded())

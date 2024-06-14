@@ -10,8 +10,7 @@ using namespace ui;
 Panel::Panel(Point position, Point size):
 	Component(position, size),
 	InnerSize(size),
-	ViewportPosition(0, 0),
-	mouseInside(false)
+	ViewportPosition(0, 0)
 {
 }
 
@@ -27,6 +26,8 @@ void Panel::AddChild(Component* c)
 {
 	c->SetParent(this);
 	c->SetParentWindow(this->GetParentWindow());
+	c->MouseInside = false;
+	c->MouseDownInside = false;
 }
 
 int Panel::GetChildCount()
@@ -108,43 +109,40 @@ void Panel::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, 
 
 void Panel::OnMouseClick(int localx, int localy, unsigned button)
 {
-	bool childclicked = false;
-
-	//check if clicked a child
-	for(int i = children.size()-1; i >= 0 ; --i)
-	{
-		//child must be enabled
-		if(children[i]->Enabled)
-		{
-			//is mouse inside?
-			if( localx >= children[i]->Position.X + ViewportPosition.X &&
-				localy >= children[i]->Position.Y + ViewportPosition.Y &&
-				localx < children[i]->Position.X + ViewportPosition.X + children[i]->Size.X &&
-				localy < children[i]->Position.Y + ViewportPosition.Y + children[i]->Size.Y )
-			{
-				childclicked = true;
-				GetParentWindow()->FocusComponent(children[i]);
-				children[i]->OnMouseClick(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y, button);
-				break;
-			}
-		}
-	}
-
-	//if a child wasn't clicked, send click to ourself
-	if(!childclicked)
-	{
-		XOnMouseClick(localx, localy, button);
-		GetParentWindow()->FocusComponent(this);
-	}
+	XOnMouseClick(localx, localy, button);
 }
 
 void Panel::OnMouseDown(int x, int y, unsigned button)
 {
-	XOnMouseDown(x, y, button);
-	for (size_t i = 0; i < children.size(); ++i)
+	if (MouseDownInside)
 	{
-		if(children[i]->Enabled)
-			children[i]->OnMouseDown(x, y, button);
+		auto localx = x - Position.X;
+		auto localy = y - Position.Y;
+		//check if clicked a child
+		for(int i = children.size()-1; i >= 0 ; --i)
+		{
+			//child must be enabled
+			if(children[i]->Enabled)
+			{
+				//is mouse inside?
+				if( localx >= children[i]->Position.X + ViewportPosition.X &&
+					localy >= children[i]->Position.Y + ViewportPosition.Y &&
+					localx < children[i]->Position.X + ViewportPosition.X + children[i]->Size.X &&
+					localy < children[i]->Position.Y + ViewportPosition.Y + children[i]->Size.Y )
+				{
+					GetParentWindow()->FocusComponent(children[i]);
+					children[i]->MouseDownInside = true;
+					break;
+				}
+			}
+		}
+
+		XOnMouseDown(x, y, button);
+		for (size_t i = 0; i < children.size(); ++i)
+		{
+			if(children[i]->Enabled)
+				children[i]->OnMouseDown(x - Position.X - ViewportPosition.X, y - Position.Y - ViewportPosition.Y, button);
+		}
 	}
 }
 
@@ -155,12 +153,14 @@ void Panel::OnMouseHover(int localx, int localy)
 	{
 		if (children[i]->Enabled)
 		{
-			if( localx >= children[i]->Position.X &&
-				localy >= children[i]->Position.Y &&
-				localx < children[i]->Position.X + children[i]->Size.X &&
-				localy < children[i]->Position.Y + children[i]->Size.Y )
+			auto px = children[i]->Position.X + ViewportPosition.X;
+			auto py = children[i]->Position.Y + ViewportPosition.Y;
+			if( localx >= px &&
+				localy >= py &&
+				localx < px + children[i]->Size.X &&
+				localy < py + children[i]->Size.Y )
 			{
-				children[i]->OnMouseHover(localx - children[i]->Position.X, localy - children[i]->Position.Y);
+				children[i]->OnMouseHover(localx - px, localy - py);
 				break;
 			}
 		}
@@ -170,25 +170,26 @@ void Panel::OnMouseHover(int localx, int localy)
 	XOnMouseHover(localx, localy);
 }
 
-void Panel::OnMouseMoved(int localx, int localy, int dx, int dy)
+void Panel::OnMouseMoved(int localx, int localy)
 {
-	XOnMouseMoved(localx, localy, dx, dy);
+	PropagateMouseMove();
+	XOnMouseMoved(localx, localy);
 	for (size_t i = 0; i < children.size(); ++i)
 	{
 		if(children[i]->Enabled)
-			children[i]->OnMouseMoved(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y, dx, dy);
+			children[i]->OnMouseMoved(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y);
 	}
 }
 
-void Panel::OnMouseMovedInside(int localx, int localy, int dx, int dy)
+void Panel::PropagateMouseMove()
 {
-	mouseInside = true;
+	auto localx = ui::Engine::Ref().GetMouseX() - GetScreenPos().X;
+	auto localy = ui::Engine::Ref().GetMouseY() - GetScreenPos().Y;
 	for (size_t i = 0; i < children.size(); ++i)
 	{
 		if (children[i]->Enabled)
 		{
-			Point local	(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y)
-			, prevlocal (local.X - dx, local.Y - dy);
+			Point local	(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y);
 
 			// mouse currently inside?
 			if( local.X >= 0 &&
@@ -196,14 +197,12 @@ void Panel::OnMouseMovedInside(int localx, int localy, int dx, int dy)
 				local.X < children[i]->Size.X &&
 				local.Y < children[i]->Size.Y )
 			{
-				children[i]->OnMouseMovedInside(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y, dx, dy);
+				children[i]->OnMouseMoved(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y);
 
 				// was the mouse outside?
-				if(!(prevlocal.X >= 0 &&
-					 prevlocal.Y >= 0 &&
-					 prevlocal.X < children[i]->Size.X &&
-					 prevlocal.Y < children[i]->Size.Y ) )
+				if (!children[i]->MouseInside)
 				{
+					children[i]->MouseInside = true;
 					children[i]->OnMouseEnter(local.X, local.Y);
 				}
 			}
@@ -211,71 +210,59 @@ void Panel::OnMouseMovedInside(int localx, int localy, int dx, int dy)
 			else
 			{
 				// was the mouse inside?
-				if(	prevlocal.X >= 0 &&
-					prevlocal.Y >= 0 &&
-					prevlocal.X < children[i]->Size.X &&
-					prevlocal.Y < children[i]->Size.Y )
+				if (children[i]->MouseInside)
 				{
+					children[i]->MouseInside = false;
 					children[i]->OnMouseLeave(local.X, local.Y);
 				}
 
 			}
 		}
 	}
-
-	// always allow hover on parent (?)
-	XOnMouseMovedInside(localx, localy, dx, dy);
 }
 
 void Panel::OnMouseEnter(int localx, int localy)
 {
-	mouseInside = true;
 	XOnMouseEnter(localx, localy);
 }
 
 void Panel::OnMouseLeave(int localx, int localy)
 {
-	mouseInside = false;
 	XOnMouseLeave(localx, localy);
-}
-
-void Panel::OnMouseUnclick(int localx, int localy, unsigned button)
-{
-	bool childunclicked = false;
-
-	//check if clicked a child
-	for(int i = children.size()-1; i >= 0 ; --i)
-	{
-		//child must be unlocked
-		if(children[i]->Enabled)
-		{
-			//is mouse inside?
-			if( localx >= children[i]->Position.X + ViewportPosition.X &&
-				localy >= children[i]->Position.Y + ViewportPosition.Y &&
-				localx < children[i]->Position.X + ViewportPosition.X + children[i]->Size.X &&
-				localy < children[i]->Position.Y + ViewportPosition.Y + children[i]->Size.Y )
-			{
-				childunclicked = true;
-				children[i]->OnMouseUnclick(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y, button);
-				break;
-			}
-		}
-	}
-
-	//if a child wasn't clicked, send click to ourself
-	if (!childunclicked)
-	{
-		XOnMouseUnclick(localx, localy, button);
-	}
 }
 
 void Panel::OnMouseUp(int x, int y, unsigned button)
 {
+	auto localx = x - Position.X;
+	auto localy = y - Position.Y;
+	//check if clicked a child
+	for(int i = children.size()-1; i >= 0 ; --i)
+	{
+		//child must be enabled
+		if(children[i]->Enabled)
+		{
+			//is mouse inside?
+			if( children[i]->MouseDownInside &&
+				localx >= children[i]->Position.X + ViewportPosition.X &&
+				localy >= children[i]->Position.Y + ViewportPosition.Y &&
+				localx < children[i]->Position.X + ViewportPosition.X + children[i]->Size.X &&
+				localy < children[i]->Position.Y + ViewportPosition.Y + children[i]->Size.Y )
+			{
+				children[i]->OnMouseClick(localx - children[i]->Position.X - ViewportPosition.X, localy - children[i]->Position.Y - ViewportPosition.Y, button);
+				break;
+			}
+		}
+	}
+	for (auto *child : children)
+	{
+		child->MouseDownInside = false;
+	}
+
 	XOnMouseUp(x, y, button);
 	for (size_t i = 0; i < children.size(); ++i)
 	{
 		if (children[i]->Enabled)
-			children[i]->OnMouseUp(x, y, button);
+			children[i]->OnMouseUp(x - Position.X - ViewportPosition.X, y - Position.Y - ViewportPosition.Y, button);
 	}
 }
 
@@ -342,11 +329,7 @@ void Panel::XOnMouseHover(int localx, int localy)
 {
 }
 
-void Panel::XOnMouseMoved(int localx, int localy, int dx, int dy)
-{
-}
-
-void Panel::XOnMouseMovedInside(int localx, int localy, int dx, int dy)
+void Panel::XOnMouseMoved(int localx, int localy)
 {
 }
 
@@ -355,10 +338,6 @@ void Panel::XOnMouseEnter(int localx, int localy)
 }
 
 void Panel::XOnMouseLeave(int localx, int localy)
-{
-}
-
-void Panel::XOnMouseUnclick(int localx, int localy, unsigned button)
 {
 }
 

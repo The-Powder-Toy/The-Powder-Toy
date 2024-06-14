@@ -1,3 +1,4 @@
+#include <ctime>
 #include "SearchSavesRequest.h"
 #include "Config.h"
 #include "client/Client.h"
@@ -6,7 +7,7 @@
 
 namespace http
 {
-	static ByteString Url(int start, int count, ByteString query, Sort sort, Category category)
+	static ByteString Url(int start, int count, ByteString query, Period period, Sort sort, Category category)
 	{
 		ByteStringBuilder builder;
 		builder << SCHEME << SERVER << "/Browse.json?Start=" << start << "&Count=" << count;
@@ -17,6 +18,38 @@ namespace http
 			}
 			query += str;
 		};
+
+		time_t currentTime = time(NULL);
+
+		if(period)
+		{
+			switch (period)
+			{
+				case todaySaves:
+					currentTime -= 60*60*24; // One day
+					break;
+				case weekSaves:
+					currentTime -= 60*60*24*7; // One week
+					break;
+				case monthSaves:
+					currentTime -= 60*60*24*31; // One month
+					break;
+				case yearSaves:
+					currentTime -= 60*60*24*365; // One year
+					break;
+				default:
+					break;
+			}
+
+			struct tm currentTimeData = *localtime(&currentTime);
+			ByteStringBuilder afterQuery;
+
+			afterQuery << "after:" << currentTimeData.tm_year+1900 << "-" <<
+			       	(currentTimeData.tm_mon < 9 ? "0" : "") << currentTimeData.tm_mon+1 << "-" <<
+			       	(currentTimeData.tm_mday < 10 ? "0" : "") << currentTimeData.tm_mday;
+			appendToQuery(afterQuery.Build());
+		}
+
 		switch (sort)
 		{
 		case sortByDate:
@@ -48,7 +81,7 @@ namespace http
 		return builder.Build();
 	}
 
-	SearchSavesRequest::SearchSavesRequest(int start, int count, ByteString query, Sort sort, Category category) : APIRequest(Url(start, count, query, sort, category), authUse, false)
+	SearchSavesRequest::SearchSavesRequest(int start, int count, ByteString query, Period period, Sort sort, Category category) : APIRequest(Url(start, count, query, period, sort, category), authUse, false)
 	{
 	}
 

@@ -136,6 +136,32 @@ void SearchController::SetPageRelative(int offset)
 		searchModel->UpdateSaveList(page, searchModel->GetLastQuery());
 }
 
+void SearchController::ChangePeriod(int period)
+{
+	switch(period)
+	{
+		case 0:
+			searchModel->SetPeriod(http::allSaves);
+			break;
+		case 1:
+			searchModel->SetPeriod(http::todaySaves);
+			break;
+		case 2:
+			searchModel->SetPeriod(http::weekSaves);
+			break;
+		case 3:
+			searchModel->SetPeriod(http::monthSaves);
+			break;
+		case 4:
+			searchModel->SetPeriod(http::yearSaves);
+			break;
+		default:
+			searchModel->SetPeriod(http::allSaves);
+	}
+
+	searchModel->UpdateSaveList(1, searchModel->GetLastQuery());
+}
+
 void SearchController::ChangeSort()
 {
 	if(searchModel->GetSort() == http::sortByDate)

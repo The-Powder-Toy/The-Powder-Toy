@@ -835,6 +835,7 @@ static int getByName(lua_State *L)
 
 void LuaElements::Open(lua_State *L)
 {
+	auto &sd = SimulationData::CRef();
 	static const luaL_Reg reg[] = {
 #define LFUNC(v) { #v, v }
 		LFUNC(allocate),
@@ -850,13 +851,14 @@ void LuaElements::Open(lua_State *L)
 	lua_newtable(L);
 	luaL_register(L, NULL, reg);
 #define LCONST(v) lua_pushinteger(L, int(v)); lua_setfield(L, -2, #v)
+#define LCONSTAS(k, v) lua_pushinteger(L, int(v)); lua_setfield(L, -2, k)
 	LCONST(TYPE_PART);
 	LCONST(TYPE_LIQUID);
 	LCONST(TYPE_SOLID);
 	LCONST(TYPE_GAS);
 	LCONST(TYPE_ENERGY);
 	LCONST(PROP_CONDUCTS);
-	LCONST(PROP_BLACK);
+	LCONST(PROP_PHOTPASS);
 	LCONST(PROP_NEUTPENETRATE);
 	LCONST(PROP_NEUTABSORB);
 	LCONST(PROP_NEUTPASS);
@@ -885,10 +887,12 @@ void LuaElements::Open(lua_State *L)
 	LCONST(SC_LIFE);
 	LCONST(SC_TOOL);
 	LCONST(SC_DECO);
+	LCONSTAS("NUM_MENUSECTIONS", int(sd.msections.size()));
 	LCONST(UPDATE_AFTER);
 	LCONST(UPDATE_REPLACE);
 	LCONST(UPDATE_BEFORE);
 	LCONST(NUM_UPDATEMODES);
+#undef LCONSTAS
 #undef LCONST
 	lua_pushvalue(L, -1);
 	lua_setglobal(L, "elements");

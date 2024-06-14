@@ -52,6 +52,10 @@ namespace http
 						return;
 					}
 					auto &info = versions[key];
+					if (info.isNull())
+					{
+						return;
+					}
 					auto getOr = [&info](ByteString key, int defaultValue) -> int {
 						if (!info.isMember(key))
 						{
@@ -59,7 +63,7 @@ namespace http
 						}
 						return info[key].asInt();
 					};
-					auto build = getOr(key == "Snapshot" ? "Snapshot" : "Build", -1);
+					auto build = getOr(key == "Snapshot" ? "Snapshot" : "Build", 0);
 					if (!updateAvailableFunc(build))
 					{
 						return;
@@ -68,8 +72,8 @@ namespace http
 						channel,
 						ByteString::Build(SCHEME, alternate ? UPDATESERVER : SERVER, info["File"].asString()),
 						ByteString(info["Changelog"].asString()).FromUtf8(),
-						getOr("Major", -1),
-						getOr("Minor", -1),
+						getOr("Major", 0),
+						getOr("Minor", 0),
 						build,
 					};
 				};

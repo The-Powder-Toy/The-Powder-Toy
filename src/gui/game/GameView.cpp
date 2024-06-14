@@ -87,7 +87,7 @@ public:
 			}
 		}
 	}
-	void OnMouseUnclick(int x, int y, unsigned int button) override
+	void OnMouseClick(int x, int y, unsigned int button) override
 	{
 		if(isButtonDown)
 		{
@@ -96,7 +96,7 @@ public:
 			else if(rightDown)
 				DoRightAction();
 		}
-		ui::Button::OnMouseUnclick(x, y, button);
+		ui::Button::OnMouseClick(x, y, button);
 
 	}
 	void OnMouseHover(int x, int y) override
@@ -120,15 +120,18 @@ public:
 		toolTip = newToolTip1;
 		toolTip2 = newToolTip2;
 	}
-	void OnMouseClick(int x, int y, unsigned int button) override
+	void OnMouseDown(int x, int y, unsigned int button) override
 	{
-		ui::Button::OnMouseClick(x, y, button);
-		rightDown = false;
-		leftDown = false;
-		if(x >= splitPosition)
-			rightDown = true;
-		else if(x < splitPosition)
-			leftDown = true;
+		ui::Button::OnMouseDown(x, y, button);
+		if (MouseDownInside)
+		{
+			rightDown = false;
+			leftDown = false;
+			if(x - Position.X >= splitPosition)
+				rightDown = true;
+			else if(x - Position.X < splitPosition)
+				leftDown = true;
+		}
 	}
 	void DoRightAction()
 	{
@@ -1052,10 +1055,17 @@ void GameView::updateToolButtonScroll()
 		{
 			for (auto *button : toolButtons)
 			{
-				if (button->Position.X < x && button->Position.X + button->Size.X > x)
+				auto inside = button->Position.X < x && button->Position.X + button->Size.X > x;
+				if (inside && !button->MouseInside)
+				{
+					button->MouseInside = true;
 					button->OnMouseEnter(x, y);
-				else
+				}
+				if (!inside && button->MouseInside)
+				{
+					button->MouseInside = false;
 					button->OnMouseLeave(x, y);
+				}
 			}
 		}
 	}
@@ -2124,6 +2134,7 @@ void GameView::OnDraw()
 		auto &sd = SimulationData::Ref();
 		std::unique_lock lk(sd.elementGraphicsMx);
 		ren->clearScreen();
+		ren->draw_air();
 		c->BeforeSimDraw();
 		ren->RenderBegin();
 		ren->SetSample(c->PointTranslate(currentMouse));

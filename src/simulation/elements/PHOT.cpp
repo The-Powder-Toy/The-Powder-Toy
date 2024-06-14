@@ -36,7 +36,7 @@ void Element::Element_PHOT()
 	HeatConduct = 251;
 	Description = "Photons. Refracts through glass, scattered by quartz, and color-changed by different elements. Ignites flammable materials.";
 
-	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
+	Properties = TYPE_ENERGY | PROP_PHOTPASS | PROP_LIFE_DEC | PROP_LIFE_KILL_DEC;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -57,6 +57,9 @@ void Element::Element_PHOT()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+
 	if (!(parts[i].ctype&0x3FFFFFFF)) {
 		sim->kill_part(i);
 		return 1;
@@ -121,7 +124,7 @@ static int update(UPDATE_FUNC_ARGS)
 					sim->create_part(ID(r), x, y, ct_under);
 
 					//If there's a correct tmp set, use it for ctype
-					if(tmp_under > 0 && ct_under < PT_NUM)
+					if((tmp_under > 0) && (tmp_under < PT_NUM) && (elements[ct_under].CarriesTypeIn & (1U << FIELD_CTYPE)))
 						parts[ID(r)].ctype = tmp_under;
 				}
 				else

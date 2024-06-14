@@ -88,24 +88,27 @@ void Label::OnContextMenuAction(int item)
 	}
 }
 
-void Label::OnMouseClick(int x, int y, unsigned button)
+void Label::OnMouseDown(int x, int y, unsigned button)
 {
-	if(button == SDL_BUTTON_RIGHT)
+	if (MouseDownInside)
 	{
-		if (menu)
+		if(button == SDL_BUTTON_RIGHT)
 		{
-			menu->Show(GetScreenPos() + ui::Point(x, y));
+			if (menu)
+			{
+				menu->Show(GetContainerPos() + ui::Point(x, y));
+			}
 		}
-	}
-	else
-	{
-		selecting = true;
-		auto tp = textPosition - Vec2{ scrollX, 0 };
-		selectionIndex0 = textWrapper.Point2Index(x - tp.X, y - tp.Y);
-		selectionIndexL = selectionIndex0;
-		selectionIndexH = selectionIndex0;
+		else
+		{
+			selecting = true;
+			auto tp = textPosition - Vec2{ scrollX, 0 };
+			selectionIndex0 = textWrapper.Point2Index(x - Position.X - tp.X, y - Position.Y - tp.Y);
+			selectionIndexL = selectionIndex0;
+			selectionIndexH = selectionIndex0;
 
-		updateSelection();
+			updateSelection();
+		}
 	}
 }
 
@@ -143,7 +146,7 @@ void Label::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bo
 	}
 }
 
-void Label::OnMouseMoved(int localx, int localy, int dx, int dy)
+void Label::OnMouseMoved(int localx, int localy)
 {
 	if (selecting)
 	{

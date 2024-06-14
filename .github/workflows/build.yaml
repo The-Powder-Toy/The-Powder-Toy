@@ -41,6 +41,13 @@ jobs:
         env:
           PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
           GITHUB_REF: ${{ github.ref }}
+      - if: steps.prepare.outputs.do_publish == 'yes'
+        run: sudo apt update && sudo apt install curlftpfs && bash -c './.github/starcatcher-publish.sh'
+        env:
+          PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
+          PUBLISH_USERNAME: ${{ secrets.STARCATCHER_PUBLISH_USERNAME }}
+          PUBLISH_PASSWORD: ${{ secrets.STARCATCHER_PUBLISH_PASSWORD }}
+          PUBLISH_ACCESSCHECK: yes
       - if: steps.prepare.outputs.do_release == 'yes'
         id: create_release
         env:
@@ -54,17 +61,46 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.prepare.outputs.build_matrix) }}
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
     steps:
+      - if: matrix.force_msys2_bash == 'yes'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          path-type: strict
+          cache: true
+          # this list doesn't have to mirror the one in build.sh perfectly
+          # but the packages listed here get cached properly and take less time to install
+          install: >-
+            git
+            curl
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-pkgconf
+            mingw-w64-ucrt-x86_64-bzip2
+            mingw-w64-ucrt-x86_64-luajit
+            mingw-w64-ucrt-x86_64-jsoncpp
+            mingw-w64-ucrt-x86_64-curl
+            mingw-w64-ucrt-x86_64-SDL2
+            mingw-w64-ucrt-x86_64-libpng
+            mingw-w64-ucrt-x86_64-meson
+            mingw-w64-ucrt-x86_64-python
+            mingw-w64-ucrt-x86_64-python-pip
+            mingw-w64-ucrt-x86_64-fftw
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-7zip
+            mingw-w64-ucrt-x86_64-jq
+            patch
       - run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
-      - if: matrix.force_msys2_bash == 'yes'
-        run: bash -c './.github/force-msys2-bash.sh'
-      - if: matrix.force_msys2_bash == 'yes'
-        run: bash -c 'pacman -Syu --noconfirm'
-      - uses: actions/setup-python@v5
+      - if: matrix.force_msys2_bash != 'yes'
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - run: python -m pip install meson==1.2.3 ninja # TODO: go back to using latest meson once https://github.com/mesonbuild/meson/pull/12544 is live
+      - if: matrix.force_msys2_bash != 'yes'
+        run: python -m pip install meson==1.2.3 ninja # TODO: go back to using latest meson once https://github.com/mesonbuild/meson/pull/12544 is live
       - if: matrix.bsh_build_platform == 'darwin'
         run: brew install bash coreutils
       - run: bash -c './.github/build.sh'

@@ -24,6 +24,6 @@ namespace ui
 		RichLabel(Point position, Point size, String text);
 
 		void SetText(String newText) override;
-		void OnMouseClick(int x, int y, unsigned button) override;
+		void OnMouseDown(int x, int y, unsigned button) override;
 	};
 }

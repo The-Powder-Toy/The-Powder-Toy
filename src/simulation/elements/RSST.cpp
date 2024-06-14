@@ -32,7 +32,8 @@ void Element::Element_RSST()
 	HeatConduct = 55;
 	Description = "Resist. Solidifies on contact with photons, is destroyed by electrons and spark.";
 
-	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPASS;
+	Properties = TYPE_LIQUID | PROP_CONDUCTS | PROP_LIFE_DEC | PROP_NEUTPASS | PROP_PHOTPASS;
+	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -60,7 +61,7 @@ int update(UPDATE_FUNC_ARGS)
 			// RSST + GUNP = FIRW
 			if(TYP(r) == PT_GUNP)
 			{
-				sim->part_change_type(i, x, y, PT_FIRW);
+				sim->create_part(i, x, y, PT_FIRW);
 				sim->kill_part(ID(r));
 				return 1;
 			}
@@ -68,7 +69,7 @@ int update(UPDATE_FUNC_ARGS)
 			// RSST + BCOL = FSEP
 			if(TYP(r) == PT_BCOL)
 			{
-				sim->part_change_type(i, x, y, PT_FSEP);
+				sim->create_part(i, x, y, PT_FSEP);
 				parts[i].life = 50;
 				sim->kill_part(ID(r));
 				return 1;
@@ -79,6 +80,13 @@ int update(UPDATE_FUNC_ARGS)
 			{
 				if(parts[ID(r)].ctype != PT_RSST)
 					parts[i].ctype = parts[ID(r)].ctype;
+			}
+
+			// Set RSST tmp from nearby breakable clone
+			if((TYP(r) == PT_BCLN) || (TYP(r) == PT_PBCN))
+			{
+				if(parts[ID(r)].ctype != PT_RSST)
+					parts[i].tmp = parts[ID(r)].ctype;
 			}
 		}
 	}

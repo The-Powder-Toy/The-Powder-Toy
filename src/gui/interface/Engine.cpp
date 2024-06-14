@@ -83,6 +83,8 @@ void Engine::ShowWindow(Window * window)
 	{
 		window->Position.Y = (g->Size().Y - window->Size.Y) / 2;
 	}
+	window->Size = window->Size.Min(g->Size());
+	window->Position = window->Position.Clamp(RectBetween<int>({0, 0}, g->Size()));
 	/*if(window->Position.Y > 0)
 	{
 		windowTargetPosition = window->Position;
@@ -268,14 +270,14 @@ void Engine::onTextEditing(String text, int start)
 	}
 }
 
-void Engine::onMouseClick(int x, int y, unsigned button)
+void Engine::onMouseDown(int x, int y, unsigned button)
 {
 	mouseb_ |= button;
 	if (state_ && !ignoreEvents)
 		state_->DoMouseDown(x, y, button);
 }
 
-void Engine::onMouseUnclick(int x, int y, unsigned button)
+void Engine::onMouseUp(int x, int y, unsigned button)
 {
 	mouseb_ &= ~button;
 	if (state_ && !ignoreEvents)
