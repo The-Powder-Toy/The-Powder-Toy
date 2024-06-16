@@ -9,7 +9,8 @@ constexpr float M_GRAV = 6.67300e-1f;
 
 //CELL, the size of the pressure, gravity, and wall maps. Larger than 1 to prevent extreme lag
 constexpr int CELL = 4;
-constexpr Vec2<int> CELLS = Vec2(153, 96);
+constexpr Vec2<int> CELLS = Vec2(306, 192);
+// x2 cells
 constexpr Vec2<int> RES = CELLS * CELL;
 
 constexpr int XCELLS = CELLS.X;
