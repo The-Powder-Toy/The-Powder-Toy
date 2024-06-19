@@ -352,7 +352,7 @@ static int request(lua_State *L, bool isPost)
 
 static int getAuthToken(lua_State *L)
 {
-	return RequestHandle::Make(L, ByteString::Build(SCHEME, SERVER, "/ExternalAuth.api?Action=Get&Audience=", format::URLEncode(tpt_lua_checkByteString(L, 1))), false, {}, RequestHandle::getAuthToken, {}, {});
+	return RequestHandle::Make(L, ByteString::Build(SERVER, "/ExternalAuth.api?Action=Get&Audience=", format::URLEncode(tpt_lua_checkByteString(L, 1))), false, {}, RequestHandle::getAuthToken, {}, {});
 }
 
 static int get(lua_State *L)

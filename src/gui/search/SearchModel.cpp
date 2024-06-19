@@ -58,7 +58,7 @@ void SearchModel::BeginGetTags(int start, int count, String query)
 {
 	lastError = "";
 	ByteStringBuilder urlStream;
-	urlStream << SCHEME << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
+	urlStream << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
 	if(query.length())
 	{
 		urlStream << "&Search_Query=";

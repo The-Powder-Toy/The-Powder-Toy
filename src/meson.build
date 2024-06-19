@@ -24,9 +24,26 @@ conf_data.set('ALLOW_FAKE_NEWER_VERSION', (is_snapshot or is_beta or is_debug or
 conf_data.set('IDENT_PLATFORM', ident_platform)
 conf_data.set('IDENT', '@0@-@1@-@2@'.format(host_arch, host_platform, host_libc).to_upper())
 
+server = get_option('server')
+static_server = get_option('static_server')
 update_server = get_option('update_server')
+
+if not (server.startswith('http://') or server.startswith('https://'))
+	server = 'https://' + server
+endif
+if not (static_server.startswith('http://') or static_server.startswith('https://'))
+	static_server = 'https://' + static_server
+endif
+
+use_update_server = false
+if update_server != ''
+	use_update_server = true
+	if not (update_server.startswith('http://') or update_server.startswith('https://'))
+		update_server = 'https://' + update_server
+	endif
+endif
+conf_data.set('USE_UPDATESERVER', use_update_server.to_string())
 conf_data.set('UPDATESERVER', update_server)
-conf_data.set('USE_UPDATESERVER', (update_server != '').to_string())
 
 platform_clipboard = get_option('platform_clipboard')
 enforce_https = get_option('enforce_https')
@@ -56,8 +73,8 @@ conf_data.set('SECURE_CIPHERS_ONLY', secure_ciphers_only.to_string())
 conf_data.set('PLATFORM_CLIPBOARD', platform_clipboard.to_string())
 
 conf_data.set('IGNORE_UPDATES', get_option('ignore_updates').to_string())
-conf_data.set('SERVER', get_option('server'))
-conf_data.set('STATICSERVER', get_option('static_server'))
+conf_data.set('SERVER', server)
+conf_data.set('STATICSERVER', static_server)
 conf_data.set('APPNAME', get_option('app_name'))
 conf_data.set('APPCOMMENT', get_option('app_comment'))
 conf_data.set('APPEXE', app_exe)

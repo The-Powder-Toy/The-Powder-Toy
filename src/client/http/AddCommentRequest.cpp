@@ -5,7 +5,7 @@
 namespace http
 {
 	AddCommentRequest::AddCommentRequest(int saveID, String comment) :
-		APIRequest(ByteString::Build(SCHEME, SERVER, "/Browse/Comments.json?ID=", saveID), authRequire, true)
+		APIRequest(ByteString::Build(SERVER, "/Browse/Comments.json?ID=", saveID), authRequire, true)
 	{
 		auto user = Client::Ref().GetAuthUser();
 		AddPostData(FormData{

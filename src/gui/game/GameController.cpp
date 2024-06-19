@@ -552,7 +552,7 @@ bool GameController::MouseUp(int x, int y, unsigned button, MouseupReason reason
 						}
 						break;
 					case sign::Type::Thread:
-						Platform::OpenURI(ByteString::Build(SCHEME, SERVER, "/Discussions/Thread/View.html?Thread=", str.Substr(3, si.first - 3).ToUtf8()));
+						Platform::OpenURI(ByteString::Build(SERVER, "/Discussions/Thread/View.html?Thread=", str.Substr(3, si.first - 3).ToUtf8()));
 						break;
 					case sign::Type::Search:
 						OpenSearch(str.Substr(3, si.first - 3));

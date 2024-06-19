@@ -36,7 +36,7 @@ static int installScriptManager(lua_State *L)
 		new ErrorMessage("Script download", "You must run this function from the console");
 		return 0;
 	}
-	lsi->scriptManagerDownload = std::make_unique<http::Request>(ByteString::Build(SCHEME, "starcatcher.us/scripts/main.lua?get=1"));
+	lsi->scriptManagerDownload = std::make_unique<http::Request>(ByteString::Build("https://starcatcher.us/scripts/main.lua?get=1"));
 	lsi->scriptManagerDownload->Start();
 	return 0;
 }

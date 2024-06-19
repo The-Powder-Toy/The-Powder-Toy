@@ -147,7 +147,7 @@ void PreviewModel::OnSaveReady()
 	{
 		auto gameSave = std::make_unique<GameSave>(*saveData);
 		if (gameSave->fromNewerVersion)
-			new ErrorMessage("This save is from a newer version", String::Build("Please update TPT in game or at https://", SERVER));
+			new ErrorMessage("This save is from a newer version", String::Build("Please update TPT in game or at ", SERVER));
 		saveInfo->SetGameSave(std::move(gameSave));
 	}
 	catch(ParseException &e)

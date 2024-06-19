@@ -6,7 +6,7 @@ namespace http
 {
 	// TODO: update Client::messageOfTheDay
 	StartupRequest::StartupRequest(bool newAlternate) :
-		Request(ByteString::Build(SCHEME, newAlternate ? UPDATESERVER : SERVER, "/Startup.json")),
+		Request(ByteString::Build(newAlternate ? UPDATESERVER : SERVER, "/Startup.json")),
 		alternate(newAlternate)
 	{
 		auto user = Client::Ref().GetAuthUser();
@@ -70,7 +70,7 @@ namespace http
 					}
 					startupInfo.updateInfo = UpdateInfo{
 						channel,
-						ByteString::Build(SCHEME, alternate ? UPDATESERVER : SERVER, info["File"].asString()),
+						ByteString::Build(alternate ? UPDATESERVER : SERVER, info["File"].asString()),
 						ByteString(info["Changelog"].asString()).FromUtf8(),
 						getOr("Major", 0),
 						getOr("Minor", 0),

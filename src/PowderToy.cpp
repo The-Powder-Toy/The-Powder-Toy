@@ -113,7 +113,7 @@ static void BlueScreen(String detailMessage, std::optional<std::vector<String>> 
 
 	StringBuilder crashInfo;
 	crashInfo << "ERROR - Details: " << detailMessage << "\n";
-	crashInfo << "An unrecoverable fault has occurred, please report it by visiting the website below\n\n  " << SCHEME << SERVER << "\n\n";
+	crashInfo << "An unrecoverable fault has occurred, please report it by visiting the website below\n\n  " << SERVER << "\n\n";
 	crashInfo << "An attempt will be made to save all of this information to " << crashLogPath.FromUtf8() << " in your data folder.\n";
 	crashInfo << "Please attach this file to your report.\n\n";
 	crashInfo << "Version: " << VersionInfo().FromUtf8() << "\n";

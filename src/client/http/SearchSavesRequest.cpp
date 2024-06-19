@@ -10,7 +10,7 @@ namespace http
 	static ByteString Url(int start, int count, ByteString query, Period period, Sort sort, Category category)
 	{
 		ByteStringBuilder builder;
-		builder << SCHEME << SERVER << "/Browse.json?Start=" << start << "&Count=" << count;
+		builder << SERVER << "/Browse.json?Start=" << start << "&Count=" << count;
 		auto appendToQuery = [&query](ByteString str) {
 			if (query.size())
 			{

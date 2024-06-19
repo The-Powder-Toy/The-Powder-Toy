@@ -117,7 +117,7 @@ void Client::Tick()
 	{
 		if (versionCheckRequest->StatusCode() == 618)
 		{
-			AddServerNotification({ "Failed to load SSL certificates", ByteString::Build(SCHEME, SERVER, "/FAQ.html") });
+			AddServerNotification({ "Failed to load SSL certificates", ByteString::Build(SERVER, "/FAQ.html") });
 		}
 		try
 		{

@@ -76,7 +76,7 @@ inline ByteString IntroText()
 	}
 	else
 	{
-		sb << "\bgTo use online features such as saving, you need to register at: \brhttps://" << SERVER << "/Register.html\n";
+		sb << "\bgTo use online features such as saving, you need to register at: \br" << SERVER << "/Register.html\n";
 	}
 	sb << "\n\bt" << VersionInfo();
 	return sb.Build();

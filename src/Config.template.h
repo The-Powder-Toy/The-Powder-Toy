@@ -60,8 +60,6 @@ constexpr auto DISPLAY_VERSION = APP_VERSION.displayVersion;
 
 constexpr char IDENT_RELTYPE    = SNAPSHOT ? 'S' : (BETA ? 'B' : 'R');
 
-constexpr char SCHEME[]         = "https://";
-constexpr char STATICSCHEME[]   = "https://";
 constexpr char LOCAL_SAVE_DIR[] = "Saves";
 constexpr char STAMPS_DIR[]     = "stamps";
 constexpr char BRUSH_DIR[]      = "Brushes";

@@ -5,7 +5,7 @@
 
 namespace http
 {
-	LoginRequest::LoginRequest(ByteString username, ByteString password) : Request(ByteString::Build("https://", SERVER, "/Login.json"))
+	LoginRequest::LoginRequest(ByteString username, ByteString password) : Request(ByteString::Build(SERVER, "/Login.json"))
 	{
 		AddPostData(FormData{
 			{ "name", username },

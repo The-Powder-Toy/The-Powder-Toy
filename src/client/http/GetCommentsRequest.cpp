@@ -5,7 +5,7 @@
 namespace http
 {
 	GetCommentsRequest::GetCommentsRequest(int saveID, int start, int count) :
-		APIRequest(ByteString::Build(SCHEME, SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", start, "&Count=", count), authOmit, false)
+		APIRequest(ByteString::Build(SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", start, "&Count=", count), authOmit, false)
 	{
 	}
 
