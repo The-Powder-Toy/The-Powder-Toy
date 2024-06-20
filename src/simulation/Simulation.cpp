@@ -1,6 +1,7 @@
 #include "Simulation.h"
 #include "Air.h"
 #include "ElementClasses.h"
+#include "TransitionConstants.h"
 #include "gravity/Gravity.h"
 #include "ToolClasses.h"
 #include "SimulationData.h"
@@ -2467,11 +2468,11 @@ void Simulation::UpdateParticles(int start, int end)
 					if ((t==PT_ICEI || t==PT_SNOW) && (!sd.IsElement(parts[i].ctype) || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW))
 						parts[i].ctype = PT_WATR;
 
-					if (elements[t].HighTemperatureTransition>-1 && ctemph>=elements[t].HighTemperature)
+					if (elements[t].HighTemperatureTransition != NT && ctemph>=elements[t].HighTemperature)
 					{
 						// particle type change due to high temperature
 						float dbt = ctempl - pt;
-						if (elements[t].HighTemperatureTransition != PT_NUM)
+						if (elements[t].HighTemperatureTransition != ST)
 						{
 							if constexpr (LATENTHEAT)
 							{
@@ -2581,11 +2582,11 @@ void Simulation::UpdateParticles(int start, int end)
 						else
 							s = 0;
 					}
-					else if (elements[t].LowTemperatureTransition > -1 && ctempl<elements[t].LowTemperature)
+					else if (elements[t].LowTemperatureTransition != NT && ctempl<elements[t].LowTemperature)
 					{
 						// particle type change due to low temperature
 						float dbt = ctempl - pt;
-						if (elements[t].LowTemperatureTransition != PT_NUM)
+						if (elements[t].LowTemperatureTransition != ST)
 						{
 							if constexpr (LATENTHEAT)
 							{
@@ -2791,9 +2792,9 @@ void Simulation::UpdateParticles(int start, int end)
 			{
 				auto s = 1;
 				auto gravtot = fabs(gravy[(y/CELL)*XCELLS+(x/CELL)])+fabs(gravx[(y/CELL)*XCELLS+(x/CELL)]);
-				if (elements[t].HighPressureTransition>-1 && pv[y/CELL][x/CELL]>elements[t].HighPressure) {
+				if (elements[t].HighPressureTransition != NT && pv[y/CELL][x/CELL]>elements[t].HighPressure) {
 					// particle type change due to high pressure
-					if (elements[t].HighPressureTransition!=PT_NUM)
+					if (elements[t].HighPressureTransition != ST)
 						t = elements[t].HighPressureTransition;
 					else if (t==PT_BMTL) {
 						if (pv[y/CELL][x/CELL]>2.5f)
@@ -2803,14 +2804,14 @@ void Simulation::UpdateParticles(int start, int end)
 						else s = 0;
 					}
 					else s = 0;
-				} else if (elements[t].LowPressureTransition>-1 && pv[y/CELL][x/CELL]<elements[t].LowPressure && gravtot<=(elements[t].LowPressure/4.0f)) {
+				} else if (elements[t].LowPressureTransition != NT && pv[y/CELL][x/CELL]<elements[t].LowPressure && gravtot<=(elements[t].LowPressure/4.0f)) {
 					// particle type change due to low pressure
-					if (elements[t].LowPressureTransition!=PT_NUM)
+					if (elements[t].LowPressureTransition != ST)
 						t = elements[t].LowPressureTransition;
 					else s = 0;
-				} else if (elements[t].HighPressureTransition>-1 && gravtot>(elements[t].HighPressure/4.0f)) {
+				} else if (elements[t].HighPressureTransition != NT && gravtot>(elements[t].HighPressure/4.0f)) {
 					// particle type change due to high gravity
-					if (elements[t].HighPressureTransition!=PT_NUM)
+					if (elements[t].HighPressureTransition != ST)
 						t = elements[t].HighPressureTransition;
 					else if (t==PT_BMTL) {
 						if (gravtot>0.625f)
