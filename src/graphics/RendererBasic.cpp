@@ -66,6 +66,7 @@ void Renderer::RenderZoom()
 	if(!zoomEnabled)
 		return;
 	{
+		 std::cout << "RenderZoom called with zoomScopeSize: " << zoomScopeSize << std::endl;
 		int x, y, i, j;
 		pixel pix;
 
