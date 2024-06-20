@@ -24,6 +24,7 @@ conf_data.set('ALLOW_FAKE_NEWER_VERSION', (is_snapshot or is_beta or is_debug or
 conf_data.set('IDENT_PLATFORM', ident_platform)
 conf_data.set('IDENT', '@0@-@1@-@2@'.format(host_arch, host_platform, host_libc).to_upper())
 
+enforce_https = get_option('enforce_https')
 server = get_option('server')
 static_server = get_option('static_server')
 update_server = get_option('update_server')
@@ -31,8 +32,14 @@ update_server = get_option('update_server')
 if not (server.startswith('http://') or server.startswith('https://'))
 	server = 'https://' + server
 endif
+if server.startswith('http://') and enforce_https
+	error('enforce_https is true but server is a http:// URL base')
+endif
 if not (static_server.startswith('http://') or static_server.startswith('https://'))
 	static_server = 'https://' + static_server
+endif
+if static_server.startswith('http://') and enforce_https
+	error('enforce_https is true but static_server is a http:// URL base')
 endif
 
 use_update_server = false
@@ -41,12 +48,14 @@ if update_server != ''
 	if not (update_server.startswith('http://') or update_server.startswith('https://'))
 		update_server = 'https://' + update_server
 	endif
+	if update_server.startswith('http://') and enforce_https
+		error('enforce_https is true but update_server is a http:// URL base')
+	endif
 endif
 conf_data.set('USE_UPDATESERVER', use_update_server.to_string())
 conf_data.set('UPDATESERVER', update_server)
 
 platform_clipboard = get_option('platform_clipboard')
-enforce_https = get_option('enforce_https')
 allow_quit = true
 force_window_frame_ops = 'forceWindowFrameOpsNone'
 allow_data_folder = true
