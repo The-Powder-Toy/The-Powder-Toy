@@ -60,13 +60,15 @@ void Renderer::FinaliseParts()
 		render_gravlensing(warpVideo);
 	}
 }
-
+#include <iostream>
+#include <vector>
+using namespace std;
 void Renderer::RenderZoom()
 {
 	if(!zoomEnabled)
 		return;
 	{
-		 std::cout << "RenderZoom called with zoomScopeSize: " << zoomScopeSize << std::endl;
+		cout << "RenderZoom called with zoomScopeSize: " << zoomScopeSize << endl;
 		int x, y, i, j;
 		pixel pix;
 
