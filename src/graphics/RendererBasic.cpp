@@ -242,7 +242,7 @@ Renderer::Renderer(Simulation *newSim):
 	mousePos(0, 0),
 	zoomWindowPosition(0, 0),
 	zoomScopePosition(0, 0),
-	zoomScopeSize(360),
+	zoomScopeSize(96),
 //Increased zoom size
 	zoomEnabled(false),
 	ZFACTOR(8),
