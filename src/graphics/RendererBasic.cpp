@@ -170,6 +170,7 @@ std::vector<RGB<uint8_t>> Renderer::plasmaTable;
 std::vector<RGB<uint8_t>> Renderer::heatTable;
 std::vector<RGB<uint8_t>> Renderer::clfmTable;
 std::vector<RGB<uint8_t>> Renderer::firwTable;
+std::vector<RGB<uint8_t>> Renderer::flameAchromaTable;
 static bool tablesPopulated = false;
 static std::mutex tablesPopulatedMx;
 void Renderer::PopulateTables()
@@ -220,6 +221,10 @@ void Renderer::PopulateTables()
 			{ 0x00FF00_rgb, 0.60f },
 			{ 0xFFFF00_rgb, 0.80f },
 			{ 0xFF0000_rgb, 1.00f },
+		}, 200);
+		flameAchromaTable = Graphics::Gradient({
+			{ 0x000000_rgb, 0.00f },
+			{ 0xFFFFFF_rgb, 1.00f },
 		}, 200);
 	}
 }
