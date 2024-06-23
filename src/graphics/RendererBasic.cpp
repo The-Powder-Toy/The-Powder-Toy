@@ -68,7 +68,7 @@ void Renderer::RenderZoom()
 	if(!zoomEnabled)
 		return;
 	{
-		cout << "RenderZoom called with zoomScopeSize: " << zoomScopeSize << endl;
+		
 		int x, y, i, j;
 		pixel pix;
 
@@ -242,7 +242,7 @@ Renderer::Renderer(Simulation *newSim):
 	mousePos(0, 0),
 	zoomWindowPosition(0, 0),
 	zoomScopePosition(0, 0),
-	zoomScopeSize(84),
+	zoomScopeSize(32),
 //Increased zoom size
 	zoomEnabled(false),
 	ZFACTOR(8),
