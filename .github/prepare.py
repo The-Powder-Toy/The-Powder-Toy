@@ -120,6 +120,10 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',    True,     True,    '.pdb',         None,  'i686-win-msvc-static', 'release',       10 ),
 	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',       10 ),
 	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None, 'release',       10 ),
+	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',        0 ), # priority = 0: static debug build
+	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',    True,     True,    '.pdb',         None, 'arm64-win-msvc-static', 'release',       10 ),
+	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None,   'debug',       10 ),
+	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',   False,    False,      None,         None,                    None, 'release',       10 ),
 	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',   False,    False,      None,        'dmg',                    None,   'debug',        0 ), # priority = 0: static debug build
 	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',    True,     True,      None,        'dmg', 'x86_64-mac-gcc-static', 'release',       10 ), # I have no idea how to separate debug info on macos
 	(  'x86_64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',   False,    False,      None,        'dmg',                    None,   'debug',       10 ),
