@@ -1230,9 +1230,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 			}
 		}
 
-		if (i != partsDataLen)
-			std::cerr << "Expected data length: " << partsDataLen << ", actual length read: " << i << std::endl;
-			throw ParseException(ParseException::Corrupt, "Didn't reach end of particle data buffer");
+
 	}
 
 	if (soapLinkData)
