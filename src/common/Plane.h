@@ -1,12 +1,49 @@
 #pragma once
 
 #include <cstdint>
+#include <cstddef>
 #include <functional>
 #include <limits>
 #include <type_traits>
 #include <utility>
 
 #include "common/Vec2.h"
+
+// TODO: std::span once we're C++20
+template<class Item>
+struct PlaneBase
+{
+	Item *base;
+
+	PlaneBase(Item *newBase) : base(newBase)
+	{
+	}
+
+	Item *begin()
+	{
+		return base;
+	}
+
+	const Item *begin() const
+	{
+		return base;
+	}
+
+	Item &operator [](size_t index)
+	{
+		return *(base + index);
+	}
+
+	const Item &operator [](size_t index) const
+	{
+		return *(base + index);
+	}
+
+	const Item *data() const
+	{
+		return base;
+	}
+};
 
 constexpr size_t DynamicExtent = std::numeric_limits<size_t>::max();
 

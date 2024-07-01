@@ -1,3 +1,4 @@
+#include "Config.h"
 #include "GameModel.h"
 #include "BitmapBrush.h"
 #include "EllipseBrush.h"
@@ -106,9 +107,10 @@ GameModel::GameModel():
 	sim->air->ambientAirTemp = ambientAirTemp;
 	decoSpace = prefs.Get("Simulation.DecoSpace", NUM_DECOSPACES, DECOSPACE_SRGB);
 	sim->SetDecoSpace(decoSpace);
-	int ngrav_enable = prefs.Get("Simulation.NewtonianGravity", NUM_GRAVMODES, GRAV_VERTICAL);
-	if (ngrav_enable)
-		sim->grav->start_grav_async();
+	if (prefs.Get("Simulation.NewtonianGravity", false))
+	{
+		sim->EnableNewtonianGravity(true);
+	}
 	sim->aheat_enable = prefs.Get("Simulation.AmbientHeat", 0); // TODO: AmbientHeat enum
 	sim->pretty_powder = prefs.Get("Simulation.PrettyPowder", 0); // TODO: PrettyPowder enum
 
@@ -166,7 +168,7 @@ GameModel::~GameModel()
 		prefs.Set("Renderer.GravityField", (bool)ren->gravityFieldEnabled);
 		prefs.Set("Renderer.Decorations", (bool)ren->decorations_enable);
 		prefs.Set("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things
-		prefs.Set("Simulation.NewtonianGravity", sim->grav->IsEnabled());
+		prefs.Set("Simulation.NewtonianGravity", bool(sim->grav));
 		prefs.Set("Simulation.AmbientHeat", sim->aheat_enable);
 		prefs.Set("Simulation.PrettyPowder", sim->pretty_powder);
 		prefs.Set("Decoration.Red", (int)colour.Red);
@@ -967,14 +969,7 @@ void GameModel::SaveToSimParameters(const GameSave &saveData)
 	sim->legacy_enable = saveData.legacyEnable;
 	sim->water_equal_test = saveData.waterEEnabled;
 	sim->aheat_enable = saveData.aheatEnable;
-	if (saveData.gravityEnable && !sim->grav->IsEnabled())
-	{
-		sim->grav->start_grav_async();
-	}
-	else if (!saveData.gravityEnable && sim->grav->IsEnabled())
-	{
-		sim->grav->stop_grav_async();
-	}
+	sim->EnableNewtonianGravity(saveData.gravityEnable);
 	sim->frameCount = saveData.frameCount;
 	if (saveData.hasRngState)
 	{
@@ -1296,14 +1291,13 @@ void GameModel::ResetAHeat()
 
 void GameModel::SetNewtonianGravity(bool newtonainGravity)
 {
+	sim->EnableNewtonianGravity(newtonainGravity);
     if (newtonainGravity)
     {
-        sim->grav->start_grav_async();
         SetInfoTip("Newtonian Gravity: On");
     }
     else
     {
-        sim->grav->stop_grav_async();
         SetInfoTip("Newtonian Gravity: Off");
     }
     UpdateQuickOptions();
@@ -1311,7 +1305,7 @@ void GameModel::SetNewtonianGravity(bool newtonainGravity)
 
 bool GameModel::GetNewtonianGrvity()
 {
-    return sim->grav->IsEnabled();
+    return bool(sim->grav);
 }
 
 void GameModel::ShowGravityGrid(bool showGrid)

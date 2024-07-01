@@ -165,8 +165,8 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 			break;
 	}
 
-	gvx += sim->gravx[((int)parts[i].y/CELL)*XCELLS+((int)parts[i].x/CELL)];
-	gvy += sim->gravy[((int)parts[i].y/CELL)*XCELLS+((int)parts[i].x/CELL)];
+	gvx += sim->gravOut.forceX[Vec2{ int(parts[i].x), int(parts[i].y) } / CELL];
+	gvy += sim->gravOut.forceY[Vec2{ int(parts[i].x), int(parts[i].y) } / CELL];
 
 	float mvx = gvx;
 	float mvy = gvy;

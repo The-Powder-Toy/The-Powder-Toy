@@ -189,6 +189,10 @@ void GameSave::setSize(Vec2<int> newBlockSize)
 	ambientHeat = PlaneAdapter<std::vector<float>>(blockSize, 0.0f);
 	blockAir = PlaneAdapter<std::vector<unsigned char>>(blockSize, 0);
 	blockAirh = PlaneAdapter<std::vector<unsigned char>>(blockSize, 0);
+	gravMass = PlaneAdapter<std::vector<float>>(blockSize, 0.f);
+	gravMask = PlaneAdapter<std::vector<uint32_t>>(blockSize, UINT32_C(0xFFFFFFFF));
+	gravForceX = PlaneAdapter<std::vector<float>>(blockSize, 0.f);
+	gravForceY = PlaneAdapter<std::vector<float>>(blockSize, 0.f);
 }
 
 std::pair<bool, std::vector<char>> GameSave::Serialise() const
@@ -305,6 +309,10 @@ void GameSave::Transform(Mat2<int> transform, Vec2<int> nudge)
 	PlaneAdapter<std::vector<float>> newAmbientHeat(newBlockS, 0.0f);
 	PlaneAdapter<std::vector<unsigned char>> newBlockAir(newBlockS, 0);
 	PlaneAdapter<std::vector<unsigned char>> newBlockAirh(newBlockS, 0);
+	PlaneAdapter<std::vector<float>> newGravMass(newBlockS, 0.f);
+	PlaneAdapter<std::vector<uint32_t>> newGravMask(newBlockS, UINT32_C(0xFFFFFFFF));
+	PlaneAdapter<std::vector<float>> newGravForceX(newBlockS, 0.f);
+	PlaneAdapter<std::vector<float>> newGravForceY(newBlockS, 0.f);
 	for (auto bpos : blockSize.OriginRect())
 	{
 		auto newBpos = transform * bpos + btranslate;
@@ -328,6 +336,10 @@ void GameSave::Transform(Mat2<int> transform, Vec2<int> nudge)
 		newAmbientHeat[newBpos] = ambientHeat[bpos];
 		newBlockAir[newBpos] = blockAir[bpos];
 		newBlockAirh[newBpos] = blockAirh[bpos];
+		newGravMass[newBpos] = gravMass[bpos];
+		newGravMask[newBpos] = gravMask[bpos];
+		newGravForceX[newBpos] = gravForceX[bpos];
+		newGravForceY[newBpos] = gravForceY[bpos];
 	}
 	blockMap = std::move(newBlockMap);
 	fanVelX = std::move(newFanVelX);
@@ -338,6 +350,10 @@ void GameSave::Transform(Mat2<int> transform, Vec2<int> nudge)
 	ambientHeat = std::move(newAmbientHeat);
 	blockAir = std::move(newBlockAir);
 	blockAirh = std::move(newBlockAirh);
+	gravMass = std::move(newGravMass);
+	gravMask = std::move(newGravMask);
+	gravForceX = std::move(newGravForceX);
+	gravForceY = std::move(newGravForceY);
 
 	blockSize = newBlockS;
 }
@@ -424,9 +440,9 @@ void GameSave::readOPS(const std::vector<char> &data)
 	Renderer::PopulateTables();
 
 	unsigned char *inputData = (unsigned char*)&data[0], *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
-	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL, *ambientData = NULL, *blockAirData = nullptr;
+	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL, *ambientData = NULL, *blockAirData = nullptr, *gravityData = nullptr;
 	unsigned int inputDataLen = data.size(), bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, soapLinkDataLen;
-	unsigned int pressDataLen, vxDataLen, vyDataLen, ambientDataLen, blockAirDataLen;
+	unsigned int pressDataLen, vxDataLen, vyDataLen, ambientDataLen, blockAirDataLen, gravityDataLen;
 	unsigned partsCount = 0;
 	unsigned int savedVersion = inputData[4];
 	version = { savedVersion, 0 };
@@ -537,6 +553,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 		CheckBsonFieldUser(iter, "vyMap", &vyData, &vyDataLen);
 		CheckBsonFieldUser(iter, "ambientMap", &ambientData, &ambientDataLen);
 		CheckBsonFieldUser(iter, "blockAir", &blockAirData, &blockAirDataLen);
+		CheckBsonFieldUser(iter, "gravity", &gravityData, &gravityDataLen);
 		CheckBsonFieldUser(iter, "fanMap", &fanData, &fanDataLen);
 		CheckBsonFieldUser(iter, "soapLinks", &soapLinkData, &soapLinkDataLen);
 		CheckBsonFieldBool(iter, "legacyEnable", &legacyEnable);
@@ -762,8 +779,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	//Read wall and fan data
 	if(wallData)
 	{
-		// TODO: use PlaneAdapter<std::span<unsigned char>> once we're C++20
-		auto wallDataPlane = PlaneAdapter<const std::basic_string_view<unsigned char>>(blockS, std::in_place, wallData, blockS.X * blockS.Y);
+		auto wallDataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, wallData);
 		unsigned int j = 0;
 		if (blockS.X * blockS.Y > int(wallDataLen))
 			throw ParseException(ParseException::Corrupt, "Not enough wall data");
@@ -875,15 +891,34 @@ void GameSave::readOPS(const std::vector<char> &data)
 	{
 		if (blockS.X * blockS.Y * 2 > int(blockAirDataLen))
 			throw ParseException(ParseException::Corrupt, "Not enough block air data");
-		// TODO: use PlaneAdapter<std::span<unsigned char>> once we're C++20
-		auto blockAirDataPlane = PlaneAdapter<const std::basic_string_view<unsigned char>>(blockS, std::in_place, blockAirData, blockS.X * blockS.Y);
-		auto blockAirhDataPlane = PlaneAdapter<const std::basic_string_view<unsigned char>>(blockS, std::in_place, blockAirData + blockS.X * blockS.Y, blockS.X * blockS.Y);
+		auto blockAirDataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, blockAirData);
+		auto blockAirhDataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, blockAirData + blockS.X * blockS.Y);
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
-			blockAir[blockP + bpos] = blockAirDataPlane[bpos];
+			blockAir [blockP + bpos] = blockAirDataPlane [bpos];
 			blockAirh[blockP + bpos] = blockAirhDataPlane[bpos];
 		}
 		hasBlockAirMaps = true;
+	}
+
+	if (gravityData)
+	{
+		if (blockS.X * blockS.Y * 4 > int(gravityDataLen))
+		{
+			throw ParseException(ParseException::Corrupt, "Not enough gravity data");
+		}
+		auto massDataPlane   = PlaneAdapter<PlaneBase<const float   >>(blockS, std::in_place, reinterpret_cast<const float    *>(gravityData                                          ));
+		auto maskDataPlane   = PlaneAdapter<PlaneBase<const uint32_t>>(blockS, std::in_place, reinterpret_cast<const uint32_t *>(gravityData +     blockS.X * blockS.Y * sizeof(float)));
+		auto forceXDataPlane = PlaneAdapter<PlaneBase<const float   >>(blockS, std::in_place, reinterpret_cast<const float    *>(gravityData + 2 * blockS.X * blockS.Y * sizeof(float)));
+		auto forceYDataPlane = PlaneAdapter<PlaneBase<const float   >>(blockS, std::in_place, reinterpret_cast<const float    *>(gravityData + 3 * blockS.X * blockS.Y * sizeof(float)));
+		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
+		{
+			gravMass  [blockP + bpos] = massDataPlane  [bpos];
+			gravMask  [blockP + bpos] = maskDataPlane  [bpos];
+			gravForceX[blockP + bpos] = forceXDataPlane[bpos];
+			gravForceY[blockP + bpos] = forceYDataPlane[bpos];
+		}
+		hasGravityMaps = true;
 	}
 
 	//Read particle data
@@ -1441,8 +1476,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	}
 	for (auto bpos : RectSized(blockP, blockS).Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
-		// TODO: use PlaneAdapter<std::span<unsigned char>> once we're C++20
-		auto dataPlane = PlaneAdapter<const std::basic_string_view<unsigned char>>(blockS, std::in_place, data, blockS.X * blockS.Y);
+		auto dataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, data);
 		if (dataPlane[bpos - blockP]==4||(ver>=44 && dataPlane[bpos - blockP]==O_WL_FAN))
 		{
 			if (p >= dataLength)
@@ -1452,8 +1486,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	}
 	for (auto bpos : RectSized(blockP, blockS).Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
-		// TODO: use PlaneAdapter<std::span<unsigned char>> once we're C++20
-		auto dataPlane = PlaneAdapter<const std::basic_string_view<unsigned char>>(blockS, std::in_place, data, blockS.X * blockS.Y);
+		auto dataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, data);
 		if (dataPlane[bpos - blockP]==4||(ver>=44 && dataPlane[bpos - blockP]==O_WL_FAN))
 		{
 			if (p >= dataLength)
@@ -1569,8 +1602,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 			}
 		}
 	}
-	// TODO: use PlaneAdapter<std::span<unsigned char>> once we're C++20
-	auto dataPlanePty = PlaneAdapter<const std::basic_string_view<unsigned char>>(partS, std::in_place, data + pty, partS.X * partS.Y);
+	auto dataPlanePty = PlaneAdapter<PlaneBase<const unsigned char>>(partS, std::in_place, data + pty);
 	if (ver>=53) {
 		for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 		{
@@ -1947,8 +1979,17 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	std::vector<unsigned char> vxData(blockSize.X*blockSize.Y*2);
 	std::vector<unsigned char> vyData(blockSize.X*blockSize.Y*2);
 	std::vector<unsigned char> ambientData(blockSize.X*blockSize.Y*2, 0);
-	// TODO: have a separate vector with two PlaneAdapter<std::span<unsigned char>>s over it once we're C++20
-	PlaneAdapter<std::vector<unsigned char>> blockAirData({ blockSize.X, blockSize.Y * 2 });
+
+	std::vector<unsigned char> blockAirData(blockSize.X * blockSize.Y * 2);
+	PlaneAdapter<PlaneBase<unsigned char>> blockAirDataPlane (blockSize, std::in_place, &blockAirData[0]                            );
+	PlaneAdapter<PlaneBase<unsigned char>> blockAirhDataPlane(blockSize, std::in_place, &blockAirData[0] + blockSize.X * blockSize.Y);
+
+	std::vector<unsigned char> gravityData(blockSize.X * blockSize.Y * 4 * sizeof(float));
+	PlaneAdapter<PlaneBase<float   >> massDataPlane  (blockSize, std::in_place, reinterpret_cast<float    *>(&gravityData[0]                                                ));
+	PlaneAdapter<PlaneBase<uint32_t>> maskDataPlane  (blockSize, std::in_place, reinterpret_cast<uint32_t *>(&gravityData[0] +     blockSize.X * blockSize.Y * sizeof(float)));
+	PlaneAdapter<PlaneBase<float   >> forceXDataPlane(blockSize, std::in_place, reinterpret_cast<float    *>(&gravityData[0] + 2 * blockSize.X * blockSize.Y * sizeof(float)));
+	PlaneAdapter<PlaneBase<float   >> forceYDataPlane(blockSize, std::in_place, reinterpret_cast<float    *>(&gravityData[0] + 3 * blockSize.X * blockSize.Y * sizeof(float)));
+
 	unsigned int wallDataLen = blockSize.X*blockSize.Y, fanDataLen = 0, pressDataLen = 0, vxDataLen = 0, vyDataLen = 0, ambientDataLen = 0;
 
 	for (auto bpos : RectSized(blockP, blockS).Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
@@ -1972,8 +2013,13 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			vyData[vyDataLen++] = (unsigned char)((int)(velY*128)&0xFF);
 			vyData[vyDataLen++] = (unsigned char)((int)(velY*128)>>8);
 
-			blockAirData[bpos - blockP] = blockAir[bpos];
-			blockAirData[(bpos - blockP) + Vec2{ 0, blockS.Y }] = blockAirh[bpos];
+			blockAirDataPlane [bpos - blockP] = blockAir [bpos];
+			blockAirhDataPlane[bpos - blockP] = blockAirh[bpos];
+
+			massDataPlane  [bpos - blockP] = gravMass  [bpos];
+			maskDataPlane  [bpos - blockP] = gravMask  [bpos];
+			forceXDataPlane[bpos - blockP] = gravForceX[bpos];
+			forceYDataPlane[bpos - blockP] = gravForceY[bpos];
 		}
 
 		if (hasAmbientHeat)
@@ -2522,13 +2568,17 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 		bson_append_binary(&b, "ambientMap", (char)BSON_BIN_USER, (const char*)&ambientData[0], ambientDataLen);
 	if (soapLinkDataLen)
 		bson_append_binary(&b, "soapLinks", (char)BSON_BIN_USER, (const char *)&soapLinkData[0], soapLinkDataLen);
+	bson_append_binary(&b, "blockAir", (char)BSON_BIN_USER, (const char *)blockAirData.data(), blockAirData.size());
 	if (ensureDeterminism)
 	{
 		bson_append_bool(&b, "ensureDeterminism", ensureDeterminism);
-		bson_append_binary(&b, "blockAir", (char)BSON_BIN_USER, (const char *)blockAirData.data(), blockAirData.Size().X * blockAirData.Size().Y);
 		bson_append_long(&b, "frameCount", int64_t(frameCount));
 		bson_append_binary(&b, "rngState", (char)BSON_BIN_USER, (const char *)&rngState, sizeof(rngState));
 		RESTRICTVERSION(98, 0);
+	}
+	if (gravityEnable)
+	{
+		bson_append_binary(&b, "gravity", (char)BSON_BIN_USER, (const char *)gravityData.data(), gravityData.size());
 	}
 	unsigned int signsCount = 0;
 	for (size_t i = 0; i < signs.size(); i++)

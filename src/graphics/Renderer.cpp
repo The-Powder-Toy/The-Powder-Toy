@@ -814,22 +814,18 @@ void Renderer::draw_other() // EMP effect
 
 void Renderer::draw_grav_zones()
 {
-	if(!gravityZonesEnabled)
-		return;
-
-	int x, y, i, j;
-	for (y=0; y<YCELLS; y++)
+	if (!gravityZonesEnabled)
 	{
-		for (x=0; x<XCELLS; x++)
+		return;
+	}
+	for (auto p : CELLS.OriginRect())
+	{
+		if (sim->gravIn.mask[p])
 		{
-			if(sim->grav->gravmask[y*XCELLS+x])
+			auto np = p * CELL;
+			for (auto o : Vec2{ CELL, CELL }.OriginRect())
 			{
-				for (j=0; j<CELL; j++)//draws the colors
-					for (i=0; i<CELL; i++)
-						if(i == j)
-							BlendPixel({ x*CELL+i, y*CELL+j }, 0xFFC800_rgb .WithAlpha(120));
-						else
-							BlendPixel({ x*CELL+i, y*CELL+j }, 0x202020_rgb .WithAlpha(120));
+				BlendPixel(np + o, (o.X == o.Y ? 0xFFC800_rgb : 0x202020_rgb).WithAlpha(120));
 			}
 		}
 	}
@@ -837,28 +833,26 @@ void Renderer::draw_grav_zones()
 
 void Renderer::draw_grav()
 {
-	int x, y, i, ca;
-	float nx, ny, dist;
-
-	if(!gravityFieldEnabled)
-		return;
-
-	for (y=0; y<YCELLS; y++)
+	if (!gravityFieldEnabled)
 	{
-		for (x=0; x<XCELLS; x++)
+		return;
+	}
+	for (auto p : CELLS.OriginRect())
+	{
+		auto gx = sim->gravOut.forceX[p];
+		auto gy = sim->gravOut.forceY[p];
+		auto agx = std::abs(gx);
+		auto agy = std::abs(gy);
+		if (agx <= 0.001f && agy <= 0.001f)
 		{
-			ca = y*XCELLS+x;
-			if(fabsf(sim->gravx[ca]) <= 0.001f && fabsf(sim->gravy[ca]) <= 0.001f)
-				continue;
-			nx = float(x*CELL);
-			ny = float(y*CELL);
-			dist = fabsf(sim->gravy[ca])+fabsf(sim->gravx[ca]);
-			for(i = 0; i < 4; i++)
-			{
-				nx -= sim->gravx[ca]*0.5f;
-				ny -= sim->gravy[ca]*0.5f;
-				AddPixel({ int(nx+0.5f), int(ny+0.5f) }, 0xFFFFFF_rgb .WithAlpha(int(dist*20.0f)));
-			}
+			continue;
+		}
+		auto np = Vec2<float>(p.X * CELL, p.Y * CELL);
+		auto dist = agx + agy;
+		for (auto i = 0; i < 4; ++i)
+		{
+			np -= Vec2{ gx * 0.5f, gy * 0.5f };
+			AddPixel({ int(np.X + 0.5f), int(np.Y + 0.5f) }, 0xFFFFFF_rgb .WithAlpha(int(dist * 20.0f)));
 		}
 	}
 }

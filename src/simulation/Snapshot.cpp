@@ -22,10 +22,9 @@ uint32_t Snapshot::Hash() const
 	takeVector(AirVelocityY);
 	takeVector(AmbientHeat);
 	takeVector(Particles);
-	takeVector(GravVelocityX);
-	takeVector(GravVelocityY);
-	takeVector(GravValue);
-	takeVector(GravMap);
+	takeVector(GravMass);
+	takeVector(GravForceX);
+	takeVector(GravForceY);
 	takeVector(BlockMap);
 	takeVector(ElecMap);
 	takeVector(BlockAir);

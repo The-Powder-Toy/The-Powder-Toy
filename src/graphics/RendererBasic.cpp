@@ -96,6 +96,30 @@ void Renderer::RenderZoom()
 	}
 }
 
+
+void Renderer::render_gravlensing(const Video &source)
+{
+	for (auto p : RES.OriginRect())
+	{
+		auto cp = p / CELL;
+		auto rp = Vec2{ int(p.X - sim->gravOut.forceX[cp] * 0.75f  + 0.5f), int(p.Y - sim->gravOut.forceY[cp] * 0.75f  + 0.5f) };
+		auto gp = Vec2{ int(p.X - sim->gravOut.forceX[cp] * 0.875f + 0.5f), int(p.Y - sim->gravOut.forceY[cp] * 0.875f + 0.5f) };
+		auto bp = Vec2{ int(p.X - sim->gravOut.forceX[cp]          + 0.5f), int(p.Y - sim->gravOut.forceY[cp]          + 0.5f) };
+		if (RES.OriginRect().Contains(rp) &&
+		    RES.OriginRect().Contains(gp) &&
+		    RES.OriginRect().Contains(bp))
+		{
+			auto v = RGB<uint8_t>::Unpack(video[p]);
+			auto s = RGB<uint8_t>::Unpack(source[rp]);
+			video[p] = RGB<uint8_t>(
+				std::min(0xFF, s.Red   + v.Red  ),
+				std::min(0xFF, s.Green + v.Green),
+				std::min(0xFF, s.Blue  + v.Blue )
+			).Pack();
+		}
+	}
+}
+
 void Renderer::DrawBlob(Vec2<int> pos, RGB<uint8_t> colour)
 {
 	BlendPixel(pos + Vec2{ +1,  0 }, colour.WithAlpha(112));
@@ -106,33 +130,6 @@ void Renderer::DrawBlob(Vec2<int> pos, RGB<uint8_t> colour)
 	BlendPixel(pos + Vec2{ -1, -1 }, colour.WithAlpha(64));
 	BlendPixel(pos + Vec2{  1,  1 }, colour.WithAlpha(64));
 	BlendPixel(pos + Vec2{ -1, +1 }, colour.WithAlpha(64));
-}
-
-
-void Renderer::render_gravlensing(const Video &source)
-{
-	int nx, ny, rx, ry, gx, gy, bx, by, co;
-	for(nx = 0; nx < XRES; nx++)
-	{
-		for(ny = 0; ny < YRES; ny++)
-		{
-			co = (ny/CELL)*XCELLS+(nx/CELL);
-			rx = (int)(nx-sim->gravx[co]*0.75f+0.5f);
-			ry = (int)(ny-sim->gravy[co]*0.75f+0.5f);
-			gx = (int)(nx-sim->gravx[co]*0.875f+0.5f);
-			gy = (int)(ny-sim->gravy[co]*0.875f+0.5f);
-			bx = (int)(nx-sim->gravx[co]+0.5f);
-			by = (int)(ny-sim->gravy[co]+0.5f);
-			if(rx >= 0 && rx < XRES && ry >= 0 && ry < YRES && gx >= 0 && gx < XRES && gy >= 0 && gy < YRES && bx >= 0 && bx < XRES && by >= 0 && by < YRES)
-			{
-				auto t = RGB<uint8_t>::Unpack(video[{ nx, ny }]);
-				t.Red   = std::min(0xFF, (int)RGB<uint8_t>::Unpack(source[{ rx, ry }]).Red   + t.Red);
-				t.Green = std::min(0xFF, (int)RGB<uint8_t>::Unpack(source[{ gx, gy }]).Green + t.Green);
-				t.Blue  = std::min(0xFF, (int)RGB<uint8_t>::Unpack(source[{ bx, by }]).Blue  + t.Blue);
-				video[{ nx, ny }] = t.Pack();
-			}
-		}
-	}
 }
 
 float temp[CELL*3][CELL*3];

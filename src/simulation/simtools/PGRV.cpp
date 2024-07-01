@@ -13,6 +13,6 @@ void SimTool::Tool_PGRV()
 
 static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
-	sim->gravmap[((y/CELL)*XCELLS)+(x/CELL)] = strength*5.0f;
+	sim->gravIn.mass[Vec2{ x, y } / CELL] = strength * 5.0f;
 	return 1;
 }

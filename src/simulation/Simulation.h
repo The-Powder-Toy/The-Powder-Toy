@@ -7,8 +7,8 @@
 #include "BuiltinGOL.h"
 #include "MenuSection.h"
 #include "CoordStack.h"
-#include "gravity/GravityPtr.h"
 #include "common/tpt-rand.h"
+#include "gravity/Gravity.h"
 #include "Element.h"
 #include "SimulationConfig.h"
 #include <cstring>
@@ -22,13 +22,12 @@ constexpr int CHANNELS = int(MAX_TEMP - 73) / 100 + 2;
 
 class Snapshot;
 class Brush;
-class SimulationSample;
+struct SimulationSample;
 struct matrix2d;
 struct vector2d;
 
 class Simulation;
 class Renderer;
-class Gravity;
 class Air;
 class GameSave;
 
@@ -36,6 +35,9 @@ class Simulation
 {
 public:
 	GravityPtr grav;
+	GravityInput gravIn;
+	GravityOutput gravOut; // invariant: when grav is empty, this is in its default-constructed state
+
 	std::unique_ptr<Air> air;
 	RNG rng;
 
@@ -80,11 +82,6 @@ public:
 	float (*vy)[XCELLS];
 	float (*pv)[XCELLS];
 	float (*hv)[XCELLS];
-	//Gravity sim
-	float *gravx;//gravx[YCELLS * XCELLS];
-	float *gravy;//gravy[YCELLS * XCELLS];
-	float *gravp;//gravp[YCELLS * XCELLS];
-	float *gravmap;//gravmap[YCELLS * XCELLS];
 	//Walls
 	unsigned char bmap[YCELLS][XCELLS];
 	unsigned char emap[YCELLS][XCELLS];
@@ -215,6 +212,11 @@ public:
 	~Simulation();
 
 	bool useLuaCallbacks = false;
+
+	void EnableNewtonianGravity(bool enable);
+	void ResetNewtonianGravity(GravityInput newGravIn, GravityOutput newGravOut);
+	void DispatchNewtonianGravity();
+	void UpdateGravityMask();
 
 private:
 	CoordStack& getCoordStackSingleton();

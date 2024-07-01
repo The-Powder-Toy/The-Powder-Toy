@@ -47,7 +47,6 @@ tpt.get_name            = tpt.getUserName
 tpt.menu_enabled        = ui.menuEnabled
 tpt.num_menus           = ui.numMenus
 tpt.perfectCircleBrush  = ui.perfectCircleBrush
-tpt.reset_gravity_field = sim.resetGravityField
 tpt.reset_spark         = sim.resetSpark
 tpt.reset_velocity      = sim.resetVelocity
 tpt.set_clipboard       = plat.clipboardPaste

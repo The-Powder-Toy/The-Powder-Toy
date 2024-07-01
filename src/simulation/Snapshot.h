@@ -17,10 +17,9 @@ public:
 
 	std::vector<Particle> Particles;
 
-	std::vector<float> GravVelocityX;
-	std::vector<float> GravVelocityY;
-	std::vector<float> GravValue;
-	std::vector<float> GravMap;
+	std::vector<float> GravForceX;
+	std::vector<float> GravForceY;
+	std::vector<float> GravMass;
 
 	std::vector<unsigned char> BlockMap;
 	std::vector<unsigned char> ElecMap;

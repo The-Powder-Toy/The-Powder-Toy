@@ -52,14 +52,10 @@ static int newtonianGravity(lua_State *L)
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
-		lua_pushboolean(L, lsi->sim->grav->IsEnabled());
+		lua_pushboolean(L, bool(lsi->sim->grav));
 		return 1;
 	}
-	int gravstate = lua_toboolean(L, 1);
-	if(gravstate)
-		lsi->sim->grav->start_grav_async();
-	else
-		lsi->sim->grav->stop_grav_async();
+	lsi->sim->EnableNewtonianGravity(lua_toboolean(L, 1));
 	lsi->gameModel->UpdateQuickOptions();
 	return 0;
 }
@@ -205,7 +201,7 @@ static int gravityMass(lua_State *L)
 {
 	auto *lsi = GetLSI();
 	return LuaBlockMap(L, [lsi](Vec2<int> p) -> float & {
-		return lsi->sim->gravmap[p.Y * XCELLS + p.X];
+		return lsi->sim->gravIn.mass[p];
 	});
 }
 
@@ -217,8 +213,8 @@ static int gravityField(lua_State *L)
 	{
 		return luaL_error(L, "Coordinates (%i, %i) out of range", pos.X, pos.Y);
 	}
-	lua_pushnumber(L, lsi->sim->gravx[pos.Y * XCELLS + pos.X]);
-	lua_pushnumber(L, lsi->sim->gravy[pos.Y * XCELLS + pos.X]);
+	lua_pushnumber(L, lsi->sim->gravOut.forceX[pos]);
+	lua_pushnumber(L, lsi->sim->gravOut.forceY[pos]);
 	return 2;
 }
 
@@ -1798,34 +1794,6 @@ static int resetSpark(lua_State *L)
 	return 0;
 }
 
-static int resetGravityField(lua_State *L)
-{
-	int nx, ny;
-	int x1, y1, width, height;
-	x1 = abs(luaL_optint(L, 1, 0));
-	y1 = abs(luaL_optint(L, 2, 0));
-	width = abs(luaL_optint(L, 3, XCELLS));
-	height = abs(luaL_optint(L, 4, YCELLS));
-	if(x1 > XCELLS-1)
-		x1 = XCELLS-1;
-	if(y1 > YCELLS-1)
-		y1 = YCELLS-1;
-	if(x1+width > XCELLS-1)
-		width = XCELLS-x1;
-	if(y1+height > YCELLS-1)
-		height = YCELLS-y1;
-	auto *lsi = GetLSI();
-	auto *sim = lsi->sim;
-	for (nx = x1; nx<x1+width; nx++)
-		for (ny = y1; ny<y1+height; ny++)
-		{
-			sim->gravx[ny*XCELLS+nx] = 0;
-			sim->gravy[ny*XCELLS+nx] = 0;
-			sim->gravp[ny*XCELLS+nx] = 0;
-		}
-	return 0;
-}
-
 static int randomSeed(lua_State *L)
 {
 	auto *lsi = GetLSI();
@@ -1946,7 +1914,6 @@ void LuaSimulation::Open(lua_State *L)
 		LFUNC(paused),
 		LFUNC(gravityMass),
 		LFUNC(gravityField),
-		LFUNC(resetGravityField),
 		LFUNC(resetSpark),
 		LFUNC(resetVelocity),
 		LFUNC(wallMap),
