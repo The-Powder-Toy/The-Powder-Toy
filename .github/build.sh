@@ -486,7 +486,18 @@ if [[ $PACKAGE_MODE == dmg ]]; then
 	cp ../README.md dmgroot/README.md
 	# apparently using sudo here fixes the occasional "resource is busy"
 	# see https://github.com/actions/runner-images/issues/7522
-	sudo hdiutil create -format UDZO -volname $APP_NAME -fs HFS+ -srcfolder dmgroot -o $ASSET_PATH
+	# actually never mind, it does not, amazing. I'll just go spam it I guess
+	for ((i = 0; i < 100; ++i)); do
+		if sudo hdiutil create -format UDZO -volname $APP_NAME -fs HFS+ -srcfolder dmgroot -o $ASSET_PATH; then
+			break
+		fi
+		>&2 echo "hdiutil is a joke, trying again in a bit..."
+		sleep 1
+	done
+	if [[ ! -f $ASSET_PATH ]]; then
+		>&2 echo "hdiutil is a joke"
+		exit 1
+	fi
 elif [[ $PACKAGE_MODE == emscripten ]]; then
 	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.worker.js $APP_EXE.wasm
 elif [[ $PACKAGE_MODE == appimage ]]; then
