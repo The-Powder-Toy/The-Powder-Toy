@@ -4042,13 +4042,5 @@ void Simulation::EnableNewtonianGravity(bool enable)
 	}
 }
 
-constexpr size_t ce_log2(size_t n)
-{
-	return ((n < 2) ? 1 : 1 + ce_log2(n / 2));
-}
-static_assert(PMAPBITS <= 16, "PMAPBITS is too large");
-// * This will technically fail in some cases where (XRES * YRES) << PMAPBITS would
-//   fit in 31 bits but multiplication is evil and wraps around without you knowing it.
-// * Whoever runs into a problem with this (e.g. with XRES = 612, YRES = 384 and
-//   PMAPBITS = 13) should just remove the check and take responsibility otherwise.
-static_assert(ce_log2(XRES) + ce_log2(YRES) + PMAPBITS <= 31, "not enough space in pmap");
+// we want XRES * YRES <= (1 << (31 - PMAPBITS)), but we do a division because multiplication could silently overflow
+static_assert(uint32_t(XRES) <= (UINT32_C(1) << (31 - PMAPBITS)) / uint32_t(YRES), "not enough space in pmap");
