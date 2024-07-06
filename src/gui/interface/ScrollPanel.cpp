@@ -81,7 +81,7 @@ void ScrollPanel::XOnMouseDown(int x, int y, unsigned int button)
 			scrollbarSelected = true;
 			scrollbarInitialYOffset = int(offsetY);
 		}
-		initialOffsetY = offsetY;
+		initialOffsetY = int(offsetY);
 		scrollbarInitialYClick = y - Position.Y;
 		scrollbarClickLocation = 100;
 	}

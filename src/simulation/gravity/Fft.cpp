@@ -179,7 +179,7 @@ void GravityImpl::Init()
 	fftwf_execute(kernelYForward.get());
 
 	//clear padded gravmap
-	std::memset(massBig.get(), 0.f, blocks.X * blocks.Y * sizeof(float));
+	std::fill(massBig.get(), massBig.get() + blocks.X * blocks.Y, 0.f);
 
 	thr = std::thread([this]() {
 		while (true)

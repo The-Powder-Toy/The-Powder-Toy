@@ -847,7 +847,7 @@ void Renderer::draw_grav()
 		{
 			continue;
 		}
-		auto np = Vec2<float>(p.X * CELL, p.Y * CELL);
+		auto np = Vec2{ float(p.X * CELL), float(p.Y * CELL) };
 		auto dist = agx + agy;
 		for (auto i = 0; i < 4; ++i)
 		{
