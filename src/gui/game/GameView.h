@@ -27,6 +27,7 @@ namespace ui
 }
 
 class SplitButton;
+class Simulation;
 
 class MenuButton;
 class Renderer;
@@ -81,6 +82,7 @@ private:
 	ui::Point currentPoint, lastPoint;
 	GameController * c;
 	Renderer * ren;
+	Simulation *sim = nullptr;
 	Brush const *activeBrush;
 	//UI Elements
 	std::vector<ui::Button*> quickOptionButtons;

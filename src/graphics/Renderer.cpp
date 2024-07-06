@@ -10,6 +10,55 @@
 #include "simulation/orbitalparts.h"
 #include <cmath>
 
+void Renderer::RenderSimulation()
+{
+	draw_grav();
+	DrawWalls();
+	render_parts();
+
+	if (display_mode & DISPLAY_PERS)
+	{
+		std::transform(video.RowIterator({ 0, 0 }), video.RowIterator({ 0, YRES }), persistentVideo.begin(), [](pixel p) {
+			return RGB<uint8_t>::Unpack(p).Decay().Pack();
+		});
+	}
+
+	render_fire();
+	draw_other();
+	draw_grav_zones();
+	DrawSigns();
+
+	if (display_mode & DISPLAY_WARP)
+	{
+		warpVideo = video;
+		std::fill_n(video.data(), WINDOWW * YRES, 0);
+		render_gravlensing(warpVideo);
+	}
+}
+
+void Renderer::render_gravlensing(const Video &source)
+{
+	for (auto p : RES.OriginRect())
+	{
+		auto cp = p / CELL;
+		auto rp = Vec2{ int(p.X - sim->gravOut.forceX[cp] * 0.75f  + 0.5f), int(p.Y - sim->gravOut.forceY[cp] * 0.75f  + 0.5f) };
+		auto gp = Vec2{ int(p.X - sim->gravOut.forceX[cp] * 0.875f + 0.5f), int(p.Y - sim->gravOut.forceY[cp] * 0.875f + 0.5f) };
+		auto bp = Vec2{ int(p.X - sim->gravOut.forceX[cp]          + 0.5f), int(p.Y - sim->gravOut.forceY[cp]          + 0.5f) };
+		if (RES.OriginRect().Contains(rp) &&
+		    RES.OriginRect().Contains(gp) &&
+		    RES.OriginRect().Contains(bp))
+		{
+			auto v = RGB<uint8_t>::Unpack(video[p]);
+			auto s = RGB<uint8_t>::Unpack(source[rp]);
+			video[p] = RGB<uint8_t>(
+				std::min(0xFF, s.Red   + v.Red  ),
+				std::min(0xFF, s.Green + v.Green),
+				std::min(0xFF, s.Blue  + v.Blue )
+			).Pack();
+		}
+	}
+}
+
 std::unique_ptr<VideoBuffer> Renderer::WallIcon(int wallID, Vec2<int> size)
 {
 	auto &sd = SimulationData::CRef();
@@ -185,8 +234,6 @@ void Renderer::render_parts()
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
 	int drawing_budget = 1000000; //Serves as an upper bound for costly effects such as SPARK, FLARE and LFLARE
 
-	if(!sim)
-		return;
 	auto *parts = sim->parts;
 	if (gridSize)//draws the grid
 	{

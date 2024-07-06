@@ -4,6 +4,7 @@
 class RenderView;
 class RenderModel;
 class Renderer;
+class Simulation;
 class RenderController
 {
 	RenderView * renderView;
@@ -11,7 +12,7 @@ class RenderController
 	std::function<void ()> onDone;
 public:
 	bool HasExited;
-	RenderController(Renderer * ren, std::function<void ()> onDone = nullptr);
+	RenderController(Simulation *sim, Renderer * ren, std::function<void ()> onDone = nullptr);
 	void Exit();
 	RenderView * GetView() { return renderView; }
 	virtual ~RenderController();

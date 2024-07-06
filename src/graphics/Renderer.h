@@ -55,8 +55,7 @@ public:
 	}
 
 	RNG rng;
-
-	const RenderableSimulation *sim;
+	const RenderableSimulation *sim = nullptr;
 
 	std::vector<unsigned int> render_modes;
 	unsigned int render_mode;
@@ -90,7 +89,7 @@ public:
 	int ZFACTOR;
 
 	//Renderers
-	void RenderBegin();
+	void RenderSimulation();
 	void RenderEnd();
 
 	void RenderZoom();
@@ -109,7 +108,6 @@ public:
 	void draw_air();
 	void draw_grav();
 	void draw_other();
-	void FinaliseParts();
 
 	void ClearAccumulation();
 	void clearScreen();
@@ -142,7 +140,7 @@ public:
 
 	static std::unique_ptr<VideoBuffer> WallIcon(int wallID, Vec2<int> size);
 
-	Renderer(RenderableSimulation *newSim);
+	Renderer();
 
 #define RENDERER_TABLE(name) \
 	static std::vector<RGB<uint8_t>> name; \

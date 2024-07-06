@@ -26,6 +26,7 @@
 #include "simulation/ElementDefs.h"
 #include "simulation/SaveRenderer.h"
 #include "simulation/SimulationData.h"
+#include "simulation/Simulation.h"
 
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
@@ -737,7 +738,7 @@ void GameView::NotifyRendererChanged(GameModel * sender)
 
 void GameView::NotifySimulationChanged(GameModel * sender)
 {
-
+	sim = sender->GetSimulation();
 }
 void GameView::NotifyUserChanged(GameModel * sender)
 {
@@ -2133,10 +2134,12 @@ void GameView::OnDraw()
 		// we're the main thread, we may write graphicscache
 		auto &sd = SimulationData::Ref();
 		std::unique_lock lk(sd.elementGraphicsMx);
+		ren->sim = sim;
 		ren->clearScreen();
 		ren->draw_air();
 		c->BeforeSimDraw();
-		ren->RenderBegin();
+		ren->RenderSimulation();
+		ren->sim = nullptr;
 		ren->SetSample(c->PointTranslate(currentMouse));
 		if (showBrush && selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
 		{

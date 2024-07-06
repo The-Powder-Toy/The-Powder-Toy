@@ -100,9 +100,23 @@ void RenderModel::SetRenderer(Renderer * ren)
 	notifyColourChanged();
 }
 
+void RenderModel::SetSimulation(Simulation *newSim)
+{
+	sim = newSim;
+	notifySimulationChanged();
+	notifyRenderChanged();
+	notifyDisplayChanged();
+	notifyColourChanged();
+}
+
 Renderer * RenderModel::GetRenderer()
 {
 	return renderer;
+}
+
+Simulation *RenderModel::GetSimulation()
+{
+	return sim;
 }
 
 void RenderModel::notifyRendererChanged()
@@ -110,6 +124,14 @@ void RenderModel::notifyRendererChanged()
 	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyRendererChanged(this);
+	}
+}
+
+void RenderModel::notifySimulationChanged()
+{
+	for (size_t i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifySimulationChanged(this);
 	}
 }
 

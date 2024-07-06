@@ -1403,7 +1403,7 @@ void GameController::HideConsole()
 
 void GameController::OpenRenderOptions()
 {
-	renderOptions = new RenderController(gameModel->GetRenderer(), NULL);
+	renderOptions = new RenderController(gameModel->GetSimulation(), gameModel->GetRenderer(), NULL);
 	ui::Engine::Ref().ShowWindow(renderOptions->GetView());
 }
 

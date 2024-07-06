@@ -5,7 +5,7 @@
 
 #include "Controller.h"
 
-RenderController::RenderController(Renderer * ren, std::function<void ()> onDone_):
+RenderController::RenderController(Simulation *sim, Renderer * ren, std::function<void ()> onDone_):
 	HasExited(false)
 {
 	renderView = new RenderView();
@@ -15,6 +15,7 @@ RenderController::RenderController(Renderer * ren, std::function<void ()> onDone
 	renderModel->AddObserver(renderView);
 
 	renderModel->SetRenderer(ren);
+	renderModel->SetSimulation(sim);
 	onDone = onDone_;
 }
 

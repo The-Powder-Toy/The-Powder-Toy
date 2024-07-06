@@ -5,11 +5,13 @@
 class ModeCheckbox;
 
 class Renderer;
+class Simulation;
 class RenderController;
 class RenderModel;
 class RenderView: public ui::Window {
 	RenderController * c;
 	Renderer * ren;
+	Simulation *sim = nullptr;
 	std::vector<ModeCheckbox *> renderModes;
 	std::vector<ModeCheckbox *> displayModes;
 	std::vector<ModeCheckbox *> colourModes;
@@ -20,6 +22,7 @@ class RenderView: public ui::Window {
 public:
 	RenderView();
 	void NotifyRendererChanged(RenderModel * sender);
+	void NotifySimulationChanged(RenderModel * sender);
 	void NotifyRenderChanged(RenderModel * sender);
 	void NotifyDisplayChanged(RenderModel * sender);
 	void NotifyColourChanged(RenderModel * sender);

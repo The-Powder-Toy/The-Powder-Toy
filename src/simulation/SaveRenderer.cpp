@@ -11,7 +11,8 @@
 SaveRenderer::SaveRenderer()
 {
 	sim = std::make_unique<Simulation>();
-	ren = std::make_unique<Renderer>(sim.get());
+	ren = std::make_unique<Renderer>();
+	ren->sim = sim.get();
 	ren->decorations_enable = true;
 	ren->blackDecorations = true;
 }
@@ -53,7 +54,7 @@ std::unique_ptr<VideoBuffer> SaveRenderer::Render(const GameSave *save, bool dec
 		}
 	}
 
-	ren->RenderBegin();
+	ren->RenderSimulation();
 	ren->RenderEnd();
 
 	auto tempThumb = std::make_unique<VideoBuffer>(save->blockSize * CELL);

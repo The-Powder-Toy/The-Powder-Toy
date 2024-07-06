@@ -43,7 +43,8 @@ int main(int argc, char *argv[])
 	}
 
 	Simulation * sim = new Simulation();
-	Renderer * ren = new Renderer(sim);
+	Renderer * ren = new Renderer();
+	ren->sim = sim;
 
 	if (gameSave)
 	{
@@ -70,7 +71,7 @@ int main(int argc, char *argv[])
 		ren->BlendText({ x+8, y+8 }, "Save file invalid", 0xC0C0F0_rgb .WithAlpha(255));
 	}
 
-	ren->RenderBegin();
+	ren->RenderSimulation();
 	ren->RenderEnd();
 
 	if (auto data = ren->DumpFrame().ToPNG())

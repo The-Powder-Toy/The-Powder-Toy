@@ -4,31 +4,6 @@
 #include "Renderer.h"
 #include "simulation/ElementClasses.h"
 #include "simulation/ElementGraphics.h"
-#include "simulation/Simulation.h"
-
-constexpr auto VIDXRES = WINDOWW;
-constexpr auto VIDYRES = WINDOWH;
-
-void Renderer::RenderBegin()
-{
-	draw_grav();
-	DrawWalls();
-	render_parts();
-	
-	if(display_mode & DISPLAY_PERS)
-	{
-		std::transform(video.RowIterator({ 0, 0 }), video.RowIterator({ 0, YRES }), persistentVideo.begin(), [](pixel p) {
-			return RGB<uint8_t>::Unpack(p).Decay().Pack();
-		});
-	}
-
-	render_fire();
-	draw_other();
-	draw_grav_zones();
-	DrawSigns();
-
-	FinaliseParts();
-}
 
 void Renderer::RenderEnd()
 {
@@ -47,17 +22,7 @@ void Renderer::clearScreen() {
 	}
 	else
 	{
-		std::fill_n(video.data(), VIDXRES * YRES, 0);
-	}
-}
-
-void Renderer::FinaliseParts()
-{
-	if(display_mode & DISPLAY_WARP)
-	{
-		warpVideo = video;
-		std::fill_n(video.data(), VIDXRES * YRES, 0);
-		render_gravlensing(warpVideo);
+		std::fill_n(video.data(), WINDOWW * YRES, 0);
 	}
 }
 
@@ -92,30 +57,6 @@ void Renderer::RenderZoom()
 				XorPixel(zoomScopePosition + Vec2{ -1, j });
 				XorPixel(zoomScopePosition + Vec2{ zoomScopeSize, j });
 			}
-		}
-	}
-}
-
-
-void Renderer::render_gravlensing(const Video &source)
-{
-	for (auto p : RES.OriginRect())
-	{
-		auto cp = p / CELL;
-		auto rp = Vec2{ int(p.X - sim->gravOut.forceX[cp] * 0.75f  + 0.5f), int(p.Y - sim->gravOut.forceY[cp] * 0.75f  + 0.5f) };
-		auto gp = Vec2{ int(p.X - sim->gravOut.forceX[cp] * 0.875f + 0.5f), int(p.Y - sim->gravOut.forceY[cp] * 0.875f + 0.5f) };
-		auto bp = Vec2{ int(p.X - sim->gravOut.forceX[cp]          + 0.5f), int(p.Y - sim->gravOut.forceY[cp]          + 0.5f) };
-		if (RES.OriginRect().Contains(rp) &&
-		    RES.OriginRect().Contains(gp) &&
-		    RES.OriginRect().Contains(bp))
-		{
-			auto v = RGB<uint8_t>::Unpack(video[p]);
-			auto s = RGB<uint8_t>::Unpack(source[rp]);
-			video[p] = RGB<uint8_t>(
-				std::min(0xFF, s.Red   + v.Red  ),
-				std::min(0xFF, s.Green + v.Green),
-				std::min(0xFF, s.Blue  + v.Blue )
-			).Pack();
 		}
 	}
 }
@@ -157,7 +98,7 @@ void Renderer::prepare_alpha(int size, float intensity)
 
 pixel Renderer::GetPixel(Vec2<int> pos) const
 {
-	if (pos.X<0 || pos.Y<0 || pos.X>=VIDXRES || pos.Y>=VIDYRES)
+	if (pos.X<0 || pos.Y<0 || pos.X>=WINDOWW || pos.Y>=WINDOWH)
 		return 0;
 	return video[pos];
 }
@@ -221,8 +162,7 @@ void Renderer::PopulateTables()
 	}
 }
 
-Renderer::Renderer(RenderableSimulation *newSim):
-	sim(newSim),
+Renderer::Renderer():
 	render_mode(0),
 	colour_mode(0),
 	display_mode(0),

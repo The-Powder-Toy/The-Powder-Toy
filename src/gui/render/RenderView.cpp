@@ -2,6 +2,7 @@
 
 #include "simulation/ElementGraphics.h"
 #include "simulation/SimulationData.h"
+#include "simulation/Simulation.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
@@ -125,6 +126,11 @@ void RenderView::NotifyRendererChanged(RenderModel * sender)
 	ren = sender->GetRenderer();
 }
 
+void RenderView::NotifySimulationChanged(RenderModel * sender)
+{
+	sim = sender->GetSimulation();
+}
+
 void RenderView::NotifyRenderChanged(RenderModel * sender)
 {
 	for (size_t i = 0; i < renderModes.size(); i++)
@@ -162,9 +168,11 @@ void RenderView::OnDraw()
 		// we're the main thread, we may write graphicscache
 		auto &sd = SimulationData::Ref();
 		std::unique_lock lk(sd.elementGraphicsMx);
+		ren->sim = sim;
 		ren->clearScreen();
-		ren->RenderBegin();
+		ren->RenderSimulation();
 		ren->RenderEnd();
+		ren->sim = nullptr;
 		for (auto y = 0; y < YRES; ++y)
 		{
 			std::copy_n(ren->Data() + ren->Size().X * y, ren->Size().X, g->Data() + g->Size().X * y);

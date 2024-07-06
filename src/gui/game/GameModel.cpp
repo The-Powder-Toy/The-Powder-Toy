@@ -59,7 +59,7 @@ GameModel::GameModel():
 {
 	sim = new Simulation();
 	sim->useLuaCallbacks = true;
-	ren = new Renderer(sim);
+	ren = new Renderer();
 
 	activeTools = regularToolset.data();
 
