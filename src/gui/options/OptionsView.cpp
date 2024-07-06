@@ -8,7 +8,7 @@
 #include "graphics/Renderer.h"
 #include "gui/Style.h"
 #include "simulation/ElementDefs.h"
-#include "simulation/SimulationData.h"
+#include "simulation/SimulationSettings.h"
 #include "client/Client.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/InformationMessage.h"

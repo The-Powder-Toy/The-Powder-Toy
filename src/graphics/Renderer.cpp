@@ -864,10 +864,10 @@ void Renderer::draw_air()
 	if(!(display_mode & DISPLAY_AIR))
 		return;
 	int x, y, i, j;
-	float (*pv)[XCELLS] = sim->air->pv;
-	float (*hv)[XCELLS] = sim->air->hv;
-	float (*vx)[XCELLS] = sim->air->vx;
-	float (*vy)[XCELLS] = sim->air->vy;
+	auto *pv = sim->pv;
+	auto *hv = sim->hv;
+	auto *vx = sim->vx;
+	auto *vy = sim->vy;
 	auto c = 0x000000_rgb;
 	for (y=0; y<YCELLS; y++)
 		for (x=0; x<XCELLS; x++)

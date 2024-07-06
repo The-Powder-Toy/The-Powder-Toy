@@ -900,7 +900,7 @@ static int resetPressure(lua_State *L)
 	for (int nx = x1; nx<x1+width; nx++)
 		for (int ny = y1; ny<y1+height; ny++)
 		{
-			lsi->sim->air->pv[ny][nx] = 0;
+			lsi->sim->pv[ny][nx] = 0;
 		}
 	return 0;
 }

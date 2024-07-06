@@ -12,7 +12,7 @@ sign::sign(String text_, int x_, int y_, Justification justification_):
 {
 }
 
-String sign::getDisplayText(const Simulation *sim, int &x0, int &y0, int &w, int &h, bool colorize, bool *v95) const
+String sign::getDisplayText(const RenderableSimulation *sim, int &x0, int &y0, int &w, int &h, bool colorize, bool *v95) const
 {
 	auto &sd = SimulationData::CRef();
 	String drawable_text;

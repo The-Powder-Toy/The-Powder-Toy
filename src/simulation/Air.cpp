@@ -28,14 +28,14 @@ void Air::make_kernel(void) //used for velocity
 
 void Air::Clear()
 {
-	std::fill(&pv[0][0], &pv[0][0]+NCELL, 0.0f);
-	std::fill(&vy[0][0], &vy[0][0]+NCELL, 0.0f);
-	std::fill(&vx[0][0], &vx[0][0]+NCELL, 0.0f);
+	std::fill(&sim.pv[0][0], &sim.pv[0][0]+NCELL, 0.0f);
+	std::fill(&sim.vy[0][0], &sim.vy[0][0]+NCELL, 0.0f);
+	std::fill(&sim.vx[0][0], &sim.vx[0][0]+NCELL, 0.0f);
 }
 
 void Air::ClearAirH()
 {
-	std::fill(&hv[0][0], &hv[0][0]+NCELL, ambientAirTemp);
+	std::fill(&sim.hv[0][0], &sim.hv[0][0]+NCELL, ambientAirTemp);
 }
 
 // Used when updating temp or velocity from far away
@@ -43,6 +43,9 @@ const float advDistanceMult = 0.7f;
 
 void Air::update_airh(void)
 {
+	auto &vx = sim.vx;
+	auto &vy = sim.vy;
+	auto &hv = sim.hv;
 	for (auto i=0; i<YCELLS; i++) //sets air temp on the edges every frame
 	{
 		hv[i][0] = ambientAirTemp;
@@ -169,6 +172,12 @@ void Air::update_airh(void)
 
 void Air::update_air(void)
 {
+	auto &vx = sim.vx;
+	auto &vy = sim.vy;
+	auto &pv = sim.pv;
+	auto &fvx = sim.fvx;
+	auto &fvy = sim.fvy;
+	auto &bmap = sim.bmap;
 	if (airMode != AIR_NOUPDATE) //airMode 4 is no air/pressure update
 	{
 		for (auto i=0; i<YCELLS; i++) //reduces pressure/velocity on the edges every frame
@@ -390,6 +399,9 @@ void Air::update_air(void)
 
 void Air::Invert()
 {
+	auto &vx = sim.vx;
+	auto &vy = sim.vy;
+	auto &pv = sim.pv;
 	for (auto nx = 0; nx<XCELLS; nx++)
 	{
 		for (auto ny = 0; ny<YCELLS; ny++)
@@ -440,14 +452,14 @@ Air::Air(Simulation & simulation):
 {
 	//Simulation should do this.
 	make_kernel();
-	std::fill(&bmap_blockair[0][0], &bmap_blockair[0][0]+NCELL, 0);
-	std::fill(&bmap_blockairh[0][0], &bmap_blockairh[0][0]+NCELL, 0);
-	std::fill(&vx[0][0], &vx[0][0]+NCELL, 0.0f);
-	std::fill(&ovx[0][0], &ovx[0][0]+NCELL, 0.0f);
-	std::fill(&vy[0][0], &vy[0][0]+NCELL, 0.0f);
-	std::fill(&ovy[0][0], &ovy[0][0]+NCELL, 0.0f);
-	std::fill(&hv[0][0], &hv[0][0]+NCELL, 0.0f);
-	std::fill(&ohv[0][0], &ohv[0][0]+NCELL, 0.0f);
-	std::fill(&pv[0][0], &pv[0][0]+NCELL, 0.0f);
-	std::fill(&opv[0][0], &opv[0][0]+NCELL, 0.0f);
+	std::fill(&bmap_blockair [0][0], &bmap_blockair [0][0] + NCELL, 0);
+	std::fill(&bmap_blockairh[0][0], &bmap_blockairh[0][0] + NCELL, 0);
+	std::fill(&sim.vx[0][0], &sim.vx[0][0] + NCELL, 0.0f);
+	std::fill(&ovx   [0][0], &ovx   [0][0] + NCELL, 0.0f);
+	std::fill(&sim.vy[0][0], &sim.vy[0][0] + NCELL, 0.0f);
+	std::fill(&ovy   [0][0], &ovy   [0][0] + NCELL, 0.0f);
+	std::fill(&sim.hv[0][0], &sim.hv[0][0] + NCELL, 0.0f);
+	std::fill(&ohv   [0][0], &ohv   [0][0] + NCELL, 0.0f);
+	std::fill(&sim.pv[0][0], &sim.pv[0][0] + NCELL, 0.0f);
+	std::fill(&opv   [0][0], &opv   [0][0] + NCELL, 0.0f);
 }

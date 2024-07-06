@@ -12,14 +12,14 @@
 #include <vector>
 
 class RenderPreset;
-class Simulation;
+struct RenderableSimulation;
 class Renderer;
 struct Particle;
 
 struct GraphicsFuncContext
 {
 	const Renderer *ren;
-	const Simulation *sim;
+	const RenderableSimulation *sim;
 	RNG rng;
 	const Particle *pipeSubcallCpart;
 	Particle *pipeSubcallTpart;
@@ -56,7 +56,7 @@ public:
 
 	RNG rng;
 
-	const Simulation *sim;
+	const RenderableSimulation *sim;
 
 	std::vector<unsigned int> render_modes;
 	unsigned int render_mode;
@@ -142,7 +142,7 @@ public:
 
 	static std::unique_ptr<VideoBuffer> WallIcon(int wallID, Vec2<int> size);
 
-	Renderer(Simulation *newSim);
+	Renderer(RenderableSimulation *newSim);
 
 #define RENDERER_TABLE(name) \
 	static std::vector<RGB<uint8_t>> name; \

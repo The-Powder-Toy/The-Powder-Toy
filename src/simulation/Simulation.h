@@ -11,6 +11,7 @@
 #include "gravity/Gravity.h"
 #include "Element.h"
 #include "SimulationConfig.h"
+#include "SimulationSettings.h"
 #include <cstring>
 #include <cstddef>
 #include <vector>
@@ -31,84 +32,95 @@ class Renderer;
 class Air;
 class GameSave;
 
-class Simulation
+struct RenderableSimulation
 {
-public:
-	GravityPtr grav;
 	GravityInput gravIn;
 	GravityOutput gravOut; // invariant: when grav is empty, this is in its default-constructed state
-
-	std::unique_ptr<Air> air;
-	RNG rng;
-
 	std::vector<sign> signs;
-	//Element * elements;
 
-	int currentTick;
-	int replaceModeSelected;
-	int replaceModeFlags;
+	int currentTick = 0;
+	int emp_decor = 0;
 
-	int debug_nextToUpdate;
-	int debug_mostRecentlyUpdated = -1; // -1 when between full update loops
-	int parts_lastActiveIndex;
-	int pfree;
-	int NUM_PARTS;
-	bool elementRecount;
-	int elementCount[PT_NUM];
-	int ISWIRE;
-	bool force_stacking_check;
-	int emp_decor;
-	int emp_trigger_count;
-	bool etrd_count_valid;
-	int etrd_life0_count;
-	int lightningRecreate;
-	//Stickman
 	playerst player;
 	playerst player2;
 	playerst fighters[MAX_FIGHTERS]; //Defined in Stickman.h
-	unsigned char fighcount; //Contains the number of fighters
-	bool gravWallChanged;
-	//Portals and Wifi
-	Particle portalp[CHANNELS][8][80];
-	int portal_rx[8];
-	int portal_ry[8];
-	int wireless[CHANNELS][2];
-	//Gol sim
-	int CGOL;
-	int GSPEED;
-	unsigned int gol[YRES][XRES][5];
-	//Air sim
-	float (*vx)[XCELLS];
-	float (*vy)[XCELLS];
-	float (*pv)[XCELLS];
-	float (*hv)[XCELLS];
-	//Walls
+
+	float vx[YCELLS][XCELLS];
+	float vy[YCELLS][XCELLS];
+	float pv[YCELLS][XCELLS];
+	float hv[YCELLS][XCELLS];
+
 	unsigned char bmap[YCELLS][XCELLS];
 	unsigned char emap[YCELLS][XCELLS];
-	float fvx[YCELLS][XCELLS];
-	float fvy[YCELLS][XCELLS];
-	//Particles
+
 	Particle parts[NPART];
 	int pmap[YRES][XRES];
 	int photons[YRES][XRES];
+
+	int aheat_enable = 0;
+
+	// initialized in clear_sim
+	int parts_lastActiveIndex;
+
+	bool useLuaCallbacks = false;
+};
+
+class Simulation : public RenderableSimulation
+{
+public:
+	GravityPtr grav;
+	std::unique_ptr<Air> air;
+
+	RNG rng;
+
+	int replaceModeSelected = 0;
+	int replaceModeFlags = 0;
+	int debug_nextToUpdate = 0;
+	int debug_mostRecentlyUpdated = -1; // -1 when between full update loops
+	int elementCount[PT_NUM];
+	int ISWIRE = 0;
+	bool force_stacking_check = false;
+	int emp_trigger_count = 0;
+	bool etrd_count_valid = false;
+	int etrd_life0_count = 0;
+	int lightningRecreate = 0;
+	bool gravWallChanged = false;
+
+	Particle portalp[CHANNELS][8][80];
+	int wireless[CHANNELS][2];
+
+	int CGOL = 0;
+	int GSPEED = 1;
+	unsigned int gol[YRES][XRES][5];
+
+	float fvx[YCELLS][XCELLS];
+	float fvy[YCELLS][XCELLS];
+
 	unsigned int pmap_count[YRES][XRES];
-	//Simulation Settings
-	int edgeMode;
-	int gravityMode;
-	float customGravityX;
-	float customGravityY;
-	int legacy_enable;
-	int aheat_enable;
-	int water_equal_test;
-	int sys_pause;
-	int framerender;
-	int pretty_powder;
-	int sandcolour;
-	int sandcolour_interface;
-	int sandcolour_frame;
-	int deco_space;
+
+	int edgeMode = EDGE_VOID;
+	int gravityMode = GRAV_VERTICAL;
+	float customGravityX = 0;
+	float customGravityY = 0;
+	int legacy_enable = 0;
+	int water_equal_test = 0;
+	int sys_pause = 0;
+	int framerender = 0;
+	int pretty_powder = 0;
+	int sandcolour_frame = 0;
+	int deco_space = DECOSPACE_SRGB;
+
+	// initialized in clear_sim
+	int pfree;
+	bool elementRecount;
+	unsigned char fighcount; //Contains the number of fighters
 	uint64_t frameCount;
 	bool ensureDeterminism;
+
+	// initialized very late >_>
+	int NUM_PARTS;
+	int sandcolour;
+	int sandcolour_interface;
 
 	void Load(const GameSave *save, bool includePressure, Vec2<int> blockP); // block coordinates
 	std::unique_ptr<GameSave> Save(bool includePressure, Rect<int> partR); // particle coordinates
@@ -210,8 +222,6 @@ public:
 	void clear_sim();
 	Simulation();
 	~Simulation();
-
-	bool useLuaCallbacks = false;
 
 	void EnableNewtonianGravity(bool enable);
 	void ResetNewtonianGravity(GravityInput newGravIn, GravityOutput newGravOut);

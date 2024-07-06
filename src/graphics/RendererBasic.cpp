@@ -221,7 +221,7 @@ void Renderer::PopulateTables()
 	}
 }
 
-Renderer::Renderer(Simulation *newSim):
+Renderer::Renderer(RenderableSimulation *newSim):
 	sim(newSim),
 	render_mode(0),
 	colour_mode(0),
