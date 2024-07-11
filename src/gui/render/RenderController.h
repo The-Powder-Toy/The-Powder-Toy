@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <cstdint>
 
 class RenderView;
 class RenderModel;
@@ -16,10 +17,11 @@ public:
 	void Exit();
 	RenderView * GetView() { return renderView; }
 	virtual ~RenderController();
-	void SetRenderMode(unsigned int renderMode);
-	void UnsetRenderMode(unsigned int renderMode);
-	void SetDisplayMode(unsigned int renderMode);
-	void UnsetDisplayMode(unsigned int renderMode);
-	void SetColourMode(unsigned int renderMode);
+	void SetRenderMode(uint32_t newRenderMode);
+	uint32_t GetRenderMode();
+	void SetDisplayMode(uint32_t newDisplayMode);
+	uint32_t GetDisplayMode();
+	void SetColorMode(uint32_t newColorMode);
+	uint32_t GetColorMode();
 	void LoadRenderPreset(int presetNum);
 };

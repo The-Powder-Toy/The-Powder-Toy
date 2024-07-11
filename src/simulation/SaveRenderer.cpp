@@ -31,7 +31,7 @@ std::unique_ptr<VideoBuffer> SaveRenderer::Render(const GameSave *save, bool dec
 	{
 		ren->SetRenderMode(renderModeSource->GetRenderMode());
 		ren->SetDisplayMode(renderModeSource->GetDisplayMode());
-		ren->SetColourMode(renderModeSource->GetColourMode());
+		ren->SetColorMode(renderModeSource->GetColorMode());
 	}
 
 	sim->clear_sim();

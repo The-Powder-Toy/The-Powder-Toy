@@ -853,9 +853,9 @@ void GameController::LoadRenderPreset(int presetNum)
 	Renderer * renderer = gameModel->GetRenderer();
 	RenderPreset preset = renderer->renderModePresets[presetNum];
 	gameModel->SetInfoTip(preset.Name);
-	renderer->SetRenderMode(preset.RenderModes);
-	renderer->SetDisplayMode(preset.DisplayModes);
-	renderer->SetColourMode(preset.ColourMode);
+	renderer->SetRenderMode(preset.renderMode);
+	renderer->SetDisplayMode(preset.displayMode);
+	renderer->SetColorMode(preset.colorMode);
 }
 
 void GameController::Update()

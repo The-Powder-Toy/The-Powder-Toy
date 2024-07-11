@@ -17,7 +17,7 @@ class ModeCheckbox : public ui::Checkbox
 {
 public:
 	using ui::Checkbox::Checkbox;
-	unsigned int mode;
+	uint32_t mode;
 };
 
 RenderView::RenderView():
@@ -51,10 +51,16 @@ RenderView::RenderView():
 		renderModeCheckbox->mode = mode;
 		renderModeCheckbox->SetIcon(icon);
 		renderModeCheckbox->SetActionCallback({ [this, renderModeCheckbox] {
+			auto renderMode = c->GetRenderMode();
 			if (renderModeCheckbox->GetChecked())
-				c->SetRenderMode(renderModeCheckbox->mode);
+			{
+				renderMode |= renderModeCheckbox->mode;
+			}
 			else
-				c->UnsetRenderMode(renderModeCheckbox->mode);
+			{
+				renderMode &= ~renderModeCheckbox->mode;
+			}
+			c->SetRenderMode(renderMode);
 		} });
 		AddComponent(renderModeCheckbox);
 	};
@@ -72,10 +78,16 @@ RenderView::RenderView():
 		displayModeCheckbox->mode = mode;
 		displayModeCheckbox->SetIcon(icon);
 		displayModeCheckbox->SetActionCallback({ [this, displayModeCheckbox] {
+			auto displayMode = c->GetDisplayMode();
 			if (displayModeCheckbox->GetChecked())
-				c->SetDisplayMode(displayModeCheckbox->mode);
+			{
+				displayMode |= displayModeCheckbox->mode;
+			}
 			else
-				c->UnsetDisplayMode(displayModeCheckbox->mode);
+			{
+				displayMode &= ~displayModeCheckbox->mode;
+			}
+			c->SetDisplayMode(displayMode);
 		} });
 		AddComponent(displayModeCheckbox);
 	};
@@ -96,10 +108,17 @@ RenderView::RenderView():
 		colourModeCheckbox->mode = mode;
 		colourModeCheckbox->SetIcon(icon);
 		colourModeCheckbox->SetActionCallback({ [this, colourModeCheckbox] {
-			if(colourModeCheckbox->GetChecked())
-				c->SetColourMode(colourModeCheckbox->mode);
+			auto colorMode = c->GetColorMode();
+			// exception: looks like an independent set of settings but behaves more like an index
+			if (colourModeCheckbox->GetChecked())
+			{
+				colorMode = colourModeCheckbox->mode;
+			}
 			else
-				c->SetColourMode(0);
+			{
+				colorMode = 0;
+			}
+			c->SetColorMode(colorMode);
 		} });
 		AddComponent(colourModeCheckbox);
 	};
@@ -154,8 +173,8 @@ void RenderView::NotifyColourChanged(RenderModel * sender)
 {
 	for (size_t i = 0; i < colourModes.size(); i++)
 	{
-		auto colourMode = colourModes[i]->mode;
-		colourModes[i]->SetChecked(colourMode == sender->GetColourMode());
+		auto colorMode = colourModes[i]->mode;
+		colourModes[i]->SetChecked(colorMode == sender->GetColorMode());
 	}
 }
 

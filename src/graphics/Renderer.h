@@ -5,13 +5,14 @@
 #include "common/tpt-rand.h"
 #include "SimulationConfig.h"
 #include "FindingElement.h"
+#include <cstdint>
 #include <optional>
 #include <array>
 #include <memory>
 #include <mutex>
 #include <vector>
 
-class RenderPreset;
+struct RenderPreset;
 struct RenderableSimulation;
 class Renderer;
 struct Particle;
@@ -57,11 +58,9 @@ public:
 	RNG rng;
 	const RenderableSimulation *sim = nullptr;
 
-	std::vector<unsigned int> render_modes;
-	unsigned int render_mode;
-	unsigned int colour_mode;
-	std::vector<unsigned int> display_modes;
-	unsigned int display_mode;
+	uint32_t renderMode = 0;
+	uint32_t colorMode = 0;
+	uint32_t displayMode = 0;
 	std::vector<RenderPreset> renderModePresets;
 	//
 	unsigned char fire_r[YCELLS][XCELLS];
@@ -120,18 +119,12 @@ public:
 	pixel GetPixel(Vec2<int> pos) const;
 	//...
 	//Display mode modifiers
-	void CompileDisplayMode();
-	void CompileRenderMode();
-	void AddRenderMode(unsigned int mode);
-	void SetRenderMode(std::vector<unsigned int> render);
-	std::vector<unsigned int> GetRenderMode();
-	void RemoveRenderMode(unsigned int mode);
-	void AddDisplayMode(unsigned int mode);
-	void RemoveDisplayMode(unsigned int mode);
-	void SetDisplayMode(std::vector<unsigned int> display);
-	std::vector<unsigned int> GetDisplayMode();
-	void SetColourMode(unsigned int mode);
-	unsigned int GetColourMode();
+	void SetRenderMode(uint32_t newRenderMode);
+	uint32_t GetRenderMode();
+	void SetDisplayMode(uint32_t newDisplayMode);
+	uint32_t GetDisplayMode();
+	void SetColorMode(uint32_t newColorMode);
+	uint32_t GetColorMode();
 
 	void ResetModes();
 

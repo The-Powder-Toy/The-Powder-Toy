@@ -66,29 +66,37 @@ GameModel::GameModel():
 	std::fill(decoToolset.begin(), decoToolset.end(), nullptr);
 	std::fill(regularToolset.begin(), regularToolset.end(), nullptr);
 
-	//Default render prefs
-	ren->SetRenderMode({
-		RENDER_FIRE,
-		RENDER_EFFE,
-		RENDER_BASC,
-	});
-	ren->SetDisplayMode({});
-	ren->SetColourMode(0);
-
 	//Load config into renderer
 	auto &prefs = GlobalPrefs::Ref();
-	ren->SetColourMode(prefs.Get("Renderer.ColourMode", 0U));
 
-	auto displayModes = prefs.Get("Renderer.DisplayModes", std::vector<unsigned int>{});
-	if (displayModes.size())
-	{
-		ren->SetDisplayMode(displayModes);
-	}
-	auto renderModes = prefs.Get("Renderer.RenderModes", std::vector<unsigned int>{});
-	if (renderModes.size())
-	{
-		ren->SetRenderMode(renderModes);
-	}
+	auto handleOldModes = [&prefs](ByteString prefName, ByteString oldPrefName, uint32_t defaultValue, auto setFunc) {
+		auto pref = prefs.Get<uint32_t>(prefName);
+		if (!pref.has_value())
+		{
+			auto modes = prefs.Get(oldPrefName, std::vector<unsigned int>{});
+			if (modes.size())
+			{
+				uint32_t mode = 0;
+				for (auto partial : modes)
+				{
+					mode |= partial;
+				}
+				pref = mode;
+			}
+			else
+			{
+				pref = defaultValue;
+			}
+		}
+		setFunc(*pref);
+	};
+	handleOldModes("Renderer.RenderMode", "Renderer.RenderModes", RENDER_FIRE | RENDER_EFFE | RENDER_BASC, [this](uint32_t renderMode) {
+		ren->SetRenderMode(renderMode);
+	});
+	handleOldModes("Renderer.DisplayMode", "Renderer.DisplayModes", 0, [this](uint32_t displayMode) {
+		ren->SetDisplayMode(displayMode);
+	});
+	ren->SetColorMode(prefs.Get("Renderer.ColourMode", UINT32_C(0)));
 
 	ren->gravityFieldEnabled = prefs.Get("Renderer.GravityField", false);
 	ren->decorations_enable = prefs.Get("Renderer.Decorations", true);
@@ -162,9 +170,9 @@ GameModel::~GameModel()
 	{
 		//Save to config:
 		Prefs::DeferWrite dw(prefs);
-		prefs.Set("Renderer.ColourMode", ren->GetColourMode());
-		prefs.Set("Renderer.DisplayModes", ren->GetDisplayMode());
-		prefs.Set("Renderer.RenderModes", ren->GetRenderMode());
+		prefs.Set("Renderer.ColourMode", ren->GetColorMode());
+		prefs.Set("Renderer.DisplayMode", ren->GetDisplayMode());
+		prefs.Set("Renderer.RenderMode", ren->GetRenderMode());
 		prefs.Set("Renderer.GravityField", (bool)ren->gravityFieldEnabled);
 		prefs.Set("Renderer.Decorations", (bool)ren->decorations_enable);
 		prefs.Set("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things

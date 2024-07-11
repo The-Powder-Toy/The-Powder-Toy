@@ -16,7 +16,7 @@ void Renderer::SetSample(Vec2<int> pos)
 }
 
 void Renderer::clearScreen() {
-	if(display_mode & DISPLAY_PERS)
+	if(displayMode & DISPLAY_PERS)
 	{
 		std::copy(persistentVideo.begin(), persistentVideo.end(), video.RowIterator({ 0, 0 }));
 	}
@@ -163,9 +163,6 @@ void Renderer::PopulateTables()
 }
 
 Renderer::Renderer():
-	render_mode(0),
-	colour_mode(0),
-	display_mode(0),
 	gravityZonesEnabled(false),
 	gravityFieldEnabled(false),
 	decorations_enable(1),
@@ -193,86 +190,72 @@ Renderer::Renderer():
 	//Render mode presets. Possibly load from config in future?
 	renderModePresets.push_back({
 		"Alternative Velocity Display",
-		{ RENDER_EFFE, RENDER_BASC },
-		{ DISPLAY_AIRC },
-		0
+		RENDER_EFFE | RENDER_BASC,
+		DISPLAY_AIRC,
+		0,
 	});
 	renderModePresets.push_back({
 		"Velocity Display",
-		{ RENDER_EFFE, RENDER_BASC },
-		{ DISPLAY_AIRV },
-		0
+		RENDER_EFFE | RENDER_BASC,
+		DISPLAY_AIRV,
+		0,
 	});
 	renderModePresets.push_back({
 		"Pressure Display",
-		{ RENDER_EFFE, RENDER_BASC },
-		{ DISPLAY_AIRP },
-		0
+		RENDER_EFFE | RENDER_BASC,
+		DISPLAY_AIRP,
+		0,
 	});
 	renderModePresets.push_back({
 		"Persistent Display",
-		{ RENDER_EFFE, RENDER_BASC },
-		{ DISPLAY_PERS },
-		0
+		RENDER_EFFE | RENDER_BASC,
+		DISPLAY_PERS,
+		0,
 	});
 	renderModePresets.push_back({
 		"Fire Display",
-		{ RENDER_FIRE, RENDER_SPRK, RENDER_EFFE, RENDER_BASC },
-		{ },
-		0
+		RENDER_FIRE | RENDER_SPRK | RENDER_EFFE | RENDER_BASC,
+		0,
+		0,
 	});
 	renderModePresets.push_back({
 		"Blob Display",
-		{ RENDER_FIRE, RENDER_SPRK, RENDER_EFFE, RENDER_BLOB },
-		{ },
-		0
+		RENDER_FIRE | RENDER_SPRK | RENDER_EFFE | RENDER_BLOB,
+		0,
+		0,
 	});
 	renderModePresets.push_back({
 		"Heat Display",
-		{ RENDER_BASC },
-		{ DISPLAY_AIRH },
-		COLOUR_HEAT
+		RENDER_BASC,
+		DISPLAY_AIRH,
+		COLOUR_HEAT,
 	});
 	renderModePresets.push_back({
 		"Fancy Display",
-		{ RENDER_FIRE, RENDER_SPRK, RENDER_GLOW, RENDER_BLUR, RENDER_EFFE, RENDER_BASC },
-		{ DISPLAY_WARP },
-		0
+		RENDER_FIRE | RENDER_SPRK | RENDER_GLOW | RENDER_BLUR | RENDER_EFFE | RENDER_BASC,
+		DISPLAY_WARP,
+		0,
 	});
 	renderModePresets.push_back({
 		"Nothing Display",
-		{ RENDER_BASC },
-		{ },
-		0
+		RENDER_BASC,
+		0,
+		0,
 	});
 	renderModePresets.push_back({
 		"Heat Gradient Display",
-		{ RENDER_BASC },
-		{ },
-		COLOUR_GRAD
+		RENDER_BASC,
+		0,
+		COLOUR_GRAD,
 	});
 	renderModePresets.push_back({
 		"Life Gradient Display",
-		{ RENDER_BASC },
-		{ },
-		COLOUR_LIFE
+		RENDER_BASC,
+		0,
+		COLOUR_LIFE,
 	});
 
 	prepare_alpha(CELL, 1.0f);
-}
-
-void Renderer::CompileRenderMode()
-{
-	int old_render_mode = render_mode;
-	render_mode = 0;
-	for (size_t i = 0; i < render_modes.size(); i++)
-		render_mode |= render_modes[i];
-
-	//If firemode is removed, clear the fire display
-	if(!(render_mode & FIREMODE) && (old_render_mode & FIREMODE))
-	{
-		ClearAccumulation();
-	}
 }
 
 void Renderer::ClearAccumulation()
@@ -283,111 +266,51 @@ void Renderer::ClearAccumulation()
 	std::fill(persistentVideo.begin(), persistentVideo.end(), 0);
 }
 
-void Renderer::AddRenderMode(unsigned int mode)
+void Renderer::SetRenderMode(uint32_t newRenderMode)
 {
-	for (size_t i = 0; i < render_modes.size(); i++)
-	{
-		if(render_modes[i] == mode)
-		{
-			return;
-		}
-	}
-	render_modes.push_back(mode);
-	CompileRenderMode();
-}
-
-void Renderer::RemoveRenderMode(unsigned int mode)
-{
-	for (size_t i = 0; i < render_modes.size(); i++)
-	{
-		if(render_modes[i] == mode)
-		{
-			render_modes.erase(render_modes.begin() + i);
-			i = 0;
-		}
-	}
-	CompileRenderMode();
-}
-
-void Renderer::SetRenderMode(std::vector<unsigned int> render)
-{
-	render_modes = render;
-	CompileRenderMode();
-}
-
-std::vector<unsigned int> Renderer::GetRenderMode()
-{
-	return render_modes;
-}
-
-void Renderer::CompileDisplayMode()
-{
-	int old_display_mode = display_mode;
-	display_mode = 0;
-	for (size_t i = 0; i < display_modes.size(); i++)
-		display_mode |= display_modes[i];
-	if (!(display_mode & DISPLAY_PERS) && (old_display_mode & DISPLAY_PERS))
+	int oldRenderMode = renderMode;
+	renderMode = newRenderMode;
+	if (!(renderMode & FIREMODE) && (oldRenderMode & FIREMODE))
 	{
 		ClearAccumulation();
 	}
 }
 
-void Renderer::AddDisplayMode(unsigned int mode)
+uint32_t Renderer::GetRenderMode()
 {
-	for (size_t i = 0; i < display_modes.size(); i++)
+	return renderMode;
+}
+
+void Renderer::SetDisplayMode(uint32_t newDisplayMode)
+{
+	int oldDisplayMode = displayMode;
+	displayMode = newDisplayMode;
+	if (!(displayMode & DISPLAY_PERS) && (oldDisplayMode & DISPLAY_PERS))
 	{
-		if (display_modes[i] == mode)
-		{
-			return;
-		}
-		if (display_modes[i] & DISPLAY_AIR)
-		{
-			display_modes.erase(display_modes.begin()+i);
-		}
+		ClearAccumulation();
 	}
-	display_modes.push_back(mode);
-	CompileDisplayMode();
 }
 
-void Renderer::RemoveDisplayMode(unsigned int mode)
+uint32_t Renderer::GetDisplayMode()
 {
-	for (size_t i = 0; i < display_modes.size(); i++)
-	{
-		if (display_modes[i] == mode)
-		{
-			display_modes.erase(display_modes.begin() + i);
-			i = 0;
-		}
-	}
-	CompileDisplayMode();
+	return displayMode;
 }
 
-void Renderer::SetDisplayMode(std::vector<unsigned int> display)
+void Renderer::SetColorMode(uint32_t newColorMode)
 {
-	display_modes = display;
-	CompileDisplayMode();
+	colorMode = newColorMode;
 }
 
-std::vector<unsigned int> Renderer::GetDisplayMode()
+uint32_t Renderer::GetColorMode()
 {
-	return display_modes;
-}
-
-void Renderer::SetColourMode(unsigned int mode)
-{
-	colour_mode = mode;
-}
-
-unsigned int Renderer::GetColourMode()
-{
-	return colour_mode;
+	return colorMode;
 }
 
 void Renderer::ResetModes()
 {
-	SetRenderMode({ RENDER_BASC, RENDER_FIRE, RENDER_SPRK, RENDER_EFFE });
-	SetDisplayMode({ });
-	SetColourMode(COLOUR_DEFAULT);
+	SetRenderMode(RENDER_BASC | RENDER_FIRE | RENDER_SPRK | RENDER_EFFE);
+	SetDisplayMode(0);
+	SetColorMode(COLOUR_DEFAULT);
 }
 
 VideoBuffer Renderer::DumpFrame()

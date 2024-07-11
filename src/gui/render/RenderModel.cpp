@@ -21,74 +21,54 @@ void RenderModel::AddObserver(RenderView * observer)
 	observer->NotifyColourChanged(this);
 }
 
-void RenderModel::SetRenderMode(unsigned int renderMode)
+void RenderModel::SetRenderMode(uint32_t newRenderMode)
 {
-	if(renderer)
-		renderer->AddRenderMode(renderMode);
+	if (renderer)
+	{
+		renderer->SetRenderMode(newRenderMode);
+	}
 	notifyRenderChanged();
 }
 
-void RenderModel::UnsetRenderMode(unsigned int renderMode)
+uint32_t RenderModel::GetRenderMode()
 {
-	if(renderer)
-		renderer->RemoveRenderMode(renderMode);
-	notifyRenderChanged();
+	return renderer ? renderer->GetRenderMode() : 0;
 }
 
-unsigned int RenderModel::GetRenderMode()
+void RenderModel::SetDisplayMode(uint32_t newDisplayMode)
 {
-	if(renderer)
-		return renderer->render_mode;
-	else
-		return 0;
-}
-
-void RenderModel::SetDisplayMode(unsigned int displayMode)
-{
-	if(renderer)
-		renderer->AddDisplayMode(displayMode);
+	if (renderer)
+	{
+		renderer->SetDisplayMode(newDisplayMode);
+	}
 	notifyDisplayChanged();
 }
 
-void RenderModel::UnsetDisplayMode(unsigned int displayMode)
+uint32_t RenderModel::GetDisplayMode()
 {
-	if(renderer)
-		renderer->RemoveDisplayMode(displayMode);
-	notifyDisplayChanged();
+	return renderer ? renderer->GetDisplayMode() : 0;
 }
 
-unsigned int RenderModel::GetDisplayMode()
+void RenderModel::SetColorMode(uint32_t newColorMode)
 {
-	if(renderer)
-		return renderer->display_mode;
-	else
-		return 0;
-}
-
-void RenderModel::SetColourMode(unsigned int colourMode)
-{
-	if(renderer)
-		renderer->SetColourMode(colourMode);
+	if (renderer)
+	{
+		renderer->SetColorMode(newColorMode);
+	}
 	notifyColourChanged();
 }
 
-unsigned int RenderModel::GetColourMode()
+uint32_t RenderModel::GetColorMode()
 {
-	if(renderer)
-		return renderer->colour_mode;
-	else
-		return 0;
+	return renderer ? renderer->GetColorMode() : 0;
 }
 
 void RenderModel::LoadRenderPreset(int presetNum)
 {
 	RenderPreset preset = renderer->renderModePresets[presetNum];
-	renderer->SetRenderMode(preset.RenderModes);
-	renderer->SetDisplayMode(preset.DisplayModes);
-	renderer->SetColourMode(preset.ColourMode);
-	notifyRenderChanged();
-	notifyDisplayChanged();
-	notifyColourChanged();
+	SetRenderMode(preset.renderMode);
+	SetDisplayMode(preset.displayMode);
+	SetColorMode(preset.colorMode);
 }
 
 void RenderModel::SetRenderer(Renderer * ren)

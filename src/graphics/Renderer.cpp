@@ -16,7 +16,7 @@ void Renderer::RenderSimulation()
 	DrawWalls();
 	render_parts();
 
-	if (display_mode & DISPLAY_PERS)
+	if (displayMode & DISPLAY_PERS)
 	{
 		std::transform(video.RowIterator({ 0, 0 }), video.RowIterator({ 0, YRES }), persistentVideo.begin(), [](pixel p) {
 			return RGB<uint8_t>::Unpack(p).Decay().Pack();
@@ -28,7 +28,7 @@ void Renderer::RenderSimulation()
 	draw_grav_zones();
 	DrawSigns();
 
-	if (display_mode & DISPLAY_WARP)
+	if (displayMode & DISPLAY_WARP)
 	{
 		warpVideo = video;
 		std::fill_n(video.data(), WINDOWW * YRES, 0);
@@ -297,7 +297,7 @@ void Renderer::render_parts()
 					fireg = graphicscache[t].fireg;
 					fireb = graphicscache[t].fireb;
 				}
-				else if(!(colour_mode & COLOUR_BASC))
+				else if(!(colorMode & COLOUR_BASC))
 				{
 					auto *graphics = elements[t].Graphics;
 					auto makeReady = !graphics || graphics(gfctx, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb); //That's a lot of args, a struct might be better
@@ -326,21 +326,21 @@ void Renderer::render_parts()
 					colb += int(sin(gradv*caddress*2.22 +TPT_PI_DBL) * 64);
 				}
 
-				if((pixel_mode & FIRE_ADD) && !(render_mode & FIRE_ADD))
+				if((pixel_mode & FIRE_ADD) && !(renderMode & FIRE_ADD))
 					pixel_mode |= PMODE_GLOW;
-				if((pixel_mode & FIRE_BLEND) && !(render_mode & FIRE_BLEND))
+				if((pixel_mode & FIRE_BLEND) && !(renderMode & FIRE_BLEND))
 					pixel_mode |= PMODE_BLUR;
-				if((pixel_mode & PMODE_BLUR) && !(render_mode & PMODE_BLUR))
+				if((pixel_mode & PMODE_BLUR) && !(renderMode & PMODE_BLUR))
 					pixel_mode |= PMODE_FLAT;
-				if((pixel_mode & PMODE_GLOW) && !(render_mode & PMODE_GLOW))
+				if((pixel_mode & PMODE_GLOW) && !(renderMode & PMODE_GLOW))
 					pixel_mode |= PMODE_BLEND;
-				if (render_mode & PMODE_BLOB)
+				if (renderMode & PMODE_BLOB)
 					pixel_mode |= PMODE_BLOB;
 
-				pixel_mode &= render_mode;
+				pixel_mode &= renderMode;
 
 				//Alter colour based on display mode
-				if(colour_mode & COLOUR_HEAT)
+				if(colorMode & COLOUR_HEAT)
 				{
 					constexpr float min_temp = MIN_TEMP;
 					constexpr float max_temp = MAX_TEMP;
@@ -357,7 +357,7 @@ void Renderer::render_parts()
 					else if (!pixel_mode)
 						pixel_mode |= PMODE_FLAT;
 				}
-				else if(colour_mode & COLOUR_LIFE)
+				else if(colorMode & COLOUR_LIFE)
 				{
 					auto gradv = 0.4f;
 					if (!(sim->parts[i].life<5))
@@ -373,7 +373,7 @@ void Renderer::render_parts()
 					else if (!pixel_mode)
 						pixel_mode |= PMODE_FLAT;
 				}
-				else if(colour_mode & COLOUR_BASC)
+				else if(colorMode & COLOUR_BASC)
 				{
 					colr = colour.Red;
 					colg = colour.Green;
@@ -382,7 +382,7 @@ void Renderer::render_parts()
 				}
 
 				//Apply decoration colour
-				if(!(colour_mode & ~COLOUR_GRAD) && decorations_enable && deca)
+				if(!(colorMode & ~COLOUR_GRAD) && decorations_enable && deca)
 				{
 					deca++;
 					if(!(pixel_mode & NO_DECO))
@@ -400,7 +400,7 @@ void Renderer::render_parts()
 					}
 				}
 
-				if (colour_mode & COLOUR_GRAD)
+				if (colorMode & COLOUR_GRAD)
 				{
 					auto frequency = 0.05f;
 					auto q = int(sim->parts[i].temp-40);
@@ -513,7 +513,7 @@ void Renderer::render_parts()
 						colr = 255;
 						colg = colb = 0;
 					}
-					else if (colour_mode != COLOUR_HEAT)
+					else if (colorMode != COLOUR_HEAT)
 					{
 						if (cplayer->fan)
 						{
@@ -542,7 +542,7 @@ void Renderer::render_parts()
 						legr = 255;
 						legg = legb = 0;
 					}
-					else if (colour_mode==COLOUR_HEAT)
+					else if (colorMode==COLOUR_HEAT)
 					{
 						legr = colr;
 						legg = colg;
@@ -776,7 +776,7 @@ void Renderer::render_parts()
 							AddPixel({ nx+nxo, ny+nyo }, RGBA<uint8_t>(colr, colg, colb, 255-orbd[r]));
 					}
 				}
-				if (pixel_mode & EFFECT_DBGLINES && !(display_mode&DISPLAY_PERS))
+				if (pixel_mode & EFFECT_DBGLINES && !(displayMode&DISPLAY_PERS))
 				{
 					// draw lines connecting wifi/portal channels
 					if (mousePos.X == nx && mousePos.Y == ny && i == ID(sim->pmap[ny][nx]) && debugLines)
@@ -841,7 +841,7 @@ void Renderer::draw_other() // EMP effect
 	int emp_decor = sim->emp_decor;
 	if (emp_decor>40) emp_decor = 40;
 	if (emp_decor<0) emp_decor = 0;
-	if (!(render_mode & EFFECT)) // not in nothing mode
+	if (!(renderMode & EFFECT)) // not in nothing mode
 		return;
 	if (emp_decor>0)
 	{
@@ -906,9 +906,9 @@ void Renderer::draw_grav()
 
 void Renderer::draw_air()
 {
-	if(!sim->aheat_enable && (display_mode & DISPLAY_AIRH))
+	if(!sim->aheat_enable && (displayMode & DISPLAY_AIRH))
 		return;
-	if(!(display_mode & DISPLAY_AIR))
+	if(!(displayMode & DISPLAY_AIR))
 		return;
 	int x, y, i, j;
 	auto *pv = sim->pv;
@@ -919,27 +919,27 @@ void Renderer::draw_air()
 	for (y=0; y<YCELLS; y++)
 		for (x=0; x<XCELLS; x++)
 		{
-			if (display_mode & DISPLAY_AIRP)
+			if (displayMode & DISPLAY_AIRP)
 			{
 				if (pv[y][x] > 0.0f)
 					c = RGB<uint8_t>(clamp_flt(pv[y][x], 0.0f, 8.0f), 0, 0);//positive pressure is red!
 				else
 					c = RGB<uint8_t>(0, 0, clamp_flt(-pv[y][x], 0.0f, 8.0f));//negative pressure is blue!
 			}
-			else if (display_mode & DISPLAY_AIRV)
+			else if (displayMode & DISPLAY_AIRV)
 			{
 				c = RGB<uint8_t>(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 					clamp_flt(pv[y][x], 0.0f, 8.0f),//pressure adds green
 					clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
 			}
-			else if (display_mode & DISPLAY_AIRH)
+			else if (displayMode & DISPLAY_AIRH)
 			{
 				c = RGB<uint8_t>::Unpack(HeatToColour(hv[y][x]));
 				//c = RGB<uint8_t>(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 				//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
 				//	clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f)).Pack();//vy adds blue
 			}
-			else if (display_mode & DISPLAY_AIRC)
+			else if (displayMode & DISPLAY_AIRC)
 			{
 				int r;
 				int g;
@@ -1133,7 +1133,7 @@ void Renderer::DrawWalls()
 				}
 
 				// when in blob view, draw some blobs...
-				if (render_mode & PMODE_BLOB)
+				if (renderMode & PMODE_BLOB)
 				{
 					switch (wtypes[wt].drawstyle)
 					{
@@ -1240,7 +1240,7 @@ void Renderer::DrawWalls()
 
 void Renderer::render_fire()
 {
-	if(!(render_mode & FIREMODE))
+	if(!(renderMode & FIREMODE))
 		return;
 	int i,j,x,y,r,g,b,a;
 	for (j=0; j<YCELLS; j++)

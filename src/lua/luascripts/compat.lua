@@ -700,3 +700,27 @@ function tpt_mt:__newindex(key, value)
 	rawset(self, key, value)
 end
 setmetatable(tpt, tpt_mt)
+
+function ren.renderModes(tbl)
+	if tbl then
+		local combined = 0
+		for i = 1, #tbl do
+			combined = bit.bor(combined, tbl[i])
+		end
+		ren.renderMode(combined)
+		return
+	end
+	return { ren.renderMode() }
+end
+
+function ren.displayModes(tbl)
+	if tbl then
+		local combined = 0
+		for i = 1, #tbl do
+			combined = bit.bor(combined, tbl[i])
+		end
+		ren.displayMode(combined)
+		return
+	end
+	return { ren.displayMode() }
+end

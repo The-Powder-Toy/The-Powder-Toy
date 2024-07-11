@@ -19,29 +19,34 @@ RenderController::RenderController(Simulation *sim, Renderer * ren, std::functio
 	onDone = onDone_;
 }
 
-void RenderController::SetRenderMode(unsigned int renderMode)
+void RenderController::SetRenderMode(uint32_t newRenderMode)
 {
-	renderModel->SetRenderMode(renderMode);
+	renderModel->SetRenderMode(newRenderMode);
 }
 
-void RenderController::UnsetRenderMode(unsigned int renderMode)
+uint32_t RenderController::GetRenderMode()
 {
-	renderModel->UnsetRenderMode(renderMode);
+	return renderModel->GetRenderMode();
 }
 
-void RenderController::SetDisplayMode(unsigned int renderMode)
+void RenderController::SetDisplayMode(uint32_t newDisplayMode)
 {
-	renderModel->SetDisplayMode(renderMode);
+	renderModel->SetDisplayMode(newDisplayMode);
 }
 
-void RenderController::UnsetDisplayMode(unsigned int renderMode)
+uint32_t RenderController::GetDisplayMode()
 {
-	renderModel->UnsetDisplayMode(renderMode);
+	return renderModel->GetDisplayMode();
 }
 
-void RenderController::SetColourMode(unsigned int renderMode)
+void RenderController::SetColorMode(uint32_t newColorMode)
 {
-	renderModel->SetColourMode(renderMode);
+	renderModel->SetColorMode(newColorMode);
+}
+
+uint32_t RenderController::GetColorMode()
+{
+	return renderModel->GetColorMode();
 }
 
 void RenderController::LoadRenderPreset(int presetNum)

@@ -4,38 +4,16 @@
 #include "graphics/Renderer.h"
 #include "simulation/ElementGraphics.h"
 
-static int renderModes(lua_State *L)
+static int renderMode(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	int args = lua_gettop(L);
-	if(args)
+	if (lua_gettop(L))
 	{
-		int size = 0;
-		luaL_checktype(L, 1, LUA_TTABLE);
-		size = lua_objlen(L, 1);
-
-		std::vector<unsigned int> renderModes;
-		for(int i = 1; i <= size; i++)
-		{
-			lua_rawgeti(L, 1, i);
-			renderModes.push_back(lua_tointeger(L, -1));
-			lua_pop(L, 1);
-		}
-		lsi->ren->SetRenderMode(renderModes);
+		lsi->ren->SetRenderMode(luaL_checkinteger(L, 1));
 		return 0;
 	}
-	else
-	{
-		lua_newtable(L);
-		std::vector<unsigned int> renderModes = lsi->ren->GetRenderMode();
-		int i = 1;
-		for(std::vector<unsigned int>::iterator iter = renderModes.begin(), end = renderModes.end(); iter != end; ++iter)
-		{
-			lua_pushinteger(L, *iter);
-			lua_rawseti(L, -2, i++);
-		}
-		return 1;
-	}
+	lua_pushinteger(L, lsi->ren->GetRenderMode());
+	return 1;
 }
 
 static int hud(lua_State *L)
@@ -92,55 +70,29 @@ static int fireSize(lua_State *L)
 	return 0;
 }
 
-static int displayModes(lua_State *L)
+static int displayMode(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	int args = lua_gettop(L);
-	if(args)
+	if (lua_gettop(L))
 	{
-		int size = 0;
-		luaL_checktype(L, 1, LUA_TTABLE);
-		size = lua_objlen(L, 1);
-
-		std::vector<unsigned int> displayModes;
-		for(int i = 1; i <= size; i++)
-		{
-			lua_rawgeti(L, 1, i);
-			displayModes.push_back(lua_tointeger(L, -1));
-			lua_pop(L, 1);
-		}
-		lsi->ren->SetDisplayMode(displayModes);
+		lsi->ren->SetDisplayMode(luaL_checkinteger(L, 1));
 		return 0;
 	}
-	else
-	{
-		lua_newtable(L);
-		std::vector<unsigned int> displayModes = lsi->ren->GetDisplayMode();
-		int i = 1;
-		for(std::vector<unsigned int>::iterator iter = displayModes.begin(), end = displayModes.end(); iter != end; ++iter)
-		{
-			lua_pushinteger(L, *iter);
-			lua_rawseti(L, -2, i++);
-		}
-		return 1;
-	}
+	lua_pushinteger(L, lsi->ren->GetDisplayMode());
+	return 1;
 }
+
 
 static int colorMode(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	int args = lua_gettop(L);
-	if(args)
+	if (lua_gettop(L))
 	{
-		luaL_checktype(L, 1, LUA_TNUMBER);
-		lsi->ren->SetColourMode(lua_tointeger(L, 1));
+		lsi->ren->SetColorMode(luaL_checkinteger(L, 1));
 		return 0;
 	}
-	else
-	{
-		lua_pushinteger(L, lsi->ren->GetColourMode());
-		return 1;
-	}
+	lua_pushinteger(L, lsi->ren->GetColorMode());
+	return 1;
 }
 
 static int decorations(lua_State *L)
@@ -270,8 +222,8 @@ void LuaRenderer::Open(lua_State *L)
 {
 	static const luaL_Reg reg[] = {
 #define LFUNC(v) { #v, v }
-		LFUNC(renderModes),
-		LFUNC(displayModes),
+		LFUNC(renderMode),
+		LFUNC(displayMode),
 		LFUNC(colorMode),
 		LFUNC(decorations),
 		LFUNC(grid),
