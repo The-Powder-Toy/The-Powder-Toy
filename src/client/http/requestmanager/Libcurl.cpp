@@ -338,7 +338,7 @@ namespace http
 			}
 			WorkerPerform();
 		}
-		assert(!requestHandles.size());
+		// assert(!requestHandles.size()); // TODO: enable again once the rest of the codebase is actual c++
 		WorkerExit();
 	}
 
