@@ -1,23 +1,21 @@
 #pragma once
-#include <functional>
+#include <utility>
 
+template<class Func>
 class Defer
 {
-	std::function<void ()> func;
+	Func func;
 
 public:
-	Defer(std::function<void ()> newFunc) : func(newFunc)
+	Defer(Func &&newFunc) : func(std::forward<Func>(newFunc))
 	{
 	}
 
-	Defer(const Defer &other) = delete;
-	Defer &operator =(const Defer &other) = delete;
+	Defer(const Defer &) = delete;
+	Defer &operator =(const Defer &) = delete;
 
 	~Defer()
 	{
-		if (func)
-		{
-			func();
-		}
+		func();
 	}
 };
