@@ -334,6 +334,7 @@ else
 	project_cpp_args += args_ccomp_sse
 endif
 
+copied_dlls = []
 if host_platform == 'windows'
 	args_ccomp_win = []
 	defs_ccomp_win = []
@@ -362,7 +363,7 @@ if host_platform == 'windows'
 				do_copy = true
 			endif
 			if do_copy
-				fs.copyfile(dll_input, dll_output)
+				copied_dlls += [ fs.copyfile(dll_input, dll_output) ]
 			endif
 		endforeach
 	endif
@@ -481,6 +482,7 @@ if get_option('build_powder')
 			cpp_args: project_cpp_args,
 			link_args: project_link_args,
 			dependencies: powder_deps,
+			link_depends: copied_dlls,
 		)
 		subdir('android')
 	else
@@ -495,6 +497,7 @@ if get_option('build_powder')
 			dependencies: powder_deps,
 			export_dynamic: project_export_dynamic,
 			install: true,
+			link_depends: copied_dlls,
 		)
 	endif
 endif
@@ -523,6 +526,7 @@ if get_option('build_render')
 		link_args: render_link_args,
 		dependencies: render_deps,
 		export_dynamic: project_export_dynamic,
+		link_depends: copied_dlls,
 	)
 endif
 
@@ -547,5 +551,6 @@ if get_option('build_font')
 		link_args: project_link_args,
 		dependencies: font_deps,
 		export_dynamic: project_export_dynamic,
+		link_depends: copied_dlls,
 	)
 endif
