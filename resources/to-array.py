@@ -34,8 +34,8 @@ extern const unsigned int {symbol_name}_size;
 def dep_escape(s):
 	t = ''
 	for c in s:
-		if c in [ ' ', '\n', '\\', ':', '$' ]:
-			t += '$'
+		if c in [ ' ', '\\', ':', '$' ]:
+			t += '\\'
 		t += c
 	return t
 
