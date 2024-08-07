@@ -158,6 +158,7 @@ public:
 	RENDERER_TABLE(heatTable)
 	RENDERER_TABLE(clfmTable)
 	RENDERER_TABLE(firwTable)
+	RENDERER_TABLE(flameAchromaTable)
 #undef RENDERER_TABLE
 	static void PopulateTables();
 
