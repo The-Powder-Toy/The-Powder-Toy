@@ -1,12 +1,16 @@
+import os
 import sys
 
 (
 	script,
 	output_cpp_path,
 	output_h_path,
+	output_dep_path,
 	input_path,
 	symbol_name,
 ) = sys.argv
+
+script_path = os.path.realpath(__file__)
 
 with open(input_path, 'rb') as input_f:
 	data = input_f.read()
@@ -25,4 +29,17 @@ with open(output_h_path, 'w') as output_h_f:
 #pragma once
 extern const unsigned char {symbol_name}[];
 extern const unsigned int {symbol_name}_size;
+''')
+
+def dep_escape(s):
+	t = ''
+	for c in s:
+		if c in [ ' ', '\n', '\\', ':', '$' ]:
+			t += '$'
+		t += c
+	return t
+
+with open(output_dep_path, 'w') as output_dep_f:
+	output_dep_f.write(f'''
+{dep_escape(output_cpp_path)} {dep_escape(output_h_path)}: {dep_escape(input_path)} {dep_escape(script_path)}
 ''')

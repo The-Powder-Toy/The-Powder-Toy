@@ -22,7 +22,8 @@ fs = import('fs')
 to_array = generator(
 	python3_prog,
 	output: [ '@PLAINNAME@.cpp', '@PLAINNAME@.h' ],
-	arguments: [ join_paths(meson.current_source_dir(), 'resources/to-array.py'), '@OUTPUT0@', '@OUTPUT1@', '@INPUT@', '@EXTRA_ARGS@' ]
+	depfile: '@PLAINNAME@.dep',
+	arguments: [ join_paths(meson.current_source_dir(), 'resources/to-array.py'), '@OUTPUT0@', '@OUTPUT1@', '@DEPFILE@', '@INPUT@', '@EXTRA_ARGS@' ]
 )
 
 render_icons_with_inkscape = get_option('render_icons_with_inkscape')
