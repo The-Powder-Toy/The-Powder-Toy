@@ -201,11 +201,11 @@ RGB<uint8_t> wavelengthToColour(int wavelength)
 {
 	int x, colr, colg, colb;
 	for (colr = colg = colb = x = 0; x<12; x++) {
-		*colr += (wavelength >> (x+18)) & 1;
-		*colg += (wavelength >> (x+9))  & 1;
-		*colb += (wavelength >>  x)	    & 1;
+		colr += (wavelength >> (x+18)) & 1;
+		colg += (wavelength >> (x+9))  & 1;
+		colb += (wavelength >>  x)	    & 1;
 	}
-	double xl = 255.0 / std::max(std::max(*colr,*colg),*colb);
+	double xl = 255.0 / std::max({colr,colg,colb});
 	colr *= xl;
 	colg *= xl;
 	colb *= xl;
