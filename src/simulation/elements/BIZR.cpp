@@ -1,5 +1,6 @@
 #include "simulation/ElementCommon.h"
 #include "BIZR.h"
+#include "FILT.h"
 
 void Element::Element_BIZR()
 {
@@ -91,7 +92,6 @@ int Element_BIZR_update(UPDATE_FUNC_ARGS)
 int Element_BIZR_graphics(GRAPHICS_FUNC_ARGS)
  //BIZR, BIZRG, BIZRS
 {
-	int x = 0;
 	float brightness = fabs(cpart->vx) + fabs(cpart->vy);
 	if (cpart->ctype&0x3FFFFFFF)
 	{
