@@ -1249,7 +1249,6 @@ void GameSave::readOPS(const std::vector<char> &data)
 							particles[newIndex].tmp = builtinGol[particles[newIndex].ctype].colour2.Pack();
 						}
 					}
-				}
 				case PT_BIZR:
 				case PT_BIZRG:
 				case PT_BIZRS:
@@ -1257,6 +1256,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 					{
 						particles[newIndex].flags |= FLAG_PHOTOLD;
 					}
+				}
 				if (PressureInTmp3(particles[newIndex].type))
 				{
 					// pavg[1] used to be saved as a u16, which PressureInTmp3 elements then treated as
