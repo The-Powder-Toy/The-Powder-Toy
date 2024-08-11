@@ -50,7 +50,7 @@ void Element::Element_BRAY()
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	int x, trans = 255;
+	int trans = 255;
 	if(cpart->tmp==0)
 	{
 		trans = cpart->life * 7;

@@ -180,7 +180,7 @@ int colourToWavelength(int cr, int cg, int cb)
 	int shg = 0;
 	if (vg > 6)
 	{
-		shg = std::max(std::min({vr - vb, vg - 6, 3}), 6 - vg, -3);
+		shg = std::max({std::min({vr - vb, vg - 6, 3}), 6 - vg, -3});
 		vr -= std::max(shg, 0);
 		vb += std::min(shg, 0);
 	}
