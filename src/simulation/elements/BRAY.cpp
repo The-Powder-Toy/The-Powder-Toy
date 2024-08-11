@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "FILT.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
 
