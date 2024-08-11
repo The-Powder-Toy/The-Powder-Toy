@@ -50,24 +50,14 @@ void Element::Element_FILT()
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	int x, wl = Element_FILT_getWavelengths(cpart);
-	*colg = 0;
-	*colb = 0;
-	*colr = 0;
-	for (x=0; x<12; x++) {
-		*colr += (wl >> (x+18)) & 1;
-		*colb += (wl >>  x)     & 1;
-	}
-	for (x=0; x<12; x++)
-		*colg += (wl >> (x+9))  & 1;
-	x = 624/(*colr+*colg+*colb+1);
+	int wl = Element_FILT_getWavelengths(cpart);
+	RGB<uint8_t> tempcolor = wavelengthToColour(wl);
+	*colr = tempcolor.Red, *colg = tempcolor.Green, *colb = tempcolor.Blue;
+	
 	if (cpart->life>0 && cpart->life<=4)
 		*cola = 127+cpart->life*30;
 	else
 		*cola = 127;
-	*colr *= x;
-	*colg *= x;
-	*colb *= x;
 	*pixel_mode &= ~PMODE;
 	*pixel_mode |= PMODE_BLEND;
 	return 0;
@@ -203,7 +193,7 @@ RGB<uint8_t> wavelengthToColour(int wavelength)
 	for (colr = colg = colb = x = 0; x<12; x++) {
 		colr += (wavelength >> (x+18)) & 1;
 		colg += (wavelength >> (x+9))  & 1;
-		colb += (wavelength >>  x)	    & 1;
+		colb += (wavelength >>  x)	   & 1;
 	}
 	double xl = 255.0 / std::max({colr,colg,colb});
 	colr *= xl;

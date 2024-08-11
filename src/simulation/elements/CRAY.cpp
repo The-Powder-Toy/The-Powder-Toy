@@ -117,7 +117,7 @@ static int update(UPDATE_FUNC_ARGS)
 								else if (parts[ID(r)].tmp==0)
 								{
 									RGB<uint8_t> tempcolor = wavelengthToColour(Element_FILT_getWavelengths(&parts[ID(r)]));
-									colored = tempcolor.Red << 16 + tempcolor.Green << 8 + tempcolor.Blue;
+									colored = 0xFF000000 + (int)(tempcolor.Red) << 16 + (int)(tempcolor.Green) << 8 + (int)(tempcolor.Blue);
 								}
 								else if (colored==0xFF000000)
 									colored = 0;
