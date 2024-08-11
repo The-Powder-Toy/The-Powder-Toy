@@ -146,23 +146,13 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	int x = 0;
-	*colr = *colg = *colb = 0;
-	for (x=0; x<12; x++) {
-		*colr += (cpart->ctype >> (x+18)) & 1;
-		*colb += (cpart->ctype >>  x)     & 1;
-	}
-	for (x=0; x<12; x++)
-		*colg += (cpart->ctype >> (x+9))  & 1;
-	x = 624/(*colr+*colg+*colb+1);
-	*colr *= x;
-	*colg *= x;
-	*colb *= x;
-
-	*firea = 100;
-	*firer = *colr;
-	*fireg = *colg;
-	*fireb = *colb;
+	double lm = std::min(cpart->life, 680) / 680.0;
+	if (cpart->life <= 0 || FLAG_PHOTOLD)
+		lm = 1.0;
+	RGB<uint8_t> tempcolor = wavelengthToColour(cpart->ctype);
+	*firer = *colr = tempcolor.Red, *fireg = *colg = tempcolor.Green, *fireb = *colb = tempcolor.Blue;
+	*firea = round(100.0 * lm);
+	*cola = round(255.0 * lm);
 
 	*pixel_mode &= ~PMODE_FLAT;
 	*pixel_mode |= FIRE_ADD | PMODE_ADD | NO_DECO;

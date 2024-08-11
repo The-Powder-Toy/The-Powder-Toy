@@ -1175,6 +1175,10 @@ void GameSave::readOPS(const std::vector<char> &data)
 					}
 					break;
 				case PT_PHOT:
+					if (savedVersion < 99)
+					{
+						particles[newIndex].flags |= FLAG_PHOTOLD;
+					}
 					if (savedVersion < 90)
 					{
 						particles[newIndex].flags |= FLAG_PHOTDECO;
@@ -1246,6 +1250,13 @@ void GameSave::readOPS(const std::vector<char> &data)
 						}
 					}
 				}
+				case PT_BIZR:
+				case PT_BIZRG:
+				case PT_BIZRS:
+					if (savedVersion < 99)
+					{
+						particles[newIndex].flags |= FLAG_PHOTOLD;
+					}
 				if (PressureInTmp3(particles[newIndex].type))
 				{
 					// pavg[1] used to be saved as a u16, which PressureInTmp3 elements then treated as

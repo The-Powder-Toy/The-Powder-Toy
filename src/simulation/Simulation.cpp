@@ -1142,6 +1142,14 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr) const
 					return 0;
 			}
 			break;
+		case PT_BIZR:
+		case PT_BIZRG:
+		case PT_BIZRS:
+			if(parts[ID(r)].dcolour && !(parts[ID(r)].flags & FLAG_PHOTOLD))
+				result = 0;
+			else
+				result = 2;
+			break;
 		default:
 			// This should never happen
 			// If it were to happen, try_move would interpret a 3 as a 1
@@ -3066,8 +3074,57 @@ killed:
 
 					if (t == PT_PHOT)
 					{
-						auto mask = elements[TYP(r)].PhotonReflectWavelengths;
-						if (TYP(r) == PT_LITH)
+						unsigned int mask = 0;
+						if(parts[i].flags & FLAG_PHOTOLD)
+							mask = elements[TYP(r)].PhotonReflectWavelengths;
+						else if (TYP(r) != PT_LITH)
+						{
+							int cr = 255, cg = 255, cb = 255;
+							if (TYP(r) == PT_SPRK)
+							{
+								cr = elements[parts[ID(r)].ctype].Colour.Red;
+								cg = elements[parts[ID(r)].ctype].Colour.Green;
+								cb = elements[parts[ID(r)].ctype].Colour.Blue;
+							}
+							else if (TYP(r) == PT_BRAY || TYP(r) == PT_BIZR || TYP(r) == PT_BIZRG || TYP(r) == PT_BIZRS)
+							{
+								RGB<uint8_t> tempcolor = wavelengthToColour(cpart->ctype);
+								cr = tempcolor.Red, cg = tempcolor.Green, cb = tempcolor.Blue;
+							}
+							else
+							{
+								cr = elements[TYP(r)].Colour.Red;
+								cg = elements[TYP(r)].Colour.Green;
+								cb = elements[TYP(r)].Colour.Blue;
+							}
+							if (parts[ID(r)].dcolour)
+							{
+								int da = (parts[ID(r)].dcolour>>24)&0xFF;
+								int dr = (parts[ID(r)].dcolour>>16)&0xFF;
+								int dg = (parts[ID(r)].dcolour>>8)&0xFF;
+								int db = (parts[ID(r)].dcolour)&0xFF;
+								cr = (da*dr + (256-da)*cr) >> 8;
+								cg = (da*dg + (256-da)*cg) >> 8;
+								cb = (da*db + (256-da)*cb) >> 8;
+							}
+							float vl = std::max({cr, cg, cb});
+							if (vl == 0.0f)
+							{
+								kill_part(i);
+								continue;
+							}
+							parts[i].ctype &= colourToWavelength(cr, cg, cb);
+							if (parts[i].life > 0)
+							{
+								parts[i].life /= (255 / vl);
+								if (parts[i].life < 2)
+								{
+									kill_part(i);
+									continue;
+								}
+							}
+						}
+						else if (TYP(r) == PT_LITH)
 						{
 							int wl_bin = parts[ID(r)].ctype / 4;
 							if (wl_bin < 0) wl_bin = 0;

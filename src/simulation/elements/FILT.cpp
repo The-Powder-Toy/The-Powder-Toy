@@ -148,3 +148,66 @@ int Element_FILT_getWavelengths(const Particle* cpart)
 		return (0x1F << temp_bin);
 	}
 }
+
+int colourToWavelength(int cr, int cg, int cb)
+{
+	float vl = std::max({cr, cg, cb});
+	if (vl == 0.0f)
+		return 0;
+	int mt = 5;
+	int best = 1000;
+	int bestmt = mt;
+	int vr, vg, vb;
+	for (; mt < 13; mt++)
+	{
+		vr = (int)(cr / vl * mt + 0.5f);
+		vg = (int)(cg / vl * mt + 0.5f);
+		vb = (int)(cb / vl * mt + 0.5f);
+		if ((mt < 7 || vr + vb >= mt - 6) && (mt < 10 || vg >= std::max(vr - 9, 0) + std::max(vb - 9, 0)))
+		{
+			int diff = std::abs(cr - vr * vl / mt) + std::abs(cg - vg * vl / mt) + std::abs(cb - vb * vl / mt);
+			if (diff <= best)
+			{
+				best = diff;
+				bestmt = mt;
+			}
+		}
+	}
+	mt = bestmt;
+	vr = (int)(cr / vl * mt + 0.5f);
+	vg = (int)(cg / vl * mt + 0.5f);
+	vb = (int)(cb / vl * mt + 0.5f);
+	int shg = 0;
+	if (vg > 6)
+	{
+		shg = std::max(std::min({vr - vb, vg - 6, 3}), 6 - vg, -3);
+		vr -= std::max(shg, 0);
+		vb += std::min(shg, 0);
+	}
+	else
+	{
+		if (vb > 9)
+			vg -= vb - 9;
+		if (vr > 9)
+			vg -= vr - 9;
+	}
+	unsigned int mask = ((1 << vr) - 1) << (30 - vr);
+	mask |= ((1 << vg) - 1) << (12 + shg);
+	mask |= ((1 << vb) - 1);
+	return mask &= 0x3FFFFFFF;
+}
+
+RGB<uint8_t> wavelengthToColour(int wavelength)
+{
+	int x, colr, colg, colb;
+	for (colr = colg = colb = x = 0; x<12; x++) {
+		*colr += (wavelength >> (x+18)) & 1;
+		*colg += (wavelength >> (x+9))  & 1;
+		*colb += (wavelength >>  x)	    & 1;
+	}
+	double xl = 255.0 / std::max(std::max(*colr,*colg),*colb);
+	colr *= xl;
+	colg *= xl;
+	colb *= xl;
+	return RGB<uint8_t>(colr, colg, colb);
+}

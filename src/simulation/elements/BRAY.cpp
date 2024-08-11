@@ -55,19 +55,8 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		trans = cpart->life * 7;
 		if (trans>255) trans = 255;
 		if (cpart->ctype&0x3FFFFFFF) {
-			*colg = 0;
-			*colb = 0;
-			*colr = 0;
-			for (x=0; x<12; x++) {
-				*colr += (cpart->ctype >> (x+18)) & 1;
-				*colb += (cpart->ctype >>  x)	 & 1;
-			}
-			for (x=0; x<12; x++)
-				*colg += (cpart->ctype >> (x+9))  & 1;
-			x = 624/(*colr+*colg+*colb+1);
-			*colr *= x;
-			*colg *= x;
-			*colb *= x;
+			RGB<uint8_t> tempcolor = wavelengthToColour(cpart->ctype);
+			*colr = tempcolor.Red, *colg = tempcolor.Green, *colb = tempcolor.Blue;
 		}
 	}
 	else if(cpart->tmp==1)
@@ -75,19 +64,8 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		trans = cpart->life/4;
 		if (trans>255) trans = 255;
 		if (cpart->ctype&0x3FFFFFFF) {
-			*colg = 0;
-			*colb = 0;
-			*colr = 0;
-			for (x=0; x<12; x++) {
-				*colr += (cpart->ctype >> (x+18)) & 1;
-				*colb += (cpart->ctype >>  x)	 & 1;
-			}
-			for (x=0; x<12; x++)
-				*colg += (cpart->ctype >> (x+9))  & 1;
-			x = 624/(*colr+*colg+*colb+1);
-			*colr *= x;
-			*colg *= x;
-			*colb *= x;
+			RGB<uint8_t> tempcolor = wavelengthToColour(cpart->ctype);
+			*colr = tempcolor.Red, *colg = tempcolor.Green, *colb = tempcolor.Blue;
 		}
 	}
 	else if(cpart->tmp==2)

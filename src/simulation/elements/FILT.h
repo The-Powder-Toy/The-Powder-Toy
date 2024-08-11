@@ -3,3 +3,5 @@
 
 int Element_FILT_getWavelengths(const Particle* cpart);
 int Element_FILT_interactWavelengths(Simulation *sim, Particle* cpart, int origWl);
+int colourToWavelength(int cr, int cg, int cb)
+RGB<uint8_t> wavelengthToColour(int wavelength)

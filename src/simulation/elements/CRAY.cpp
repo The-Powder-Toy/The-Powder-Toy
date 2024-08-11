@@ -3,7 +3,6 @@
 
 static int update(UPDATE_FUNC_ARGS);
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);
-static unsigned int wavelengthToDecoColour(int wavelength);
 
 void Element::Element_CRAY()
 {
@@ -117,7 +116,8 @@ static int update(UPDATE_FUNC_ARGS)
 									colored = 0xFF000000;
 								else if (parts[ID(r)].tmp==0)
 								{
-									colored = wavelengthToDecoColour(Element_FILT_getWavelengths(&parts[ID(r)]));
+									RGB<uint8_t> tempcolor = wavelengthToColour(Element_FILT_getWavelengths(&parts[ID(r)]));
+									colored = tempcolor.Red << 16 + tempcolor.Green << 8 + tempcolor.Blue;
 								}
 								else if (colored==0xFF000000)
 									colored = 0;
@@ -140,30 +140,6 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 	}
 	return 0;
-}
-
-static unsigned int wavelengthToDecoColour(int wavelength)
-{
-	int colr = 0, colg = 0, colb = 0, x;
-	for (x=0; x<12; x++) {
-		colr += (wavelength >> (x+18)) & 1;
-		colb += (wavelength >>  x)     & 1;
-	}
-	for (x=0; x<12; x++)
-		colg += (wavelength >> (x+9))  & 1;
-	x = 624/(colr+colg+colb+1);
-	colr *= x;
-	colg *= x;
-	colb *= x;
-
-	if(colr > 255) colr = 255;
-	else if(colr < 0) colr = 0;
-	if(colg > 255) colg = 255;
-	else if(colg < 0) colg = 0;
-	if(colb > 255) colb = 255;
-	else if(colb < 0) colb = 0;
-
-	return (255<<24) | (colr<<16) | (colg<<8) | colb;
 }
 
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
