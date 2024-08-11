@@ -3088,7 +3088,7 @@ killed:
 							}
 							else if (TYP(r) == PT_BRAY || TYP(r) == PT_BIZR || TYP(r) == PT_BIZRG || TYP(r) == PT_BIZRS)
 							{
-								RGB<uint8_t> tempcolor = wavelengthToColour(cpart->ctype);
+								RGB<uint8_t> tempcolor = wavelengthToColour(parts[ID(r)].ctype);
 								cr = tempcolor.Red, cg = tempcolor.Green, cb = tempcolor.Blue;
 							}
 							else
