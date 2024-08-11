@@ -1245,6 +1245,14 @@ void GameSave::readOPS(const std::vector<char> &data)
 							particles[newIndex].tmp = builtinGol[particles[newIndex].ctype].colour2.Pack();
 						}
 					}
+					break;
+				case PT_ARAY:
+				case PT_CRAY:
+				case PT_FRAY:
+					if (savedVersion < 99 && !fakeNewerVersion)
+					{
+						particles[newIndex].flags |= FLAG_INWRDIAGONAL;
+					}
 				}
 				if (PressureInTmp3(particles[newIndex].type))
 				{
