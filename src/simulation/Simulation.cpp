@@ -3074,7 +3074,7 @@ killed:
 
 					if (t == PT_PHOT)
 					{
-						unsigned int mask = 0;
+						unsigned int mask = 0x3FFFFFFF;
 						if(parts[i].flags & FLAG_PHOTOLD)
 							mask = elements[TYP(r)].PhotonReflectWavelengths;
 						else if (TYP(r) != PT_LITH)
@@ -3103,9 +3103,9 @@ killed:
 								int dr = (parts[ID(r)].dcolour>>16)&0xFF;
 								int dg = (parts[ID(r)].dcolour>>8)&0xFF;
 								int db = (parts[ID(r)].dcolour)&0xFF;
-								cr = (da*dr + (256-da)*cr) >> 8;
-								cg = (da*dg + (256-da)*cg) >> 8;
-								cb = (da*db + (256-da)*cb) >> 8;
+								cr = (da*dr + (255-da)*cr) / 255;
+								cg = (da*dg + (255-da)*cg) / 255;
+								cb = (da*db + (255-da)*cb) / 255;
 							}
 							float vl = std::max({cr, cg, cb});
 							if (vl == 0.0f)
@@ -3113,7 +3113,7 @@ killed:
 								kill_part(i);
 								continue;
 							}
-							parts[i].ctype &= colourToWavelength(cr, cg, cb);
+							mask = colourToWavelength(cr, cg, cb);
 							if (parts[i].life > 0)
 							{
 								parts[i].life /= (255 / vl);
