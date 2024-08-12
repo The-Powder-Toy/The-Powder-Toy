@@ -60,6 +60,14 @@ static int update(UPDATE_FUNC_ARGS)
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
 
+	if(parts[i].dcolour && !(parts[i].flags & FLAG_PHOTOLD))
+	{
+		int cr = (parts[i].dcolour>>16)&0xFF, cg = (parts[i].dcolour>>8)&0xFF, cb = parts[i].dcolour&0xFF;
+		parts[i].dcolour = 0;
+		parts[i].ctype = colourToWavelength(cr, cg, cb);
+		parts[i].life = 680 * std::max({cr, cg, cb}) / 255;
+	}
+
 	if (!(parts[i].ctype&0x3FFFFFFF)) {
 		sim->kill_part(i);
 		return 1;
@@ -146,10 +154,18 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	double lm = std::min(cpart->life, 680) / 680.0;
-	if (cpart->life <= 0 || (cpart->flags & FLAG_PHOTOLD))
+	int templife = cpart->life, tempctype = cpart->ctype;
+	if(cpart->dcolour && !(cpart->flags & FLAG_PHOTOLD))
+	{
+		int cr = (cpart->dcolour>>16)&0xFF, cg = (cpart->dcolour>>8)&0xFF, cb = cpart->dcolour&0xFF;
+		tempctype = colourToWavelength(cr, cg, cb);
+		templife = 680 * std::max({cr, cg, cb}) / 255;
+	}
+	
+	double lm = std::min(templife, 680) / 680.0;
+	if (templife <= 0 || (cpart->flags & FLAG_PHOTOLD))
 		lm = 1.0;
-	RGB<uint8_t> tempcolor = wavelengthToColour(cpart->ctype);
+	RGB<uint8_t> tempcolor = wavelengthToColour(tempctype);
 	*firer = *colr = tempcolor.Red, *fireg = *colg = tempcolor.Green, *fireb = *colb = tempcolor.Blue;
 	*firea = round(100.0 * lm);
 	*cola = round(255.0 * lm);

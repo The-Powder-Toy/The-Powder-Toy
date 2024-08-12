@@ -3107,22 +3107,16 @@ killed:
 								cg = (da*dg + (255-da)*cg) / 255;
 								cb = (da*db + (255-da)*cb) / 255;
 							}
-							float vl = std::max({cr, cg, cb});
-							if (vl == 0.0f)
-							{
-								kill_part(i);
-								continue;
-							}
-							mask = colourToWavelength(cr, cg, cb);
 							if (parts[i].life > 0)
 							{
-								parts[i].life /= (255 / vl);
+								parts[i].life = parts[i].life * std::max({cr, cg, cb}) / 255;
 								if (parts[i].life < 2)
 								{
 									kill_part(i);
 									continue;
 								}
 							}
+							mask = colourToWavelength(cr, cg, cb);
 						}
 						else if (TYP(r) == PT_LITH)
 						{
