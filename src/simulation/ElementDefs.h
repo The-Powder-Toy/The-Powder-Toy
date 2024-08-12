@@ -37,7 +37,7 @@ constexpr auto FLAG_SKIPMOVE      = UINT32_C(0x00000002); // skip movement for o
 //#define FLAG_WATEREQUAL 0x4 //if a liquid was already checked during equalization
 constexpr auto FLAG_MOVABLE       = UINT32_C(0x00000008); // compatibility with old saves (moving SPNG), only applies to SPNG
 constexpr auto FLAG_PHOTDECO      = UINT32_C(0x00000008); // compatibility with old saves (decorated photons), only applies to PHOT. Having the same value as FLAG_MOVABLE is fine because they apply to different elements, and this saves space for future flags,
-constexpr auto FLAG_INWRDIAGONAL  = UINT32_C(0x00000008); // compatibility with old saves (inwr sparks on diagonals), only applies to ARAY, CRAY and FRAY.
+constexpr auto FLAG_INWRDIAGONAL  = UINT32_C(0x00000008); // compatibility with old saves (INWR sparks on diagonals), only applies to ARAY, CRAY and FRAY.
 
 
 #define UPDATE_FUNC_ARGS Simulation* sim, int i, int x, int y, int surround_space, int nt, Particle *parts, int pmap[YRES][XRES]
