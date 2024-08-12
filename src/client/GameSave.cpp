@@ -1175,10 +1175,6 @@ void GameSave::readOPS(const std::vector<char> &data)
 					}
 					break;
 				case PT_PHOT:
-					if (savedVersion < 99)
-					{
-						particles[newIndex].flags |= FLAG_PHOTOLD;
-					}
 					if (savedVersion < 90)
 					{
 						particles[newIndex].flags |= FLAG_PHOTDECO;
@@ -1249,17 +1245,8 @@ void GameSave::readOPS(const std::vector<char> &data)
 							particles[newIndex].tmp = builtinGol[particles[newIndex].ctype].colour2.Pack();
 						}
 					}
-				case PT_BIZR:
-				case PT_BIZRG:
-				case PT_BIZRS:
-				case PT_GLAS:
-				case PT_BGLA:
-					if (savedVersion < 99)
-					{
-						particles[newIndex].flags |= FLAG_PHOTOLD;
-					}
 				}
-				if(savedVersion < 99 && elements[particles[newIndex].type].PhotonReflectWavelengths != 0x3FFFFFFF)
+				if(savedVersion < 99)
 					particles[newIndex].flags |= FLAG_PHOTOLD;
 				if (PressureInTmp3(particles[newIndex].type))
 				{
