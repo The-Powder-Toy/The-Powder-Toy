@@ -1196,10 +1196,6 @@ void GameSave::readOPS(const std::vector<char> &data)
 					}
 					break;
 				case PT_CRAY:
-					if (savedVersion < 99 && !fakeNewerVersion)
-					{
-						particles[newIndex].flags |= FLAG_INWRDIAGONAL;
-					}
 					if (savedVersion < 91)
 					{
 						if (particles[newIndex].tmp2)
