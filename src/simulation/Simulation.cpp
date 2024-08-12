@@ -2998,6 +2998,27 @@ killed:
 						int lt = TYP(pmap[y][x]);
 						int rt_glas = (rt == PT_GLAS) || (rt == PT_BGLA);
 						int lt_glas = (lt == PT_GLAS) || (lt == PT_BGLA);
+						if(!(parts[i].flags & FLAG_PHOTOLD))
+						{
+							if(rt_glas)
+							{
+								int glasdeco = parts[ID(pmap[fin_y][fin_x])].dcolour;
+								if(glasdeco)
+								{
+									int dr = (glasdeco>>16)&0xFF, dg = (glasdeco>>8)&0xFF, db = glasdeco&0xFF;
+									parts[i].ctype &= colourToWavelength(dr, dg, db);
+								}
+							}
+							if(lt_glas)
+							{
+								int glasdeco = parts[ID(pmap[y][x])].dcolour;
+								if(glasdeco)
+								{
+									int dr = (glasdeco>>16)&0xFF, dg = (glasdeco>>8)&0xFF, db = glasdeco&0xFF;
+									parts[i].ctype &= colourToWavelength(dr, dg, db);
+								}
+							}
+						}
 						if ((rt_glas && !lt_glas) || (lt_glas && !rt_glas))
 						{
 							auto gn = get_normal_interp<true>(*this, REFRACT|t, parts[i].x, parts[i].y, parts[i].vx, parts[i].vy);
