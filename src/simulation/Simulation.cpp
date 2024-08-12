@@ -3000,7 +3000,7 @@ killed:
 						int lt_glas = (lt == PT_GLAS) || (lt == PT_BGLA);
 						if(!(parts[i].flags & FLAG_PHOTOLD))
 						{
-							if(rt_glas)
+							if(rt_glas && !(parts[ID(pmap[fin_y][fin_x])].flags & FLAG_PHOTOLD))
 							{
 								int glasdeco = parts[ID(pmap[fin_y][fin_x])].dcolour;
 								if(glasdeco)
@@ -3009,7 +3009,7 @@ killed:
 									parts[i].ctype &= colourToWavelength(dr, dg, db);
 								}
 							}
-							if(lt_glas)
+							if(lt_glas && !(parts[ID(pmap[y][x])].flags & FLAG_PHOTOLD))
 							{
 								int glasdeco = parts[ID(pmap[y][x])].dcolour;
 								if(glasdeco)
