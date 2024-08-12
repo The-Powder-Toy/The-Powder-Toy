@@ -147,7 +147,7 @@ static int update(UPDATE_FUNC_ARGS)
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	double lm = std::min(cpart->life, 680) / 680.0;
-	if (cpart->life <= 0 || FLAG_PHOTOLD)
+	if (cpart->life <= 0 || (cpart->flags & FLAG_PHOTOLD))
 		lm = 1.0;
 	RGB<uint8_t> tempcolor = wavelengthToColour(cpart->ctype);
 	*firer = *colr = tempcolor.Red, *fireg = *colg = tempcolor.Green, *fireb = *colb = tempcolor.Blue;
