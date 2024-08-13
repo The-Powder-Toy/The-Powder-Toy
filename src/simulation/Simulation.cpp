@@ -3755,7 +3755,10 @@ void Simulation::BeforeSim()
 			air->update_airh();
 
 		DispatchNewtonianGravity();
-		gravIn = {};
+		for (auto p : gravIn.mass.Size().OriginRect())
+		{
+			gravIn.mass[p] = 0.f;
+		}
 
 		if(emp_decor>0)
 			emp_decor -= emp_decor/25+2;
