@@ -3096,7 +3096,7 @@ killed:
 					if (t == PT_PHOT)
 					{
 						unsigned int mask = 0x3FFFFFFF;
-						if(parts[i].flags & FLAG_PHOTOLD)
+						if((parts[i].flags | parts[ID(r)].flags) & FLAG_PHOTOLD)
 							mask = elements[TYP(r)].PhotonReflectWavelengths;
 						else if (TYP(r) != PT_LITH)
 						{
