@@ -29,9 +29,9 @@ static bool InitFontData()
 	}
 	int first = -1;
 	int last = -1;
-	char *begin = &fontDataBuf[0];
-	char *ptr = &fontDataBuf[0];
-	char *end = &fontDataBuf[0] + fontDataBuf.size();
+	char *begin = fontDataBuf.data();
+	char *ptr = fontDataBuf.data();
+	char *end = fontDataBuf.data() + fontDataBuf.size();
 	while (ptr != end)
 	{
 		if (ptr + 4 > end)

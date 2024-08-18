@@ -25,7 +25,7 @@ void Prefs::Read()
 		std::cerr << "no json data" << std::endl;
 		return;
 	}
-	if (!reader->parse(&data[0], &data[0] + data.size(), &root, &errs))
+	if (!reader->parse(data.data(), data.data() + data.size(), &root, &errs))
 	{
 		std::cerr << errs << std::endl;
 		return;

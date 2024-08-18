@@ -173,7 +173,7 @@ ByteString WinNarrow(const std::wstring &source)
 		return "";
 	}
 	std::string output(buffer_size, 0);
-	if (!WideCharToMultiByte(CP_UTF8, 0, source.c_str(), source.size(), &output[0], buffer_size, NULL, NULL))
+	if (!WideCharToMultiByte(CP_UTF8, 0, source.c_str(), source.size(), output.data(), buffer_size, NULL, NULL))
 	{
 		return "";
 	}
@@ -188,7 +188,7 @@ std::wstring WinWiden(const ByteString &source)
 		return L"";
 	}
 	std::wstring output(buffer_size, 0);
-	if (!MultiByteToWideChar(CP_UTF8, 0, source.c_str(), source.size(), &output[0], buffer_size))
+	if (!MultiByteToWideChar(CP_UTF8, 0, source.c_str(), source.size(), output.data(), buffer_size))
 	{
 		return L"";
 	}
@@ -201,7 +201,7 @@ ByteString ExecutableName()
 	while (true)
 	{
 		SetLastError(ERROR_SUCCESS);
-		if (!GetModuleFileNameW(NULL, &buf[0], DWORD(buf.size())))
+		if (!GetModuleFileNameW(NULL, buf.data(), DWORD(buf.size())))
 		{
 			std::cerr << "GetModuleFileNameW: " << GetLastError() << std::endl;
 			return "";
@@ -212,7 +212,7 @@ ByteString ExecutableName()
 		}
 		buf.resize(buf.size() * 2);
 	}
-	return WinNarrow(&buf[0]); // Pass pointer to copy only up to the zero terminator.
+	return WinNarrow(buf.data()); // Pass pointer to copy only up to the zero terminator.
 }
 
 void DoRestart()

@@ -156,7 +156,7 @@ void FillHunkVectorPtr(const Item *oldItems, const Item *newItems, SnapshotDelta
 template<class Item>
 void FillHunkVector(const std::vector<Item> &oldItems, const std::vector<Item> &newItems, SnapshotDelta::HunkVector<Item> &out)
 {
-	FillHunkVectorPtr<Item>(&oldItems[0], &newItems[0], out, std::min(oldItems.size(), newItems.size()));
+	FillHunkVectorPtr<Item>(oldItems.data(), newItems.data(), out, std::min(oldItems.size(), newItems.size()));
 }
 
 template<class Item>
@@ -187,7 +187,7 @@ void ApplyHunkVectorPtr(const SnapshotDelta::HunkVector<Item> &in, Item *items)
 template<bool UseOld, class Item>
 void ApplyHunkVector(const SnapshotDelta::HunkVector<Item> &in, std::vector<Item> &items)
 {
-	ApplyHunkVectorPtr<UseOld, Item>(in, &items[0]);
+	ApplyHunkVectorPtr<UseOld, Item>(in, items.data());
 }
 
 template<bool UseOld, class Item>
@@ -221,12 +221,12 @@ std::unique_ptr<SnapshotDelta> SnapshotDelta::FromSnapshots(const Snapshot &oldS
 	FillSingleDiff(oldSnap.Authors        , newSnap.Authors        , delta.Authors        );
 	FillSingleDiff(oldSnap.FrameCount     , newSnap.FrameCount     , delta.FrameCount     );
 	FillSingleDiff(oldSnap.RngState       , newSnap.RngState       , delta.RngState       );
-	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(&oldSnap.PortalParticles[0]), reinterpret_cast<const uint32_t *>(&newSnap.PortalParticles[0]), delta.PortalParticles, newSnap.PortalParticles.size() * ParticleUint32Count);
-	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(&oldSnap.stickmen[0])       , reinterpret_cast<const uint32_t *>(&newSnap.stickmen[0]       ), delta.stickmen       , newSnap.stickmen       .size() * playerstUint32Count);
+	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(oldSnap.PortalParticles.data()), reinterpret_cast<const uint32_t *>(newSnap.PortalParticles.data()), delta.PortalParticles, newSnap.PortalParticles.size() * ParticleUint32Count);
+	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(oldSnap.stickmen.data())       , reinterpret_cast<const uint32_t *>(newSnap.stickmen.data()       ), delta.stickmen       , newSnap.stickmen       .size() * playerstUint32Count);
 
 	// * Slightly more interesting; this will only diff the common parts, the rest is copied separately.
 	auto commonSize = std::min(oldSnap.Particles.size(), newSnap.Particles.size());
-	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(&oldSnap.Particles[0]), reinterpret_cast<const uint32_t *>(&newSnap.Particles[0]), delta.commonParticles, commonSize * ParticleUint32Count);
+	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(oldSnap.Particles.data()), reinterpret_cast<const uint32_t *>(newSnap.Particles.data()), delta.commonParticles, commonSize * ParticleUint32Count);
 	delta.extraPartsOld.resize(oldSnap.Particles.size() - commonSize);
 	std::copy(oldSnap.Particles.begin() + commonSize, oldSnap.Particles.end(), delta.extraPartsOld.begin());
 	delta.extraPartsNew.resize(newSnap.Particles.size() - commonSize);
@@ -257,11 +257,11 @@ std::unique_ptr<Snapshot> SnapshotDelta::Forward(const Snapshot &oldSnap)
 	ApplySingleDiff<false>(Authors        , newSnap.Authors        );
 	ApplySingleDiff<false>(FrameCount     , newSnap.FrameCount     );
 	ApplySingleDiff<false>(RngState       , newSnap.RngState       );
-	ApplyHunkVectorPtr<false>(PortalParticles, reinterpret_cast<uint32_t *>(&newSnap.PortalParticles[0]));
-	ApplyHunkVectorPtr<false>(stickmen       , reinterpret_cast<uint32_t *>(&newSnap.stickmen[0]       ));
+	ApplyHunkVectorPtr<false>(PortalParticles, reinterpret_cast<uint32_t *>(newSnap.PortalParticles.data()));
+	ApplyHunkVectorPtr<false>(stickmen       , reinterpret_cast<uint32_t *>(newSnap.stickmen.data()       ));
 
 	// * Slightly more interesting; apply the common hunk vector, copy the extra portion separaterly.
-	ApplyHunkVectorPtr<false>(commonParticles, reinterpret_cast<uint32_t *>(&newSnap.Particles[0]));
+	ApplyHunkVectorPtr<false>(commonParticles, reinterpret_cast<uint32_t *>(newSnap.Particles.data()));
 	auto commonSize = oldSnap.Particles.size() - extraPartsOld.size();
 	newSnap.Particles.resize(commonSize + extraPartsNew.size());
 	std::copy(extraPartsNew.begin(), extraPartsNew.end(), newSnap.Particles.begin() + commonSize);
@@ -291,11 +291,11 @@ std::unique_ptr<Snapshot> SnapshotDelta::Restore(const Snapshot &newSnap)
 	ApplySingleDiff<true>(Authors        , oldSnap.Authors        );
 	ApplySingleDiff<true>(FrameCount     , oldSnap.FrameCount     );
 	ApplySingleDiff<true>(RngState       , oldSnap.RngState       );
-	ApplyHunkVectorPtr<true>(PortalParticles, reinterpret_cast<uint32_t *>(&oldSnap.PortalParticles[0]));
-	ApplyHunkVectorPtr<true>(stickmen       , reinterpret_cast<uint32_t *>(&oldSnap.stickmen[0]       ));
+	ApplyHunkVectorPtr<true>(PortalParticles, reinterpret_cast<uint32_t *>(oldSnap.PortalParticles.data()));
+	ApplyHunkVectorPtr<true>(stickmen       , reinterpret_cast<uint32_t *>(oldSnap.stickmen.data()       ));
 
 	// * Slightly more interesting; apply the common hunk vector, copy the extra portion separaterly.
-	ApplyHunkVectorPtr<true>(commonParticles, reinterpret_cast<uint32_t *>(&oldSnap.Particles[0]));
+	ApplyHunkVectorPtr<true>(commonParticles, reinterpret_cast<uint32_t *>(oldSnap.Particles.data()));
 	auto commonSize = newSnap.Particles.size() - extraPartsNew.size();
 	oldSnap.Particles.resize(commonSize + extraPartsOld.size());
 	std::copy(extraPartsOld.begin(), extraPartsOld.end(), oldSnap.Particles.begin() + commonSize);

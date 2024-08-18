@@ -61,7 +61,7 @@ GameModel::GameModel():
 	sim->useLuaCallbacks = true;
 	ren = new Renderer(sim);
 
-	activeTools = &regularToolset[0];
+	activeTools = regularToolset.data();
 
 	std::fill(decoToolset.begin(), decoToolset.end(), nullptr);
 	std::fill(regularToolset.begin(), regularToolset.end(), nullptr);
@@ -883,17 +883,17 @@ void GameModel::SetActiveMenu(int menuID)
 
 	if(menuID == SC_DECO)
 	{
-		if(activeTools != &decoToolset[0])
+		if(activeTools != decoToolset.data())
 		{
-			activeTools = &decoToolset[0];
+			activeTools = decoToolset.data();
 			notifyActiveToolsChanged();
 		}
 	}
 	else
 	{
-		if(activeTools != &regularToolset[0])
+		if(activeTools != regularToolset.data())
 		{
-			activeTools = &regularToolset[0];
+			activeTools = regularToolset.data();
 			notifyActiveToolsChanged();
 		}
 	}

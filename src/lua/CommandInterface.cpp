@@ -307,7 +307,7 @@ AnyType CommandInterface::tptS_set(std::deque<String> * words)
 	AnyType value = eval(words);
 
 	Simulation * sim = m->GetSimulation();
-	unsigned char * partsBlock = (unsigned char*)&sim->parts[0];
+	unsigned char * partsBlock = reinterpret_cast<unsigned char *>(&sim->parts[0]);
 
 	int returnValue = 0;
 

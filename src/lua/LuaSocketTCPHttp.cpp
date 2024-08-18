@@ -156,7 +156,7 @@ namespace LuaSocket
 			CURLcode res = CURLE_OK;
 			if (!tcps->writeClosed)
 			{
-				res = curl_easy_send(tcps->easy, &data[0] + writtenTotal, len - writtenTotal, &writtenNow);
+				res = curl_easy_send(tcps->easy, data + writtenTotal, len - writtenTotal, &writtenNow);
 			}
 			writtenTotal += writtenNow;
 			if (writtenTotal >= len)
@@ -250,7 +250,7 @@ namespace LuaSocket
 			}
 			else
 			{
-				res = curl_easy_recv(tcps->easy, &tcps->recvBuf[0] + readTotal, len - readTotal, &readNow);
+				res = curl_easy_recv(tcps->easy, tcps->recvBuf.data() + readTotal, len - readTotal, &readNow);
 			}
 			readTotal += readNow;
 			returning = readTotal;
@@ -353,7 +353,7 @@ namespace LuaSocket
 			}
 			returning = curOut;
 		}
-		lua_pushlstring(L, &tcps->recvBuf[0], returning);
+		lua_pushlstring(L, tcps->recvBuf.data(), returning);
 		// * This copy makes ReceiveNoPrefix quadratic if there's a lot of stuff in
 		//   the stash (as a result of a *very* long line being returned by an "*L"
 		//   pattern and then whatever was left being stashed) and it's all *very*
@@ -361,9 +361,9 @@ namespace LuaSocket
 		//   of view of an "*L" pattern). Handling this edge case in a special,
 		//   sub-quadratic way isn't worth the effort.
 		std::copy(
-			&tcps->recvBuf[0] + readTotal - tcps->stashedLen,
-			&tcps->recvBuf[0] + readTotal,
-			&tcps->recvBuf[0]
+			tcps->recvBuf.data() + readTotal - tcps->stashedLen,
+			tcps->recvBuf.data() + readTotal,
+			tcps->recvBuf.data()
 		);
 		return retn;
 	}

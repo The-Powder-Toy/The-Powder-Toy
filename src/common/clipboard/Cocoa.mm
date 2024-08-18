@@ -19,7 +19,7 @@ namespace Clipboard
 				changeCount = [pasteboard declareTypes:[NSArray arrayWithObject:format] owner:nil];
 				std::vector<char> saveData;
 				SerializeClipboard(saveData);
-				const auto *base = &saveData[0];
+				const auto *base = saveData.data();
 				auto size = saveData.size();
 				NSData *data = [NSData dataWithBytes:base length:size];
 				if (![pasteboard setData:data forType:format])

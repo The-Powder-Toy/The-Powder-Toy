@@ -415,7 +415,7 @@ namespace http
 							// Hopefully this is what a NULL from curl_mime_addpart means.
 							HandleCURLcode(CURLE_OUT_OF_MEMORY);
 						}
-						HandleCURLcode(curl_mime_data(part, &field.value[0], field.value.size()));
+						HandleCURLcode(curl_mime_data(part, field.value.data(), field.value.size()));
 						HandleCURLcode(curl_mime_name(part, field.name.c_str()));
 						if (field.filename.has_value())
 						{
@@ -431,7 +431,7 @@ namespace http
 							HandleCURLFORMcode(curl_formadd(&handle->curlPostFieldsFirst, &handle->curlPostFieldsLast,
 								CURLFORM_COPYNAME, field.name.c_str(),
 								CURLFORM_BUFFER, field.filename->c_str(),
-								CURLFORM_BUFFERPTR, &field.value[0],
+								CURLFORM_BUFFERPTR, field.value.data(),
 								CURLFORM_BUFFERLENGTH, field.value.size(),
 							CURLFORM_END));
 						}
@@ -439,7 +439,7 @@ namespace http
 						{
 							HandleCURLFORMcode(curl_formadd(&handle->curlPostFieldsFirst, &handle->curlPostFieldsLast,
 								CURLFORM_COPYNAME, field.name.c_str(),
-								CURLFORM_PTRCONTENTS, &field.value[0],
+								CURLFORM_PTRCONTENTS, field.value.data(),
 								CURLFORM_CONTENTLEN, field.value.size(),
 							CURLFORM_END));
 						}
@@ -450,7 +450,7 @@ namespace http
 				else if (std::holds_alternative<http::StringData>(postData) && std::get<http::StringData>(postData).size())
 				{
 					auto &stringData = std::get<http::StringData>(postData);
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDS, &stringData[0]));
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDS, stringData.data()));
 					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDSIZE_LARGE, curl_off_t(stringData.size())));
 				}
 				else if (handle->isPost)

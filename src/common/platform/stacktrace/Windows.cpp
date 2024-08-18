@@ -20,7 +20,7 @@ static std::optional<SymbolInfo> GetSymbolInfo(HANDLE process, uintptr_t offset)
 {
 	DWORD64 displacement;
 	std::array<char, sizeof(SYMBOL_INFOW) + 1000> symbolData{};
-	auto &symbol = *reinterpret_cast<SYMBOL_INFOW *>(&symbolData[0]);
+	auto &symbol = *reinterpret_cast<SYMBOL_INFOW *>(symbolData.data());
 	symbol.SizeOfStruct = sizeof(symbol);
 	symbol.MaxNameLen = symbolData.size() - sizeof(symbol);
 	if (SymFromAddrW(process, offset, &displacement, &symbol))

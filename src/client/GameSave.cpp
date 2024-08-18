@@ -439,7 +439,12 @@ void GameSave::readOPS(const std::vector<char> &data)
 
 	Renderer::PopulateTables();
 
-	unsigned char *inputData = (unsigned char*)&data[0], *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
+	auto *inputData = reinterpret_cast<const unsigned char *>(data.data());
+	unsigned char *partsData = nullptr;
+	unsigned char *partsPosData = nullptr;
+	unsigned char *fanData = nullptr;
+	unsigned char *wallData = nullptr;
+	unsigned char *soapLinkData = nullptr;
 	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL, *ambientData = NULL, *blockAirData = nullptr, *gravityData = nullptr;
 	unsigned int inputDataLen = data.size(), bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, soapLinkDataLen;
 	unsigned int pressDataLen, vxDataLen, vyDataLen, ambientDataLen, blockAirDataLen, gravityDataLen;
@@ -1314,7 +1319,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	auto &builtinGol = SimulationData::builtinGol;
 	Renderer::PopulateTables();
 
-	unsigned char * saveData = (unsigned char *)&dataVec[0];
+	auto *saveData = reinterpret_cast<const unsigned char *>(dataVec.data());
 	auto dataLength = int(dataVec.size());
 	int q,p=0, pty, ty, legacy_beta=0;
 	Vec2<int> blockP = { 0, 0 };
@@ -1388,7 +1393,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	}
 
 	setSize(blockS);
-	const auto *data = reinterpret_cast<unsigned char *>(&bsonData[0]);
+	const auto *data = reinterpret_cast<const unsigned char *>(bsonData.data());
 	dataLength = bsonData.size();
 
 	if constexpr (DEBUG)
@@ -1509,7 +1514,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 			}
 			if (j)
 			{
-				memset(&particles[0]+k, 0, sizeof(Particle));
+				memset(&particles[k], 0, sizeof(Particle));
 				particles[k].type = j;
 				if (j == PT_COAL)
 					particles[k].tmp = 50;
@@ -1920,7 +1925,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 				throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 			if(l>254)
 				l = 254;
-			memcpy(tempSignText, &data[0]+p, l);
+			memcpy(tempSignText, &data[p], l);
 			tempSignText[l] = 0;
 			p += l;
 		}
@@ -1981,14 +1986,14 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	std::vector<unsigned char> ambientData(blockSize.X*blockSize.Y*2, 0);
 
 	std::vector<unsigned char> blockAirData(blockSize.X * blockSize.Y * 2);
-	PlaneAdapter<PlaneBase<unsigned char>> blockAirDataPlane (blockSize, std::in_place, &blockAirData[0]                            );
-	PlaneAdapter<PlaneBase<unsigned char>> blockAirhDataPlane(blockSize, std::in_place, &blockAirData[0] + blockSize.X * blockSize.Y);
+	PlaneAdapter<PlaneBase<unsigned char>> blockAirDataPlane (blockSize, std::in_place, blockAirData.data()                            );
+	PlaneAdapter<PlaneBase<unsigned char>> blockAirhDataPlane(blockSize, std::in_place, blockAirData.data() + blockSize.X * blockSize.Y);
 
 	std::vector<unsigned char> gravityData(blockSize.X * blockSize.Y * 4 * sizeof(float));
-	PlaneAdapter<PlaneBase<float   >> massDataPlane  (blockSize, std::in_place, reinterpret_cast<float    *>(&gravityData[0]                                                ));
-	PlaneAdapter<PlaneBase<uint32_t>> maskDataPlane  (blockSize, std::in_place, reinterpret_cast<uint32_t *>(&gravityData[0] +     blockSize.X * blockSize.Y * sizeof(float)));
-	PlaneAdapter<PlaneBase<float   >> forceXDataPlane(blockSize, std::in_place, reinterpret_cast<float    *>(&gravityData[0] + 2 * blockSize.X * blockSize.Y * sizeof(float)));
-	PlaneAdapter<PlaneBase<float   >> forceYDataPlane(blockSize, std::in_place, reinterpret_cast<float    *>(&gravityData[0] + 3 * blockSize.X * blockSize.Y * sizeof(float)));
+	PlaneAdapter<PlaneBase<float   >> massDataPlane  (blockSize, std::in_place, reinterpret_cast<float    *>(gravityData.data()                                                ));
+	PlaneAdapter<PlaneBase<uint32_t>> maskDataPlane  (blockSize, std::in_place, reinterpret_cast<uint32_t *>(gravityData.data() +     blockSize.X * blockSize.Y * sizeof(float)));
+	PlaneAdapter<PlaneBase<float   >> forceXDataPlane(blockSize, std::in_place, reinterpret_cast<float    *>(gravityData.data() + 2 * blockSize.X * blockSize.Y * sizeof(float)));
+	PlaneAdapter<PlaneBase<float   >> forceYDataPlane(blockSize, std::in_place, reinterpret_cast<float    *>(gravityData.data() + 3 * blockSize.X * blockSize.Y * sizeof(float)));
 
 	unsigned int wallDataLen = blockSize.X*blockSize.Y, fanDataLen = 0, pressDataLen = 0, vxDataLen = 0, vyDataLen = 0, ambientDataLen = 0;
 
@@ -2115,7 +2120,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	unsigned int partsDataLen = 0;
 	std::vector<unsigned> partsSaveIndex(NPART);
 	unsigned int partsCount = 0;
-	std::fill(&partsSaveIndex[0], &partsSaveIndex[0] + NPART, 0);
+	std::fill(partsSaveIndex.data(), partsSaveIndex.data() + NPART, 0);
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
 	std::set<int> paletteSet;
@@ -2539,7 +2544,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	bson_append_int(&b, "pmapbits", pmapbits);
 	if (partsDataLen)
 	{
-		bson_append_binary(&b, "parts", (char)BSON_BIN_USER, (const char *)&partsData[0], partsDataLen);
+		bson_append_binary(&b, "parts", (char)BSON_BIN_USER, reinterpret_cast<const char *>(partsData.data()), partsDataLen);
 
 		if (paletteData.size())
 		{
@@ -2552,33 +2557,33 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 		}
 
 		if (partsPosDataLen)
-			bson_append_binary(&b, "partsPos", (char)BSON_BIN_USER, (const char *)&partsPosData[0], partsPosDataLen);
+			bson_append_binary(&b, "partsPos", (char)BSON_BIN_USER, reinterpret_cast<const char *>(partsPosData.data()), partsPosDataLen);
 	}
 	if (hasWallData)
 		bson_append_binary(&b, "wallMap", (char)BSON_BIN_USER, (const char *)wallData.data(), wallDataLen);
 	if (fanDataLen)
-		bson_append_binary(&b, "fanMap", (char)BSON_BIN_USER, (const char *)&fanData[0], fanDataLen);
+		bson_append_binary(&b, "fanMap", (char)BSON_BIN_USER, reinterpret_cast<const char *>(fanData.data()), fanDataLen);
 	if (hasPressure && pressDataLen)
-		bson_append_binary(&b, "pressMap", (char)BSON_BIN_USER, (const char*)&pressData[0], pressDataLen);
+		bson_append_binary(&b, "pressMap", (char)BSON_BIN_USER, reinterpret_cast<const char *>(pressData.data()), pressDataLen);
 	if (hasPressure && vxDataLen)
-		bson_append_binary(&b, "vxMap", (char)BSON_BIN_USER, (const char*)&vxData[0], vxDataLen);
+		bson_append_binary(&b, "vxMap", (char)BSON_BIN_USER, reinterpret_cast<const char *>(vxData.data()), vxDataLen);
 	if (hasPressure && vyDataLen)
-		bson_append_binary(&b, "vyMap", (char)BSON_BIN_USER, (const char*)&vyData[0], vyDataLen);
+		bson_append_binary(&b, "vyMap", (char)BSON_BIN_USER, reinterpret_cast<const char *>(vyData.data()), vyDataLen);
 	if (hasAmbientHeat && this->aheatEnable && ambientDataLen)
-		bson_append_binary(&b, "ambientMap", (char)BSON_BIN_USER, (const char*)&ambientData[0], ambientDataLen);
+		bson_append_binary(&b, "ambientMap", (char)BSON_BIN_USER, reinterpret_cast<const char *>(ambientData.data()), ambientDataLen);
 	if (soapLinkDataLen)
-		bson_append_binary(&b, "soapLinks", (char)BSON_BIN_USER, (const char *)&soapLinkData[0], soapLinkDataLen);
-	bson_append_binary(&b, "blockAir", (char)BSON_BIN_USER, (const char *)blockAirData.data(), blockAirData.size());
+		bson_append_binary(&b, "soapLinks", (char)BSON_BIN_USER, reinterpret_cast<const char *>(soapLinkData.data()), soapLinkDataLen);
+	bson_append_binary(&b, "blockAir", (char)BSON_BIN_USER, reinterpret_cast<const char *>(blockAirData.data()), blockAirData.size());
 	if (ensureDeterminism)
 	{
 		bson_append_bool(&b, "ensureDeterminism", ensureDeterminism);
 		bson_append_long(&b, "frameCount", int64_t(frameCount));
-		bson_append_binary(&b, "rngState", (char)BSON_BIN_USER, (const char *)&rngState, sizeof(rngState));
+		bson_append_binary(&b, "rngState", (char)BSON_BIN_USER, reinterpret_cast<const char *>(&rngState), sizeof(rngState));
 		RESTRICTVERSION(98, 0);
 	}
 	if (gravityEnable)
 	{
-		bson_append_binary(&b, "gravity", (char)BSON_BIN_USER, (const char *)gravityData.data(), gravityData.size());
+		bson_append_binary(&b, "gravity", (char)BSON_BIN_USER, reinterpret_cast<const char *>(gravityData.data()), gravityData.size());
 	}
 	unsigned int signsCount = 0;
 	for (size_t i = 0; i < signs.size(); i++)

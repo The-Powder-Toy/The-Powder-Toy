@@ -11,8 +11,8 @@ namespace Platform
 std::optional<std::vector<String>> StackTrace()
 {
 	std::array<void *, 100> buf;
-	auto used = backtrace(&buf[0], buf.size());
-	auto *strs = backtrace_symbols(&buf[0], used);
+	auto used = backtrace(buf.data(), buf.size());
+	auto *strs = backtrace_symbols(buf.data(), used);
 	Defer freeStrs([strs]() {
 		free(strs);
 	});

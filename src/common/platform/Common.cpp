@@ -58,7 +58,7 @@ bool ReadFile(std::vector<char> &fileData, ByteString filename)
 	if (f) f.seekg(0, std::ios::end);
 	if (f) fileData.resize(f.tellg());
 	if (f) f.seekg(0);
-	if (f && fileData.size()) f.read(&fileData[0], fileData.size());
+	if (f && fileData.size()) f.read(fileData.data(), fileData.size());
 	if (!f)
 	{
 		std::cerr << "ReadFile: " << filename << ": " << strerror(errno) << std::endl;
@@ -85,7 +85,7 @@ bool WriteFile(const std::vector<char> &fileData, ByteString filename)
 	bool ok = false;
 	{
 		std::ofstream f(writeFileName, std::ios::binary);
-		if (f) f.write(&fileData[0], fileData.size());
+		if (f) f.write(fileData.data(), fileData.size());
 		ok = bool(f);
 	}
 	if (!ok)

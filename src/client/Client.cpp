@@ -46,7 +46,7 @@ void Client::MigrateStampsDef()
 	}
 	for (auto i = 0; i < int(data.size()); i += 10)
 	{
-		stampIDs.push_back(ByteString(&data[0] + i, &data[0] + i + 10));
+		stampIDs.push_back(ByteString(data.data() + i, data.data() + i + 10));
 	}
 }
 
