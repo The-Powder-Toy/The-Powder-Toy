@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Misc.h"
+#include "VideoBuffer.h"
 #include "common/tpt-rand.h"
 #include "common/tpt-compat.h"
 #include "simulation/Simulation.h"
@@ -36,7 +37,7 @@ void Renderer::RenderSimulation()
 	}
 }
 
-void Renderer::render_gravlensing(const Video &source)
+void Renderer::render_gravlensing(const RendererFrame &source)
 {
 	for (auto p : RES.OriginRect())
 	{

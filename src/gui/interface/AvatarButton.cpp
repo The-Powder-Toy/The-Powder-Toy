@@ -2,6 +2,7 @@
 #include "AvatarButton.h"
 #include "Format.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "ContextMenu.h"
 #include "Config.h"
 #include <iostream>

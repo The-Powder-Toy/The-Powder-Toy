@@ -15,6 +15,7 @@
 #include "client/http/SearchTagsRequest.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "tasks/Task.h"
 #include "tasks/TaskWindow.h"
 

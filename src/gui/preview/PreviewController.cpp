@@ -11,6 +11,7 @@
 #include "client/http/FavouriteSaveRequest.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/login/LoginController.h"

@@ -1,5 +1,6 @@
 #include "ToolButton.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "Favorite.h"
 #include <SDL.h>
 

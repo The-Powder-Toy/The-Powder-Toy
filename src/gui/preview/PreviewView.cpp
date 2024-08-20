@@ -30,6 +30,7 @@
 #include "Format.h"
 #include "Misc.h"
 
+#include "graphics/VideoBuffer.h"
 #include "SimulationConfig.h"
 #include <SDL.h>
 

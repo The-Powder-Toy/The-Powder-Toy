@@ -1,13 +1,13 @@
 #pragma once
-#include "VideoBuffer.h"
+#include "Icons.h"
+#include "RasterDrawMethods.h"
 #include "gui/game/RenderPreset.h"
 #include "gui/interface/Point.h"
 #include "common/tpt-rand.h"
-#include "SimulationConfig.h"
+#include "RendererFrame.h"
 #include "FindingElement.h"
 #include <cstdint>
 #include <optional>
-#include <array>
 #include <memory>
 #include <mutex>
 #include <vector>
@@ -30,10 +30,9 @@ int HeatToColour(float temp);
 
 class Renderer: public RasterDrawMethods<Renderer>
 {
-	using Video = PlaneAdapter<std::array<pixel, WINDOW.X * RES.Y>, WINDOW.X, RES.Y>;
-	Video video;
+	RendererFrame video;
 	std::array<pixel, WINDOW.X * RES.Y> persistentVideo;
-	Video warpVideo;
+	RendererFrame warpVideo;
 
 	Rect<int> GetClipRect() const
 	{
@@ -45,18 +44,13 @@ class Renderer: public RasterDrawMethods<Renderer>
 	float fireIntensity = 1;
 
 public:
-	Vec2<int> Size() const
-	{
-		return video.Size();
-	}
-
-	pixel const *Data() const
-	{
-		return video.data();
-	}
-
 	RNG rng;
 	const RenderableSimulation *sim = nullptr;
+
+	const RendererFrame &GetVideo() const
+	{
+		return video;
+	}
 
 	uint32_t renderMode = 0;
 	uint32_t colorMode = 0;
@@ -73,7 +67,6 @@ public:
 	int decorations_enable;
 	bool blackDecorations;
 	bool debugLines;
-	pixel sampleColor;
 	std::optional<FindingElement> findingElement;
 	int foundElements;
 
@@ -86,7 +79,7 @@ public:
 	void DrawBlob(Vec2<int> pos, RGB<uint8_t> colour);
 	void DrawWalls();
 	void DrawSigns();
-	void render_gravlensing(const Video &source);
+	void render_gravlensing(const RendererFrame &source);
 	void render_fire();
 	float GetFireIntensity() const
 	{
@@ -101,13 +94,9 @@ public:
 
 	void ClearAccumulation();
 	void clearScreen();
-	void SetSample(Vec2<int> pos);
 
 	void draw_icon(int x, int y, Icon icon);
 
-	VideoBuffer DumpFrame();
-
-	pixel GetPixel(Vec2<int> pos) const;
 	//...
 	//Display mode modifiers
 	void SetRenderMode(uint32_t newRenderMode);

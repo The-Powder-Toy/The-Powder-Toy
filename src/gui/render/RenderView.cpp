@@ -6,6 +6,7 @@
 
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
+#include "graphics/VideoBuffer.h"
 
 #include "RenderController.h"
 #include "RenderModel.h"
@@ -193,7 +194,8 @@ void RenderView::OnDraw()
 		ren->sim = nullptr;
 		for (auto y = 0; y < YRES; ++y)
 		{
-			std::copy_n(ren->Data() + ren->Size().X * y, ren->Size().X, g->Data() + g->Size().X * y);
+			auto &video = ren->GetVideo();
+			std::copy_n(video.data() + video.Size().X * y, video.Size().X, g->Data() + g->Size().X * y);
 		}
 	}
 	g->DrawLine({ 0, YRES }, { XRES-1, YRES }, 0xC8C8C8_rgb);

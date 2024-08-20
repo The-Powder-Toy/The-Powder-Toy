@@ -671,9 +671,9 @@ void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, in
 			ApplyDecoration(i, j, colR, colG, colB, colA, mode);
 }
 
-bool Simulation::ColorCompare(Renderer *ren, int x, int y, int replaceR, int replaceG, int replaceB)
+bool Simulation::ColorCompare(const RendererFrame &frame, int x, int y, int replaceR, int replaceG, int replaceB)
 {
-	auto pix = RGB<uint8_t>::Unpack(ren->GetPixel({ x, y }));
+	auto pix = RGB<uint8_t>::Unpack(frame[{ x, y }]);
 	int r = pix.Red;
 	int g = pix.Green;
 	int b = pix.Blue;
@@ -681,7 +681,7 @@ bool Simulation::ColorCompare(Renderer *ren, int x, int y, int replaceR, int rep
 	return diff < 15;
 }
 
-void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB)
+void Simulation::ApplyDecorationFill(const RendererFrame &frame, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB)
 {
 	int x1, x2;
 	char *bitmap = (char*)malloc(XRES*YRES); //Bitmap for checking
@@ -689,7 +689,7 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 		return;
 	memset(bitmap, 0, XRES*YRES);
 
-	if (!ColorCompare(ren, x, y, replaceR, replaceG, replaceB)) {
+	if (!ColorCompare(frame, x, y, replaceR, replaceG, replaceB)) {
 		free(bitmap);
 		return;
 	}
@@ -707,7 +707,7 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 			// go left as far as possible
 			while (x1>0)
 			{
-				if (bitmap[(x1-1)+y*XRES] || !ColorCompare(ren, x1-1, y, replaceR, replaceG, replaceB))
+				if (bitmap[(x1-1)+y*XRES] || !ColorCompare(frame, x1-1, y, replaceR, replaceG, replaceB))
 				{
 					break;
 				}
@@ -716,7 +716,7 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 			// go right as far as possible
 			while (x2<XRES-1)
 			{
-				if (bitmap[(x1+1)+y*XRES] || !ColorCompare(ren, x2+1, y, replaceR, replaceG, replaceB))
+				if (bitmap[(x1+1)+y*XRES] || !ColorCompare(frame, x2+1, y, replaceR, replaceG, replaceB))
 				{
 					break;
 				}
@@ -731,12 +731,12 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 
 			if (y >= 1)
 				for (x=x1; x<=x2; x++)
-					if (!bitmap[x+(y-1)*XRES] && ColorCompare(ren, x, y-1, replaceR, replaceG, replaceB))
+					if (!bitmap[x+(y-1)*XRES] && ColorCompare(frame, x, y-1, replaceR, replaceG, replaceB))
 						cs.push(x, y-1);
 
 			if (y < YRES-1)
 				for (x=x1; x<=x2; x++)
-					if (!bitmap[x+(y+1)*XRES] && ColorCompare(ren, x, y+1, replaceR, replaceG, replaceB))
+					if (!bitmap[x+(y+1)*XRES] && ColorCompare(frame, x, y+1, replaceR, replaceG, replaceB))
 						cs.push(x, y+1);
 		} while (cs.getSize() > 0);
 	}

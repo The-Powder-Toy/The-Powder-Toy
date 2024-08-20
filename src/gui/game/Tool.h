@@ -2,6 +2,7 @@
 #include "common/String.h"
 #include "common/Vec2.h"
 #include "graphics/Pixel.h"
+#include "graphics/VideoBuffer.h"
 #include "gui/interface/Point.h"
 #include "simulation/StructProperty.h"
 #include <memory>
@@ -9,7 +10,6 @@
 
 class Simulation;
 class Brush;
-class VideoBuffer;
 struct Particle;
 
 class Tool

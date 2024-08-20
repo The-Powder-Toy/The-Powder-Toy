@@ -395,13 +395,13 @@ void GameModel::BuildMenus()
 	menuList[SC_LIFE]->AddTool(new GOLTool(*this));
 
 	//Add decoration tools to menu
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_ADD, "ADD", "Colour blending: Add.", 0x000000_rgb, "DEFAULT_DECOR_ADD"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_SUBTRACT, "SUB", "Colour blending: Subtract.", 0x000000_rgb, "DEFAULT_DECOR_SUB"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_MULTIPLY, "MUL", "Colour blending: Multiply.", 0x000000_rgb, "DEFAULT_DECOR_MUL"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_DIVIDE, "DIV", "Colour blending: Divide." , 0x000000_rgb, "DEFAULT_DECOR_DIV"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_SMUDGE, "SMDG", "Smudge tool, blends surrounding deco together.", 0x000000_rgb, "DEFAULT_DECOR_SMDG"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_CLEAR, "CLR", "Erase any set decoration.", 0x000000_rgb, "DEFAULT_DECOR_CLR"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_DRAW, "SET", "Draw decoration (No blending).", 0x000000_rgb, "DEFAULT_DECOR_SET"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(view->rendererFrame, DECO_ADD, "ADD", "Colour blending: Add.", 0x000000_rgb, "DEFAULT_DECOR_ADD"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(view->rendererFrame, DECO_SUBTRACT, "SUB", "Colour blending: Subtract.", 0x000000_rgb, "DEFAULT_DECOR_SUB"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(view->rendererFrame, DECO_MULTIPLY, "MUL", "Colour blending: Multiply.", 0x000000_rgb, "DEFAULT_DECOR_MUL"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(view->rendererFrame, DECO_DIVIDE, "DIV", "Colour blending: Divide." , 0x000000_rgb, "DEFAULT_DECOR_DIV"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(view->rendererFrame, DECO_SMUDGE, "SMDG", "Smudge tool, blends surrounding deco together.", 0x000000_rgb, "DEFAULT_DECOR_SMDG"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(view->rendererFrame, DECO_CLEAR, "CLR", "Erase any set decoration.", 0x000000_rgb, "DEFAULT_DECOR_CLR"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(view->rendererFrame, DECO_DRAW, "SET", "Draw decoration (No blending).", 0x000000_rgb, "DEFAULT_DECOR_SET"));
 	SetColourSelectorColour(colour); // update tool colors
 	decoToolset[0] = GetToolFromIdentifier("DEFAULT_DECOR_SET");
 	decoToolset[1] = GetToolFromIdentifier("DEFAULT_DECOR_CLR");

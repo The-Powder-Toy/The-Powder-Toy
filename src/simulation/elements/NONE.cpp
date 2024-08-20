@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "graphics/VideoBuffer.h"
 
 static std::unique_ptr<VideoBuffer> iconGen(int wallID, Vec2<int> size);
 

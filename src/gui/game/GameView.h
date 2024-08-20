@@ -3,6 +3,7 @@
 #include "gui/interface/Window.h"
 #include "simulation/Sample.h"
 #include "graphics/FindingElement.h"
+#include "graphics/RendererFrame.h"
 #include <ctime>
 #include <deque>
 #include <memory>
@@ -234,4 +235,7 @@ public:
 	class OptionListener;
 
 	void SkipIntroText();
+	pixel GetPixelUnderMouse() const;
+
+	RendererFrame rendererFrame;
 };

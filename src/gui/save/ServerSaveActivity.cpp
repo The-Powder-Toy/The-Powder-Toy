@@ -1,5 +1,6 @@
 #include "ServerSaveActivity.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "gui/interface/Label.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Button.h"

@@ -12,6 +12,7 @@
 #include "gui/interface/DropDown.h"
 #include "PowderToySDL.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "SimulationConfig.h"
 #include <SDL.h>
 

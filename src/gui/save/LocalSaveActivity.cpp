@@ -5,6 +5,7 @@
 #include "client/ThumbnailRendererTask.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "gui/Style.h"
 
 #include "gui/dialogues/ConfirmPrompt.h"

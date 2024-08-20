@@ -915,7 +915,7 @@ ByteString GameView::TakeScreenshot(int captureUI, int fileType)
 	std::unique_ptr<VideoBuffer> screenshot;
 	if (captureUI)
 	{
-		screenshot = std::make_unique<VideoBuffer>(ren->DumpFrame());
+		screenshot = std::make_unique<VideoBuffer>(rendererFrame);
 	}
 	else
 	{
@@ -2140,11 +2140,11 @@ void GameView::OnDraw()
 		c->BeforeSimDraw();
 		ren->RenderSimulation();
 		ren->sim = nullptr;
-		ren->SetSample(c->PointTranslate(currentMouse));
 
 		c->AfterSimDraw();
 
-		std::copy_n(ren->Data(), ren->Size().X * ren->Size().Y, g->Data());
+		rendererFrame = ren->GetVideo();
+		std::copy_n(rendererFrame.data(), rendererFrame.Size().X * rendererFrame.Size().Y, g->Data());
 
 		if (showBrush && selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
 		{
@@ -2259,7 +2259,7 @@ void GameView::OnDraw()
 
 		if(recording)
 		{
-			std::vector<char> data = ren->DumpFrame().ToPPM();
+			std::vector<char> data = VideoBuffer(rendererFrame).ToPPM();
 
 			ByteString filename = ByteString::Build("recordings", PATH_SEP_CHAR, recordingFolder, PATH_SEP_CHAR, "frame_", Format::Width(recordingIndex++, 6), ".ppm");
 
@@ -2573,4 +2573,14 @@ std::optional<FindingElement> GameView::FindingElementCandidate() const
 		}
 	}
 	return std::nullopt;
+}
+
+pixel GameView::GetPixelUnderMouse() const
+{
+	auto point = c->PointTranslate(currentMouse);
+	if (!rendererFrame.Size().OriginRect().Contains(point))
+	{
+		return 0;
+	}
+	return rendererFrame[point];
 }

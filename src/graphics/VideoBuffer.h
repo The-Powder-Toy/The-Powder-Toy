@@ -26,6 +26,11 @@ public:
 	VideoBuffer(pixel const *data, Vec2<int> size, size_t rowStride);
 	VideoBuffer(Vec2<int> size);
 
+	template<class Plane>
+	VideoBuffer(const Plane &plane) : VideoBuffer(plane.data(), plane.Size())
+	{
+	}
+
 	Vec2<int> Size() const
 	{
 		return video.Size();

@@ -1,4 +1,5 @@
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "graphics/Renderer.h"
 #include "common/String.h"
 #include "common/tpt-rand.h"
@@ -73,6 +74,6 @@ int main(int argc, char *argv[])
 
 	ren->RenderSimulation();
 
-	if (auto data = ren->DumpFrame().ToPNG())
+	if (auto data = VideoBuffer(ren->GetVideo()).ToPNG())
 		Platform::WriteFile(*data, outputFilename);
 }

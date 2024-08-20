@@ -5,12 +5,8 @@
 #include "simulation/ElementClasses.h"
 #include "simulation/ElementGraphics.h"
 
-void Renderer::SetSample(Vec2<int> pos)
+void Renderer::clearScreen()
 {
-	sampleColor = GetPixel(pos);
-}
-
-void Renderer::clearScreen() {
 	if(displayMode & DISPLAY_PERS)
 	{
 		std::copy(persistentVideo.begin(), persistentVideo.end(), video.RowIterator({ 0, 0 }));
@@ -54,13 +50,6 @@ void Renderer::prepare_alpha(int size, float intensity)
 		for (y=0; y<CELL*3; y++)
 			fire_alpha[y][x] = (int)(multiplier*temp[y][x]/(CELL*CELL));
 
-}
-
-pixel Renderer::GetPixel(Vec2<int> pos) const
-{
-	if (pos.X<0 || pos.Y<0 || pos.X>=WINDOWW || pos.Y>=WINDOWH)
-		return 0;
-	return video[pos];
 }
 
 std::vector<RGB<uint8_t>> Renderer::flameTable;
@@ -128,7 +117,6 @@ Renderer::Renderer():
 	decorations_enable(1),
 	blackDecorations(false),
 	debugLines(false),
-	sampleColor(0xFFFFFFFF),
     foundElements(0),
 	mousePos(0, 0),
 	gridSize(0)
@@ -266,13 +254,6 @@ void Renderer::ResetModes()
 	SetRenderMode(RENDER_BASC | RENDER_FIRE | RENDER_SPRK | RENDER_EFFE);
 	SetDisplayMode(0);
 	SetColorMode(COLOUR_DEFAULT);
-}
-
-VideoBuffer Renderer::DumpFrame()
-{
-	VideoBuffer newBuffer(RES);
-	newBuffer.BlendImage(video.data(), 0xFF, Size().OriginRect());
-	return newBuffer;
 }
 
 template struct RasterDrawMethods<Renderer>;

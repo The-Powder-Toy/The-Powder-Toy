@@ -10,6 +10,7 @@
 
 #include "gui/dialogues/ErrorMessage.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 
 #include "SimulationConfig.h"
 #include <SDL.h>

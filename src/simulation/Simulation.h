@@ -9,6 +9,7 @@
 #include "CoordStack.h"
 #include "common/tpt-rand.h"
 #include "gravity/Gravity.h"
+#include "graphics/RendererFrame.h"
 #include "Element.h"
 #include "SimulationConfig.h"
 #include "SimulationSettings.h"
@@ -183,8 +184,8 @@ public:
 	void ApplyDecorationPoint(int x, int y, int colR, int colG, int colB, int colA, int mode, Brush const &cBrush);
 	void ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode, Brush const &cBrush);
 	void ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode);
-	bool ColorCompare(Renderer *ren, int x, int y, int replaceR, int replaceG, int replaceB);
-	void ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB);
+	bool ColorCompare(const RendererFrame &frame, int x, int y, int replaceR, int replaceG, int replaceB);
+	void ApplyDecorationFill(const RendererFrame &frame, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB);
 
 	//Drawing Tools like HEAT, AIR, and GRAV
 	int Tool(int x, int y, int tool, int brushX, int brushY, float strength = 1.0f);

@@ -1,5 +1,10 @@
 #pragma once
-#include "VideoBuffer.h"
+#include "Icons.h"
+#include "gui/interface/Point.h"
+#include "common/Plane.h"
+#include "SimulationConfig.h"
+#include "RasterDrawMethods.h"
+#include <array>
 
 class Graphics: public RasterDrawMethods<Graphics>
 {

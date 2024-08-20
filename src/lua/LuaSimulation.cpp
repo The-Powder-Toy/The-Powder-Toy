@@ -6,6 +6,7 @@
 #include "Format.h"
 #include "gui/game/GameController.h"
 #include "gui/game/GameModel.h"
+#include "gui/game/GameView.h"
 #include "gui/game/Brush.h"
 #include "gui/game/Tool.h"
 #include "simulation/Air.h"
@@ -833,8 +834,9 @@ static int floodDeco(lua_State *L)
 
 	auto *lsi = GetLSI();
 	// hilariously broken, intersects with console and all Lua graphics
-	auto loc = RGB<uint8_t>::Unpack(lsi->ren->GetPixel({ x, y }));
-	lsi->sim->ApplyDecorationFill(lsi->ren, x, y, r, g, b, a, loc.Red, loc.Green, loc.Blue);
+	auto &rendererFrame = lsi->gameModel->view->rendererFrame;
+	auto loc = RGB<uint8_t>::Unpack(rendererFrame[{ x, y }]);
+	lsi->sim->ApplyDecorationFill(rendererFrame, x, y, r, g, b, a, loc.Red, loc.Green, loc.Blue);
 	return 0;
 }
 
