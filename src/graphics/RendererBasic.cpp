@@ -5,6 +5,75 @@
 #include "simulation/ElementClasses.h"
 #include "simulation/ElementGraphics.h"
 
+const std::vector<RenderPreset> Renderer::renderModePresets = {
+	{
+		"Alternative Velocity Display",
+		RENDER_EFFE | RENDER_BASC,
+		DISPLAY_AIRC,
+		0,
+	},
+	{
+		"Velocity Display",
+		RENDER_EFFE | RENDER_BASC,
+		DISPLAY_AIRV,
+		0,
+	},
+	{
+		"Pressure Display",
+		RENDER_EFFE | RENDER_BASC,
+		DISPLAY_AIRP,
+		0,
+	},
+	{
+		"Persistent Display",
+		RENDER_EFFE | RENDER_BASC,
+		DISPLAY_PERS,
+		0,
+	},
+	{
+		"Fire Display",
+		RENDER_FIRE | RENDER_SPRK | RENDER_EFFE | RENDER_BASC,
+		0,
+		0,
+	},
+	{
+		"Blob Display",
+		RENDER_FIRE | RENDER_SPRK | RENDER_EFFE | RENDER_BLOB,
+		0,
+		0,
+	},
+	{
+		"Heat Display",
+		RENDER_BASC,
+		DISPLAY_AIRH,
+		COLOUR_HEAT,
+	},
+	{
+		"Fancy Display",
+		RENDER_FIRE | RENDER_SPRK | RENDER_GLOW | RENDER_BLUR | RENDER_EFFE | RENDER_BASC,
+		DISPLAY_WARP,
+		0,
+	},
+	{
+		"Nothing Display",
+		RENDER_BASC,
+		0,
+		0,
+	},
+	{
+		"Heat Gradient Display",
+		RENDER_BASC,
+		0,
+		COLOUR_GRAD,
+	},
+	{
+		"Life Gradient Display",
+		RENDER_BASC,
+		0,
+		COLOUR_LIFE,
+	},
+};
+
 void Renderer::clearScreen()
 {
 	if(displayMode & DISPLAY_PERS)
@@ -129,74 +198,6 @@ Renderer::Renderer():
 
 	//Set defauly display modes
 	ResetModes();
-
-	//Render mode presets. Possibly load from config in future?
-	renderModePresets.push_back({
-		"Alternative Velocity Display",
-		RENDER_EFFE | RENDER_BASC,
-		DISPLAY_AIRC,
-		0,
-	});
-	renderModePresets.push_back({
-		"Velocity Display",
-		RENDER_EFFE | RENDER_BASC,
-		DISPLAY_AIRV,
-		0,
-	});
-	renderModePresets.push_back({
-		"Pressure Display",
-		RENDER_EFFE | RENDER_BASC,
-		DISPLAY_AIRP,
-		0,
-	});
-	renderModePresets.push_back({
-		"Persistent Display",
-		RENDER_EFFE | RENDER_BASC,
-		DISPLAY_PERS,
-		0,
-	});
-	renderModePresets.push_back({
-		"Fire Display",
-		RENDER_FIRE | RENDER_SPRK | RENDER_EFFE | RENDER_BASC,
-		0,
-		0,
-	});
-	renderModePresets.push_back({
-		"Blob Display",
-		RENDER_FIRE | RENDER_SPRK | RENDER_EFFE | RENDER_BLOB,
-		0,
-		0,
-	});
-	renderModePresets.push_back({
-		"Heat Display",
-		RENDER_BASC,
-		DISPLAY_AIRH,
-		COLOUR_HEAT,
-	});
-	renderModePresets.push_back({
-		"Fancy Display",
-		RENDER_FIRE | RENDER_SPRK | RENDER_GLOW | RENDER_BLUR | RENDER_EFFE | RENDER_BASC,
-		DISPLAY_WARP,
-		0,
-	});
-	renderModePresets.push_back({
-		"Nothing Display",
-		RENDER_BASC,
-		0,
-		0,
-	});
-	renderModePresets.push_back({
-		"Heat Gradient Display",
-		RENDER_BASC,
-		0,
-		COLOUR_GRAD,
-	});
-	renderModePresets.push_back({
-		"Life Gradient Display",
-		RENDER_BASC,
-		0,
-		COLOUR_LIFE,
-	});
 
 	prepare_alpha(CELL, 1.0f);
 }

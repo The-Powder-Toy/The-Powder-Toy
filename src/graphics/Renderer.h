@@ -55,7 +55,7 @@ public:
 	uint32_t renderMode = 0;
 	uint32_t colorMode = 0;
 	uint32_t displayMode = 0;
-	std::vector<RenderPreset> renderModePresets;
+	static const std::vector<RenderPreset> renderModePresets;
 	//
 	unsigned char fire_r[YCELLS][XCELLS];
 	unsigned char fire_g[YCELLS][XCELLS];

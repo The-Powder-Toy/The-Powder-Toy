@@ -65,7 +65,7 @@ uint32_t RenderModel::GetColorMode()
 
 void RenderModel::LoadRenderPreset(int presetNum)
 {
-	RenderPreset preset = renderer->renderModePresets[presetNum];
+	RenderPreset preset = Renderer::renderModePresets[presetNum];
 	SetRenderMode(preset.renderMode);
 	SetDisplayMode(preset.displayMode);
 	SetColorMode(preset.colorMode);

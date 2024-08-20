@@ -852,7 +852,7 @@ void GameController::ToggleNewtonianGravity()
 void GameController::LoadRenderPreset(int presetNum)
 {
 	Renderer * renderer = gameModel->GetRenderer();
-	RenderPreset preset = renderer->renderModePresets[presetNum];
+	RenderPreset preset = Renderer::renderModePresets[presetNum];
 	gameModel->SetInfoTip(preset.Name);
 	renderer->SetRenderMode(preset.renderMode);
 	renderer->SetDisplayMode(preset.displayMode);
