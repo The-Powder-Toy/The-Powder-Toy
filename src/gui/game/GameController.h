@@ -2,6 +2,7 @@
 #include "lua/CommandInterfacePtr.h"
 #include "client/ClientListener.h"
 #include "client/StartupInfo.h"
+#include "common/ExplicitSingleton.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Colour.h"
 #include "gui/SavePreviewType.h"
@@ -37,7 +38,7 @@ class GameSave;
 class LoginController;
 class TagsController;
 class ConsoleController;
-class GameController: public ClientListener
+class GameController : public ClientListener, public ExplicitSingleton<GameController>
 {
 	CommandInterfacePtr commandInterface;
 
@@ -204,4 +205,5 @@ public:
 
 	void BeforeSimDraw();
 	void AfterSimDraw();
+	bool HaveSimGraphicsEventHandlers();
 };

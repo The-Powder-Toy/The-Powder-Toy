@@ -10,10 +10,10 @@ static int renderMode(lua_State *L)
 	auto *lsi = GetLSI();
 	if (lua_gettop(L))
 	{
-		lsi->ren->SetRenderMode(luaL_checkinteger(L, 1));
+		lsi->gameModel->GetRendererSettings().renderMode = luaL_checkinteger(L, 1);
 		return 0;
 	}
-	lua_pushinteger(L, lsi->ren->GetRenderMode());
+	lua_pushinteger(L, lsi->gameModel->GetRendererSettings().renderMode);
 	return 1;
 }
 
@@ -63,11 +63,10 @@ static int fireSize(lua_State *L)
 	auto *lsi = GetLSI();
 	if (lua_gettop(L) < 1)
 	{
-		lua_pushnumber(L, lsi->gameModel->GetRenderer()->GetFireIntensity());
+		lua_pushnumber(L, lsi->gameModel->GetRendererSettings().fireIntensity);
 		return 1;
 	}
-	float fireintensity = float(luaL_checknumber(L, 1));
-	lsi->gameModel->GetRenderer()->prepare_alpha(CELL, fireintensity);
+	lsi->gameModel->GetRendererSettings().fireIntensity = float(luaL_checknumber(L, 1));
 	return 0;
 }
 
@@ -76,10 +75,10 @@ static int displayMode(lua_State *L)
 	auto *lsi = GetLSI();
 	if (lua_gettop(L))
 	{
-		lsi->ren->SetDisplayMode(luaL_checkinteger(L, 1));
+		lsi->gameModel->GetRendererSettings().displayMode = luaL_checkinteger(L, 1);
 		return 0;
 	}
-	lua_pushinteger(L, lsi->ren->GetDisplayMode());
+	lua_pushinteger(L, lsi->gameModel->GetRendererSettings().displayMode);
 	return 1;
 }
 
@@ -89,10 +88,10 @@ static int colorMode(lua_State *L)
 	auto *lsi = GetLSI();
 	if (lua_gettop(L))
 	{
-		lsi->ren->SetColorMode(luaL_checkinteger(L, 1));
+		lsi->gameModel->GetRendererSettings().colorMode = luaL_checkinteger(L, 1);
 		return 0;
 	}
-	lua_pushinteger(L, lsi->ren->GetColorMode());
+	lua_pushinteger(L, lsi->gameModel->GetRendererSettings().colorMode);
 	return 1;
 }
 
@@ -117,11 +116,11 @@ static int grid(lua_State *L)
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
-		lua_pushnumber(L, lsi->ren->GetGridSize());
+		lua_pushnumber(L, lsi->gameModel->GetRendererSettings().gridSize);
 		return 1;
 	}
 	int grid = luaL_optint(L, 1, -1);
-	lsi->ren->SetGridSize(grid);
+	lsi->gameModel->GetRendererSettings().gridSize = grid;
 	return 0;
 }
 

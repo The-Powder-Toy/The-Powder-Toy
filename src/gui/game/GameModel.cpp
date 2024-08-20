@@ -91,15 +91,15 @@ GameModel::GameModel():
 		setFunc(*pref);
 	};
 	handleOldModes("Renderer.RenderMode", "Renderer.RenderModes", RENDER_FIRE | RENDER_EFFE | RENDER_BASC, [this](uint32_t renderMode) {
-		ren->SetRenderMode(renderMode);
+		rendererSettings.renderMode = renderMode;
 	});
 	handleOldModes("Renderer.DisplayMode", "Renderer.DisplayModes", 0, [this](uint32_t displayMode) {
-		ren->SetDisplayMode(displayMode);
+		rendererSettings.displayMode = displayMode;
 	});
-	ren->SetColorMode(prefs.Get("Renderer.ColourMode", UINT32_C(0)));
+	rendererSettings.colorMode = prefs.Get("Renderer.ColourMode", UINT32_C(0));
 
-	ren->gravityFieldEnabled = prefs.Get("Renderer.GravityField", false);
-	ren->decorations_enable = prefs.Get("Renderer.Decorations", true);
+	rendererSettings.gravityFieldEnabled = prefs.Get("Renderer.GravityField", false);
+	rendererSettings.decorations_enable = prefs.Get("Renderer.Decorations", true);
 
 	//Load config into simulation
 	edgeMode = prefs.Get("Simulation.EdgeMode", NUM_EDGEMODES, EDGE_VOID);
@@ -170,12 +170,12 @@ GameModel::~GameModel()
 	{
 		//Save to config:
 		Prefs::DeferWrite dw(prefs);
-		prefs.Set("Renderer.ColourMode", ren->GetColorMode());
-		prefs.Set("Renderer.DisplayMode", ren->GetDisplayMode());
-		prefs.Set("Renderer.RenderMode", ren->GetRenderMode());
-		prefs.Set("Renderer.GravityField", (bool)ren->gravityFieldEnabled);
-		prefs.Set("Renderer.Decorations", (bool)ren->decorations_enable);
-		prefs.Set("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things
+		prefs.Set("Renderer.ColourMode", rendererSettings.colorMode);
+		prefs.Set("Renderer.DisplayMode", rendererSettings.displayMode);
+		prefs.Set("Renderer.RenderMode", rendererSettings.renderMode);
+		prefs.Set("Renderer.GravityField", (bool)rendererSettings.gravityFieldEnabled);
+		prefs.Set("Renderer.Decorations", (bool)rendererSettings.decorations_enable);
+		prefs.Set("Renderer.DebugMode", rendererSettings.debugLines); //These two should always be equivalent, even though they are different things
 		prefs.Set("Simulation.NewtonianGravity", bool(sim->grav));
 		prefs.Set("Simulation.AmbientHeat", sim->aheat_enable);
 		prefs.Set("Simulation.PrettyPowder", sim->pretty_powder);
@@ -1260,9 +1260,9 @@ bool GameModel::GetPaused()
 
 void GameModel::SetDecoration(bool decorationState)
 {
-	if (ren->decorations_enable != (decorationState?1:0))
+	if (rendererSettings.decorations_enable != (decorationState?1:0))
 	{
-		ren->decorations_enable = decorationState?1:0;
+		rendererSettings.decorations_enable = decorationState?1:0;
 		notifyDecorationChanged();
 		UpdateQuickOptions();
 		if (decorationState)
@@ -1274,7 +1274,7 @@ void GameModel::SetDecoration(bool decorationState)
 
 bool GameModel::GetDecoration()
 {
-	return ren->decorations_enable?true:false;
+	return rendererSettings.decorations_enable?true:false;
 }
 
 void GameModel::SetAHeatEnable(bool aHeat)
@@ -1318,7 +1318,7 @@ bool GameModel::GetNewtonianGrvity()
 
 void GameModel::ShowGravityGrid(bool showGrid)
 {
-	ren->gravityFieldEnabled = showGrid;
+	rendererSettings.gravityFieldEnabled = showGrid;
 	if (showGrid)
 		SetInfoTip("Gravity Grid: On");
 	else
@@ -1327,7 +1327,7 @@ void GameModel::ShowGravityGrid(bool showGrid)
 
 bool GameModel::GetGravityGrid()
 {
-	return ren->gravityFieldEnabled;
+	return rendererSettings.gravityFieldEnabled;
 }
 
 void GameModel::FrameStep(int frames)

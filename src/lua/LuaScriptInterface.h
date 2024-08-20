@@ -62,6 +62,8 @@ class LuaScriptInterface : public CommandInterface
 {
 	LuaStatePtr luaState;
 
+	Renderer *ren;
+
 public:
 	lua_State *L{};
 
@@ -70,7 +72,18 @@ public:
 	ui::Window *window;
 	Simulation *sim;
 	Graphics *g;
-	Renderer *ren;
+
+	std::variant<Graphics *, Renderer *> GetGraphics()
+	{
+		if (eventTraits & eventTraitSimGraphics)
+		{
+			// This is ok without calling gameModel->view->PauseRendererThread() because
+			// the renderer thread gets paused anyway if there are handlers
+			// installed for eventTraitSimGraphics and *SimDraw events.
+			return ren;
+		}
+		return g;
+	}
 
 	std::vector<CustomElement> customElements; // must come after luaState
 

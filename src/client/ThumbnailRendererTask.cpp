@@ -29,7 +29,7 @@ ThumbnailRendererTask::~ThumbnailRendererTask()
 
 bool ThumbnailRendererTask::doWork()
 {
-	thumbnail = SaveRenderer::Ref().Render(save.get(), decorations, fire);
+	thumbnail = SaveRenderer::Ref().Render(save.get(), decorations, fire, RendererSettings{});
 	if (thumbnail)
 	{
 		thumbnail->ResizeToFit(size, true);

@@ -2,10 +2,9 @@
 #include "Icons.h"
 #include "RasterDrawMethods.h"
 #include "gui/game/RenderPreset.h"
-#include "gui/interface/Point.h"
+#include "RendererSettings.h"
 #include "common/tpt-rand.h"
 #include "RendererFrame.h"
-#include "FindingElement.h"
 #include <cstdint>
 #include <optional>
 #include <memory>
@@ -13,13 +12,13 @@
 #include <vector>
 
 struct RenderPreset;
-struct RenderableSimulation;
 class Renderer;
+struct RenderableSimulation;
 struct Particle;
 
 struct GraphicsFuncContext
 {
-	const Renderer *ren;
+	const RendererSettings *ren;
 	const RenderableSimulation *sim;
 	RNG rng;
 	const Particle *pipeSubcallCpart;
@@ -28,7 +27,7 @@ struct GraphicsFuncContext
 
 int HeatToColour(float temp);
 
-class Renderer: public RasterDrawMethods<Renderer>
+class Renderer : private RendererSettings, public RasterDrawMethods<Renderer>
 {
 	RendererFrame video;
 	std::array<pixel, WINDOW.X * RES.Y> persistentVideo;
@@ -41,39 +40,24 @@ class Renderer: public RasterDrawMethods<Renderer>
 
 	friend struct RasterDrawMethods<Renderer>;
 
-	float fireIntensity = 1;
+	RNG rng;
+	unsigned char fire_r[YCELLS][XCELLS];
+	unsigned char fire_g[YCELLS][XCELLS];
+	unsigned char fire_b[YCELLS][XCELLS];
+	unsigned int fire_alpha[CELL*3][CELL*3];
 
 public:
-	RNG rng;
-	const RenderableSimulation *sim = nullptr;
-
 	const RendererFrame &GetVideo() const
 	{
 		return video;
 	}
 
-	uint32_t renderMode = 0;
-	uint32_t colorMode = 0;
-	uint32_t displayMode = 0;
+	const RenderableSimulation *sim = nullptr;
+
+	void ApplySettings(const RendererSettings &newSettings);
+
 	static const std::vector<RenderPreset> renderModePresets;
-	//
-	unsigned char fire_r[YCELLS][XCELLS];
-	unsigned char fire_g[YCELLS][XCELLS];
-	unsigned char fire_b[YCELLS][XCELLS];
-	unsigned int fire_alpha[CELL*3][CELL*3];
-	//
-	bool gravityZonesEnabled;
-	bool gravityFieldEnabled;
-	int decorations_enable;
-	bool blackDecorations;
-	bool debugLines;
-	std::optional<FindingElement> findingElement;
-	int foundElements;
 
-	//Mouse position for debug information
-	ui::Point mousePos;
-
-	//Renderers
 	void RenderSimulation();
 
 	void DrawBlob(Vec2<int> pos, RGB<uint8_t> colour);
@@ -81,10 +65,6 @@ public:
 	void DrawSigns();
 	void render_gravlensing(const RendererFrame &source);
 	void render_fire();
-	float GetFireIntensity() const
-	{
-		return fireIntensity;
-	}
 	void prepare_alpha(int size, float intensity);
 	void render_parts();
 	void draw_grav_zones();
@@ -94,22 +74,6 @@ public:
 
 	void ClearAccumulation();
 	void clearScreen();
-
-	void draw_icon(int x, int y, Icon icon);
-
-	//...
-	//Display mode modifiers
-	void SetRenderMode(uint32_t newRenderMode);
-	uint32_t GetRenderMode();
-	void SetDisplayMode(uint32_t newDisplayMode);
-	uint32_t GetDisplayMode();
-	void SetColorMode(uint32_t newColorMode);
-	uint32_t GetColorMode();
-
-	void ResetModes();
-
-	int GetGridSize() { return gridSize; }
-	void SetGridSize(int value) { gridSize = value; }
 
 	static std::unique_ptr<VideoBuffer> WallIcon(int wallID, Vec2<int> size);
 
@@ -140,7 +104,4 @@ public:
 	RENDERER_TABLE(firwTable)
 #undef RENDERER_TABLE
 	static void PopulateTables();
-
-private:
-	int gridSize;
 };

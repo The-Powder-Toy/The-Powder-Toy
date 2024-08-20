@@ -11,16 +11,6 @@ static int32_t int32Truncate(double n)
 	return int32_t(n);
 }
 
-static std::variant<Graphics *, Renderer *> currentGraphics()
-{
-	auto *lsi = GetLSI();
-	if (lsi->eventTraits & eventTraitSimGraphics)
-	{
-		return lsi->ren;
-	}
-	return lsi->g;
-}
-
 static int textSize(lua_State *L)
 {
 	auto text = tpt_lua_optString(L, 1, "");
@@ -51,7 +41,7 @@ static int drawText(lua_State *L)
 
 	std::visit([x, y, r, g, b, a, &text](auto p) {
 		p->BlendText({ x, y }, text, RGBA<uint8_t>(r, g, b, a));
-	}, currentGraphics());
+	}, GetLSI()->GetGraphics());
 	return 0;
 }
 
@@ -73,7 +63,7 @@ static int drawPixel(lua_State *L)
 	else if (a > 255) a = 255;
 	std::visit([x, y, r, g, b, a](auto p) {
 		p->BlendPixel({ x, y }, RGBA<uint8_t>(r, g, b, a));
-	}, currentGraphics());
+	}, GetLSI()->GetGraphics());
 	return 0;
 }
 
@@ -106,7 +96,7 @@ static int drawLine(lua_State *L)
 		{
 			p->BlendLine({ x1, y1 }, { x2, y2 }, RGBA<uint8_t>(r, g, b, a));
 		}
-	}, currentGraphics());
+	}, GetLSI()->GetGraphics());
 	return 0;
 }
 
@@ -139,7 +129,7 @@ static int drawRect(lua_State *L)
 		{
 			p->BlendRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGBA<uint8_t>(r, g, b, a));
 		}
-	}, currentGraphics());
+	}, GetLSI()->GetGraphics());
 	return 0;
 }
 
@@ -172,7 +162,7 @@ static int fillRect(lua_State *L)
 		{
 			p->BlendFilledRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGBA<uint8_t>(r, g, b, a));
 		}
-	}, currentGraphics());
+	}, GetLSI()->GetGraphics());
 	return 0;
 }
 
@@ -198,7 +188,7 @@ static int drawCircle(lua_State *L)
 
 	std::visit([x, y, rx, ry, r, g, b, a](auto p) {
 		p->BlendEllipse({ x, y }, { abs(rx), abs(ry) }, RGBA<uint8_t>(r, g, b, a));
-	}, currentGraphics());
+	}, GetLSI()->GetGraphics());
 	return 0;
 }
 
@@ -224,7 +214,7 @@ static int fillCircle(lua_State *L)
 
 	std::visit([x, y, rx, ry, r, g, b, a](auto p) {
 		p->BlendFilledEllipse({ x, y }, { abs(rx), abs(ry) }, RGBA<uint8_t>(r, g, b, a));
-	}, currentGraphics());
+	}, GetLSI()->GetGraphics());
 	return 0;
 }
 

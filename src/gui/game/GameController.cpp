@@ -271,9 +271,9 @@ void GameController::Install()
 void GameController::AdjustGridSize(int direction)
 {
 	if(direction > 0)
-		gameModel->GetRenderer()->SetGridSize((gameModel->GetRenderer()->GetGridSize()+1)%10);
+		gameModel->GetRendererSettings().gridSize = (gameModel->GetRendererSettings().gridSize+1)%10;
 	else
-		gameModel->GetRenderer()->SetGridSize((gameModel->GetRenderer()->GetGridSize()+9)%10);
+		gameModel->GetRendererSettings().gridSize = (gameModel->GetRendererSettings().gridSize+9)%10;
 }
 
 void GameController::InvertAirSim()
@@ -851,19 +851,19 @@ void GameController::ToggleNewtonianGravity()
 
 void GameController::LoadRenderPreset(int presetNum)
 {
-	Renderer * renderer = gameModel->GetRenderer();
+	auto &settings = gameModel->GetRendererSettings();
 	RenderPreset preset = Renderer::renderModePresets[presetNum];
 	gameModel->SetInfoTip(preset.Name);
-	renderer->SetRenderMode(preset.renderMode);
-	renderer->SetDisplayMode(preset.displayMode);
-	renderer->SetColorMode(preset.colorMode);
+	settings.renderMode = preset.renderMode;
+	settings.displayMode = preset.displayMode;
+	settings.colorMode = preset.colorMode;
 }
 
 void GameController::Update()
 {
 	auto &sd = SimulationData::CRef();
 	ui::Point pos = gameView->GetMousePosition();
-	gameModel->GetRenderer()->mousePos = PointTranslate(pos);
+	gameModel->GetRendererSettings().mousePos = PointTranslate(pos);
 	if (pos.X < XRES && pos.Y < YRES)
 		gameView->SetSample(gameModel->GetSimulation()->GetSample(PointTranslate(pos).X, PointTranslate(pos).Y));
 	else
@@ -1106,7 +1106,7 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 	if (gameModel->GetActiveMenu() == SC_DECO && toolSelection == 2)
 		toolSelection = 0;
 	gameModel->SetActiveTool(toolSelection, tool);
-	gameModel->GetRenderer()->gravityZonesEnabled = false;
+	gameModel->GetRendererSettings().gravityZonesEnabled = false;
 	if (toolSelection == 3)
 		gameModel->GetSimulation()->replaceModeSelected = tool->ToolID;
 	gameModel->SetLastTool(tool);
@@ -1115,7 +1115,7 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 		auto *activeTool = gameModel->GetActiveTool(i);
 		if (activeTool && activeTool->Identifier == "DEFAULT_WL_GRVTY")
 		{
-			gameModel->GetRenderer()->gravityZonesEnabled = true;
+			gameModel->GetRendererSettings().gravityZonesEnabled = true;
 		}
 	}
 	if (tool->Identifier == "DEFAULT_UI_PROPERTY")
@@ -1404,7 +1404,7 @@ void GameController::HideConsole()
 
 void GameController::OpenRenderOptions()
 {
-	renderOptions = new RenderController(gameModel->GetSimulation(), gameModel->GetRenderer(), NULL);
+	renderOptions = new RenderController(gameModel->GetSimulation(), gameModel->GetRenderer(), &gameModel->GetRendererSettings(), NULL);
 	ui::Engine::Ref().ShowWindow(renderOptions->GetView());
 }
 
@@ -1726,4 +1726,9 @@ void GameController::BeforeSimDraw()
 void GameController::AfterSimDraw()
 {
 	commandInterface->HandleEvent(AfterSimDrawEvent{});
+}
+
+bool GameController::HaveSimGraphicsEventHandlers()
+{
+	return commandInterface->HaveSimGraphicsEventHandlers();
 }

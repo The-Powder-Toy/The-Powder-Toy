@@ -4,11 +4,13 @@
 
 class RenderView;
 class Renderer;
+struct RendererSettings;
 class Simulation;
 class RenderModel
 {
 	std::vector<RenderView*> observers;
-	Renderer * renderer;
+	Renderer * renderer = nullptr;
+	RendererSettings *rendererSettings = nullptr;
 	Simulation *sim = nullptr;
 	void notifyRendererChanged();
 	void notifySimulationChanged();
@@ -16,11 +18,11 @@ class RenderModel
 	void notifyDisplayChanged();
 	void notifyColourChanged();
 public:
-	RenderModel();
 	Renderer * GetRenderer();
+	RendererSettings *GetRendererSettings();
 	Simulation *GetSimulation();
 	void AddObserver(RenderView * observer);
-	void SetRenderer(Renderer * ren);
+	void SetRenderer(Renderer * ren, RendererSettings *newRendererSettings);
 	void SetSimulation(Simulation *newSim);
 	void SetRenderMode(uint32_t newRenderMode);
 	uint32_t GetRenderMode();

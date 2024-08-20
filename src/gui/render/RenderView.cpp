@@ -1,18 +1,16 @@
 #include "RenderView.h"
-
 #include "simulation/ElementGraphics.h"
 #include "simulation/SimulationData.h"
 #include "simulation/Simulation.h"
-
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
 #include "graphics/VideoBuffer.h"
-
 #include "RenderController.h"
 #include "RenderModel.h"
-
 #include "gui/interface/Checkbox.h"
 #include "gui/interface/Button.h"
+#include "gui/game/GameController.h"
+#include "gui/game/GameView.h"
 
 class ModeCheckbox : public ui::Checkbox
 {
@@ -144,6 +142,7 @@ void RenderView::OnTryExit(ExitMethod method)
 void RenderView::NotifyRendererChanged(RenderModel * sender)
 {
 	ren = sender->GetRenderer();
+	rendererSettings = sender->GetRendererSettings();
 }
 
 void RenderView::NotifySimulationChanged(RenderModel * sender)
@@ -183,20 +182,14 @@ void RenderView::OnDraw()
 {
 	Graphics * g = GetGraphics();
 	g->DrawFilledRect(WINDOW.OriginRect(), 0x000000_rgb);
-	if(ren)
+	auto *view = GameController::Ref().GetView();
+	view->PauseRendererThread();
+	ren->ApplySettings(*rendererSettings);
+	view->RenderSimulation(*sim, true);
+	for (auto y = 0; y < YRES; ++y)
 	{
-		// we're the main thread, we may write graphicscache
-		auto &sd = SimulationData::Ref();
-		std::unique_lock lk(sd.elementGraphicsMx);
-		ren->sim = sim;
-		ren->clearScreen();
-		ren->RenderSimulation();
-		ren->sim = nullptr;
-		for (auto y = 0; y < YRES; ++y)
-		{
-			auto &video = ren->GetVideo();
-			std::copy_n(video.data() + video.Size().X * y, video.Size().X, g->Data() + g->Size().X * y);
-		}
+		auto &video = ren->GetVideo();
+		std::copy_n(video.data() + video.Size().X * y, video.Size().X, g->Data() + g->Size().X * y);
 	}
 	g->DrawLine({ 0, YRES }, { XRES-1, YRES }, 0xC8C8C8_rgb);
 	g->DrawLine({ line1, YRES }, { line1, WINDOWH }, 0xC8C8C8_rgb);

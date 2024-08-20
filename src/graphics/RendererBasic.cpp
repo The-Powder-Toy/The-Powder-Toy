@@ -180,15 +180,7 @@ void Renderer::PopulateTables()
 	}
 }
 
-Renderer::Renderer():
-	gravityZonesEnabled(false),
-	gravityFieldEnabled(false),
-	decorations_enable(1),
-	blackDecorations(false),
-	debugLines(false),
-    foundElements(0),
-	mousePos(0, 0),
-	gridSize(0)
+Renderer::Renderer()
 {
 	PopulateTables();
 
@@ -197,9 +189,8 @@ Renderer::Renderer():
 	memset(fire_b, 0, sizeof(fire_b));
 
 	//Set defauly display modes
-	ResetModes();
-
 	prepare_alpha(CELL, 1.0f);
+	ClearAccumulation();
 }
 
 void Renderer::ClearAccumulation()
@@ -210,51 +201,17 @@ void Renderer::ClearAccumulation()
 	std::fill(persistentVideo.begin(), persistentVideo.end(), 0);
 }
 
-void Renderer::SetRenderMode(uint32_t newRenderMode)
+void Renderer::ApplySettings(const RendererSettings &newSettings)
 {
-	int oldRenderMode = renderMode;
-	renderMode = newRenderMode;
-	if (!(renderMode & FIREMODE) && (oldRenderMode & FIREMODE))
+	if (!(newSettings.renderMode & FIREMODE) && (renderMode & FIREMODE))
 	{
 		ClearAccumulation();
 	}
-}
-
-uint32_t Renderer::GetRenderMode()
-{
-	return renderMode;
-}
-
-void Renderer::SetDisplayMode(uint32_t newDisplayMode)
-{
-	int oldDisplayMode = displayMode;
-	displayMode = newDisplayMode;
-	if (!(displayMode & DISPLAY_PERS) && (oldDisplayMode & DISPLAY_PERS))
+	if (!(newSettings.displayMode & DISPLAY_PERS) && (displayMode & DISPLAY_PERS))
 	{
 		ClearAccumulation();
 	}
-}
-
-uint32_t Renderer::GetDisplayMode()
-{
-	return displayMode;
-}
-
-void Renderer::SetColorMode(uint32_t newColorMode)
-{
-	colorMode = newColorMode;
-}
-
-uint32_t Renderer::GetColorMode()
-{
-	return colorMode;
-}
-
-void Renderer::ResetModes()
-{
-	SetRenderMode(RENDER_BASC | RENDER_FIRE | RENDER_SPRK | RENDER_EFFE);
-	SetDisplayMode(0);
-	SetColorMode(COLOUR_DEFAULT);
+	static_cast<RendererSettings &>(*this) = newSettings;
 }
 
 template struct RasterDrawMethods<Renderer>;

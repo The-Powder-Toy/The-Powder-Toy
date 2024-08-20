@@ -575,7 +575,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		if(save->GetGameSave())
 		{
 			missingElements = save->GetGameSave()->missingElements;
-			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
+			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), false, true, RendererSettings{});
 			if (savePreview)
 				savePreview->ResizeToFit(RES / 2, true);
 			missingElementsButton->Visible = missingElements;

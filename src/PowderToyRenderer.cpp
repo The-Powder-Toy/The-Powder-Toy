@@ -52,8 +52,10 @@ int main(int argc, char *argv[])
 		sim->Load(gameSave.get(), true, { 0, 0 });
 
 		//Render save
-		ren->decorations_enable = true;
-		ren->blackDecorations = true;
+		RendererSettings rendererSettings;
+		rendererSettings.decorations_enable = true;
+		rendererSettings.blackDecorations = true;
+		ren->ApplySettings(rendererSettings);
 
 		int frame = 15;
 		while(frame)

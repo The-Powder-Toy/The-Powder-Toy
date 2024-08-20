@@ -203,7 +203,6 @@ GameView::GameView():
 	recordingFolder(0),
 	currentPoint(ui::Point(0, 0)),
 	lastPoint(ui::Point(0, 0)),
-	ren(NULL),
 	activeBrush(NULL),
 	saveSimulationButtonEnabled(false),
 	saveReuploadAllowed(true),
@@ -332,6 +331,7 @@ GameView::GameView():
 
 GameView::~GameView()
 {
+	StopRendererThread();
 	if(!colourPicker->GetParentWindow())
 		delete colourPicker;
 
@@ -470,8 +470,7 @@ bool GameView::GetBrushEnable()
 void GameView::SetDebugHUD(bool mode)
 {
 	showDebug = mode;
-	if (ren)
-		ren->debugLines = showDebug;
+	rendererSettings->debugLines = showDebug;
 }
 
 bool GameView::GetDebugHUD()
@@ -518,9 +517,10 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 
 	decoBrush = sender->GetActiveTool(0)->Identifier.BeginsWith("DEFAULT_DECOR_");
 
-	if (sender->GetRenderer()->findingElement)
+	auto &settings = sender->GetRendererSettings();
+	if (settings.findingElement)
 	{
-		ren->findingElement = FindingElementCandidate();
+		settings.findingElement = FindingElementCandidate();
 	}
 }
 
@@ -734,6 +734,7 @@ void GameView::NotifyColourSelectorColourChanged(GameModel * sender)
 void GameView::NotifyRendererChanged(GameModel * sender)
 {
 	ren = sender->GetRenderer();
+	rendererSettings = &sender->GetRendererSettings();
 }
 
 void GameView::NotifySimulationChanged(GameModel * sender)
@@ -1443,13 +1444,13 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		if (ctrl)
 		{
 			auto findingElementCandidate = FindingElementCandidate();
-			if (ren->findingElement == findingElementCandidate)
+			if (rendererSettings->findingElement == findingElementCandidate)
 			{
-				ren->findingElement = std::nullopt;
+				rendererSettings->findingElement = std::nullopt;
 			}
 			else
 			{
-				ren->findingElement = findingElementCandidate;
+				rendererSettings->findingElement = findingElementCandidate;
 			}
 		}
 		else
@@ -1982,7 +1983,7 @@ void GameView::NotifyTransformedPlaceSaveChanged(GameModel *sender)
 {
 	if (sender->GetTransformedPlaceSave())
 	{
-		placeSaveThumb = SaveRenderer::Ref().Render(sender->GetTransformedPlaceSave(), true, true, sender->GetRenderer());
+		placeSaveThumb = SaveRenderer::Ref().Render(sender->GetTransformedPlaceSave(), true, true, sender->GetRendererSettings());
 		selectMode = PlaceSave;
 		selectPoint2 = mousePosition;
 	}
@@ -2126,165 +2127,188 @@ void GameView::SetSaveButtonTooltips()
 		saveSimulationButton->SetToolTips("Re-upload the current simulation", "Upload a new simulation. Hold Ctrl to save offline.");
 }
 
+void GameView::RenderSimulation(const RenderableSimulation &sim, bool handleEvents)
+{
+	ren->sim = &sim;
+	ren->clearScreen();
+	ren->draw_air();
+	if (handleEvents)
+	{
+		c->BeforeSimDraw();
+	}
+	{
+		// we may write graphicscache here
+		auto &sd = SimulationData::Ref();
+		std::unique_lock lk(sd.elementGraphicsMx);
+		ren->RenderSimulation();
+	}
+	if (handleEvents)
+	{
+		c->AfterSimDraw();
+	}
+	ren->sim = nullptr;
+}
+
 void GameView::OnDraw()
 {
 	Graphics * g = GetGraphics();
-	if (ren)
+
+	auto wantRendererThread = !c->HaveSimGraphicsEventHandlers();
+	if (wantRendererThread)
 	{
-		// we're the main thread, we may write graphicscache
-		auto &sd = SimulationData::Ref();
-		std::unique_lock lk(sd.elementGraphicsMx);
-		ren->sim = sim;
-		ren->clearScreen();
-		ren->draw_air();
-		c->BeforeSimDraw();
-		ren->RenderSimulation();
-		ren->sim = nullptr;
-
-		c->AfterSimDraw();
-
+		StartRendererThread();
+		WaitForRendererThread();
 		rendererFrame = ren->GetVideo();
-		std::copy_n(rendererFrame.data(), rendererFrame.Size().X * rendererFrame.Size().Y, g->Data());
+		DispatchRendererThread();
+	}
+	else
+	{
+		PauseRendererThread();
+		ren->ApplySettings(*rendererSettings);
+		RenderSimulation(*sim, true);
+		rendererFrame = ren->GetVideo();
+	}
 
-		if (showBrush && selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
+	std::copy_n(rendererFrame.data(), rendererFrame.Size().X * rendererFrame.Size().Y, g->Data());
+
+	if (showBrush && selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
+	{
+		ui::Point finalCurrentMouse = windTool ? c->PointTranslateNoClamp(currentMouse) : c->PointTranslate(currentMouse);
+		ui::Point initialDrawPoint = drawPoint1;
+
+		if (wallBrush)
 		{
-			ui::Point finalCurrentMouse = windTool ? c->PointTranslateNoClamp(currentMouse) : c->PointTranslate(currentMouse);
-			ui::Point initialDrawPoint = drawPoint1;
-
-			if (wallBrush)
-			{
-				finalCurrentMouse = c->NormaliseBlockCoord(finalCurrentMouse);
-				initialDrawPoint = c->NormaliseBlockCoord(initialDrawPoint);
-			}
-
-			if (drawMode == DrawRect && isMouseDown)
-			{
-				if (drawSnap)
-				{
-					finalCurrentMouse = rectSnapCoords(c->PointTranslate(initialDrawPoint), finalCurrentMouse);
-				}
-				if (wallBrush)
-				{
-					if (finalCurrentMouse.X > initialDrawPoint.X)
-						finalCurrentMouse.X += CELL-1;
-					else
-						initialDrawPoint.X += CELL-1;
-
-					if (finalCurrentMouse.Y > initialDrawPoint.Y)
-						finalCurrentMouse.Y += CELL-1;
-					else
-						initialDrawPoint.Y += CELL-1;
-				}
-				activeBrush->RenderRect(g, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
-			}
-			else if (drawMode == DrawLine && isMouseDown)
-			{
-				if (drawSnap)
-				{
-					finalCurrentMouse = lineSnapCoords(c->PointTranslate(initialDrawPoint), finalCurrentMouse);
-				}
-				activeBrush->RenderLine(g, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
-			}
-			else if (drawMode == DrawFill)// || altBehaviour)
-			{
-				if (!decoBrush)
-					activeBrush->RenderFill(g, finalCurrentMouse);
-			}
-			if (drawMode == DrawPoints || drawMode==DrawLine || (drawMode == DrawRect && !isMouseDown))
-			{
-				if (wallBrush)
-				{
-					ui::Point finalBrushRadius = c->NormaliseBlockCoord(activeBrush->GetRadius());
-					auto topLeft     = finalCurrentMouse - finalBrushRadius;
-					auto bottomRight = finalCurrentMouse + finalBrushRadius + Vec2{ CELL - 1, CELL - 1 };
-					g->XorLine({     topLeft.X,     topLeft.Y     }, { bottomRight.X,     topLeft.Y     });
-					g->XorLine({     topLeft.X, bottomRight.Y     }, { bottomRight.X, bottomRight.Y     });
-					g->XorLine({     topLeft.X,     topLeft.Y + 1 }, {     topLeft.X, bottomRight.Y - 1 }); // offset by 1 so the corners don't get xor'd twice
-					g->XorLine({ bottomRight.X,     topLeft.Y + 1 }, { bottomRight.X, bottomRight.Y - 1 }); // offset by 1 so the corners don't get xor'd twice
-				}
-				else
-				{
-					activeBrush->RenderPoint(g, finalCurrentMouse);
-				}
-			}
+			finalCurrentMouse = c->NormaliseBlockCoord(finalCurrentMouse);
+			initialDrawPoint = c->NormaliseBlockCoord(initialDrawPoint);
 		}
 
-		if(selectMode!=SelectNone)
+		if (drawMode == DrawRect && isMouseDown)
 		{
-			if(selectMode==PlaceSave)
+			if (drawSnap)
 			{
-				if(placeSaveThumb && selectPoint2.X!=-1)
-				{
-					auto rect = RectSized(PlaceSavePos() * CELL, placeSaveThumb->Size());
-					g->BlendImage(placeSaveThumb->Data(), 0x80, rect);
-					g->XorDottedRect(rect);
-				}
+				finalCurrentMouse = rectSnapCoords(c->PointTranslate(initialDrawPoint), finalCurrentMouse);
+			}
+			if (wallBrush)
+			{
+				if (finalCurrentMouse.X > initialDrawPoint.X)
+					finalCurrentMouse.X += CELL-1;
+				else
+					initialDrawPoint.X += CELL-1;
+
+				if (finalCurrentMouse.Y > initialDrawPoint.Y)
+					finalCurrentMouse.Y += CELL-1;
+				else
+					initialDrawPoint.Y += CELL-1;
+			}
+			activeBrush->RenderRect(g, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
+		}
+		else if (drawMode == DrawLine && isMouseDown)
+		{
+			if (drawSnap)
+			{
+				finalCurrentMouse = lineSnapCoords(c->PointTranslate(initialDrawPoint), finalCurrentMouse);
+			}
+			activeBrush->RenderLine(g, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
+		}
+		else if (drawMode == DrawFill)// || altBehaviour)
+		{
+			if (!decoBrush)
+				activeBrush->RenderFill(g, finalCurrentMouse);
+		}
+		if (drawMode == DrawPoints || drawMode==DrawLine || (drawMode == DrawRect && !isMouseDown))
+		{
+			if (wallBrush)
+			{
+				ui::Point finalBrushRadius = c->NormaliseBlockCoord(activeBrush->GetRadius());
+				auto topLeft     = finalCurrentMouse - finalBrushRadius;
+				auto bottomRight = finalCurrentMouse + finalBrushRadius + Vec2{ CELL - 1, CELL - 1 };
+				g->XorLine({     topLeft.X,     topLeft.Y     }, { bottomRight.X,     topLeft.Y     });
+				g->XorLine({     topLeft.X, bottomRight.Y     }, { bottomRight.X, bottomRight.Y     });
+				g->XorLine({     topLeft.X,     topLeft.Y + 1 }, {     topLeft.X, bottomRight.Y - 1 }); // offset by 1 so the corners don't get xor'd twice
+				g->XorLine({ bottomRight.X,     topLeft.Y + 1 }, { bottomRight.X, bottomRight.Y - 1 }); // offset by 1 so the corners don't get xor'd twice
 			}
 			else
 			{
-				if(selectPoint1.X==-1)
-				{
-					g->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, YRES }), 0x000000_rgb .WithAlpha(100));
-				}
-				else
-				{
-					int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
-					int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
-					int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
-					int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
-
-					if(x2>XRES-1)
-						x2 = XRES-1;
-					if(y2>YRES-1)
-						y2 = YRES-1;
-
-					g->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, y1 }), 0x000000_rgb .WithAlpha(100));
-					g->BlendFilledRect(RectSized(Vec2{ 0, y2+1 }, Vec2{ XRES, YRES-y2-1 }), 0x000000_rgb .WithAlpha(100));
-
-					g->BlendFilledRect(RectSized(Vec2{ 0, y1 }, Vec2{ x1, (y2-y1)+1 }), 0x000000_rgb .WithAlpha(100));
-					g->BlendFilledRect(RectSized(Vec2{ x2+1, y1 }, Vec2{ XRES-x2-1, (y2-y1)+1 }), 0x000000_rgb .WithAlpha(100));
-
-					g->XorDottedRect(RectBetween(Vec2{ x1, y1 }, Vec2{ x2, y2 }));
-				}
+				activeBrush->RenderPoint(g, finalCurrentMouse);
 			}
 		}
+	}
 
-		g->RenderZoom();
-
-		if (doScreenshot)
+	if(selectMode!=SelectNone)
+	{
+		if(selectMode==PlaceSave)
 		{
-			doScreenshot = false;
-			TakeScreenshot(0, 0);
-		}
-
-		if(recording)
-		{
-			std::vector<char> data = VideoBuffer(rendererFrame).ToPPM();
-
-			ByteString filename = ByteString::Build("recordings", PATH_SEP_CHAR, recordingFolder, PATH_SEP_CHAR, "frame_", Format::Width(recordingIndex++, 6), ".ppm");
-
-			Platform::WriteFile(data, filename);
-		}
-
-		if (logEntries.size())
-		{
-			int startX = 20;
-			int startY = YRES-20;
-			std::deque<std::pair<String, int> >::iterator iter;
-			for(iter = logEntries.begin(); iter != logEntries.end(); iter++)
+			if(placeSaveThumb && selectPoint2.X!=-1)
 			{
-				String message = (*iter).first;
-				int alpha = std::min((*iter).second, 255);
-				if (alpha <= 0) //erase this and everything older
-				{
-					logEntries.erase(iter, logEntries.end());
-					break;
-				}
-				startY -= 14;
-				g->BlendFilledRect(RectSized(Vec2{ startX-3, startY-3 }, Vec2{ Graphics::TextSize(message).X + 5, 14 }), 0x000000_rgb .WithAlpha(std::min(100, alpha)));
-				g->BlendText({ startX, startY }, message, 0xFFFFFF_rgb .WithAlpha(alpha));
-				(*iter).second -= 3;
+				auto rect = RectSized(PlaceSavePos() * CELL, placeSaveThumb->Size());
+				g->BlendImage(placeSaveThumb->Data(), 0x80, rect);
+				g->XorDottedRect(rect);
 			}
+		}
+		else
+		{
+			if(selectPoint1.X==-1)
+			{
+				g->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, YRES }), 0x000000_rgb .WithAlpha(100));
+			}
+			else
+			{
+				int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
+				int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
+				int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
+				int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
+
+				if(x2>XRES-1)
+					x2 = XRES-1;
+				if(y2>YRES-1)
+					y2 = YRES-1;
+
+				g->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, y1 }), 0x000000_rgb .WithAlpha(100));
+				g->BlendFilledRect(RectSized(Vec2{ 0, y2+1 }, Vec2{ XRES, YRES-y2-1 }), 0x000000_rgb .WithAlpha(100));
+
+				g->BlendFilledRect(RectSized(Vec2{ 0, y1 }, Vec2{ x1, (y2-y1)+1 }), 0x000000_rgb .WithAlpha(100));
+				g->BlendFilledRect(RectSized(Vec2{ x2+1, y1 }, Vec2{ XRES-x2-1, (y2-y1)+1 }), 0x000000_rgb .WithAlpha(100));
+
+				g->XorDottedRect(RectBetween(Vec2{ x1, y1 }, Vec2{ x2, y2 }));
+			}
+		}
+	}
+
+	g->RenderZoom();
+
+	if (doScreenshot)
+	{
+		doScreenshot = false;
+		TakeScreenshot(0, 0);
+	}
+
+	if(recording)
+	{
+		std::vector<char> data = VideoBuffer(rendererFrame).ToPPM();
+
+		ByteString filename = ByteString::Build("recordings", PATH_SEP_CHAR, recordingFolder, PATH_SEP_CHAR, "frame_", Format::Width(recordingIndex++, 6), ".ppm");
+
+		Platform::WriteFile(data, filename);
+	}
+
+	if (logEntries.size())
+	{
+		int startX = 20;
+		int startY = YRES-20;
+		std::deque<std::pair<String, int> >::iterator iter;
+		for(iter = logEntries.begin(); iter != logEntries.end(); iter++)
+		{
+			String message = (*iter).first;
+			int alpha = std::min((*iter).second, 255);
+			if (alpha <= 0) //erase this and everything older
+			{
+				logEntries.erase(iter, logEntries.end());
+				break;
+			}
+			startY -= 14;
+			g->BlendFilledRect(RectSized(Vec2{ startX-3, startY-3 }, Vec2{ Graphics::TextSize(message).X + 5, 14 }), 0x000000_rgb .WithAlpha(std::min(100, alpha)));
+			g->BlendText({ startX, startY }, message, 0xFFFFFF_rgb .WithAlpha(alpha));
+			(*iter).second -= 3;
 		}
 	}
 
@@ -2487,8 +2511,8 @@ void GameView::OnDraw()
 
 		if (showDebug)
 		{
-			if (ren->findingElement)
-				fpsInfo << " Parts: " << ren->foundElements << "/" << sample.NumParts;
+			if (rendererSettings->findingElement)
+				fpsInfo << " Parts: " << rendererSettings->foundElements << "/" << sample.NumParts;
 			else
 				fpsInfo << " Parts: " << sample.NumParts;
 		}
@@ -2496,10 +2520,17 @@ void GameView::OnDraw()
 			fpsInfo << " [REPLACE MODE]";
 		if (c->GetReplaceModeFlags()&SPECIFIC_DELETE)
 			fpsInfo << " [SPECIFIC DELETE]";
-		if (ren && ren->GetGridSize())
-			fpsInfo << " [GRID: " << ren->GetGridSize() << "]";
-		if (ren && ren->findingElement)
+		if (rendererSettings->gridSize)
+			fpsInfo << " [GRID: " << rendererSettings->gridSize << "]";
+		if (rendererSettings->findingElement)
 			fpsInfo << " [FIND]";
+		if (showDebug)
+		{
+			if (wantRendererThread)
+			{
+				fpsInfo << " [SRT]";
+			}
+		}
 
 		int textWidth = Graphics::TextSize(fpsInfo.Build()).X - 1;
 		int alpha = 255-introText*5;
@@ -2583,4 +2614,107 @@ pixel GameView::GetPixelUnderMouse() const
 		return 0;
 	}
 	return rendererFrame[point];
+}
+
+void GameView::RendererThread()
+{
+	while (true)
+	{
+		{
+			std::unique_lock lk(rendererThreadMx);
+			rendererThreadOwnsRenderer = false;
+			rendererThreadCv.notify_one();
+			rendererThreadCv.wait(lk, [this]() {
+				return rendererThreadState == rendererThreadStopping || rendererThreadOwnsRenderer;
+			});
+			if (rendererThreadState == rendererThreadStopping)
+			{
+				break;
+			}
+		}
+		RenderSimulation(*rendererThreadSim, false);
+	}
+}
+
+void GameView::StartRendererThread()
+{
+	bool start = false;
+	bool notify = false;
+	{
+		std::lock_guard lk(rendererThreadMx);
+		if (rendererThreadState == rendererThreadAbsent)
+		{
+			rendererThreadSim = std::make_unique<RenderableSimulation>();
+			rendererThreadState = rendererThreadRunning;
+			start = true;
+		}
+		else if (rendererThreadState == rendererThreadPaused)
+		{
+			rendererThreadState = rendererThreadRunning;
+			notify = true;
+		}
+	}
+	if (start)
+	{
+		rendererThread = std::thread([this]() {
+			RendererThread();
+		});
+		notify = true;
+	}
+	if (notify)
+	{
+		DispatchRendererThread();
+	}
+}
+
+void GameView::StopRendererThread()
+{
+	bool join = false;
+	{
+		std::lock_guard lk(rendererThreadMx);
+		if (rendererThreadState != rendererThreadAbsent)
+		{
+			rendererThreadState = rendererThreadStopping;
+			join = true;
+		}
+	}
+	if (join)
+	{
+		rendererThreadCv.notify_one();
+		rendererThread.join();
+	}
+}
+
+void GameView::PauseRendererThread()
+{
+	std::unique_lock lk(rendererThreadMx);
+	if (rendererThreadState == rendererThreadRunning)
+	{
+		rendererThreadState = rendererThreadPaused;
+		rendererThreadCv.notify_one();
+		rendererThreadCv.wait(lk, [this]() {
+			return !rendererThreadOwnsRenderer;
+		});
+	}
+}
+
+void GameView::DispatchRendererThread()
+{
+	ren->ApplySettings(*rendererSettings);
+	*rendererThreadSim = *sim;
+	rendererThreadSim->useLuaCallbacks = false;
+	rendererThreadOwnsRenderer = true;
+	{
+		std::lock_guard lk(rendererThreadMx);
+		rendererThreadOwnsRenderer = true;
+	}
+	rendererThreadCv.notify_one();
+}
+
+void GameView::WaitForRendererThread()
+{
+	std::unique_lock lk(rendererThreadMx);
+	rendererThreadCv.wait(lk, [this]() {
+		return !rendererThreadOwnsRenderer;
+	});
 }

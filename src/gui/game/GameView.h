@@ -9,6 +9,9 @@
 #include <memory>
 #include <vector>
 #include <optional>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
 enum DrawMode
 {
@@ -29,9 +32,11 @@ namespace ui
 
 class SplitButton;
 class Simulation;
+struct RenderableSimulation;
 
 class MenuButton;
 class Renderer;
+struct RendererSettings;
 class VideoBuffer;
 class ToolButton;
 class GameController;
@@ -82,7 +87,8 @@ private:
 
 	ui::Point currentPoint, lastPoint;
 	GameController * c;
-	Renderer * ren;
+	Renderer *ren = nullptr;
+	RendererSettings *rendererSettings = nullptr;
 	Simulation *sim = nullptr;
 	Brush const *activeBrush;
 	//UI Elements
@@ -147,10 +153,28 @@ private:
 	Vec2<int> PlaceSavePos() const;
 
 	std::optional<FindingElement> FindingElementCandidate() const;
+	enum RendererThreadState
+	{
+		rendererThreadAbsent,
+		rendererThreadRunning,
+		rendererThreadPaused,
+		rendererThreadStopping,
+	};
+	RendererThreadState rendererThreadState = rendererThreadAbsent;
+	std::thread rendererThread;
+	std::mutex rendererThreadMx;
+	std::condition_variable rendererThreadCv;
+	bool rendererThreadOwnsRenderer = false;
+	void StartRendererThread();
+	void StopRendererThread();
+	void RendererThread();
+	void WaitForRendererThread();
+	void DispatchRendererThread();
+	std::unique_ptr<RenderableSimulation> rendererThreadSim;
 
 public:
 	GameView();
-	virtual ~GameView();
+	~GameView();
 
 	//Breaks MVC, but any other way is going to be more of a mess.
 	ui::Point GetMousePosition();
@@ -238,4 +262,12 @@ public:
 	pixel GetPixelUnderMouse() const;
 
 	RendererFrame rendererFrame;
+	// Call this before accessing Renderer "out of turn", e.g. from RenderView. This *does not*
+	// include OptionsModel or Lua setting functions because they only access the RendererSettings
+	// in GameModel, or Lua drawing functions because they only access Renderer in eventTraitSimGraphics
+	// and *SimDraw events, and the renderer thread gets paused anyway if there are handlers
+	// installed for such events.
+	void PauseRendererThread();
+
+	void RenderSimulation(const RenderableSimulation &sim, bool handleEvents);
 };

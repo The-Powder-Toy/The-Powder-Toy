@@ -34,6 +34,7 @@ public:
 	void Init();
 
 	bool HandleEvent(const GameControllerEvent &event);
+	bool HaveSimGraphicsEventHandlers();
 
 	int Command(String command);
 	String FormatCommand(String command);

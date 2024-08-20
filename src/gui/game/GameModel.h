@@ -2,6 +2,7 @@
 #include "gui/interface/Colour.h"
 #include "client/User.h"
 #include "gui/interface/Point.h"
+#include "graphics/RendererSettings.h"
 #include <vector>
 #include <deque>
 #include <memory>
@@ -66,6 +67,7 @@ private:
 
 	Simulation * sim;
 	Renderer * ren;
+	RendererSettings rendererSettings;
 	std::vector<Menu*> menuList;
 	std::vector<QuickOption*> quickOptions;
 	int activeMenu;
@@ -231,6 +233,10 @@ public:
 	void SetUser(User user);
 	Simulation * GetSimulation();
 	Renderer * GetRenderer();
+	RendererSettings &GetRendererSettings()
+	{
+		return rendererSettings;
+	}
 	void SetZoomEnabled(bool enabled);
 	bool GetZoomEnabled();
 	void SetZoomSize(int size);

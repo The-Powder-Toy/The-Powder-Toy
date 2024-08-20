@@ -1,16 +1,9 @@
 #include "RenderModel.h"
-
 #include "RenderView.h"
-
 #include "gui/game/RenderPreset.h"
-
+#include "gui/game/GameController.h"
+#include "gui/game/GameView.h"
 #include "graphics/Renderer.h"
-
-RenderModel::RenderModel():
-	renderer(NULL)
-{
-
-}
 
 void RenderModel::AddObserver(RenderView * observer)
 {
@@ -23,44 +16,35 @@ void RenderModel::AddObserver(RenderView * observer)
 
 void RenderModel::SetRenderMode(uint32_t newRenderMode)
 {
-	if (renderer)
-	{
-		renderer->SetRenderMode(newRenderMode);
-	}
+	rendererSettings->renderMode = newRenderMode;
 	notifyRenderChanged();
 }
 
 uint32_t RenderModel::GetRenderMode()
 {
-	return renderer ? renderer->GetRenderMode() : 0;
+	return rendererSettings->renderMode;
 }
 
 void RenderModel::SetDisplayMode(uint32_t newDisplayMode)
 {
-	if (renderer)
-	{
-		renderer->SetDisplayMode(newDisplayMode);
-	}
+	rendererSettings->displayMode = newDisplayMode;
 	notifyDisplayChanged();
 }
 
 uint32_t RenderModel::GetDisplayMode()
 {
-	return renderer ? renderer->GetDisplayMode() : 0;
+	return rendererSettings->displayMode;
 }
 
 void RenderModel::SetColorMode(uint32_t newColorMode)
 {
-	if (renderer)
-	{
-		renderer->SetColorMode(newColorMode);
-	}
+	rendererSettings->colorMode = newColorMode;
 	notifyColourChanged();
 }
 
 uint32_t RenderModel::GetColorMode()
 {
-	return renderer ? renderer->GetColorMode() : 0;
+	return rendererSettings->colorMode;
 }
 
 void RenderModel::LoadRenderPreset(int presetNum)
@@ -71,9 +55,10 @@ void RenderModel::LoadRenderPreset(int presetNum)
 	SetColorMode(preset.colorMode);
 }
 
-void RenderModel::SetRenderer(Renderer * ren)
+void RenderModel::SetRenderer(Renderer * ren, RendererSettings *newRendererSettings)
 {
 	renderer = ren;
+	rendererSettings = newRendererSettings;
 	notifyRendererChanged();
 	notifyRenderChanged();
 	notifyDisplayChanged();
@@ -92,6 +77,11 @@ void RenderModel::SetSimulation(Simulation *newSim)
 Renderer * RenderModel::GetRenderer()
 {
 	return renderer;
+}
+
+RendererSettings *RenderModel::GetRendererSettings()
+{
+	return rendererSettings;
 }
 
 Simulation *RenderModel::GetSimulation()
