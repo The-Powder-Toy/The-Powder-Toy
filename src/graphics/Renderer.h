@@ -1,5 +1,5 @@
 #pragma once
-#include "Graphics.h"
+#include "VideoBuffer.h"
 #include "gui/game/RenderPreset.h"
 #include "gui/interface/Point.h"
 #include "common/tpt-rand.h"
@@ -80,18 +80,9 @@ public:
 	//Mouse position for debug information
 	ui::Point mousePos;
 
-	//Zoom window
-	ui::Point zoomWindowPosition;
-	ui::Point zoomScopePosition;
-	int zoomScopeSize;
-	bool zoomEnabled;
-	int ZFACTOR;
-
 	//Renderers
 	void RenderSimulation();
-	void RenderEnd();
 
-	void RenderZoom();
 	void DrawBlob(Vec2<int> pos, RGB<uint8_t> colour);
 	void DrawWalls();
 	void DrawSigns();
@@ -134,6 +125,15 @@ public:
 	static std::unique_ptr<VideoBuffer> WallIcon(int wallID, Vec2<int> size);
 
 	Renderer();
+
+	struct GradientStop
+	{
+		RGB<uint8_t> color;
+		float point;
+
+		bool operator <(const GradientStop &other) const;
+	};
+	static std::vector<RGB<uint8_t>> Gradient(std::vector<GradientStop> stops, int resolution);
 
 #define RENDERER_TABLE(name) \
 	static std::vector<RGB<uint8_t>> name; \

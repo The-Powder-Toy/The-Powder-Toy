@@ -5,11 +5,6 @@
 #include "simulation/ElementClasses.h"
 #include "simulation/ElementGraphics.h"
 
-void Renderer::RenderEnd()
-{
-	RenderZoom();
-}
-
 void Renderer::SetSample(Vec2<int> pos)
 {
 	sampleColor = GetPixel(pos);
@@ -23,41 +18,6 @@ void Renderer::clearScreen() {
 	else
 	{
 		std::fill_n(video.data(), WINDOWW * YRES, 0);
-	}
-}
-
-void Renderer::RenderZoom()
-{
-	if(!zoomEnabled)
-		return;
-	{
-		int x, y, i, j;
-		pixel pix;
-
-		DrawFilledRect(RectSized(zoomWindowPosition, { zoomScopeSize * ZFACTOR, zoomScopeSize * ZFACTOR }), 0x000000_rgb);
-		DrawRect(RectSized(zoomWindowPosition - Vec2{ 2, 2 }, Vec2{ zoomScopeSize*ZFACTOR+3, zoomScopeSize*ZFACTOR+3 }), 0xC0C0C0_rgb);
-		DrawRect(RectSized(zoomWindowPosition - Vec2{ 1, 1 }, Vec2{ zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1 }), 0x000000_rgb);
-		for (j=0; j<zoomScopeSize; j++)
-			for (i=0; i<zoomScopeSize; i++)
-			{
-				pix = video[{ i + zoomScopePosition.X, j + zoomScopePosition.Y }];
-				for (y=0; y<ZFACTOR-1; y++)
-					for (x=0; x<ZFACTOR-1; x++)
-						video[{ i * ZFACTOR + x + zoomWindowPosition.X, j * ZFACTOR + y + zoomWindowPosition.Y }] = pix;
-			}
-		if (zoomEnabled)
-		{
-			for (j=-1; j<=zoomScopeSize; j++)
-			{
-				XorPixel(zoomScopePosition + Vec2{ j, -1 });
-				XorPixel(zoomScopePosition + Vec2{ j, zoomScopeSize });
-			}
-			for (j=0; j<zoomScopeSize; j++)
-			{
-				XorPixel(zoomScopePosition + Vec2{ -1, j });
-				XorPixel(zoomScopePosition + Vec2{ zoomScopeSize, j });
-			}
-		}
 	}
 }
 
@@ -116,20 +76,20 @@ void Renderer::PopulateTables()
 	if (!tablesPopulated)
 	{
 		tablesPopulated = true;
-		flameTable = Graphics::Gradient({
+		flameTable = Gradient({
 			{ 0x000000_rgb, 0.00f },
 			{ 0x60300F_rgb, 0.50f },
 			{ 0xDFBF6F_rgb, 0.90f },
 			{ 0xAF9F0F_rgb, 1.00f },
 		}, 200);
-		plasmaTable = Graphics::Gradient({
+		plasmaTable = Gradient({
 			{ 0x000000_rgb, 0.00f },
 			{ 0x301040_rgb, 0.25f },
 			{ 0x301060_rgb, 0.50f },
 			{ 0xAFFFFF_rgb, 0.90f },
 			{ 0xAFFFFF_rgb, 1.00f },
 		}, 200);
-		heatTable = Graphics::Gradient({
+		heatTable = Gradient({
 			{ 0x2B00FF_rgb, 0.00f },
 			{ 0x003CFF_rgb, 0.01f },
 			{ 0x00C0FF_rgb, 0.05f },
@@ -141,7 +101,7 @@ void Renderer::PopulateTables()
 			{ 0xFF0000_rgb, 0.71f },
 			{ 0xFF00DC_rgb, 1.00f },
 		}, 1024);
-		clfmTable = Graphics::Gradient({
+		clfmTable = Gradient({
 			{ 0x000000_rgb, 0.00f },
 			{ 0x0A0917_rgb, 0.10f },
 			{ 0x19163C_rgb, 0.20f },
@@ -151,7 +111,7 @@ void Renderer::PopulateTables()
 			{ 0x57A0B4_rgb, 0.80f },
 			{ 0x5EC4C6_rgb, 1.00f },
 		}, 200);
-		firwTable = Graphics::Gradient({
+		firwTable = Gradient({
 			{ 0xFF00FF_rgb, 0.00f },
 			{ 0x0000FF_rgb, 0.20f },
 			{ 0x00FFFF_rgb, 0.40f },
@@ -171,11 +131,6 @@ Renderer::Renderer():
 	sampleColor(0xFFFFFFFF),
     foundElements(0),
 	mousePos(0, 0),
-	zoomWindowPosition(0, 0),
-	zoomScopePosition(0, 0),
-	zoomScopeSize(32),
-	zoomEnabled(false),
-	ZFACTOR(8),
 	gridSize(0)
 {
 	PopulateTables();
@@ -321,3 +276,35 @@ VideoBuffer Renderer::DumpFrame()
 }
 
 template struct RasterDrawMethods<Renderer>;
+
+bool Renderer::GradientStop::operator <(const GradientStop &other) const
+{
+	return point < other.point;
+}
+
+std::vector<RGB<uint8_t>> Renderer::Gradient(std::vector<GradientStop> stops, int resolution)
+{
+	std::vector<RGB<uint8_t>> table(resolution, 0x000000_rgb);
+	if (stops.size() >= 2)
+	{
+		std::sort(stops.begin(), stops.end());
+		auto stop = -1;
+		for (auto i = 0; i < resolution; ++i)
+		{
+			auto point = i / (float)resolution;
+			while (stop < (int)stops.size() - 1 && stops[stop + 1].point <= point)
+			{
+				++stop;
+			}
+			if (stop < 0 || stop >= (int)stops.size() - 1)
+			{
+				continue;
+			}
+			auto &left = stops[stop];
+			auto &right = stops[stop + 1];
+			auto f = (point - left.point) / (right.point - left.point);
+			table[i] = left.color.Blend(right.color.WithAlpha(uint8_t(f * 0xFF)));
+		}
+	}
+	return table;
+}

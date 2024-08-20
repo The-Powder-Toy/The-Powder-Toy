@@ -190,7 +190,6 @@ void RenderView::OnDraw()
 		ren->sim = sim;
 		ren->clearScreen();
 		ren->RenderSimulation();
-		ren->RenderEnd();
 		ren->sim = nullptr;
 		for (auto y = 0; y < YRES; ++y)
 		{

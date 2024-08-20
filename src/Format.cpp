@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <png.h>
 #include "Format.h"
-#include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 
 ByteString format::UnixtimeToDate(time_t unixtime, ByteString dateFormat, bool local)
 {

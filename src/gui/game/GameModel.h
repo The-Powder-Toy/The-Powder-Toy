@@ -273,4 +273,6 @@ public:
 	void UpdateUpTo(int upTo);
 	void BeforeSim();
 	void AfterSim();
+
+	GameView *view = nullptr;
 };

@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "simulation/SaveRenderer.h"
 #include "client/GameSave.h"
 

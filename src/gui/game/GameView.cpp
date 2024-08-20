@@ -2245,9 +2245,9 @@ void GameView::OnDraw()
 		}
 
 		c->AfterSimDraw();
-		ren->RenderEnd();
 
 		std::copy_n(ren->Data(), ren->Size().X * ren->Size().Y, g->Data());
+		g->RenderZoom();
 
 		if (doScreenshot)
 		{

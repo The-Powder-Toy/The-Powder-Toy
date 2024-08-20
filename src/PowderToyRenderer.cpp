@@ -72,7 +72,6 @@ int main(int argc, char *argv[])
 	}
 
 	ren->RenderSimulation();
-	ren->RenderEnd();
 
 	if (auto data = ren->DumpFrame().ToPNG())
 		Platform::WriteFile(*data, outputFilename);

@@ -2,7 +2,7 @@
 
 #include "client/GameSave.h"
 
-#include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "graphics/Renderer.h"
 
 #include "Simulation.h"
@@ -55,7 +55,6 @@ std::unique_ptr<VideoBuffer> SaveRenderer::Render(const GameSave *save, bool dec
 	}
 
 	ren->RenderSimulation();
-	ren->RenderEnd();
 
 	auto tempThumb = std::make_unique<VideoBuffer>(save->blockSize * CELL);
 	tempThumb->BlendImage(ren->Data(), 0xFF, ren->Size().OriginRect());

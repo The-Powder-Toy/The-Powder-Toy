@@ -1091,24 +1091,24 @@ void GameModel::SetLastTool(Tool * newTool)
 
 void GameModel::SetZoomEnabled(bool enabled)
 {
-	ren->zoomEnabled = enabled;
+	view->GetGraphics()->zoomEnabled = enabled;
 	notifyZoomChanged();
 }
 
 bool GameModel::GetZoomEnabled()
 {
-	return ren->zoomEnabled;
+	return view->GetGraphics()->zoomEnabled;
 }
 
 void GameModel::SetZoomPosition(ui::Point position)
 {
-	ren->zoomScopePosition = position;
+	view->GetGraphics()->zoomScopePosition = position;
 	notifyZoomChanged();
 }
 
 ui::Point GameModel::GetZoomPosition()
 {
-	return ren->zoomScopePosition;
+	return view->GetGraphics()->zoomScopePosition;
 }
 
 bool GameModel::MouseInZoom(ui::Point position)
@@ -1141,35 +1141,35 @@ ui::Point GameModel::AdjustZoomCoords(ui::Point position)
 
 void GameModel::SetZoomWindowPosition(ui::Point position)
 {
-	ren->zoomWindowPosition = position;
+	view->GetGraphics()->zoomWindowPosition = position;
 	notifyZoomChanged();
 }
 
 ui::Point GameModel::GetZoomWindowPosition()
 {
-	return ren->zoomWindowPosition;
+	return view->GetGraphics()->zoomWindowPosition;
 }
 
 void GameModel::SetZoomSize(int size)
 {
-	ren->zoomScopeSize = size;
+	view->GetGraphics()->zoomScopeSize = size;
 	notifyZoomChanged();
 }
 
 int GameModel::GetZoomSize()
 {
-	return ren->zoomScopeSize;
+	return view->GetGraphics()->zoomScopeSize;
 }
 
 void GameModel::SetZoomFactor(int factor)
 {
-	ren->ZFACTOR = factor;
+	view->GetGraphics()->ZFACTOR = factor;
 	notifyZoomChanged();
 }
 
 int GameModel::GetZoomFactor()
 {
-	return ren->ZFACTOR;
+	return view->GetGraphics()->ZFACTOR;
 }
 
 void GameModel::SetActiveColourPreset(size_t preset)

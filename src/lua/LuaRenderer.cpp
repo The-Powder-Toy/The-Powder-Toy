@@ -2,6 +2,7 @@
 #include "gui/game/GameController.h"
 #include "gui/game/GameModel.h"
 #include "graphics/Renderer.h"
+#include "graphics/Graphics.h"
 #include "simulation/ElementGraphics.h"
 
 static int renderMode(lua_State *L)
@@ -148,13 +149,13 @@ static int zoomEnabled(lua_State *L)
 	auto *lsi = GetLSI();
 	if (lua_gettop(L) == 0)
 	{
-		lua_pushboolean(L, lsi->ren->zoomEnabled);
+		lua_pushboolean(L, lsi->g->zoomEnabled);
 		return 1;
 	}
 	else
 	{
 		luaL_checktype(L, -1, LUA_TBOOLEAN);
-		lsi->ren->zoomEnabled = lua_toboolean(L, -1);
+		lsi->g->zoomEnabled = lua_toboolean(L, -1);
 		return 0;
 	}
 }
@@ -162,14 +163,13 @@ static int zoomEnabled(lua_State *L)
 static int zoomWindow(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	auto *ren = lsi->ren;
 	if (lua_gettop(L) == 0)
 	{
-		ui::Point location = ren->zoomWindowPosition;
+		ui::Point location = lsi->g->zoomWindowPosition;
 		lua_pushnumber(L, location.X);
 		lua_pushnumber(L, location.Y);
-		lua_pushnumber(L, ren->ZFACTOR);
-		lua_pushnumber(L, ren->zoomScopeSize * ren->ZFACTOR);
+		lua_pushnumber(L, lsi->g->ZFACTOR);
+		lua_pushnumber(L, lsi->g->zoomScopeSize * lsi->g->ZFACTOR);
 		return 4;
 	}
 	int x = luaL_optint(L, 1, 0);
@@ -179,24 +179,23 @@ static int zoomWindow(lua_State *L)
 		return luaL_error(L, "Zoom factor must be greater than 0");
 
 	// To prevent crash when zoom window is outside screen
-	if (x < 0 || y < 0 || ren->zoomScopeSize * f + x > XRES || ren->zoomScopeSize * f + y > YRES)
+	if (x < 0 || y < 0 || lsi->g->zoomScopeSize * f + x > XRES || lsi->g->zoomScopeSize * f + y > YRES)
 		return luaL_error(L, "Zoom window outside of bounds");
 
-	ren->zoomWindowPosition = ui::Point(x, y);
-	ren->ZFACTOR = f;
+	lsi->g->zoomWindowPosition = ui::Point(x, y);
+	lsi->g->ZFACTOR = f;
 	return 0;
 }
 
 static int zoomScope(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	auto *ren = lsi->ren;
 	if (lua_gettop(L) == 0)
 	{
-		ui::Point location = ren->zoomScopePosition;
+		ui::Point location = lsi->g->zoomScopePosition;
 		lua_pushnumber(L, location.X);
 		lua_pushnumber(L, location.Y);
-		lua_pushnumber(L, ren->zoomScopeSize);
+		lua_pushnumber(L, lsi->g->zoomScopeSize);
 		return 3;
 	}
 	int x = luaL_optint(L, 1, 0);
@@ -206,15 +205,15 @@ static int zoomScope(lua_State *L)
 		return luaL_error(L, "Zoom scope size must be greater than 0");
 
 	// To prevent crash when zoom or scope window is outside screen
-	int windowEdgeRight = ren->ZFACTOR * s + ren->zoomWindowPosition.X;
-	int windowEdgeBottom = ren->ZFACTOR * s + ren->zoomWindowPosition.Y;
+	int windowEdgeRight = lsi->g->ZFACTOR * s + lsi->g->zoomWindowPosition.X;
+	int windowEdgeBottom = lsi->g->ZFACTOR * s + lsi->g->zoomWindowPosition.Y;
 	if (x < 0 || y < 0 || x + s > XRES || y + s > YRES)
 		return luaL_error(L, "Zoom scope outside of bounds");
 	if (windowEdgeRight > XRES || windowEdgeBottom > YRES)
 		return luaL_error(L, "Zoom window outside of bounds");
 
-	ren->zoomScopePosition = ui::Point(x, y);
-	ren->zoomScopeSize = s;
+	lsi->g->zoomScopePosition = ui::Point(x, y);
+	lsi->g->zoomScopeSize = s;
 	return 0;
 }
 
