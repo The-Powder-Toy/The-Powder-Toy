@@ -2141,6 +2141,11 @@ void GameView::OnDraw()
 		ren->RenderSimulation();
 		ren->sim = nullptr;
 		ren->SetSample(c->PointTranslate(currentMouse));
+
+		c->AfterSimDraw();
+
+		std::copy_n(ren->Data(), ren->Size().X * ren->Size().Y, g->Data());
+
 		if (showBrush && selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
 		{
 			ui::Point finalCurrentMouse = windTool ? c->PointTranslateNoClamp(currentMouse) : c->PointTranslate(currentMouse);
@@ -2170,7 +2175,7 @@ void GameView::OnDraw()
 					else
 						initialDrawPoint.Y += CELL-1;
 				}
-				activeBrush->RenderRect(ren, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
+				activeBrush->RenderRect(g, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
 			}
 			else if (drawMode == DrawLine && isMouseDown)
 			{
@@ -2178,12 +2183,12 @@ void GameView::OnDraw()
 				{
 					finalCurrentMouse = lineSnapCoords(c->PointTranslate(initialDrawPoint), finalCurrentMouse);
 				}
-				activeBrush->RenderLine(ren, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
+				activeBrush->RenderLine(g, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
 			}
 			else if (drawMode == DrawFill)// || altBehaviour)
 			{
 				if (!decoBrush)
-					activeBrush->RenderFill(ren, finalCurrentMouse);
+					activeBrush->RenderFill(g, finalCurrentMouse);
 			}
 			if (drawMode == DrawPoints || drawMode==DrawLine || (drawMode == DrawRect && !isMouseDown))
 			{
@@ -2192,14 +2197,14 @@ void GameView::OnDraw()
 					ui::Point finalBrushRadius = c->NormaliseBlockCoord(activeBrush->GetRadius());
 					auto topLeft     = finalCurrentMouse - finalBrushRadius;
 					auto bottomRight = finalCurrentMouse + finalBrushRadius + Vec2{ CELL - 1, CELL - 1 };
-					ren->XorLine({     topLeft.X,     topLeft.Y     }, { bottomRight.X,     topLeft.Y     });
-					ren->XorLine({     topLeft.X, bottomRight.Y     }, { bottomRight.X, bottomRight.Y     });
-					ren->XorLine({     topLeft.X,     topLeft.Y + 1 }, {     topLeft.X, bottomRight.Y - 1 }); // offset by 1 so the corners don't get xor'd twice
-					ren->XorLine({ bottomRight.X,     topLeft.Y + 1 }, { bottomRight.X, bottomRight.Y - 1 }); // offset by 1 so the corners don't get xor'd twice
+					g->XorLine({     topLeft.X,     topLeft.Y     }, { bottomRight.X,     topLeft.Y     });
+					g->XorLine({     topLeft.X, bottomRight.Y     }, { bottomRight.X, bottomRight.Y     });
+					g->XorLine({     topLeft.X,     topLeft.Y + 1 }, {     topLeft.X, bottomRight.Y - 1 }); // offset by 1 so the corners don't get xor'd twice
+					g->XorLine({ bottomRight.X,     topLeft.Y + 1 }, { bottomRight.X, bottomRight.Y - 1 }); // offset by 1 so the corners don't get xor'd twice
 				}
 				else
 				{
-					activeBrush->RenderPoint(ren, finalCurrentMouse);
+					activeBrush->RenderPoint(g, finalCurrentMouse);
 				}
 			}
 		}
@@ -2211,15 +2216,15 @@ void GameView::OnDraw()
 				if(placeSaveThumb && selectPoint2.X!=-1)
 				{
 					auto rect = RectSized(PlaceSavePos() * CELL, placeSaveThumb->Size());
-					ren->BlendImage(placeSaveThumb->Data(), 0x80, rect);
-					ren->XorDottedRect(rect);
+					g->BlendImage(placeSaveThumb->Data(), 0x80, rect);
+					g->XorDottedRect(rect);
 				}
 			}
 			else
 			{
 				if(selectPoint1.X==-1)
 				{
-					ren->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, YRES }), 0x000000_rgb .WithAlpha(100));
+					g->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, YRES }), 0x000000_rgb .WithAlpha(100));
 				}
 				else
 				{
@@ -2233,20 +2238,17 @@ void GameView::OnDraw()
 					if(y2>YRES-1)
 						y2 = YRES-1;
 
-					ren->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, y1 }), 0x000000_rgb .WithAlpha(100));
-					ren->BlendFilledRect(RectSized(Vec2{ 0, y2+1 }, Vec2{ XRES, YRES-y2-1 }), 0x000000_rgb .WithAlpha(100));
+					g->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, y1 }), 0x000000_rgb .WithAlpha(100));
+					g->BlendFilledRect(RectSized(Vec2{ 0, y2+1 }, Vec2{ XRES, YRES-y2-1 }), 0x000000_rgb .WithAlpha(100));
 
-					ren->BlendFilledRect(RectSized(Vec2{ 0, y1 }, Vec2{ x1, (y2-y1)+1 }), 0x000000_rgb .WithAlpha(100));
-					ren->BlendFilledRect(RectSized(Vec2{ x2+1, y1 }, Vec2{ XRES-x2-1, (y2-y1)+1 }), 0x000000_rgb .WithAlpha(100));
+					g->BlendFilledRect(RectSized(Vec2{ 0, y1 }, Vec2{ x1, (y2-y1)+1 }), 0x000000_rgb .WithAlpha(100));
+					g->BlendFilledRect(RectSized(Vec2{ x2+1, y1 }, Vec2{ XRES-x2-1, (y2-y1)+1 }), 0x000000_rgb .WithAlpha(100));
 
-					ren->XorDottedRect(RectBetween(Vec2{ x1, y1 }, Vec2{ x2, y2 }));
+					g->XorDottedRect(RectBetween(Vec2{ x1, y1 }, Vec2{ x2, y2 }));
 				}
 			}
 		}
 
-		c->AfterSimDraw();
-
-		std::copy_n(ren->Data(), ren->Size().X * ren->Size().Y, g->Data());
 		g->RenderZoom();
 
 		if (doScreenshot)
