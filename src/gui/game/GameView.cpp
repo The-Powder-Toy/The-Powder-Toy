@@ -2153,8 +2153,8 @@ void GameView::OnDraw()
 {
 	Graphics * g = GetGraphics();
 
-	auto wantRendererThread = !c->HaveSimGraphicsEventHandlers();
-	if (wantRendererThread)
+	auto threadedRenderingAllowed = c->ThreadedRenderingAllowed();
+	if (threadedRenderingAllowed)
 	{
 		StartRendererThread();
 		WaitForRendererThread();
@@ -2526,7 +2526,7 @@ void GameView::OnDraw()
 			fpsInfo << " [FIND]";
 		if (showDebug)
 		{
-			if (wantRendererThread)
+			if (threadedRenderingAllowed)
 			{
 				fpsInfo << " [SRT]";
 			}

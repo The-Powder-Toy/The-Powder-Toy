@@ -100,6 +100,7 @@ GameModel::GameModel():
 
 	rendererSettings.gravityFieldEnabled = prefs.Get("Renderer.GravityField", false);
 	rendererSettings.decorations_enable = prefs.Get("Renderer.Decorations", true);
+	threadedRendering = prefs.Get("Renderer.SeparateThread", false);
 
 	//Load config into simulation
 	edgeMode = prefs.Get("Simulation.EdgeMode", NUM_EDGEMODES, EDGE_VOID);
@@ -535,6 +536,11 @@ int GameModel::GetEdgeMode()
 void GameModel::SetTemperatureScale(int temperatureScale)
 {
 	this->temperatureScale = temperatureScale;
+}
+
+void GameModel::SetThreadedRendering(bool newThreadedRendering)
+{
+	threadedRendering = newThreadedRendering;
 }
 
 void GameModel::SetAmbientAirTemperature(float ambientAirTemp)

@@ -318,6 +318,9 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		}
 		currentY += 4; // and then undo the undo
 	}
+	threadedRendering = addCheckbox(0, "Separate rendering thread", "May increase framerate when fancy effects are in use", [this] {
+		c->SetThreadedRendering(threadedRendering->GetChecked());
+	});
 	decoSpace = addDropDown("Colour space used by decoration tools", {
 		{ "sRGB", DECOSPACE_SRGB },
 		{ "Linear", DECOSPACE_LINEAR },
@@ -490,6 +493,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	includePressure->SetChecked(sender->GetIncludePressure());
 	perfectCircle->SetChecked(sender->GetPerfectCircle());
 	graveExitsConsole->SetChecked(sender->GetGraveExitsConsole());
+	threadedRendering->SetChecked(sender->GetThreadedRendering());
 	momentumScroll->SetChecked(sender->GetMomentumScroll());
 }
 

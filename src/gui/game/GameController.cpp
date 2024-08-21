@@ -1728,7 +1728,7 @@ void GameController::AfterSimDraw()
 	commandInterface->HandleEvent(AfterSimDrawEvent{});
 }
 
-bool GameController::HaveSimGraphicsEventHandlers()
+bool GameController::ThreadedRenderingAllowed()
 {
-	return commandInterface->HaveSimGraphicsEventHandlers();
+	return gameModel->GetThreadedRendering() && !commandInterface->HaveSimGraphicsEventHandlers();
 }

@@ -72,6 +72,11 @@ void OptionsController::SetTemperatureScale(int temperatureScale)
 	model->SetTemperatureScale(temperatureScale);
 }
 
+void OptionsController::SetThreadedRendering(bool newThreadedRendering)
+{
+	model->SetThreadedRendering(newThreadedRendering);
+}
+
 void OptionsController::SetFullscreen(bool fullscreen)
 {
 	model->SetFullscreen(fullscreen);

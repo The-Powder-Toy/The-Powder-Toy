@@ -95,6 +95,18 @@ void OptionsModel::SetTemperatureScale(int temperatureScale)
 	notifySettingsChanged();
 }
 
+int OptionsModel::GetThreadedRendering()
+{
+	return gModel->GetThreadedRendering();
+}
+
+void OptionsModel::SetThreadedRendering(bool newThreadedRendering)
+{
+	GlobalPrefs::Ref().Set("Renderer.SeparateThread", newThreadedRendering);
+	gModel->SetThreadedRendering(newThreadedRendering);
+	notifySettingsChanged();
+}
+
 float OptionsModel::GetAmbientAirTemperature()
 {
 	return gModel->GetSimulation()->air->ambientAirTemp;

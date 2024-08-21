@@ -205,5 +205,5 @@ public:
 
 	void BeforeSimDraw();
 	void AfterSimDraw();
-	bool HaveSimGraphicsEventHandlers();
+	bool ThreadedRenderingAllowed();
 };

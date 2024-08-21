@@ -130,6 +130,7 @@ private:
 	void SaveToSimParameters(const GameSave &saveData);
 
 	std::optional<int> queuedVote;
+	bool threadedRendering = false;
 
 public:
 	GameModel();
@@ -143,6 +144,11 @@ public:
 	inline int GetTemperatureScale() const
 	{
 		return temperatureScale;
+	}
+	void SetThreadedRendering(bool newThreadedRendering);
+	bool GetThreadedRendering() const
+	{
+		return threadedRendering;
 	}
 	void SetAmbientAirTemperature(float ambientAirTemp);
 	float GetAmbientAirTemperature();

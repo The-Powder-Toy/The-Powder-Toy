@@ -216,6 +216,18 @@ static int zoomScope(lua_State *L)
 	return 0;
 }
 
+static int separateThread(lua_State *L)
+{
+	auto *lsi = GetLSI();
+	if (lua_gettop(L))
+	{
+		lsi->gameModel->SetThreadedRendering(lua_toboolean(L, 1));
+		return 0;
+	}
+	lua_pushboolean(L, lsi->gameModel->GetThreadedRendering());
+	return 1;
+}
+
 void LuaRenderer::Open(lua_State *L)
 {
 	static const luaL_Reg reg[] = {
@@ -234,6 +246,7 @@ void LuaRenderer::Open(lua_State *L)
 		LFUNC(zoomScope),
 		LFUNC(fireSize),
 		LFUNC(useDisplayPreset),
+		LFUNC(separateThread),
 #undef LFUNC
 		{ NULL, NULL }
 	};
