@@ -46,20 +46,6 @@ class Renderer : private RendererSettings, public RasterDrawMethods<Renderer>
 	unsigned char fire_b[YCELLS][XCELLS];
 	unsigned int fire_alpha[CELL*3][CELL*3];
 
-public:
-	const RendererFrame &GetVideo() const
-	{
-		return video;
-	}
-
-	const RenderableSimulation *sim = nullptr;
-
-	void ApplySettings(const RendererSettings &newSettings);
-
-	static const std::vector<RenderPreset> renderModePresets;
-
-	void RenderSimulation();
-
 	void DrawBlob(Vec2<int> pos, RGB<uint8_t> colour);
 	void DrawWalls();
 	void DrawSigns();
@@ -72,12 +58,21 @@ public:
 	void draw_grav();
 	void draw_other();
 
-	void ClearAccumulation();
-	void clearScreen();
-
-	static std::unique_ptr<VideoBuffer> WallIcon(int wallID, Vec2<int> size);
-
+public:
 	Renderer();
+	void ApplySettings(const RendererSettings &newSettings);
+	void RenderSimulation();
+	void RenderBackground();
+	void ApproximateAccumulation();
+	void ClearAccumulation();
+	void Clear();
+
+	const RendererFrame &GetVideo() const
+	{
+		return video;
+	}
+
+	const RenderableSimulation *sim = nullptr;
 
 	struct GradientStop
 	{
@@ -87,6 +82,8 @@ public:
 		bool operator <(const GradientStop &other) const;
 	};
 	static std::vector<RGB<uint8_t>> Gradient(std::vector<GradientStop> stops, int resolution);
+	static std::unique_ptr<VideoBuffer> WallIcon(int wallID, Vec2<int> size);
+	static const std::vector<RenderPreset> renderModePresets;
 
 #define RENDERER_TABLE(name) \
 	static std::vector<RGB<uint8_t>> name; \

@@ -2130,8 +2130,8 @@ void GameView::SetSaveButtonTooltips()
 void GameView::RenderSimulation(const RenderableSimulation &sim, bool handleEvents)
 {
 	ren->sim = &sim;
-	ren->clearScreen();
-	ren->draw_air();
+	ren->Clear();
+	ren->RenderBackground();
 	if (handleEvents)
 	{
 		c->BeforeSimDraw();

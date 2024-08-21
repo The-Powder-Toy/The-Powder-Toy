@@ -32,20 +32,11 @@ std::unique_ptr<VideoBuffer> SaveRenderer::Render(const GameSave *save, bool dec
 
 	sim->Load(save, true, { 0, 0 });
 	ren->ClearAccumulation();
-	ren->clearScreen();
-
+	ren->Clear();
 	if (fire)
 	{
-   		int frame = 15;
-		while(frame)
-		{
-			frame--;
-			ren->render_parts();
-			ren->render_fire();
-			ren->clearScreen();
-		}
+		ren->ApproximateAccumulation();
 	}
-
 	ren->RenderSimulation();
 
 	auto tempThumb = std::make_unique<VideoBuffer>(save->blockSize * CELL);

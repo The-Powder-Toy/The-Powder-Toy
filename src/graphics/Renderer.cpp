@@ -11,6 +11,11 @@
 #include "simulation/orbitalparts.h"
 #include <cmath>
 
+void Renderer::RenderBackground()
+{
+	draw_air();
+}
+
 void Renderer::RenderSimulation()
 {
 	draw_grav();
@@ -34,6 +39,16 @@ void Renderer::RenderSimulation()
 		warpVideo = video;
 		std::fill_n(video.data(), WINDOWW * YRES, 0);
 		render_gravlensing(warpVideo);
+	}
+}
+
+void Renderer::ApproximateAccumulation()
+{
+	for (int i = 0; i < 15; ++i)
+	{
+		render_parts();
+		render_fire();
+		Clear();
 	}
 }
 

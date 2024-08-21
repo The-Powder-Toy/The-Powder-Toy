@@ -74,7 +74,7 @@ const std::vector<RenderPreset> Renderer::renderModePresets = {
 	},
 };
 
-void Renderer::clearScreen()
+void Renderer::Clear()
 {
 	if(displayMode & DISPLAY_PERS)
 	{
