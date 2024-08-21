@@ -834,7 +834,7 @@ static int floodDeco(lua_State *L)
 
 	auto *lsi = GetLSI();
 	// hilariously broken, intersects with console and all Lua graphics
-	auto &rendererFrame = lsi->gameModel->view->rendererFrame;
+	auto &rendererFrame = lsi->gameModel->view->GetRendererFrame();
 	auto loc = RGB<uint8_t>::Unpack(rendererFrame[{ x, y }]);
 	lsi->sim->ApplyDecorationFill(rendererFrame, x, y, r, g, b, a, loc.Red, loc.Green, loc.Blue);
 	return 0;

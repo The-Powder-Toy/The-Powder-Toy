@@ -734,6 +734,7 @@ void GameView::NotifyColourSelectorColourChanged(GameModel * sender)
 void GameView::NotifyRendererChanged(GameModel * sender)
 {
 	ren = sender->GetRenderer();
+	rendererFrame = &ren->GetVideo();
 	rendererSettings = &sender->GetRendererSettings();
 }
 
@@ -916,7 +917,7 @@ ByteString GameView::TakeScreenshot(int captureUI, int fileType)
 	std::unique_ptr<VideoBuffer> screenshot;
 	if (captureUI)
 	{
-		screenshot = std::make_unique<VideoBuffer>(rendererFrame);
+		screenshot = std::make_unique<VideoBuffer>(*rendererFrame);
 	}
 	else
 	{
@@ -2158,7 +2159,8 @@ void GameView::OnDraw()
 	{
 		StartRendererThread();
 		WaitForRendererThread();
-		rendererFrame = ren->GetVideo();
+		*rendererThreadResult = ren->GetVideo();
+		rendererFrame = rendererThreadResult.get();
 		DispatchRendererThread();
 	}
 	else
@@ -2166,10 +2168,10 @@ void GameView::OnDraw()
 		PauseRendererThread();
 		ren->ApplySettings(*rendererSettings);
 		RenderSimulation(*sim, true);
-		rendererFrame = ren->GetVideo();
+		rendererFrame = &ren->GetVideo();
 	}
 
-	std::copy_n(rendererFrame.data(), rendererFrame.Size().X * rendererFrame.Size().Y, g->Data());
+	std::copy_n(rendererFrame->data(), rendererFrame->Size().X * rendererFrame->Size().Y, g->Data());
 
 	if (showBrush && selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
 	{
@@ -2284,7 +2286,7 @@ void GameView::OnDraw()
 
 	if(recording)
 	{
-		std::vector<char> data = VideoBuffer(rendererFrame).ToPPM();
+		std::vector<char> data = VideoBuffer(*rendererFrame).ToPPM();
 
 		ByteString filename = ByteString::Build("recordings", PATH_SEP_CHAR, recordingFolder, PATH_SEP_CHAR, "frame_", Format::Width(recordingIndex++, 6), ".ppm");
 
@@ -2609,11 +2611,11 @@ std::optional<FindingElement> GameView::FindingElementCandidate() const
 pixel GameView::GetPixelUnderMouse() const
 {
 	auto point = c->PointTranslate(currentMouse);
-	if (!rendererFrame.Size().OriginRect().Contains(point))
+	if (!rendererFrame->Size().OriginRect().Contains(point))
 	{
 		return 0;
 	}
-	return rendererFrame[point];
+	return (*rendererFrame)[point];
 }
 
 void GameView::RendererThread()
@@ -2645,6 +2647,7 @@ void GameView::StartRendererThread()
 		if (rendererThreadState == rendererThreadAbsent)
 		{
 			rendererThreadSim = std::make_unique<RenderableSimulation>();
+			rendererThreadResult = std::make_unique<RendererFrame>();
 			rendererThreadState = rendererThreadRunning;
 			start = true;
 		}

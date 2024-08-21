@@ -171,6 +171,8 @@ private:
 	void WaitForRendererThread();
 	void DispatchRendererThread();
 	std::unique_ptr<RenderableSimulation> rendererThreadSim;
+	std::unique_ptr<RendererFrame> rendererThreadResult;
+	const RendererFrame *rendererFrame = nullptr;
 
 public:
 	GameView();
@@ -261,7 +263,10 @@ public:
 	void SkipIntroText();
 	pixel GetPixelUnderMouse() const;
 
-	RendererFrame rendererFrame;
+	const RendererFrame &GetRendererFrame() const
+	{
+		return *rendererFrame;
+	}
 	// Call this before accessing Renderer "out of turn", e.g. from RenderView. This *does not*
 	// include OptionsModel or Lua setting functions because they only access the RendererSettings
 	// in GameModel, or Lua drawing functions because they only access Renderer in eventTraitSimGraphics
