@@ -99,7 +99,7 @@ GameModel::GameModel():
 	rendererSettings.colorMode = prefs.Get("Renderer.ColourMode", UINT32_C(0));
 
 	rendererSettings.gravityFieldEnabled = prefs.Get("Renderer.GravityField", false);
-	rendererSettings.decorations_enable = prefs.Get("Renderer.Decorations", true);
+	rendererSettings.decorationLevel = prefs.Get("Renderer.Decorations", true) ? RendererSettings::decorationEnabled : RendererSettings::decorationDisabled;
 	threadedRendering = prefs.Get("Renderer.SeparateThread", false);
 
 	//Load config into simulation
@@ -174,8 +174,8 @@ GameModel::~GameModel()
 		prefs.Set("Renderer.ColourMode", rendererSettings.colorMode);
 		prefs.Set("Renderer.DisplayMode", rendererSettings.displayMode);
 		prefs.Set("Renderer.RenderMode", rendererSettings.renderMode);
-		prefs.Set("Renderer.GravityField", (bool)rendererSettings.gravityFieldEnabled);
-		prefs.Set("Renderer.Decorations", (bool)rendererSettings.decorations_enable);
+		prefs.Set("Renderer.GravityField", rendererSettings.gravityFieldEnabled);
+		prefs.Set("Renderer.Decorations", GetDecoration());
 		prefs.Set("Renderer.DebugMode", rendererSettings.debugLines); //These two should always be equivalent, even though they are different things
 		prefs.Set("Simulation.NewtonianGravity", bool(sim->grav));
 		prefs.Set("Simulation.AmbientHeat", sim->aheat_enable);
@@ -1266,9 +1266,10 @@ bool GameModel::GetPaused()
 
 void GameModel::SetDecoration(bool decorationState)
 {
-	if (rendererSettings.decorations_enable != (decorationState?1:0))
+	auto desiredLevel = decorationState ? RendererSettings::decorationEnabled : RendererSettings::decorationDisabled;
+	if (rendererSettings.decorationLevel != desiredLevel)
 	{
-		rendererSettings.decorations_enable = decorationState?1:0;
+		rendererSettings.decorationLevel = desiredLevel;
 		notifyDecorationChanged();
 		UpdateQuickOptions();
 		if (decorationState)
@@ -1280,7 +1281,7 @@ void GameModel::SetDecoration(bool decorationState)
 
 bool GameModel::GetDecoration()
 {
-	return rendererSettings.decorations_enable?true:false;
+	return rendererSettings.decorationLevel != RendererSettings::decorationDisabled;
 }
 
 void GameModel::SetAHeatEnable(bool aHeat)

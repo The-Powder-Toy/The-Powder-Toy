@@ -53,8 +53,7 @@ int main(int argc, char *argv[])
 
 		//Render save
 		RendererSettings rendererSettings;
-		rendererSettings.decorations_enable = true;
-		rendererSettings.blackDecorations = true;
+		rendererSettings.decorationLevel = RendererSettings::decorationAntiClickbait;
 		ren->ApplySettings(rendererSettings);
 		ren->ClearAccumulation();
 		ren->Clear();

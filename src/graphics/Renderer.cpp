@@ -289,7 +289,7 @@ void Renderer::render_parts()
 			decg = (sim->parts[i].dcolour>>8)&0xFF;
 			decb = (sim->parts[i].dcolour)&0xFF;
 
-			if(decorations_enable && blackDecorations)
+			if (decorationLevel == decorationAntiClickbait)
 			{
 				if(deca < 250 || decr > 5 || decg > 5 || decb > 5)
 					deca = 0;
@@ -398,7 +398,7 @@ void Renderer::render_parts()
 				}
 
 				//Apply decoration colour
-				if(!(colorMode & ~COLOUR_GRAD) && decorations_enable && deca)
+				if(!(colorMode & ~COLOUR_GRAD) && decorationLevel != decorationDisabled && deca)
 				{
 					deca++;
 					if(!(pixel_mode & NO_DECO))

@@ -13,8 +13,13 @@ struct RendererSettings
 	std::optional<FindingElement> findingElement;
 	bool gravityZonesEnabled = false;
 	bool gravityFieldEnabled = false;
-	int decorations_enable = 1;
-	bool blackDecorations = false;
+	enum DecorationLevel
+	{
+		decorationDisabled,
+		decorationEnabled,
+		decorationAntiClickbait,
+	};
+	DecorationLevel decorationLevel = decorationEnabled;
 	bool debugLines = false;
 	int foundElements = 0;
 	ui::Point mousePos = { 0, 0 };

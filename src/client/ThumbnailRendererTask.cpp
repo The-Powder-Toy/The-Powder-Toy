@@ -13,10 +13,10 @@ int ThumbnailRendererTask::QueueSize()
 	return queueSize;
 }
 
-ThumbnailRendererTask::ThumbnailRendererTask(GameSave const &save, Vec2<int> size, bool decorations, bool fire):
+ThumbnailRendererTask::ThumbnailRendererTask(GameSave const &save, Vec2<int> size, RendererSettings::DecorationLevel newDecorationLevel, bool fire):
 	save(std::make_unique<GameSave>(save)),
 	size(size),
-	decorations(decorations),
+	decorationLevel(newDecorationLevel),
 	fire(fire)
 {
 	queueSize += 1;
@@ -29,7 +29,9 @@ ThumbnailRendererTask::~ThumbnailRendererTask()
 
 bool ThumbnailRendererTask::doWork()
 {
-	thumbnail = SaveRenderer::Ref().Render(save.get(), decorations, fire, RendererSettings{});
+	RendererSettings rendererSettings;
+	rendererSettings.decorationLevel = decorationLevel;
+	thumbnail = SaveRenderer::Ref().Render(save.get(), fire, rendererSettings);
 	if (thumbnail)
 	{
 		thumbnail->ResizeToFit(size, true);
