@@ -11,11 +11,13 @@ RenderController::RenderController(Simulation *sim, Renderer * ren, RendererSett
 	renderView = new RenderView();
 	renderModel = new RenderModel();
 
+	renderModel->SetRenderer(ren, rendererSettings);
+
 	renderView->AttachController(this);
 	renderModel->AddObserver(renderView);
 
-	renderModel->SetRenderer(ren, rendererSettings);
 	renderModel->SetSimulation(sim);
+
 	onDone = onDone_;
 }
 
