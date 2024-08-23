@@ -339,11 +339,6 @@ ui::Point GameController::PointTranslate(ui::Point point)
 	return gameModel->AdjustZoomCoords(point);
 }
 
-ui::Point GameController::PointTranslateNoClamp(ui::Point point)
-{
-	return gameModel->AdjustZoomCoords(point);
-}
-
 ui::Point GameController::NormaliseBlockCoord(ui::Point point)
 {
 	return (point/CELL)*CELL;
@@ -370,7 +365,7 @@ void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point poi
 	if (!activeTool)
 		return;
 	activeTool->Strength = 1.0f;
-	activeTool->DrawLine(sim, cBrush, point1, point2);
+	activeTool->DrawLine(sim, cBrush, point1, point2, false);
 }
 
 void GameController::DrawFill(int toolSelection, ui::Point point)
@@ -434,6 +429,16 @@ void GameController::ToolClick(int toolSelection, ui::Point point)
 	if (!activeTool)
 		return;
 	activeTool->Click(sim, cBrush, point);
+}
+
+void GameController::ToolDrag(int toolSelection, ui::Point point1, ui::Point point2)
+{
+	Simulation * sim = gameModel->GetSimulation();
+	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
+	Brush &cBrush = gameModel->GetBrush();
+	if (!activeTool)
+		return;
+	activeTool->Drag(sim, cBrush, point1, point2);
 }
 
 static Rect<int> SaneSaveRect(Vec2<int> point1, Vec2<int> point2)

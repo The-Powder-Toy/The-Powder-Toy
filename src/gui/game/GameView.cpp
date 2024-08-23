@@ -178,7 +178,6 @@ GameView::GameView():
 	wallBrush(false),
 	toolBrush(false),
 	decoBrush(false),
-	windTool(false),
 	toolIndex(0),
 	currentSaveType(0),
 	lastMenu(-1),
@@ -1152,7 +1151,6 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 				return;
 			Tool *lastTool = c->GetActiveTool(toolIndex);
 			c->SetLastTool(lastTool);
-			windTool = lastTool->Identifier == "DEFAULT_UI_WIND";
 			decoBrush = lastTool->Identifier.BeginsWith("DEFAULT_DECOR_");
 
 			UpdateDrawMode();
@@ -1724,12 +1722,12 @@ void GameView::OnTick(float dt)
 		{
 			c->DrawFill(toolIndex, c->PointTranslate(currentMouse));
 		}
-		else if (windTool && drawMode == DrawLine)
+		else if (drawMode == DrawLine)
 		{
 			ui::Point drawPoint2 = currentMouse;
 			if (altBehaviour)
 				drawPoint2 = lineSnapCoords(c->PointTranslate(drawPoint1), currentMouse);
-			c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), c->PointTranslateNoClamp(drawPoint2));
+			c->ToolDrag(toolIndex, c->PointTranslate(drawPoint1), c->PointTranslate(drawPoint2));
 		}
 	}
 
@@ -2177,7 +2175,7 @@ void GameView::OnDraw()
 
 	if (showBrush && selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
 	{
-		ui::Point finalCurrentMouse = windTool ? c->PointTranslateNoClamp(currentMouse) : c->PointTranslate(currentMouse);
+		ui::Point finalCurrentMouse = c->PointTranslate(currentMouse);
 		ui::Point initialDrawPoint = drawPoint1;
 
 		if (wallBrush)

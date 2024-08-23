@@ -634,7 +634,6 @@ static int floodWalls(lua_State *L)
 
 static int toolBrush(lua_State *L)
 {
-	auto &sd = SimulationData::CRef();
 	int x = luaL_optint(L,1,-1);
 	int y = luaL_optint(L,2,-1);
 	int rx = luaL_optint(L,3,5);
@@ -642,29 +641,26 @@ static int toolBrush(lua_State *L)
 	int tool = luaL_optint(L,5,0);
 	int brushID = luaL_optint(L,6,BRUSH_CIRCLE);
 	float strength = luaL_optnumber(L,7,1.0f);
-	if (tool == (int)sd.tools.size())
-	{
-		lua_pushinteger(L, 0);
-		return 1;
-	}
-	else if (tool < 0 || tool > (int)sd.tools.size())
-		return luaL_error(L, "Invalid tool id '%d'", tool);
-
 	auto *lsi = GetLSI();
+	auto *toolPtr = lsi->gameModel->GetToolByIndex(tool);
+	if (!toolPtr)
+	{
+		return luaL_error(L, "Invalid tool id '%d'", tool);
+	}
+
 	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
 	if (!brush)
 		return luaL_error(L, "Invalid brush id '%d'", brushID);
 	auto newBrush = brush->Clone();
 	newBrush->SetRadius(ui::Point(rx, ry));
 
-	int ret = lsi->sim->ToolBrush(x, y, tool, *newBrush, strength);
-	lua_pushinteger(L, ret);
-	return 1;
+	toolPtr->Strength = strength;
+	toolPtr->Draw(lsi->sim, *newBrush, { x, y });
+	return 0;
 }
 
 static int toolLine(lua_State *L)
 {
-	auto &sd = SimulationData::CRef();
 	int x1 = luaL_optint(L,1,-1);
 	int y1 = luaL_optint(L,2,-1);
 	int x2 = luaL_optint(L,3,-1);
@@ -677,32 +673,25 @@ static int toolLine(lua_State *L)
 
 	if (x1 < 0 || x2 < 0 || x1 >= XRES || x2 >= XRES || y1 < 0 || y2 < 0 || y1 >= YRES || y2 >= YRES)
 		return luaL_error(L, "coordinates out of range (%d,%d),(%d,%d)", x1, y1, x2, y2);
-	if (tool < 0 || tool >= (int)sd.tools.size()+1)
-		return luaL_error(L, "Invalid tool id '%d'", tool);
-
 	auto *lsi = GetLSI();
+	auto *toolPtr = lsi->gameModel->GetToolByIndex(tool);
+	if (!toolPtr)
+	{
+		return luaL_error(L, "Invalid tool id '%d'", tool);
+	}
+
 	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
 	if (!brush)
 		return luaL_error(L, "Invalid brush id '%d'", brushID);
 	auto newBrush = brush->Clone();
 	newBrush->SetRadius(ui::Point(rx, ry));
-
-	if (tool == (int)sd.tools.size())
-	{
-		Tool *windTool = lsi->gameModel->GetToolFromIdentifier("DEFAULT_UI_WIND");
-		float oldStrength = windTool->Strength;
-		windTool->Strength = strength;
-		windTool->DrawLine(lsi->sim, *newBrush, ui::Point(x1, y1), ui::Point(x2, y2));
-		windTool->Strength = oldStrength;
-	}
-	else
-		lsi->sim->ToolLine(x1, y1, x2, y2, tool, *newBrush, strength);
+	toolPtr->Strength = strength;
+	toolPtr->DrawLine(lsi->sim, *newBrush, { x1, y1 }, { x2, y2 }, false);
 	return 0;
 }
 
 static int toolBox(lua_State *L)
 {
-	auto &sd = SimulationData::CRef();
 	int x1 = luaL_optint(L,1,-1);
 	int y1 = luaL_optint(L,2,-1);
 	int x2 = luaL_optint(L,3,-1);
@@ -711,16 +700,24 @@ static int toolBox(lua_State *L)
 		return luaL_error(L, "coordinates out of range (%d,%d),(%d,%d)", x1, y1, x2, y2);
 	int tool = luaL_optint(L,5,0);
 	float strength = luaL_optnumber(L,6,1.0f);
-	if (tool == (int)sd.tools.size())
-	{
-		lua_pushinteger(L, 0);
-		return 1;
-	}
-	else if (tool < 0 || tool >= (int)sd.tools.size())
-		return luaL_error(L, "Invalid tool id '%d'", tool);
-
+	int brushID = luaL_optint(L,7,BRUSH_CIRCLE);
+	int rx = luaL_optint(L,5,0);
+	int ry = luaL_optint(L,6,0);
 	auto *lsi = GetLSI();
-	lsi->sim->ToolBox(x1, y1, x2, y2, tool, strength);
+	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
+	if (!brush)
+	{
+		return luaL_error(L, "Invalid brush id '%d'", brushID);
+	}
+	auto *toolPtr = lsi->gameModel->GetToolByIndex(tool);
+	if (!toolPtr)
+	{
+		return luaL_error(L, "Invalid tool id '%d'", tool);
+	}
+	auto newBrush = brush->Clone();
+	newBrush->SetRadius(ui::Point(rx, ry));
+	toolPtr->Strength = strength;
+	toolPtr->DrawRect(lsi->sim, *newBrush, { x1, y1 }, { x2, y2 });
 	return 0;
 }
 
@@ -1959,16 +1956,6 @@ void LuaSimulation::Open(lua_State *L)
 	LCONSTF(CFDS);
 	LCONSTF(MAX_VELOCITY);
 
-	LCONST(TOOL_HEAT);
-	LCONST(TOOL_COOL);
-	LCONST(TOOL_VAC);
-	LCONST(TOOL_PGRV);
-	LCONST(TOOL_AIR);
-	LCONST(TOOL_NGRV);
-	LCONST(TOOL_MIX);
-	LCONST(TOOL_CYCL);
-	LCONSTAS("TOOL_WIND", sd.tools.size());
-
 	LCONST(DECO_DRAW);
 	LCONST(DECO_CLEAR);
 	LCONST(DECO_ADD);
@@ -2035,9 +2022,26 @@ void LuaSimulation::Open(lua_State *L)
 		lua_setfield(L, -2, "walls");
 		LCONSTAS("NUM_WALLS", UI_WALLCOUNT);
 	}
+
+	{
+		lua_newtable(L);
+		auto &toolList = lsi->gameModel->GetTools();
+		for (int i = 0; i < int(toolList.size()); ++i)
+		{
+			tpt_lua_pushByteString(L, toolList[i]->Identifier);
+			lua_pushinteger(L, i);
+			lua_settable(L, -3);
+			lua_pushinteger(L, i);
+			tpt_lua_pushByteString(L, toolList[i]->Identifier);
+			lua_settable(L, -3);
+		}
+		lua_setfield(L, -2, "tools");
+		LCONSTAS("NUM_TOOLS", UI_WALLCOUNT);
+	}
 #undef LCONSTAS
 #undef LCONSTF
 #undef LCONST
+
 	{
 		int particlePropertiesCount = 0;
 		for (auto &prop : Particle::GetProperties())

@@ -9,6 +9,7 @@ simulation_tool_names = [
 	'CYCL',
 	'AMBM',
 	'AMBP',
+	'WIND',
 ]
 
 simulation_tool_src = []

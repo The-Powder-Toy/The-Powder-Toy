@@ -5,7 +5,6 @@
 #include "common/String.h"
 #include "MenuSection.h"
 #include "BuiltinGOL.h"
-#include "SimTool.h"
 #include "Element.h"
 #include "Particle.h"
 #include "WallType.h"
@@ -157,7 +156,6 @@ class SimulationData : public ExplicitSingleton<SimulationData>
 public:
 	std::array<Element, PT_NUM> elements;
 	std::array<gcache_item, PT_NUM> graphicscache;
-	std::vector<SimTool> tools;
 	std::vector<wall_type> wtypes;
 	std::vector<menu_section> msections;
 	char can_move[PT_NUM][PT_NUM];

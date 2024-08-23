@@ -60,6 +60,17 @@ private:
 	std::vector<GameView*> observers;
 	std::vector<Tool*> toolList;
 
+	std::vector<std::unique_ptr<Tool>> tools;
+
+	template<class ToolType, class... Args>
+	ToolType *AddTool(Args &&...args)
+	{
+		auto ptr = std::make_unique<ToolType>(std::forward<Args>(args)...);
+		auto raw = ptr.get();
+		tools.push_back(std::move(ptr));
+		return raw;
+	}
+
 	//All tools that are associated with elements
 	std::vector<Tool*> elementTools;
 	//Tools that are present in elementTools, but don't have an associated menu and need to be freed manually
@@ -138,6 +149,8 @@ public:
 
 	void Tick();
 
+	Tool *GetToolByIndex(int index);
+
 	void SetEdgeMode(int edgeMode);
 	int GetEdgeMode();
 	void SetTemperatureScale(int temperatureScale);
@@ -199,6 +212,11 @@ public:
 	Tool * GetElementTool(int elementID);
 	std::vector<Tool*> GetToolList();
 	std::vector<Tool*> GetUnlistedTools();
+
+	const std::vector<std::unique_ptr<Tool>> &GetTools()
+	{
+		return tools;
+	}
 
 	Brush &GetBrush();
 	Brush *GetBrushByID(int i);

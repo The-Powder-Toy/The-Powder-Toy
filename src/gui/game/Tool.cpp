@@ -13,15 +13,9 @@ std::unique_ptr<VideoBuffer> Tool::GetTexture(Vec2<int> size)
 }
 
 void Tool::Click(Simulation * sim, Brush const &brush, ui::Point position) { }
-void Tool::Draw(Simulation * sim, Brush const &brush, ui::Point position) {
-	sim->ToolBrush(position.X, position.Y, ToolID, brush, Strength);
-}
-void Tool::DrawLine(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2, bool dragging) {
-	sim->ToolLine(position1.X, position1.Y, position2.X, position2.Y, ToolID, brush, Strength);
-}
-void Tool::DrawRect(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2) {
-	sim->ToolBox(position1.X, position1.Y, position2.X, position2.Y, ToolID, Strength);
-}
+void Tool::Draw(Simulation * sim, Brush const &brush, ui::Point position) {}
+void Tool::DrawLine(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2, bool dragging) {}
+void Tool::DrawRect(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2) {}
 void Tool::DrawFill(Simulation * sim, Brush const &brush, ui::Point position) {}
 
 
@@ -73,23 +67,6 @@ void WallTool::DrawFill(Simulation * sim, Brush const &brush, ui::Point position
 	if (ToolID != WL_STREAM)
 		sim->FloodWalls(position.X, position.Y, ToolID, -1);
 }
-
-void WindTool::DrawLine(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2, bool dragging)
-{
-	float strength = dragging?0.01f:0.002f;
-	strength *= this->Strength;
-
-	for (ui::Point off : brush)
-	{
-		ui::Point coords = position1 + off;
-		if (coords.X >= 0 && coords.Y >= 0 && coords.X < XRES && coords.Y < YRES)
-		{
-			sim->vx[coords.Y / CELL][coords.X / CELL] += (position2 - position1).X * strength;
-			sim->vy[coords.Y / CELL][coords.X / CELL] += (position2 - position1).Y * strength;
-		}
-	}
-}
-
 
 void Element_LIGH_Tool::DrawLine(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2, bool dragging)
 {

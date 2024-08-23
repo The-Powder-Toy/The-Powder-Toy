@@ -24,6 +24,3 @@ powder_files += files(
 	'Snapshot.cpp',
 	'SnapshotDelta.cpp',
 )
-render_files += files(
-	'NoToolClasses.cpp',
-)
