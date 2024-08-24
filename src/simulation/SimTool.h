@@ -1,5 +1,5 @@
 #pragma once
-#include "gui/game/Tool.h"
+#include "gui/game/tool/Tool.h"
 #include "common/String.h"
 #include "graphics/Pixel.h"
 

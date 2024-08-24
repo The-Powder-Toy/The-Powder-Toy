@@ -1,7 +1,5 @@
-#include "Tool.h"
-
+#include "SignTool.h"
 #include "simulation/Simulation.h"
-
 #include "gui/Style.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Button.h"
@@ -9,7 +7,6 @@
 #include "gui/interface/Textbox.h"
 #include "gui/interface/DropDown.h"
 #include "gui/game/GameModel.h"
-
 #include "graphics/Graphics.h"
 
 class SignWindow: public ui::Window

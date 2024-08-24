@@ -1,11 +1,9 @@
-#include "Tool.h"
-
+#include "GOLTool.h"
 #include "prefs/GlobalPrefs.h"
 #include "client/Client.h"
 #include "common/tpt-rand.h"
 #include "simulation/GOLString.h"
 #include "simulation/SimulationData.h"
-
 #include "gui/Style.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
@@ -14,7 +12,6 @@
 #include "gui/colourpicker/ColourPickerActivity.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/game/GameModel.h"
-
 #include "graphics/Graphics.h"
 
 class GOLWindow: public ui::Window

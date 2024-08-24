@@ -1,7 +1,5 @@
 #include "Menu.h"
 
-#include "Tool.h"
-
 Menu::Menu(String::value_type icon_, String description_, int visible_):
 	icon(icon_),
 	description(description_),

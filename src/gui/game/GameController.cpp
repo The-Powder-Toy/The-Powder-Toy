@@ -10,7 +10,8 @@
 #include "Notification.h"
 #include "QuickOptions.h"
 #include "RenderPreset.h"
-#include "Tool.h"
+#include "tool/PropertyTool.h"
+#include "tool/GOLTool.h"
 
 #include "GameControllerEvents.h"
 #include "lua/CommandInterface.h"
@@ -1129,7 +1130,7 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 	}
 	if(tool->Identifier == "DEFAULT_UI_ADDLIFE")
 	{
-		((GOLTool *)tool)->OpenWindow(gameModel->GetSimulation(), toolSelection);
+		static_cast<GOLTool *>(tool)->OpenWindow(gameModel->GetSimulation(), toolSelection);
 	}
 }
 

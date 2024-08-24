@@ -1,9 +1,7 @@
-#include "Tool.h"
-
+#include "PropertyTool.h"
 #include "prefs/GlobalPrefs.h"
-#include "Menu.h"
+#include "gui/game/Menu.h"
 #include "Format.h"
-
 #include "gui/game/GameModel.h"
 #include "gui/Style.h"
 #include "gui/game/Brush.h"
@@ -13,14 +11,11 @@
 #include "gui/interface/Textbox.h"
 #include "gui/interface/DropDown.h"
 #include "gui/dialogues/ErrorMessage.h"
-
 #include "simulation/GOLString.h"
 #include "simulation/BuiltinGOL.h"
 #include "simulation/Simulation.h"
 #include "simulation/SimulationData.h"
-
 #include "graphics/Graphics.h"
-
 #include "Config.h"
 #include <iostream>
 #include <SDL.h>

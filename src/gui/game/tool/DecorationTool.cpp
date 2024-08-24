@@ -2,7 +2,7 @@
 #include "graphics/Renderer.h"
 #include "simulation/SimulationData.h"
 #include "simulation/Simulation.h"
-#include "GameView.h"
+#include "gui/game/GameView.h"
 
 std::unique_ptr<VideoBuffer> DecorationTool::GetIcon(int ToolID, Vec2<int> size)
 {

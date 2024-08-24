@@ -20,9 +20,6 @@ public:
 		gameView(newGameView)
 	{}
 
-	virtual ~DecorationTool()
-	{}
-
 	void Draw(Simulation * sim, Brush const &brush, ui::Point position) override;
 	void DrawLine(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2, bool dragging) override;
 	void DrawRect(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2) override;

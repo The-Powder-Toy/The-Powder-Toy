@@ -8,7 +8,7 @@
 #include "gui/game/GameModel.h"
 #include "gui/game/GameView.h"
 #include "gui/game/Brush.h"
-#include "gui/game/Tool.h"
+#include "gui/game/tool/Tool.h"
 #include "simulation/Air.h"
 #include "simulation/ElementCommon.h"
 #include "simulation/GOLString.h"

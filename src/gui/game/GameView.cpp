@@ -1,7 +1,8 @@
 #include "GameView.h"
 
 #include "Brush.h"
-#include "DecorationTool.h"
+#include "tool/DecorationTool.h"
+#include "tool/PropertyTool.h"
 #include "Favorite.h"
 #include "Format.h"
 #include "GameController.h"
@@ -21,6 +22,7 @@
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
+#include "graphics/VideoBuffer.h"
 #include "gui/Style.h"
 #include "simulation/ElementClasses.h"
 #include "simulation/ElementDefs.h"
@@ -561,7 +563,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 
 		//get decotool texture manually, since it changes depending on it's own color
 		if (sender->GetActiveMenu() == SC_DECO)
-			tempTexture = ((DecorationTool*)tool)->GetIcon(tool->ToolID, Vec2(26, 14));
+			tempTexture = static_cast<DecorationTool *>(tool)->GetIcon(tool->ToolID, Vec2(26, 14));
 
 		if (tempTexture)
 			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", tool->Identifier, tool->Description);
