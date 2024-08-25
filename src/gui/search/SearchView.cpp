@@ -191,7 +191,7 @@ void SearchView::searchHelp()
 		"Use \bt@title\bw to limit search to only save titles, for example \bg~@title subframe\bw\n"
 		"Use \bt@description\bw to limit search to only save descriptions, for example \bg~@description \"No description provided\"\bw\n"
 		"Use \bt@user\bw to limit search to only specific users, for example \bg~@user 117n00b | Catelite | Fluttershy @title laser\bw\n"
-		"Use \bt@tags\bw to limit search to only specific users, for example \bg~@tags resistcup @title printer | @description spider before:2024-06\bw\n"
+		"Use \bt@tags\bw to limit search to just save tags, for example \bg~@tags resistcup @title printer | @description spider before:2024-06\bw\n"
 		"Parenthesis can be used to further complicate your searches. For example: \bg~(@user MG99 @description complete) | (@user goglesq @tags tutorial)\bw"
 		;
 
