@@ -42,6 +42,7 @@ private:
 	ui::Button * unpublishSelected;
 	ui::Button * favouriteSelected;
 	ui::Button * clearSelection;
+	void searchHelp();
 	void clearSearch();
 	void doSearch();
 	void textChanged();

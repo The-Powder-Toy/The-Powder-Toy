@@ -3,6 +3,7 @@
 #include "SearchModel.h"
 #include "client/Client.h"
 #include "client/SaveInfo.h"
+#include "gui/dialogues/InformationMessage.h"
 #include "gui/interface/SaveButton.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
@@ -45,7 +46,7 @@ SearchView::SearchView():
 	AddComponent(pageCountLabel);
 	AddComponent(pageTextbox);
 
-	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point(WINDOWW-283, 17), "", "[search]");
+	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point(WINDOWW-283, 17), "", "[search, F1 for help]");
 	searchField->Appearance.icon = IconSearch;
 	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	searchField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -163,6 +164,38 @@ void SearchView::doSearch()
 {
 	if (searchField->GetText().length() > 3 || !searchField->GetText().length())
 		c->DoSearch(searchField->GetText());
+}
+
+void SearchView::searchHelp()
+{
+	String info =
+		"Type in the search bar to begin automatically searching save titles and tags. Search terms are ORed together.\n"
+		"\n"
+		"Sorting: click the \bt\"By Votes\"\bw / \bt\"By Date\"\bw buttons to change the order saves are displayed in\n"
+		"Categories: If you're logged in, use \bt\"My Own\"\bw to view only your own saves, or click the Star icon to view your favorited saves\n"
+		"Date Range: Click the dropdown to the right of the search box to select the date range for your search\n"
+		"\n"
+		"Special search terms:\n"
+		"\btid:#######\bw - search by save id\n"
+		"\bthistory:#######\bw - see previous versions for a save id\n"
+		"\btuser:XXXXXX\bw - search for saves by a specific user\n"
+		"\btbefore:YYYY-MM-DD\bw - all saves originally created before a certain date. Month and Day portions are both optional\n"
+		"\btafter:YYYY-MM-DD\bw - all saves originally created after a certain date. Month and Day portions are both optional\n"
+		"\n"
+		"Advanced search:\n"
+		"Start a search with \bt~\bw to do an advanced search. This search works across save titles, descriptions, usernames, and tags, rather than only save titles and tags."
+		" It also concatenates search terms with AND instead of OR.\n"
+		"Use \bt|\bw to OR together search terms, for example \bg~bomb | nuke | explosive\bw\n"
+		"Use \bt!\bw to negate terms, for example \bg~city !destroyable !desert\bw\n"
+		"Use \bt\"\bw to create multi-word search terms, for example \bg~\"power plant\" uran | plut | polo\bw\n"
+		"Use \bt@title\bw to limit search to only save titles, for example \bg~@title subframe\bw\n"
+		"Use \bt@description\bw to limit search to only save descriptions, for example \bg~@description \"No description provided\"\bw\n"
+		"Use \bt@user\bw to limit search to only specific users, for example \bg~@user 117n00b | Catelite | Fluttershy @title laser\bw\n"
+		"Use \bt@tags\bw to limit search to only specific users, for example \bg~@tags resistcup @title printer | @description spider before:2024-06\bw\n"
+		"Parenthesis can be used to further complicate your searches. For example: \bg~(@user MG99 @description complete) | (@user goglesq @tags tutorial)\bw"
+		;
+
+	new InformationMessage("Search Help", info, true);
 }
 
 void SearchView::clearSearch()
@@ -664,6 +697,8 @@ void SearchView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctr
 		c->SelectAllSaves();
 	else if (key == SDLK_LCTRL || key == SDLK_RCTRL)
 		c->InstantOpen(true);
+	else if (key == SDLK_F1)
+		searchHelp();
 }
 
 void SearchView::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
