@@ -198,7 +198,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 					}
 				}
 				// Make paper burn more reliably
-				if (rt==PT_PAPR)
+				if (rt == PT_PAPR && t != PT_PHOT)
 				{
 					parts[ID(r)].temp += 4;
 				}
