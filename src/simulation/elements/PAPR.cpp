@@ -132,7 +132,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	if (cpart->life)
 	{
 		// Render deco color when marked
-		if(gfctx.ren->decorations_enable && !gfctx.ren->blackDecorations)
+		if(gfctx.ren->decorationLevel == RendererSettings::decorationEnabled)
 		{
 			// Burnt paper has more faded colors
 			float alpha = restrict_flt(((cpart->dcolour >> 24) & 0xFF) - restrict_flt((burnAmount - 450) * 1.7f, 0, 255), 0, 255) / 255.f;
