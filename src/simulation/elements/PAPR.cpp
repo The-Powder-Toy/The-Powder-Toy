@@ -78,17 +78,27 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 	}
 
-	// Get marked by BCOL
-	if (TYP(pmap[y][x]) == PT_BCOL)
+	auto r = pmap[y][x];
+	switch (TYP(r))
 	{
-		parts[i].life = 1;
-		parts[i].dcolour = 0xFF22222A;
-	}
+		// Get marked by BCOL
+		case PT_BCOL:
+			parts[i].life = 1;
+			parts[i].dcolour = 0xFF22222A;
+			break;
 
-	// Doesn't guarantee layering won't happen, but makes it far less likely
-	if (TYP(pmap[y][x]) == PT_SAWD)
-	{
-		parts[ID(pmap[y][x])].tmp = 0;
+		// Doesn't guarantee layering won't happen, but makes it far less likely
+		case PT_SAWD:
+			parts[ID(r)].tmp = 0;
+			break;
+
+		case PT_GUNP:
+			sim->create_part(i, x, y, PT_IGNT);
+			sim->kill_part(ID(r));
+			break;
+
+		default:
+			break;
 	}
 
 	// Generally, these should correspond, but correct if they don't.
