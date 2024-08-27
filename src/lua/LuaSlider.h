@@ -15,13 +15,13 @@ class LuaSlider: public LuaComponent
 	ui::Slider * slider;
 	LuaComponentCallback onValueChangedFunction;
 	void triggerOnValueChanged();
-	int onValueChanged(lua_State * l);
-	int steps(lua_State * l);
-	int value(lua_State * l);
+	int onValueChanged(lua_State *L);
+	int steps(lua_State *L);
+	int value(lua_State *L);
 public:
 	static const char className[];
 	static Luna<LuaSlider>::RegType methods[];
 
-	LuaSlider(lua_State * l);
+	LuaSlider(lua_State *L);
 	~LuaSlider();
 };

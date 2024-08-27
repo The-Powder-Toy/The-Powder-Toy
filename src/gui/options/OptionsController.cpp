@@ -72,6 +72,11 @@ void OptionsController::SetTemperatureScale(int temperatureScale)
 	model->SetTemperatureScale(temperatureScale);
 }
 
+void OptionsController::SetThreadedRendering(bool newThreadedRendering)
+{
+	model->SetThreadedRendering(newThreadedRendering);
+}
+
 void OptionsController::SetFullscreen(bool fullscreen)
 {
 	model->SetFullscreen(fullscreen);
@@ -105,6 +110,11 @@ void OptionsController::SetScale(int scale)
 void OptionsController::SetGraveExitsConsole(bool graveExitsConsole)
 {
 	model->SetGraveExitsConsole(graveExitsConsole);
+}
+
+void OptionsController::SetNativeClipoard(bool nativeClipoard)
+{
+	model->SetNativeClipoard(nativeClipoard);
 }
 
 void OptionsController::SetResizable(bool resizable)

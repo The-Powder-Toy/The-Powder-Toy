@@ -87,10 +87,11 @@ GameController::GameController():
 
 	gameView->AttachController(this);
 	gameModel->AddObserver(gameView);
+	gameModel->view = gameView; // mvc is a joke
 
 	gameView->SetDebugHUD(GlobalPrefs::Ref().Get("Renderer.DebugMode", false));
 
-	CommandInterface::Create(this, gameModel);
+	commandInterface = CommandInterface::Create(this, gameModel);
 
 	Client::Ref().AddListener(this);
 
@@ -146,7 +147,7 @@ GameController::~GameController()
 	{
 		delete *iter;
 	}
-	delete commandInterface;
+	commandInterface.reset();
 	delete gameModel;
 	if (gameView->CloseActiveWindow())
 	{
@@ -270,9 +271,9 @@ void GameController::Install()
 void GameController::AdjustGridSize(int direction)
 {
 	if(direction > 0)
-		gameModel->GetRenderer()->SetGridSize((gameModel->GetRenderer()->GetGridSize()+1)%10);
+		gameModel->GetRendererSettings().gridSize = (gameModel->GetRendererSettings().gridSize+1)%10;
 	else
-		gameModel->GetRenderer()->SetGridSize((gameModel->GetRenderer()->GetGridSize()+9)%10);
+		gameModel->GetRendererSettings().gridSize = (gameModel->GetRendererSettings().gridSize+9)%10;
 }
 
 void GameController::InvertAirSim()
@@ -396,6 +397,10 @@ void GameController::DrawPoints(int toolSelection, ui::Point oldPos, ui::Point n
 	}
 
 	activeTool->Strength = gameModel->GetToolStrength();
+	// This is a joke, the game mvc has to go >_>
+	activeTool->shiftBehaviour = gameView->ShiftBehaviour();
+	activeTool->ctrlBehaviour = gameView->CtrlBehaviour();
+	activeTool->altBehaviour = gameView->AltBehaviour();
 	if (!held)
 		activeTool->Draw(sim, cBrush, newPos);
 	else
@@ -444,7 +449,12 @@ static Rect<int> SaneSaveRect(Vec2<int> point1, Vec2<int> point2)
 
 ByteString GameController::StampRegion(ui::Point point1, ui::Point point2)
 {
-	auto newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), SaneSaveRect(point1, point2));
+	return StampRegion(point1, point2, gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
+}
+
+ByteString GameController::StampRegion(ui::Point point1, ui::Point point2, bool includePressure)
+{
+	auto newSave = gameModel->GetSimulation()->Save(includePressure, SaneSaveRect(point1, point2));
 	if(newSave)
 	{
 		newSave->paused = gameModel->GetPaused();
@@ -543,7 +553,7 @@ bool GameController::MouseUp(int x, int y, unsigned button, MouseupReason reason
 						}
 						break;
 					case sign::Type::Thread:
-						Platform::OpenURI(ByteString::Build(SCHEME, "powdertoy.co.uk/Discussions/Thread/View.html?Thread=", str.Substr(3, si.first - 3).ToUtf8()));
+						Platform::OpenURI(ByteString::Build(SERVER, "/Discussions/Thread/View.html?Thread=", str.Substr(3, si.first - 3).ToUtf8()));
 						break;
 					case sign::Type::Search:
 						OpenSearch(str.Substr(3, si.first - 3));
@@ -776,7 +786,7 @@ void GameController::ResetSpark()
 
 void GameController::SwitchGravity()
 {
-	gameModel->GetSimulation()->gravityMode = (gameModel->GetSimulation()->gravityMode + 1) % NUM_GRAV_MODES;
+	gameModel->GetSimulation()->gravityMode = (gameModel->GetSimulation()->gravityMode + 1) % NUM_GRAVMODES;
 
 	switch (gameModel->GetSimulation()->gravityMode)
 	{
@@ -797,23 +807,23 @@ void GameController::SwitchGravity()
 
 void GameController::SwitchAir()
 {
-	gameModel->GetSimulation()->air->airMode = (gameModel->GetSimulation()->air->airMode + 1) % NUM_AIR_MODES;
+	gameModel->GetSimulation()->air->airMode = (gameModel->GetSimulation()->air->airMode + 1) % NUM_AIRMODES;
 
 	switch (gameModel->GetSimulation()->air->airMode)
 	{
 	case AIR_ON:
 		gameModel->SetInfoTip("Air: On");
 		break;
-	case AIR_PRESSURE_OFF:
+	case AIR_PRESSUREOFF:
 		gameModel->SetInfoTip("Air: Pressure Off");
 		break;
-	case AIR_VELOCITY_OFF:
+	case AIR_VELOCITYOFF:
 		gameModel->SetInfoTip("Air: Velocity Off");
 		break;
 	case AIR_OFF:
 		gameModel->SetInfoTip("Air: Off");
 		break;
-	case AIR_NO_UPDATE:
+	case AIR_NOUPDATE:
 		gameModel->SetInfoTip("Air: No Update");
 		break;
 	}
@@ -841,19 +851,19 @@ void GameController::ToggleNewtonianGravity()
 
 void GameController::LoadRenderPreset(int presetNum)
 {
-	Renderer * renderer = gameModel->GetRenderer();
-	RenderPreset preset = renderer->renderModePresets[presetNum];
+	auto &settings = gameModel->GetRendererSettings();
+	RenderPreset preset = Renderer::renderModePresets[presetNum];
 	gameModel->SetInfoTip(preset.Name);
-	renderer->SetRenderMode(preset.RenderModes);
-	renderer->SetDisplayMode(preset.DisplayModes);
-	renderer->SetColourMode(preset.ColourMode);
+	settings.renderMode = preset.renderMode;
+	settings.displayMode = preset.displayMode;
+	settings.colorMode = preset.colorMode;
 }
 
 void GameController::Update()
 {
 	auto &sd = SimulationData::CRef();
 	ui::Point pos = gameView->GetMousePosition();
-	gameModel->GetRenderer()->mousePos = PointTranslate(pos);
+	gameModel->GetRendererSettings().mousePos = PointTranslate(pos);
 	if (pos.X < XRES && pos.Y < YRES)
 		gameView->SetSample(gameModel->GetSimulation()->GetSample(PointTranslate(pos).X, PointTranslate(pos).Y));
 	else
@@ -1022,7 +1032,7 @@ int GameController::GetEdgeMode()
 
 void GameController::SetEdgeMode(int edgeMode)
 {
-	if (edgeMode < 0 || edgeMode >= NUM_EDGE_MODES)
+	if (edgeMode < 0 || edgeMode >= NUM_EDGEMODES)
 		edgeMode = 0;
 
 	gameModel->SetEdgeMode(edgeMode);
@@ -1096,17 +1106,22 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 	if (gameModel->GetActiveMenu() == SC_DECO && toolSelection == 2)
 		toolSelection = 0;
 	gameModel->SetActiveTool(toolSelection, tool);
-	gameModel->GetRenderer()->gravityZonesEnabled = false;
+	gameModel->GetRendererSettings().gravityZonesEnabled = false;
 	if (toolSelection == 3)
 		gameModel->GetSimulation()->replaceModeSelected = tool->ToolID;
 	gameModel->SetLastTool(tool);
 	for(int i = 0; i < 3; i++)
 	{
-		if(gameModel->GetActiveTool(i) == gameModel->GetMenuList().at(SC_WALL)->GetToolList().at(WL_GRAV))
-			gameModel->GetRenderer()->gravityZonesEnabled = true;
+		auto *activeTool = gameModel->GetActiveTool(i);
+		if (activeTool && activeTool->Identifier == "DEFAULT_WL_GRVTY")
+		{
+			gameModel->GetRendererSettings().gravityZonesEnabled = true;
+		}
 	}
-	if(tool->Identifier == "DEFAULT_UI_PROPERTY")
-		((PropertyTool *)tool)->OpenWindow(gameModel->GetSimulation());
+	if (tool->Identifier == "DEFAULT_UI_PROPERTY")
+	{
+		static_cast<PropertyTool *>(tool)->OpenWindow(gameModel->GetSimulation(), nullptr);
+	}
 	if(tool->Identifier == "DEFAULT_UI_ADDLIFE")
 	{
 		((GOLTool *)tool)->OpenWindow(gameModel->GetSimulation(), toolSelection);
@@ -1124,6 +1139,11 @@ void GameController::SetActiveTool(int toolSelection, ByteString identifier)
 void GameController::SetLastTool(Tool * tool)
 {
 	gameModel->SetLastTool(tool);
+}
+
+Tool *GameController::GetLastTool()
+{
+	return gameModel->GetLastTool();
 }
 
 int GameController::GetReplaceModeFlags()
@@ -1370,7 +1390,7 @@ void GameController::OpenOptions()
 void GameController::ShowConsole()
 {
 	if (!console)
-		console = new ConsoleController(NULL, commandInterface);
+		console = new ConsoleController(NULL, commandInterface.get());
 	if (console->GetView() != ui::Engine::Ref().GetWindow())
 		ui::Engine::Ref().ShowWindow(console->GetView());
 }
@@ -1384,7 +1404,7 @@ void GameController::HideConsole()
 
 void GameController::OpenRenderOptions()
 {
-	renderOptions = new RenderController(gameModel->GetRenderer(), NULL);
+	renderOptions = new RenderController(gameModel->GetSimulation(), gameModel->GetRenderer(), &gameModel->GetRendererSettings(), NULL);
 	ui::Engine::Ref().ShowWindow(renderOptions->GetView());
 }
 
@@ -1696,4 +1716,19 @@ bool GameController::GetMouseClickRequired()
 void GameController::RemoveCustomGOLType(const ByteString &identifier)
 {
 	gameModel->RemoveCustomGOLType(identifier);
+}
+
+void GameController::BeforeSimDraw()
+{
+	commandInterface->HandleEvent(BeforeSimDrawEvent{});
+}
+
+void GameController::AfterSimDraw()
+{
+	commandInterface->HandleEvent(AfterSimDrawEvent{});
+}
+
+bool GameController::ThreadedRenderingAllowed()
+{
+	return gameModel->GetThreadedRendering() && !commandInterface->HaveSimGraphicsEventHandlers();
 }

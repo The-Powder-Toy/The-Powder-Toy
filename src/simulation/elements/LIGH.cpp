@@ -1,5 +1,7 @@
 #include "simulation/ElementCommon.h"
 
+#include "graphics/Pixel.h"
+
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
@@ -195,6 +197,7 @@ static bool create_LIGH(Simulation * sim, int x, int y, int c, float temp, int l
 	{
 		sim->parts[p].temp = float(temp);
 		sim->parts[p].tmp = tmp;
+		sim->parts[p].dcolour = sim->parts[i].dcolour;
 		if (last)
 		{
 			int nextSegmentLife = (int)(life/1.5 - sim->rng.between(0, 1));
@@ -299,7 +302,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	*firer = *colr = 235;
 	*fireg = *colg = 245;
 	*fireb = *colb = 255;
-	*pixel_mode |= PMODE_GLOW | FIRE_ADD;
+	*pixel_mode |= PMODE_GLOW | FIRE_ADD | DECO_FIRE;
 	return 1;
 }
 

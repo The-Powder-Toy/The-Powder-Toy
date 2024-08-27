@@ -77,7 +77,7 @@ namespace http
 		if (doOnce.allPems.size())
 		{
 			curl_blob blob;
-			blob.data = &doOnce.allPems[0];
+			blob.data = doOnce.allPems.data();
 			blob.len = doOnce.allPems.size();
 			blob.flags = CURL_BLOB_COPY;
 			HandleCURLcode(curl_easy_setopt(easy, CURLOPT_CAINFO_BLOB, &blob));

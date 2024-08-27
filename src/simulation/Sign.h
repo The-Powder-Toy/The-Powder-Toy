@@ -2,16 +2,17 @@
 #include "common/String.h"
 #include <utility>
 
-class Simulation;
+struct RenderableSimulation;
 
 struct sign
 {
 	enum Justification
 	{
-		Left = 0,
-		Middle = 1,
-		Right = 2,
-		None = 3
+		Left,
+		Middle,
+		Right,
+		None,
+		Max,
 	};
 
 	enum Type
@@ -28,6 +29,6 @@ struct sign
 	String text;
 
 	sign(String text_, int x_, int y_, Justification justification_);
-	String getDisplayText(const Simulation *sim, int &x, int &y, int &w, int &h, bool colorize = true, bool *v95 = nullptr) const;
+	String getDisplayText(const RenderableSimulation *sim, int &x, int &y, int &w, int &h, bool colorize = true, bool *v95 = nullptr) const;
 	std::pair<int, Type> split() const;
 };

@@ -6,8 +6,8 @@ void Element::Element_BIZRS()
 	Identifier = "DEFAULT_PT_BIZRS";
 	Name = "BIZS";
 	Colour = 0x00E455_rgb;
-	MenuVisible = 1;
-	MenuSection = SC_CRACKER2;
+	MenuVisible = 0;
+	MenuSection = SC_SOLIDS;
 	Enabled = 1;
 
 	Advection = 0.0f;

@@ -93,7 +93,7 @@ private:
 		std::vector<char> res(uncompressedLength);
 
 		int dstate;
-		dstate = BZ2_bzBuffToBuffDecompress(&res[0], (unsigned *)&uncompressedLength, &data[8], data.size()-8, 0, 0);
+		dstate = BZ2_bzBuffToBuffDecompress(res.data(), (unsigned *)&uncompressedLength, &data[8], data.size()-8, 0, 0);
 		if (dstate)
 		{
 			return niceNotifyError(String::Build("Unable to decompress update: ", dstate));
@@ -151,7 +151,7 @@ void UpdateActivity::NotifyError(Task * sender)
 	new ConfirmPrompt("Autoupdate failed", sb.Build(), { [this] {
 		if constexpr (!USE_UPDATESERVER)
 		{
-			Platform::OpenURI(ByteString(SCHEME) + "powdertoy.co.uk/Download.html");
+			Platform::OpenURI(ByteString::Build(SERVER, "/Download.html"));
 		}
 		Exit();
 	}, [this] { Exit(); } });

@@ -2,7 +2,7 @@
 #include <cstring>
 #include "common/RasterGeometry.h"
 #include "FontReader.h"
-#include "Graphics.h"
+#include "VideoBuffer.h"
 #include "RasterDrawMethods.h"
 
 #define clipRect() (static_cast<Derived const &>(*this).GetClipRect())

@@ -23,6 +23,3 @@ if subprocess.run([
 	apk_path,
 ]).returncode:
 	sys.exit(1)
-
-with open(phony_path, 'w') as _:
-	pass

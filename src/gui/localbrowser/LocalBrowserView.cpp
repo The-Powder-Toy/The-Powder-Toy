@@ -48,7 +48,13 @@ LocalBrowserView::LocalBrowserView():
 	removeSelected = new ui::Button(ui::Point(((WINDOWW-100)/2), WINDOWH-18), ui::Point(100, 16), "Delete");
 	removeSelected->Visible = false;
 	removeSelected->SetActionCallback({ [this] { c->RemoveSelected(); } });
+
+	renameSelected = new ui::Button(ui::Point(((WINDOWW - 100) / 2 + 52), WINDOWH - 18), ui::Point(100, 16), "Rename");
+	renameSelected->Visible = false;
+	renameSelected->SetActionCallback({ [this] { c->RenameSelected(); } });
+
 	AddComponent(removeSelected);
+	AddComponent(renameSelected);
 }
 
 void LocalBrowserView::textChanged()
@@ -179,16 +185,18 @@ void LocalBrowserView::NotifySelectedChanged(LocalBrowserModel * sender)
 		}
 	}
 
-	if (selected.size())
+	removeSelected->Visible = selected.size() > 0;
+	renameSelected->Visible = selected.size() == 1;
+	removeSelected->Position.X = (WINDOWW - 100) / 2;
+	if (renameSelected->Visible)
 	{
-		removeSelected->Visible = true;
-		pageLabel->Visible = pageCountLabel->Visible = pageTextbox->Visible = false;
+		removeSelected->Position.X -= 52;
 	}
-	else if (removeSelected->Visible)
-	{
-		removeSelected->Visible = false;
-		pageLabel->Visible = pageCountLabel->Visible = pageTextbox->Visible = true;
-	}
+
+	auto showPagination = !removeSelected->Visible;
+	pageLabel->Visible = showPagination;
+	pageCountLabel->Visible = showPagination;
+	pageTextbox->Visible = showPagination;
 }
 
 void LocalBrowserView::OnMouseWheel(int x, int y, int d)

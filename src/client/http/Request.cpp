@@ -267,6 +267,7 @@ namespace http
 			{
 				std::istringstream ss(result);
 				Json::Value root;
+				int status;
 				try
 				{
 					ss >> root;
@@ -275,11 +276,7 @@ namespace http
 					{
 						return;
 					}
-					int status = root.get("Status", 1).asInt();
-					if (status != 1)
-					{
-						throw RequestError(ByteString(root.get("Error", "Unspecified Error").asString()));
-					}
+					status = root.get("Status", 1).asInt();
 				}
 				catch (const std::exception &ex)
 				{
@@ -290,6 +287,11 @@ namespace http
 						throw RequestError(ByteString::Build("HTTP Error ", status, ": ", http::StatusText(status)));
 					}
 					throw RequestError("Could not read response: " + ByteString(ex.what()));
+				}
+
+				if (status != 1)
+				{
+					throw RequestError(ByteString(root.get("Error", "Unspecified Error").asString()));
 				}
 			}
 			break;

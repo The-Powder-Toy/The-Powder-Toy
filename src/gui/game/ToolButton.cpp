@@ -1,5 +1,6 @@
 #include "ToolButton.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "Favorite.h"
 #include <SDL.h>
 
@@ -16,12 +17,15 @@ ToolButton::ToolButton(ui::Point position, ui::Point size, String text, ByteStri
 	Component::TextPosition(buttonDisplayText);
 }
 
-void ToolButton::OnMouseClick(int x, int y, unsigned int button)
+void ToolButton::OnMouseDown(int x, int y, unsigned int button)
 {
-	isButtonDown = true;
+	if (MouseDownInside)
+	{
+		isButtonDown = true;
+	}
 }
 
-void ToolButton::OnMouseUnclick(int x, int y, unsigned int button)
+void ToolButton::OnMouseClick(int x, int y, unsigned int button)
 {
 	if(isButtonDown)
 	{

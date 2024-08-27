@@ -31,6 +31,8 @@ public:
 	void SetEdgeMode(int edgeMode);
 	int GetTemperatureScale();
 	void SetTemperatureScale(int temperatureScale);
+	int GetThreadedRendering();
+	void SetThreadedRendering(bool newThreadedRendering);
 	int GetGravityMode();
 	void SetGravityMode(int gravityMode);
 	float GetCustomGravityX();
@@ -41,6 +43,8 @@ public:
 	void SetScale(int scale);
 	bool GetGraveExitsConsole();
 	void SetGraveExitsConsole(bool graveExitsConsole);
+	bool GetNativeClipoard();
+	void SetNativeClipoard(bool nativeClipoard);
 	bool GetResizable();
 	void SetResizable(bool resizable);
 	bool GetFullscreen();

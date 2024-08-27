@@ -1,5 +1,6 @@
 #include "simulation/ElementCommon.h"
 #include "simulation/orbitalparts.h"
+#include "PRTI.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -64,8 +65,8 @@ static int update(UPDATE_FUNC_ARGS)
 	else if (parts[i].tmp<0) parts[i].tmp = 0;
 	for (auto count=0; count<8; count++)
 	{
-		auto rx = sim->portal_rx[count];
-		auto ry = sim->portal_ry[count];
+		auto rx = portal_rx[count];
+		auto ry = portal_ry[count];
 		if (rx || ry)
 		{
 			auto r = pmap[y+ry][x+rx];

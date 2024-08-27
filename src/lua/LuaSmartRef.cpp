@@ -3,10 +3,10 @@
 
 void LuaSmartRef::Clear()
 {
-	auto *luacon_ci = static_cast<LuaScriptInterface *>(commandInterface);
-	if (luacon_ci)
+	auto *lsi = GetLSI();
+	if (lsi)
 	{
-		luaL_unref(luacon_ci->l, LUA_REGISTRYINDEX, ref);
+		luaL_unref(lsi->L, LUA_REGISTRYINDEX, ref);
 		ref = LUA_REFNIL;
 	}
 }
@@ -16,19 +16,19 @@ LuaSmartRef::~LuaSmartRef()
 	Clear();
 }
 
-void LuaSmartRef::Assign(lua_State *l, int index)
+void LuaSmartRef::Assign(lua_State *L, int index)
 {
 	if (index < 0)
 	{
-		index = lua_gettop(l) + index + 1;
+		index = lua_gettop(L) + index + 1;
 	}
 	Clear();
-	lua_pushvalue(l, index);
-	ref = luaL_ref(l, LUA_REGISTRYINDEX);
+	lua_pushvalue(L, index);
+	ref = luaL_ref(L, LUA_REGISTRYINDEX);
 }
 
-int LuaSmartRef::Push(lua_State *l)
+int LuaSmartRef::Push(lua_State *L)
 {
-	lua_rawgeti(l, LUA_REGISTRYINDEX, ref);
-	return lua_type(l, -1);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
+	return lua_type(L, -1);
 }

@@ -1,5 +1,5 @@
 #include "Format.h"
-#include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "WindowIcon.h"
 
 #include "icon_exe.png.h"

@@ -2,7 +2,7 @@
 #include "gui/interface/Point.h"
 #include <memory>
 
-class Renderer;
+class Graphics;
 class Brush
 {
 private:
@@ -82,10 +82,10 @@ public:
 		return iterator{*this, -radius.X, -radius.Y - 1};
 	}
 
-	void RenderRect(Renderer * ren, ui::Point position1, ui::Point position2) const;
-	void RenderLine(Renderer * ren, ui::Point position1, ui::Point position2) const;
-	void RenderPoint(Renderer * ren, ui::Point position) const;
-	void RenderFill(Renderer * ren, ui::Point position) const;
+	void RenderRect(Graphics *g, ui::Point position1, ui::Point position2) const;
+	void RenderLine(Graphics *g, ui::Point position1, ui::Point position2) const;
+	void RenderPoint(Graphics *g, ui::Point position) const;
+	void RenderFill(Graphics *g, ui::Point position) const;
 
 	void SetRadius(ui::Point newRadius);
 };

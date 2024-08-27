@@ -296,13 +296,8 @@ namespace http
 		{
 			{
 				std::lock_guard lk(sharedStateMx);
-				for (auto &requestHandle : requestHandles)
-				{
-					if (requestHandle->statusCode)
-					{
-						requestHandlesToUnregister.push_back(requestHandle);
-					}
-				}
+				// Register new handles first. This always succeeds even if the handle is "failed early" so that
+				// a single MarkDone call could be issued on all handles further down in this block.
 				for (auto &requestHandle : requestHandlesToRegister)
 				{
 					// Must not be present
@@ -311,6 +306,17 @@ namespace http
 					RegisterRequestHandle(requestHandle);
 				}
 				requestHandlesToRegister.clear();
+				// Then unregister done handles. As explained above, registering a new handle may also immediately mark
+				// it done and we won't be coming back here until Wait() returns, so this has to come second.
+				for (auto &requestHandle : requestHandles)
+				{
+					if (requestHandle->statusCode)
+					{
+						requestHandlesToUnregister.push_back(requestHandle);
+					}
+				}
+				// Actually unregister handles queued to be unregistered. They can be queued just above, or from another thread.
+				// Thus, it's ok for them to be in the queue multiple times, but it's not ok to try to unregister them multiple times.
 				for (auto &requestHandle : requestHandlesToUnregister)
 				{
 					auto eraseFrom = std::remove(requestHandles.begin(), requestHandles.end(), requestHandle);
@@ -332,7 +338,7 @@ namespace http
 			}
 			WorkerPerform();
 		}
-		assert(!requestHandles.size());
+		// assert(!requestHandles.size()); // TODO: enable again once the rest of the codebase is actual c++
 		WorkerExit();
 	}
 
@@ -409,7 +415,7 @@ namespace http
 							// Hopefully this is what a NULL from curl_mime_addpart means.
 							HandleCURLcode(CURLE_OUT_OF_MEMORY);
 						}
-						HandleCURLcode(curl_mime_data(part, &field.value[0], field.value.size()));
+						HandleCURLcode(curl_mime_data(part, field.value.data(), field.value.size()));
 						HandleCURLcode(curl_mime_name(part, field.name.c_str()));
 						if (field.filename.has_value())
 						{
@@ -425,7 +431,7 @@ namespace http
 							HandleCURLFORMcode(curl_formadd(&handle->curlPostFieldsFirst, &handle->curlPostFieldsLast,
 								CURLFORM_COPYNAME, field.name.c_str(),
 								CURLFORM_BUFFER, field.filename->c_str(),
-								CURLFORM_BUFFERPTR, &field.value[0],
+								CURLFORM_BUFFERPTR, field.value.data(),
 								CURLFORM_BUFFERLENGTH, field.value.size(),
 							CURLFORM_END));
 						}
@@ -433,7 +439,7 @@ namespace http
 						{
 							HandleCURLFORMcode(curl_formadd(&handle->curlPostFieldsFirst, &handle->curlPostFieldsLast,
 								CURLFORM_COPYNAME, field.name.c_str(),
-								CURLFORM_PTRCONTENTS, &field.value[0],
+								CURLFORM_PTRCONTENTS, field.value.data(),
 								CURLFORM_CONTENTLEN, field.value.size(),
 							CURLFORM_END));
 						}
@@ -444,7 +450,7 @@ namespace http
 				else if (std::holds_alternative<http::StringData>(postData) && std::get<http::StringData>(postData).size())
 				{
 					auto &stringData = std::get<http::StringData>(postData);
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDS, &stringData[0]));
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDS, stringData.data()));
 					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDSIZE_LARGE, curl_off_t(stringData.size())));
 				}
 				else if (handle->isPost)

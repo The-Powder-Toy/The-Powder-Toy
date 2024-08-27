@@ -2,10 +2,14 @@
 #include "gui/interface/Colour.h"
 #include "client/User.h"
 #include "gui/interface/Point.h"
+#include "graphics/RendererSettings.h"
 #include <vector>
 #include <deque>
 #include <memory>
 #include <optional>
+#include <array>
+
+constexpr auto NUM_TOOLINDICES = 4;
 
 class Menu;
 class Tool;
@@ -50,9 +54,6 @@ class GameModel
 
 private:
 	std::vector<Notification*> notifications;
-	//int clipboardSize;
-	//unsigned char * clipboardData;
-	std::unique_ptr<GameSave> clipboard;
 	std::unique_ptr<GameSave> placeSave;
 	std::unique_ptr<GameSave> transformedPlaceSave;
 	std::deque<String> consoleLog;
@@ -66,6 +67,7 @@ private:
 
 	Simulation * sim;
 	Renderer * ren;
+	RendererSettings rendererSettings;
 	std::vector<Menu*> menuList;
 	std::vector<QuickOption*> quickOptions;
 	int activeMenu;
@@ -75,8 +77,8 @@ private:
 	std::unique_ptr<SaveFile> currentFile;
 	Tool * lastTool;
 	Tool ** activeTools;
-	Tool * decoToolset[4];
-	Tool * regularToolset[4];
+	std::array<Tool *, NUM_TOOLINDICES> decoToolset;
+	std::array<Tool *, NUM_TOOLINDICES> regularToolset;
 	User currentUser;
 	float toolStrength;
 	std::deque<HistoryEntry> history;
@@ -128,6 +130,7 @@ private:
 	void SaveToSimParameters(const GameSave &saveData);
 
 	std::optional<int> queuedVote;
+	bool threadedRendering = false;
 
 public:
 	GameModel();
@@ -141,6 +144,11 @@ public:
 	inline int GetTemperatureScale() const
 	{
 		return temperatureScale;
+	}
+	void SetThreadedRendering(bool newThreadedRendering);
+	bool GetThreadedRendering() const
+	{
+		return threadedRendering;
 	}
 	void SetAmbientAirTemperature(float ambientAirTemp);
 	float GetAmbientAirTemperature();
@@ -195,6 +203,10 @@ public:
 	Brush &GetBrush();
 	Brush *GetBrushByID(int i);
 	int GetBrushID();
+	int BrushListSize() const
+	{
+		return int(brushList.size());
+	}
 	void SetBrushID(int i);
 
 	void SetVote(int direction);
@@ -227,6 +239,10 @@ public:
 	void SetUser(User user);
 	Simulation * GetSimulation();
 	Renderer * GetRenderer();
+	RendererSettings &GetRendererSettings()
+	{
+		return rendererSettings;
+	}
 	void SetZoomEnabled(bool enabled);
 	bool GetZoomEnabled();
 	void SetZoomSize(int size);
@@ -269,4 +285,6 @@ public:
 	void UpdateUpTo(int upTo);
 	void BeforeSim();
 	void AfterSim();
+
+	GameView *view = nullptr;
 };

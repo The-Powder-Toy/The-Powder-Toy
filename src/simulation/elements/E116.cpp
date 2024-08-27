@@ -6,7 +6,7 @@ void Element::Element_E116()
 	Name = "EQVE";
 	Colour = 0xFFE0A0_rgb;
 	MenuVisible = 0;
-	MenuSection = SC_CRACKER2;
+	MenuSection = SC_SPECIAL;
 	Enabled = 1;
 
 	Advection = 0.7f;

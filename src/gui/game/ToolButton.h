@@ -9,7 +9,7 @@ class ToolButton: public ui::Button
 	ByteString toolIdentifier;
 public:
 	ToolButton(ui::Point position, ui::Point size, String text, ByteString toolIdentifier, String toolTip = String());
-	void OnMouseUnclick(int x, int y, unsigned int button) override;
+	void OnMouseDown(int x, int y, unsigned int button) override;
 	void OnMouseUp(int x, int y, unsigned int button) override;
 	void OnMouseClick(int x, int y, unsigned int button) override;
 	void Draw(const ui::Point& screenPos) override;

@@ -33,7 +33,7 @@ void Element::Element_PBCN()
 	HeatConduct = 251;
 	Description = "Powered breakable clone.";
 
-	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID | PROP_PHOTPASS | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;

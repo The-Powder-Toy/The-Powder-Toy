@@ -1,6 +1,6 @@
 #include "Sign.h"
 
-#include "graphics/Graphics.h"
+#include "graphics/Renderer.h"
 #include "Simulation.h"
 #include "SimulationData.h"
 
@@ -12,7 +12,7 @@ sign::sign(String text_, int x_, int y_, Justification justification_):
 {
 }
 
-String sign::getDisplayText(const Simulation *sim, int &x0, int &y0, int &w, int &h, bool colorize, bool *v95) const
+String sign::getDisplayText(const RenderableSimulation *sim, int &x0, int &y0, int &w, int &h, bool colorize, bool *v95) const
 {
 	auto &sd = SimulationData::CRef();
 	String drawable_text;
@@ -136,7 +136,7 @@ String sign::getDisplayText(const Simulation *sim, int &x0, int &y0, int &w, int
 		}
 	}
 
-	w = Graphics::TextSize(drawable_text.c_str()).X + 4;
+	w = Renderer::TextSize(drawable_text.c_str()).X + 4;
 	h = 15;
 	x0 = (ju == Right) ? x - w : (ju == Left) ? x : x - w/2;
 	y0 = (y > 18) ? y - 18 : y + 4;

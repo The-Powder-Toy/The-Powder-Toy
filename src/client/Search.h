@@ -14,4 +14,13 @@ namespace http
 		sortByVotes,
 		sortByDate,
 	};
+
+	enum Period
+	{
+		allSaves,
+		todaySaves,
+		weekSaves,
+		monthSaves,
+		yearSaves,
+	};
 }

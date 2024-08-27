@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Misc.h"
+#include "VideoBuffer.h"
 #include "common/tpt-rand.h"
 #include "common/tpt-compat.h"
 #include "simulation/Simulation.h"
@@ -9,6 +10,70 @@
 #include "simulation/gravity/Gravity.h"
 #include "simulation/orbitalparts.h"
 #include <cmath>
+
+void Renderer::RenderBackground()
+{
+	draw_air();
+}
+
+void Renderer::RenderSimulation()
+{
+	draw_grav();
+	DrawWalls();
+	render_parts();
+
+	if (displayMode & DISPLAY_PERS)
+	{
+		std::transform(video.RowIterator({ 0, 0 }), video.RowIterator({ 0, YRES }), persistentVideo.begin(), [](pixel p) {
+			return RGB<uint8_t>::Unpack(p).Decay().Pack();
+		});
+	}
+
+	render_fire();
+	draw_other();
+	draw_grav_zones();
+	DrawSigns();
+
+	if (displayMode & DISPLAY_WARP)
+	{
+		warpVideo = video;
+		std::fill_n(video.data(), WINDOWW * YRES, 0);
+		render_gravlensing(warpVideo);
+	}
+}
+
+void Renderer::ApproximateAccumulation()
+{
+	for (int i = 0; i < 15; ++i)
+	{
+		render_parts();
+		render_fire();
+		Clear();
+	}
+}
+
+void Renderer::render_gravlensing(const RendererFrame &source)
+{
+	for (auto p : RES.OriginRect())
+	{
+		auto cp = p / CELL;
+		auto rp = Vec2{ int(p.X - sim->gravOut.forceX[cp] * 0.75f  + 0.5f), int(p.Y - sim->gravOut.forceY[cp] * 0.75f  + 0.5f) };
+		auto gp = Vec2{ int(p.X - sim->gravOut.forceX[cp] * 0.875f + 0.5f), int(p.Y - sim->gravOut.forceY[cp] * 0.875f + 0.5f) };
+		auto bp = Vec2{ int(p.X - sim->gravOut.forceX[cp]          + 0.5f), int(p.Y - sim->gravOut.forceY[cp]          + 0.5f) };
+		if (RES.OriginRect().Contains(rp) &&
+		    RES.OriginRect().Contains(gp) &&
+		    RES.OriginRect().Contains(bp))
+		{
+			auto v = RGB<uint8_t>::Unpack(video[p]);
+			auto s = RGB<uint8_t>::Unpack(source[rp]);
+			video[p] = RGB<uint8_t>(
+				std::min(0xFF, s.Red   + v.Red  ),
+				std::min(0xFF, s.Green + v.Green),
+				std::min(0xFF, s.Blue  + v.Blue )
+			).Pack();
+		}
+	}
+}
 
 std::unique_ptr<VideoBuffer> Renderer::WallIcon(int wallID, Vec2<int> size)
 {
@@ -183,8 +248,8 @@ void Renderer::render_parts()
 	gfctx.pipeSubcallTpart = nullptr;
 	int deca, decr, decg, decb, cola, colr, colg, colb, firea, firer, fireg, fireb, pixel_mode, q, i, t, nx, ny, x, y;
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
-	if(!sim)
-		return;
+	int drawing_budget = 1000000; //Serves as an upper bound for costly effects such as SPARK, FLARE and LFLARE
+
 	auto *parts = sim->parts;
 	if (gridSize)//draws the grid
 	{
@@ -224,7 +289,7 @@ void Renderer::render_parts()
 			decg = (sim->parts[i].dcolour>>8)&0xFF;
 			decb = (sim->parts[i].dcolour)&0xFF;
 
-			if(decorations_enable && blackDecorations)
+			if (decorationLevel == decorationAntiClickbait)
 			{
 				if(deca < 250 || decr > 5 || decg > 5 || decb > 5)
 					deca = 0;
@@ -248,7 +313,7 @@ void Renderer::render_parts()
 					fireg = graphicscache[t].fireg;
 					fireb = graphicscache[t].fireb;
 				}
-				else if(!(colour_mode & COLOUR_BASC))
+				else if(!(colorMode & COLOUR_BASC))
 				{
 					auto *graphics = elements[t].Graphics;
 					auto makeReady = !graphics || graphics(gfctx, &(sim->parts[i]), nx, ny, &pixel_mode, &cola, &colr, &colg, &colb, &firea, &firer, &fireg, &fireb); //That's a lot of args, a struct might be better
@@ -277,21 +342,21 @@ void Renderer::render_parts()
 					colb += int(sin(gradv*caddress*2.22 +TPT_PI_DBL) * 64);
 				}
 
-				if((pixel_mode & FIRE_ADD) && !(render_mode & FIRE_ADD))
+				if((pixel_mode & FIRE_ADD) && !(renderMode & FIRE_ADD))
 					pixel_mode |= PMODE_GLOW;
-				if((pixel_mode & FIRE_BLEND) && !(render_mode & FIRE_BLEND))
+				if((pixel_mode & FIRE_BLEND) && !(renderMode & FIRE_BLEND))
 					pixel_mode |= PMODE_BLUR;
-				if((pixel_mode & PMODE_BLUR) && !(render_mode & PMODE_BLUR))
+				if((pixel_mode & PMODE_BLUR) && !(renderMode & PMODE_BLUR))
 					pixel_mode |= PMODE_FLAT;
-				if((pixel_mode & PMODE_GLOW) && !(render_mode & PMODE_GLOW))
+				if((pixel_mode & PMODE_GLOW) && !(renderMode & PMODE_GLOW))
 					pixel_mode |= PMODE_BLEND;
-				if (render_mode & PMODE_BLOB)
+				if (renderMode & PMODE_BLOB)
 					pixel_mode |= PMODE_BLOB;
 
-				pixel_mode &= render_mode;
+				pixel_mode &= renderMode;
 
 				//Alter colour based on display mode
-				if(colour_mode & COLOUR_HEAT)
+				if(colorMode & COLOUR_HEAT)
 				{
 					constexpr float min_temp = MIN_TEMP;
 					constexpr float max_temp = MAX_TEMP;
@@ -308,7 +373,7 @@ void Renderer::render_parts()
 					else if (!pixel_mode)
 						pixel_mode |= PMODE_FLAT;
 				}
-				else if(colour_mode & COLOUR_LIFE)
+				else if(colorMode & COLOUR_LIFE)
 				{
 					auto gradv = 0.4f;
 					if (!(sim->parts[i].life<5))
@@ -324,7 +389,7 @@ void Renderer::render_parts()
 					else if (!pixel_mode)
 						pixel_mode |= PMODE_FLAT;
 				}
-				else if(colour_mode & COLOUR_BASC)
+				else if(colorMode & COLOUR_BASC)
 				{
 					colr = colour.Red;
 					colg = colour.Green;
@@ -333,7 +398,7 @@ void Renderer::render_parts()
 				}
 
 				//Apply decoration colour
-				if(!(colour_mode & ~COLOUR_GRAD) && decorations_enable && deca)
+				if(!(colorMode & ~COLOUR_GRAD) && decorationLevel != decorationDisabled && deca)
 				{
 					deca++;
 					if(!(pixel_mode & NO_DECO))
@@ -351,7 +416,7 @@ void Renderer::render_parts()
 					}
 				}
 
-				if (colour_mode & COLOUR_GRAD)
+				if (colorMode & COLOUR_GRAD)
 				{
 					auto frequency = 0.05f;
 					auto q = int(sim->parts[i].temp-40);
@@ -464,7 +529,7 @@ void Renderer::render_parts()
 						colr = 255;
 						colg = colb = 0;
 					}
-					else if (colour_mode != COLOUR_HEAT)
+					else if (colorMode != COLOUR_HEAT)
 					{
 						if (cplayer->fan)
 						{
@@ -493,7 +558,7 @@ void Renderer::render_parts()
 						legr = 255;
 						legg = legb = 0;
 					}
-					else if (colour_mode==COLOUR_HEAT)
+					else if (colorMode==COLOUR_HEAT)
 					{
 						legr = colr;
 						legg = colg;
@@ -633,7 +698,7 @@ void Renderer::render_parts()
 				{
 					auto flicker = float(gfctx.rng()%20);
 					auto gradv = 4*sim->parts[i].life + flicker;
-					for (x = 0; gradv>0.5; x++) {
+					for (x = 0; (gradv>0.5) && (drawing_budget > 0); x++) {
 						auto col = RGBA<uint8_t>(
 							std::min(0xFF, colr * int(gradv) / 255),
 							std::min(0xFF, colg * int(gradv) / 255),
@@ -644,6 +709,7 @@ void Renderer::render_parts()
 						AddPixel({ nx, ny+x }, col);
 						AddPixel({ nx, ny-x }, col);
 						gradv = gradv/1.5f;
+						drawing_budget--;
 					}
 				}
 				if(pixel_mode & PMODE_FLARE)
@@ -660,12 +726,13 @@ void Renderer::render_parts()
 					BlendPixel({ nx-1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 					BlendPixel({ nx+1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 					BlendPixel({ nx-1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-					for (x = 1; gradv>0.5; x++) {
+					for (x = 1; (gradv>0.5) && (drawing_budget > 0); x++) {
 						AddPixel({ nx+x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						AddPixel({ nx-x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						AddPixel({ nx, ny+x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						AddPixel({ nx, ny-x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						gradv = gradv/1.2f;
+						drawing_budget--;
 					}
 				}
 				if(pixel_mode & PMODE_LFLARE)
@@ -682,12 +749,13 @@ void Renderer::render_parts()
 					BlendPixel({ nx-1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 					BlendPixel({ nx+1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 					BlendPixel({ nx-1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-					for (x = 1; gradv>0.5; x++) {
+					for (x = 1; (gradv>0.5) && (drawing_budget > 0); x++) {
 						AddPixel({ nx+x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						AddPixel({ nx-x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						AddPixel({ nx, ny+x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						AddPixel({ nx, ny-x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
 						gradv = gradv/1.01f;
+						drawing_budget--;
 					}
 				}
 				if (pixel_mode & EFFECT_GRAVIN)
@@ -724,7 +792,7 @@ void Renderer::render_parts()
 							AddPixel({ nx+nxo, ny+nyo }, RGBA<uint8_t>(colr, colg, colb, 255-orbd[r]));
 					}
 				}
-				if (pixel_mode & EFFECT_DBGLINES && !(display_mode&DISPLAY_PERS))
+				if (pixel_mode & EFFECT_DBGLINES && !(displayMode&DISPLAY_PERS))
 				{
 					// draw lines connecting wifi/portal channels
 					if (mousePos.X == nx && mousePos.Y == ny && i == ID(sim->pmap[ny][nx]) && debugLines)
@@ -789,7 +857,7 @@ void Renderer::draw_other() // EMP effect
 	int emp_decor = sim->emp_decor;
 	if (emp_decor>40) emp_decor = 40;
 	if (emp_decor<0) emp_decor = 0;
-	if (!(render_mode & EFFECT)) // not in nothing mode
+	if (!(renderMode & EFFECT)) // not in nothing mode
 		return;
 	if (emp_decor>0)
 	{
@@ -809,22 +877,18 @@ void Renderer::draw_other() // EMP effect
 
 void Renderer::draw_grav_zones()
 {
-	if(!gravityZonesEnabled)
-		return;
-
-	int x, y, i, j;
-	for (y=0; y<YCELLS; y++)
+	if (!gravityZonesEnabled)
 	{
-		for (x=0; x<XCELLS; x++)
+		return;
+	}
+	for (auto p : CELLS.OriginRect())
+	{
+		if (sim->gravIn.mask[p])
 		{
-			if(sim->grav->gravmask[y*XCELLS+x])
+			auto np = p * CELL;
+			for (auto o : Vec2{ CELL, CELL }.OriginRect())
 			{
-				for (j=0; j<CELL; j++)//draws the colors
-					for (i=0; i<CELL; i++)
-						if(i == j)
-							BlendPixel({ x*CELL+i, y*CELL+j }, 0xFFC800_rgb .WithAlpha(120));
-						else
-							BlendPixel({ x*CELL+i, y*CELL+j }, 0x202020_rgb .WithAlpha(120));
+				BlendPixel(np + o, (o.X == o.Y ? 0xFFC800_rgb : 0x202020_rgb).WithAlpha(120));
 			}
 		}
 	}
@@ -832,68 +896,66 @@ void Renderer::draw_grav_zones()
 
 void Renderer::draw_grav()
 {
-	int x, y, i, ca;
-	float nx, ny, dist;
-
-	if(!gravityFieldEnabled)
-		return;
-
-	for (y=0; y<YCELLS; y++)
+	if (!gravityFieldEnabled)
 	{
-		for (x=0; x<XCELLS; x++)
+		return;
+	}
+	for (auto p : CELLS.OriginRect())
+	{
+		auto gx = sim->gravOut.forceX[p];
+		auto gy = sim->gravOut.forceY[p];
+		auto agx = std::abs(gx);
+		auto agy = std::abs(gy);
+		if (agx <= 0.001f && agy <= 0.001f)
 		{
-			ca = y*XCELLS+x;
-			if(fabsf(sim->gravx[ca]) <= 0.001f && fabsf(sim->gravy[ca]) <= 0.001f)
-				continue;
-			nx = float(x*CELL);
-			ny = float(y*CELL);
-			dist = fabsf(sim->gravy[ca])+fabsf(sim->gravx[ca]);
-			for(i = 0; i < 4; i++)
-			{
-				nx -= sim->gravx[ca]*0.5f;
-				ny -= sim->gravy[ca]*0.5f;
-				AddPixel({ int(nx+0.5f), int(ny+0.5f) }, 0xFFFFFF_rgb .WithAlpha(int(dist*20.0f)));
-			}
+			continue;
+		}
+		auto np = Vec2{ float(p.X * CELL), float(p.Y * CELL) };
+		auto dist = agx + agy;
+		for (auto i = 0; i < 4; ++i)
+		{
+			np -= Vec2{ gx * 0.5f, gy * 0.5f };
+			AddPixel({ int(np.X + 0.5f), int(np.Y + 0.5f) }, 0xFFFFFF_rgb .WithAlpha(int(dist * 20.0f)));
 		}
 	}
 }
 
 void Renderer::draw_air()
 {
-	if(!sim->aheat_enable && (display_mode & DISPLAY_AIRH))
+	if(!sim->aheat_enable && (displayMode & DISPLAY_AIRH))
 		return;
-	if(!(display_mode & DISPLAY_AIR))
+	if(!(displayMode & DISPLAY_AIR))
 		return;
 	int x, y, i, j;
-	float (*pv)[XCELLS] = sim->air->pv;
-	float (*hv)[XCELLS] = sim->air->hv;
-	float (*vx)[XCELLS] = sim->air->vx;
-	float (*vy)[XCELLS] = sim->air->vy;
+	auto *pv = sim->pv;
+	auto *hv = sim->hv;
+	auto *vx = sim->vx;
+	auto *vy = sim->vy;
 	auto c = 0x000000_rgb;
 	for (y=0; y<YCELLS; y++)
 		for (x=0; x<XCELLS; x++)
 		{
-			if (display_mode & DISPLAY_AIRP)
+			if (displayMode & DISPLAY_AIRP)
 			{
 				if (pv[y][x] > 0.0f)
 					c = RGB<uint8_t>(clamp_flt(pv[y][x], 0.0f, 8.0f), 0, 0);//positive pressure is red!
 				else
 					c = RGB<uint8_t>(0, 0, clamp_flt(-pv[y][x], 0.0f, 8.0f));//negative pressure is blue!
 			}
-			else if (display_mode & DISPLAY_AIRV)
+			else if (displayMode & DISPLAY_AIRV)
 			{
 				c = RGB<uint8_t>(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 					clamp_flt(pv[y][x], 0.0f, 8.0f),//pressure adds green
 					clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
 			}
-			else if (display_mode & DISPLAY_AIRH)
+			else if (displayMode & DISPLAY_AIRH)
 			{
 				c = RGB<uint8_t>::Unpack(HeatToColour(hv[y][x]));
 				//c = RGB<uint8_t>(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 				//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
 				//	clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f)).Pack();//vy adds blue
 			}
-			else if (display_mode & DISPLAY_AIRC)
+			else if (displayMode & DISPLAY_AIRC)
 			{
 				int r;
 				int g;
@@ -1087,7 +1149,7 @@ void Renderer::DrawWalls()
 				}
 
 				// when in blob view, draw some blobs...
-				if (render_mode & PMODE_BLOB)
+				if (renderMode & PMODE_BLOB)
 				{
 					switch (wtypes[wt].drawstyle)
 					{
@@ -1194,7 +1256,7 @@ void Renderer::DrawWalls()
 
 void Renderer::render_fire()
 {
-	if(!(render_mode & FIREMODE))
+	if(!(renderMode & FIREMODE))
 		return;
 	int i,j,x,y,r,g,b,a;
 	for (j=0; j<YCELLS; j++)

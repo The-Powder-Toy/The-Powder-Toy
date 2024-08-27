@@ -5,7 +5,7 @@
 namespace http
 {
 	DeleteSaveRequest::DeleteSaveRequest(int saveID) :
-		APIRequest(ByteString::Build(SCHEME, SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Delete&Key=", Client::Ref().GetAuthUser().SessionKey), authRequire, true)
+		APIRequest(ByteString::Build(SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Delete&Key=", Client::Ref().GetAuthUser().SessionKey), authRequire, true)
 	{
 	}
 

@@ -35,6 +35,7 @@ public:
 
 	bool NextCommentPage();
 	bool PrevCommentPage();
+	void RefreshComments();
 	void CommentAdded();
 
 	virtual ~PreviewController();

@@ -18,7 +18,10 @@ Label::Label(Point position, Point size, String labelText):
 	selecting(false),
 	autoHeight(size.Y==-1?true:false)
 {
-	SetText(labelText);
+	if (labelText.size()) // Don't call virtual function in ctor unless absolutely necessary. Deriveds set labelText to "".
+	{
+		SetText(labelText);
+	}
 
 	menu = new ContextMenu(this);
 	menu->AddItem(ContextMenuItem("Copy", 0, true));
@@ -85,23 +88,27 @@ void Label::OnContextMenuAction(int item)
 	}
 }
 
-void Label::OnMouseClick(int x, int y, unsigned button)
+void Label::OnMouseDown(int x, int y, unsigned button)
 {
-	if(button == SDL_BUTTON_RIGHT)
+	if (MouseDownInside)
 	{
-		if (menu)
+		if(button == SDL_BUTTON_RIGHT)
 		{
-			menu->Show(GetScreenPos() + ui::Point(x, y));
+			if (menu)
+			{
+				menu->Show(GetContainerPos() + ui::Point(x, y));
+			}
 		}
-	}
-	else
-	{
-		selecting = true;
-		selectionIndex0 = textWrapper.Point2Index(x - textPosition.X, y - textPosition.Y);
-		selectionIndexL = selectionIndex0;
-		selectionIndexH = selectionIndex0;
+		else
+		{
+			selecting = true;
+			auto tp = textPosition - Vec2{ scrollX, 0 };
+			selectionIndex0 = textWrapper.Point2Index(x - Position.X - tp.X, y - Position.Y - tp.Y);
+			selectionIndexL = selectionIndex0;
+			selectionIndexH = selectionIndex0;
 
-		updateSelection();
+			updateSelection();
+		}
 	}
 }
 
@@ -139,11 +146,12 @@ void Label::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bo
 	}
 }
 
-void Label::OnMouseMoved(int localx, int localy, int dx, int dy)
+void Label::OnMouseMoved(int localx, int localy)
 {
 	if (selecting)
 	{
-		selectionIndex1 = textWrapper.Point2Index(localx - textPosition.X, localy - textPosition.Y);
+		auto tp = textPosition - Vec2{ scrollX, 0 };
+		selectionIndex1 = textWrapper.Point2Index(localx - tp.X, localy - tp.Y);
 		if (selectionIndex1.raw_index < selectionIndex0.raw_index)
 		{
 			selectionIndexL = selectionIndex1;
@@ -160,6 +168,10 @@ void Label::OnMouseMoved(int localx, int localy, int dx, int dy)
 
 void Label::Tick(float dt)
 {
+	if (multiline)
+	{
+		scrollX = 0;
+	}
 	if (!this->IsFocused() && (HasSelection() || selecting))
 	{
 		ClearSelection();
@@ -244,13 +256,16 @@ void Label::Draw(const Point& screenPos)
 	int selectionYH;
 	int selectionLineH = displayTextWrapper.Index2Point(indexH, selectionXH, selectionYH);
 
+	auto clip = RectSized(screenPos + Vec2{ 1, 1 }, Size - Vec2{ 2, 2 }) & g->GetClipRect();
+	g->SwapClipRect(clip);
+	auto tp = textPosition - Vec2{ scrollX, 0 };
 	if (HasSelection())
 	{
 		if (selectionLineH == selectionLineL)
 		{
 			g->DrawFilledRect(
 				RectSized(
-					screenPos + textPosition + Vec2{ selectionXL - 1, selectionYL - 2 },
+					screenPos + tp + Vec2{ selectionXL - 1, selectionYL - 2 },
 					Vec2{ selectionXH - selectionXL + 1, FONT_H }
 				),
 				0xFFFFFF_rgb
@@ -260,7 +275,7 @@ void Label::Draw(const Point& screenPos)
 		{
 			g->DrawFilledRect(
 				RectSized(
-					screenPos + textPosition + Vec2{ selectionXL - 1, selectionYL - 2 },
+					screenPos + tp + Vec2{ selectionXL - 1, selectionYL - 2 },
 					Vec2{ textSize.X - selectionXL + 1, FONT_H }
 				),
 				0xFFFFFF_rgb
@@ -269,7 +284,7 @@ void Label::Draw(const Point& screenPos)
 			{
 				g->DrawFilledRect(
 					RectSized(
-						screenPos + textPosition + Vec2{ -1, selectionYL - 2 + i * FONT_H },
+						screenPos + tp + Vec2{ -1, selectionYL - 2 + i * FONT_H },
 						Vec2{ textSize.X + 1, FONT_H }
 					),
 					0xFFFFFF_rgb
@@ -277,18 +292,18 @@ void Label::Draw(const Point& screenPos)
 			}
 			g->DrawFilledRect(
 				RectSized(
-					screenPos + textPosition + Vec2{ -1, selectionYH - 2 },
+					screenPos + tp + Vec2{ -1, selectionYH - 2 },
 					Vec2{ selectionXH + 1, FONT_H }
 				),
 				0xFFFFFF_rgb
 			);
 		}
 	}
-
 	g->BlendText(
-		screenPos + textPosition,
+		screenPos + tp,
 		displayTextWithSelection,
 		textColour.NoAlpha().WithAlpha(255)
 	);
+	g->SwapClipRect(clip);
 }
 

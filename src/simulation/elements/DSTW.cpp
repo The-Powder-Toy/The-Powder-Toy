@@ -33,7 +33,7 @@ void Element::Element_DSTW()
 	LatentHeat = 7500;
 	Description = "Distilled water, does not conduct electricity.";
 
-	Properties = TYPE_LIQUID|PROP_NEUTPASS;
+	Properties = TYPE_LIQUID | PROP_NEUTPASS | PROP_PHOTPASS;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

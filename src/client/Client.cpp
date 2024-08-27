@@ -3,7 +3,6 @@
 #include "client/http/StartupRequest.h"
 #include "ClientListener.h"
 #include "Format.h"
-#include "MD5.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
@@ -11,6 +10,7 @@
 #include "common/platform/Platform.h"
 #include "common/String.h"
 #include "graphics/Graphics.h"
+#include "gui/dialogues/ErrorMessage.h"
 #include "prefs/Prefs.h"
 #include "lua/CommandInterface.h"
 #include "Config.h"
@@ -46,7 +46,7 @@ void Client::MigrateStampsDef()
 	}
 	for (auto i = 0; i < int(data.size()); i += 10)
 	{
-		stampIDs.push_back(ByteString(&data[0] + i, &data[0] + i + 10));
+		stampIDs.push_back(ByteString(data.data() + i, data.data() + i + 10));
 	}
 }
 
@@ -117,7 +117,7 @@ void Client::Tick()
 	{
 		if (versionCheckRequest->StatusCode() == 618)
 		{
-			AddServerNotification({ "Failed to load SSL certificates", ByteString(SCHEME) + "powdertoy.co.uk/FAQ.html" });
+			AddServerNotification({ "Failed to load SSL certificates", ByteString::Build(SERVER, "/FAQ.html") });
 		}
 		try
 		{
@@ -130,7 +130,7 @@ void Client::Tick()
 			{
 				updateInfo = info.updateInfo;
 				applyUpdateInfo = true;
-				messageOfTheDay = info.messageOfTheDay;
+				SetMessageOfTheDay(info.messageOfTheDay);
 			}
 			for (auto &notification : info.notifications)
 			{
@@ -141,7 +141,7 @@ void Client::Tick()
 		{
 			if (!usingAltUpdateServer)
 			{
-				messageOfTheDay = ByteString::Build("Error while fetching MotD: ", ex.what()).FromUtf8();
+				SetMessageOfTheDay(ByteString::Build("Error while fetching MotD: ", ex.what()).FromUtf8());
 			}
 		}
 		versionCheckRequest.reset();
@@ -153,7 +153,7 @@ void Client::Tick()
 			auto info = alternateVersionCheckRequest->Finish();
 			updateInfo = info.updateInfo;
 			applyUpdateInfo = true;
-			messageOfTheDay = info.messageOfTheDay;
+			SetMessageOfTheDay(info.messageOfTheDay);
 			for (auto &notification : info.notifications)
 			{
 				AddServerNotification(notification);
@@ -161,7 +161,7 @@ void Client::Tick()
 		}
 		catch (const http::RequestError &ex)
 		{
-			messageOfTheDay = ByteString::Build("Error while checking for updates: ", ex.what()).FromUtf8();
+			SetMessageOfTheDay(ByteString::Build("Error while checking for updates: ", ex.what()).FromUtf8());
 		}
 		alternateVersionCheckRequest.reset();
 	}
@@ -287,6 +287,27 @@ void Client::DeleteStamp(ByteString stampID)
 	}
 }
 
+void Client::RenameStamp(ByteString stampID, ByteString newName)
+{
+	auto oldPath = ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, stampID, ".stm");
+	auto newPath = ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, newName, ".stm");
+
+	if (Platform::FileExists(newPath))
+	{
+		new ErrorMessage("Error renaming stamp", "A stamp with this name already exists.");
+		return;
+	}
+
+	if (!Platform::RenameFile(oldPath, newPath, false))
+	{
+		new ErrorMessage("Error renaming stamp", "Could not rename the stamp.");
+		return;
+	}
+
+	std::replace(stampIDs.begin(), stampIDs.end(), stampID, newName);
+	WriteStamps();
+}
+
 ByteString Client::AddStamp(std::unique_ptr<GameSave> saveData)
 {
 	auto now = (uint64_t)time(NULL);
@@ -356,7 +377,6 @@ void Client::RescanStamps()
 			newStampIDs.push_back(stampID);
 		}
 	}
-	auto oldCount = newStampIDs.size();
 	auto stampIDsSet = std::set<ByteString>(stampIDs.begin(), stampIDs.end());
 	for (auto &stampID : stampFilesSet)
 	{
@@ -368,8 +388,6 @@ void Client::RescanStamps()
 	}
 	if (changed)
 	{
-		// Move newly discovered stamps to front.
-		std::rotate(newStampIDs.begin(), newStampIDs.begin() + oldCount, newStampIDs.end());
 		stampIDs = newStampIDs;
 		WriteStamps();
 	}
@@ -423,7 +441,6 @@ std::unique_ptr<SaveFile> Client::LoadSaveFile(ByteString filename)
 		{
 			file->SetLoadingError(err.FromUtf8());
 		}
-		commandInterface->SetLastError(err.FromUtf8());
 	}
 	return file;
 }

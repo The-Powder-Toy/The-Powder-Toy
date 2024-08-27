@@ -2,11 +2,13 @@
 #include "Format.h"
 #include "OptionsController.h"
 #include "OptionsModel.h"
+#include "common/clipboard/Clipboard.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
 #include "gui/Style.h"
 #include "simulation/ElementDefs.h"
+#include "simulation/SimulationSettings.h"
 #include "client/Client.h"
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/InformationMessage.h"
@@ -59,22 +61,28 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	AddComponent(scrollPanel);
 
 	int currentY = 8;
-	auto addCheckbox = [this, &currentY, &autoWidth](int indent, String text, String info, std::function<void ()> action) {
+	auto addLabel = [this, &currentY, &autoWidth](int indent, String text) {
+		auto *label = new ui::Label(ui::Point(22 + indent * 15, currentY), ui::Point(1, 16), "");
+		autoWidth(label, 0);
+		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+		label->SetMultiline(true);
+		label->SetText("\bg" + text); // stupid hack because autoWidth just changes Size.X and that doesn't update the text wrapper
+		label->AutoHeight();
+		scrollPanel->AddChild(label);
+		currentY += label->Size.Y - 1;
+	};
+	auto addCheckbox = [this, &currentY, &autoWidth, &addLabel](int indent, String text, String info, std::function<void ()> action) {
 		auto *checkbox = new ui::Checkbox(ui::Point(8 + indent * 15, currentY), ui::Point(1, 16), text, "");
 		autoWidth(checkbox, 0);
 		checkbox->SetActionCallback({ action });
-		scrollPanel->AddChild(checkbox);
 		currentY += 14;
 		if (info.size())
 		{
-			auto *label = new ui::Label(ui::Point(22 + indent * 15, currentY), ui::Point(1, 16), "\bg" + info);
-			autoWidth(label, 0);
-			label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-			label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-			scrollPanel->AddChild(label);
-			currentY += 14;
+			addLabel(indent, info);
 		}
 		currentY += 4;
+		scrollPanel->AddChild(checkbox);
 		return checkbox;
 	};
 	auto addDropDown = [this, &currentY, &autoWidth](String info, std::vector<std::pair<String, int>> options, std::function<void ()> action) {
@@ -113,11 +121,11 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		c->SetWaterEqualisation(waterEqualisation->GetChecked());
 	});
 	airMode = addDropDown("Air simulation mode", {
-		{ "On", 0 },
-		{ "Pressure off", 1 },
-		{ "Velocity off", 2 },
-		{ "Off", 3 },
-		{ "No update", 4 },
+		{ "On", AIR_ON },
+		{ "Pressure off", AIR_PRESSUREOFF },
+		{ "Velocity off", AIR_VELOCITYOFF },
+		{ "Off", AIR_OFF },
+		{ "No update", AIR_NOUPDATE },
 	}, [this] {
 		c->SetAirMode(airMode->GetOption().second);
 	});
@@ -129,10 +137,11 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		ambientAirTemp->SetDefocusCallback({ [this] {
 			UpdateAirTemp(ambientAirTemp->GetText(), true);
 		}});
+		ambientAirTemp->SetLimit(9);
 		scrollPanel->AddChild(ambientAirTemp);
 		ambientAirTempPreview = new ui::Button(ui::Point(Size.X-31, currentY), ui::Point(16, 16), "", "Preview");
 		scrollPanel->AddChild(ambientAirTempPreview);
-		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-96, 16), "Ambient air temperature");
+		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-105, 16), "Ambient air temperature");
 		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 		scrollPanel->AddChild(label);
@@ -203,10 +212,10 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 			}
 	};
 	gravityMode = addDropDown("Gravity simulation mode", {
-		{ "Vertical", 0 },
-		{ "Off", 1 },
-		{ "Radial", 2 },
-		{ "Custom", 3 },
+		{ "Vertical", GRAV_VERTICAL },
+		{ "Off", GRAV_OFF },
+		{ "Radial", GRAV_RADIAL },
+		{ "Custom", GRAV_CUSTOM },
 	}, [this] {
 		c->SetGravityMode(gravityMode->GetOption().second);
 		if (gravityMode->GetOption().second == 3)
@@ -215,9 +224,9 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		}
 	});
 	edgeMode = addDropDown("Edge mode", {
-		{ "Void", 0 },
-		{ "Solid", 1 },
-		{ "Loop", 2 },
+		{ "Void", EDGE_VOID },
+		{ "Solid", EDGE_SOLID },
+		{ "Loop", EDGE_LOOP },
 	}, [this] {
 		c->SetEdgeMode(edgeMode->GetOption().second);
 	});
@@ -296,11 +305,27 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	graveExitsConsole = addCheckbox(0, "Key under Esc exits console", "Disable if that key is 0 on your keyboard", [this] {
 		c->SetGraveExitsConsole(graveExitsConsole->GetChecked());
 	});
+	if constexpr (PLATFORM_CLIPBOARD)
+	{
+		auto indent = 0;
+		nativeClipoard = addCheckbox(indent, "Use platform clipboard", "Allows copying and pasting across TPT instances", [this] {
+			c->SetNativeClipoard(nativeClipoard->GetChecked());
+		});
+		currentY -= 4; // temporarily undo the currentY += 4 at the end of addCheckbox
+		if (auto extra = Clipboard::Explanation())
+		{
+			addLabel(indent, "\bg" + *extra);
+		}
+		currentY += 4; // and then undo the undo
+	}
+	threadedRendering = addCheckbox(0, "Separate rendering thread", "May increase framerate when fancy effects are in use", [this] {
+		c->SetThreadedRendering(threadedRendering->GetChecked());
+	});
 	decoSpace = addDropDown("Colour space used by decoration tools", {
-		{ "sRGB", 0 },
-		{ "Linear", 1 },
-		{ "Gamma 2.2", 2 },
-		{ "Gamma 1.8", 3 },
+		{ "sRGB", DECOSPACE_SRGB },
+		{ "Linear", DECOSPACE_LINEAR },
+		{ "Gamma 2.2", DECOSPACE_GAMMA22 },
+		{ "Gamma 1.8", DECOSPACE_GAMMA18 },
 	}, [this] {
 		c->SetDecoSpace(decoSpace->GetOption().second);
 	});
@@ -459,11 +484,16 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	{
 		fastquit->SetChecked(sender->GetFastQuit());
 	}
+	if (nativeClipoard)
+	{
+		nativeClipoard->SetChecked(sender->GetNativeClipoard());
+	}
 	showAvatars->SetChecked(sender->GetShowAvatars());
 	mouseClickRequired->SetChecked(sender->GetMouseClickRequired());
 	includePressure->SetChecked(sender->GetIncludePressure());
 	perfectCircle->SetChecked(sender->GetPerfectCircle());
 	graveExitsConsole->SetChecked(sender->GetGraveExitsConsole());
+	threadedRendering->SetChecked(sender->GetThreadedRendering());
 	momentumScroll->SetChecked(sender->GetMomentumScroll());
 }
 

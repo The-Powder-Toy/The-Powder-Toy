@@ -13,11 +13,11 @@ class LuaScriptInterface;
 class LuaLabel: public LuaComponent
 {
 	ui::Label * label;
-	int text(lua_State * l);
+	int text(lua_State *L);
 public:
 	static const char className[];
 	static Luna<LuaLabel>::RegType methods[];
 
-	LuaLabel(lua_State * l);
+	LuaLabel(lua_State *L);
 	~LuaLabel();
 };

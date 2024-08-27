@@ -5,6 +5,7 @@
 #include "client/ThumbnailRendererTask.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "gui/Style.h"
 
 #include "gui/dialogues/ConfirmPrompt.h"
@@ -55,7 +56,7 @@ LocalSaveActivity::LocalSaveActivity(std::unique_ptr<SaveFile> newSave, OnSaved 
 
 	if(save->GetGameSave())
 	{
-		thumbnailRenderer = new ThumbnailRendererTask(*save->GetGameSave(), Size - Vec2(16, 16), true, false);
+		thumbnailRenderer = new ThumbnailRendererTask(*save->GetGameSave(), Size - Vec2(16, 16), RendererSettings::decorationEnabled, false);
 		thumbnailRenderer->Start();
 	}
 }

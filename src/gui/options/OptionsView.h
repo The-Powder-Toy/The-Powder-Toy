@@ -40,6 +40,8 @@ class OptionsView: public ui::Window
 	ui::Checkbox *includePressure{};
 	ui::Checkbox *perfectCircle{};
 	ui::Checkbox *graveExitsConsole{};
+	ui::Checkbox *nativeClipoard{};
+	ui::Checkbox *threadedRendering{};
 	ui::ScrollPanel *scrollPanel{};
 	float customGravityX, customGravityY;
 	void UpdateAmbientAirTempPreview(float airTemp, bool isValid);

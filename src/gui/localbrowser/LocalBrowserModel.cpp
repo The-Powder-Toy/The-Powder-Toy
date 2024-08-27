@@ -59,6 +59,8 @@ void LocalBrowserModel::OpenSave(int index)
 {
 	stamp = std::move(savesList[index]);
 	savesList.clear();
+	notifyPageChanged();
+	notifySavesListChanged();
 }
 
 bool LocalBrowserModel::GetMoveToFront()
@@ -73,6 +75,7 @@ void LocalBrowserModel::SetMoveToFront(bool move)
 
 void LocalBrowserModel::UpdateSavesList(int pageNumber)
 {
+	ClearSelected();
 	savesList.clear();
 	currentPage = pageNumber;
 

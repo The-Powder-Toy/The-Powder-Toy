@@ -42,6 +42,7 @@ void Element::Element_PVOD()
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
+	CtypeDraw = &Element::basicCtypeDraw;
 
 	Update = &update;
 	Graphics = &graphics;

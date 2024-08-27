@@ -32,7 +32,7 @@ void Element::Element_SLTW()
 	LatentHeat = 7500;
 	Description = "Saltwater, conducts electricity, difficult to freeze.";
 
-	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
+	Properties = TYPE_LIQUID | PROP_CONDUCTS | PROP_LIFE_DEC | PROP_NEUTPENETRATE | PROP_PHOTPASS;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

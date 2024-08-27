@@ -9,9 +9,6 @@ extern "C"
 #include <lauxlib.h>
 #include <lualib.h>
 
-LUALIB_API void tpt_lua_setmainthread(lua_State *L);
-LUALIB_API void tpt_lua_getmainthread(lua_State *L);
-
 #if LUA_VERSION_NUM >= 502
 void luaL_register(lua_State *L, const char *libname, const luaL_Reg *l);
 #define lua_strlen(L,i) lua_rawlen(L, (i))
@@ -25,7 +22,6 @@ LUALIB_API int (luaL_typerror) (lua_State *L, int narg, const char *tname);
 LUALIB_API void (lua_pushglobaltable) (lua_State *L);
 # endif
 #endif
-int luaL_tostring(lua_State *L, int n);
 
 #ifdef __cplusplus
 }

@@ -1,3 +1,4 @@
+#include "Config.h"
 #include "GameModel.h"
 #include "BitmapBrush.h"
 #include "EllipseBrush.h"
@@ -19,6 +20,7 @@
 #include "client/SaveInfo.h"
 #include "client/http/ExecVoteRequest.h"
 #include "common/platform/Platform.h"
+#include "common/clipboard/Clipboard.h"
 #include "graphics/Renderer.h"
 #include "simulation/Air.h"
 #include "simulation/GOLString.h"
@@ -53,46 +55,55 @@ GameModel::GameModel():
 	colour(255, 0, 0, 255),
 	edgeMode(EDGE_VOID),
 	ambientAirTemp(R_TEMP + 273.15f),
-	decoSpace(0)
+	decoSpace(DECOSPACE_SRGB)
 {
 	sim = new Simulation();
 	sim->useLuaCallbacks = true;
-	ren = new Renderer(sim);
+	ren = new Renderer();
 
-	activeTools = regularToolset;
+	activeTools = regularToolset.data();
 
-	std::fill(decoToolset, decoToolset+4, (Tool*)NULL);
-	std::fill(regularToolset, regularToolset+4, (Tool*)NULL);
-
-	//Default render prefs
-	ren->SetRenderMode({
-		RENDER_FIRE,
-		RENDER_EFFE,
-		RENDER_BASC,
-	});
-	ren->SetDisplayMode({});
-	ren->SetColourMode(0);
+	std::fill(decoToolset.begin(), decoToolset.end(), nullptr);
+	std::fill(regularToolset.begin(), regularToolset.end(), nullptr);
 
 	//Load config into renderer
 	auto &prefs = GlobalPrefs::Ref();
-	ren->SetColourMode(prefs.Get("Renderer.ColourMode", 0U));
 
-	auto displayModes = prefs.Get("Renderer.DisplayModes", std::vector<unsigned int>{});
-	if (displayModes.size())
-	{
-		ren->SetDisplayMode(displayModes);
-	}
-	auto renderModes = prefs.Get("Renderer.RenderModes", std::vector<unsigned int>{});
-	if (renderModes.size())
-	{
-		ren->SetRenderMode(renderModes);
-	}
+	auto handleOldModes = [&prefs](ByteString prefName, ByteString oldPrefName, uint32_t defaultValue, auto setFunc) {
+		auto pref = prefs.Get<uint32_t>(prefName);
+		if (!pref.has_value())
+		{
+			auto modes = prefs.Get(oldPrefName, std::vector<unsigned int>{});
+			if (modes.size())
+			{
+				uint32_t mode = 0;
+				for (auto partial : modes)
+				{
+					mode |= partial;
+				}
+				pref = mode;
+			}
+			else
+			{
+				pref = defaultValue;
+			}
+		}
+		setFunc(*pref);
+	};
+	handleOldModes("Renderer.RenderMode", "Renderer.RenderModes", RENDER_FIRE | RENDER_EFFE | RENDER_BASC, [this](uint32_t renderMode) {
+		rendererSettings.renderMode = renderMode;
+	});
+	handleOldModes("Renderer.DisplayMode", "Renderer.DisplayModes", 0, [this](uint32_t displayMode) {
+		rendererSettings.displayMode = displayMode;
+	});
+	rendererSettings.colorMode = prefs.Get("Renderer.ColourMode", UINT32_C(0));
 
-	ren->gravityFieldEnabled = prefs.Get("Renderer.GravityField", false);
-	ren->decorations_enable = prefs.Get("Renderer.Decorations", true);
+	rendererSettings.gravityFieldEnabled = prefs.Get("Renderer.GravityField", false);
+	rendererSettings.decorationLevel = prefs.Get("Renderer.Decorations", true) ? RendererSettings::decorationEnabled : RendererSettings::decorationDisabled;
+	threadedRendering = prefs.Get("Renderer.SeparateThread", false);
 
 	//Load config into simulation
-	edgeMode = prefs.Get("Simulation.EdgeMode", (int)EDGE_VOID);
+	edgeMode = prefs.Get("Simulation.EdgeMode", NUM_EDGEMODES, EDGE_VOID);
 	sim->SetEdgeMode(edgeMode);
 	ambientAirTemp = float(R_TEMP) + 273.15f;
 	{
@@ -103,11 +114,12 @@ GameModel::GameModel():
 		}
 	}
 	sim->air->ambientAirTemp = ambientAirTemp;
-	decoSpace = prefs.Get("Simulation.DecoSpace", 0); // TODO: DecoSpace enum
+	decoSpace = prefs.Get("Simulation.DecoSpace", NUM_DECOSPACES, DECOSPACE_SRGB);
 	sim->SetDecoSpace(decoSpace);
-	int ngrav_enable = prefs.Get("Simulation.NewtonianGravity", 0); // TODO: NewtonianGravity enum
-	if (ngrav_enable)
-		sim->grav->start_grav_async();
+	if (prefs.Get("Simulation.NewtonianGravity", false))
+	{
+		sim->EnableNewtonianGravity(true);
+	}
 	sim->aheat_enable = prefs.Get("Simulation.AmbientHeat", 0); // TODO: AmbientHeat enum
 	sim->pretty_powder = prefs.Get("Simulation.PrettyPowder", 0); // TODO: PrettyPowder enum
 
@@ -159,13 +171,13 @@ GameModel::~GameModel()
 	{
 		//Save to config:
 		Prefs::DeferWrite dw(prefs);
-		prefs.Set("Renderer.ColourMode", ren->GetColourMode());
-		prefs.Set("Renderer.DisplayModes", ren->GetDisplayMode());
-		prefs.Set("Renderer.RenderModes", ren->GetRenderMode());
-		prefs.Set("Renderer.GravityField", (bool)ren->gravityFieldEnabled);
-		prefs.Set("Renderer.Decorations", (bool)ren->decorations_enable);
-		prefs.Set("Renderer.DebugMode", ren->debugLines); //These two should always be equivalent, even though they are different things
-		prefs.Set("Simulation.NewtonianGravity", sim->grav->IsEnabled());
+		prefs.Set("Renderer.ColourMode", rendererSettings.colorMode);
+		prefs.Set("Renderer.DisplayMode", rendererSettings.displayMode);
+		prefs.Set("Renderer.RenderMode", rendererSettings.renderMode);
+		prefs.Set("Renderer.GravityField", rendererSettings.gravityFieldEnabled);
+		prefs.Set("Renderer.Decorations", GetDecoration());
+		prefs.Set("Renderer.DebugMode", rendererSettings.debugLines); //These two should always be equivalent, even though they are different things
+		prefs.Set("Simulation.NewtonianGravity", bool(sim->grav));
 		prefs.Set("Simulation.AmbientHeat", sim->aheat_enable);
 		prefs.Set("Simulation.PrettyPowder", sim->pretty_powder);
 		prefs.Set("Decoration.Red", (int)colour.Red);
@@ -227,7 +239,7 @@ void GameModel::BuildMenus()
 	if(activeMenu != -1)
 		lastMenu = activeMenu;
 
-	ByteString activeToolIdentifiers[4];
+	std::array<ByteString, NUM_TOOLINDICES> activeToolIdentifiers;
 	if(regularToolset[0])
 		activeToolIdentifiers[0] = regularToolset[0]->Identifier;
 	if(regularToolset[1])
@@ -255,9 +267,9 @@ void GameModel::BuildMenus()
 	elementTools.clear();
 
 	//Create menus
-	for (int i = 0; i < SC_TOTAL; i++)
+	for (auto &section : sd.msections)
 	{
-		menuList.push_back(new Menu(sd.msections[i].icon, sd.msections[i].name, sd.msections[i].doshow));
+		menuList.push_back(new Menu(section.icon, section.name, section.doshow));
 	}
 
 	//Build menus from Simulation elements
@@ -283,7 +295,7 @@ void GameModel::BuildMenus()
 				tempTool = new ElementTool(i, elements[i].Name, elements[i].Description, elements[i].Colour, elements[i].Identifier, elements[i].IconGenerator);
 			}
 
-			if (elements[i].MenuSection >= 0 && elements[i].MenuSection < SC_TOTAL && elements[i].MenuVisible)
+			if (elements[i].MenuSection >= 0 && elements[i].MenuSection < int(sd.msections.size()) && elements[i].MenuVisible)
 			{
 				menuList[elements[i].MenuSection]->AddTool(tempTool);
 			}
@@ -384,13 +396,13 @@ void GameModel::BuildMenus()
 	menuList[SC_LIFE]->AddTool(new GOLTool(*this));
 
 	//Add decoration tools to menu
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_ADD, "ADD", "Colour blending: Add.", 0x000000_rgb, "DEFAULT_DECOR_ADD"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_SUBTRACT, "SUB", "Colour blending: Subtract.", 0x000000_rgb, "DEFAULT_DECOR_SUB"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_MULTIPLY, "MUL", "Colour blending: Multiply.", 0x000000_rgb, "DEFAULT_DECOR_MUL"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_DIVIDE, "DIV", "Colour blending: Divide." , 0x000000_rgb, "DEFAULT_DECOR_DIV"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_SMUDGE, "SMDG", "Smudge tool, blends surrounding deco together.", 0x000000_rgb, "DEFAULT_DECOR_SMDG"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_CLEAR, "CLR", "Erase any set decoration.", 0x000000_rgb, "DEFAULT_DECOR_CLR"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_DRAW, "SET", "Draw decoration (No blending).", 0x000000_rgb, "DEFAULT_DECOR_SET"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(view, DECO_ADD, "ADD", "Colour blending: Add.", 0x000000_rgb, "DEFAULT_DECOR_ADD"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(view, DECO_SUBTRACT, "SUB", "Colour blending: Subtract.", 0x000000_rgb, "DEFAULT_DECOR_SUB"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(view, DECO_MULTIPLY, "MUL", "Colour blending: Multiply.", 0x000000_rgb, "DEFAULT_DECOR_MUL"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(view, DECO_DIVIDE, "DIV", "Colour blending: Divide." , 0x000000_rgb, "DEFAULT_DECOR_DIV"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(view, DECO_SMUDGE, "SMDG", "Smudge tool, blends surrounding deco together.", 0x000000_rgb, "DEFAULT_DECOR_SMDG"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(view, DECO_CLEAR, "CLR", "Erase any set decoration.", 0x000000_rgb, "DEFAULT_DECOR_CLR"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(view, DECO_DRAW, "SET", "Draw decoration (No blending).", 0x000000_rgb, "DEFAULT_DECOR_SET"));
 	SetColourSelectorColour(colour); // update tool colors
 	decoToolset[0] = GetToolFromIdentifier("DEFAULT_DECOR_SET");
 	decoToolset[1] = GetToolFromIdentifier("DEFAULT_DECOR_CLR");
@@ -524,6 +536,11 @@ int GameModel::GetEdgeMode()
 void GameModel::SetTemperatureScale(int temperatureScale)
 {
 	this->temperatureScale = temperatureScale;
+}
+
+void GameModel::SetThreadedRendering(bool newThreadedRendering)
+{
+	threadedRendering = newThreadedRendering;
 }
 
 void GameModel::SetAmbientAirTemperature(float ambientAirTemp)
@@ -880,17 +897,17 @@ void GameModel::SetActiveMenu(int menuID)
 
 	if(menuID == SC_DECO)
 	{
-		if(activeTools != decoToolset)
+		if(activeTools != decoToolset.data())
 		{
-			activeTools = decoToolset;
+			activeTools = decoToolset.data();
 			notifyActiveToolsChanged();
 		}
 	}
 	else
 	{
-		if(activeTools != regularToolset)
+		if(activeTools != regularToolset.data())
 		{
-			activeTools = regularToolset;
+			activeTools = regularToolset.data();
 			notifyActiveToolsChanged();
 		}
 	}
@@ -966,14 +983,7 @@ void GameModel::SaveToSimParameters(const GameSave &saveData)
 	sim->legacy_enable = saveData.legacyEnable;
 	sim->water_equal_test = saveData.waterEEnabled;
 	sim->aheat_enable = saveData.aheatEnable;
-	if (saveData.gravityEnable && !sim->grav->IsEnabled())
-	{
-		sim->grav->start_grav_async();
-	}
-	else if (!saveData.gravityEnable && sim->grav->IsEnabled())
-	{
-		sim->grav->stop_grav_async();
-	}
+	sim->EnableNewtonianGravity(saveData.gravityEnable);
 	sim->frameCount = saveData.frameCount;
 	if (saveData.hasRngState)
 	{
@@ -1087,24 +1097,24 @@ void GameModel::SetLastTool(Tool * newTool)
 
 void GameModel::SetZoomEnabled(bool enabled)
 {
-	ren->zoomEnabled = enabled;
+	view->GetGraphics()->zoomEnabled = enabled;
 	notifyZoomChanged();
 }
 
 bool GameModel::GetZoomEnabled()
 {
-	return ren->zoomEnabled;
+	return view->GetGraphics()->zoomEnabled;
 }
 
 void GameModel::SetZoomPosition(ui::Point position)
 {
-	ren->zoomScopePosition = position;
+	view->GetGraphics()->zoomScopePosition = position;
 	notifyZoomChanged();
 }
 
 ui::Point GameModel::GetZoomPosition()
 {
-	return ren->zoomScopePosition;
+	return view->GetGraphics()->zoomScopePosition;
 }
 
 bool GameModel::MouseInZoom(ui::Point position)
@@ -1137,35 +1147,35 @@ ui::Point GameModel::AdjustZoomCoords(ui::Point position)
 
 void GameModel::SetZoomWindowPosition(ui::Point position)
 {
-	ren->zoomWindowPosition = position;
+	view->GetGraphics()->zoomWindowPosition = position;
 	notifyZoomChanged();
 }
 
 ui::Point GameModel::GetZoomWindowPosition()
 {
-	return ren->zoomWindowPosition;
+	return view->GetGraphics()->zoomWindowPosition;
 }
 
 void GameModel::SetZoomSize(int size)
 {
-	ren->zoomScopeSize = size;
+	view->GetGraphics()->zoomScopeSize = size;
 	notifyZoomChanged();
 }
 
 int GameModel::GetZoomSize()
 {
-	return ren->zoomScopeSize;
+	return view->GetGraphics()->zoomScopeSize;
 }
 
 void GameModel::SetZoomFactor(int factor)
 {
-	ren->ZFACTOR = factor;
+	view->GetGraphics()->ZFACTOR = factor;
 	notifyZoomChanged();
 }
 
 int GameModel::GetZoomFactor()
 {
-	return ren->ZFACTOR;
+	return view->GetGraphics()->ZFACTOR;
 }
 
 void GameModel::SetActiveColourPreset(size_t preset)
@@ -1256,9 +1266,10 @@ bool GameModel::GetPaused()
 
 void GameModel::SetDecoration(bool decorationState)
 {
-	if (ren->decorations_enable != (decorationState?1:0))
+	auto desiredLevel = decorationState ? RendererSettings::decorationEnabled : RendererSettings::decorationDisabled;
+	if (rendererSettings.decorationLevel != desiredLevel)
 	{
-		ren->decorations_enable = decorationState?1:0;
+		rendererSettings.decorationLevel = desiredLevel;
 		notifyDecorationChanged();
 		UpdateQuickOptions();
 		if (decorationState)
@@ -1270,7 +1281,7 @@ void GameModel::SetDecoration(bool decorationState)
 
 bool GameModel::GetDecoration()
 {
-	return ren->decorations_enable?true:false;
+	return rendererSettings.decorationLevel != RendererSettings::decorationDisabled;
 }
 
 void GameModel::SetAHeatEnable(bool aHeat)
@@ -1295,14 +1306,13 @@ void GameModel::ResetAHeat()
 
 void GameModel::SetNewtonianGravity(bool newtonainGravity)
 {
+	sim->EnableNewtonianGravity(newtonainGravity);
     if (newtonainGravity)
     {
-        sim->grav->start_grav_async();
         SetInfoTip("Newtonian Gravity: On");
     }
     else
     {
-        sim->grav->stop_grav_async();
         SetInfoTip("Newtonian Gravity: Off");
     }
     UpdateQuickOptions();
@@ -1310,12 +1320,12 @@ void GameModel::SetNewtonianGravity(bool newtonainGravity)
 
 bool GameModel::GetNewtonianGrvity()
 {
-    return sim->grav->IsEnabled();
+    return bool(sim->grav);
 }
 
 void GameModel::ShowGravityGrid(bool showGrid)
 {
-	ren->gravityFieldEnabled = showGrid;
+	rendererSettings.gravityFieldEnabled = showGrid;
 	if (showGrid)
 		SetInfoTip("Gravity Grid: On");
 	else
@@ -1324,7 +1334,7 @@ void GameModel::ShowGravityGrid(bool showGrid)
 
 bool GameModel::GetGravityGrid()
 {
-	return ren->gravityFieldEnabled;
+	return rendererSettings.gravityFieldEnabled;
 }
 
 void GameModel::FrameStep(int frames)
@@ -1357,6 +1367,10 @@ void GameModel::SetPlaceSave(std::unique_ptr<GameSave> save)
 	transformedPlaceSave.reset();
 	placeSave = std::move(save);
 	notifyPlaceSaveChanged();
+	if (placeSave && placeSave->missingElements)
+	{
+		Log("Paste content has missing custom elements", false);
+	}
 }
 
 void GameModel::TransformPlaceSave(Mat2<int> transform, Vec2<int> nudge)
@@ -1371,12 +1385,12 @@ void GameModel::TransformPlaceSave(Mat2<int> transform, Vec2<int> nudge)
 
 void GameModel::SetClipboard(std::unique_ptr<GameSave> save)
 {
-	clipboard = std::move(save);
+	Clipboard::SetClipboardData(std::move(save));
 }
 
 const GameSave *GameModel::GetClipboard() const
 {
-	return clipboard.get();
+	return Clipboard::GetClipboardData();
 }
 
 const GameSave *GameModel::GetTransformedPlaceSave() const
@@ -1707,7 +1721,7 @@ void GameModel::BeforeSim()
 {
 	if (!sim->sys_pause || sim->framerender)
 	{
-		commandInterface->HandleEvent(BeforeSimEvent{});
+		CommandInterface::Ref().HandleEvent(BeforeSimEvent{});
 	}
 	sim->BeforeSim();
 }
@@ -1715,5 +1729,5 @@ void GameModel::BeforeSim()
 void GameModel::AfterSim()
 {
 	sim->AfterSim();
-	commandInterface->HandleEvent(AfterSimEvent{});
+	CommandInterface::Ref().HandleEvent(AfterSimEvent{});
 }

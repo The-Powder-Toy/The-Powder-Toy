@@ -15,7 +15,8 @@ class DropDownWindow : public ui::Window
 
 public:
 	DropDownWindow(DropDown * dropDown):
-		Window(dropDown->GetScreenPos() + ui::Point(-1, -1 - dropDown->optionIndex * 16), ui::Point(dropDown->Size.X+2, 2+dropDown->options.size()*16)),
+		Window(dropDown->GetScreenPos() + ui::Point(-1, -1 - (dropDown->optionIndex*16 < dropDown->GetScreenPos().Y ? dropDown->optionIndex*16 : 0)),
+						  ui::Point(dropDown->Size.X+2, 2+dropDown->options.size()*16)),
 		dropDown(dropDown),
 		appearance(dropDown->Appearance)
 	{

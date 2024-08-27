@@ -1,16 +1,9 @@
 #include "RenderModel.h"
-
 #include "RenderView.h"
-
 #include "gui/game/RenderPreset.h"
-
+#include "gui/game/GameController.h"
+#include "gui/game/GameView.h"
 #include "graphics/Renderer.h"
-
-RenderModel::RenderModel():
-	renderer(NULL)
-{
-
-}
 
 void RenderModel::AddObserver(RenderView * observer)
 {
@@ -21,80 +14,61 @@ void RenderModel::AddObserver(RenderView * observer)
 	observer->NotifyColourChanged(this);
 }
 
-void RenderModel::SetRenderMode(unsigned int renderMode)
+void RenderModel::SetRenderMode(uint32_t newRenderMode)
 {
-	if(renderer)
-		renderer->AddRenderMode(renderMode);
+	rendererSettings->renderMode = newRenderMode;
 	notifyRenderChanged();
 }
 
-void RenderModel::UnsetRenderMode(unsigned int renderMode)
+uint32_t RenderModel::GetRenderMode()
 {
-	if(renderer)
-		renderer->RemoveRenderMode(renderMode);
-	notifyRenderChanged();
+	return rendererSettings->renderMode;
 }
 
-unsigned int RenderModel::GetRenderMode()
+void RenderModel::SetDisplayMode(uint32_t newDisplayMode)
 {
-	if(renderer)
-		return renderer->render_mode;
-	else
-		return 0;
-}
-
-void RenderModel::SetDisplayMode(unsigned int displayMode)
-{
-	if(renderer)
-		renderer->AddDisplayMode(displayMode);
+	rendererSettings->displayMode = newDisplayMode;
 	notifyDisplayChanged();
 }
 
-void RenderModel::UnsetDisplayMode(unsigned int displayMode)
+uint32_t RenderModel::GetDisplayMode()
 {
-	if(renderer)
-		renderer->RemoveDisplayMode(displayMode);
-	notifyDisplayChanged();
+	return rendererSettings->displayMode;
 }
 
-unsigned int RenderModel::GetDisplayMode()
+void RenderModel::SetColorMode(uint32_t newColorMode)
 {
-	if(renderer)
-		return renderer->display_mode;
-	else
-		return 0;
-}
-
-void RenderModel::SetColourMode(unsigned int colourMode)
-{
-	if(renderer)
-		renderer->SetColourMode(colourMode);
+	rendererSettings->colorMode = newColorMode;
 	notifyColourChanged();
 }
 
-unsigned int RenderModel::GetColourMode()
+uint32_t RenderModel::GetColorMode()
 {
-	if(renderer)
-		return renderer->colour_mode;
-	else
-		return 0;
+	return rendererSettings->colorMode;
 }
 
 void RenderModel::LoadRenderPreset(int presetNum)
 {
-	RenderPreset preset = renderer->renderModePresets[presetNum];
-	renderer->SetRenderMode(preset.RenderModes);
-	renderer->SetDisplayMode(preset.DisplayModes);
-	renderer->SetColourMode(preset.ColourMode);
+	RenderPreset preset = Renderer::renderModePresets[presetNum];
+	SetRenderMode(preset.renderMode);
+	SetDisplayMode(preset.displayMode);
+	SetColorMode(preset.colorMode);
+}
+
+void RenderModel::SetRenderer(Renderer * ren, RendererSettings *newRendererSettings)
+{
+	renderer = ren;
+	rendererSettings = newRendererSettings;
+	notifyRendererChanged();
 	notifyRenderChanged();
 	notifyDisplayChanged();
 	notifyColourChanged();
 }
 
-void RenderModel::SetRenderer(Renderer * ren)
+void RenderModel::SetSimulation(Simulation *newSim)
 {
-	renderer = ren;
-	notifyRendererChanged();
+	sim = newSim;
+	notifySimulationChanged();
 	notifyRenderChanged();
 	notifyDisplayChanged();
 	notifyColourChanged();
@@ -105,11 +79,29 @@ Renderer * RenderModel::GetRenderer()
 	return renderer;
 }
 
+RendererSettings *RenderModel::GetRendererSettings()
+{
+	return rendererSettings;
+}
+
+Simulation *RenderModel::GetSimulation()
+{
+	return sim;
+}
+
 void RenderModel::notifyRendererChanged()
 {
 	for (size_t i = 0; i < observers.size(); i++)
 	{
 		observers[i]->NotifyRendererChanged(this);
+	}
+}
+
+void RenderModel::notifySimulationChanged()
+{
+	for (size_t i = 0; i < observers.size(); i++)
+	{
+		observers[i]->NotifySimulationChanged(this);
 	}
 }
 

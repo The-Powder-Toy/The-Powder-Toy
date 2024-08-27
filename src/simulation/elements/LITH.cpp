@@ -93,6 +93,8 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 				Particle &neighbor = parts[ID(neighborData)];
 
+				auto pavg = sim->parts_avg(i, ID(neighborData), PT_INSL);
+
 				switch (TYP(neighborData))
 				{
 				case PT_SLTW:
@@ -134,7 +136,7 @@ static int update(UPDATE_FUNC_ARGS)
 					break;
 
 				case PT_SPRK:
-					if (sim->parts_avg(i, ID(neighborData), PT_INSL) == PT_INSL)
+					if (pavg == PT_INSL || pavg == PT_RSSS)
 					{
 						break;
 					}
@@ -149,7 +151,7 @@ static int update(UPDATE_FUNC_ARGS)
 					break;
 
 				case PT_NSCN:
-					if (sim->parts_avg(i, ID(neighborData), PT_INSL) == PT_INSL)
+					if (pavg == PT_INSL || pavg == PT_RSSS)
 					{
 						break;
 					}

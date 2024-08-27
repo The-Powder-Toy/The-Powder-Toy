@@ -43,11 +43,16 @@ void Window::AddComponent(Component* c)
 	if (c->GetParentWindow() == NULL)
 	{
 		c->SetParentWindow(this);
+		c->MouseInside = false;
+		c->MouseDownInside = false;
 		Components.push_back(c);
 
 		if (Engine::Ref().GetMouseX() > Position.X + c->Position.X && Engine::Ref().GetMouseX() < Position.X + c->Position.X + c->Size.X &&
 			Engine::Ref().GetMouseY() > Position.Y + c->Position.Y && Engine::Ref().GetMouseY() < Position.Y + c->Position.Y + c->Size.Y)
+		{
+			c->MouseInside = true;
 			c->OnMouseEnter(Engine::Ref().GetMouseX() - (Position.X + c->Position.X), Engine::Ref().GetMouseY() - (Position.Y + c->Position.Y));
+		}
 	}
 	else
 	{
@@ -440,7 +445,7 @@ void Window::DoMouseDown(int x_, int y_, unsigned button)
 				FocusComponent(Components[i]);
 				if (!DEBUG || !debugMode)
 				{
-					Components[i]->OnMouseClick(x - Components[i]->Position.X, y - Components[i]->Position.Y, button);
+					Components[i]->MouseDownInside = true;
 				}
 				clickState = true;
 				break;
@@ -485,21 +490,17 @@ void Window::DoMouseMove(int x_, int y_, int dx, int dy)
 			Point local(x - Components[i]->Position.X, y - Components[i]->Position.Y);
 			Point a(local.X - dx, local.Y - dy);
 
-			Components[i]->OnMouseMoved(local.X, local.Y, dx, dy);
+			Components[i]->OnMouseMoved(local.X, local.Y);
 
 			if (local.X >= 0 &&
 			    local.Y >= 0 &&
 			    local.X < Components[i]->Size.X &&
 			    local.Y < Components[i]->Size.Y && !halt)
 			{
-				Components[i]->OnMouseMovedInside(local.X, local.Y, dx, dy);
-
 				// entering?
-				if (!(a.X >= 0 &&
-				      a.Y >= 0 &&
-				      a.X < Components[i]->Size.X &&
-				      a.Y < Components[i]->Size.Y ))
+				if (!Components[i]->MouseInside)
 				{
+					Components[i]->MouseInside = true;
 					Components[i]->OnMouseEnter(local.X, local.Y);
 				}
 				if (Components[i]->Enabled)
@@ -508,11 +509,9 @@ void Window::DoMouseMove(int x_, int y_, int dx, int dy)
 			else if (!halt)
 			{
 				// leaving?
-				if (a.X >= 0 &&
-					a.Y >= 0 &&
-					a.X < Components[i]->Size.X &&
-					a.Y < Components[i]->Size.Y )
+				if (Components[i]->MouseInside)
 				{
+					Components[i]->MouseInside = false;
 					Components[i]->OnMouseLeave(local.X, local.Y);
 				}
 
@@ -537,12 +536,16 @@ void Window::DoMouseUp(int x_, int y_, unsigned button)
 	{
 		if (Components[i]->Enabled && Components[i]->Visible)
 		{
-			if (x >= Components[i]->Position.X && y >= Components[i]->Position.Y && x < Components[i]->Position.X + Components[i]->Size.X && y < Components[i]->Position.Y + Components[i]->Size.Y)
+			if (Components[i]->MouseDownInside && x >= Components[i]->Position.X && y >= Components[i]->Position.Y && x < Components[i]->Position.X + Components[i]->Size.X && y < Components[i]->Position.Y + Components[i]->Size.Y)
 			{
-				Components[i]->OnMouseUnclick(x - Components[i]->Position.X, y - Components[i]->Position.Y, button);
+				Components[i]->OnMouseClick(x - Components[i]->Position.X, y - Components[i]->Position.Y, button);
 				break;
 			}
 		}
+	}
+	for (auto *component : Components)
+	{
+		component->MouseDownInside = false;
 	}
 
 	//on mouse up

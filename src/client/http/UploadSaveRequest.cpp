@@ -6,7 +6,7 @@
 
 namespace http
 {
-	UploadSaveRequest::UploadSaveRequest(const SaveInfo &saveInfo) : Request(ByteString::Build(SCHEME, SERVER, "/Save.api"))
+	UploadSaveRequest::UploadSaveRequest(const SaveInfo &saveInfo) : Request(ByteString::Build(SERVER, "/Save.api"))
 	{
 		auto [ fromNewerVersion, gameData ] = saveInfo.GetGameSave()->Serialise();
 		if (!gameData.size())

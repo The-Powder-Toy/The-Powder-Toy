@@ -53,9 +53,9 @@ public:
 
 	void Tick(float dt) override;
 	void OnContextMenuAction(int item) override;
-	void OnMouseClick(int x, int y, unsigned button) override;
+	void OnMouseDown(int x, int y, unsigned button) override;
 	void OnMouseUp(int x, int y, unsigned button) override;
-	void OnMouseMoved(int localx, int localy, int dx, int dy) override;
+	void OnMouseMoved(int localx, int localy) override;
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void OnVKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 	void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;

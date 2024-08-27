@@ -30,6 +30,7 @@
 #include "Format.h"
 #include "Misc.h"
 
+#include "graphics/VideoBuffer.h"
 #include "SimulationConfig.h"
 #include <SDL.h>
 
@@ -111,9 +112,9 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	AddComponent(missingElementsButton);
 
 	if(showAvatars)
-		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(100, 16), "");
+		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(265, 16), "");
 	else
-		saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(100, 16), "");
+		saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(300, 16), "");
 	saveNameLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveNameLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(saveNameLabel);
@@ -129,9 +130,9 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	AddComponent(saveDescriptionLabel);
 
 	if(showAvatars)
-		authorDateLabel = new ui::Label(ui::Point(39, (YRES/2)+4+15), ui::Point(180, 16), "");
+		authorDateLabel = new ui::Label(ui::Point(39, (YRES/2)+4+15), ui::Point(200, 16), "");
 	else
-		authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15), ui::Point(200, 16), "");
+		authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15), ui::Point(220, 16), "");
 	authorDateLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(authorDateLabel);
@@ -148,7 +149,7 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 		AddComponent(avatarButton);
 	}
 
-	viewsLabel = new ui::Label(ui::Point((XRES/2)-80, (YRES/2)+4+15), ui::Point(80, 16), "");
+	viewsLabel = new ui::Label(ui::Point((XRES/2)-88, (YRES/2)+4+15), ui::Point(88, 16), "");
 	viewsLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	viewsLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(viewsLabel);
@@ -427,6 +428,7 @@ void PreviewView::OnTick(float dt)
 	{
 		try
 		{
+			addCommentRequest->Finish();
 			addCommentBox->SetText("");
 			c->CommentAdded();
 		}
@@ -434,7 +436,8 @@ void PreviewView::OnTick(float dt)
 		{
 			new ErrorMessage("Error submitting comment", ByteString(ex.what()).FromUtf8());
 		}
-		submitCommentButton->Enabled = true;
+		isSubmittingComment = false;
+		CheckCommentSubmitEnabled();
 		commentBoxAutoHeight();
 		addCommentRequest.reset();
 		CheckComment();
@@ -572,10 +575,12 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		if(save->GetGameSave())
 		{
 			missingElements = save->GetGameSave()->missingElements;
-			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
+			RendererSettings rendererSettings;
+			rendererSettings.decorationLevel = RendererSettings::decorationAntiClickbait;
+			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), true, rendererSettings);
 			if (savePreview)
 				savePreview->ResizeToFit(RES / 2, true);
-			missingElementsButton->Visible = missingElements.identifiers.size() || missingElements.ids.size();
+			missingElementsButton->Visible = missingElements;
 			UpdateLoadStatus();
 		}
 		else if (!sender->GetCanOpen())
@@ -600,20 +605,34 @@ void PreviewView::submitComment()
 	if (addCommentBox)
 	{
 		String comment = addCommentBox->GetText();
-		if (comment.length() < 4)
+		if (comment.length() == 0)
+		{
+			c->RefreshComments();
+			isRefreshingComments = true;
+		}
+		else if (comment.length() < 4)
 		{
 			new ErrorMessage("Error", "Comment is too short");
-			return;
+		}
+		else
+		{
+			isSubmittingComment = true;
+			FocusComponent(NULL);
+
+			addCommentRequest = std::make_unique<http::AddCommentRequest>(c->SaveID(), comment);
+			addCommentRequest->Start();
+
+			CheckComment();
 		}
 
-		submitCommentButton->Enabled = false;
-		FocusComponent(NULL);
-
-		addCommentRequest = std::make_unique<http::AddCommentRequest>(c->SaveID(), comment);
-		addCommentRequest->Start();
-
-		CheckComment();
+		CheckCommentSubmitEnabled();
 	}
+}
+
+void PreviewView::CheckCommentSubmitEnabled()
+{
+	if (submitCommentButton)
+		submitCommentButton->Enabled = !isRefreshingComments && !isSubmittingComment;
 }
 
 void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
@@ -644,10 +663,10 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 		} });
 		addCommentBox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		addCommentBox->SetMultiline(true);
+		addCommentBox->SetLimit(1000);
 		AddComponent(addCommentBox);
 		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), "Submit");
 		submitCommentButton->SetActionCallback({ [this] { submitComment(); } });
-		//submitCommentButton->Enabled = false;
 		AddComponent(submitCommentButton);
 
 		commentWarningLabel = new ui::Label(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 16), "If you see this it is a bug");
@@ -688,6 +707,9 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 	commentComponents.clear();
 	commentTextComponents.clear();
 	commentsPanel->InnerSize = ui::Point(0, 0);
+
+	isRefreshingComments = false;
+	CheckCommentSubmitEnabled();
 
 	if (commentsPtr)
 	{
@@ -737,11 +759,11 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 				authorNameFormatted = "\bl" + authorNameFormatted;
 			}
 			if (showAvatars)
-				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13 + 26), 16), authorNameFormatted);
+				tempUsername = new ui::Label(ui::Point(31, currentY+8), ui::Point(Size.X-((XRES/2) + 13 + 26), 14), authorNameFormatted);
 			else
-				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), authorNameFormatted);
+				tempUsername = new ui::Label(ui::Point(5, currentY+8), ui::Point(Size.X-((XRES/2) + 13), 14), authorNameFormatted);
 			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 			currentY += 16;
 
 			commentComponents.push_back(tempUsername);

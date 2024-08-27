@@ -4,7 +4,7 @@
 namespace http
 {
 	SaveUserInfoRequest::SaveUserInfoRequest(UserInfo info) :
-		APIRequest(ByteString::Build(SCHEME, SERVER, "/Profile.json"), authRequire, true)
+		APIRequest(ByteString::Build(SERVER, "/Profile.json"), authRequire, true)
 	{
 		AddPostData(FormData{
 			{ "Location", info.location.ToUtf8() },

@@ -1,6 +1,7 @@
 #pragma once
 #include "common/String.h"
 #include <json/json.h>
+#include <optional>
 
 class Prefs
 {
@@ -35,7 +36,7 @@ public:
 	Prefs(ByteString path);
 
 	template<class Type>
-	Type Get(ByteString path, Type defaultValue) const
+	std::optional<Type> Get(ByteString path) const
 	{
 		auto value = GetJson(root, path);
 		if (value != Json::nullValue)
@@ -48,14 +49,25 @@ public:
 			{
 			}
 		}
+		return std::nullopt;
+	}
+
+	template<class Type>
+	Type Get(ByteString path, Type defaultValue) const
+	{
+		auto value = Get<Type>(path);
+		if (value)
+		{
+			return *value;
+		}
 		return defaultValue;
 	}
 
 	template<class Enum, class EnumBase = int>
-	Enum Get(ByteString path, Enum maxValue, Enum defaultValue) const
+	Enum Get(ByteString path, Enum numValues, Enum defaultValue) const
 	{
 		EnumBase value = Get(path, EnumBase(defaultValue));
-		if (value < 0 || value >= EnumBase(maxValue))
+		if (value < 0 || value >= EnumBase(numValues))
 		{
 			value = EnumBase(defaultValue);
 		}

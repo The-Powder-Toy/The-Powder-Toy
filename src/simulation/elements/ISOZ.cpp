@@ -32,7 +32,7 @@ void Element::Element_ISOZ()
 	HeatConduct = 29;
 	Description = "Isotope-Z. Radioactive liquid, decays into photons when touching PHOT or under negative pressure.";
 
-	Properties = TYPE_LIQUID|PROP_NEUTPENETRATE;
+	Properties = TYPE_LIQUID | PROP_NEUTPENETRATE | PROP_PHOTPASS;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

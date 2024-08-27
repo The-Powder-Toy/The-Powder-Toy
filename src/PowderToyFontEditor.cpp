@@ -75,7 +75,7 @@ int main(int argc, char * argv[])
 	}
 	else
 	{
-		std::cerr << "path to font.cpp not supplied" << std::endl;
+		std::cerr << "path to font.bz2 not supplied" << std::endl;
 		Platform::Exit(1);
 	}
 

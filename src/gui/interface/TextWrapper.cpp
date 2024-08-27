@@ -27,9 +27,16 @@ namespace ui
 
 		int word_begins_at = -1; // this is a pointer into records; we're not currently in a word
 		int word_width = 0;
-		int lines = 1;
+		int lines = 0;
 		int char_width;
 		int clear_count = 0;
+
+		wrappedWidth = 0;
+		auto resetLine = [&]() {
+			wrappedWidth = std::max(wrappedWidth, line_width);
+			line_width = 0;
+			lines += 1;
+		};
 
 		auto wrap_if_needed = [&](int width_to_consider) -> bool {
 			if (do_wrapping && width_to_consider + char_width > max_width)
@@ -42,8 +49,7 @@ namespace ui
 					true, // signal the end of the line to the clickmap generator
 					true // allow record to eat the following space
 				});
-				line_width = 0;
-				lines += 1;
+				resetLine();
 				return true;
 			}
 			return false;
@@ -57,6 +63,7 @@ namespace ui
 			switch (*it) // set sequence_length if *it starts a sequence that should be forwarded as-is
 			{
 			case   '\b': sequence_length = 2; break;
+			case '\x0e': sequence_length = 1; break;
 			case '\x0f': sequence_length = 4; break;
 			}
 			
@@ -98,8 +105,7 @@ namespace ui
 					true, // signal the end of the line to the clickmap generator
 					false
 				});
-				lines += 1;
-				line_width = 0;
+				resetLine();
 				word_begins_at = -1; // reset word state
 				++clear_count;
 				break;
@@ -206,6 +212,7 @@ namespace ui
 			wrapped_text.append(1, record.character);
 		}
 
+		resetLine();
 		clear_text_size = clear_count;
 		wrapped_lines = lines;
 		return lines;

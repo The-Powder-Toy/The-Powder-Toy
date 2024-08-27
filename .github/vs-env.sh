@@ -24,5 +24,8 @@ IFS=$'\t\n'
 for i in $(MSYS_NO_PATHCONV=1 cmd /c "$vs_install_dir\\VC\\Auxiliary\\Build\\vcvarsall.bat" $VS_ENV_PARAMS \& env \& exit /b); do
 	set +e
 	export "$i" 2>/dev/null
+	echo $i | grep ERROR
 	set -e
 done
+
+cl

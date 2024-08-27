@@ -5,8 +5,8 @@ void Element::Element_LOVE()
 	Identifier = "DEFAULT_PT_LOVE";
 	Name = "LOVE";
 	Colour = 0xFF30FF_rgb;
-	MenuVisible = 1;
-	MenuSection = SC_CRACKER2;
+	MenuVisible = 0;
+	MenuSection = SC_SPECIAL;
 	Enabled = 1;
 
 	Advection = 0.0f;

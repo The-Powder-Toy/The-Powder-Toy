@@ -1,9 +1,8 @@
 #include "DecorationTool.h"
-
 #include "graphics/Renderer.h"
-
 #include "simulation/SimulationData.h"
 #include "simulation/Simulation.h"
+#include "GameView.h"
 
 std::unique_ptr<VideoBuffer> DecorationTool::GetIcon(int ToolID, Vec2<int> size)
 {
@@ -54,11 +53,16 @@ void DecorationTool::DrawRect(Simulation * sim, Brush const &brush, ui::Point po
 
 void DecorationTool::DrawFill(Simulation * sim, Brush const &brush, ui::Point position)
 {
-	auto loc = RGB<uint8_t>::Unpack(ren.GetPixel(position));
+	auto &rendererFrame = gameView->GetRendererFrame();
+	if (!rendererFrame.Size().OriginRect().Contains(position))
+	{
+		return;
+	}
+	auto loc = RGB<uint8_t>::Unpack(rendererFrame[position]);
 	if (ToolID == DECO_CLEAR)
 		// TODO: this is actually const-correct
-		sim->ApplyDecorationFill(const_cast<Renderer *>(&ren), position.X, position.Y, 0, 0, 0, 0, loc.Red, loc.Green, loc.Blue);
+		sim->ApplyDecorationFill(rendererFrame, position.X, position.Y, 0, 0, 0, 0, loc.Red, loc.Green, loc.Blue);
 	else
-		sim->ApplyDecorationFill(const_cast<Renderer *>(&ren), position.X, position.Y, Colour.Red, Colour.Green, Colour.Blue, Colour.Alpha, loc.Red, loc.Green, loc.Blue);
+		sim->ApplyDecorationFill(rendererFrame, position.X, position.Y, Colour.Red, Colour.Green, Colour.Blue, Colour.Alpha, loc.Red, loc.Green, loc.Blue);
 }
 

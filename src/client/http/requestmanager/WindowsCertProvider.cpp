@@ -64,11 +64,11 @@ namespace http
 					}
 					std::vector<char> pem(pemLength);
 					// actually get the data
-					if (!CryptBinaryToStringA(context->pbCertEncoded, context->cbCertEncoded, CRYPT_STRING_BASE64HEADER, &pem[0], &pemLength))
+					if (!CryptBinaryToStringA(context->pbCertEncoded, context->cbCertEncoded, CRYPT_STRING_BASE64HEADER, pem.data(), &pemLength))
 					{
 						return die("CryptBinaryToStringA failed");
 					}
-					allPems += ByteString(&pem[0], &pem[0] + pem.size() - 1); // buffer includes the zero terminator, omit that
+					allPems += ByteString(pem.data(), pem.data() + pem.size() - 1); // buffer includes the zero terminator, omit that
 				}
 				if (!allPems.size())
 				{
@@ -86,7 +86,7 @@ namespace http
 		if (doOnce.allPems.size())
 		{
 			curl_blob blob;
-			blob.data = &doOnce.allPems[0];
+			blob.data = doOnce.allPems.data();
 			blob.len = doOnce.allPems.size();
 			blob.flags = CURL_BLOB_COPY;
 			HandleCURLcode(curl_easy_setopt(easy, CURLOPT_CAINFO_BLOB, &blob));

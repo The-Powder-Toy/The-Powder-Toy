@@ -31,9 +31,6 @@ constexpr int SC_LIFE      = 12;
 constexpr int SC_TOOL      = 13;
 constexpr int SC_FAVORITES = 14;
 constexpr int SC_DECO      = 15;
-constexpr int SC_CRACKER   = 16;
-constexpr int SC_CRACKER2  = 17;
-constexpr int SC_TOTAL     = 16;
 
 constexpr int O_WL_WALLELEC     = 122;
 constexpr int O_WL_EWALL        = 123;
@@ -143,21 +140,6 @@ constexpr int NGT_BRAN = 23;
 //replace mode / specific delete flags
 constexpr auto REPLACE_MODE    = UINT32_C(0x00000001);
 constexpr auto SPECIFIC_DELETE = UINT32_C(0x00000002);
-
-enum EdgeMode
-{
-	EDGE_VOID, EDGE_SOLID, EDGE_LOOP, NUM_EDGE_MODES
-};
-
-enum AirMode
-{
-	AIR_ON, AIR_PRESSURE_OFF, AIR_VELOCITY_OFF, AIR_OFF, AIR_NO_UPDATE, NUM_AIR_MODES
-};
-
-enum GravityMode
-{
-	GRAV_VERTICAL, GRAV_OFF, GRAV_RADIAL, GRAV_CUSTOM, NUM_GRAV_MODES
-};
 
 struct CustomGOLData
 {

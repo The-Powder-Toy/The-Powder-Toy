@@ -67,7 +67,7 @@ constexpr int FLAG_KEEP_SEARCHING = 0x8;
 /* Returns true for particles that activate the special FILT color copying mode */
 static bool phot_data_type(int rt)
 {
-	return rt == PT_FILT || rt == PT_PHOT || rt == PT_BRAY;
+	return rt == PT_FILT || rt == PT_PHOT || rt == PT_BRAY || rt == PT_BIZR || rt == PT_BIZRG || rt == PT_BIZRS;
 }
 
 /* Returns true for particles that start a ray search ("dtec" mode)

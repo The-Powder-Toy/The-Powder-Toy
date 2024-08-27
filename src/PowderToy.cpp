@@ -22,6 +22,7 @@
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/interface/Engine.h"
+#include "gui/interface/TextWrapper.h"
 #include "Config.h"
 #include "SimulationConfig.h"
 #include <optional>
@@ -29,6 +30,8 @@
 #include <iostream>
 #include <csignal>
 #include <SDL.h>
+#include <exception>
+#include <cstdlib>
 
 void LoadWindowPosition()
 {
@@ -97,38 +100,72 @@ void TickClient()
 	Client::Ref().Tick();
 }
 
-void BlueScreen(String detailMessage)
+int main(int argc, char *argv[]);
+
+static void BlueScreen(String detailMessage, std::optional<std::vector<String>> stackTrace)
 {
 	auto &engine = ui::Engine::Ref();
 	engine.g->BlendFilledRect(engine.g->Size().OriginRect(), 0x1172A9_rgb .WithAlpha(0xD2));
 
-	String errorTitle = "ERROR";
-	String errorDetails = "Details: " + detailMessage;
-	String errorHelp = String("An unrecoverable fault has occurred, please report the error by visiting the website below\n") + SCHEME + SERVER;
-	auto versionInfo = ByteString::Build("Version: ", VersionInfo(), "\nTag: ", VCS_TAG).FromUtf8();
+	auto crashPrevLogPath = ByteString("crash.prev.log");
+	auto crashLogPath = ByteString("crash.log");
+	Platform::RenameFile(crashLogPath, crashPrevLogPath, true);
 
-	// We use the width of errorHelp to center, but heights of the individual texts for vertical spacing
-	auto pos = engine.g->Size() / 2 - Vec2(Graphics::TextSize(errorHelp).X / 2, 100);
-	engine.g->BlendText(pos, errorTitle, 0xFFFFFF_rgb .WithAlpha(0xFF));
-	pos.Y += 4 + Graphics::TextSize(errorTitle).Y;
-	engine.g->BlendText(pos, errorDetails, 0xFFFFFF_rgb .WithAlpha(0xFF));
-	pos.Y += 4 + Graphics::TextSize(errorDetails).Y;
-	engine.g->BlendText(pos, errorHelp, 0xFFFFFF_rgb .WithAlpha(0xFF));
-	pos.Y += 4 + Graphics::TextSize(errorHelp).Y;
-	engine.g->BlendText(pos, versionInfo, 0xFFFFFF_rgb .WithAlpha(0xFF));
+	StringBuilder crashInfo;
+	crashInfo << "ERROR - Details: " << detailMessage << "\n";
+	crashInfo << "An unrecoverable fault has occurred, please report it by visiting the website below\n\n  " << SERVER << "\n\n";
+	crashInfo << "An attempt will be made to save all of this information to " << crashLogPath.FromUtf8() << " in your data folder.\n";
+	crashInfo << "Please attach this file to your report.\n\n";
+	crashInfo << "Version: " << VersionInfo().FromUtf8() << "\n";
+	crashInfo << "Tag: " << VCS_TAG << "\n";
+	crashInfo << "Date: " << format::UnixtimeToDate(time(NULL), "%Y-%m-%dT%H:%M:%SZ", false).FromUtf8() << "\n";
+	if (stackTrace)
+	{
+		crashInfo << "Stack trace; main is at 0x" << Format::Hex() << intptr_t(main) << ":\n";
+		for (auto &item : *stackTrace)
+		{
+			crashInfo << " - " << item << "\n";
+		}
+	}
+	else
+	{
+		crashInfo << "Stack trace not available\n";
+	}
+	String errorText = crashInfo.Build();
+	constexpr auto width = 440;
+	ui::TextWrapper tw;
+	tw.Update(errorText, true, width);
+	engine.g->BlendText(ui::Point((engine.g->Size().X - width) / 2, 80), tw.WrappedText(), 0xFFFFFF_rgb .WithAlpha(0xFF));
+
+	auto crashLogData = errorText.ToUtf8();
+	std::cerr << crashLogData << std::endl;
+	Platform::WriteFile(std::vector<char>(crashLogData.begin(), crashLogData.end()), crashLogPath);
 
 	//Death loop
 	SDL_Event event;
-	while(true)
+	auto running = true;
+	while (running)
 	{
 		while (SDL_PollEvent(&event))
-			if(event.type == SDL_QUIT)
-				exit(-1); // Don't use Platform::Exit, we're practically zombies at this point anyway.
+		{
+			if (event.type == SDL_QUIT)
+			{
+				running = false;
+			}
+		}
 		blit(engine.g->Data());
 	}
+
+	// Don't use Platform::Exit, we're practically zombies at this point anyway.
+#if defined(__MINGW32__) || defined(__APPLE__) || defined(__EMSCRIPTEN__) || defined(__OpenBSD__)
+	// Come on...
+	exit(-1);
+#else
+	quick_exit(-1);
+#endif
 }
 
-struct
+static struct
 {
 	int sig;
 	const char *message;
@@ -140,7 +177,7 @@ struct
 	{ 0, nullptr },
 };
 
-void SigHandler(int signal)
+static void SigHandler(int signal)
 {
 	const char *message = "Unknown signal";
 	for (auto *msg = signalMessages; msg->message; ++msg)
@@ -151,7 +188,29 @@ void SigHandler(int signal)
 			break;
 		}
 	}
-	BlueScreen(ByteString(message).FromUtf8());
+	BlueScreen(ByteString(message).FromUtf8(), Platform::StackTrace());
+}
+
+static void TerminateHandler()
+{
+	ByteString err = "std::terminate called without a current exception";
+	auto eptr = std::current_exception();
+	try
+	{
+		if (eptr)
+		{
+			std::rethrow_exception(eptr);
+		}
+	}
+	catch (const std::exception &e)
+	{
+		err = "unhandled exception: " + ByteString(e.what());
+	}
+	catch (...)
+	{
+		err = "unhandled exception not derived from std::exception, cannot determine reason";
+	}
+	BlueScreen(err.FromUtf8(), Platform::StackTrace());
 }
 
 constexpr int SCALE_MAXIMUM = 10;
@@ -388,19 +447,20 @@ int Main(int argc, char *argv[])
 	engine.Begin();
 	engine.SetFastQuit(prefs.Get("FastQuit", true));
 	engine.TouchUI = prefs.Get("TouchUI", DEFAULT_TOUCH_UI);
-	if (Client::Ref().IsFirstRun() && FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsNone)
-	{
-		auto guessed = GuessBestScale();
-		if (windowFrameOps.scale != guessed)
-		{
-			windowFrameOps.scale = guessed;
-			prefs.Set("Scale", windowFrameOps.scale);
-			showLargeScreenDialog = true;
-		}
-	}
 	engine.windowFrameOps = windowFrameOps;
 
 	SDLOpen();
+
+	if (Client::Ref().IsFirstRun() && FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsNone)
+	{
+		auto guessed = GuessBestScale();
+		if (engine.windowFrameOps.scale != guessed)
+		{
+			engine.windowFrameOps.scale = guessed;
+			prefs.Set("Scale", guessed);
+			showLargeScreenDialog = true;
+		}
+	}
 
 	bool enableBluescreen = USE_BLUESCREEN && !true_arg(arguments["disable-bluescreen"]);
 	if (enableBluescreen)
@@ -410,6 +470,7 @@ int Main(int argc, char *argv[])
 		{
 			signal(msg->sig, SigHandler);
 		}
+		std::set_terminate(TerminateHandler);
 	}
 
 	if constexpr (X86)
@@ -417,114 +478,97 @@ int Main(int argc, char *argv[])
 		X86KillDenormals();
 	}
 
-	auto wrapWithBluescreen = [&]() {
-		explicitSingletons->simulationData = std::make_unique<SimulationData>();
-		explicitSingletons->gameController = std::make_unique<GameController>();
-		auto *gameController = explicitSingletons->gameController.get();
-		engine.ShowWindow(gameController->GetView());
+	explicitSingletons->simulationData = std::make_unique<SimulationData>();
+	explicitSingletons->gameController = std::make_unique<GameController>();
+	auto *gameController = explicitSingletons->gameController.get();
+	engine.ShowWindow(gameController->GetView());
 
-		auto openArg = arguments["open"];
-		if (openArg.has_value())
+	auto openArg = arguments["open"];
+	if (openArg.has_value())
+	{
+		if constexpr (DEBUG)
 		{
-			if constexpr (DEBUG)
-			{
-				std::cout << "Loading " << openArg.value() << std::endl;
-			}
-			if (Platform::FileExists(openArg.value()))
-			{
-				try
-				{
-					std::vector<char> gameSaveData;
-					if (!Platform::ReadFile(gameSaveData, openArg.value()))
-					{
-						new ErrorMessage("Error", "Could not read file");
-					}
-					else
-					{
-						auto newFile = std::make_unique<SaveFile>(openArg.value());
-						auto newSave = std::make_unique<GameSave>(std::move(gameSaveData));
-						newFile->SetGameSave(std::move(newSave));
-						gameController->LoadSaveFile(std::move(newFile));
-					}
-
-				}
-				catch (std::exception & e)
-				{
-					new ErrorMessage("Error", "Could not open save file:\n" + ByteString(e.what()).FromUtf8()) ;
-				}
-			}
-			else
-			{
-				new ErrorMessage("Error", "Could not open file");
-			}
+			std::cout << "Loading " << openArg.value() << std::endl;
 		}
-
-		auto ptsaveArg = arguments["ptsave"];
-		if (ptsaveArg.has_value())
+		if (Platform::FileExists(openArg.value()))
 		{
-			engine.g->Clear();
-			engine.g->DrawRect(RectSized(engine.g->Size() / 2 - Vec2(100, 25), Vec2(200, 50)), 0xB4B4B4_rgb);
-			String loadingText = "Loading save...";
-			engine.g->BlendText(engine.g->Size() / 2 - Vec2((Graphics::TextSize(loadingText).X - 1) / 2, 5), loadingText, style::Colour::InformationTitle);
-
-			blit(engine.g->Data());
 			try
 			{
-				ByteString saveIdPart;
-				if (ByteString::Split split = ptsaveArg.value().SplitBy(':'))
+				std::vector<char> gameSaveData;
+				if (!Platform::ReadFile(gameSaveData, openArg.value()))
 				{
-					if (split.Before() != "ptsave")
-						throw std::runtime_error("Not a ptsave link");
-					saveIdPart = split.After().SplitBy('#').Before();
+					new ErrorMessage("Error", "Could not read file");
 				}
 				else
-					throw std::runtime_error("Invalid save link");
+				{
+					auto newFile = std::make_unique<SaveFile>(openArg.value());
+					auto newSave = std::make_unique<GameSave>(std::move(gameSaveData));
+					newFile->SetGameSave(std::move(newSave));
+					gameController->LoadSaveFile(std::move(newFile));
+				}
 
-				if (!saveIdPart.size())
-					throw std::runtime_error("No Save ID");
-				if constexpr (DEBUG)
-				{
-					std::cout << "Got Ptsave: id: " << saveIdPart << std::endl;
-				}
-				ByteString saveHistoryPart = "0";
-				if (auto split = saveIdPart.SplitBy('@'))
-				{
-					saveHistoryPart = split.After();
-					saveIdPart = split.Before();
-				}
-				int saveId = saveIdPart.ToNumber<int>();
-				int saveHistory = saveHistoryPart.ToNumber<int>();
-				gameController->OpenSavePreview(saveId, saveHistory, savePreviewUrl);
 			}
 			catch (std::exception & e)
 			{
-				new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
-				Platform::MarkPresentable();
+				new ErrorMessage("Error", "Could not open save file:\n" + ByteString(e.what()).FromUtf8()) ;
 			}
 		}
 		else
 		{
-			Platform::MarkPresentable();
+			new ErrorMessage("Error", "Could not open file");
 		}
+	}
 
-		MainLoop();
-	};
-
-	if (enableBluescreen)
+	auto ptsaveArg = arguments["ptsave"];
+	if (ptsaveArg.has_value())
 	{
+		engine.g->Clear();
+		engine.g->DrawRect(RectSized(engine.g->Size() / 2 - Vec2(100, 25), Vec2(200, 50)), 0xB4B4B4_rgb);
+		String loadingText = "Loading save...";
+		engine.g->BlendText(engine.g->Size() / 2 - Vec2((Graphics::TextSize(loadingText).X - 1) / 2, 5), loadingText, style::Colour::InformationTitle);
+
+		blit(engine.g->Data());
 		try
 		{
-			wrapWithBluescreen();
+			ByteString saveIdPart;
+			if (ByteString::Split split = ptsaveArg.value().SplitBy(':'))
+			{
+				if (split.Before() != "ptsave")
+					throw std::runtime_error("Not a ptsave link");
+				saveIdPart = split.After().SplitBy('#').Before();
+			}
+			else
+				throw std::runtime_error("Invalid save link");
+
+			if (!saveIdPart.size())
+				throw std::runtime_error("No Save ID");
+			if constexpr (DEBUG)
+			{
+				std::cout << "Got Ptsave: id: " << saveIdPart << std::endl;
+			}
+			ByteString saveHistoryPart = "0";
+			if (auto split = saveIdPart.SplitBy('@'))
+			{
+				saveHistoryPart = split.After();
+				saveIdPart = split.Before();
+			}
+			int saveId = saveIdPart.ToNumber<int>();
+			int saveHistory = saveHistoryPart.ToNumber<int>();
+			gameController->OpenSavePreview(saveId, saveHistory, savePreviewUrl);
 		}
-		catch (const std::exception &e)
+		catch (std::exception & e)
 		{
-			BlueScreen(ByteString(e.what()).FromUtf8());
+			new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
+			Platform::MarkPresentable();
 		}
 	}
 	else
 	{
-		wrapWithBluescreen();
+		Platform::MarkPresentable();
 	}
+
+	MainLoop();
+
 	Platform::Exit(0);
 	return 0;
 }

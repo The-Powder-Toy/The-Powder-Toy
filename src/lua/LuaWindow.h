@@ -27,30 +27,30 @@ class LuaWindow
 	LuaComponentCallback onKeyPressFunction;
 	LuaComponentCallback onKeyReleaseFunction;
 
-	std::map<LuaComponent *, LuaSmartRef> grabbed_components;
+	std::map<LuaComponent *, LuaSmartRef> grabbedComponents;
 
 	ui::Window * window;
-	lua_State * l;
-	int position(lua_State * l);
-	int size(lua_State * l);
-	int addComponent(lua_State * l);
-	int removeComponent(lua_State * l);
+	lua_State *L;
+	int position(lua_State *L);
+	int size(lua_State *L);
+	int addComponent(lua_State *L);
+	int removeComponent(lua_State *L);
 
 	//Set event handlers
-	int onInitialized(lua_State * l);
-	int onExit(lua_State * l);
-	int onTick(lua_State * l);
-	int onDraw(lua_State * l);
-	int onFocus(lua_State * l);
-	int onBlur(lua_State * l);
-	int onTryExit(lua_State * l);
-	int onTryOkay(lua_State * l);
-	int onMouseMove(lua_State * l);
-	int onMouseDown(lua_State * l);
-	int onMouseUp(lua_State * l);
-	int onMouseWheel(lua_State * l);
-	int onKeyPress(lua_State * l);
-	int onKeyRelease(lua_State * l);
+	int onInitialized(lua_State *L);
+	int onExit(lua_State *L);
+	int onTick(lua_State *L);
+	int onDraw(lua_State *L);
+	int onFocus(lua_State *L);
+	int onBlur(lua_State *L);
+	int onTryExit(lua_State *L);
+	int onTryOkay(lua_State *L);
+	int onMouseMove(lua_State *L);
+	int onMouseDown(lua_State *L);
+	int onMouseUp(lua_State *L);
+	int onMouseWheel(lua_State *L);
+	int onKeyPress(lua_State *L);
+	int onKeyRelease(lua_State *L);
 
 	void triggerOnInitialized();
 	void triggerOnExit();
@@ -75,6 +75,6 @@ public:
 	ui::Window * GetWindow() { return window; }
 	void ClearRef(LuaComponent *luaComponent);
 
-	LuaWindow(lua_State * l);
+	LuaWindow(lua_State *L);
 	~LuaWindow();
 };

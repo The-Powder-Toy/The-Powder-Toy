@@ -11,6 +11,7 @@
 #include "client/http/FavouriteSaveRequest.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/login/LoginController.h"
@@ -102,7 +103,7 @@ void PreviewController::FavouriteSave()
 
 void PreviewController::OpenInBrowser()
 {
-	ByteString uri = ByteString::Build(SCHEME, SERVER, "/Browse/View.html?ID=", saveId);
+	ByteString uri = ByteString::Build(SERVER, "/Browse/View.html?ID=", saveId);
 	Platform::OpenURI(uri);
 }
 
@@ -126,10 +127,15 @@ bool PreviewController::PrevCommentPage()
 	return false;
 }
 
+void PreviewController::RefreshComments()
+{
+	previewModel->UpdateComments(1);
+}
+
 void PreviewController::CommentAdded()
 {
 	previewModel->CommentAdded();
-	previewModel->UpdateComments(1);
+	RefreshComments();
 }
 
 void PreviewController::Exit()

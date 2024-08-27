@@ -457,34 +457,37 @@ void Graphics::SwapClipRect(Rect<int> &rect)
 	clipRect &= video.Size().OriginRect();
 }
 
-bool Graphics::GradientStop::operator <(const GradientStop &other) const
+void Graphics::RenderZoom()
 {
-	return point < other.point;
-}
-
-std::vector<RGB<uint8_t>> Graphics::Gradient(std::vector<GradientStop> stops, int resolution)
-{
-	std::vector<RGB<uint8_t>> table(resolution, 0x000000_rgb);
-	if (stops.size() >= 2)
+	if(!zoomEnabled)
+		return;
 	{
-		std::sort(stops.begin(), stops.end());
-		auto stop = -1;
-		for (auto i = 0; i < resolution; ++i)
+		int x, y, i, j;
+		pixel pix;
+
+		DrawFilledRect(RectSized(zoomWindowPosition, { zoomScopeSize * ZFACTOR, zoomScopeSize * ZFACTOR }), 0x000000_rgb);
+		DrawRect(RectSized(zoomWindowPosition - Vec2{ 2, 2 }, Vec2{ zoomScopeSize*ZFACTOR+3, zoomScopeSize*ZFACTOR+3 }), 0xC0C0C0_rgb);
+		DrawRect(RectSized(zoomWindowPosition - Vec2{ 1, 1 }, Vec2{ zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1 }), 0x000000_rgb);
+		for (j=0; j<zoomScopeSize; j++)
+			for (i=0; i<zoomScopeSize; i++)
+			{
+				pix = video[{ i + zoomScopePosition.X, j + zoomScopePosition.Y }];
+				for (y=0; y<ZFACTOR-1; y++)
+					for (x=0; x<ZFACTOR-1; x++)
+						video[{ i * ZFACTOR + x + zoomWindowPosition.X, j * ZFACTOR + y + zoomWindowPosition.Y }] = pix;
+			}
+		if (zoomEnabled)
 		{
-			auto point = i / (float)resolution;
-			while (stop < (int)stops.size() - 1 && stops[stop + 1].point <= point)
+			for (j=-1; j<=zoomScopeSize; j++)
 			{
-				++stop;
+				XorPixel(zoomScopePosition + Vec2{ j, -1 });
+				XorPixel(zoomScopePosition + Vec2{ j, zoomScopeSize });
 			}
-			if (stop < 0 || stop >= (int)stops.size() - 1)
+			for (j=0; j<zoomScopeSize; j++)
 			{
-				continue;
+				XorPixel(zoomScopePosition + Vec2{ -1, j });
+				XorPixel(zoomScopePosition + Vec2{ zoomScopeSize, j });
 			}
-			auto &left = stops[stop];
-			auto &right = stops[stop + 1];
-			auto f = (point - left.point) / (right.point - left.point);
-			table[i] = left.color.Blend(right.color.WithAlpha(uint8_t(f * 0xFF)));
 		}
 	}
-	return table;
 }

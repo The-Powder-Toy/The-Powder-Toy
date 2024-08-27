@@ -51,6 +51,11 @@ inline int isign(float i)
 	return 0;
 }
 
+inline int iabs(int i)
+{
+	return i * isign(i);
+}
+
 inline unsigned clamp_flt(float f, float min, float max)
 {
 	if (f<min)
@@ -74,7 +79,6 @@ inline float restrict_flt(float f, float min, float max)
 
 void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b);
 void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v);
-void membwand(void * dest, void * src, size_t destsize, size_t srcsize);
 
 class ByteString;
 

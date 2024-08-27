@@ -86,7 +86,7 @@ void Button::Draw(const Point& screenPos)
 
 	if (Enabled)
 	{
-		if (isButtonDown || (isTogglable && toggle))
+		if ((isButtonDown && MouseDownInside) || (isTogglable && toggle))
 		{
 			textColour = Appearance.TextActive;
 			borderColour = Appearance.BorderActive;
@@ -140,7 +140,7 @@ void Button::Draw(const Point& screenPos)
 	}
 }
 
-void Button::OnMouseUnclick(int x, int y, unsigned int button)
+void Button::OnMouseClick(int x, int y, unsigned int button)
 {
 	if(button == 1)
 	{
@@ -171,17 +171,20 @@ void Button::OnMouseUp(int x, int y, unsigned int button)
 	isAltButtonDown = false;
 }
 
-void Button::OnMouseClick(int x, int y, unsigned int button)
+void Button::OnMouseDown(int x, int y, unsigned int button)
 {
-	if(!Enabled)
-		return;
-	if(button == 1)
+	if (MouseDownInside)
 	{
-		isButtonDown = true;
-	}
-	else if(button == 3)
-	{
-		isAltButtonDown = true;
+		if(!Enabled)
+			return;
+		if(button == 1)
+		{
+			isButtonDown = true;
+		}
+		else if(button == 3)
+		{
+			isAltButtonDown = true;
+		}
 	}
 }
 

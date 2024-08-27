@@ -91,6 +91,7 @@ public:
 
 	std::unique_ptr<SaveFile> GetStamp(ByteString stampID);
 	void DeleteStamp(ByteString stampID);
+	void RenameStamp(ByteString stampID, ByteString newName);
 	ByteString AddStamp(std::unique_ptr<GameSave> saveData);
 	void RescanStamps();
 	const std::vector<ByteString> &GetStamps() const;

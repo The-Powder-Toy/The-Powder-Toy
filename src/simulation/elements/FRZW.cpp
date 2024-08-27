@@ -7,8 +7,8 @@ void Element::Element_FRZW()
 	Identifier = "DEFAULT_PT_FRZW";
 	Name = "FRZW";
 	Colour = 0x1020C0_rgb;
-	MenuVisible = 1;
-	MenuSection = SC_CRACKER2;
+	MenuVisible = 0;
+	MenuSection = SC_LIQUID;
 	Enabled = 1;
 
 	Advection = 0.6f;

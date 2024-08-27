@@ -17,6 +17,7 @@ public:
 	std::unique_ptr<SaveFile> TakeSave();
 	void RemoveSelected();
 	void removeSelectedC();
+	void RenameSelected();
 	void ClearSelection();
 	void Selected(ByteString stampID, bool selected);
 	void RescanStamps();

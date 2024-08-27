@@ -48,8 +48,12 @@ void Element::Element_NWHL()
 static int update(UPDATE_FUNC_ARGS)
 {
 	if (parts[i].tmp)
-		sim->gravmap[(y/CELL)*XCELLS+(x/CELL)] -= restrict_flt(0.001f*parts[i].tmp, 0.1f, 51.2f);
+	{
+		sim->gravIn.mass[Vec2{ x, y } / CELL] -= restrict_flt(0.001f * parts[i].tmp, 0.1f, 51.2f);
+	}
 	else
-		sim->gravmap[(y/CELL)*XCELLS+(x/CELL)] -= 0.1f;
+	{
+		sim->gravIn.mass[Vec2{ x, y } / CELL] -= 0.1f;
+	}
 	return 0;
 }

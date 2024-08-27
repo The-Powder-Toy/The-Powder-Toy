@@ -59,6 +59,8 @@ class PreviewView: public ui::Window
 	String doErrorMessage;
 	bool showAvatars;
 	bool prevPage;
+	bool isSubmittingComment = false;
+	bool isRefreshingComments = false;
 
 	int commentBoxHeight;
 	float commentBoxPositionX;
@@ -72,6 +74,7 @@ class PreviewView: public ui::Window
 	void displayComments();
 	void commentBoxAutoHeight();
 	void submitComment();
+	void CheckCommentSubmitEnabled();
 	bool CheckSwearing(String text);
 	void CheckComment();
 	void ShowMissingCustomElements();

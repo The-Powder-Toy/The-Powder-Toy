@@ -40,42 +40,42 @@ option(
 	'display_version_major',
 	type: 'integer',
 	min: 0,
-	value: 97,
+	value: 98,
 	description: 'Major component of the display version, should more or less map to the MINOR version in semantic versioning'
 )
 option(
 	'display_version_minor',
 	type: 'integer',
 	min: 0,
-	value: 0,
+	value: 2,
 	description: 'Minor component of the display version, should more or less map to the PATCH version in semantic versioning'
 )
 option(
 	'build_num',
 	type: 'integer',
 	min: 0,
-	value: 354,
+	value: 369,
 	description: 'Build number, should be strictly monotonously increasing across public releases'
 )
 option(
 	'upstream_version_major',
 	type: 'integer',
 	min: 0,
-	value: 97,
+	value: 98,
 	description: 'Major component of the upstream display version, mod owners should not change this but merge upstream changes to it'
 )
 option(
 	'upstream_version_minor',
 	type: 'integer',
 	min: 0,
-	value: 0,
+	value: 2,
 	description: 'Minor component of the upstream display version, mod owners should not change this but merge upstream changes to it'
 )
 option(
 	'upstream_build_num',
 	type: 'integer',
 	min: 0,
-	value: 354,
+	value: 369,
 	description: 'Upstream build number, mod owners should not change this but merge upstream changes to it'
 )
 option(
@@ -95,7 +95,7 @@ option(
 option(
 	'x86_sse',
 	type: 'combo',
-	choices: [ 'none', 'sse', 'sse2', 'sse3', 'auto' ],
+	choices: [ 'none', 'sse', 'sse2', 'sse3', 'sse4.1', 'sse4.2', 'avx', 'avx2', 'avx512', 'auto' ],
 	value: 'auto',
 	description: 'Enable SSE (available only on x86)'
 )
@@ -279,4 +279,35 @@ option(
 	type: 'string',
 	value: '',
 	description: 'Build date string, used by ghactions workflows, not useful otherwise'
+)
+option(
+	'platform_clipboard',
+	type: 'boolean',
+	value: true,
+	description: 'Enable platform clipboard, allows copying simulation data between different windows'
+)
+option(
+	'use_bluescreen',
+	type: 'combo',
+	choices: [ 'no', 'yes', 'auto' ],
+	value: 'auto',
+	description: 'Show blue error screen upon unhandled signals and exceptions'
+)
+option(
+	'windows_icons',
+	type: 'boolean',
+	value: true,
+	description: 'Add icon resources to the executable on Windows'
+)
+option(
+	'windows_utf8cp',
+	type: 'boolean',
+	value: true,
+	description: 'Ask Windows nicely for UTF-8 as the codepage'
+)
+option(
+	'export_lua_symbols',
+	type: 'boolean',
+	value: false,
+	description: 'Export Lua symbols to enable loading of Lua shared modules'
 )

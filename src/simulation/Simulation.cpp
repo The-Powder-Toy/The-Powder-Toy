@@ -1,19 +1,20 @@
 #include "Simulation.h"
 #include "Air.h"
 #include "ElementClasses.h"
+#include "TransitionConstants.h"
 #include "gravity/Gravity.h"
 #include "ToolClasses.h"
 #include "SimulationData.h"
 #include "client/GameSave.h"
 #include "common/tpt-compat.h"
 #include "common/tpt-rand.h"
-#include "common/tpt-thread-local.h"
 #include "gui/game/Brush.h"
 #include "elements/EMP.h"
 #include "elements/LOLZ.h"
 #include "elements/STKM.h"
 #include "elements/PIPE.h"
 #include "elements/FILT.h"
+#include "elements/PRTI.h"
 #include <iostream>
 #include <set>
 
@@ -31,6 +32,52 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 
 	RecalcFreeParticles(false);
 
+	struct ExistingParticle
+	{
+		int id;
+		Vec2<int> pos;
+	};
+	std::vector<ExistingParticle> existingParticles;
+	auto pasteArea = RES.OriginRect() & RectSized(partP, save->blockSize * CELL);
+	for (int i = 0; i <= parts_lastActiveIndex; i++)
+	{
+		if (parts[i].type)
+		{
+			auto p = Vec2<int>{ int(parts[i].x + 0.5f), int(parts[i].y + 0.5f) };
+			if (pasteArea.Contains(p))
+			{
+				existingParticles.push_back({ i, p });
+			}
+		}
+	}
+	std::sort(existingParticles.begin(), existingParticles.end(), [](const auto &lhs, const auto &rhs) {
+		return std::tie(lhs.pos.Y, lhs.pos.X) < std::tie(rhs.pos.Y, rhs.pos.X);
+	});
+	PlaneAdapter<std::vector<size_t>> existingParticleIndices(pasteArea.Size(), existingParticles.size());
+	{
+		auto lastPos = Vec2<int>{ -1, -1 }; // not a valid pos in existingParticles
+		for (auto it = existingParticles.begin(); it != existingParticles.end(); ++it)
+		{
+			if (lastPos != it->pos)
+			{
+				existingParticleIndices[it->pos - pasteArea.TopLeft] = it - existingParticles.begin();
+				lastPos = it->pos;
+			}
+		}
+	}
+	auto removeExistingParticles = [this, pasteArea, &existingParticles, &existingParticleIndices](Vec2<int> p) {
+		auto rp = p - pasteArea.TopLeft;
+		if (existingParticleIndices.Size().OriginRect().Contains(rp))
+		{
+			auto index = existingParticleIndices[rp];
+			for (auto it = existingParticles.begin() + index; it != existingParticles.end() && it->pos == p; ++it)
+			{
+				kill_part(it->id);
+			}
+			existingParticleIndices[rp] = existingParticles.size();
+		}
+	};
+
 	std::map<unsigned int, unsigned int> soapList;
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
@@ -42,8 +89,8 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 
 		tempPart.x += (float)partP.X;
 		tempPart.y += (float)partP.Y;
-		int x = int(tempPart.x + 0.5f);
-		int y = int(tempPart.y + 0.5f);
+		int x = int(std::floor(tempPart.x + 0.5f));
+		int y = int(std::floor(tempPart.y + 0.5f));
 
 		// Check various scenarios where we are unable to spawn the element, and set type to 0 to block spawning later
 		if (!InBounds(x, y))
@@ -69,9 +116,6 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 			continue;
 		}
 
-		// Mark location to be cleaned of existing particles.
-		pmap[y][x] = -1;
-
 		if (elements[tempPart.type].CreateAllowed)
 		{
 			if (!(*(elements[tempPart.type].CreateAllowed))(this, -3, int(tempPart.x + 0.5f), int(tempPart.y + 0.5f), tempPart.type))
@@ -79,6 +123,8 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 				continue;
 			}
 		}
+
+		removeExistingParticles({ x, y });
 
 		// Allocate particle (this location is guaranteed to be empty due to "full scan" logic above)
 		if (pfree == -1)
@@ -171,35 +217,12 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 		{
 			parts[i].tmp3 = 0;
 		}
-
-		if (!parts[i].type)
-		{
-			continue;
-		}
-
-		// Mark to be preserved in the loop below.
-		parts[i].type |= 1 << PMAPBITS;
 	}
 	parts_lastActiveIndex = NPART-1;
 	force_stacking_check = true;
 	Element_PPIP_ppip_changed = 1;
 
-	// Loop through particles to find particles in need of being killed
-	for (int i = 0; i <= parts_lastActiveIndex; i++)
-	{
-		if (parts[i].type)
-		{
-			int x = int(parts[i].x + 0.5f);
-			int y = int(parts[i].y + 0.5f);
-			bool preserve = parts[i].type & (1 << PMAPBITS);
-			parts[i].type &= ~(1 << PMAPBITS);
-			if (pmap[y][x] == -1 && !preserve)
-			{
-				kill_part(i);
-			}
-		}
-	}
-
+	// Sort out pmap, just to be on the safe side.
 	RecalcFreeParticles(false);
 
 	// fix SOAP links using soapList, a map of old particle ID -> new particle ID
@@ -239,6 +262,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 			signs.push_back(tempSign);
 		}
 	}
+	auto useGravityMaps = save->hasGravityMaps && grav;
 	for (auto bpos : RectSized(blockP, save->blockSize) & CELLS.OriginRect())
 	{
 		auto spos = bpos - blockP;
@@ -262,10 +286,21 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 			}
 			if (save->hasBlockAirMaps)
 			{
-				air->bmap_blockair[bpos.Y][bpos.X] = save->blockAir[spos];
+				air->bmap_blockair [bpos.Y][bpos.X] = save->blockAir [spos];
 				air->bmap_blockairh[bpos.Y][bpos.X] = save->blockAirh[spos];
 			}
 		}
+		if (useGravityMaps)
+		{
+			gravIn.mass   [bpos] = save->gravMass  [spos];
+			gravIn.mask   [bpos] = save->gravMask  [spos];
+			gravOut.forceX[bpos] = save->gravForceX[spos];
+			gravOut.forceY[bpos] = save->gravForceY[spos];
+		}
+	}
+	if (useGravityMaps)
+	{
+		ResetNewtonianGravity(gravIn, gravOut);
 	}
 
 	gravWallChanged = true;
@@ -376,6 +411,21 @@ std::unique_ptr<GameSave> Simulation::Save(bool includePressure, Rect<int> partR
 			newSave->blockAir[bpos] = air->bmap_blockair[bpos.Y + blockP.Y][bpos.X + blockP.X];
 			newSave->blockAirh[bpos] = air->bmap_blockairh[bpos.Y + blockP.Y][bpos.X + blockP.X];
 		}
+		if (grav)
+		{
+			newSave->gravMass  [bpos] = gravIn.mass   [bpos + blockP];
+			newSave->gravMask  [bpos] = gravIn.mask   [bpos + blockP];
+			newSave->gravForceX[bpos] = gravOut.forceX[bpos + blockP];
+			newSave->gravForceY[bpos] = gravOut.forceY[bpos + blockP];
+		}
+	}
+	if (includePressure)
+	{
+		newSave->hasBlockAirMaps = true;
+	}
+	if (grav)
+	{
+		newSave->hasGravityMaps = true;
 	}
 	if (includePressure || ensureDeterminism)
 	{
@@ -411,7 +461,7 @@ void Simulation::SaveSimOptions(GameSave &gameSave)
 	gameSave.edgeMode = edgeMode;
 	gameSave.legacyEnable = legacy_enable;
 	gameSave.waterEEnabled = water_equal_test;
-	gameSave.gravityEnable = grav->IsEnabled();
+	gameSave.gravityEnable = bool(grav);
 	gameSave.aheatEnable = aheat_enable;
 }
 
@@ -430,7 +480,7 @@ bool Simulation::FloodFillPmapCheck(int x, int y, int type) const
 CoordStack& Simulation::getCoordStackSingleton()
 {
 	// Future-proofing in case Simulation is later multithreaded
-	static THREAD_LOCAL(CoordStack, cs);
+	thread_local CoordStack cs;
 	return cs;
 }
 
@@ -983,8 +1033,7 @@ void Simulation::clear_sim(void)
 	//memset(fire_b, 0, sizeof(fire_b));
 	//if(gravmask)
 		//memset(gravmask, 0xFFFFFFFF, NCELL*sizeof(unsigned));
-	if(grav)
-		grav->Clear();
+	ResetNewtonianGravity({}, {});
 	if(air)
 	{
 		air->Clear();
@@ -1351,14 +1400,6 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			return 0;
 		}
 		break;
-	// SOAP slowly floats up inside OIL
-	case PT_SOAP:
-		if (parts[i].type == PT_OIL)
-		{
-			if (rng.chance(19, 20) || std::abs(parts[i].x - nx) > 3 || std::abs(parts[i].y - ny) > 3)
-				return 0;
-		}
-		break;
 	}
 
 	switch (parts[i].type)
@@ -1419,7 +1460,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			return 1;
 		}
 
-		if (ID(pmap[ny][nx]) == ri)
+		if (pmap[ny][nx] && ID(pmap[ny][nx]) == ri)
 			pmap[ny][nx] = 0;
 		parts[ri].x += float(x - nx);
 		parts[ri].y += float(y - ny);
@@ -1477,9 +1518,9 @@ bool Simulation::move(int i, int x, int y, float nxf, float nyf)
 	parts[i].y = nyf;
 	if (ny != y || nx != x)
 	{
-		if (ID(pmap[y][x]) == i)
+		if (pmap[y][x] && ID(pmap[y][x]) == i)
 			pmap[y][x] = 0;
-		if (ID(photons[y][x]) == i)
+		if (photons[y][x] && ID(photons[y][x]) == i)
 			photons[y][x] = 0;
 		// kill_part if particle is out of bounds
 		if (nx < CELL || nx >= XRES - CELL || ny < CELL || ny >= YRES - CELL)
@@ -1510,6 +1551,35 @@ void Simulation::photoelectric_effect(int nx, int ny)//create sparks from PHOT w
 			parts[ID(r)].life = 4;
 		}
 	}
+}
+
+unsigned static direction_to_map(float dx, float dy, int t)
+{
+	// TODO:
+	// Adding extra directions causes some inaccuracies.
+	// Not adding them causes problems with some diagonal surfaces (photons absorbed instead of reflected).
+	// For now, don't add them.
+	// Solution may involve more intelligent setting of initial i0 value in find_next_boundary?
+	// or rewriting normal/boundary finding code
+
+	return (dx >= 0) |
+		   (((dx + dy) >= 0) << 1) |     /*  567  */
+		   ((dy >= 0) << 2) |            /*  4+0  */
+		   (((dy - dx) >= 0) << 3) |     /*  321  */
+		   ((dx <= 0) << 4) |
+		   (((dx + dy) <= 0) << 5) |
+		   ((dy <= 0) << 6) |
+		   (((dy - dx) <= 0) << 7);
+	/*
+	return (dx >= -0.001) |
+		   (((dx + dy) >= -0.001) << 1) |     //  567
+		   ((dy >= -0.001) << 2) |            //  4+0
+		   (((dy - dx) >= -0.001) << 3) |     //  321
+		   ((dx <= 0.001) << 4) |
+		   (((dx + dy) <= 0.001) << 5) |
+		   ((dy <= 0.001) << 6) |
+		   (((dy - dx) <= 0.001) << 7);
+	}*/
 }
 
 int Simulation::is_blocking(int t, int x, int y) const
@@ -1553,7 +1623,7 @@ int Simulation::find_next_boundary(int pt, int *x, int *y, int dm, int *em, bool
 	unsigned int mask = 0;
 	for (int i = 0; i < 8; ++i)
 	{
-		if (is_blocking(pt, *x + dx[i], *y + dy[i]))
+		if ((dm & (1U << i)) && is_blocking(pt, *x + dx[i], *y + dy[i]))
 		{
 			mask |= (1U << i);
 		}
@@ -1561,7 +1631,7 @@ int Simulation::find_next_boundary(int pt, int *x, int *y, int dm, int *em, bool
 	for (int i = 0; i < 8; ++i)
 	{
 		int n = (i + (reverse ? 1 : -1)) & 7;
-		if (((dm & mask & (1U << i))) && !(mask & (1U << n)))
+		if (((mask & (1U << i))) && !(mask & (1U << n)))
 		{
 			*x += dx[i];
 			*y += dy[i];
@@ -1586,8 +1656,8 @@ Simulation::GetNormalResult Simulation::get_normal(int pt, int x, int y, float d
 	if (!is_boundary(pt, x, y))
 		return { false };
 
-	ldm = 0xFF;
-	rdm = 0xFF;
+	ldm = (pt & REFRACT) ? 0xFF : direction_to_map(-dy, dx, pt);
+	rdm = (pt & REFRACT) ? 0xFF : direction_to_map(dy, -dx, pt);
 	lx = rx = x;
 	ly = ry = y;
 	lv = rv = 1;
@@ -1684,9 +1754,9 @@ void Simulation::kill_part(int i)//kills particle number i
 
 	if (x >= 0 && y >= 0 && x < XRES && y < YRES)
 	{
-		if (ID(pmap[y][x]) == i)
+		if (pmap[y][x] && ID(pmap[y][x]) == i)
 			pmap[y][x] = 0;
-		else if (ID(photons[y][x]) == i)
+		else if (photons[y][x] && ID(photons[y][x]) == i)
 			photons[y][x] = 0;
 	}
 
@@ -1734,13 +1804,13 @@ bool Simulation::part_change_type(int i, int x, int y, int t)
 	if (elements[t].Properties & TYPE_ENERGY)
 	{
 		photons[y][x] = PMAP(i, t);
-		if (ID(pmap[y][x]) == i)
+		if (pmap[y][x] && ID(pmap[y][x]) == i)
 			pmap[y][x] = 0;
 	}
 	else
 	{
 		pmap[y][x] = PMAP(i, t);
-		if (ID(photons[y][x]) == i)
+		if (photons[y][x] && ID(photons[y][x]) == i)
 			photons[y][x] = 0;
 	}
 	return false;
@@ -1836,9 +1906,9 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	{
 		int oldX = (int)(parts[p].x + 0.5f);
 		int oldY = (int)(parts[p].y + 0.5f);
-		if (ID(pmap[oldY][oldX]) == p)
+		if (pmap[oldY][oldX] && ID(pmap[oldY][oldX]) == p)
 			pmap[oldY][oldX] = 0;
-		if (ID(photons[oldY][oldX]) == p)
+		if (photons[oldY][oldX] && ID(photons[oldY][oldX]) == p)
 			photons[oldY][oldX] = 0;
 
 		oldType = parts[p].type;
@@ -1924,8 +1994,8 @@ void Simulation::GetGravityField(int x, int y, float particleGrav, float newtonG
 	}
 	if (newtonGrav)
 	{
-		pGravX += newtonGrav*gravx[(y/CELL)*XCELLS+(x/CELL)];
-		pGravY += newtonGrav*gravy[(y/CELL)*XCELLS+(x/CELL)];
+		pGravX += newtonGrav * gravOut.forceX[Vec2{ x, y } / CELL];
+		pGravY += newtonGrav * gravOut.forceY[Vec2{ x, y } / CELL];
 	}
 }
 
@@ -2433,11 +2503,11 @@ void Simulation::UpdateParticles(int start, int end)
 					if ((t==PT_ICEI || t==PT_SNOW) && (!sd.IsElement(parts[i].ctype) || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW))
 						parts[i].ctype = PT_WATR;
 
-					if (elements[t].HighTemperatureTransition>-1 && ctemph>=elements[t].HighTemperature)
+					if (elements[t].HighTemperatureTransition != NT && ctemph>=elements[t].HighTemperature)
 					{
 						// particle type change due to high temperature
 						float dbt = ctempl - pt;
-						if (elements[t].HighTemperatureTransition != PT_NUM)
+						if (elements[t].HighTemperatureTransition != ST)
 						{
 							if constexpr (LATENTHEAT)
 							{
@@ -2547,11 +2617,11 @@ void Simulation::UpdateParticles(int start, int end)
 						else
 							s = 0;
 					}
-					else if (elements[t].LowTemperatureTransition > -1 && ctempl<elements[t].LowTemperature)
+					else if (elements[t].LowTemperatureTransition != NT && ctempl<elements[t].LowTemperature)
 					{
 						// particle type change due to low temperature
 						float dbt = ctempl - pt;
-						if (elements[t].LowTemperatureTransition != PT_NUM)
+						if (elements[t].LowTemperatureTransition != ST)
 						{
 							if constexpr (LATENTHEAT)
 							{
@@ -2756,10 +2826,11 @@ void Simulation::UpdateParticles(int start, int end)
 
 			{
 				auto s = 1;
-				auto gravtot = fabs(gravy[(y/CELL)*XCELLS+(x/CELL)])+fabs(gravx[(y/CELL)*XCELLS+(x/CELL)]);
-				if (elements[t].HighPressureTransition>-1 && pv[y/CELL][x/CELL]>elements[t].HighPressure) {
+				auto gravtot = std::abs(gravOut.forceX[Vec2{ x, y } / CELL]) +
+				               std::abs(gravOut.forceY[Vec2{ x, y } / CELL]);
+				if (elements[t].HighPressureTransition != NT && pv[y/CELL][x/CELL]>elements[t].HighPressure) {
 					// particle type change due to high pressure
-					if (elements[t].HighPressureTransition!=PT_NUM)
+					if (elements[t].HighPressureTransition != ST)
 						t = elements[t].HighPressureTransition;
 					else if (t==PT_BMTL) {
 						if (pv[y/CELL][x/CELL]>2.5f)
@@ -2769,14 +2840,14 @@ void Simulation::UpdateParticles(int start, int end)
 						else s = 0;
 					}
 					else s = 0;
-				} else if (elements[t].LowPressureTransition>-1 && pv[y/CELL][x/CELL]<elements[t].LowPressure && gravtot<=(elements[t].LowPressure/4.0f)) {
+				} else if (elements[t].LowPressureTransition != NT && pv[y/CELL][x/CELL]<elements[t].LowPressure && gravtot<=(elements[t].LowPressure/4.0f)) {
 					// particle type change due to low pressure
-					if (elements[t].LowPressureTransition!=PT_NUM)
+					if (elements[t].LowPressureTransition != ST)
 						t = elements[t].LowPressureTransition;
 					else s = 0;
-				} else if (elements[t].HighPressureTransition>-1 && gravtot>(elements[t].HighPressure/4.0f)) {
+				} else if (elements[t].HighPressureTransition != NT && gravtot>(elements[t].HighPressure/4.0f)) {
 					// particle type change due to high gravity
-					if (elements[t].HighPressureTransition!=PT_NUM)
+					if (elements[t].HighPressureTransition != ST)
 						t = elements[t].HighPressureTransition;
 					else if (t==PT_BMTL) {
 						if (gravtot>0.625f)
@@ -2897,9 +2968,9 @@ killed:
 				}
 				if (ny!=y || nx!=x)
 				{
-					if (ID(pmap[y][x]) == i)
+					if (pmap[y][x] && ID(pmap[y][x]) == i)
 						pmap[y][x] = 0;
-					else if (ID(photons[y][x]) == i)
+					else if (photons[y][x] && ID(photons[y][x]) == i)
 						photons[y][x] = 0;
 					if (nx<CELL || nx>=XRES-CELL || ny<CELL || ny>=YRES-CELL)
 					{
@@ -2945,6 +3016,7 @@ killed:
 							}
 							auto nn = GLASS_IOR - GLASS_DISP*(r-30)/30.0f;
 							nn *= nn;
+
 							auto enter = rt_glas && !lt_glas;
 							nrx = enter ? -nrx : nrx;
 							nry = enter ? -nry : nry;
@@ -3135,7 +3207,7 @@ killed:
 								goto movedone;
 							}
 						}
-						if (elements[t].Falldown>1 && !grav->IsEnabled() && gravityMode==GRAV_VERTICAL && parts[i].vy>fabsf(parts[i].vx))
+						if (elements[t].Falldown>1 && !grav && gravityMode==GRAV_VERTICAL && parts[i].vy>fabsf(parts[i].vx))
 						{
 							auto s = 0;
 							// stagnant is true if FLAG_STAGNANT was set for this particle in previous frame
@@ -3639,6 +3711,48 @@ void Simulation::CheckStacking()
 	}
 }
 
+void Simulation::UpdateGravityMask()
+{
+	for (auto p : CELLS.OriginRect())
+	{
+		gravIn.mask[p] = 0;
+	}
+	std::stack<Vec2<int>> toCheck;
+	auto check = [this, &toCheck](Vec2<int> p) {
+		if (!(bmap[p.Y][p.X] == WL_GRAV || gravIn.mask[p]))
+		{
+			gravIn.mask[p] = UINT32_C(0xFFFFFFFF);
+			for (auto o : RectSized<int>({ -1, -1 }, { 3, 3 }))
+			{
+				if ((o.X + o.Y) & 1) // i.e. immediate neighbours but not diagonal ones
+				{
+					auto q = p + o;
+					if (CELLS.OriginRect().Contains(q))
+					{
+						toCheck.push(q);
+					}
+				}
+			}
+		}
+	};
+	for (auto x = 0; x < CELLS.X; ++x)
+	{
+		check({ x, 0           });
+		check({ x, CELLS.Y - 1 });
+	}
+	for (auto y = 1; y < CELLS.Y - 1; ++y) // corners already checked in the previous loop
+	{
+		check({ 0          , y });
+		check({ CELLS.X - 1, y });
+	}
+	while (!toCheck.empty())
+	{
+		auto p = toCheck.top();
+		toCheck.pop();
+		check(p);
+	}
+}
+
 //updates pmap, gol, and some other simulation stuff (but not particles)
 void Simulation::BeforeSim()
 {
@@ -3649,16 +3763,12 @@ void Simulation::BeforeSim()
 		if(aheat_enable)
 			air->update_airh();
 
-		if(grav->IsEnabled())
+		DispatchNewtonianGravity();
+		for (auto p : gravIn.mass.Size().OriginRect())
 		{
-			grav->gravity_update_async();
-
-			//Get updated buffer pointers for gravity
-			gravx = &grav->gravx[0];
-			gravy = &grav->gravy[0];
-			gravp = &grav->gravp[0];
-			gravmap = &grav->gravmap[0];
+			gravIn.mass[p] = 0.f;
 		}
+
 		if(emp_decor>0)
 			emp_decor -= emp_decor/25+2;
 		if(emp_decor < 0)
@@ -3678,7 +3788,7 @@ void Simulation::BeforeSim()
 
 	if (gravWallChanged)
 	{
-		grav->gravity_mask();
+		UpdateGravityMask();
 		gravWallChanged = false;
 	}
 
@@ -3850,81 +3960,54 @@ void Simulation::AfterSim()
 
 Simulation::~Simulation() = default;
 
-Simulation::Simulation():
-	replaceModeSelected(0),
-	replaceModeFlags(0),
-	debug_nextToUpdate(0),
-	ISWIRE(0),
-	force_stacking_check(false),
-	emp_decor(0),
-	emp_trigger_count(0),
-	etrd_count_valid(false),
-	etrd_life0_count(0),
-	lightningRecreate(0),
-	gravWallChanged(false),
-	CGOL(0),
-	GSPEED(1),
-	edgeMode(EDGE_VOID),
-	gravityMode(GRAV_VERTICAL),
-	customGravityX(0),
-	customGravityY(0),
-	legacy_enable(0),
-	aheat_enable(0),
-	water_equal_test(0),
-	sys_pause(0),
-	framerender(0),
-	pretty_powder(0),
-	sandcolour_frame(0),
-	deco_space(0)
+Simulation::Simulation()
 {
-	int tportal_rx[] = {-1, 0, 1, 1, 1, 0,-1,-1};
-	int tportal_ry[] = {-1,-1,-1, 0, 1, 1, 1, 0};
-
-	memcpy(portal_rx, tportal_rx, sizeof(tportal_rx));
-	memcpy(portal_ry, tportal_ry, sizeof(tportal_ry));
-
-	currentTick = 0;
 	std::fill(elementCount, elementCount+PT_NUM, 0);
 	elementRecount = true;
 
-	//Create and attach gravity simulation
-	grav = Gravity::Create();
-	//Give air sim references to our data
-	grav->bmap = bmap;
-	//Gravity sim gives us maps to use
-	gravx = &grav->gravx[0];
-	gravy = &grav->gravy[0];
-	gravp = &grav->gravp[0];
-	gravmap = &grav->gravmap[0];
-
 	//Create and attach air simulation
 	air = std::make_unique<Air>(*this);
-	//Give air sim references to our data
-	air->bmap = bmap;
-	air->emap = emap;
-	air->fvx = fvx;
-	air->fvy = fvy;
-	//Air sim gives us maps to use
-	vx = air->vx;
-	vy = air->vy;
-	pv = air->pv;
-	hv = air->hv;
 
 	player.comm = 0;
 	player2.comm = 0;
 
 	clear_sim();
 
-	grav->gravity_mask();
+	UpdateGravityMask();
 }
 
-constexpr size_t ce_log2(size_t n)
+void Simulation::DispatchNewtonianGravity()
 {
-	return ((n < 2) ? 1 : 1 + ce_log2(n / 2));
+	if (grav)
+	{
+		grav->Exchange(gravOut, gravIn);
+	}
 }
-static_assert(PMAPBITS <= 16, "PMAPBITS is too large");
-// * This will technically fail in some cases where (XRES * YRES) << PMAPBITS would
-//   fit in 31 bits but multiplication is evil and wraps around without you knowing it.
-// * Whoever runs into a problem with this (e.g. with XRES = 612, YRES = 384 and
-//   PMAPBITS = 13) should just remove the check and take responsibility otherwise.
-static_assert(ce_log2(XRES) + ce_log2(YRES) + PMAPBITS <= 31, "not enough space in pmap");
+
+void Simulation::ResetNewtonianGravity(GravityInput newGravIn, GravityOutput newGravOut)
+{
+	gravIn = newGravIn;
+	DispatchNewtonianGravity();
+	if (grav)
+	{
+		gravOut = newGravOut;
+		gravWallChanged = true;
+	}
+}
+
+void Simulation::EnableNewtonianGravity(bool enable)
+{
+	if (grav && !enable)
+	{
+		grav.reset();
+		gravOut = {}; // reset as per the invariant
+	}
+	if (!grav && enable)
+	{
+		grav = Gravity::Create();
+		DispatchNewtonianGravity();
+	}
+}
+
+// we want XRES * YRES <= (1 << (31 - PMAPBITS)), but we do a division because multiplication could silently overflow
+static_assert(uint32_t(XRES) <= (UINT32_C(1) << (31 - PMAPBITS)) / uint32_t(YRES), "not enough space in pmap");

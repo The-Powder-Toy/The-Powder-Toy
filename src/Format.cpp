@@ -8,14 +8,21 @@
 #include <stdexcept>
 #include <png.h>
 #include "Format.h"
-#include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 
-ByteString format::UnixtimeToDate(time_t unixtime, ByteString dateFormat)
+ByteString format::UnixtimeToDate(time_t unixtime, ByteString dateFormat, bool local)
 {
 	struct tm * timeData;
 	char buffer[128];
 
-	timeData = localtime(&unixtime);
+	if (local)
+	{
+		timeData = localtime(&unixtime);
+	}
+	else
+	{
+		timeData = gmtime(&unixtime);
+	}
 
 	strftime(buffer, 128, dateFormat.c_str(), timeData);
 	return ByteString(buffer);

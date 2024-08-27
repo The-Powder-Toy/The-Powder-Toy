@@ -112,6 +112,14 @@ struct Vec2
 		);
 	}
 
+	Vec2<T> Min(Vec2<T> other) const
+	{
+		return Vec2<T>(
+			std::min(X, other.X),
+			std::min(Y, other.Y)
+		);
+	}
+
 	// Return a rectangle starting at origin, whose dimensions match this vector
 	template<typename S = T, typename = std::enable_if_t<std::is_integral_v<S>>>
 	constexpr inline Rect<T> OriginRect() const

@@ -20,7 +20,12 @@ void Prefs::Read()
 	Json::CharReaderBuilder rbuilder;
 	std::unique_ptr<Json::CharReader> const reader(rbuilder.newCharReader());
 	ByteString errs;
-	if (!reader->parse(&data[0], &data[0] + data.size(), &root, &errs))
+	if (!data.size())
+	{
+		std::cerr << "no json data" << std::endl;
+		return;
+	}
+	if (!reader->parse(data.data(), data.data() + data.size(), &root, &errs))
 	{
 		std::cerr << errs << std::endl;
 		return;

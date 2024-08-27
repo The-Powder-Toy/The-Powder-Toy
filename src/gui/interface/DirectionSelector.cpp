@@ -133,7 +133,7 @@ void DirectionSelector::Draw(const ui::Point& screenPos)
 	g->BlendEllipse(center + value.offset, { handleRadius, handleRadius }, borderColor);
 }
 
-void DirectionSelector::OnMouseMoved(int x, int y, int dx, int dy)
+void DirectionSelector::OnMouseMoved(int x, int y)
 {
 	if (mouseDown)
 	{
@@ -142,11 +142,14 @@ void DirectionSelector::OnMouseMoved(int x, int y, int dx, int dy)
 	CheckHovering(x, y);
 }
 
-void DirectionSelector::OnMouseClick(int x, int y, unsigned button)
+void DirectionSelector::OnMouseDown(int x, int y, unsigned button)
 {
-	mouseDown = true;
-	SetPositionAbs({ x, y });
-	CheckHovering(x, y);
+	if (MouseDownInside)
+	{
+		mouseDown = true;
+		SetPositionAbs({ x - Position.X, y - Position.Y });
+		CheckHovering(x - Position.X, y - Position.Y);
+	}
 }
 
 void DirectionSelector::OnMouseUp(int x, int y, unsigned button)

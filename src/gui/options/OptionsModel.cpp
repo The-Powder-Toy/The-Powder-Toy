@@ -1,13 +1,10 @@
 #include "OptionsModel.h"
-
 #include "OptionsView.h"
-
 #include "simulation/Simulation.h"
 #include "simulation/Air.h"
 #include "simulation/gravity/Gravity.h"
-
 #include "prefs/GlobalPrefs.h"
-
+#include "common/clipboard/Clipboard.h"
 #include "gui/interface/Engine.h"
 #include "gui/game/GameModel.h"
 
@@ -46,15 +43,12 @@ void OptionsModel::SetAmbientHeatSimulation(bool state)
 
 bool OptionsModel::GetNewtonianGravity()
 {
-	return sim->grav->IsEnabled();
+	return bool(sim->grav);
 }
 
 void OptionsModel::SetNewtonianGravity(bool state)
 {
-	if(state)
-		sim->grav->start_grav_async();
-	else
-		sim->grav->stop_grav_async();
+	sim->EnableNewtonianGravity(state);
 	notifySettingsChanged();
 }
 
@@ -98,6 +92,18 @@ void OptionsModel::SetTemperatureScale(int temperatureScale)
 {
 	GlobalPrefs::Ref().Set("Renderer.TemperatureScale", temperatureScale);
 	gModel->SetTemperatureScale(temperatureScale);
+	notifySettingsChanged();
+}
+
+int OptionsModel::GetThreadedRendering()
+{
+	return gModel->GetThreadedRendering();
+}
+
+void OptionsModel::SetThreadedRendering(bool newThreadedRendering)
+{
+	GlobalPrefs::Ref().Set("Renderer.SeparateThread", newThreadedRendering);
+	gModel->SetThreadedRendering(newThreadedRendering);
 	notifySettingsChanged();
 }
 
@@ -165,6 +171,18 @@ void OptionsModel::SetGraveExitsConsole(bool graveExitsConsole)
 {
 	ui::Engine::Ref().GraveExitsConsole = graveExitsConsole;
 	GlobalPrefs::Ref().Set("GraveExitsConsole", graveExitsConsole);
+	notifySettingsChanged();
+}
+
+bool OptionsModel::GetNativeClipoard()
+{
+	return Clipboard::GetEnabled();
+}
+
+void OptionsModel::SetNativeClipoard(bool nativeClipoard)
+{
+	Clipboard::SetEnabled(nativeClipoard);
+	GlobalPrefs::Ref().Set("NativeClipboard.Enabled", nativeClipoard);
 	notifySettingsChanged();
 }
 

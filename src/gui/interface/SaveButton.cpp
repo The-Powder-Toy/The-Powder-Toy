@@ -10,6 +10,7 @@
 
 #include "gui/dialogues/ErrorMessage.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 
 #include "SimulationConfig.h"
 #include <SDL.h>
@@ -127,7 +128,7 @@ void SaveButton::Tick(float dt)
 			{
 				if(save->GetGameSave())
 				{
-					thumbnailRenderer = new ThumbnailRendererTask(*save->GetGameSave(), thumbBoxSize, true, true);
+					thumbnailRenderer = new ThumbnailRendererTask(*save->GetGameSave(), thumbBoxSize, RendererSettings::decorationEnabled, true);
 					thumbnailRenderer->Start();
 					triedThumbnail = true;
 				}
@@ -140,7 +141,7 @@ void SaveButton::Tick(float dt)
 			}
 			else if (file && file->GetGameSave())
 			{
-				thumbnailRenderer = new ThumbnailRendererTask(*file->GetGameSave(), thumbBoxSize, true, false);
+				thumbnailRenderer = new ThumbnailRendererTask(*file->GetGameSave(), thumbBoxSize, RendererSettings::decorationEnabled, false);
 				thumbnailRenderer->Start();
 				triedThumbnail = true;
 			}
@@ -262,7 +263,7 @@ void SaveButton::Draw(const Point& screenPos)
 	}
 }
 
-void SaveButton::OnMouseUnclick(int x, int y, unsigned int button)
+void SaveButton::OnMouseClick(int x, int y, unsigned int button)
 {
 	if(button != 1)
 	{
@@ -333,36 +334,40 @@ void SaveButton::OnContextMenuAction(int item)
 	}
 }
 
-void SaveButton::OnMouseClick(int x, int y, unsigned int button)
+void SaveButton::OnMouseDown(int x, int y, unsigned int button)
 {
-	if(button == SDL_BUTTON_RIGHT)
+	if (MouseDownInside)
 	{
-		if(menu)
-			menu->Show(GetScreenPos() + ui::Point(x, y));
-	}
-	else
-	{
-		isButtonDown = true;
-		if(button !=1 && selectable)
+		if(button == SDL_BUTTON_RIGHT)
 		{
-			selected = !selected;
-			DoSelection();
+			if(menu)
+				menu->Show(GetContainerPos() + ui::Point(x, y));
 		}
+		else
+		{
+			isButtonDown = true;
+			if(button !=1 && selectable)
+			{
+				selected = !selected;
+				DoSelection();
+			}
 
+		}
 	}
 }
 
-void SaveButton::OnMouseMovedInside(int x, int y, int dx, int dy)
+void SaveButton::OnMouseMoved(int x, int y)
 {
-	if(y > Size.Y-11)
-		isMouseInsideAuthor = true;
-	else
-		isMouseInsideAuthor = false;
+	isMouseInsideAuthor = false;
+	isMouseInsideHistory = false;
+	if (MouseInside)
+	{
+		if (y > Size.Y-11)
+			isMouseInsideAuthor = true;
 
-	if(showVotes && y > Size.Y-29 && y < Size.Y - 18 && x > 0 && x < 9)
-		isMouseInsideHistory = true;
-	else
-		isMouseInsideHistory = false;
+		if (y > Size.Y-29 && y < Size.Y - 18 && x > 0 && x < 9)
+			isMouseInsideHistory = true;
+	}
 }
 
 void SaveButton::OnMouseEnter(int x, int y)

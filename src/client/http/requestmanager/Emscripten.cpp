@@ -190,7 +190,7 @@ namespace http
 							new Blob([ HEAP8.slice($2, $2 + $3) ]),
 							UTF8ToString($4)
 						);
-					}, handle->id, field.name.c_str(), &field.value[0], field.value.size(), field.filename->c_str());
+					}, handle->id, field.name.c_str(), field.value.data(), field.value.size(), field.filename->c_str());
 				}
 				else
 				{
@@ -212,7 +212,7 @@ namespace http
 					HEAP8.byteOffset + $1,
 					$2
 				);
-			}, handle->id, &stringData[0], stringData.size());
+			}, handle->id, stringData.data(), stringData.size());
 		}
 		if (handle->isPost)
 		{
@@ -328,7 +328,7 @@ namespace http
 				EM_ASM({
 					let responseData = Module.emscriptenRequestManager.requests[$0].responseData;
 					writeArrayToMemory(new Int8Array(responseData), $1);
-				}, handle->id, &handle->responseData[0]);
+				}, handle->id, handle->responseData.data());
 			}
 			auto headerCount = EM_ASM_INT({
 				let responseHeaders = Module.emscriptenRequestManager.requests[$0].responseHeaders;

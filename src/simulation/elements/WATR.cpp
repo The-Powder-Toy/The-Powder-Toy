@@ -33,7 +33,7 @@ void Element::Element_WATR()
 	LatentHeat = 7500;
 	Description = "Water. Conducts electricity, freezes, and extinguishes fires.";
 
-	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPASS;
+	Properties = TYPE_LIQUID | PROP_CONDUCTS | PROP_LIFE_DEC | PROP_NEUTPASS | PROP_PHOTPASS;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

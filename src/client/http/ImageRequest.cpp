@@ -1,5 +1,5 @@
 #include "ImageRequest.h"
-#include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "client/Client.h"
 #include <iostream>
 

@@ -6,9 +6,6 @@ project(
 		'c_std=c99',
 		'cpp_std=c++17',
 		'cpp_rtti=false',
-		'build.c_std=c99', # used by to_array
-		'build.cpp_std=c++17', # used by to_array
-		'build.cpp_rtti=false', # used by to_array
 	],
 	meson_version: '>=0.64.0',
 )
@@ -18,11 +15,15 @@ if get_option('prepare')
 	subdir_done()
 endif
 
+python = import('python')
+python3_prog = python.find_installation('python3')
+
 fs = import('fs')
 to_array = generator(
-	executable('toarray', sources: 'resources/ToArray.cpp', native: true),
+	python3_prog,
 	output: [ '@PLAINNAME@.cpp', '@PLAINNAME@.h' ],
-	arguments: [ '@OUTPUT0@', '@OUTPUT1@', '@INPUT@', '@EXTRA_ARGS@' ]
+	depfile: '@PLAINNAME@.dep',
+	arguments: [ join_paths(meson.current_source_dir(), 'resources/to-array.py'), '@OUTPUT0@', '@OUTPUT1@', '@DEPFILE@', '@INPUT@', '@EXTRA_ARGS@' ]
 )
 
 render_icons_with_inkscape = get_option('render_icons_with_inkscape')
@@ -32,21 +33,17 @@ c_compiler = meson.get_compiler('c')
 
 is_x86 = host_machine.cpu_family() in [ 'x86', 'x86_64' ]
 is_64bit = host_machine.cpu_family() in [ 'aarch64', 'x86_64' ]
-is_msvc = c_compiler.get_id() in [ 'msvc' ]
 
 host_arch = host_machine.cpu_family()
 host_platform = host_machine.system()
 # educated guesses follow, PRs welcome
-if c_compiler.get_id() in [ 'msvc' ]
+if c_compiler.get_id() in [ 'msvc', 'clang-cl' ]
 	if host_platform != 'windows'
 		error('this seems fishy')
 	endif
 	host_libc = 'msvc'
 elif c_compiler.get_id() in [ 'gcc' ] and host_platform == 'windows'
 	host_libc = 'mingw'
-	if get_option('b_lto')
-		warning('mingw does not like static + lto')
-	endif
 elif host_platform in [ 'darwin' ]
 	host_libc = 'macos'
 elif host_platform in [ 'emscripten' ]
@@ -69,8 +66,8 @@ if static_variant != 'prebuilt' and host_platform == 'android'
 	warning('only prebuilt libs are supported for android')
 	static_variant = 'prebuilt'
 endif
-if static_variant == 'system' and host_platform == 'windows'
-	warning('no way to find system libs on windows')
+if static_variant == 'system' and host_platform == 'windows' and host_libc == 'msvc'
+	warning('no way to find system libs for msvc on windows')
 	static_variant = 'prebuilt'
 endif
 
@@ -82,20 +79,19 @@ tpt_libs_static = 'none'
 if static_variant == 'prebuilt'
 	tpt_libs_static = 'static'
 endif
-if static_variant == 'none' and host_platform == 'windows'
+if static_variant == 'none' and host_platform == 'windows' and host_libc == 'msvc'
 	tpt_libs_static = 'dynamic'
 endif
 tpt_libs_debug = is_debug ? 'debug' : 'release'
 tpt_libs_variant = '@0@-@1@-@2@-@3@'.format(host_arch, host_platform, host_libc, tpt_libs_static)
 tpt_libs_vtag = get_option('tpt_libs_vtag')
 if tpt_libs_vtag == ''
-	tpt_libs_vtag = 'v20231003175140'
+	tpt_libs_vtag = 'v20240112165024'
 endif
 if tpt_libs_static != 'none'
 	if tpt_libs_variant not in [
 		'x86_64-linux-gnu-static',
 		'x86_64-windows-mingw-static',
-		'x86_64-windows-mingw-dynamic',
 		'x86_64-windows-msvc-static',
 		'x86_64-windows-msvc-dynamic',
 		'x86-windows-msvc-static',
@@ -133,10 +129,21 @@ endif
 
 x86_sse_level_str = get_option('x86_sse')
 if x86_sse_level_str == 'auto'
-	x86_sse_level = 20
-	if not is_x86 or not is_64bit or host_platform == 'darwin' or (is_64bit and is_msvc)
+	if host_machine.cpu_family() == 'x86_64' and host_platform != 'darwin'
+		x86_sse_level = 20
+	else
 		x86_sse_level = 0
 	endif
+elif x86_sse_level_str == 'avx512'
+	x86_sse_level = 500
+elif x86_sse_level_str == 'avx2'
+	x86_sse_level = 200
+elif x86_sse_level_str == 'avx'
+	x86_sse_level = 100
+elif x86_sse_level_str == 'sse4.2'
+	x86_sse_level = 42
+elif x86_sse_level_str == 'sse4.1'
+	x86_sse_level = 41
 elif x86_sse_level_str == 'sse3'
 	x86_sse_level = 30
 elif x86_sse_level_str == 'sse2'
@@ -237,99 +244,115 @@ else
 endif
 json_dep = dependency('jsoncpp', static: is_static)
 
-if is_msvc
-	if x86_sse_level >= 30
-		warning('SSE3 configured to be enabled but unavailable in msvc')
-		x86_sse_level = 20
-	endif
-	if is_64bit and x86_sse_level > 0
-		warning('SSE explicitly configured but unavailable in msvc targeting 64-bit machines')
-		x86_sse_level = 0
-	endif
-	args_msvc = [
-		'/GS',
-		'/D_SCL_SECURE_NO_WARNINGS',
-		'/DUNICODE',
-		'/D_UNICODE',
-	]
-	if x86_sse_level >= 20
-		args_msvc += [ '/arch:SSE2' ]
-	elif x86_sse_level >= 10
-		args_msvc += [ '/arch:SSE' ]
-	endif
-	if not is_debug
-		args_msvc += [
+if not is_debug
+	args_ccomp_opt = []
+	if c_compiler.get_argument_syntax() == 'msvc'
+		args_ccomp_opt += [
 			'/Oy-',
 			'/fp:fast',
-			'/GL',
 		]
 		project_link_args += [
 			'/OPT:REF',
 			'/OPT:ICF',
-			'/LTCG',
 		]
-	endif
-	project_c_args += args_msvc
-	project_cpp_args += args_msvc
-else
-	args_ccomp = []
-	if host_platform == 'darwin' and x86_sse_level > 0
-		message('SSE level explicitly configured but unavailable on macosx')
-		x86_sse_level = 0
-	endif
-	if x86_sse_level >= 30
-		args_ccomp += [ '-msse3' ]
-	elif x86_sse_level >= 20
-		args_ccomp += [ '-msse2' ]
-	elif x86_sse_level >= 10
-		args_ccomp += [ '-msse' ]
-	endif
-	if host_platform == 'windows'
-		args_ccomp += [
-			'-DUNICODE',
-			'-D_UNICODE',
-		]
-	endif
-	if not is_debug
-		args_ccomp += [
+	else
+		args_ccomp_opt += [
 			'-ftree-vectorize',
 			'-funsafe-math-optimizations',
 			'-ffast-math',
 			'-fomit-frame-pointer',
 		]
 	endif
-	if host_platform == 'android'
-		if not is_64bit
-			args_ccomp += [ '-U_FILE_OFFSET_BITS' ]
-		endif
-		# android doesn't ship libc++_shared.so, so we might as well link it statically;
-		# the alternative would be to grab libc++_shared.so from the NDK and ship it with
-		# the app alongside libpowder.so, and possibly add it to SDL's list of libraries to load
-		project_link_args += [ '-static-libstdc++' ]
-	endif
-	project_c_args += args_ccomp + [
-		'-Wno-implicit-fallthrough',
-		'-Wno-missing-field-initializers',
-		'-Wno-unused-result',
-		'-Wno-unused-parameter',
-	]
-	project_cpp_args += args_ccomp + [
-		'-Wno-invalid-offsetof',
-		'-Wno-unused-result',
-		'-Wno-missing-field-initializers',
-		'-Wno-unused-parameter',
-	]
+	project_c_args += args_ccomp_opt
+	project_cpp_args += args_ccomp_opt
 endif
 
+if not is_debug
+	args_ccomp_lto = []
+	if c_compiler.get_id() in [ 'clang', 'clang-cl' ]
+		# use ThinLTO for Clang/LLVM
+		args_ccomp_lto += [ '-flto=thin' ]
+	elif c_compiler.get_argument_syntax() == 'msvc'
+		args_ccomp_lto += [ '/GL' ]
+		project_link_args += [ '/LTCG' ]
+	endif
+	project_c_args += args_ccomp_lto
+	project_cpp_args += args_ccomp_lto
+endif
+
+if c_compiler.get_argument_syntax() == 'msvc'
+	args_msvc = [
+		'/GS',
+		'/D_SCL_SECURE_NO_WARNINGS',
+	]
+	project_c_args += args_msvc
+	project_cpp_args += args_msvc
+endif
+
+# clang-cl supports both syntaxes. use the GCC one.
+if c_compiler.get_argument_syntax() == 'msvc' and c_compiler.get_id() not in [ 'clang-cl' ]
+	args_ccomp_sse = []
+	if x86_sse_level == 30
+		warning('SSE3 configured to be enabled but unavailable in msvc')
+	endif
+	if x86_sse_level >= 500
+		args_ccomp_sse += [ '/arch:AVX512' ]
+	elif x86_sse_level >= 200
+		args_ccomp_sse += [ '/arch:AVX2' ]
+	elif x86_sse_level >= 100
+		args_ccomp_sse += [ '/arch:AVX' ]
+	elif x86_sse_level >= 20 and host_machine.cpu_family() == 'x86'
+		args_ccomp_sse += [ '/arch:SSE2' ]
+	elif x86_sse_level >= 10 and host_machine.cpu_family() == 'x86'
+		args_ccomp_sse += [ '/arch:SSE' ]
+	endif
+	project_c_args += args_ccomp_sse
+	project_cpp_args += args_ccomp_sse
+else
+	args_ccomp_sse = []
+	if host_platform == 'darwin' and x86_sse_level > 0
+		message('SSE level explicitly configured but unavailable on macosx')
+		x86_sse_level = 0
+	endif
+	if x86_sse_level >= 500
+		args_ccomp_sse += [ '-mavx512f', '-mavx512cd', '-mavx512vl', '-mavx512dq', '-mavx512bw' ]
+	elif x86_sse_level >= 200
+		args_ccomp_sse += [ '-mavx2' ]
+	elif x86_sse_level >= 100
+		args_ccomp_sse += [ '-mavx' ]
+	elif x86_sse_level >= 42
+		args_ccomp_sse += [ '-msse4.2' ]
+	elif x86_sse_level >= 41
+		args_ccomp_sse += [ '-msse4.1' ]
+	elif x86_sse_level >= 30
+		args_ccomp_sse += [ '-msse3' ]
+	elif x86_sse_level >= 20
+		args_ccomp_sse += [ '-msse2' ]
+	elif x86_sse_level >= 10
+		args_ccomp_sse += [ '-msse' ]
+	endif
+	project_c_args += args_ccomp_sse
+	project_cpp_args += args_ccomp_sse
+endif
+
+copied_dlls = []
 if host_platform == 'windows'
-	args_ccomp_win = [ '-D_WIN32_WINNT=0x0501', '-DNOMINMAX' ]
+	args_ccomp_win = []
+	defs_ccomp_win = []
+	defs_ccomp_win += [
+		'_WIN32_WINNT=0x0501',
+		'NOMINMAX',
+		'UNICODE',
+		'_UNICODE',
+	]
 	windows_mod = import('windows')
 	if is_static
-		args_ccomp_win += [ '-DCURL_STATICLIB' ]
+		defs_ccomp_win += [ 'CURL_STATICLIB' ]
 		if host_arch == 'x86_64'
-			args_ccomp_win += [ '-DZLIB_WINAPI' ]
+			defs_ccomp_win += [ 'ZLIB_WINAPI' ]
 		endif
-	else
+	endif
+	if tpt_libs_static == 'dynamic'
 		foreach input_output_condition : tpt_libs.get_variable('config_dlls')
 			dll_input = input_output_condition[0]
 			dll_output = input_output_condition[1]
@@ -341,12 +364,55 @@ if host_platform == 'windows'
 				do_copy = true
 			endif
 			if do_copy
-				fs.copyfile(dll_input, dll_output)
+				copied_dlls += [ fs.copyfile(dll_input, dll_output) ]
 			endif
 		endforeach
 	endif
-	project_c_args   += args_ccomp_win
+	foreach def : defs_ccomp_win
+		if c_compiler.get_argument_syntax() == 'msvc'
+			args_ccomp_win += [ '/D' + def ]
+		else
+			args_ccomp_win += [ '-D' + def ]
+		endif
+	endforeach
+	project_c_args += args_ccomp_win
 	project_cpp_args += args_ccomp_win
+elif host_platform == 'android'
+	args_ccomp_android = []
+	if not is_64bit
+		args_ccomp_android += [ '-U_FILE_OFFSET_BITS' ]
+	endif
+	# android doesn't ship libc++_shared.so, so we might as well link it statically;
+	# the alternative would be to grab libc++_shared.so from the NDK and ship it with
+	# the app alongside libpowder.so, and possibly add it to SDL's list of libraries to load
+	project_link_args += [ '-static-libstdc++' ]
+	project_c_args += args_ccomp_android
+	project_cpp_args += args_ccomp_android
+endif
+
+if c_compiler.get_argument_syntax() == 'msvc' and c_compiler.get_id() not in [ 'clang-cl' ]
+	project_c_args += [
+		'/wd5262',
+		'/wd4834',
+		'/wd4100',
+	]
+	project_cpp_args += [
+		'/wd4834',
+		'/wd4100',
+	]
+else
+	project_c_args += [
+		'-Wno-implicit-fallthrough',
+		'-Wno-missing-field-initializers',
+		'-Wno-unused-result',
+		'-Wno-unused-parameter',
+	]
+	project_cpp_args += [
+		'-Wno-invalid-offsetof',
+		'-Wno-unused-result',
+		'-Wno-missing-field-initializers',
+		'-Wno-unused-parameter',
+	]
 endif
 
 project_inc = include_directories([ 'src', 'resources' ])
@@ -361,7 +427,11 @@ else
 	ident_platform = 'UNKNOWN'
 endif
 
+project_deps = []
 data_files = []
+powder_deps = []
+
+project_export_dynamic = false
 
 subdir('src')
 subdir('resources')
@@ -375,9 +445,25 @@ if host_platform == 'emscripten'
 		'-o', app_exe + '.js', # so we get a .wasm, and a .js
 	]
 endif
+if get_option('export_lua_symbols')
+	if is_static and lua_variant != 'none' and not project_export_dynamic
+		if host_platform == 'windows'
+			error('Lua symbols are currently impossible to export correctly on Windows')
+		elif c_compiler.has_link_argument('-Wl,--export-dynamic-symbol')
+			project_link_args += [
+				'-Wl,--export-dynamic-symbol=lua_*',
+				'-Wl,--export-dynamic-symbol=luaL_*',
+				'-Wl,--export-dynamic-symbol=luaopen_*',
+			]
+		else
+			warning('your linker does not support -Wl,--export-dynamic-symbol so Meson will be instructed to export all symbols in order to enable loading Lua shared modules, which may blow up the size of the resulting binary')
+			project_export_dynamic = true
+		endif
+	endif
+endif
 
 if get_option('build_powder')
-	powder_deps = [
+	powder_deps += project_deps + [
 		threads_dep,
 		zlib_dep,
 		png_dep,
@@ -397,6 +483,7 @@ if get_option('build_powder')
 			cpp_args: project_cpp_args,
 			link_args: project_link_args,
 			dependencies: powder_deps,
+			link_depends: copied_dlls,
 		)
 		subdir('android')
 	else
@@ -409,7 +496,9 @@ if get_option('build_powder')
 			win_subsystem: is_debug ? 'console' : 'windows',
 			link_args: project_link_args,
 			dependencies: powder_deps,
+			export_dynamic: project_export_dynamic,
 			install: true,
+			link_depends: copied_dlls,
 		)
 	endif
 endif
@@ -418,7 +507,7 @@ if get_option('build_render')
 	if host_platform == 'emscripten'
 		error('render does not target emscripten')
 	endif
-	render_deps = [
+	render_deps = project_deps + [
 		threads_dep,
 		zlib_dep,
 		bzip2_dep,
@@ -437,6 +526,8 @@ if get_option('build_render')
 		cpp_args: project_cpp_args,
 		link_args: render_link_args,
 		dependencies: render_deps,
+		export_dynamic: project_export_dynamic,
+		link_depends: copied_dlls,
 	)
 endif
 
@@ -444,7 +535,7 @@ if get_option('build_font')
 	if host_platform == 'emscripten'
 		error('font does not target emscripten')
 	endif
-	font_deps = [
+	font_deps = project_deps + [
 		threads_dep,
 		zlib_dep,
 		png_dep,
@@ -460,5 +551,7 @@ if get_option('build_font')
 		cpp_args: project_cpp_args,
 		link_args: project_link_args,
 		dependencies: font_deps,
+		export_dynamic: project_export_dynamic,
+		link_depends: copied_dlls,
 	)
 endif

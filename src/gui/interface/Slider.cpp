@@ -1,6 +1,6 @@
 #include "Slider.h"
-
 #include "graphics/Graphics.h"
+#include "graphics/Renderer.h"
 
 namespace ui {
 
@@ -40,7 +40,7 @@ void Slider::updatePosition(int position)
 	}
 }
 
-void Slider::OnMouseMoved(int x, int y, int dx, int dy)
+void Slider::OnMouseMoved(int x, int y)
 {
 	if(isMouseDown)
 	{
@@ -48,10 +48,13 @@ void Slider::OnMouseMoved(int x, int y, int dx, int dy)
 	}
 }
 
-void Slider::OnMouseClick(int x, int y, unsigned button)
+void Slider::OnMouseDown(int x, int y, unsigned button)
 {
-	isMouseDown = true;
-	updatePosition(x);
+	if (MouseDownInside)
+	{
+		isMouseDown = true;
+		updatePosition(x - Position.X);
+	}
 }
 
 void Slider::OnMouseUp(int x, int y, unsigned button)
@@ -67,7 +70,7 @@ void Slider::SetColour(Colour col1, Colour col2)
 {
 	this->col1 = col1;
 	this->col2 = col2;
-	bgGradient = Graphics::Gradient({
+	bgGradient = Renderer::Gradient({
 		{ col1.NoAlpha(), 0.f },
 		{ col2.NoAlpha(), 1.f },
 	}, Size.X-7);

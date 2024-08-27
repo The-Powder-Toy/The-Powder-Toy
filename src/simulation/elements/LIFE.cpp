@@ -58,10 +58,10 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		colour1 = 0xFFFFFF_rgb;
 	}
 	auto ruleset = cpart->ctype;
-	bool renderDeco = !gfctx.ren->blackDecorations;
+	bool renderDeco = gfctx.ren->decorationLevel != RendererSettings::decorationAntiClickbait;
 	if (ruleset >= 0 && ruleset < NGOL)
 	{
-		if (!renderDeco || !gfctx.ren->decorations_enable)
+		if (!renderDeco || gfctx.ren->decorationLevel == RendererSettings::decorationDisabled)
 		{
 			colour1 = builtinGol[ruleset].colour;
 			colour2 = builtinGol[ruleset].colour2;

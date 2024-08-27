@@ -1,5 +1,5 @@
 #include "Brush.h"
-#include "graphics/Renderer.h"
+#include "graphics/Graphics.h"
 
 Brush::Brush(const Brush &other)
 {
@@ -52,6 +52,14 @@ void Brush::InitOutline()
 
 void Brush::SetRadius(ui::Point newRadius)
 {
+	if (newRadius.X < 0)
+		newRadius.X = 0;
+	if (newRadius.Y < 0)
+		newRadius.Y = 0;
+	if (newRadius.X > 200)
+		newRadius.X = 200;
+	if (newRadius.Y > 200)
+		newRadius.Y = 200;
 	radius = newRadius;
 	InitOutline();
 }
@@ -67,14 +75,6 @@ void Brush::AdjustSize(int delta, bool logarithmic, bool keepX, bool keepY)
 		newSize = oldSize + ui::Point(delta * std::max(oldSize.X / 5, 1), delta * std::max(oldSize.Y / 5, 1));
 	else
 		newSize = oldSize + ui::Point(delta, delta);
-	if (newSize.X < 0)
-		newSize.X = 0;
-	if (newSize.Y < 0)
-		newSize.Y = 0;
-	if (newSize.X > 200)
-		newSize.X = 200;
-	if (newSize.Y > 200)
-		newSize.Y = 200;
 
 	if (keepY)
 		SetRadius(ui::Point(newSize.X, oldSize.Y));
@@ -84,7 +84,7 @@ void Brush::AdjustSize(int delta, bool logarithmic, bool keepX, bool keepY)
 		SetRadius(newSize);
 }
 
-void Brush::RenderRect(Renderer * ren, ui::Point position1, ui::Point position2) const
+void Brush::RenderRect(Graphics *g, ui::Point position1, ui::Point position2) const
 {
 	int width, height;
 	width = position2.X-position1.X;
@@ -100,35 +100,35 @@ void Brush::RenderRect(Renderer * ren, ui::Point position1, ui::Point position2)
 		width *= -1;
 	}
 
-	ren->XorLine(position1, position1 + Vec2{ width, 0 });
+	g->XorLine(position1, position1 + Vec2{ width, 0 });
 	if (height > 0)
 	{
-		ren->XorLine(position1 + Vec2{ 0, height }, position1 + Vec2{ width, height });
+		g->XorLine(position1 + Vec2{ 0, height }, position1 + Vec2{ width, height });
 		if (height > 1)
 		{
-			ren->XorLine(position1 + Vec2{ width, 1 }, position1 + Vec2{ width, height - 1 });
+			g->XorLine(position1 + Vec2{ width, 1 }, position1 + Vec2{ width, height - 1 });
 			if (width > 0)
 			{
-				ren->XorLine(position1 + Vec2{ 0, 1 }, position1 + Vec2{ 0, height - 1 });
+				g->XorLine(position1 + Vec2{ 0, 1 }, position1 + Vec2{ 0, height - 1 });
 			}
 		}
 	}
 }
 
-void Brush::RenderLine(Renderer * ren, ui::Point position1, ui::Point position2) const
+void Brush::RenderLine(Graphics *g, ui::Point position1, ui::Point position2) const
 {
-	ren->XorLine(position1, position2);
+	g->XorLine(position1, position2);
 }
 
-void Brush::RenderPoint(Renderer * ren, ui::Point position) const
+void Brush::RenderPoint(Graphics *g, ui::Point position) const
 {
-	ren->XorImage(&outline[0], RectBetween(position - radius, position + radius));
+	g->XorImage(&outline[0], RectBetween(position - radius, position + radius));
 }
 
-void Brush::RenderFill(Renderer * ren, ui::Point position) const
+void Brush::RenderFill(Graphics *g, ui::Point position) const
 {
-	ren->XorLine(position - Vec2{ 5, 0 }, position - Vec2{ 1, 0 });
-	ren->XorLine(position + Vec2{ 5, 0 }, position + Vec2{ 1, 0 });
-	ren->XorLine(position - Vec2{ 0, 5 }, position - Vec2{ 0, 1 });
-	ren->XorLine(position + Vec2{ 0, 5 }, position + Vec2{ 0, 1 });
+	g->XorLine(position - Vec2{ 5, 0 }, position - Vec2{ 1, 0 });
+	g->XorLine(position + Vec2{ 5, 0 }, position + Vec2{ 1, 0 });
+	g->XorLine(position - Vec2{ 0, 5 }, position - Vec2{ 0, 1 });
+	g->XorLine(position + Vec2{ 0, 5 }, position + Vec2{ 0, 1 });
 }

@@ -243,6 +243,27 @@ static int update(UPDATE_FUNC_ARGS)
 			parts[i].ctype = 1;
 			parts[i].life = 10;
 		}
+
+		//SOAP+OIL foam effect
+		for (auto rx=-2; rx<3; rx++)
+			for (auto ry=-2; ry<3; ry++)
+				if (rx || ry)
+				{
+					auto r = pmap[y+ry][x+rx];
+					if (!r)
+						continue;
+					if (TYP(r) == PT_OIL)
+					{
+						float ax, ay, gx, gy;
+
+						sim->GetGravityField(x, y, elements[PT_SOAP].Gravity, 1.0f, gx, gy);
+
+						ax = ((parts[i].vx-gx)*0.5f + parts[ID(r)].vx)/2;
+						ay = ((parts[i].vy-gy)*0.5f + parts[ID(r)].vy)/2;
+						parts[i].vx = parts[ID(r)].vx = ax;
+						parts[i].vy = parts[ID(r)].vy = ay;
+					}
+				}
 	}
 	for (auto rx = -2; rx <= 2; rx++)
 	{
