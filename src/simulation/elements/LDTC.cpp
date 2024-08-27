@@ -154,17 +154,14 @@ static int update(UPDATE_FUNC_ARGS)
 						int photonWl = TYP(rr) == PT_FILT ?
 							Element_FILT_getWavelengths(&parts[ID(rr)]) :
 							parts[ID(rr)].ctype;
-						if (TYP(r) == PT_FILT)
+						while (TYP(r) == PT_FILT)
 						{
-							while (TYP(r) == PT_FILT)
-							{
-								parts[ID(r)].ctype = photonWl;
-								nx += rx;
-								ny += ry;
-								if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
-									break;
-								r = pmap[ny][nx];
-							}
+							parts[ID(r)].ctype = photonWl;
+							nx += rx;
+							ny += ry;
+							if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
+								break;
+							r = pmap[ny][nx];
 						}
 						break;
 					}
