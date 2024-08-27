@@ -93,8 +93,13 @@ static int update(UPDATE_FUNC_ARGS)
 			break;
 
 		case PT_GUNP:
-			sim->create_part(i, x, y, PT_IGNT);
-			sim->kill_part(ID(r));
+			if (sim->pv[y / CELL][x / CELL] > 0.75f && sim->rng.chance(1, 5))
+			{
+				sim->create_part(i, x, y, PT_IGNT);
+				parts[i].life = 3;
+				sim->kill_part(ID(r));
+				return 1;
+			}
 			break;
 
 		default:
