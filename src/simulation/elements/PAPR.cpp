@@ -87,6 +87,27 @@ static int update(UPDATE_FUNC_ARGS)
 			parts[i].dcolour = 0xFF22222A;
 			break;
 
+		// Acts as a smoke filter
+		case PT_SMKE:
+			if (sim->rng.chance(1, 5))
+			{
+				sim->kill_part(ID(r));
+				// On average, each pixel of PAPR absorbs 10 SMKE particles before becoming impermeable
+				if (sim->rng.chance(1, 10))
+				{
+					parts[i].life = 1;
+					parts[i].dcolour = 0xFF322222;
+				}
+			}
+			break;
+
+		// Can also filter out CAUS from the air, but much less effectively (partly because of corrosion)
+		case PT_CAUS:
+			sim->kill_part(ID(r));
+			parts[i].life = 1;
+			parts[i].dcolour = 0xFF223C22;
+			break;
+
 		// Doesn't guarantee layering won't happen, but makes it far less likely
 		case PT_SAWD:
 			parts[ID(r)].tmp = 0;
