@@ -42,7 +42,6 @@ elif host_platform == 'android'
 	)
 	powder_files += files(
 		'MainCommon.cpp',
-		'DdirCommon.cpp',
 	)
 elif host_platform == 'emscripten'
 	use_bluescreen = false
