@@ -2159,6 +2159,7 @@ void GameView::OnDraw()
 	{
 		StartRendererThread();
 		WaitForRendererThread();
+		foundParticles = ren->GetFoundParticles();
 		*rendererThreadResult = ren->GetVideo();
 		rendererFrame = rendererThreadResult.get();
 		DispatchRendererThread();
@@ -2168,6 +2169,7 @@ void GameView::OnDraw()
 		PauseRendererThread();
 		ren->ApplySettings(*rendererSettings);
 		RenderSimulation(*sim, true);
+		foundParticles = ren->GetFoundParticles();
 		rendererFrame = &ren->GetVideo();
 	}
 
@@ -2514,7 +2516,7 @@ void GameView::OnDraw()
 		if (showDebug)
 		{
 			if (rendererSettings->findingElement)
-				fpsInfo << " Parts: " << rendererSettings->foundElements << "/" << sample.NumParts;
+				fpsInfo << " Parts: " << foundParticles << "/" << sample.NumParts;
 			else
 				fpsInfo << " Parts: " << sample.NumParts;
 		}

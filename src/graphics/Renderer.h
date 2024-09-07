@@ -32,6 +32,7 @@ class Renderer : private RendererSettings, public RasterDrawMethods<Renderer>
 	RendererFrame video;
 	std::array<pixel, WINDOW.X * RES.Y> persistentVideo;
 	RendererFrame warpVideo;
+	int foundParticles = 0;
 
 	Rect<int> GetClipRect() const
 	{
@@ -70,6 +71,11 @@ public:
 	const RendererFrame &GetVideo() const
 	{
 		return video;
+	}
+
+	int GetFoundParticles() const
+	{
+		return foundParticles;
 	}
 
 	const RenderableSimulation *sim = nullptr;

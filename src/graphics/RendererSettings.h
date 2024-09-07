@@ -21,7 +21,6 @@ struct RendererSettings
 	};
 	DecorationLevel decorationLevel = decorationEnabled;
 	bool debugLines = false;
-	int foundElements = 0;
 	ui::Point mousePos = { 0, 0 };
 	int gridSize = 0;
 	float fireIntensity = 1;

@@ -262,7 +262,7 @@ void Renderer::render_parts()
 					BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
 			}
 	}
-	foundElements = 0;
+	foundParticles = 0;
 	for(i = 0; i<=sim->parts_lastActiveIndex; i++) {
 		if (sim->parts[i].type && sim->parts[i].type >= 0 && sim->parts[i].type < PT_NUM) {
 			t = sim->parts[i].type;
@@ -483,7 +483,7 @@ void Renderer::render_parts()
 					{
 						colr = firer = 255;
 						colg = fireg = colb = fireb = 0;
-						foundElements++;
+						foundParticles++;
 					}
 					else
 					{

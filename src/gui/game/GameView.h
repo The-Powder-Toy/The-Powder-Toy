@@ -172,6 +172,7 @@ private:
 	void DispatchRendererThread();
 	std::unique_ptr<RenderableSimulation> rendererThreadSim;
 	std::unique_ptr<RendererFrame> rendererThreadResult;
+	int foundParticles = 0;
 	const RendererFrame *rendererFrame = nullptr;
 
 public:
