@@ -215,7 +215,7 @@ public:
 	void NotifySaveChanged(GameModel * sender);
 	void NotifyBrushChanged(GameModel * sender);
 	void NotifyMenuListChanged(GameModel * sender);
-	void NotifyToolListChanged(GameModel * sender);
+	void NotifyActiveMenuToolListChanged(GameModel * sender);
 	void NotifyActiveToolsChanged(GameModel * sender);
 	void NotifyUserChanged(GameModel * sender);
 	void NotifyZoomChanged(GameModel * sender);

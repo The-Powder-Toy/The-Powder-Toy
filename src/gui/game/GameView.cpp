@@ -534,7 +534,7 @@ void GameView::NotifyLastToolChanged(GameModel * sender)
 	}
 }
 
-void GameView::NotifyToolListChanged(GameModel * sender)
+void GameView::NotifyActiveMenuToolListChanged(GameModel * sender)
 {
 	for (size_t i = 0; i < menuButtons.size(); i++)
 	{
@@ -553,7 +553,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 		delete toolButtons[i];
 	}
 	toolButtons.clear();
-	std::vector<Tool*> toolList = sender->GetToolList();
+	std::vector<Tool*> toolList = sender->GetActiveMenuToolList();
 	int currentX = 0;
 	for (size_t i = 0; i < toolList.size(); i++)
 	{
@@ -729,7 +729,7 @@ void GameView::NotifyColourSelectorColourChanged(GameModel * sender)
 {
 	colourPicker->Appearance.BackgroundInactive = sender->GetColourSelectorColour();
 	colourPicker->Appearance.BackgroundHover = sender->GetColourSelectorColour();
-	NotifyToolListChanged(sender);
+	NotifyActiveMenuToolListChanged(sender);
 }
 
 void GameView::NotifyRendererChanged(GameModel * sender)

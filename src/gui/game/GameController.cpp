@@ -1099,7 +1099,7 @@ int GameController::GetNumMenus(bool onlyEnabled)
 
 void GameController::RebuildFavoritesMenu()
 {
-	gameModel->BuildFavoritesMenu();
+	gameModel->BuildMenus();
 }
 
 Tool * GameController::GetActiveTool(int selection)
@@ -1326,24 +1326,15 @@ void GameController::OpenProfile()
 
 void GameController::OpenElementSearch()
 {
-	std::vector<Tool*> toolList;
-	std::vector<Menu*> menuList = gameModel->GetMenuList();
-	for (auto i = 0U; i < menuList.size(); ++i)
+	std::vector<Tool *> toolList;
+	for (auto &ptr : gameModel->GetTools())
 	{
-		if (i == SC_FAVORITES)
+		if (!ptr)
 		{
 			continue;
 		}
-		auto *mm = menuList[i];
-		if(!mm)
-			continue;
-		std::vector<Tool*> menuToolList = mm->GetToolList();
-		if(!menuToolList.size())
-			continue;
-		toolList.insert(toolList.end(), menuToolList.begin(), menuToolList.end());
+		toolList.push_back(ptr.get());
 	}
-	std::vector<Tool*> hiddenTools = gameModel->GetUnlistedTools();
-	toolList.insert(toolList.end(), hiddenTools.begin(), hiddenTools.end());
 	new ElementSearchActivity(this, toolList);
 }
 

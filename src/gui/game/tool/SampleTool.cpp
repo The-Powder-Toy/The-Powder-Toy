@@ -64,8 +64,9 @@ void SampleTool::Draw(Simulation * sim, Brush const &brush, ui::Point position)
 			}
 			else
 			{
-				if (auto elementTool = gameModel.GetElementTool(part->type))
-					gameModel.SetActiveTool(0, elementTool);
+				auto &sd = SimulationData::Ref();
+				auto &elements = sd.elements;
+				gameModel.SetActiveTool(0, gameModel.GetToolFromIdentifier(elements[part->type].Identifier));
 			}
 		}
 	}

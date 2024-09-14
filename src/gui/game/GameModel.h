@@ -59,36 +59,25 @@ private:
 	std::unique_ptr<GameSave> transformedPlaceSave;
 	std::deque<String> consoleLog;
 	std::vector<GameView*> observers;
-	std::vector<Tool*> toolList;
 
 	std::vector<std::unique_ptr<Tool>> tools;
 
-	template<class ToolType, class... Args>
-	ToolType *AddTool(Args &&...args)
-	{
-		auto ptr = std::make_unique<ToolType>(std::forward<Args>(args)...);
-		auto raw = ptr.get();
-		tools.push_back(std::move(ptr));
-		return raw;
-	}
-
-	//All tools that are associated with elements
-	std::vector<Tool*> elementTools;
-	//Tools that are present in elementTools, but don't have an associated menu and need to be freed manually
-	std::vector<Tool*> extraElementTools;
+	void SanitizeToolsets();
+	void DeselectTool(ByteString identifier);
+	void InitTools();
 
 	Simulation * sim;
 	Renderer * ren;
 	RendererSettings rendererSettings;
-	std::vector<Menu*> menuList;
+	std::vector<std::unique_ptr<Menu>> menuList;
 	std::vector<QuickOption*> quickOptions;
 	int activeMenu;
 	int currentBrush;
 	std::vector<std::unique_ptr<Brush>> brushList;
 	std::unique_ptr<SaveInfo> currentSave;
 	std::unique_ptr<SaveFile> currentFile;
-	Tool * lastTool;
-	Tool ** activeTools;
+	Tool *lastTool = nullptr;
+	Tool **activeTools = nullptr;
 	std::array<Tool *, NUM_TOOLINDICES> decoToolset;
 	std::array<Tool *, NUM_TOOLINDICES> regularToolset;
 	User currentUser;
@@ -121,7 +110,7 @@ private:
 	void notifySaveChanged();
 	void notifyBrushChanged();
 	void notifyMenuListChanged();
-	void notifyToolListChanged();
+	void notifyActiveMenuToolListChanged();
 	void notifyActiveToolsChanged();
 	void notifyUserChanged();
 	void notifyZoomChanged();
@@ -188,7 +177,6 @@ public:
 	String GetInfoTip();
 
 	void BuildMenus();
-	void BuildFavoritesMenu();
 	void BuildBrushList();
 	void BuildQuickOptionMenu(GameController * controller);
 
@@ -210,9 +198,12 @@ public:
 	Tool * GetLastTool();
 	void SetLastTool(Tool * newTool);
 	Tool *GetToolFromIdentifier(ByteString const &identifier);
-	Tool * GetElementTool(int elementID);
-	std::vector<Tool*> GetToolList();
-	std::vector<Tool*> GetUnlistedTools();
+	std::optional<int> GetToolIndex(Tool *tool);
+	std::vector<Tool *> GetActiveMenuToolList();
+	void AllocTool(std::unique_ptr<Tool> tool);
+	void AllocElementTool(int element);
+	void AllocCustomGolTool(const CustomGOLData &gd);
+	void FreeTool(Tool *tool);
 
 	const std::vector<std::unique_ptr<Tool>> &GetTools()
 	{

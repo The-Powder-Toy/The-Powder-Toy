@@ -399,6 +399,7 @@ static int allocate(lua_State *L)
 			lsi->customCanMove[elem][newID] = 0;
 			lsi->customCanMove[newID][elem] = 0;
 		}
+		lsi->gameModel->AllocElementTool(newID);
 		lsi->gameModel->BuildMenus();
 		lsi->InitCustomCanMove();
 	}
@@ -524,6 +525,7 @@ static int element(lua_State *L)
 
 			sd.graphicscache[id].isready = 0;
 		}
+		lsi->gameModel->AllocElementTool(id);
 		lsi->gameModel->BuildMenus();
 		lsi->InitCustomCanMove();
 
@@ -591,6 +593,7 @@ static int property(lua_State *L)
 				manageElementIdentifier(L, id, false);
 				LuaSetProperty(L, *prop, propertyAddress, 3);
 				manageElementIdentifier(L, id, true);
+				lsi->gameModel->AllocElementTool(id);
 				lsi->gameModel->BuildMenus();
 				lsi->InitCustomCanMove();
 				sd.graphicscache[id].isready = 0;
@@ -745,12 +748,14 @@ static int ffree(lua_State *L)
 		}
 	}
 
+	auto *lsi = GetLSI();
 	{
 		auto &sd = SimulationData::Ref();
 		std::unique_lock lk(sd.elementGraphicsMx);
 		sd.elements[id].Enabled = false;
 	}
-	auto *lsi = GetLSI();
+	lsi->customElements[id] = {};
+	lsi->gameModel->FreeTool(lsi->gameModel->GetToolFromIdentifier(identifier));
 	lsi->gameModel->BuildMenus();
 
 	lua_getglobal(L, "elements");
@@ -777,7 +782,7 @@ static int loadDefault(lua_State *L)
 	auto &builtinElements = GetElements();
 	auto *lsi = GetLSI();
 	{
-		auto loadDefaultOne = [L, &elements, &builtinElements](int id) {
+		auto loadDefaultOne = [lsi, L, &elements, &builtinElements](int id) {
 			lua_getglobal(L, "elements");
 			ByteString identifier = elements[id].Identifier;
 			tpt_lua_pushByteString(L, identifier);
@@ -786,9 +791,14 @@ static int loadDefault(lua_State *L)
 
 			manageElementIdentifier(L, id, false);
 			if (id < (int)builtinElements.size())
+			{
 				elements[id] = builtinElements[id];
+			}
 			else
+			{
 				elements[id] = Element();
+				lsi->gameModel->FreeTool(lsi->gameModel->GetToolFromIdentifier(identifier));
+			}
 			manageElementIdentifier(L, id, true);
 
 			tpt_lua_pushByteString(L, identifier);
