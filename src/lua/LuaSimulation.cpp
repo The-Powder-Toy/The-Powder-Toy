@@ -2020,21 +2020,6 @@ void LuaSimulation::Open(lua_State *L)
 		LCONSTAS("NUM_WALLS", UI_WALLCOUNT);
 	}
 
-	{
-		lua_newtable(L);
-		auto &toolList = lsi->gameModel->GetTools();
-		for (int i = 0; i < int(toolList.size()); ++i)
-		{
-			tpt_lua_pushByteString(L, toolList[i]->Identifier);
-			lua_pushinteger(L, i);
-			lua_settable(L, -3);
-			lua_pushinteger(L, i);
-			tpt_lua_pushByteString(L, toolList[i]->Identifier);
-			lua_settable(L, -3);
-		}
-		lua_setfield(L, -2, "tools");
-		LCONSTAS("NUM_TOOLS", UI_WALLCOUNT);
-	}
 #undef LCONSTAS
 #undef LCONSTF
 #undef LCONST

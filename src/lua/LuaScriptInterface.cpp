@@ -155,6 +155,7 @@ LuaScriptInterface::LuaScriptInterface(GameController *newGameController, GameMo
 	LuaRenderer::Open(L);
 	LuaSimulation::Open(L);
 	LuaSocket::Open(L);
+	LuaTools::Open(L);
 	{
 		lua_getglobal(L, "os");
 		lua_pushcfunction(L, osExit);
@@ -208,6 +209,12 @@ void CommandInterface::Init()
 		else
 			Log(CommandInterface::LogWarning, "Loaded autorun.lua");
 	}
+}
+
+void CommandInterface::SetToolIndex(ByteString identifier, std::optional<int> index)
+{
+	auto *lsi = static_cast<LuaScriptInterface *>(this);
+	LuaTools::SetToolIndex(lsi->L, identifier, index);
 }
 
 void LuaGetProperty(lua_State *L, StructProperty property, intptr_t propertyAddress)

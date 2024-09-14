@@ -213,6 +213,7 @@ public:
 	Brush &GetBrush();
 	Brush *GetBrushByID(int i);
 	int GetBrushID();
+	int GetBrushIndex(const Brush &brush);
 	int BrushListSize() const
 	{
 		return int(brushList.size());

@@ -37,3 +37,7 @@ String CommandInterface::FormatCommand(String command)
 {
 	return PlainFormatCommand(command);
 }
+
+void CommandInterface::SetToolIndex(ByteString identifier, std::optional<int> index)
+{
+}

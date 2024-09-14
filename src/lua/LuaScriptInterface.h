@@ -58,6 +58,17 @@ struct CustomElement
 	LuaSmartRef changeType;
 };
 
+struct CustomTool
+{
+	LuaSmartRef perform;
+	LuaSmartRef click;
+	LuaSmartRef drag;
+	LuaSmartRef draw;
+	LuaSmartRef drawLine;
+	LuaSmartRef drawRect;
+	LuaSmartRef drawFill;
+};
+
 class LuaScriptInterface : public CommandInterface
 {
 	LuaStatePtr luaState;
@@ -86,6 +97,7 @@ public:
 	}
 
 	std::vector<CustomElement> customElements; // must come after luaState
+	std::vector<CustomTool> customTools;
 
 	EventTraits eventTraits = eventTraitNone;
 
@@ -202,6 +214,12 @@ namespace LuaSocket
 	void Timeout(double timeout);
 	void Open(lua_State *L);
 	void OpenTCP(lua_State *L);
+}
+
+namespace LuaTools
+{
+	void Open(lua_State *L);
+	void SetToolIndex(lua_State *L, ByteString identifier, std::optional<int> index);
 }
 
 inline LuaScriptInterface *GetLSI()

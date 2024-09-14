@@ -206,4 +206,6 @@ public:
 	void BeforeSimDraw();
 	void AfterSimDraw();
 	bool ThreadedRenderingAllowed();
+
+	void SetToolIndex(ByteString identifier, std::optional<int> index);
 };

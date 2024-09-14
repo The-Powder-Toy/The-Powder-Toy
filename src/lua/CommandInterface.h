@@ -5,6 +5,7 @@
 #include "gui/game/GameControllerEvents.h"
 #include "TPTSTypes.h"
 #include <deque>
+#include <optional>
 
 class GameModel;
 class GameController;
@@ -54,6 +55,8 @@ public:
 	AnyType tptS_bubble(std::deque<String> * words);
 	AnyType tptS_quit(std::deque<String> * words);
 	ValueType testType(String word);
+
+	void SetToolIndex(ByteString identifier, std::optional<int> index);
 
 	static CommandInterfacePtr Create(GameController *newGameController, GameModel *newGameModel);
 };

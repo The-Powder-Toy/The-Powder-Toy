@@ -1729,3 +1729,11 @@ bool GameController::ThreadedRenderingAllowed()
 {
 	return gameModel->GetThreadedRendering() && !commandInterface->HaveSimGraphicsEventHandlers();
 }
+
+void GameController::SetToolIndex(ByteString identifier, std::optional<int> index)
+{
+	if (commandInterface)
+	{
+		commandInterface->SetToolIndex(identifier, index);
+	}
+}

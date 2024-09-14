@@ -598,6 +598,14 @@ Brush *GameModel::GetBrushByID(int i)
 		return nullptr;
 }
 
+int GameModel::GetBrushIndex(const Brush &brush)
+{
+	auto it = std::find_if(brushList.begin(), brushList.end(), [&brush](auto &ptr) {
+		return ptr.get() == &brush;
+	});
+	return int(it - brushList.begin());
+}
+
 int GameModel::GetBrushID()
 {
 	return currentBrush;
@@ -1647,6 +1655,7 @@ void GameModel::AllocTool(std::unique_ptr<Tool> tool)
 		index = int(tools.size());
 		tools.emplace_back();
 	}
+	GameController::Ref().SetToolIndex(tool->Identifier, *index);
 	tools[*index] = std::move(tool);
 }
 
@@ -1659,6 +1668,7 @@ void GameModel::FreeTool(Tool *tool)
 	}
 	auto &ptr = tools[*index];
 	DeselectTool(ptr->Identifier);
+	GameController::Ref().SetToolIndex(ptr->Identifier, std::nullopt);
 	ptr.reset();
 }
 
