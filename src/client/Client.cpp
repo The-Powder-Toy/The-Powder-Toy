@@ -122,7 +122,7 @@ void Client::Tick()
 		try
 		{
 			auto info = versionCheckRequest->Finish();
-			if (!info.sessionGood)
+			if (!info.sessionGood && authUser.UserID)
 			{
 				SetAuthUser(User(0, ""));
 			}
