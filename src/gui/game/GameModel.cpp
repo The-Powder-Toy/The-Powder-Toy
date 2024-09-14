@@ -137,6 +137,7 @@ GameModel::GameModel():
 		currentUser = Client::Ref().GetAuthUser();
 	}
 
+	LoadCustomGol();
 	BuildMenus();
 
 	perfectCircle = prefs.Get("PerfectCircleBrush", true);
@@ -312,60 +313,10 @@ void GameModel::BuildMenus()
 		Tool * tempTool = AddTool<ElementTool>(PT_LIFE|PMAPID(i), builtinGol[i].name, builtinGol[i].description, builtinGol[i].colour, "DEFAULT_PT_LIFE_"+builtinGol[i].name.ToAscii());
 		menuList[SC_LIFE]->AddTool(tempTool);
 	}
+	for (auto &gd : sd.GetCustomGol())
 	{
-		auto &prefs = GlobalPrefs::Ref();
-		auto customGOLTypes = prefs.Get("CustomGOL.Types", std::vector<ByteString>{});
-		std::vector<ByteString> validatedCustomLifeTypes;
-		std::vector<CustomGOLData> newCustomGol;
-		bool removedAny = false;
-		for (auto gol : customGOLTypes)
-		{
-			auto parts = gol.FromUtf8().PartitionBy(' ');
-			if (parts.size() != 4)
-			{
-				removedAny = true;
-				continue;
-			}
-			CustomGOLData gd;
-			gd.nameString = parts[0];
-			gd.ruleString = parts[1];
-			auto &colour1String = parts[2];
-			auto &colour2String = parts[3];
-			if (!ValidateGOLName(gd.nameString))
-			{
-				removedAny = true;
-				continue;
-			}
-			gd.rule = ParseGOLString(gd.ruleString);
-			if (gd.rule == -1)
-			{
-				removedAny = true;
-				continue;
-			}
-			try
-			{
-				gd.colour1 = colour1String.ToNumber<int>();
-				gd.colour2 = colour2String.ToNumber<int>();
-			}
-			catch (std::exception &)
-			{
-				removedAny = true;
-				continue;
-			}
-			newCustomGol.push_back(gd);
-			validatedCustomLifeTypes.push_back(gol);
-		}
-		if (removedAny)
-		{
-			// All custom rules that fail validation will be removed
-			prefs.Set("CustomGOL.Types", validatedCustomLifeTypes);
-		}
-		for (auto &gd : newCustomGol)
-		{
-			Tool * tempTool = AddTool<ElementTool>(PT_LIFE|PMAPID(gd.rule), gd.nameString, "Custom GOL type: " + gd.ruleString, RGB<uint8_t>::Unpack(gd.colour1), "DEFAULT_PT_LIFECUST_"+gd.nameString.ToAscii(), nullptr);
-			menuList[SC_LIFE]->AddTool(tempTool);
-		}
-		sd.SetCustomGOL(newCustomGol);
+		Tool * tempTool = AddTool<ElementTool>(PT_LIFE|PMAPID(gd.rule), gd.nameString, "Custom GOL type: " + SerialiseGOLRule(gd.rule), gd.colour1, "DEFAULT_PT_LIFECUST_"+gd.nameString.ToAscii(), nullptr);
+		menuList[SC_LIFE]->AddTool(tempTool);
 	}
 
 	//Build other menus from wall data
@@ -1664,26 +1615,127 @@ void GameModel::SetPerfectCircle(bool perfectCircle)
 	}
 }
 
-bool GameModel::RemoveCustomGOLType(const ByteString &identifier)
+bool GameModel::AddCustomGol(String ruleString, String nameString, RGB<uint8_t> color1, RGB<uint8_t> color2)
+{
+	if (auto gd = CheckCustomGol(ruleString, nameString, color1, color2))
+	{
+		auto &sd = SimulationData::Ref();
+		auto newCustomGol = sd.GetCustomGol();
+		newCustomGol.push_back(*gd);
+		sd.SetCustomGOL(newCustomGol);
+		SaveCustomGol();
+		BuildMenus();
+		return true;
+	}
+	return false;
+}
+
+bool GameModel::RemoveCustomGol(const ByteString &identifier)
 {
 	bool removedAny = false;
-	auto &prefs = GlobalPrefs::Ref();
-	auto customGOLTypes = prefs.Get("CustomGOL.Types", std::vector<ByteString>{});
-	std::vector<ByteString> newCustomGOLTypes;
-	for (auto gol : customGOLTypes)
+	std::vector<CustomGOLData> newCustomGol;
+	auto &sd = SimulationData::Ref();
+	for (auto gol : sd.GetCustomGol())
 	{
-		auto parts = gol.PartitionBy(' ');
-		if (parts.size() && "DEFAULT_PT_LIFECUST_" + parts[0] == identifier)
+		if ("DEFAULT_PT_LIFECUST_" + gol.nameString == identifier.FromUtf8())
+		{
 			removedAny = true;
+		}
 		else
-			newCustomGOLTypes.push_back(gol);
+		{
+			newCustomGol.push_back(gol);
+		}
 	}
 	if (removedAny)
 	{
-		prefs.Set("CustomGOL.Types", newCustomGOLTypes);
+		sd.SetCustomGOL(newCustomGol);
+		BuildMenus();
+		SaveCustomGol();
 	}
-	BuildMenus();
 	return removedAny;
+}
+
+void GameModel::LoadCustomGol()
+{
+	auto &prefs = GlobalPrefs::Ref();
+	auto customGOLTypes = prefs.Get("CustomGOL.Types", std::vector<ByteString>{});
+	bool removedAny = false;
+	std::vector<CustomGOLData> newCustomGol;
+	for (auto gol : customGOLTypes)
+	{
+		auto parts = gol.FromUtf8().PartitionBy(' ');
+		if (parts.size() != 4)
+		{
+			removedAny = true;
+			continue;
+		}
+		auto nameString = parts[0];
+		auto ruleString = parts[1];
+		auto &colour1String = parts[2];
+		auto &colour2String = parts[3];
+		RGB<uint8_t> color1;
+		RGB<uint8_t> color2;
+		try
+		{
+			color1 = RGB<uint8_t>::Unpack(colour1String.ToNumber<int>());
+			color2 = RGB<uint8_t>::Unpack(colour2String.ToNumber<int>());
+		}
+		catch (std::exception &)
+		{
+			removedAny = true;
+			continue;
+		}
+		if (auto gd = CheckCustomGol(ruleString, nameString, color1, color2))
+		{
+			newCustomGol.push_back(*gd);
+		}
+		else
+		{
+			removedAny = true;
+		}
+	}
+	auto &sd = SimulationData::Ref();
+	sd.SetCustomGOL(newCustomGol);
+	if (removedAny)
+	{
+		SaveCustomGol();
+	}
+}
+
+void GameModel::SaveCustomGol()
+{
+	auto &prefs = GlobalPrefs::Ref();
+	std::vector<ByteString> newCustomGOLTypes;
+	auto &sd = SimulationData::Ref();
+	for (auto &gd : sd.GetCustomGol())
+	{
+		StringBuilder sb;
+		sb << gd.nameString << " " << SerialiseGOLRule(gd.rule) << " " << gd.colour1.Pack() << " " << gd.colour2.Pack();
+		newCustomGOLTypes.push_back(sb.Build().ToUtf8());
+	}
+	prefs.Set("CustomGOL.Types", newCustomGOLTypes);
+}
+
+std::optional<CustomGOLData> GameModel::CheckCustomGol(String ruleString, String nameString, RGB<uint8_t> color1, RGB<uint8_t> color2)
+{
+	if (!ValidateGOLName(nameString))
+	{
+		return std::nullopt;
+	}
+	auto rule = ParseGOLString(ruleString);
+	if (rule == -1)
+	{
+		return std::nullopt;
+	}
+	auto &sd = SimulationData::Ref();
+	for (auto &gd : sd.GetCustomGol())
+	{
+		if (gd.nameString == nameString)
+		{
+			return std::nullopt;
+		}
+	}
+	return CustomGOLData{ rule, color1, color2, nameString };
 }
 
 void GameModel::UpdateUpTo(int upTo)

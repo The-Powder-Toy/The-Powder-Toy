@@ -159,9 +159,7 @@ void GOLWindow::validate()
 		prefs.Set("CustomGOL.Rule", ruleString);
 	}
 
-	auto color1 = (((highColour.Red << 8) | highColour.Green) << 8) | highColour.Blue;
-	auto color2 = (((lowColour.Red << 8) | lowColour.Green) << 8) | lowColour.Blue;
-	if (!AddCustomGol(ruleString, nameString, color1, color2))
+	if (!gameModel.AddCustomGol(ruleString, nameString, highColour.NoAlpha(), lowColour.NoAlpha()))
 	{
 		new ErrorMessage("Could not add GOL type", "Name already taken");
 		return;

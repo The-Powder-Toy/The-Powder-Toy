@@ -1489,13 +1489,13 @@ static int listCustomGol(lua_State *L)
 		lua_newtable(L);
 		tpt_lua_pushString(L, cgol.nameString);
 		lua_setfield(L, -2, "name");
-		tpt_lua_pushString(L, cgol.ruleString);
+		tpt_lua_pushString(L, SerialiseGOLRule(cgol.rule));
 		lua_setfield(L, -2, "rulestr");
 		lua_pushnumber(L, cgol.rule);
 		lua_setfield(L, -2, "rule");
-		lua_pushnumber(L, cgol.colour1);
+		lua_pushnumber(L, cgol.colour1.Pack());
 		lua_setfield(L, -2, "color1");
-		lua_pushnumber(L, cgol.colour2);
+		lua_pushnumber(L, cgol.colour2.Pack());
 		lua_setfield(L, -2, "color2");
 		lua_rawseti(L, -2, ++i);
 	}
@@ -1529,10 +1529,9 @@ static int addCustomGol(lua_State *L)
 	if (sd.GetCustomGOLByRule(rule))
 		return luaL_error(L, "This Custom GoL rule already exists");
 
-	if (!AddCustomGol(ruleString, nameString, color1, color2))
-		return luaL_error(L, "Duplicate name, cannot add");
 	auto *lsi = GetLSI();
-	lsi->gameModel->BuildMenus();
+	if (!lsi->gameModel->AddCustomGol(ruleString, nameString, RGB<uint8_t>::Unpack(color1), RGB<uint8_t>::Unpack(color2)))
+		return luaL_error(L, "Duplicate name, cannot add");
 	return 0;
 }
 
@@ -1540,9 +1539,7 @@ static int removeCustomGol(lua_State *L)
 {
 	auto *lsi = GetLSI();
 	ByteString nameString = tpt_lua_checkByteString(L, 1);
-	bool removedAny = lsi->gameModel->RemoveCustomGOLType("DEFAULT_PT_LIFECUST_" + nameString);
-	if (removedAny)
-		lsi->gameModel->BuildMenus();
+	bool removedAny = lsi->gameModel->RemoveCustomGol("DEFAULT_PT_LIFECUST_" + nameString);
 	lua_pushboolean(L, removedAny);
 	return 1;
 }

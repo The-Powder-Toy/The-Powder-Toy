@@ -9,6 +9,7 @@
 #include "Particle.h"
 #include "WallType.h"
 #include "graphics/gcache_item.h"
+#include "CustomGOLData.h"
 #include <cstdint>
 #include <vector>
 #include <array>
@@ -139,17 +140,6 @@ constexpr int NGT_BRAN = 23;
 //replace mode / specific delete flags
 constexpr auto REPLACE_MODE    = UINT32_C(0x00000001);
 constexpr auto SPECIFIC_DELETE = UINT32_C(0x00000002);
-
-struct CustomGOLData
-{
-	int rule, colour1, colour2;
-	String nameString, ruleString;
-
-	inline bool operator <(const CustomGOLData &other) const
-	{
-		return rule < other.rule;
-	}
-};
 
 class SimulationData : public ExplicitSingleton<SimulationData>
 {

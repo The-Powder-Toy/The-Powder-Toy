@@ -602,7 +602,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 					else if (identifier.BeginsWith("DEFAULT_PT_LIFECUST_"))
 					{
 						new ConfirmPrompt("Remove custom GOL type", "Are you sure you want to remove " + identifier.Substr(20).FromUtf8() + "?", { [this, identifier]() {
-							c->RemoveCustomGOLType(identifier);
+							c->RemoveCustomGol(identifier);
 						} });
 					}
 				}

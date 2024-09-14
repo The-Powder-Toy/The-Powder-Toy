@@ -1719,9 +1719,9 @@ bool GameController::GetMouseClickRequired()
 	return gameModel->GetMouseClickRequired();
 }
 
-void GameController::RemoveCustomGOLType(const ByteString &identifier)
+void GameController::RemoveCustomGol(const ByteString &identifier)
 {
-	gameModel->RemoveCustomGOLType(identifier);
+	gameModel->RemoveCustomGol(identifier);
 }
 
 void GameController::BeforeSimDraw()

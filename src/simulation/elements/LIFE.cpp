@@ -111,8 +111,8 @@ static void create(ELEMENT_CREATE_FUNC_ARGS)
 		auto *cgol = sd.GetCustomGOLByRule(v);
 		if (cgol)
 		{
-			sim->parts[i].dcolour = cgol->colour1;
-			sim->parts[i].tmp = cgol->colour2;
+			sim->parts[i].dcolour = cgol->colour1.Pack();
+			sim->parts[i].tmp = cgol->colour2.Pack();
 		}
 	}
 	sim->parts[i].tmp2 = ((v >> 17) & 0xF) + 1;

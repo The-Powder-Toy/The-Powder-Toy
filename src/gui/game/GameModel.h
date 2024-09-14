@@ -3,6 +3,7 @@
 #include "client/User.h"
 #include "gui/interface/Point.h"
 #include "graphics/RendererSettings.h"
+#include "simulation/CustomGOLData.h"
 #include <vector>
 #include <deque>
 #include <memory>
@@ -295,7 +296,11 @@ public:
 	void AddNotification(Notification * notification);
 	void RemoveNotification(Notification * notification);
 
-	bool RemoveCustomGOLType(const ByteString &identifier);
+	bool AddCustomGol(String ruleString, String nameString, RGB<uint8_t> color1, RGB<uint8_t> color2);
+	bool RemoveCustomGol(const ByteString &identifier);
+	void LoadCustomGol();
+	void SaveCustomGol();
+	std::optional<CustomGOLData> CheckCustomGol(String ruleString, String nameString, RGB<uint8_t> color1, RGB<uint8_t> color2);
 
 	ByteString SelectNextIdentifier;
 	int SelectNextTool;

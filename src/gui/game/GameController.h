@@ -201,7 +201,7 @@ public:
 	void RunUpdater(UpdateInfo info);
 	bool GetMouseClickRequired();
 
-	void RemoveCustomGOLType(const ByteString &identifier);
+	void RemoveCustomGol(const ByteString &identifier);
 
 	void BeforeSimDraw();
 	void AfterSimDraw();
