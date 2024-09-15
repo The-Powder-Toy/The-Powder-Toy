@@ -89,7 +89,7 @@ Task::Task() :
 	done(false),
 	thProgress(0),
 	thDone(false),
-	listener(NULL)
+	listener(nullptr)
 {
 }
 

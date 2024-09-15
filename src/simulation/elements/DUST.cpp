@@ -41,5 +41,5 @@ void Element::Element_DUST()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Graphics = NULL; // it this needed?
+	Graphics = nullptr; // it this needed?
 }

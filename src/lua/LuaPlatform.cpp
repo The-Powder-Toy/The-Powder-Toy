@@ -70,10 +70,10 @@ void LuaPlatform::Open(lua_State *L)
 		LFUNC(clipboardCopy),
 		LFUNC(clipboardPaste),
 #undef LFUNC
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 	lua_pushvalue(L, -1);
 	lua_setglobal(L, "platform");
 	lua_setglobal(L, "plat");

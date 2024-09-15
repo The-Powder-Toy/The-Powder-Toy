@@ -4,7 +4,7 @@
 
 void SimTool::CallPerform(Simulation *sim, ui::Point position, ui::Point brushOffset)
 {
-	Particle * cpart = NULL;
+	Particle * cpart = nullptr;
 	int r;
 	if ((r = sim->pmap[position.Y][position.X]))
 		cpart = &(sim->parts[ID(r)]);

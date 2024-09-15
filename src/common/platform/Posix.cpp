@@ -12,7 +12,7 @@ namespace Platform
 ByteString GetCwd()
 {
 	ByteString cwd;
-	char *cwdPtr = getcwd(NULL, 0);
+	char *cwdPtr = getcwd(nullptr, 0);
 	if (cwdPtr)
 	{
 		cwd = cwdPtr;
@@ -26,7 +26,7 @@ void Millisleep(long int t)
 	struct timespec s;
 	s.tv_sec = t / 1000;
 	s.tv_nsec = (t % 1000) * 10000000;
-	nanosleep(&s, NULL);
+	nanosleep(&s, nullptr);
 }
 
 bool Stat(ByteString filename)

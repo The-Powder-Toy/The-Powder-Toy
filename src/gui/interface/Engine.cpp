@@ -13,7 +13,7 @@ using namespace ui;
 Engine::Engine():
 	drawingFrequencyLimit(0),
 	FrameIndex(0),
-	state_(NULL),
+	state_(nullptr),
 	windowTargetPosition(0, 0),
 	FastQuit(1),
 	GlobalQuit(true),
@@ -157,7 +157,7 @@ int Engine::CloseWindow()
 	}
 	else
 	{
-		state_ = NULL;
+		state_ = nullptr;
 		return 1;
 	}
 }
@@ -177,7 +177,7 @@ int Engine::CloseWindow()
 
 void Engine::Tick()
 {
-	if(state_ != NULL)
+	if(state_ != nullptr)
 		state_->DoTick(dt);
 
 
