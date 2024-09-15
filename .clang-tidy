@@ -1,0 +1,4 @@
+---
+Checks:          '-*'
+WarningsAsErrors: true
+...
