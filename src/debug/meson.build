@@ -1,4 +1,4 @@
-powder_files += files(
+powder_source_files += files(
 	'DebugLines.cpp',
 	'DebugParts.cpp',
 	'ElementPopulation.cpp',

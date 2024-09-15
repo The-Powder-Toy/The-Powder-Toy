@@ -453,6 +453,9 @@ foreach embedded_file : embedded_files
 	) ]
 endforeach
 
+powder_files = []
+powder_files += powder_external_files
+powder_files += powder_source_files
 powder_files += data_files
 render_files += data_files
 font_files += data_files
