@@ -43,4 +43,4 @@ conf_data.set('LUACONSOLE', (lua_variant != 'none').to_string())
 
 subdir('luascripts')
 
-powder_files += luaconsole_files
+powder_source_files += luaconsole_files

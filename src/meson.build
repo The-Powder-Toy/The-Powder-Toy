@@ -108,24 +108,26 @@ if host_platform == 'android'
 	conf_data.set('ANDROID_PROPERTIES', '\n'.join(android_properties))
 endif
 
-powder_files = files(
+powder_source_files = files(
 	'SDLCompat.cpp',
 	'PowderToySDL.cpp',
 	'PowderToy.cpp',
 	'lua/CommandInterface.cpp',
 	'lua/TPTSTypes.cpp',
 )
+powder_external_files = []
+
 if host_platform == 'emscripten'
-	powder_files += files(
+	powder_source_files += files(
 		'PowderToySDLEmscripten.cpp',
 	)
 else
-	powder_files += files(
+	powder_source_files += files(
 		'PowderToySDLCommon.cpp',
 	)
 endif
 if is_x86
-	powder_files += files('X86KillDenormals.cpp')
+	powder_source_files += files('X86KillDenormals.cpp')
 endif
 
 render_files = files(
@@ -162,7 +164,7 @@ else
 endif
 
 if host_platform == 'linux'
-	powder_files += files('WindowIcon.cpp')
+	powder_source_files += files('WindowIcon.cpp')
 	font_files += files('WindowIcon.cpp')
 endif
 
@@ -177,7 +179,7 @@ if lua_variant != 'none'
 	subdir('lua')
 	conf_data.set('LUACONSOLE', 'true')
 else
-	powder_files += files(
+	powder_source_files += files(
 		'lua/PlainCommandInterface.cpp',
 	)
 	conf_data.set('LUACONSOLE', 'false')
@@ -187,7 +189,7 @@ subdir('resampler')
 subdir('simulation')
 subdir('tasks')
 
-powder_files += common_files
+powder_source_files += common_files
 render_files += common_files
 font_files += common_files
 
