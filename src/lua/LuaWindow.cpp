@@ -32,7 +32,7 @@ Luna<LuaWindow>::RegType LuaWindow::methods[] = {
 	method(LuaWindow, onMouseWheel),
 	method(LuaWindow, onKeyPress),
 	method(LuaWindow, onKeyRelease),
-	{0, 0}
+	{nullptr, nullptr}
 };
 
 LuaWindow::LuaWindow(lua_State *L)

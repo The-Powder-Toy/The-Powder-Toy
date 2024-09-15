@@ -1584,7 +1584,7 @@ int Simulation::is_blocking(int t, int x, int y) const
 		return 0;
 	}
 
-	return !eval_move(t, x, y, NULL);
+	return !eval_move(t, x, y, nullptr);
 }
 
 int Simulation::is_boundary(int pt, int x, int y) const
@@ -1871,7 +1871,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		// If there isn't a particle but there is a wall, check whether the new particle is allowed to be in it
 		//   (not "!=2" for wall check because eval_move returns 1 for moving into empty space)
 		// If there's no particle and no wall, assume creation is allowed
-		if (pmap[y][x] ? (eval_move(t, x, y, NULL) != 2) : (bmap[y/CELL][x/CELL] && eval_move(t, x, y, NULL) == 0))
+		if (pmap[y][x] ? (eval_move(t, x, y, nullptr) != 2) : (bmap[y/CELL][x/CELL] && eval_move(t, x, y, nullptr) == 0))
 		{
 			return -1;
 		}
@@ -2196,7 +2196,7 @@ Simulation::PlanMoveResult Simulation::PlanMove(Sim &sim, int i, int x, int y)
 			}
 			//block if particle can't move (0), or some special cases where it returns 1 (can_move = 3 but returns 1 meaning particle will be eaten)
 			//also photons are still blocked (slowed down) by any particle (even ones it can move through), and absorb wall also blocks particles
-			int eval = sim.eval_move(t, fin_x, fin_y, NULL);
+			int eval = sim.eval_move(t, fin_x, fin_y, nullptr);
 			if (!eval || (can_move[t][TYP(pmap[fin_y][fin_x])] == 3 && eval == 1) || (t == PT_PHOT && pmap[fin_y][fin_x]) || bmap[fin_y/CELL][fin_x/CELL]==WL_DESTROYALL || closedEholeStart!=(bmap[fin_y/CELL][fin_x/CELL] == WL_EHOLE && !emap[fin_y/CELL][fin_x/CELL]))
 			{
 				// found an obstacle
@@ -2938,7 +2938,7 @@ killed:
 					if (!x_ok || !y_ok) //when moving from left to right stickmen might be able to fall through solid things, fix with "eval_move(t, nx+diffx, ny+diffy, NULL)" but then they die instead
 					{
 						//adjust stickmen legs
-						playerst* stickman = NULL;
+						playerst* stickman = nullptr;
 						int t = parts[i].type;
 						if (t == PT_STKM)
 							stickman = &player;
@@ -2985,7 +2985,7 @@ killed:
 						continue;
 					}
 
-					if (eval_move(PT_PHOT, fin_x, fin_y, NULL))
+					if (eval_move(PT_PHOT, fin_x, fin_y, nullptr))
 					{
 						int rt = TYP(pmap[fin_y][fin_x]);
 						int lt = TYP(pmap[y][x]);

@@ -52,14 +52,14 @@ namespace http
 
 	struct RequestHandleHttp : public RequestHandle
 	{
-		curl_slist *curlHeaders = NULL;
+		curl_slist *curlHeaders = nullptr;
 #ifdef REQUEST_USE_CURL_MIMEPOST
-		curl_mime *curlPostFields = NULL;
+		curl_mime *curlPostFields = nullptr;
 #else
 		curl_httppost *curlPostFieldsFirst = NULL;
 		curl_httppost *curlPostFieldsLast = NULL;
 #endif
-		CURL *curlEasy = NULL;
+		CURL *curlEasy = nullptr;
 		char curlErrorBuffer[CURL_ERROR_SIZE];
 		bool curlAddedToMulti = false;
 		bool gotStatusLine = false;
@@ -139,7 +139,7 @@ namespace http
 		void UnregisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle);
 
 		bool curlGlobalInit = false;
-		CURLM *curlMulti = NULL;
+		CURLM *curlMulti = nullptr;
 
 		void Wake()
 		{
@@ -152,7 +152,7 @@ namespace http
 		{
 			int dontcare;
 #ifdef REQUEST_USE_CURL_MULTI_POLL
-			HandleCURLMcode(curl_multi_poll(curlMulti, NULL, 0, 100000, &dontcare));
+			HandleCURLMcode(curl_multi_poll(curlMulti, nullptr, 0, 100000, &dontcare));
 #else
 			constexpr auto TickMs = 100;
 			if (requestHandles.size())
@@ -285,7 +285,7 @@ namespace http
 	void RequestManagerImpl::WorkerExit()
 	{
 		curl_multi_cleanup(curlMulti);
-		curlMulti = NULL;
+		curlMulti = nullptr;
 		curl_global_cleanup();
 	}
 

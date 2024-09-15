@@ -1,4 +1,4 @@
 ---
-Checks:          '-*'
+Checks:          '-*,modernize-use-nullptr'
 WarningsAsErrors: true
 ...

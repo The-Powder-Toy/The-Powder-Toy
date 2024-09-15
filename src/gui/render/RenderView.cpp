@@ -21,7 +21,7 @@ public:
 
 RenderView::RenderView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES, WINDOWH)),
-	ren(NULL),
+	ren(nullptr),
 	toolTip(""),
 	toolTipPresence(0),
 	isToolTipFadingIn(false)

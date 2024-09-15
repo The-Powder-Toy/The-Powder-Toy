@@ -262,10 +262,10 @@ void LuaMisc::Open(lua_State *L)
 		LFUNC(compatChunk),
 #undef LFUNC
 		{ "log", flog },
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 #define LCONST(v) lua_pushinteger(L, int(v)); lua_setfield(L, -2, #v)
 	LCONST(DEBUG_PARTS);
 	LCONST(DEBUG_ELEMENTPOP);
