@@ -267,7 +267,7 @@ public:
 	{
 		return *rendererFrame;
 	}
-	// Call this before accessing Renderer "out of turn", e.g. from RenderView. This *does not*
+	// Call this before accessing Renderer "out of turn", e.g. from RenderView or GameModel. This *does not*
 	// include OptionsModel or Lua setting functions because they only access the RendererSettings
 	// in GameModel, or Lua drawing functions because they only access Renderer in eventTraitSimGraphics
 	// and *SimDraw events, and the renderer thread gets paused anyway if there are handlers

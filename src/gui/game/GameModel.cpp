@@ -192,6 +192,7 @@ GameModel::~GameModel()
 		prefs.Set("Decoration.Alpha", (int)colour.Alpha);
 	}
 
+	view->PauseRendererThread();
 	delete sim;
 	delete ren;
 	//if(activeTools)
@@ -760,6 +761,7 @@ void GameModel::SetSave(std::unique_ptr<SaveInfo> newSave, bool invertIncludePre
 		auto *saveData = currentSave->GetGameSave();
 		SaveToSimParameters(*saveData);
 		sim->clear_sim();
+		view->PauseRendererThread();
 		ren->ClearAccumulation();
 		sim->Load(saveData, !invertIncludePressure, { 0, 0 });
 		// This save was created before logging existed
@@ -811,6 +813,7 @@ void GameModel::SetSaveFile(std::unique_ptr<SaveFile> newSave, bool invertInclud
 		auto *saveData = currentFile->GetGameSave();
 		SaveToSimParameters(*saveData);
 		sim->clear_sim();
+		view->PauseRendererThread();
 		ren->ClearAccumulation();
 		sim->Load(saveData, !invertIncludePressure, { 0, 0 });
 		Client::Ref().OverwriteAuthorInfo(saveData->authors);
