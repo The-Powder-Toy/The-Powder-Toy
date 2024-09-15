@@ -575,3 +575,19 @@ if get_option('build_font')
 		override_options: target_options,
 	)
 endif
+
+if get_option('clang_tidy')
+	clang_tidy = find_program('run-clang-tidy', required: false)
+
+	if clang_tidy.found()
+		run_target('clang-tidy',
+			command: [
+				clang_tidy,
+				'-p', meson.project_build_root(),
+				'-config-file', files('.clang-tidy'),
+				'-quiet',
+				powder_source_files
+			]
+		)
+	endif
+endif
