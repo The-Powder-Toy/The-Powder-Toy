@@ -11,11 +11,12 @@
 #include "graphics/Graphics.h"
 
 #include <algorithm>
+#include <utility>
 
 TaskWindow::TaskWindow(String title_, Task * task_, bool closeOnDone):
 	ui::Window(ui::Point(-1, -1), ui::Point(240, 60)),
 	task(task_),
-	title(title_),
+	title(std::move(title_)),
 	progress(0),
 	done(false),
 	closeOnDone(closeOnDone),

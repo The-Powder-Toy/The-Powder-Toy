@@ -6,6 +6,8 @@
 #include "LoginModel.h"
 #include "Controller.h"
 
+#include <utility>
+
 LoginController::LoginController(std::function<void ()> onDone_):
 	HasExited(false)
 {
@@ -15,7 +17,7 @@ LoginController::LoginController(std::function<void ()> onDone_):
 	loginView->AttachController(this);
 	loginModel->AddObserver(loginView);
 
-	onDone = onDone_;
+	onDone = std::move(onDone_);
 }
 
 void LoginController::Login(const ByteString& username, const ByteString& password)

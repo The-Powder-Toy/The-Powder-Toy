@@ -4,6 +4,7 @@
 #include "CurlError.h"
 #include "Config.h"
 #include <iostream>
+#include <utility>
 
 #if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 55, 0)
 # define REQUEST_USE_CURL_OFFSET_T
@@ -169,7 +170,7 @@ namespace http
 	};
 
 	RequestManagerImpl::RequestManagerImpl(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork) :
-		RequestManager(newProxy, newCafile, newCapath, newDisableNetwork)
+		RequestManager(std::move(newProxy), std::move(newCafile), std::move(newCapath), newDisableNetwork)
 	{
 		worker = std::thread([this]() {
 			Worker();
@@ -534,7 +535,7 @@ namespace http
 
 	RequestManagerPtr RequestManager::Create(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork)
 	{
-		return RequestManagerPtr(new RequestManagerImpl(newProxy, newCafile, newCapath, newDisableNetwork));
+		return RequestManagerPtr(new RequestManagerImpl(std::move(newProxy), std::move(newCafile), std::move(newCapath), newDisableNetwork));
 	}
 
 	void RequestManagerDeleter::operator ()(RequestManager *ptr) const

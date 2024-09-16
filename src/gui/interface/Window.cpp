@@ -10,6 +10,8 @@
 #include "SimulationConfig.h"
 #include <SDL.h>
 
+#include <utility>
+
 using namespace ui;
 
 Window::Window(Point _position, Point _size):
@@ -178,7 +180,7 @@ void Window::DoFocus()
 
 void Window::DoFileDrop(ByteString filename)
 {
-	OnFileDrop(filename);
+	OnFileDrop(std::move(filename));
 }
 
 void Window::DoDraw()

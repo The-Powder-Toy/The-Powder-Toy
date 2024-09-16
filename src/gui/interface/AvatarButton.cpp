@@ -6,13 +6,14 @@
 #include "ContextMenu.h"
 #include "Config.h"
 #include <iostream>
+#include <utility>
 #include <SDL.h>
 
 namespace ui {
 
 AvatarButton::AvatarButton(Point position, Point size, ByteString username):
 	Component(position, size),
-	name(username),
+	name(std::move(username)),
 	tried(false)
 {
 

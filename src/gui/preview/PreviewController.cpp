@@ -17,6 +17,7 @@
 #include "gui/login/LoginController.h"
 #include "gui/login/LoginView.h"
 #include "Config.h"
+#include <utility>
 
 PreviewController::PreviewController(int saveID, int saveDate, SavePreviewType savePreviewType, std::function<void ()> onDone_, std::unique_ptr<VideoBuffer> thumbnail):
 	saveId(saveID),
@@ -39,7 +40,7 @@ PreviewController::PreviewController(int saveID, int saveDate, SavePreviewType s
 
 	Client::Ref().AddListener(this);
 
-	onDone = onDone_;
+	onDone = std::move(onDone_);
 }
 
 void PreviewController::Update()

@@ -1,5 +1,7 @@
 #include "LocalSaveActivity.h"
 
+#include <utility>
+
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "client/ThumbnailRendererTask.h"
@@ -20,7 +22,7 @@ LocalSaveActivity::LocalSaveActivity(std::unique_ptr<SaveFile> newSave, OnSaved 
 	WindowActivity(ui::Point(-1, -1), ui::Point(220, 200)),
 	save(std::move(newSave)),
 	thumbnailRenderer(nullptr),
-	onSaved(onSaved_)
+	onSaved(std::move(onSaved_))
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), "Save to computer:");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);

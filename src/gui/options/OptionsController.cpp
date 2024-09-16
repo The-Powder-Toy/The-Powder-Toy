@@ -5,9 +5,11 @@
 
 #include "Controller.h"
 
+#include <utility>
+
 OptionsController::OptionsController(GameModel * gModel_, std::function<void ()> onDone_):
 	gModel(gModel_),
-	onDone(onDone_),
+	onDone(std::move(onDone_)),
 	HasExited(false)
 {
 	view = new OptionsView();

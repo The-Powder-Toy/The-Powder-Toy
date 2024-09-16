@@ -11,6 +11,7 @@
 #include "gui/interface/Button.h"
 #include "gui/game/GameController.h"
 #include "gui/game/GameView.h"
+#include <utility>
 
 class ModeCheckbox : public ui::Checkbox
 {
@@ -27,7 +28,7 @@ RenderView::RenderView():
 	isToolTipFadingIn(false)
 {
 	auto addPresetButton = [this](int index, Icon icon, ui::Point offset, String tooltip) {
-		auto *presetButton = new ui::Button(ui::Point(XRES, YRES) + offset, ui::Point(30, 13), "", tooltip);
+		auto *presetButton = new ui::Button(ui::Point(XRES, YRES) + offset, ui::Point(30, 13), "", std::move(tooltip));
 		presetButton->SetIcon(icon);
 		presetButton->SetActionCallback({ [this, index] { c->LoadRenderPreset(index); } });
 		AddComponent(presetButton);
@@ -45,7 +46,7 @@ RenderView::RenderView():
 	addPresetButton(10, IconLife      , ui::Point(-232,  6), "Life display mode preset");
 
 	auto addRenderModeCheckbox = [this](unsigned int mode, Icon icon, ui::Point offset, String tooltip) {
-		auto *renderModeCheckbox = new ModeCheckbox(ui::Point(0, YRES) + offset, ui::Point(30, 16), "", tooltip);
+		auto *renderModeCheckbox = new ModeCheckbox(ui::Point(0, YRES) + offset, ui::Point(30, 16), "", std::move(tooltip));
 		renderModes.push_back(renderModeCheckbox);
 		renderModeCheckbox->mode = mode;
 		renderModeCheckbox->SetIcon(icon);
@@ -72,7 +73,7 @@ RenderView::RenderView():
 	addRenderModeCheckbox(RENDER_SPRK, IconEffect, ui::Point(97,  4), "Glow effect on sparks");
 
 	auto addDisplayModeCheckbox = [this](unsigned int mode, Icon icon, ui::Point offset, String tooltip) {
-		auto *displayModeCheckbox = new ModeCheckbox(ui::Point(0, YRES) + offset, ui::Point(30, 16), "", tooltip);
+		auto *displayModeCheckbox = new ModeCheckbox(ui::Point(0, YRES) + offset, ui::Point(30, 16), "", std::move(tooltip));
 		displayModes.push_back(displayModeCheckbox);
 		displayModeCheckbox->mode = mode;
 		displayModeCheckbox->SetIcon(icon);
@@ -102,7 +103,7 @@ RenderView::RenderView():
 	line3 = 270;
 
 	auto addColourModeCheckbox = [this](unsigned int mode, Icon icon, ui::Point offset, String tooltip) {
-		auto *colourModeCheckbox = new ModeCheckbox(ui::Point(0, YRES) + offset, ui::Point(30, 16), "", tooltip);
+		auto *colourModeCheckbox = new ModeCheckbox(ui::Point(0, YRES) + offset, ui::Point(30, 16), "", std::move(tooltip));
 		colourModes.push_back(colourModeCheckbox);
 		colourModeCheckbox->mode = mode;
 		colourModeCheckbox->SetIcon(icon);

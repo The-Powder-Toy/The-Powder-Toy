@@ -43,6 +43,7 @@
 #include <iostream>
 #include <algorithm>
 #include <optional>
+#include <utility>
 
 HistoryEntry::~HistoryEntry()
 {
@@ -76,10 +77,10 @@ GameModel::GameModel():
 	auto &prefs = GlobalPrefs::Ref();
 
 	auto handleOldModes = [&prefs](ByteString prefName, ByteString oldPrefName, uint32_t defaultValue, auto setFunc) {
-		auto pref = prefs.Get<uint32_t>(prefName);
+		auto pref = prefs.Get<uint32_t>(std::move(prefName));
 		if (!pref.has_value())
 		{
-			auto modes = prefs.Get(oldPrefName, std::vector<unsigned int>{});
+			auto modes = prefs.Get(std::move(oldPrefName), std::vector<unsigned int>{});
 			if (modes.size())
 			{
 				uint32_t mode = 0;
@@ -995,7 +996,7 @@ ui::Colour GameModel::GetColourSelectorColour()
 
 void GameModel::SetUser(User user)
 {
-	currentUser = user;
+	currentUser = std::move(user);
 	//Client::Ref().SetAuthUser(user);
 	notifyUserChanged();
 }
@@ -1194,13 +1195,13 @@ void GameModel::RemoveNotification(Notification * notification)
 
 void GameModel::SetToolTip(String text)
 {
-	toolTip = text;
+	toolTip = std::move(text);
 	notifyToolTipChanged();
 }
 
 void GameModel::SetInfoTip(String text)
 {
-	infoTip = text;
+	infoTip = std::move(text);
 	notifyInfoTipChanged();
 }
 

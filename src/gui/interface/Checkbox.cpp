@@ -1,5 +1,7 @@
 #include "Checkbox.h"
 
+#include <utility>
+
 #include "graphics/Graphics.h"
 
 #include "gui/interface/Window.h"
@@ -8,8 +10,8 @@ using namespace ui;
 
 Checkbox::Checkbox(ui::Point position, ui::Point size, String text, String toolTip):
 	Component(position, size),
-	text(text),
-	toolTip(toolTip),
+	text(std::move(text)),
+	toolTip(std::move(toolTip)),
 	checked(false),
 	isMouseOver(false)
 {
@@ -18,7 +20,7 @@ Checkbox::Checkbox(ui::Point position, ui::Point size, String text, String toolT
 
 void Checkbox::SetText(String text)
 {
-	this->text = text;
+	this->text = std::move(text);
 }
 
 String Checkbox::GetText()

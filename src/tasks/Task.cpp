@@ -1,5 +1,7 @@
 #include "Task.h"
 
+#include <utility>
+
 #include "TaskListener.h"
 
 void Task::AddTaskListener(TaskListener * listener)
@@ -136,13 +138,13 @@ void Task::notifyProgress(int progress)
 void Task::notifyStatus(String status)
 {
 	std::lock_guard<std::mutex> g(taskMutex);
-	thStatus = status;
+	thStatus = std::move(status);
 }
 
 void Task::notifyError(String error)
 {
 	std::lock_guard<std::mutex> g(taskMutex);
-	thError = error;
+	thError = std::move(error);
 }
 
 void Task::notifyProgressMain()

@@ -17,6 +17,7 @@
 #include "elements/PRTI.h"
 #include <iostream>
 #include <set>
+#include <utility>
 
 static float remainder_p(float x, float y)
 {
@@ -3978,11 +3979,11 @@ void Simulation::DispatchNewtonianGravity()
 
 void Simulation::ResetNewtonianGravity(GravityInput newGravIn, GravityOutput newGravOut)
 {
-	gravIn = newGravIn;
+	gravIn = std::move(newGravIn);
 	DispatchNewtonianGravity();
 	if (grav)
 	{
-		gravOut = newGravOut;
+		gravOut = std::move(newGravOut);
 		gravWallChanged = true;
 	}
 }

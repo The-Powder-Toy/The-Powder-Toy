@@ -1,9 +1,11 @@
 #include "APIRequest.h"
 #include "client/Client.h"
 
+#include <utility>
+
 namespace http
 {
-	APIRequest::APIRequest(ByteString url, AuthMode authMode, bool newCheckStatus) : Request(url), checkStatus(newCheckStatus)
+	APIRequest::APIRequest(ByteString url, AuthMode authMode, bool newCheckStatus) : Request(std::move(url)), checkStatus(newCheckStatus)
 	{
 		auto user = Client::Ref().GetAuthUser();
 		if (authMode == authRequire && !user.UserID)

@@ -16,6 +16,8 @@
 #include "tasks/Task.h"
 #include "gui/Style.h"
 
+#include <utility>
+
 class SaveUploadTask: public Task
 {
 	SaveInfo &save;
@@ -60,7 +62,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	WindowActivity(ui::Point(-1, -1), ui::Point(440, 200)),
 	thumbnailRenderer(nullptr),
 	save(std::move(newSave)),
-	onUploaded(onUploaded_),
+	onUploaded(std::move(onUploaded_)),
 	saveUploadTask(nullptr)
 {
 	titleLabel = new ui::Label(ui::Point(4, 5), ui::Point((Size.X/2)-8, 16), "");
@@ -157,7 +159,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, bool s
 	WindowActivity(ui::Point(-1, -1), ui::Point(200, 50)),
 	thumbnailRenderer(nullptr),
 	save(std::move(newSave)),
-	onUploaded(onUploaded_),
+	onUploaded(std::move(onUploaded_)),
 	saveUploadTask(nullptr)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(0, 0), Size, "Saving to server...");

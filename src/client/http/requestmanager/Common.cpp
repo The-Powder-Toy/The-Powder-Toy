@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "RequestManager.h"
 #include "client/http/Request.h"
 #include "Config.h"
@@ -5,9 +7,9 @@
 namespace http
 {
 	RequestManager::RequestManager(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork) :
-		proxy(newProxy),
-		cafile(newCafile),
-		capath(newCapath),
+		proxy(std::move(newProxy)),
+		cafile(std::move(newCafile)),
+		capath(std::move(newCapath)),
 		disableNetwork(newDisableNetwork)
 	{
 		auto apiVersion = Version(97, 0);

@@ -4,13 +4,14 @@
 #include <iostream>
 #include <cstring>
 #include <json/json.h>
+#include <utility>
 
 namespace http
 {
 	Request::Request(ByteString newUri)
 	{
 		handle = RequestHandle::Create();
-		handle->uri = newUri;
+		handle->uri = std::move(newUri);
 	}
 
 	Request::~Request()
@@ -54,7 +55,7 @@ namespace http
 		assert(handle->state == RequestHandle::ready);
 		// Even if the map is empty, calling this function signifies you want to do a POST request
 		handle->isPost = true;
-		handle->postData = data;
+		handle->postData = std::move(data);
 	}
 
 	void Request::AuthHeaders(const ByteString& ID, const ByteString& session)

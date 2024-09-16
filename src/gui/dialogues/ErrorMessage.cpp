@@ -1,5 +1,7 @@
 #include "ErrorMessage.h"
 
+#include <utility>
+
 #include "gui/Style.h"
 
 #include "gui/interface/Button.h"
@@ -12,7 +14,7 @@
 
 ErrorMessage::ErrorMessage(const String& title, const String& message, DismissCallback callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 35)),
-	callback(callback_)
+	callback(std::move(callback_))
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), title);
 	titleLabel->SetTextColour(style::Colour::ErrorTitle);

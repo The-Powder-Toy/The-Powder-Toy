@@ -1,4 +1,5 @@
 #include <ctime>
+#include <utility>
 #include "SearchSavesRequest.h"
 #include "Config.h"
 #include "client/Client.h"
@@ -81,7 +82,7 @@ namespace http
 		return builder.Build();
 	}
 
-	SearchSavesRequest::SearchSavesRequest(int start, int count, ByteString query, Period period, Sort sort, Category category) : APIRequest(Url(start, count, query, period, sort, category), authUse, false)
+	SearchSavesRequest::SearchSavesRequest(int start, int count, ByteString query, Period period, Sort sort, Category category) : APIRequest(Url(start, count, std::move(query), period, sort, category), authUse, false)
 	{
 	}
 

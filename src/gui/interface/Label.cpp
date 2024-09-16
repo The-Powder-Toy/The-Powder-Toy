@@ -7,6 +7,8 @@
 #include "graphics/FontReader.h"
 #include <SDL.h>
 
+#include <utility>
+
 using namespace ui;
 
 Label::Label(Point position, Point size, const String& labelText):
@@ -41,7 +43,7 @@ void Label::SetMultiline(bool status)
 
 void Label::SetText(String newText)
 {
-	this->text = newText;
+	this->text = std::move(newText);
 	updateTextWrapper();
 	updateSelection();
 	TextPosition(displayTextWrapper.WrappedText());
@@ -227,7 +229,7 @@ void Label::updateSelection()
 
 void Label::SetDisplayText(String newText)
 {
-	displayText = newText;
+	displayText = std::move(newText);
 	ClearSelection();
 	updateTextWrapper();
 	updateSelection();

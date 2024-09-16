@@ -41,6 +41,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <iostream>
+#include <utility>
 #include <SDL.h>
 
 class SplitButton : public ui::Button
@@ -59,16 +60,16 @@ class SplitButton : public ui::Button
 
 public:
 	SplitButton(ui::Point position, ui::Point size, String buttonText, String toolTip, String toolTip2, int split) :
-		Button(position, size, buttonText, toolTip),
+		Button(position, size, std::move(buttonText), std::move(toolTip)),
 		showSplit(true),
 		splitPosition(split),
-		toolTip2(toolTip2)
+		toolTip2(std::move(toolTip2))
 	{
 
 	}
 	virtual ~SplitButton() = default;
 
-	void SetRightToolTip(String tooltip) { toolTip2 = tooltip; }
+	void SetRightToolTip(String tooltip) { toolTip2 = std::move(tooltip); }
 	bool GetShowSplit() { return showSplit; }
 	void SetShowSplit(bool split) { showSplit = split; }
 	inline SplitButtonAction const &GetSplitActionCallback() { return actionCallback; }
@@ -120,8 +121,8 @@ public:
 	}
 	void SetToolTips(String newToolTip1, String newToolTip2)
 	{
-		toolTip = newToolTip1;
-		toolTip2 = newToolTip2;
+		toolTip = std::move(newToolTip1);
+		toolTip2 = std::move(newToolTip2);
 	}
 	void OnMouseDown(int x, int y, unsigned int button) override
 	{

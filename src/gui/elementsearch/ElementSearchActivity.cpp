@@ -1,9 +1,10 @@
 #include "ElementSearchActivity.h"
 
-#include <set>
-#include <map>
-#include <algorithm>
 #include <SDL.h>
+#include <algorithm>
+#include <map>
+#include <set>
+#include <utility>
 
 #include "gui/interface/Textbox.h"
 #include "gui/interface/ScrollPanel.h"
@@ -22,7 +23,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 302)),
 	firstResult(nullptr),
 	gameController(gameController),
-	tools(tools),
+	tools(std::move(tools)),
 	toolTip(""),
 	toolTipPresence(0),
 	shiftPressed(false),

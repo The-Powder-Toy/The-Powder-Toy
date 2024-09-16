@@ -4,8 +4,9 @@
 #include "client/User.h"
 #include <fstream>
 #include <iostream>
+#include <utility>
 
-Prefs::Prefs(ByteString newPath) : path(newPath)
+Prefs::Prefs(ByteString newPath) : path(std::move(newPath))
 {
 	Read();
 }

@@ -67,6 +67,7 @@
 #include "Config.h"
 #include <SDL.h>
 #include <iostream>
+#include <utility>
 
 GameController::GameController():
 	firstTick(true),
@@ -584,12 +585,12 @@ bool GameController::MouseWheel(int x, int y, int d)
 
 bool GameController::TextInput(String text)
 {
-	return commandInterface->HandleEvent(TextInputEvent{ text });
+	return commandInterface->HandleEvent(TextInputEvent{ std::move(text) });
 }
 
 bool GameController::TextEditing(String text)
 {
-	return commandInterface->HandleEvent(TextEditingEvent{ text });
+	return commandInterface->HandleEvent(TextEditingEvent{ std::move(text) });
 }
 
 bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
@@ -1577,7 +1578,7 @@ void GameController::NotifyNewNotification(Client * sender, ServerNotification n
 	{
 		ByteString link;
 	public:
-		LinkNotification(ByteString link_, String message) : Notification(message), link(link_) {}
+		LinkNotification(ByteString link_, String message) : Notification(std::move(message)), link(std::move(link_)) {}
 		virtual ~LinkNotification() {}
 
 		void Action() override
@@ -1594,7 +1595,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 	{
 		GameController * c;
 	public:
-		UpdateNotification(GameController * c, String message) : Notification(message), c(c) {}
+		UpdateNotification(GameController * c, String message) : Notification(std::move(message)), c(c) {}
 		virtual ~UpdateNotification() {}
 
 		void Action() override

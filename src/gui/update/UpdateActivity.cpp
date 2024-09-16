@@ -9,11 +9,12 @@
 #include "Config.h"
 #include <bzlib.h>
 #include <memory>
+#include <utility>
 
 class UpdateDownloadTask : public Task
 {
 public:
-	UpdateDownloadTask(ByteString updateName, UpdateActivity * a) : a(a), updateName(updateName) {}
+	UpdateDownloadTask(ByteString updateName, UpdateActivity * a) : a(a), updateName(std::move(updateName)) {}
 private:
 	UpdateActivity * a;
 	ByteString updateName;

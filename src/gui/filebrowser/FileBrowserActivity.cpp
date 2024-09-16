@@ -18,6 +18,7 @@
 
 #include "Config.h"
 #include <algorithm>
+#include <utility>
 
 //Currently, reading is done on another thread, we can't render outside the main thread due to some bullshit with OpenGL
 class LoadFilesTask: public Task
@@ -61,8 +62,8 @@ public:
 	}
 
 	LoadFilesTask(ByteString directory, ByteString search):
-		directory(directory),
-		search(search)
+		directory(std::move(directory)),
+		search(std::move(search))
 	{
 
 	}
@@ -70,7 +71,7 @@ public:
 
 FileBrowserActivity::FileBrowserActivity(const ByteString& directory, OnSelected onSelected_):
 	WindowActivity(ui::Point(-1, -1), ui::Point(500, 350)),
-	onSelected(onSelected_),
+	onSelected(std::move(onSelected_)),
 	directory(directory),
 	hasQueuedSearch(false),
 	totalFiles(0)
@@ -199,7 +200,7 @@ void FileBrowserActivity::loadDirectory(ByteString directory, ByteString search)
 	progressBar->Visible = true;
 	progressBar->SetProgress(-1);
 	progressBar->SetStatus("Loading files");
-	loadFiles = new LoadFilesTask(directory, search);
+	loadFiles = new LoadFilesTask(std::move(directory), std::move(search));
 	loadFiles->AddTaskListener(this);
 	loadFiles->Start();
 }

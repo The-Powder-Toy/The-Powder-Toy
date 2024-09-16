@@ -34,6 +34,8 @@
 #include "SimulationConfig.h"
 #include <SDL.h>
 
+#include <utility>
+
 PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+210, (YRES/2)+150)),
 	submitCommentButton(nullptr),
@@ -686,7 +688,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 void PreviewView::SaveLoadingError(String errorMessage)
 {
 	doError = true;
-	doErrorMessage = errorMessage;
+	doErrorMessage = std::move(errorMessage);
 	Platform::MarkPresentable();
 }
 

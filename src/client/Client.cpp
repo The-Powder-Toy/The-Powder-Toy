@@ -25,6 +25,7 @@
 #include <chrono>
 #include <algorithm>
 #include <set>
+#include <utility>
 
 Client::Client():
 	messageOfTheDay("Fetching the message of the day..."),
@@ -90,7 +91,7 @@ bool Client::IsFirstRun()
 
 void Client::SetMessageOfTheDay(String message)
 {
-	messageOfTheDay = message;
+	messageOfTheDay = std::move(message);
 	notifyMessageOfTheDay();
 }
 
@@ -234,7 +235,7 @@ Client::~Client()
 
 void Client::SetAuthUser(User user)
 {
-	authUser = user;
+	authUser = std::move(user);
 	SaveAuthUser();
 	notifyAuthUserChanged();
 }

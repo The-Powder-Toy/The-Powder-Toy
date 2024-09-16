@@ -24,6 +24,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cmath>
+#include <utility>
 #include <SDL.h>
 
 OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
@@ -73,9 +74,9 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		currentY += label->Size.Y - 1;
 	};
 	auto addCheckbox = [this, &currentY, &autoWidth, &addLabel](int indent, String text, const String& info, std::function<void ()> action) {
-		auto *checkbox = new ui::Checkbox(ui::Point(8 + indent * 15, currentY), ui::Point(1, 16), text, "");
+		auto *checkbox = new ui::Checkbox(ui::Point(8 + indent * 15, currentY), ui::Point(1, 16), std::move(text), "");
 		autoWidth(checkbox, 0);
-		checkbox->SetActionCallback({ action });
+		checkbox->SetActionCallback({ std::move(action) });
 		currentY += 14;
 		if (info.size())
 		{
@@ -92,7 +93,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		{
 			dropDown->AddOption(option);
 		}
-		dropDown->SetActionCallback({ action });
+		dropDown->SetActionCallback({ std::move(action) });
 		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X - 96, 16), info);
 		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;

@@ -1,5 +1,7 @@
 #include "TextPrompt.h"
 
+#include <utility>
+
 #include "gui/interface/Label.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Engine.h"
@@ -11,7 +13,7 @@
 
 TextPrompt::TextPrompt(const String& title, const String& message, String text, String placeholder, bool multiline, TextDialogueCallback callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 65)),
-	callback(callback_)
+	callback(std::move(callback_))
 {
 	if(multiline)
 		Size.X += 100;
@@ -30,7 +32,7 @@ TextPrompt::TextPrompt(const String& title, const String& message, String text, 
 
 	Size.Y += messageLabel->Size.Y+4;
 
-	textField = new ui::Textbox(ui::Point(4, messageLabel->Position.Y + messageLabel->Size.Y + 7), ui::Point(Size.X-8, 16), text, placeholder);
+	textField = new ui::Textbox(ui::Point(4, messageLabel->Position.Y + messageLabel->Size.Y + 7), ui::Point(Size.X-8, 16), std::move(text), std::move(placeholder));
 	if(multiline)
 	{
 		textField->SetMultiline(true);

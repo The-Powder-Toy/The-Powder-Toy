@@ -1,8 +1,10 @@
 #include "TPTSTypes.h"
 
+#include <utility>
+
 AnyType::AnyType(ValueType type_, ValueValue value_):
 	type(type_),
-	value(value_)
+	value(std::move(value_))
 {
 }
 

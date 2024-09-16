@@ -1,5 +1,7 @@
 #include "DropDown.h"
 
+#include <utility>
+
 #include "graphics/Graphics.h"
 #include "gui/Style.h"
 #include "Button.h"
@@ -177,7 +179,7 @@ start:
 
 void DropDown::SetOptions(std::vector<std::pair<String, int> > options)
 {
-	this->options = options;
+	this->options = std::move(options);
 }
 
 } /* namespace ui */

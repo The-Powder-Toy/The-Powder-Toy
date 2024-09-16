@@ -2,11 +2,13 @@
 #include "common/platform/Platform.h"
 #include "Format.h"
 
+#include <utility>
+
 using namespace ui;
 
 RichLabel::RichLabel(Point position, Point size, String text) : Label(position, size, "")
 {
-	SetText(text);
+	SetText(std::move(text));
 }
 
 void RichLabel::SetText(String newText)
