@@ -1,4 +1,4 @@
 ---
-Checks:          '-*,modernize-use-nullptr'
+Checks:          '-*,modernize-use-nullptr,performance*,-performance-avoid-endl,-performance-enum-size,-performance-for-range-copy,-performance-inefficient-vector-operation,-performance-no-int-to-ptr,-performance-type-promotion-in-math-fn,-performance-unnecessary-copy-initialization,-performance-unnecessary-value-param'
 WarningsAsErrors: true
 ...
