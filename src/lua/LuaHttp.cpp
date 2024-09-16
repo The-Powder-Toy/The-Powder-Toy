@@ -24,7 +24,7 @@ private:
 
 	RequestHandle() = default;
 
-	std::pair<int, ByteString> FinishGetAuthToken(ByteString data)
+	std::pair<int, ByteString> FinishGetAuthToken(const ByteString& data)
 	{
 		std::istringstream ss(data);
 		Json::Value root;

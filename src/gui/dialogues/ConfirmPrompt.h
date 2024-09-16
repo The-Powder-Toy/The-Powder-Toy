@@ -13,7 +13,7 @@ class ConfirmPrompt : public ui::Window
 	ResultCallback callback;
 
 public:
-	ConfirmPrompt(String title, String message, ResultCallback callback_ = {}, String buttonText = String("Confirm"));
+	ConfirmPrompt(const String& title, const String& message, ResultCallback callback_ = {}, String buttonText = String("Confirm"));
 	virtual ~ConfirmPrompt() = default;
 
 	void OnDraw() override;

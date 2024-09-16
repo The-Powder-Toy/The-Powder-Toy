@@ -1134,7 +1134,7 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 	}
 }
 
-void GameController::SetActiveTool(int toolSelection, ByteString identifier)
+void GameController::SetActiveTool(int toolSelection, const ByteString& identifier)
 {
 	Tool *tool = gameModel->GetToolFromIdentifier(identifier);
 	if (!tool)
@@ -1178,7 +1178,7 @@ void GameController::SetReplaceModeFlags(int flags)
 	gameModel->GetSimulation()->replaceModeFlags = flags;
 }
 
-void GameController::OpenSearch(String searchText)
+void GameController::OpenSearch(const String& searchText)
 {
 	if(!search)
 		search = new SearchController([this] {
@@ -1692,7 +1692,7 @@ void GameController::RemoveNotification(Notification * notification)
 	gameModel->RemoveNotification(notification);
 }
 
-void GameController::RunUpdater(UpdateInfo info)
+void GameController::RunUpdater(const UpdateInfo& info)
 {
 	if (Platform::CanUpdate())
 	{
@@ -1730,7 +1730,7 @@ bool GameController::ThreadedRenderingAllowed()
 	return gameModel->GetThreadedRendering() && !commandInterface->HaveSimGraphicsEventHandlers();
 }
 
-void GameController::SetToolIndex(ByteString identifier, std::optional<int> index)
+void GameController::SetToolIndex(const ByteString& identifier, std::optional<int> index)
 {
 	if (commandInterface)
 	{

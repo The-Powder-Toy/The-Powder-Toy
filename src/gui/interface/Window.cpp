@@ -398,7 +398,7 @@ void Window::DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl,
 		finalise();
 }
 
-void Window::DoTextInput(String text)
+void Window::DoTextInput(const String& text)
 {
 	if (debugMode)
 		return;
@@ -415,7 +415,7 @@ void Window::DoTextInput(String text)
 		finalise();
 }
 
-void Window::DoTextEditing(String text)
+void Window::DoTextEditing(const String& text)
 {
 	if (focusedComponent_ != nullptr)
 	{

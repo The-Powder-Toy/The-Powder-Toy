@@ -104,7 +104,7 @@ public:
 class StringType: public AnyType
 {
 public:
-	StringType(String string);
+	StringType(const String& string);
 	String Value();
 };
 

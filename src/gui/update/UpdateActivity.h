@@ -8,7 +8,7 @@ class UpdateActivity
 	Task * updateDownloadTask;
 	TaskWindow * updateWindow;
 public:
-	UpdateActivity(UpdateInfo info);
+	UpdateActivity(const UpdateInfo& info);
 	virtual ~UpdateActivity();
 	void Exit();
 	virtual void NotifyDone(Task * sender);

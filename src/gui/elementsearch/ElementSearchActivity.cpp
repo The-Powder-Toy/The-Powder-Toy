@@ -59,7 +59,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	searchTools("");
 }
 
-void ElementSearchActivity::searchTools(String query)
+void ElementSearchActivity::searchTools(const String& query)
 {
 	firstResult = nullptr;
 	for (auto &toolButton : toolButtons) {
@@ -105,7 +105,7 @@ void ElementSearchActivity::searchTools(String query)
 		}
 	};
 
-	auto pushIfMatches = [ &queryLower, &push ](String infoLower, int toolIndex, int favouritePriority, int haystackRelevance) {
+	auto pushIfMatches = [ &queryLower, &push ](const String& infoLower, int toolIndex, int favouritePriority, int haystackRelevance) {
 		if (infoLower == queryLower)
 		{
 			push(Match{ favouritePriority, toolIndex, haystackRelevance, 0 });

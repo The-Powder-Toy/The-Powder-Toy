@@ -113,7 +113,7 @@ public:
 			return;
 		SetToolTip(x, y);
 	}
-	void TextPosition(String ButtonText) override
+	void TextPosition(const String& ButtonText) override
 	{
 		ui::Button::TextPosition(ButtonText);
 		textPosition.X += 3;
@@ -1834,13 +1834,13 @@ void GameView::DoMouseWheel(int x, int y, int d)
 		Window::DoMouseWheel(x, y, d);
 }
 
-void GameView::DoTextInput(String text)
+void GameView::DoTextInput(const String& text)
 {
 	if (c->TextInput(text))
 		Window::DoTextInput(text);
 }
 
-void GameView::DoTextEditing(String text)
+void GameView::DoTextEditing(const String& text)
 {
 	if (c->TextEditing(text))
 		Window::DoTextEditing(text);
@@ -1946,7 +1946,7 @@ void GameView::NotifyZoomChanged(GameModel * sender)
 	zoomEnabled = sender->GetZoomEnabled();
 }
 
-void GameView::NotifyLogChanged(GameModel * sender, String entry)
+void GameView::NotifyLogChanged(GameModel * sender, const String& entry)
 {
 	logEntries.push_front(std::pair<String, int>(entry, 600));
 	if (logEntries.size() > 20)

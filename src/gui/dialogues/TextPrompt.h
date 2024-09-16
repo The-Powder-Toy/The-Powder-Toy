@@ -22,7 +22,7 @@ protected:
 	ui::Textbox * textField;
 
 public:
-	TextPrompt(String title, String message, String text, String placeholder, bool multiline, TextDialogueCallback callback_ = {});
+	TextPrompt(const String& title, const String& message, String text, String placeholder, bool multiline, TextDialogueCallback callback_ = {});
 	virtual ~TextPrompt() = default;
 
 	void OnDraw() override;

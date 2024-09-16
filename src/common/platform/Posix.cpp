@@ -29,7 +29,7 @@ void Millisleep(long int t)
 	nanosleep(&s, nullptr);
 }
 
-bool Stat(ByteString filename)
+bool Stat(const ByteString& filename)
 {
 	struct stat s;
 	if (stat(filename.c_str(), &s) == 0)
@@ -42,7 +42,7 @@ bool Stat(ByteString filename)
 	}
 }
 
-bool FileExists(ByteString filename)
+bool FileExists(const ByteString& filename)
 {
 	struct stat s;
 	if (stat(filename.c_str(), &s) == 0)
@@ -62,7 +62,7 @@ bool FileExists(ByteString filename)
 	}
 }
 
-bool DirectoryExists(ByteString directory)
+bool DirectoryExists(const ByteString& directory)
 {
 	struct stat s;
 	if (stat(directory.c_str(), &s) == 0)
@@ -82,7 +82,7 @@ bool DirectoryExists(ByteString directory)
 	}
 }
 
-bool IsLink(ByteString path)
+bool IsLink(const ByteString& path)
 {
 	struct stat s;
 	if (stat(path.c_str(), &s) == 0)
@@ -102,12 +102,12 @@ bool IsLink(ByteString path)
 	}
 }
 
-bool RemoveFile(ByteString filename)
+bool RemoveFile(const ByteString& filename)
 {
 	return remove(filename.c_str()) == 0;
 }
 
-bool RenameFile(ByteString filename, ByteString newFilename, bool replace)
+bool RenameFile(const ByteString& filename, const ByteString& newFilename, bool replace)
 {
 	// TODO: Make atomic :( Could use renameat2 with RENAME_NOREPLACE on linux and
 	// renamex_np with RENAME_EXCL on darwin, but both require filesystem support;
@@ -119,22 +119,22 @@ bool RenameFile(ByteString filename, ByteString newFilename, bool replace)
 	return rename(filename.c_str(), newFilename.c_str()) == 0;
 }
 
-bool DeleteDirectory(ByteString folder)
+bool DeleteDirectory(const ByteString& folder)
 {
 	return rmdir(folder.c_str()) == 0;
 }
 
-bool MakeDirectory(ByteString dir)
+bool MakeDirectory(const ByteString& dir)
 {
 	return mkdir(dir.c_str(), 0755) == 0;
 }
 
-bool ChangeDir(ByteString toDir)
+bool ChangeDir(const ByteString& toDir)
 {
 	return chdir(toDir.c_str()) == 0;
 }
 
-std::vector<ByteString> DirectoryList(ByteString directory)
+std::vector<ByteString> DirectoryList(const ByteString& directory)
 {
 	std::vector<ByteString> directoryList;
 	struct dirent * directoryEntry;

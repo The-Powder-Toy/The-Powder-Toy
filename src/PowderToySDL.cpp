@@ -64,7 +64,7 @@ void SetTextInputRect(int x, int y, int w, int h)
 	SDL_SetTextInputRect(&rect);
 }
 
-void ClipboardPush(ByteString text)
+void ClipboardPush(const ByteString& text)
 {
 	SDL_SetClipboardText(text.c_str());
 }

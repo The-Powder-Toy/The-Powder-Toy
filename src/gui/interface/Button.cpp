@@ -20,7 +20,7 @@ Button::Button(Point position, Point size, String buttonText, String toolTip):
 	TextPosition(ButtonText);
 }
 
-void Button::TextPosition(String ButtonText)
+void Button::TextPosition(const String& ButtonText)
 {
 	buttonDisplayText = ButtonText;
 	if(buttonDisplayText.length())

@@ -33,7 +33,7 @@ public:
 	SearchView * GetView() { return searchView; }
 	void Exit();
 	void DoSearch(String query, bool now = false);
-	void DoSearch2(String query);
+	void DoSearch2(const String& query);
 	void Refresh();
 	void SetPage(int page);
 	void SetPageRelative(int offset);

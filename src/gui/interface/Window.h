@@ -66,8 +66,8 @@ namespace ui
 		virtual void DoMouseWheel(int x, int y, int d);
 		virtual void DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 		virtual void DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
-		virtual void DoTextInput(String text);
-		virtual void DoTextEditing(String text);
+		virtual void DoTextInput(const String& text);
+		virtual void DoTextEditing(const String& text);
 
 		// Sets halt and destroy, this causes the Windows to stop sending events and remove itself.
 		void SelfDestruct();

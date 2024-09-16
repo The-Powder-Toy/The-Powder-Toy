@@ -7,7 +7,7 @@ namespace http
 	class RemoveTagRequest : public APIRequest
 	{
 	public:
-		RemoveTagRequest(int saveID, ByteString tag);
+		RemoveTagRequest(int saveID, const ByteString& tag);
 
 		std::list<ByteString> Finish();
 	};

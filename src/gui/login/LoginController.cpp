@@ -18,7 +18,7 @@ LoginController::LoginController(std::function<void ()> onDone_):
 	onDone = onDone_;
 }
 
-void LoginController::Login(ByteString username, ByteString password)
+void LoginController::Login(const ByteString& username, const ByteString& password)
 {
 	loginModel->Login(username, password);
 }

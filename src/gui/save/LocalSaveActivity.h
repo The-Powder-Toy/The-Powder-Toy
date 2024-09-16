@@ -35,7 +35,7 @@ class LocalSaveActivity: public WindowActivity
 
 public:
 	LocalSaveActivity(std::unique_ptr<SaveFile> newSave, OnSaved onSaved = nullptr);
-	void saveWrite(ByteString finalFilename);
+	void saveWrite(const ByteString& finalFilename);
 	void Save();
 	void OnDraw() override;
 	void OnTick(float dt) override;

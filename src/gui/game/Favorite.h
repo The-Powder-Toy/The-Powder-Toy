@@ -10,11 +10,11 @@ public:
 	Favorite();
 
 	std::vector<ByteString> GetFavoritesList();
-	bool IsFavorite(ByteString identifier);
+	bool IsFavorite(const ByteString& identifier);
 	bool AnyFavorites();
 
-	void AddFavorite(ByteString identifier);
-	void RemoveFavorite(ByteString identifier);
+	void AddFavorite(const ByteString& identifier);
+	void RemoveFavorite(const ByteString& identifier);
 
 	void SaveFavoritesToPrefs();
 	void LoadFavoritesFromPrefs();

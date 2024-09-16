@@ -132,7 +132,7 @@ void LocalBrowserController::Update()
 	}
 }
 
-void LocalBrowserController::Selected(ByteString saveName, bool selected)
+void LocalBrowserController::Selected(const ByteString& saveName, bool selected)
 {
 	if(selected)
 		browserModel->SelectSave(saveName);

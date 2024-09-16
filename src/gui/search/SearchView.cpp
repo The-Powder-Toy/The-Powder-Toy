@@ -242,7 +242,7 @@ SearchView::~SearchView()
 	saveButtons.clear();
 }
 
-void SearchView::Search(String query)
+void SearchView::Search(const String& query)
 {
 	searchField->SetText(query);
 	c->DoSearch(query, true);

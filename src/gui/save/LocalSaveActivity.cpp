@@ -102,7 +102,7 @@ void LocalSaveActivity::Save()
 	}
 }
 
-void LocalSaveActivity::saveWrite(ByteString finalFilename)
+void LocalSaveActivity::saveWrite(const ByteString& finalFilename)
 {
 	Platform::MakeDirectory(LOCAL_SAVE_DIR);
 	Json::Value localSaveInfo;

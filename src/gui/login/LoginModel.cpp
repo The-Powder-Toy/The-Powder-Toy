@@ -5,7 +5,7 @@
 #include "client/http/LoginRequest.h"
 #include "client/http/LogoutRequest.h"
 
-void LoginModel::Login(ByteString username, ByteString password)
+void LoginModel::Login(const ByteString& username, const ByteString& password)
 {
 	if (username.Contains("@"))
 	{

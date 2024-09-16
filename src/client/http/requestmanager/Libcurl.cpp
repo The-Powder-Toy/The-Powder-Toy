@@ -136,7 +136,7 @@ namespace http
 
 		std::vector<std::shared_ptr<RequestHandle>> requestHandles;
 		void RegisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle);
-		void UnregisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle);
+		void UnregisterRequestHandle(const std::shared_ptr<RequestHandle>& requestHandle);
 
 		bool curlGlobalInit = false;
 		CURLM *curlMulti = nullptr;
@@ -366,7 +366,7 @@ namespace http
 	{
 		auto manager = static_cast<RequestManagerImpl *>(this);
 		auto handle = static_cast<RequestHandleHttp *>(requestHandle.get());
-		auto failEarly = [&requestHandle](int statusCode, ByteString error) {
+		auto failEarly = [&requestHandle](int statusCode, const ByteString& error) {
 			requestHandle->statusCode = statusCode;
 			requestHandle->error = error;
 		};
@@ -514,7 +514,7 @@ namespace http
 		handle->curlAddedToMulti = true;
 	}
 
-	void RequestManagerImpl::UnregisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle)
+	void RequestManagerImpl::UnregisterRequestHandle(const std::shared_ptr<RequestHandle>& requestHandle)
 	{
 		auto manager = static_cast<RequestManagerImpl *>(this);
 		auto handle = static_cast<RequestHandleHttp *>(requestHandle.get());

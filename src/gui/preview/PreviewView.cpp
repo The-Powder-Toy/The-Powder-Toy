@@ -232,7 +232,7 @@ void PreviewView::commentBoxAutoHeight()
 	}
 }
 
-bool PreviewView::CheckSwearing(String text)
+bool PreviewView::CheckSwearing(const String& text)
 {
 	for (std::set<String>::iterator iter = swearWords.begin(), end = swearWords.end(); iter != end; iter++)
 		if (text.Contains(*iter))

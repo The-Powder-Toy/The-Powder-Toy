@@ -99,7 +99,7 @@ String Client::GetMessageOfTheDay()
 	return messageOfTheDay;
 }
 
-void Client::AddServerNotification(ServerNotification notification)
+void Client::AddServerNotification(const ServerNotification& notification)
 {
 	serverNotifications.push_back(notification);
 	notifyNewNotification(notification);
@@ -203,7 +203,7 @@ void Client::notifyAuthUserChanged()
 	}
 }
 
-void Client::notifyNewNotification(ServerNotification notification)
+void Client::notifyNewNotification(const ServerNotification& notification)
 {
 	for (std::vector<ClientListener*>::iterator iterator = listeners.begin(), end = listeners.end(); iterator != end; ++iterator)
 	{
@@ -244,7 +244,7 @@ User Client::GetAuthUser()
 	return authUser;
 }
 
-void Client::MoveStampToFront(ByteString stampID)
+void Client::MoveStampToFront(const ByteString& stampID)
 {
 	auto it = std::find(stampIDs.begin(), stampIDs.end(), stampID);
 	auto changed = false;
@@ -265,7 +265,7 @@ void Client::MoveStampToFront(ByteString stampID)
 	}
 }
 
-std::unique_ptr<SaveFile> Client::GetStamp(ByteString stampID)
+std::unique_ptr<SaveFile> Client::GetStamp(const ByteString& stampID)
 {
 	ByteString stampFile = ByteString(ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, stampID, ".stm"));
 	auto saveFile = LoadSaveFile(stampFile);
@@ -276,7 +276,7 @@ std::unique_ptr<SaveFile> Client::GetStamp(ByteString stampID)
 	return saveFile;
 }
 
-void Client::DeleteStamp(ByteString stampID)
+void Client::DeleteStamp(const ByteString& stampID)
 {
 	auto it = std::remove(stampIDs.begin(), stampIDs.end(), stampID);
 	if (it != stampIDs.end())
@@ -287,7 +287,7 @@ void Client::DeleteStamp(ByteString stampID)
 	}
 }
 
-void Client::RenameStamp(ByteString stampID, ByteString newName)
+void Client::RenameStamp(const ByteString& stampID, const ByteString& newName)
 {
 	auto oldPath = ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, stampID, ".stm");
 	auto newPath = ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, newName, ".stm");
@@ -406,7 +406,7 @@ const std::vector<ByteString> &Client::GetStamps() const
 	return stampIDs;
 }
 
-std::unique_ptr<SaveFile> Client::LoadSaveFile(ByteString filename)
+std::unique_ptr<SaveFile> Client::LoadSaveFile(const ByteString& filename)
 {
 	ByteString err;
 	std::unique_ptr<SaveFile> file;
@@ -541,7 +541,7 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 	std::stack<ByteString> dirsToDelete;
 
 	// Migrate a list of files
-	auto migrateList = [&](std::vector<ByteString> list, ByteString directory, String niceName) {
+	auto migrateList = [&](const std::vector<ByteString>& list, const ByteString& directory, const String& niceName) {
 		result << '\n' << niceName << ": ";
 		if (!list.empty() && !directory.empty())
 			Platform::MakeDirectory(toDir + directory);
@@ -577,7 +577,7 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 	};
 
 	// Migrate a single file
-	auto migrateFile = [&fromDir, &toDir, &result, &logFile](ByteString filename) {
+	auto migrateFile = [&fromDir, &toDir, &result, &logFile](const ByteString& filename) {
 		ByteString from = fromDir + filename;
 		ByteString to = toDir + filename;
 		if (!Platform::FileExists(to))

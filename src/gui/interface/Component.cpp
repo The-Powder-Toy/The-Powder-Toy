@@ -30,7 +30,7 @@ void Component::Refresh()
 	drawn = false;
 }
 
-void Component::TextPosition(String displayText)
+void Component::TextPosition(const String& displayText)
 {
 
 	textPosition = ui::Point(0, 0);
@@ -169,11 +169,11 @@ void Component::OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ct
 {
 }
 
-void Component::OnTextInput(String text)
+void Component::OnTextInput(const String& text)
 {
 }
 
-void Component::OnTextEditing(String text)
+void Component::OnTextEditing(const String& text)
 {
 }
 

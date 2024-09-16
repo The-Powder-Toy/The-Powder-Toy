@@ -19,8 +19,8 @@ protected:
 	GameController * c;
 
 
-	int PlainCommand(String command);
-	String PlainFormatCommand(String command);
+	int PlainCommand(const String& command);
+	String PlainFormatCommand(const String& command);
 
 public:
 	CommandInterface(GameController *newGameController, GameModel *newGameModel);
@@ -28,7 +28,7 @@ public:
 	enum LogType { LogError, LogWarning, LogNotice };
 	enum FormatType { FormatInt, FormatString, FormatChar, FormatFloat, FormatElement };
 	int GetPropertyOffset(ByteString key, FormatType & format);
-	void Log(LogType type, String message);
+	void Log(LogType type, const String& message);
 	//void AttachGameModel(GameModel * m);
 
 	void OnTick();
@@ -46,7 +46,7 @@ public:
 	String GetLastError();
 
 	AnyType eval(std::deque<String> * words);
-	int parseNumber(String str);
+	int parseNumber(const String& str);
 	AnyType tptS_set(std::deque<String> * words);
 	AnyType tptS_create(std::deque<String> * words);
 	AnyType tptS_delete(std::deque<String> * words);
@@ -54,9 +54,9 @@ public:
 	AnyType tptS_reset(std::deque<String> * words);
 	AnyType tptS_bubble(std::deque<String> * words);
 	AnyType tptS_quit(std::deque<String> * words);
-	ValueType testType(String word);
+	ValueType testType(const String& word);
 
-	void SetToolIndex(ByteString identifier, std::optional<int> index);
+	void SetToolIndex(const ByteString& identifier, std::optional<int> index);
 
 	static CommandInterfacePtr Create(GameController *newGameController, GameModel *newGameModel);
 };

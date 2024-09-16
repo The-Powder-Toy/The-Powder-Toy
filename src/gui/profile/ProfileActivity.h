@@ -31,7 +31,7 @@ class ProfileActivity: public WindowActivity {
 	std::unique_ptr<http::GetUserInfoRequest> getUserInfoRequest;
 
 public:
-	ProfileActivity(ByteString username);
+	ProfileActivity(const ByteString& username);
 	virtual ~ProfileActivity();
 	void OnTick(float dt) override;
 	void OnDraw() override;

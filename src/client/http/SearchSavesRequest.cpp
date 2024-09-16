@@ -11,7 +11,7 @@ namespace http
 	{
 		ByteStringBuilder builder;
 		builder << SERVER << "/Browse.json?Start=" << start << "&Count=" << count;
-		auto appendToQuery = [&query](ByteString str) {
+		auto appendToQuery = [&query](const ByteString& str) {
 			if (query.size())
 			{
 				query += " ";

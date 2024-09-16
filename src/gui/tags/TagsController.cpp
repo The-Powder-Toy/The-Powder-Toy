@@ -25,13 +25,13 @@ SaveInfo * TagsController::GetSave()
 	return tagsModel->GetSave();
 }
 
-void TagsController::RemoveTag(ByteString tag)
+void TagsController::RemoveTag(const ByteString& tag)
 {
 	tagsModel->RemoveTag(tag);
 }
 
 
-void TagsController::AddTag(ByteString tag)
+void TagsController::AddTag(const ByteString& tag)
 {
 	tagsModel->AddTag(tag);
 }

@@ -9,7 +9,7 @@
 
 #include "graphics/Graphics.h"
 
-TextPrompt::TextPrompt(String title, String message, String text, String placeholder, bool multiline, TextDialogueCallback callback_):
+TextPrompt::TextPrompt(const String& title, const String& message, String text, String placeholder, bool multiline, TextDialogueCallback callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 65)),
 	callback(callback_)
 {

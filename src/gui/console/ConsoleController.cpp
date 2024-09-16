@@ -19,7 +19,7 @@ ConsoleController::ConsoleController(std::function<void ()> onDone_, CommandInte
 	this->commandInterface = commandInterface;
 }
 
-void ConsoleController::EvaluateCommand(String command)
+void ConsoleController::EvaluateCommand(const String& command)
 {
 	if(command.length())
 	{

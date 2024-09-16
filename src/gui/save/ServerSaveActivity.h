@@ -45,7 +45,7 @@ public:
 	virtual void Exit() override;
 	void ShowPublishingInfo();
 	void ShowRules();
-	void CheckName(String newname);
+	void CheckName(const String& newname);
 	virtual void OnDraw() override;
 	virtual void OnTick(float dt) override;
 	virtual ~ServerSaveActivity();

@@ -1152,7 +1152,7 @@ const GameSave *GameModel::GetTransformedPlaceSave() const
 	return transformedPlaceSave.get();
 }
 
-void GameModel::Log(String message, bool printToFile)
+void GameModel::Log(const String& message, bool printToFile)
 {
 	consoleLog.push_front(message);
 	if(consoleLog.size()>100)
@@ -1358,7 +1358,7 @@ void GameModel::notifyTransformedPlaceSaveChanged()
 	}
 }
 
-void GameModel::notifyLogChanged(String entry)
+void GameModel::notifyLogChanged(const String& entry)
 {
 	for (size_t i = 0; i < observers.size(); i++)
 	{
@@ -1427,7 +1427,7 @@ void GameModel::SetPerfectCircle(bool perfectCircle)
 	}
 }
 
-bool GameModel::AddCustomGol(String ruleString, String nameString, RGB<uint8_t> color1, RGB<uint8_t> color2)
+bool GameModel::AddCustomGol(const String& ruleString, const String& nameString, RGB<uint8_t> color1, RGB<uint8_t> color2)
 {
 	if (auto gd = CheckCustomGol(ruleString, nameString, color1, color2))
 	{
@@ -1531,7 +1531,7 @@ void GameModel::SaveCustomGol()
 	prefs.Set("CustomGOL.Types", newCustomGOLTypes);
 }
 
-std::optional<CustomGOLData> GameModel::CheckCustomGol(String ruleString, String nameString, RGB<uint8_t> color1, RGB<uint8_t> color2)
+std::optional<CustomGOLData> GameModel::CheckCustomGol(const String& ruleString, const String& nameString, RGB<uint8_t> color1, RGB<uint8_t> color2)
 {
 	if (!ValidateGOLName(nameString))
 	{
@@ -1615,7 +1615,7 @@ void GameModel::SanitizeToolsets()
 	}
 }
 
-void GameModel::DeselectTool(ByteString identifier)
+void GameModel::DeselectTool(const ByteString& identifier)
 {
 	auto *tool = GetToolFromIdentifier(identifier);
 	for (auto &slot : decoToolset)

@@ -10,8 +10,8 @@ class Prefs
 	};
 
 	Json::Value root;
-	static Json::Value GetJson(const Json::Value &node, ByteString path);
-	static void SetJson(Json::Value &node, ByteString path, Json::Value value);
+	static Json::Value GetJson(const Json::Value &node, const ByteString& path);
+	static void SetJson(Json::Value &node, const ByteString& path, const Json::Value& value);
 
 	template<class Type>
 	struct Bipacker

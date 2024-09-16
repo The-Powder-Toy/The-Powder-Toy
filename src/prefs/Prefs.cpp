@@ -71,7 +71,7 @@ void Prefs::DropDeferWriteLevel(DeferWriteTag)
 	Write();
 }
 
-Json::Value Prefs::GetJson(const Json::Value &node, ByteString path)
+Json::Value Prefs::GetJson(const Json::Value &node, const ByteString& path)
 {
 	if (node.type() != Json::objectValue)
 	{
@@ -85,7 +85,7 @@ Json::Value Prefs::GetJson(const Json::Value &node, ByteString path)
 	return GetJson(node[split.Before()], split.After());
 }
 
-void Prefs::SetJson(Json::Value &node, ByteString path, Json::Value value)
+void Prefs::SetJson(Json::Value &node, const ByteString& path, const Json::Value& value)
 {
 	if (node.type() != Json::objectValue)
 	{

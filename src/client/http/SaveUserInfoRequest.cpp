@@ -3,7 +3,7 @@
 
 namespace http
 {
-	SaveUserInfoRequest::SaveUserInfoRequest(UserInfo info) :
+	SaveUserInfoRequest::SaveUserInfoRequest(const UserInfo& info) :
 		APIRequest(ByteString::Build(SERVER, "/Profile.json"), authRequire, true)
 	{
 		AddPostData(FormData{

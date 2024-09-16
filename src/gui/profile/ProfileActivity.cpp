@@ -12,7 +12,7 @@
 #include "gui/interface/Textbox.h"
 #include "Config.h"
 
-ProfileActivity::ProfileActivity(ByteString username) :
+ProfileActivity::ProfileActivity(const ByteString& username) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 300)),
 	loading(false),
 	saving(false),

@@ -4,7 +4,7 @@
 
 namespace http
 {
-	ReportSaveRequest::ReportSaveRequest(int saveID, String message) :
+	ReportSaveRequest::ReportSaveRequest(int saveID, const String& message) :
 		APIRequest(ByteString::Build(SERVER, "/Browse/Report.json?ID=", saveID, "&Key=", Client::Ref().GetAuthUser().SessionKey), authRequire, true)
 	{
 		AddPostData(FormData{

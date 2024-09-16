@@ -377,7 +377,7 @@ void LuaTools::Open(lua_State *L)
 	}
 }
 
-void LuaTools::SetToolIndex(lua_State *L, ByteString identifier, std::optional<int> index)
+void LuaTools::SetToolIndex(lua_State *L, const ByteString& identifier, std::optional<int> index)
 {
 	lua_getglobal(L, "tools");
 	tpt_lua_pushByteString(L, identifier);

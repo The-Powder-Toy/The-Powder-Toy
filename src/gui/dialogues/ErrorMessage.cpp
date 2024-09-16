@@ -10,7 +10,7 @@
 
 #include "graphics/Graphics.h"
 
-ErrorMessage::ErrorMessage(String title, String message, DismissCallback callback_):
+ErrorMessage::ErrorMessage(const String& title, const String& message, DismissCallback callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 35)),
 	callback(callback_)
 {

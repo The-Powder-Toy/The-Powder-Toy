@@ -19,5 +19,5 @@ public:
 	std::deque<ConsoleCommand> GetPreviousCommands();
 	ConsoleModel();
 	void AddObserver(ConsoleView * observer);
-	void AddLastCommand(ConsoleCommand command);
+	void AddLastCommand(const ConsoleCommand& command);
 };

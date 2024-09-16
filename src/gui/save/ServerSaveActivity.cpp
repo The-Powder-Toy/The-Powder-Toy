@@ -343,7 +343,7 @@ void ServerSaveActivity::ShowRules()
 	new InformationMessage("Save Uploading Rules", rules, true);
 }
 
-void ServerSaveActivity::CheckName(String newname)
+void ServerSaveActivity::CheckName(const String& newname)
 {
 	if (newname.length() && newname == save->GetName() && save->GetUserName() == Client::Ref().GetAuthUser().Username)
 		titleLabel->SetText("Modify simulation properties:");

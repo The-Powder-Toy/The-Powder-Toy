@@ -2,7 +2,7 @@
 #include "GameSave.h"
 #include "common/platform/Platform.h"
 
-SaveFile::SaveFile(ByteString filename, bool newLazyLoad):
+SaveFile::SaveFile(const ByteString& filename, bool newLazyLoad):
 	filename(filename),
 	displayName(filename.FromUtf8()),
 	loadingError(""),

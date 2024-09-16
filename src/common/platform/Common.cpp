@@ -16,7 +16,7 @@ std::string sharedCwd;
 
 // Returns a list of all files in a directory matching a search
 // search - list of search terms. extensions - list of extensions to also match
-std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search, std::vector<ByteString> extensions)
+std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search, const std::vector<ByteString>& extensions)
 {
 	//Get full file listing
 	//Normalise directory string, ensure / or \ is present
@@ -52,7 +52,7 @@ std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search,
 	return searchResults;
 }
 
-bool ReadFile(std::vector<char> &fileData, ByteString filename)
+bool ReadFile(std::vector<char> &fileData, const ByteString& filename)
 {
 	std::ifstream f(filename, std::ios::binary);
 	if (f) f.seekg(0, std::ios::end);
@@ -67,7 +67,7 @@ bool ReadFile(std::vector<char> &fileData, ByteString filename)
 	return true;
 }
 
-bool WriteFile(const std::vector<char> &fileData, ByteString filename)
+bool WriteFile(const std::vector<char> &fileData, const ByteString& filename)
 {
 	auto replace = FileExists(filename);
 	auto writeFileName = filename;

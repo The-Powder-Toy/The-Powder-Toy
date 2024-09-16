@@ -44,7 +44,7 @@ class FileBrowserActivity: public TaskListener, public WindowActivity
 	void populateList();
 	void cleanup();
 public:
-	FileBrowserActivity(ByteString directory, OnSelected onSelected = nullptr);
+	FileBrowserActivity(const ByteString& directory, OnSelected onSelected = nullptr);
 	virtual ~FileBrowserActivity();
 	
 	void OnDraw() override;
@@ -55,7 +55,7 @@ public:
 	void SelectSave(int index);
 	void DeleteSave(int index);
 	void RenameSave(int index);
-	void DoSearch(ByteString search);
+	void DoSearch(const ByteString& search);
 
 	void NotifyDone(Task * task) override;
 	void NotifyError(Task * task) override;

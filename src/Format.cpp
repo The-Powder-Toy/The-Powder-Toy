@@ -10,7 +10,7 @@
 #include "Format.h"
 #include "graphics/VideoBuffer.h"
 
-ByteString format::UnixtimeToDate(time_t unixtime, ByteString dateFormat, bool local)
+ByteString format::UnixtimeToDate(time_t unixtime, const ByteString& dateFormat, bool local)
 {
 	struct tm * timeData;
 	char buffer[128];

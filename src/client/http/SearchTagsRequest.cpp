@@ -4,7 +4,7 @@
 
 namespace http
 {
-	static ByteString Url(int start, int count, ByteString query)
+	static ByteString Url(int start, int count, const ByteString& query)
 	{
 		ByteStringBuilder builder;
 		builder << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
@@ -15,7 +15,7 @@ namespace http
 		return builder.Build();
 	}
 
-	SearchTagsRequest::SearchTagsRequest(int start, int count, ByteString query) : APIRequest(Url(start, count, query), authOmit, false)
+	SearchTagsRequest::SearchTagsRequest(int start, int count, const ByteString& query) : APIRequest(Url(start, count, query), authOmit, false)
 	{
 	}
 

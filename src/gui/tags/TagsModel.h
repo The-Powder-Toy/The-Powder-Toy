@@ -23,8 +23,8 @@ class TagsModel {
 public:
 	void AddObserver(TagsView * observer);
 	void SetSave(SaveInfo *newSave /* non-owning */);
-	void RemoveTag(ByteString tag);
-	void AddTag(ByteString tag);
+	void RemoveTag(const ByteString& tag);
+	void AddTag(const ByteString& tag);
 	SaveInfo *GetSave(); // non-owning
 	void Tick();
 };

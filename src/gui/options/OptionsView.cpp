@@ -61,7 +61,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	AddComponent(scrollPanel);
 
 	int currentY = 8;
-	auto addLabel = [this, &currentY, &autoWidth](int indent, String text) {
+	auto addLabel = [this, &currentY, &autoWidth](int indent, const String& text) {
 		auto *label = new ui::Label(ui::Point(22 + indent * 15, currentY), ui::Point(1, 16), "");
 		autoWidth(label, 0);
 		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -72,7 +72,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		scrollPanel->AddChild(label);
 		currentY += label->Size.Y - 1;
 	};
-	auto addCheckbox = [this, &currentY, &autoWidth, &addLabel](int indent, String text, String info, std::function<void ()> action) {
+	auto addCheckbox = [this, &currentY, &autoWidth, &addLabel](int indent, String text, const String& info, std::function<void ()> action) {
 		auto *checkbox = new ui::Checkbox(ui::Point(8 + indent * 15, currentY), ui::Point(1, 16), text, "");
 		autoWidth(checkbox, 0);
 		checkbox->SetActionCallback({ action });
@@ -85,7 +85,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		scrollPanel->AddChild(checkbox);
 		return checkbox;
 	};
-	auto addDropDown = [this, &currentY, &autoWidth](String info, std::vector<std::pair<String, int>> options, std::function<void ()> action) {
+	auto addDropDown = [this, &currentY, &autoWidth](const String& info, const std::vector<std::pair<String, int>>& options, std::function<void ()> action) {
 		auto *dropDown = new ui::DropDown(ui::Point(Size.X - 95, currentY), ui::Point(80, 16));
 		scrollPanel->AddChild(dropDown);
 		for (auto &option : options)
@@ -393,7 +393,7 @@ void OptionsView::AmbientAirTempToTextBox(float airTemp)
 	ambientAirTemp->SetText(sb.Build());
 }
 
-void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
+void OptionsView::UpdateAirTemp(const String& temp, bool isDefocus)
 {
 	// Parse air temp and determine validity
 	float airTemp = 0;

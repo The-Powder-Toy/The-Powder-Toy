@@ -11,7 +11,7 @@
 
 #include "graphics/Graphics.h"
 
-ConfirmPrompt::ConfirmPrompt(String title, String message, ResultCallback callback_, String buttonText):
+ConfirmPrompt::ConfirmPrompt(const String& title, const String& message, ResultCallback callback_, String buttonText):
 	ui::Window(ui::Point(-1, -1), ui::Point(250, 50)),
 	callback(callback_)
 {

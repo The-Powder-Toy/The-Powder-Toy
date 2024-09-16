@@ -97,7 +97,7 @@ float FloatType::Value()
 
 //String type
 
-StringType::StringType(String string):	AnyType(TypeString, ValueValue())
+StringType::StringType(const String& string):	AnyType(TypeString, ValueValue())
 {
 	value = string;
 }

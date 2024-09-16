@@ -55,7 +55,7 @@ void ConsoleView::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ct
 	}
 }
 
-void ConsoleView::DoTextInput(String text)
+void ConsoleView::DoTextInput(const String& text)
 {
 	if (text == "~")
 		doClose = false;

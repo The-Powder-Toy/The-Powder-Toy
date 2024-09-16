@@ -113,7 +113,7 @@ void SearchController::DoSearch(String query, bool now)
 	}
 }
 
-void SearchController::DoSearch2(String query)
+void SearchController::DoSearch2(const String& query)
 {
 	// calls SearchView function to set textbox text, then calls DoSearch
 	searchView->Search(query);

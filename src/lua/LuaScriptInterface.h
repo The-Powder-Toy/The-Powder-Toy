@@ -26,9 +26,9 @@ class LuaComponent;
 
 int LuaToLoggableString(lua_State *L, int n);
 String LuaGetError();
-void LuaGetProperty(lua_State *L, StructProperty property, intptr_t propertyAddress);
-void LuaSetProperty(lua_State *L, StructProperty property, intptr_t propertyAddress, int stackPos);
-void LuaSetParticleProperty(lua_State *L, int particleID, StructProperty property, intptr_t propertyAddress, int stackPos);
+void LuaGetProperty(lua_State *L, const StructProperty& property, intptr_t propertyAddress);
+void LuaSetProperty(lua_State *L, const StructProperty& property, intptr_t propertyAddress, int stackPos);
+void LuaSetParticleProperty(lua_State *L, int particleID, const StructProperty& property, intptr_t propertyAddress, int stackPos);
 
 struct LuaStateDeleter
 {
@@ -219,7 +219,7 @@ namespace LuaSocket
 namespace LuaTools
 {
 	void Open(lua_State *L);
-	void SetToolIndex(lua_State *L, ByteString identifier, std::optional<int> index);
+	void SetToolIndex(lua_State *L, const ByteString& identifier, std::optional<int> index);
 }
 
 inline LuaScriptInterface *GetLSI()

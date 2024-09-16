@@ -31,7 +31,7 @@ bool SearchModel::GetShowTags()
 	return showTags;
 }
 
-void SearchModel::BeginSearchSaves(int start, int count, String query, http::Period period, http::Sort sort, http::Category category)
+void SearchModel::BeginSearchSaves(int start, int count, const String& query, http::Period period, http::Sort sort, http::Category category)
 {
 	lastError = "";
 	resultCount = 0;
@@ -54,7 +54,7 @@ std::vector<std::unique_ptr<SaveInfo>> SearchModel::EndSearchSaves()
 	return saveArray;
 }
 
-void SearchModel::BeginGetTags(int start, int count, String query)
+void SearchModel::BeginGetTags(int start, int count, const String& query)
 {
 	lastError = "";
 	ByteStringBuilder urlStream;
@@ -84,7 +84,7 @@ std::vector<std::pair<ByteString, int>> SearchModel::EndGetTags()
 	return tagArray;
 }
 
-bool SearchModel::UpdateSaveList(int pageNumber, String query)
+bool SearchModel::UpdateSaveList(int pageNumber, const String& query)
 {
 	//Threading
 	if (!searchSaves)

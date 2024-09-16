@@ -484,7 +484,7 @@ CoordStack& Simulation::getCoordStackSingleton()
 	return cs;
 }
 
-int Simulation::flood_prop(int x, int y, StructProperty prop, PropertyValue propvalue)
+int Simulation::flood_prop(int x, int y, const StructProperty& prop, PropertyValue propvalue)
 {
 	int i, x1, x2, dy = 1;
 	int did_something = 0;

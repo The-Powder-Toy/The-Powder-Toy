@@ -9,7 +9,7 @@
 
 using namespace ui;
 
-Label::Label(Point position, Point size, String labelText):
+Label::Label(Point position, Point size, const String& labelText):
 	Component(position, size),
 	textColour(255, 255, 255),
 	selectionIndexL(textWrapper.IndexBegin()),

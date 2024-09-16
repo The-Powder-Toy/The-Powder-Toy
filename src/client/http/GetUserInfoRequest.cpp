@@ -4,7 +4,7 @@
 
 namespace http
 {
-	GetUserInfoRequest::GetUserInfoRequest(ByteString username) :
+	GetUserInfoRequest::GetUserInfoRequest(const ByteString& username) :
 		APIRequest(ByteString::Build(SERVER, "/User.json?Name=", username), authOmit, false)
 	{
 	}

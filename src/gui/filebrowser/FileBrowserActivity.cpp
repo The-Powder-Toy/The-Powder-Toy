@@ -39,7 +39,7 @@ class LoadFilesTask: public Task
 	bool doWork() override
 	{
 		std::vector<ByteString> files = Platform::DirectorySearch(directory, search, { ".cps" });
-		std::sort(files.rbegin(), files.rend(), [](ByteString a, ByteString b) { return a.ToLower() > b.ToLower(); });
+		std::sort(files.rbegin(), files.rend(), [](const ByteString& a, const ByteString& b) { return a.ToLower() > b.ToLower(); });
 
 		notifyProgress(-1);
 		for(std::vector<ByteString>::iterator iter = files.begin(), end = files.end(); iter != end; ++iter)
@@ -68,7 +68,7 @@ public:
 	}
 };
 
-FileBrowserActivity::FileBrowserActivity(ByteString directory, OnSelected onSelected_):
+FileBrowserActivity::FileBrowserActivity(const ByteString& directory, OnSelected onSelected_):
 	WindowActivity(ui::Point(-1, -1), ui::Point(500, 350)),
 	onSelected(onSelected_),
 	directory(directory),
@@ -115,7 +115,7 @@ FileBrowserActivity::FileBrowserActivity(ByteString directory, OnSelected onSele
 	loadDirectory(directory, "");
 }
 
-void FileBrowserActivity::DoSearch(ByteString search)
+void FileBrowserActivity::DoSearch(const ByteString& search)
 {
 	if (loadFiles)
 	{

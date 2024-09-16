@@ -23,7 +23,7 @@ CommandInterface::CommandInterface(GameController *newGameController, GameModel 
 	this->c = newGameController;
 }
 
-void CommandInterface::Log(LogType type, String message)
+void CommandInterface::Log(LogType type, const String& message)
 {
 	m->Log(message, type == LogError || type == LogNotice);
 }
@@ -71,7 +71,7 @@ String CommandInterface::GetLastError()
 	return lastError;
 }
 
-int CommandInterface::PlainCommand(String command)
+int CommandInterface::PlainCommand(const String& command)
 {
 	lastError = "";
 	std::deque<String> words;
@@ -104,7 +104,7 @@ int CommandInterface::PlainCommand(String command)
 	return retCode;
 }
 
-ValueType CommandInterface::testType(String word)
+ValueType CommandInterface::testType(const String& word)
 {
 	size_t i = 0;
 	String::value_type const *rawWord = word.c_str();
@@ -174,7 +174,7 @@ parseString:
 	return TypeString;
 }
 
-int CommandInterface::parseNumber(String str)
+int CommandInterface::parseNumber(const String& str)
 {
 	String::value_type const *stringData = str.c_str();
 	char cc;
@@ -264,7 +264,7 @@ AnyType CommandInterface::eval(std::deque<String> * words)
 	return StringType(word);
 }
 
-String CommandInterface::PlainFormatCommand(String command)
+String CommandInterface::PlainFormatCommand(const String& command)
 {
 	std::deque<String> words;
 	std::deque<AnyType> commandWords;

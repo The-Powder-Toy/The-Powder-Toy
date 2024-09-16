@@ -21,5 +21,5 @@ class SaveRenderer: public ExplicitSingleton<SaveRenderer>
 public:
 	SaveRenderer();
 	~SaveRenderer();
-	std::unique_ptr<VideoBuffer> Render(const GameSave *save, bool fire, RendererSettings rendererSettings);
+	std::unique_ptr<VideoBuffer> Render(const GameSave *save, bool fire, const RendererSettings& rendererSettings);
 };

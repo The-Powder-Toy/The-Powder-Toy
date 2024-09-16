@@ -8,7 +8,7 @@
 
 #include "graphics/Graphics.h"
 
-InformationMessage::InformationMessage(String title, String message, bool large, DismissCallback callback_):
+InformationMessage::InformationMessage(const String& title, const String& message, bool large, DismissCallback callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 35)),
 	callback(callback_)
 {

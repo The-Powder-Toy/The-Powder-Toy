@@ -102,7 +102,7 @@ void TickClient()
 
 int main(int argc, char *argv[]);
 
-static void BlueScreen(String detailMessage, std::optional<std::vector<String>> stackTrace)
+static void BlueScreen(const String& detailMessage, std::optional<std::vector<String>> stackTrace)
 {
 	auto &engine = ui::Engine::Ref();
 	engine.g->BlendFilledRect(engine.g->Size().OriginRect(), 0x1172A9_rgb .WithAlpha(0xD2));
@@ -405,7 +405,7 @@ int Main(int argc, char *argv[])
 		}
 	}
 
-	auto clientConfig = [&prefs](Argument arg, ByteString name, ByteString defaultValue) {
+	auto clientConfig = [&prefs](Argument arg, const ByteString& name, const ByteString& defaultValue) {
 		ByteString value;
 		if (arg.has_value())
 		{
