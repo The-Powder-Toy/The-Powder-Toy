@@ -1,22 +1,6 @@
 #include "Brush.h"
 #include "graphics/Graphics.h"
 
-Brush::Brush(const Brush &other)
-{
-	radius = other.radius;
-	auto size = GetSize();
-	if (other.bitmap)
-	{
-		bitmap = std::make_unique<unsigned char []>(size.X * size.Y);
-		std::copy(&other.bitmap[0], &other.bitmap[0] + size.X * size.Y, &bitmap[0]);
-	}
-	if (other.outline)
-	{
-		outline = std::make_unique<unsigned char []>(size.X * size.Y);
-		std::copy(&other.outline[0], &other.outline[0] + size.X * size.Y, &outline[0]);
-	}
-}
-
 void Brush::InitBitmap()
 {
 	bitmap = GenerateBitmap();
@@ -26,26 +10,26 @@ void Brush::InitOutline()
 {
 	InitBitmap();
 	ui::Point bounds = GetSize();
-	outline = std::make_unique<unsigned char []>(bounds.X * bounds.Y);
+	outline = PlaneAdapter<std::vector<unsigned char>>(bounds);
 	for (int j = 0; j < bounds.Y; j++)
 	{
 		for (int i = 0; i < bounds.X; i++)
 		{
 			bool value = false;
-			if (bitmap[i + j * bounds.X])
+			if (bitmap[{ i, j }])
 			{
 				if (i == 0 || j == 0 || i == bounds.X - 1 || j == bounds.Y - 1)
 					value = true;
-				else if (!bitmap[(i + 1) + j * bounds.X])
+				else if (!bitmap[{ i + 1, j }])
 					value = true;
-				else if (!bitmap[(i - 1) + j * bounds.X])
+				else if (!bitmap[{ i - 1, j }])
 					value = true;
-				else if (!bitmap[i + (j + 1) * bounds.X])
+				else if (!bitmap[{ i, j + 1 }])
 					value = true;
-				else if (!bitmap[i + (j - 1) * bounds.X])
+				else if (!bitmap[{ i, j - 1 }])
 					value = true;
 			}
-			outline[i + j * bounds.X] = value ? 0xFF : 0;
+			outline[{ i, j }] = value ? 0xFF : 0;
 		}
 	}
 }
@@ -122,7 +106,7 @@ void Brush::RenderLine(Graphics *g, ui::Point position1, ui::Point position2) co
 
 void Brush::RenderPoint(Graphics *g, ui::Point position) const
 {
-	g->XorImage(&outline[0], RectBetween(position - radius, position + radius));
+	g->XorImage(outline.data(), RectBetween(position - radius, position + radius));
 }
 
 void Brush::RenderFill(Graphics *g, ui::Point position) const
