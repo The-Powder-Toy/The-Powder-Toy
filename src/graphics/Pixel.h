@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <initializer_list>
 #include <limits>
 #include <type_traits>
 #include <utility>
@@ -16,17 +17,15 @@ constexpr int PIXELCHANNELS = 3;
 // Use sparingly, e.g. when passing packed data to a third party library.
 typedef uint32_t pixel_rgba;
 
-template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 struct RGBA;
 
-template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
-struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) RGB
+struct alignas(alignof(uint32_t)) RGB
 {
-	T Blue, Green, Red;
+	uint8_t Blue, Green, Red;
 
 	constexpr RGB() = default;
 
-	constexpr RGB(T r, T g, T b):
+	constexpr RGB(uint8_t r, uint8_t g, uint8_t b):
 		Blue(b),
 		Green(g),
 		Red(r)
@@ -38,38 +37,12 @@ struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) 
 
 	// Blend and Add get called in tight loops so it's important that they
 	// vectorize well.
-	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
-	constexpr RGB<T> Blend(RGBA<T> other) const
-	{
-		if (other.Alpha == 0xFF)
-			return other.NoAlpha();
-		// Dividing by 0xFF means the two branches return the same value in the
-		// case that other.Alpha == 0xFF, and the division happens via
-		// multiplication and bitshift anyway, so it vectorizes better than code
-		// that branches in a meaningful way.
-		return RGB<T>(
-			// the intermediate is guaranteed to fit in 16 bits, and a 16 bit
-			// multiplication vectorizes better than a longer one.
-			uint16_t(other.Alpha * other.Red   + (0xFF - other.Alpha) * Red  ) / 0xFF,
-			uint16_t(other.Alpha * other.Green + (0xFF - other.Alpha) * Green) / 0xFF,
-			uint16_t(other.Alpha * other.Blue  + (0xFF - other.Alpha) * Blue ) / 0xFF
-		);
-	}
+	constexpr RGB Blend(RGBA other) const;
+	constexpr RGB Add(RGBA other) const;
 
-	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
-	constexpr RGB<T> Add(RGBA<T> other) const
+	constexpr RGB AddFire(RGB other, int fireAlpha) const
 	{
-		return RGB<T>(
-			std::min(0xFF, Red + uint16_t(other.Alpha * other.Red) / 0xFF),
-			std::min(0xFF, Green + uint16_t(other.Alpha * other.Green) / 0xFF),
-			std::min(0xFF, Blue + uint16_t(other.Alpha * other.Blue) / 0xFF)
-		);
-	}
-
-	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
-	constexpr RGB<T> AddFire(RGB<T> other, int fireAlpha) const
-	{
-		return RGB<T>(
+		return RGB(
 			std::min(0xFF, Red + (fireAlpha * other.Red) / 0xFF),
 			std::min(0xFF, Green + (fireAlpha * other.Green) / 0xFF),
 			std::min(0xFF, Blue + (fireAlpha * other.Blue) / 0xFF)
@@ -77,8 +50,7 @@ struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) 
 	}
 
 	// Decrement each component that is nonzero.
-	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
-	constexpr RGB<T> Decay() const
+	constexpr RGB Decay() const
 	{
 		// This vectorizes really well.
 		pixel colour = Pack(), mask = colour;
@@ -89,43 +61,36 @@ struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) 
 		return Unpack(colour - mask);
 	}
 
-	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
-	RGB<T> Inverse() const
+	constexpr RGB Inverse() const
 	{
-		return RGB<T>(0xFF - Red, 0xFF - Green, 0xFF - Blue);
+		return RGB(0xFF - Red, 0xFF - Green, 0xFF - Blue);
 	}
 
-	constexpr RGBA<T> WithAlpha(T a) const
-	{
-		return RGBA<T>(Red, Green, Blue, a);
-	}
+	constexpr RGBA WithAlpha(uint8_t a) const;
 
-	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
 	constexpr pixel Pack() const
 	{
 		return Red << 16 | Green << 8 | Blue;
 	}
 
-	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
-	constexpr static RGB<T> Unpack(pixel px)
+	constexpr static RGB Unpack(pixel px)
 	{
-		return RGB<T>(px >> 16, px >> 8, px);
+		return RGB(px >> 16, px >> 8, px);
 	}
 };
 
-constexpr inline RGB<uint8_t> operator ""_rgb(unsigned long long value)
+constexpr inline RGB operator ""_rgb(unsigned long long value)
 {
-	return RGB<uint8_t>::Unpack(value);
+	return RGB::Unpack(value);
 }
 
-template<typename T, typename>
-struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) RGBA
+struct alignas(alignof(uint32_t)) RGBA
 {
-	T Blue, Green, Red, Alpha;
+	uint8_t Blue, Green, Red, Alpha;
 
 	constexpr RGBA() = default;
 
-	constexpr RGBA(T r, T g, T b, T a):
+	constexpr RGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a):
 		Blue(b),
 		Green(g),
 		Red(r),
@@ -133,8 +98,7 @@ struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) 
 	{
 	}
 
-	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
-	RGBA(T r, T g, T b):
+	RGBA(uint8_t r, uint8_t g, uint8_t b):
 		Blue(b),
 		Green(g),
 		Red(r),
@@ -145,20 +109,51 @@ struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) 
 	template<typename S> // Disallow brace initialization
 	RGBA(std::initializer_list<S>) = delete;
 
-	constexpr RGB<T> NoAlpha() const
+	constexpr RGB NoAlpha() const
 	{
-		return RGB<T>(Red, Green, Blue);
+		return RGB(Red, Green, Blue);
 	}
 
-	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
 	constexpr pixel Pack() const
 	{
 		return Red << 16 | Green << 8 | Blue | Alpha << 24;
 	}
 
-	template<typename S = T, typename = std::enable_if_t<std::is_same_v<S, uint8_t>>>
-	constexpr static RGBA<T> Unpack(pixel_rgba px)
+	constexpr static RGBA Unpack(pixel_rgba px)
 	{
-		return RGBA<T>(px >> 16, px >> 8, px, px >> 24);
+		return RGBA(px >> 16, px >> 8, px, px >> 24);
 	}
 };
+
+// Blend and Add get called in tight loops so it's important that they
+// vectorize well.
+constexpr RGB RGB::Blend(RGBA other) const
+{
+	if (other.Alpha == 0xFF)
+		return other.NoAlpha();
+	// Dividing by 0xFF means the two branches return the same value in the
+	// case that other.Alpha == 0xFF, and the division happens via
+	// multiplication and bitshift anyway, so it vectorizes better than code
+	// that branches in a meaningful way.
+	return RGB(
+		// the intermediate is guaranteed to fit in 16 bits, and a 16 bit
+		// multiplication vectorizes better than a longer one.
+		uint16_t(other.Alpha * other.Red   + (0xFF - other.Alpha) * Red  ) / 0xFF,
+		uint16_t(other.Alpha * other.Green + (0xFF - other.Alpha) * Green) / 0xFF,
+		uint16_t(other.Alpha * other.Blue  + (0xFF - other.Alpha) * Blue ) / 0xFF
+	);
+}
+
+constexpr RGB RGB::Add(RGBA other) const
+{
+	return RGB(
+		std::min(0xFF, Red + uint16_t(other.Alpha * other.Red) / 0xFF),
+		std::min(0xFF, Green + uint16_t(other.Alpha * other.Green) / 0xFF),
+		std::min(0xFF, Blue + uint16_t(other.Alpha * other.Blue) / 0xFF)
+	);
+}
+
+constexpr RGBA RGB::WithAlpha(uint8_t a) const
+{
+	return RGBA(Red, Green, Blue, a);
+}

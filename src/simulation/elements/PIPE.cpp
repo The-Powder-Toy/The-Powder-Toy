@@ -374,7 +374,7 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 			// native graphics function. Lua graphics functions are more complicated to appease: they access particle data through the
 			// particle ID, so not only do we have to give them a correctly populated Particle, it also has to be somewhere in Simulation.
 			// luaGraphicsWrapper takes care of this.
-			RGB<uint8_t> colour = elements[t].Colour;
+			RGB colour = elements[t].Colour;
 			*colr = colour.Red;
 			*colg = colour.Green;
 			*colb = colour.Blue;

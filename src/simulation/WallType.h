@@ -7,8 +7,8 @@ class VideoBuffer;
 
 struct wall_type
 {
-	RGB<uint8_t> colour;
-	RGB<uint8_t> eglow; // if emap set, add this to fire glow
+	RGB colour;
+	RGB eglow; // if emap set, add this to fire glow
 	int drawstyle;
 	std::unique_ptr<VideoBuffer> (*textureGen)(int, Vec2<int>);
 	String name;

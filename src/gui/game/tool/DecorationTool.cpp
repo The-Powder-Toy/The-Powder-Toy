@@ -10,7 +10,7 @@ std::unique_ptr<VideoBuffer> DecorationTool::GetIcon(int ToolID, Vec2<int> size)
 
 	if (ToolID == DECO_SMUDGE)
 		for (auto pos : size.OriginRect())
-			texture->DrawPixel(pos, RGB<uint8_t>(0, 0xFF - 5 * pos.X, 5 * pos.X));
+			texture->DrawPixel(pos, RGB(0, 0xFF - 5 * pos.X, 5 * pos.X));
 	else if (ToolID == DECO_DRAW || ToolID == DECO_CLEAR)
 		texture->BlendFilledRect(size.OriginRect(), Colour);
 	else
@@ -18,7 +18,7 @@ std::unique_ptr<VideoBuffer> DecorationTool::GetIcon(int ToolID, Vec2<int> size)
 
 	if (ToolID == DECO_CLEAR)
 	{
-		auto reverse = RGB<uint8_t>(Colour.Red + 127, Colour.Green + 127, Colour.Blue + 127).WithAlpha(0xFF);
+		auto reverse = RGB(Colour.Red + 127, Colour.Green + 127, Colour.Blue + 127).WithAlpha(0xFF);
 		texture->BlendChar(size / 2 - Vec2(4, 2), 0xE06C, reverse);
 	}
 	else
@@ -58,7 +58,7 @@ void DecorationTool::DrawFill(Simulation * sim, Brush const &brush, ui::Point po
 	{
 		return;
 	}
-	auto loc = RGB<uint8_t>::Unpack(rendererFrame[position]);
+	auto loc = RGB::Unpack(rendererFrame[position]);
 	if (ToolID == DECO_CLEAR)
 		// TODO: this is actually const-correct
 		sim->ApplyDecorationFill(rendererFrame, position.X, position.Y, 0, 0, 0, 0, loc.Red, loc.Green, loc.Blue);

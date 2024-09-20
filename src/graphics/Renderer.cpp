@@ -25,7 +25,7 @@ void Renderer::RenderSimulation()
 	if (displayMode & DISPLAY_PERS)
 	{
 		std::transform(video.RowIterator({ 0, 0 }), video.RowIterator({ 0, YRES }), persistentVideo.begin(), [](pixel p) {
-			return RGB<uint8_t>::Unpack(p).Decay().Pack();
+			return RGB::Unpack(p).Decay().Pack();
 		});
 	}
 
@@ -64,11 +64,11 @@ void Renderer::render_gravlensing(const RendererFrame &source)
 		    RES.OriginRect().Contains(gp) &&
 		    RES.OriginRect().Contains(bp))
 		{
-			auto v = RGB<uint8_t>::Unpack(video[p]);
-			video[p] = RGB<uint8_t>(
-				std::min(0xFF, RGB<uint8_t>::Unpack(source[rp]).Red   + v.Red  ),
-				std::min(0xFF, RGB<uint8_t>::Unpack(source[gp]).Green + v.Green),
-				std::min(0xFF, RGB<uint8_t>::Unpack(source[bp]).Blue  + v.Blue )
+			auto v = RGB::Unpack(video[p]);
+			video[p] = RGB(
+				std::min(0xFF, RGB::Unpack(source[rp]).Red   + v.Red  ),
+				std::min(0xFF, RGB::Unpack(source[gp]).Green + v.Green),
+				std::min(0xFF, RGB::Unpack(source[bp]).Blue  + v.Blue )
 			).Pack();
 		}
 	}
@@ -82,8 +82,8 @@ std::unique_ptr<VideoBuffer> Renderer::WallIcon(int wallID, Vec2<int> size)
 		return nullptr;
 	wall_type const &wtype = wtypes[wallID];
 
-	RGB<uint8_t> primary = wtype.colour;
-	RGB<uint8_t> secondary = wtype.eglow;
+	RGB primary = wtype.colour;
+	RGB secondary = wtype.eglow;
 
 	auto texture = std::make_unique<VideoBuffer>(size);
 	switch (wtype.drawstyle)
@@ -189,7 +189,7 @@ std::unique_ptr<VideoBuffer> Renderer::WallIcon(int wallID, Vec2<int> size)
 				int rc = std::min(150, std::max(0, r));
 				int gc = std::min(200, std::max(0, g));
 				int bc = std::min(200, std::max(0, b));
-				texture->DrawLine(Vec2(x, 0), Vec2(x, size.Y - 1), RGB<uint8_t>(rc, gc, bc));
+				texture->DrawLine(Vec2(x, 0), Vec2(x, size.Y - 1), RGB(rc, gc, bc));
 			}
 			texture->BlendChar(size / 2 - Vec2(10, 2), 0xE06C, 0xFF0000_rgb .WithAlpha(0xFF));
 			texture->BlendChar(size / 2 - Vec2(-1, 2), 0xE06C, 0xFF0000_rgb .WithAlpha(0xFF));
@@ -277,7 +277,7 @@ void Renderer::render_parts()
 			//Defaults
 			pixel_mode = 0 | PMODE_FLAT;
 			cola = 255;
-			RGB<uint8_t> colour = elements[t].Colour;
+			RGB colour = elements[t].Colour;
 			colr = colour.Red;
 			colg = colour.Green;
 			colb = colour.Blue;
@@ -360,7 +360,7 @@ void Renderer::render_parts()
 					constexpr float min_temp = MIN_TEMP;
 					constexpr float max_temp = MAX_TEMP;
 					firea = 255;
-					RGB<uint8_t> color = heatTableAt(int((sim->parts[i].temp - min_temp) / (max_temp - min_temp) * 1024));
+					RGB color = heatTableAt(int((sim->parts[i].temp - min_temp) / (max_temp - min_temp) * 1024));
 					firer = colr = color.Red;
 					fireg = colg = color.Green;
 					fireb = colb = color.Blue;
@@ -501,7 +501,7 @@ void Renderer::render_parts()
 					if (t==PT_SOAP)
 					{
 						if ((parts[i].ctype&3) == 3 && parts[i].tmp >= 0 && parts[i].tmp < NPART)
-							BlendLine({ nx, ny }, { int(parts[parts[i].tmp].x+0.5f), int(parts[parts[i].tmp].y+0.5f) }, RGBA<uint8_t>(colr, colg, colb, cola));
+							BlendLine({ nx, ny }, { int(parts[parts[i].tmp].x+0.5f), int(parts[parts[i].tmp].y+0.5f) }, RGBA(colr, colg, colb, cola));
 					}
 				}
 				if(pixel_mode & PSPEC_STICKMAN)
@@ -539,7 +539,7 @@ void Renderer::render_parts()
 						}
 						else if (cplayer->elem < PT_NUM && cplayer->elem > 0)
 						{
-							RGB<uint8_t> elemColour = elements[cplayer->elem].Colour;
+							RGB elemColour = elements[cplayer->elem].Colour;
 							colr = elemColour.Red;
 							colg = elemColour.Green;
 							colb = elemColour.Blue;
@@ -589,23 +589,23 @@ void Renderer::render_parts()
 					//head
 					if(t==PT_FIGH)
 					{
-						DrawLine({ nx, ny+2 }, { nx+2, ny }, RGB<uint8_t>(colr, colg, colb));
-						DrawLine({ nx+2, ny }, { nx, ny-2 }, RGB<uint8_t>(colr, colg, colb));
-						DrawLine({ nx, ny-2 }, { nx-2, ny }, RGB<uint8_t>(colr, colg, colb));
-						DrawLine({ nx-2, ny }, { nx, ny+2 }, RGB<uint8_t>(colr, colg, colb));
+						DrawLine({ nx, ny+2 }, { nx+2, ny }, RGB(colr, colg, colb));
+						DrawLine({ nx+2, ny }, { nx, ny-2 }, RGB(colr, colg, colb));
+						DrawLine({ nx, ny-2 }, { nx-2, ny }, RGB(colr, colg, colb));
+						DrawLine({ nx-2, ny }, { nx, ny+2 }, RGB(colr, colg, colb));
 					}
 					else
 					{
-						DrawLine({ nx-2, ny+2 }, { nx+2, ny+2 }, RGB<uint8_t>(colr, colg, colb));
-						DrawLine({ nx-2, ny-2 }, { nx+2, ny-2 }, RGB<uint8_t>(colr, colg, colb));
-						DrawLine({ nx-2, ny-2 }, { nx-2, ny+2 }, RGB<uint8_t>(colr, colg, colb));
-						DrawLine({ nx+2, ny-2 }, { nx+2, ny+2 }, RGB<uint8_t>(colr, colg, colb));
+						DrawLine({ nx-2, ny+2 }, { nx+2, ny+2 }, RGB(colr, colg, colb));
+						DrawLine({ nx-2, ny-2 }, { nx+2, ny-2 }, RGB(colr, colg, colb));
+						DrawLine({ nx-2, ny-2 }, { nx-2, ny+2 }, RGB(colr, colg, colb));
+						DrawLine({ nx+2, ny-2 }, { nx+2, ny+2 }, RGB(colr, colg, colb));
 					}
 					//legs
-					DrawLine({                    nx,                  ny+3 }, { int(cplayer->legs[ 0]), int(cplayer->legs[ 1]) }, RGB<uint8_t>(legr, legg, legb));
-					DrawLine({ int(cplayer->legs[0]), int(cplayer->legs[1]) }, { int(cplayer->legs[ 4]), int(cplayer->legs[ 5]) }, RGB<uint8_t>(legr, legg, legb));
-					DrawLine({                    nx,                  ny+3 }, { int(cplayer->legs[ 8]), int(cplayer->legs[ 9]) }, RGB<uint8_t>(legr, legg, legb));
-					DrawLine({ int(cplayer->legs[8]), int(cplayer->legs[9]) }, { int(cplayer->legs[12]), int(cplayer->legs[13]) }, RGB<uint8_t>(legr, legg, legb));
+					DrawLine({                    nx,                  ny+3 }, { int(cplayer->legs[ 0]), int(cplayer->legs[ 1]) }, RGB(legr, legg, legb));
+					DrawLine({ int(cplayer->legs[0]), int(cplayer->legs[1]) }, { int(cplayer->legs[ 4]), int(cplayer->legs[ 5]) }, RGB(legr, legg, legb));
+					DrawLine({                    nx,                  ny+3 }, { int(cplayer->legs[ 8]), int(cplayer->legs[ 9]) }, RGB(legr, legg, legb));
+					DrawLine({ int(cplayer->legs[8]), int(cplayer->legs[9]) }, { int(cplayer->legs[12]), int(cplayer->legs[13]) }, RGB(legr, legg, legb));
 					if (cplayer->rocketBoots)
 					{
 						for (int leg=0; leg<2; leg++)
@@ -616,65 +616,65 @@ void Renderer::render_parts()
 								DrawPixel({ nx, ny }, 0x00FF00_rgb);
 							else
 								DrawPixel({ nx, ny }, 0xFF0000_rgb);
-							BlendPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb, 223));
-							BlendPixel({ nx-1, ny }, RGBA<uint8_t>(colr, colg, colb, 223));
-							BlendPixel({ nx, ny+1 }, RGBA<uint8_t>(colr, colg, colb, 223));
-							BlendPixel({ nx, ny-1 }, RGBA<uint8_t>(colr, colg, colb, 223));
+							BlendPixel({ nx+1, ny }, RGBA(colr, colg, colb, 223));
+							BlendPixel({ nx-1, ny }, RGBA(colr, colg, colb, 223));
+							BlendPixel({ nx, ny+1 }, RGBA(colr, colg, colb, 223));
+							BlendPixel({ nx, ny-1 }, RGBA(colr, colg, colb, 223));
 
-							BlendPixel({ nx+1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, 112));
-							BlendPixel({ nx-1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, 112));
-							BlendPixel({ nx+1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, 112));
-							BlendPixel({ nx-1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, 112));
+							BlendPixel({ nx+1, ny-1 }, RGBA(colr, colg, colb, 112));
+							BlendPixel({ nx-1, ny-1 }, RGBA(colr, colg, colb, 112));
+							BlendPixel({ nx+1, ny+1 }, RGBA(colr, colg, colb, 112));
+							BlendPixel({ nx-1, ny+1 }, RGBA(colr, colg, colb, 112));
 						}
 					}
 				}
 				if(pixel_mode & PMODE_FLAT)
 				{
-					video[{ nx, ny }] = RGB<uint8_t>(colr, colg, colb).Pack();
+					video[{ nx, ny }] = RGB(colr, colg, colb).Pack();
 				}
 				if(pixel_mode & PMODE_BLEND)
 				{
-					BlendPixel({ nx, ny }, RGBA<uint8_t>(colr, colg, colb, cola));
+					BlendPixel({ nx, ny }, RGBA(colr, colg, colb, cola));
 				}
 				if(pixel_mode & PMODE_ADD)
 				{
-					AddPixel({ nx, ny }, RGBA<uint8_t>(colr, colg, colb, cola));
+					AddPixel({ nx, ny }, RGBA(colr, colg, colb, cola));
 				}
 				if(pixel_mode & PMODE_BLOB)
 				{
-					video[{ nx, ny }] = RGB<uint8_t>(colr, colg, colb).Pack();
+					video[{ nx, ny }] = RGB(colr, colg, colb).Pack();
 
-					BlendPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb, 223));
-					BlendPixel({ nx-1, ny }, RGBA<uint8_t>(colr, colg, colb, 223));
-					BlendPixel({ nx, ny+1 }, RGBA<uint8_t>(colr, colg, colb, 223));
-					BlendPixel({ nx, ny-1 }, RGBA<uint8_t>(colr, colg, colb, 223));
+					BlendPixel({ nx+1, ny }, RGBA(colr, colg, colb, 223));
+					BlendPixel({ nx-1, ny }, RGBA(colr, colg, colb, 223));
+					BlendPixel({ nx, ny+1 }, RGBA(colr, colg, colb, 223));
+					BlendPixel({ nx, ny-1 }, RGBA(colr, colg, colb, 223));
 
-					BlendPixel({ nx+1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, 112));
-					BlendPixel({ nx-1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, 112));
-					BlendPixel({ nx+1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, 112));
-					BlendPixel({ nx-1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, 112));
+					BlendPixel({ nx+1, ny-1 }, RGBA(colr, colg, colb, 112));
+					BlendPixel({ nx-1, ny-1 }, RGBA(colr, colg, colb, 112));
+					BlendPixel({ nx+1, ny+1 }, RGBA(colr, colg, colb, 112));
+					BlendPixel({ nx-1, ny+1 }, RGBA(colr, colg, colb, 112));
 				}
 				if(pixel_mode & PMODE_GLOW)
 				{
 					int cola1 = (5*cola)/255;
-					AddPixel({ nx, ny }, RGBA<uint8_t>(colr, colg, colb, (192*cola)/255));
-					AddPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb, (96*cola)/255));
-					AddPixel({ nx-1, ny }, RGBA<uint8_t>(colr, colg, colb, (96*cola)/255));
-					AddPixel({ nx, ny+1 }, RGBA<uint8_t>(colr, colg, colb, (96*cola)/255));
-					AddPixel({ nx, ny-1 }, RGBA<uint8_t>(colr, colg, colb, (96*cola)/255));
+					AddPixel({ nx, ny }, RGBA(colr, colg, colb, (192*cola)/255));
+					AddPixel({ nx+1, ny }, RGBA(colr, colg, colb, (96*cola)/255));
+					AddPixel({ nx-1, ny }, RGBA(colr, colg, colb, (96*cola)/255));
+					AddPixel({ nx, ny+1 }, RGBA(colr, colg, colb, (96*cola)/255));
+					AddPixel({ nx, ny-1 }, RGBA(colr, colg, colb, (96*cola)/255));
 
 					for (x = 1; x < 6; x++) {
-						AddPixel({ nx, ny-x }, RGBA<uint8_t>(colr, colg, colb, cola1));
-						AddPixel({ nx, ny+x }, RGBA<uint8_t>(colr, colg, colb, cola1));
-						AddPixel({ nx-x, ny }, RGBA<uint8_t>(colr, colg, colb, cola1));
-						AddPixel({ nx+x, ny }, RGBA<uint8_t>(colr, colg, colb, cola1));
+						AddPixel({ nx, ny-x }, RGBA(colr, colg, colb, cola1));
+						AddPixel({ nx, ny+x }, RGBA(colr, colg, colb, cola1));
+						AddPixel({ nx-x, ny }, RGBA(colr, colg, colb, cola1));
+						AddPixel({ nx+x, ny }, RGBA(colr, colg, colb, cola1));
 						for (y = 1; y < 6; y++) {
 							if(x + y > 7)
 								continue;
-							AddPixel({ nx+x, ny-y }, RGBA<uint8_t>(colr, colg, colb, cola1));
-							AddPixel({ nx-x, ny+y }, RGBA<uint8_t>(colr, colg, colb, cola1));
-							AddPixel({ nx+x, ny+y }, RGBA<uint8_t>(colr, colg, colb, cola1));
-							AddPixel({ nx-x, ny-y }, RGBA<uint8_t>(colr, colg, colb, cola1));
+							AddPixel({ nx+x, ny-y }, RGBA(colr, colg, colb, cola1));
+							AddPixel({ nx-x, ny+y }, RGBA(colr, colg, colb, cola1));
+							AddPixel({ nx+x, ny+y }, RGBA(colr, colg, colb, cola1));
+							AddPixel({ nx-x, ny-y }, RGBA(colr, colg, colb, cola1));
 						}
 					}
 				}
@@ -685,11 +685,11 @@ void Renderer::render_parts()
 						for (y=-3; y<4; y++)
 						{
 							if (abs(x)+abs(y) <2 && !(abs(x)==2||abs(y)==2))
-								BlendPixel({ x+nx, y+ny }, RGBA<uint8_t>(colr, colg, colb, 30));
+								BlendPixel({ x+nx, y+ny }, RGBA(colr, colg, colb, 30));
 							if (abs(x)+abs(y) <=3 && abs(x)+abs(y))
-								BlendPixel({ x+nx, y+ny }, RGBA<uint8_t>(colr, colg, colb, 20));
+								BlendPixel({ x+nx, y+ny }, RGBA(colr, colg, colb, 20));
 							if (abs(x)+abs(y) == 2)
-								BlendPixel({ x+nx, y+ny }, RGBA<uint8_t>(colr, colg, colb, 10));
+								BlendPixel({ x+nx, y+ny }, RGBA(colr, colg, colb, 10));
 						}
 					}
 				}
@@ -698,7 +698,7 @@ void Renderer::render_parts()
 					auto flicker = float(gfctx.rng()%20);
 					auto gradv = 4*sim->parts[i].life + flicker;
 					for (x = 0; (gradv>0.5) && (drawing_budget > 0); x++) {
-						auto col = RGBA<uint8_t>(
+						auto col = RGBA(
 							std::min(0xFF, colr * int(gradv) / 255),
 							std::min(0xFF, colg * int(gradv) / 255),
 							std::min(0xFF, colb * int(gradv) / 255)
@@ -715,21 +715,21 @@ void Renderer::render_parts()
 				{
 					auto flicker = float(gfctx.rng()%20);
 					auto gradv = flicker + fabs(parts[i].vx)*17 + fabs(sim->parts[i].vy)*17;
-					BlendPixel({ nx, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) ));
-					BlendPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb,int( (gradv*2)>255?255:(gradv*2)) ));
-					BlendPixel({ nx-1, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
-					BlendPixel({ nx, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
-					BlendPixel({ nx, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
+					BlendPixel({ nx, ny }, RGBA(colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) ));
+					BlendPixel({ nx+1, ny }, RGBA(colr, colg, colb,int( (gradv*2)>255?255:(gradv*2)) ));
+					BlendPixel({ nx-1, ny }, RGBA(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
+					BlendPixel({ nx, ny+1 }, RGBA(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
+					BlendPixel({ nx, ny-1 }, RGBA(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
 					if (gradv>255) gradv=255;
-					BlendPixel({ nx+1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-					BlendPixel({ nx-1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-					BlendPixel({ nx+1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-					BlendPixel({ nx-1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+					BlendPixel({ nx+1, ny-1 }, RGBA(colr, colg, colb, int(gradv)));
+					BlendPixel({ nx-1, ny-1 }, RGBA(colr, colg, colb, int(gradv)));
+					BlendPixel({ nx+1, ny+1 }, RGBA(colr, colg, colb, int(gradv)));
+					BlendPixel({ nx-1, ny+1 }, RGBA(colr, colg, colb, int(gradv)));
 					for (x = 1; (gradv>0.5) && (drawing_budget > 0); x++) {
-						AddPixel({ nx+x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-						AddPixel({ nx-x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-						AddPixel({ nx, ny+x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-						AddPixel({ nx, ny-x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+						AddPixel({ nx+x, ny }, RGBA(colr, colg, colb, int(gradv)));
+						AddPixel({ nx-x, ny }, RGBA(colr, colg, colb, int(gradv)));
+						AddPixel({ nx, ny+x }, RGBA(colr, colg, colb, int(gradv)));
+						AddPixel({ nx, ny-x }, RGBA(colr, colg, colb, int(gradv)));
 						gradv = gradv/1.2f;
 						drawing_budget--;
 					}
@@ -738,21 +738,21 @@ void Renderer::render_parts()
 				{
 					auto flicker = float(gfctx.rng()%20);
 					auto gradv = flicker + fabs(parts[i].vx)*17 + fabs(parts[i].vy)*17;
-					BlendPixel({ nx, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) ));
-					BlendPixel({ nx+1, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
-					BlendPixel({ nx-1, ny }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
-					BlendPixel({ nx, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
-					BlendPixel({ nx, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
+					BlendPixel({ nx, ny }, RGBA(colr, colg, colb, int((gradv*4)>255?255:(gradv*4)) ));
+					BlendPixel({ nx+1, ny }, RGBA(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
+					BlendPixel({ nx-1, ny }, RGBA(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
+					BlendPixel({ nx, ny+1 }, RGBA(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
+					BlendPixel({ nx, ny-1 }, RGBA(colr, colg, colb, int((gradv*2)>255?255:(gradv*2)) ));
 					if (gradv>255) gradv=255;
-					BlendPixel({ nx+1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-					BlendPixel({ nx-1, ny-1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-					BlendPixel({ nx+1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-					BlendPixel({ nx-1, ny+1 }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+					BlendPixel({ nx+1, ny-1 }, RGBA(colr, colg, colb, int(gradv)));
+					BlendPixel({ nx-1, ny-1 }, RGBA(colr, colg, colb, int(gradv)));
+					BlendPixel({ nx+1, ny+1 }, RGBA(colr, colg, colb, int(gradv)));
+					BlendPixel({ nx-1, ny+1 }, RGBA(colr, colg, colb, int(gradv)));
 					for (x = 1; (gradv>0.5) && (drawing_budget > 0); x++) {
-						AddPixel({ nx+x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-						AddPixel({ nx-x, ny }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-						AddPixel({ nx, ny+x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
-						AddPixel({ nx, ny-x }, RGBA<uint8_t>(colr, colg, colb, int(gradv)));
+						AddPixel({ nx+x, ny }, RGBA(colr, colg, colb, int(gradv)));
+						AddPixel({ nx-x, ny }, RGBA(colr, colg, colb, int(gradv)));
+						AddPixel({ nx, ny+x }, RGBA(colr, colg, colb, int(gradv)));
+						AddPixel({ nx, ny-x }, RGBA(colr, colg, colb, int(gradv)));
 						gradv = gradv/1.01f;
 						drawing_budget--;
 					}
@@ -771,7 +771,7 @@ void Renderer::render_parts()
 						nxo = (int)(ddist*cos(drad));
 						nyo = (int)(ddist*sin(drad));
 						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES && TYP(sim->pmap[ny+nyo][nx+nxo]) != PT_PRTI)
-							AddPixel({ nx+nxo, ny+nyo }, RGBA<uint8_t>(colr, colg, colb, 255-orbd[r]));
+							AddPixel({ nx+nxo, ny+nyo }, RGBA(colr, colg, colb, 255-orbd[r]));
 					}
 				}
 				if (pixel_mode & EFFECT_GRAVOUT)
@@ -788,7 +788,7 @@ void Renderer::render_parts()
 						nxo = (int)(ddist*cos(drad));
 						nyo = (int)(ddist*sin(drad));
 						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES && TYP(sim->pmap[ny+nyo][nx+nxo]) != PT_PRTO)
-							AddPixel({ nx+nxo, ny+nyo }, RGBA<uint8_t>(colr, colg, colb, 255-orbd[r]));
+							AddPixel({ nx+nxo, ny+nyo }, RGBA(colr, colg, colb, 255-orbd[r]));
 					}
 				}
 				if (pixel_mode & EFFECT_DBGLINES && !(displayMode&DISPLAY_PERS))
@@ -869,7 +869,7 @@ void Renderer::draw_other() // EMP effect
 		for (j=0; j<YRES; j++)
 			for (i=0; i<XRES; i++)
 			{
-				BlendPixel({ i, j }, RGBA<uint8_t>(r, g, b, a));
+				BlendPixel({ i, j }, RGBA(r, g, b, a));
 			}
 	}
 }
@@ -937,20 +937,20 @@ void Renderer::draw_air()
 			if (displayMode & DISPLAY_AIRP)
 			{
 				if (pv[y][x] > 0.0f)
-					c = RGB<uint8_t>(clamp_flt(pv[y][x], 0.0f, 8.0f), 0, 0);//positive pressure is red!
+					c = RGB(clamp_flt(pv[y][x], 0.0f, 8.0f), 0, 0);//positive pressure is red!
 				else
-					c = RGB<uint8_t>(0, 0, clamp_flt(-pv[y][x], 0.0f, 8.0f));//negative pressure is blue!
+					c = RGB(0, 0, clamp_flt(-pv[y][x], 0.0f, 8.0f));//negative pressure is blue!
 			}
 			else if (displayMode & DISPLAY_AIRV)
 			{
-				c = RGB<uint8_t>(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
+				c = RGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 					clamp_flt(pv[y][x], 0.0f, 8.0f),//pressure adds green
 					clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f));//vy adds blue
 			}
 			else if (displayMode & DISPLAY_AIRH)
 			{
-				c = RGB<uint8_t>::Unpack(HeatToColour(hv[y][x]));
-				//c = RGB<uint8_t>(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
+				c = RGB::Unpack(HeatToColour(hv[y][x]));
+				//c = RGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 				//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
 				//	clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f)).Pack();//vy adds blue
 			}
@@ -972,7 +972,7 @@ void Renderer::draw_air()
 						g=255;
 					if (b>255)
 						b=255;
-					c = RGB<uint8_t>(r, g, b);
+					c = RGB(r, g, b);
 				}
 				else
 				{
@@ -983,7 +983,7 @@ void Renderer::draw_air()
 						g=255;
 					if (b>255)
 						b=255;
-					c = RGB<uint8_t>(r, g, b);
+					c = RGB(r, g, b);
 				}
 			}
 			if (findingElement)
@@ -1010,8 +1010,8 @@ void Renderer::DrawWalls()
 				if (wt >= UI_WALLCOUNT)
 					continue;
 				unsigned char powered = sim->emap[y][x];
-				RGB<uint8_t> prgb = wtypes[wt].colour;
-				RGB<uint8_t> grgb = wtypes[wt].eglow;
+				RGB prgb = wtypes[wt].colour;
+				RGB grgb = wtypes[wt].eglow;
 
 				if (findingElement)
 				{
@@ -1234,7 +1234,7 @@ void Renderer::DrawWalls()
 				if (wtypes[wt].eglow.Pack() && powered)
 				{
 					// glow if electrified
-					RGB<uint8_t> glow = wtypes[wt].eglow;
+					RGB glow = wtypes[wt].eglow;
 					int alpha = 255;
 					int cr = (alpha*glow.Red   + (255-alpha)*fire_r[y/CELL][x/CELL]) >> 8;
 					int cg = (alpha*glow.Green + (255-alpha)*fire_g[y/CELL][x/CELL]) >> 8;
@@ -1271,7 +1271,7 @@ void Renderer::render_fire()
 						a = fire_alpha[y+CELL][x+CELL];
 						if (findingElement)
 							a /= 2;
-						AddFirePixel({ i*CELL+x, j*CELL+y }, RGB<uint8_t>(r, g, b), a);
+						AddFirePixel({ i*CELL+x, j*CELL+y }, RGB(r, g, b), a);
 					}
 			r *= 8;
 			g *= 8;
@@ -1297,7 +1297,7 @@ int HeatToColour(float temp)
 {
 	constexpr float min_temp = MIN_TEMP;
 	constexpr float max_temp = MAX_TEMP;
-	RGB<uint8_t> color = Renderer::heatTableAt(int((temp - min_temp) / (max_temp - min_temp) * 1024));
+	RGB color = Renderer::heatTableAt(int((temp - min_temp) / (max_temp - min_temp) * 1024));
 	color.Red   = uint8_t(color.Red   * 0.7f);
 	color.Green = uint8_t(color.Green * 0.7f);
 	color.Blue  = uint8_t(color.Blue  * 0.7f);

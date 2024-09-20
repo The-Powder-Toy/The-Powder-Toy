@@ -1908,7 +1908,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	{
 		int colr, colg, colb;
 		int sandcolourToUse = p == -2 ? sandcolour_interface : sandcolour;
-		RGB<uint8_t> colour = elements[t].Colour;
+		RGB colour = elements[t].Colour;
 		colr = colour.Red   + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
 		colg = colour.Green + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
 		colb = colour.Blue  + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);

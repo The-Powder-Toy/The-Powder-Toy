@@ -86,7 +86,7 @@ void Renderer::Clear()
 	}
 }
 
-void Renderer::DrawBlob(Vec2<int> pos, RGB<uint8_t> colour)
+void Renderer::DrawBlob(Vec2<int> pos, RGB colour)
 {
 	BlendPixel(pos + Vec2{ +1,  0 }, colour.WithAlpha(112));
 	BlendPixel(pos + Vec2{ -1,  0 }, colour.WithAlpha(112));
@@ -121,11 +121,11 @@ void Renderer::prepare_alpha(int size, float intensity)
 
 }
 
-std::vector<RGB<uint8_t>> Renderer::flameTable;
-std::vector<RGB<uint8_t>> Renderer::plasmaTable;
-std::vector<RGB<uint8_t>> Renderer::heatTable;
-std::vector<RGB<uint8_t>> Renderer::clfmTable;
-std::vector<RGB<uint8_t>> Renderer::firwTable;
+std::vector<RGB> Renderer::flameTable;
+std::vector<RGB> Renderer::plasmaTable;
+std::vector<RGB> Renderer::heatTable;
+std::vector<RGB> Renderer::clfmTable;
+std::vector<RGB> Renderer::firwTable;
 static bool tablesPopulated = false;
 static std::mutex tablesPopulatedMx;
 void Renderer::PopulateTables()
@@ -221,9 +221,9 @@ bool Renderer::GradientStop::operator <(const GradientStop &other) const
 	return point < other.point;
 }
 
-std::vector<RGB<uint8_t>> Renderer::Gradient(std::vector<GradientStop> stops, int resolution)
+std::vector<RGB> Renderer::Gradient(std::vector<GradientStop> stops, int resolution)
 {
-	std::vector<RGB<uint8_t>> table(resolution, 0x000000_rgb);
+	std::vector<RGB> table(resolution, 0x000000_rgb);
 	if (stops.size() >= 2)
 	{
 		std::sort(stops.begin(), stops.end());

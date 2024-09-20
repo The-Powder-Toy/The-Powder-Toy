@@ -295,11 +295,11 @@ public:
 	void AddNotification(Notification * notification);
 	void RemoveNotification(Notification * notification);
 
-	bool AddCustomGol(String ruleString, String nameString, RGB<uint8_t> color1, RGB<uint8_t> color2);
+	bool AddCustomGol(String ruleString, String nameString, RGB color1, RGB color2);
 	bool RemoveCustomGol(const ByteString &identifier);
 	void LoadCustomGol();
 	void SaveCustomGol();
-	std::optional<CustomGOLData> CheckCustomGol(String ruleString, String nameString, RGB<uint8_t> color1, RGB<uint8_t> color2);
+	std::optional<CustomGOLData> CheckCustomGol(String ruleString, String nameString, RGB color1, RGB color2);
 
 	ByteString SelectNextIdentifier;
 	int SelectNextTool;

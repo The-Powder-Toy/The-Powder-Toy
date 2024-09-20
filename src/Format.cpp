@@ -113,7 +113,7 @@ std::vector<char> format::PixelsToPPM(PlaneAdapter<std::vector<pixel>> const &in
 
 	for (int i = 0; i < input.Size().X * input.Size().Y; i++)
 	{
-		auto colour = RGB<uint8_t>::Unpack(input.data()[i]);
+		auto colour = RGB::Unpack(input.data()[i]);
 		data.push_back(colour.Red);
 		data.push_back(colour.Green);
 		data.push_back(colour.Blue);
@@ -130,7 +130,7 @@ static std::unique_ptr<PlaneAdapter<std::vector<uint32_t>>> readPNG(
 	// If specified
 	//   RGB data is returned with A=0x00
 	//   RGBA data is blended against the background and returned with A=0x00
-	std::optional<RGB<uint8_t>> background
+	std::optional<RGB> background
 )
 {
 	png_infop info = nullptr;
@@ -223,7 +223,7 @@ std::unique_ptr<PlaneAdapter<std::vector<pixel_rgba>>> format::PixelsFromPNG(std
 	return readPNG(data, std::nullopt);
 }
 
-std::unique_ptr<PlaneAdapter<std::vector<pixel>>> format::PixelsFromPNG(std::span<const char> data, RGB<uint8_t> background)
+std::unique_ptr<PlaneAdapter<std::vector<pixel>>> format::PixelsFromPNG(std::span<const char> data, RGB background)
 {
 	return readPNG(data, background);
 }

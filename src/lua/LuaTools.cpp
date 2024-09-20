@@ -344,7 +344,7 @@ static int property(lua_State *L)
 				if      constexpr (std::is_same_v<PropertyType, String      >) thing = tpt_lua_checkString(L, 3);
 				else if constexpr (std::is_same_v<PropertyType, bool        >) thing = lua_toboolean(L, 3);
 				else if constexpr (std::is_same_v<PropertyType, int         >) thing = luaL_checkinteger(L, 3);
-				else if constexpr (std::is_same_v<PropertyType, RGB<uint8_t>>) thing = RGB<uint8_t>::Unpack(luaL_checkinteger(L, 3));
+				else if constexpr (std::is_same_v<PropertyType, RGB         >) thing = RGB::Unpack(luaL_checkinteger(L, 3));
 				else static_assert(DependentFalse<PropertyType>::value);
 				if (buildMenusIfChanged)
 				{
@@ -356,7 +356,7 @@ static int property(lua_State *L)
 				if      constexpr (std::is_same_v<PropertyType, String      >) tpt_lua_pushString(L, thing);
 				else if constexpr (std::is_same_v<PropertyType, bool        >) lua_pushboolean(L, thing);
 				else if constexpr (std::is_same_v<PropertyType, int         >) lua_pushinteger(L, thing);
-				else if constexpr (std::is_same_v<PropertyType, RGB<uint8_t>>) lua_pushinteger(L, thing.Pack());
+				else if constexpr (std::is_same_v<PropertyType, RGB         >) lua_pushinteger(L, thing.Pack());
 				else static_assert(DependentFalse<PropertyType>::value);
 				returnValueCount = 1;
 			}
