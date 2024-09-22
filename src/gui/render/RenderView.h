@@ -1,5 +1,6 @@
 #pragma once
 #include "gui/interface/Window.h"
+#include <cstdint>
 #include <vector>
 
 class ModeCheckbox;
@@ -21,6 +22,7 @@ class RenderView: public ui::Window {
 	int toolTipPresence;
 	bool isToolTipFadingIn;
 	int line1, line2, line3, line4;
+	uint32_t CalculateRenderMode();
 public:
 	RenderView();
 	void NotifyRendererChanged(RenderModel * sender);
