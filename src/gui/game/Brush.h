@@ -2,6 +2,7 @@
 #include "gui/interface/Point.h"
 #include "common/Plane.h"
 #include <memory>
+#include <vector>
 
 class Graphics;
 class Brush
