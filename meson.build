@@ -453,31 +453,41 @@ if get_option('build_powder')
 		bzip2_dep,
 		json_dep,
 	]
-	if host_platform == 'android'
-		powder_sha = shared_library(
-			app_exe,
-			sources: powder_files,
-			include_directories: project_inc,
-			cpp_args: project_cpp_args,
-			link_args: project_link_args,
-			dependencies: powder_deps,
-			link_depends: copied_dlls,
-		)
-		subdir('android')
-	else
-		executable(
-			app_exe,
-			sources: powder_files,
-			include_directories: project_inc,
-			cpp_args: project_cpp_args,
-			win_subsystem: is_debug ? 'console' : 'windows',
-			link_args: project_link_args,
-			dependencies: powder_deps,
-			export_dynamic: project_export_dynamic,
-			install: true,
-			link_depends: copied_dlls,
-		)
-	endif
+	powder_sha = shared_library(
+		app_exe,
+		sources: powder_files,
+		include_directories: project_inc,
+		c_args: project_c_args,
+		cpp_args: project_cpp_args,
+		link_args: project_link_args,
+		dependencies: powder_deps,
+		link_depends: copied_dlls,
+	)
+	
+	executable(
+		app_exe,
+		sources: powder_files,
+		include_directories: project_inc,
+		c_args: project_c_args,
+		cpp_args: project_cpp_args,
+		win_subsystem: is_debug ? 'console' : 'windows',
+		link_args: project_link_args,
+		dependencies: powder_deps,
+		export_dynamic: project_export_dynamic,
+		install: true,
+		link_depends: copied_dlls,
+	)
+
+
+# Locate the Python interpreter
+python = find_program('python3')
+
+# Run the Python script to find all header files
+find_headers = run_command(python, 'find_headers.py').stdout().strip().split('\n')
+
+# Install all header files
+install_headers(find_headers)
+
 endif
 
 if get_option('build_render')

@@ -73,6 +73,7 @@ public:
 	GameController();
 	~GameController();
 	GameView * GetView();
+	GameModel * GetModel();
 	int GetSignAt(int x, int y);
 	String GetSignText(int signID);
 	std::pair<int, sign::Type> GetSignSplit(int signID);
