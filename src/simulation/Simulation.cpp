@@ -1216,7 +1216,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				if (!portalp[parts[ID(r)].tmp][count][nnx].type)
 				{
 					portalp[parts[ID(r)].tmp][count][nnx] = parts[i];
-					parts[i].type=PT_NONE;
+					kill_part(i);
 					break;
 				}
 		}
