@@ -1059,6 +1059,9 @@ void GameController::SetEdgeMode(int edgeMode)
 		case EDGE_LOOP:
 			gameModel->SetInfoTip("Edge Mode: Loop");
 			break;
+		case EDGE_PATCH	:
+			gameModel->SetInfoTip("Edge Mode: Patch");
+			break;
 	}
 }
 

@@ -855,6 +855,81 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush const &
 	}
 }
 
+//Powder Magic functions
+
+void Simulation::InitializeForceCache(int width, int height) {
+    force_cache.resize(height / CELL, std::vector<std::vector<ForceVector>>(width / CELL));
+}
+
+void Simulation::AddForceVector(int x, int y, double vx, double vy, int ms_duration) {
+    int cell_x = x / CELL;
+    int cell_y = y / CELL;
+    ForceVector fv = {vx, vy, std::chrono::steady_clock::now() + std::chrono::milliseconds(ms_duration)};
+    force_cache[cell_y][cell_x].push_back(fv);
+}
+
+void Simulation::RemoveExpiredForces() {
+    auto now = std::chrono::steady_clock::now();
+    for (auto& row : force_cache) {
+        for (auto& cell : row) {
+            cell.erase(std::remove_if(cell.begin(), cell.end(), [now](const ForceVector& fv) {
+                return fv.cutoff_time <= now;
+            }), cell.end());
+        }
+    }
+}
+
+void Simulation::UpdateForceCache() {
+    RemoveExpiredForces();
+}
+
+int Simulation::CreateForceField(int x1, int y1, int x2, int y2, int width, int magnitude, int ms_duration) {
+    // Calculate the direction vector of the line segment
+    int dx = x2 - x1;
+    int dy = y2 - y1;
+
+    // Calculate the length of the line segment
+    double length = std::sqrt(dx * dx + dy * dy);
+
+    // Normalize the direction vector
+    double nx = dx / length;
+    double ny = dy / length;
+
+    // Calculate the orthogonal vectors
+    double ox = -ny;
+    double oy = nx;
+
+    // Iterate over the points in the area defined by the rectangle
+    for (int x = std::min(x1, x2) - width; x <= std::max(x1, x2) + width; ++x) {
+        for (int y = std::min(y1, y2) - width; y <= std::max(y1, y2) + width; ++y) {
+            // Check if the point is within the width on both sides of the line
+            double distance = std::abs((x - x1) * dy - (y - y1) * dx) / length;
+            if (distance <= width) {
+                // Add force vector orthogonal to the line
+                AddForceVector(x, y, magnitude * ox, magnitude * oy, ms_duration);
+            }
+        }
+    }
+
+    return 0; // Return appropriate value based on the logic
+}
+
+void Simulation::ApplyForces(std::vector<std::vector<double>>& vx, std::vector<std::vector<double>>& vy) {
+	for (int y = 0; y < static_cast<int>(force_cache.size()); ++y) {
+		for (int x = 0; x < static_cast<int>(force_cache[y].size()); ++x) {
+			double sum_vx = 0;
+            double sum_vy = 0;
+            for (const auto& fv : force_cache[y][x]) {
+                sum_vx += fv.vx;
+                sum_vy += fv.vy;
+            }
+            vx[y][x] = sum_vx;
+            vy[y][x] = sum_vy;
+        }
+    }
+    UpdateForceCache();
+}
+
 void Simulation::CreateBox(int x1, int y1, int x2, int y2, int c, int flags)
 {
 	int i, j;

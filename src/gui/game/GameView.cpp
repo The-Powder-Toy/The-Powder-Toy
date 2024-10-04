@@ -1888,8 +1888,8 @@ void GameView::DoDraw()
 		g->BlendLine({ x, YRES + 1 }, { x, YRES + 18 }, 0x000000_rgb .WithAlpha(fadeout[x]));
 		g->BlendLine({ XRES - x, YRES + 1 }, { XRES - x, YRES + 18 }, 0x000000_rgb .WithAlpha(fadeout[x]));
 	}
-
-	c->Tick();
+	// hacking!! Seperating simulation rate and ui drawing rate
+	// c->Tick();
 	{
 		auto rect = g->Size().OriginRect();
 		g->SwapClipRect(rect);  // reset any nonsense cliprect Lua left configured

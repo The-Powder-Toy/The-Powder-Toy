@@ -21,6 +21,10 @@
 #include <memory>
 #include <optional>
 
+//Powder Magic imports
+#include <chrono>
+#include <cmath>
+
 constexpr int CHANNELS = int(MAX_TEMP - 73) / 100 + 2;
 
 class Snapshot;
@@ -203,6 +207,15 @@ public:
 	void CreateBox(int x1, int y1, int x2, int y2, int c, int flags = -1);
 	int FloodParts(int x, int y, int c, int cm, int flags = -1);
 
+	//Powder Magic additions
+	int CreateForceField(int x1, int y1, int x2, int y2, int width, int magnitude, int ms_duration);
+	void ApplyForces(std::vector<std::vector<double>>& vx, std::vector<std::vector<double>>& vy);
+    void UpdateForceCache();
+	void InitializeForceCache(int width, int height);
+    void AddForceVector(int x, int y, double vx, double vy, int ms_duration);
+    void RemoveExpiredForces();
+	//End Powder Magic additions
+
 	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY);
 
 	int get_wavelength_bin(int *wm);
@@ -226,4 +239,12 @@ public:
 
 private:
 	CoordStack& getCoordStackSingleton();
+
+	struct ForceVector {
+        double vx;
+        double vy;
+        std::chrono::steady_clock::time_point cutoff_time;
+    };
+
+    std::vector<std::vector<std::vector<ForceVector>>> force_cache;
 };

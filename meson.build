@@ -483,10 +483,7 @@ if get_option('build_powder')
 python = find_program('python3')
 
 # Run the Python script to find all header files
-find_headers = run_command(python, 'find_headers.py').stdout().strip().split('\n')
-
-# Install all header files
-install_headers(find_headers)
+find_headers = run_command(python, 'install_libs.py').stdout().strip().split('\n')
 
 endif
 

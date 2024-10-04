@@ -8,8 +8,20 @@ constexpr int BARSIZE  = 17;
 constexpr float M_GRAV = 6.67300e-1f;
 
 //CELL, the size of the pressure, gravity, and wall maps. Larger than 1 to prevent extreme lag
+
+// It looks like 8 gb of ram with a cell size of 6 buys us an empty particulate space of 2,160,000. Little above 2 million.
+// Also the number of pixels in a 1080p screen. This is a good number to aim for.
+// It also looks like the performance of one simulation is not affected by the computational load of the others.
+// Many small simulations are far more efficient than one large one.
+
+
+// constexpr int CELL = 4;
+// constexpr Vec2<int> CELLS = Vec2(50, 50);
+
+
+
 constexpr int CELL = 4;
-constexpr Vec2<int> CELLS = Vec2(153, 96);
+constexpr Vec2<int> CELLS = Vec2(50, 50);
 constexpr Vec2<int> RES = CELLS * CELL;
 
 constexpr int XCELLS = CELLS.X;
