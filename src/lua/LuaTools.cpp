@@ -365,6 +365,8 @@ void LuaTools::Open(lua_State *L)
 	};
 	lua_newtable(L);
 	luaL_register(L, NULL, reg);
+	lua_newtable(L);
+	lua_setfield(L, -2, "index");
 	lua_setglobal(L, "tools");
 	auto &toolList = lsi->gameModel->GetTools();
 	for (int i = 0; i < int(toolList.size()); ++i)
@@ -380,6 +382,7 @@ void LuaTools::Open(lua_State *L)
 void LuaTools::SetToolIndex(lua_State *L, ByteString identifier, std::optional<int> index)
 {
 	lua_getglobal(L, "tools");
+	lua_getfield(L, -1, "index");
 	tpt_lua_pushByteString(L, identifier);
 	if (index)
 	{
@@ -390,5 +393,5 @@ void LuaTools::SetToolIndex(lua_State *L, ByteString identifier, std::optional<i
 		lua_pushnil(L);
 	}
 	lua_settable(L, -3);
-	lua_pop(L, 1);
+	lua_pop(L, 2);
 }
