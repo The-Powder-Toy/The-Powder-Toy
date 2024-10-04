@@ -9,13 +9,13 @@
 using namespace ui;
 
 Component::Component(Point position, Point size):
-	parentstate_(0),
-	_parent(NULL),
+	parentstate_(nullptr),
+	_parent(nullptr),
 	drawn(false),
 	textPosition(0, 0),
 	textSize(0, 0),
 	iconPosition(0, 0),
-	menu(NULL),
+	menu(nullptr),
 	Position(position),
 	Size(size),
 	Enabled(true),
@@ -93,9 +93,9 @@ void Component::SetParentWindow(Window* window)
 
 void Component::SetParent(Panel* new_parent)
 {
-	if(new_parent == NULL)
+	if(new_parent == nullptr)
 	{
-		if(_parent != NULL)
+		if(_parent != nullptr)
 		{
 			// remove from current parent and send component to parent state
 			for(int i = 0; i < _parent->GetChildCount(); ++i)

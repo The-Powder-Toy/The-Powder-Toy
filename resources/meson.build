@@ -83,7 +83,7 @@ if host_platform == 'windows'
 	rc_conf_data.set('WINUTF8_XML', winutf8_xml_path)
 	rc_conf_data.set('ICON_EXE_ICO', icon_exe_ico_path)
 	rc_conf_data.set('ICON_CPS_ICO', icon_cps_ico_path)
-	powder_files += windows_mod.compile_resources(
+	powder_external_files += windows_mod.compile_resources(
 		configure_file(
 			input: 'powder-res.template.rc',
 			output: 'powder-res.rc',

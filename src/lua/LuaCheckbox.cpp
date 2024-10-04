@@ -12,7 +12,7 @@ Luna<LuaCheckbox>::RegType LuaCheckbox::methods[] = {
 	method(LuaCheckbox, size),
 	method(LuaCheckbox, visible),
 	method(LuaCheckbox, checked),
-	{0, 0}
+	{nullptr, nullptr}
 };
 
 LuaCheckbox::LuaCheckbox(lua_State *L) :

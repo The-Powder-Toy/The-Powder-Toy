@@ -445,7 +445,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	unsigned char *fanData = nullptr;
 	unsigned char *wallData = nullptr;
 	unsigned char *soapLinkData = nullptr;
-	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL, *ambientData = NULL, *blockAirData = nullptr, *gravityData = nullptr;
+	unsigned char *pressData = nullptr, *vxData = nullptr, *vyData = nullptr, *ambientData = nullptr, *blockAirData = nullptr, *gravityData = nullptr;
 	unsigned int inputDataLen = data.size(), bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, soapLinkDataLen;
 	unsigned int pressDataLen, vxDataLen, vyDataLen, ambientDataLen, blockAirDataLen, gravityDataLen;
 	unsigned partsCount = 0;
@@ -454,7 +454,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	bool fakeNewerVersion = false; // used for development builds only
 
 	bson b;
-	b.data = NULL;
+	b.data = nullptr;
 	auto bson_deleter = [](bson * b) { bson_destroy(b); };
 	// Use unique_ptr with a custom deleter to ensure that bson_destroy is called even when an exception is thrown
 	std::unique_ptr<bson, decltype(bson_deleter)> b_ptr(&b, bson_deleter);
@@ -2471,7 +2471,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	}
 
 	bson b;
-	b.data = NULL;
+	b.data = nullptr;
 	auto bson_deleter = [](bson * b) { bson_destroy(b); };
 	// Use unique_ptr with a custom deleter to ensure that bson_destroy is called even when an exception is thrown
 	std::unique_ptr<bson, decltype(bson_deleter)> b_ptr(&b, bson_deleter);

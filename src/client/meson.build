@@ -14,7 +14,7 @@ endif
 
 subdir('http')
 
-powder_files += client_files
+powder_source_files += client_files
 
 render_files += files(
 	'GameSave.cpp',

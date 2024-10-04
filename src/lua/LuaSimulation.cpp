@@ -568,7 +568,7 @@ static int createWalls(lua_State *L)
 		return luaL_error(L, "Unrecognised wall id '%d'", c);
 
 	auto *lsi = GetLSI();
-	int ret = lsi->sim->CreateWalls(x, y, rx, ry, c, NULL);
+	int ret = lsi->sim->CreateWalls(x, y, rx, ry, c, nullptr);
 	lua_pushinteger(L, ret);
 	return 1;
 }
@@ -589,7 +589,7 @@ static int createWallLine(lua_State *L)
 		return luaL_error(L, "Unrecognised wall id '%d'", c);
 
 	auto *lsi = GetLSI();
-	lsi->sim->CreateWallLine(x1, y1, x2, y2, rx, ry, c, NULL);
+	lsi->sim->CreateWallLine(x1, y1, x2, y2, rx, ry, c, nullptr);
 	return 0;
 }
 
@@ -1919,10 +1919,10 @@ void LuaSimulation::Open(lua_State *L)
 		LFUNC(fanVelocityX),
 		LFUNC(fanVelocityY),
 #undef LFUNC
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 
 #define LCONST(v) lua_pushinteger(L, int(v)); lua_setfield(L, -2, #v)
 #define LCONSTF(v) lua_pushnumber(L, float(v)); lua_setfield(L, -2, #v)

@@ -20,7 +20,7 @@
 
 ElementSearchActivity::ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 302)),
-	firstResult(NULL),
+	firstResult(nullptr),
 	gameController(gameController),
 	tools(tools),
 	toolTip(""),
@@ -61,7 +61,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 
 void ElementSearchActivity::searchTools(String query)
 {
-	firstResult = NULL;
+	firstResult = nullptr;
 	for (auto &toolButton : toolButtons) {
 		scrollPanel->RemoveChild(toolButton);
 		delete toolButton;

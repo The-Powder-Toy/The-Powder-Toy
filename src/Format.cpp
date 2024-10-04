@@ -30,7 +30,7 @@ ByteString format::UnixtimeToDate(time_t unixtime, ByteString dateFormat, bool l
 
 ByteString format::UnixtimeToDateMini(time_t unixtime)
 {
-	time_t currentTime = time(NULL);
+	time_t currentTime = time(nullptr);
 	struct tm currentTimeData = *gmtime(&currentTime);
 	struct tm timeData = *gmtime(&unixtime);
 
@@ -135,10 +135,10 @@ static std::unique_ptr<PlaneAdapter<std::vector<uint32_t>>> readPNG(
 {
 	png_infop info = nullptr;
 	auto deleter = [&info](png_struct *png) {
-		png_destroy_read_struct(&png, &info, NULL);
+		png_destroy_read_struct(&png, &info, nullptr);
 	};
 	auto png = std::unique_ptr<png_struct, decltype(deleter)>(
-		png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL,
+		png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr,
 			[](png_structp png, png_const_charp msg) {
 				fprintf(stderr, "PNG error: %s\n", msg);
 			},
@@ -235,7 +235,7 @@ std::unique_ptr<std::vector<char>> format::PixelsToPNG(PlaneAdapter<std::vector<
 		png_destroy_write_struct(&png, &info);
 	};
 	auto png = std::unique_ptr<png_struct, decltype(deleter)>(
-		png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL,
+		png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr,
 			[](png_structp png, png_const_charp msg) {
 				fprintf(stderr, "PNG error: %s\n", msg);
 			},
@@ -272,13 +272,13 @@ std::unique_ptr<std::vector<char>> format::PixelsToPNG(PlaneAdapter<std::vector<
 
 	png_set_write_fn(png.get(), static_cast<void *>(&writeFn), [](png_structp png, png_bytep data, size_t length) {
 		(*static_cast<decltype(writeFn) *>(png_get_io_ptr(png)))(png, data, length);
-	}, NULL);
+	}, nullptr);
 	png_set_IHDR(png.get(), info, input.Size().X, input.Size().Y, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 	png_write_info(png.get(), info);
 	png_set_filler(png.get(), 0x00, PNG_FILLER_AFTER);
 	png_set_bgr(png.get());
 	png_write_image(png.get(), const_cast<png_bytepp>(rowPointers.data()));
-	png_write_end(png.get(), NULL);
+	png_write_end(png.get(), nullptr);
 
 	return std::make_unique<std::vector<char>>(std::move(output));
 }

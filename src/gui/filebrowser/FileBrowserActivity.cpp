@@ -212,7 +212,7 @@ void FileBrowserActivity::NotifyDone(Task * task)
 	createButtons = true;
 	totalFiles = files.size();
 	delete loadFiles;
-	loadFiles = NULL;
+	loadFiles = nullptr;
 	if (!files.size())
 	{
 		progressBar->Visible = false;

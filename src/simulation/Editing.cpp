@@ -292,7 +292,7 @@ void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int wall)
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			CreateWalls(i, j, 0, 0, wall, NULL);
+			CreateWalls(i, j, 0, 0, wall, nullptr);
 }
 
 int Simulation::FloodWalls(int x, int y, int wall, int bm)
@@ -335,7 +335,7 @@ int Simulation::FloodWalls(int x, int y, int wall, int bm)
 	// fill span
 	for (x=x1; x<=x2; x++)
 	{
-		if (!CreateWalls(x, y, 0, 0, wall, NULL))
+		if (!CreateWalls(x, y, 0, 0, wall, nullptr))
 			return 0;
 	}
 	// fill children

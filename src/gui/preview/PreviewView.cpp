@@ -36,9 +36,9 @@
 
 PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+210, (YRES/2)+150)),
-	submitCommentButton(NULL),
-	addCommentBox(NULL),
-	commentWarningLabel(NULL),
+	submitCommentButton(nullptr),
+	addCommentBox(nullptr),
+	commentWarningLabel(nullptr),
 	userIsAuthor(false),
 	doOpen(false),
 	doError(false),
@@ -617,7 +617,7 @@ void PreviewView::submitComment()
 		else
 		{
 			isSubmittingComment = true;
-			FocusComponent(NULL);
+			FocusComponent(nullptr);
 
 			addCommentRequest = std::make_unique<http::AddCommentRequest>(c->SaveID(), comment);
 			addCommentRequest->Start();
@@ -641,13 +641,13 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	{
 		RemoveComponent(addCommentBox);
 		delete addCommentBox;
-		addCommentBox = NULL;
+		addCommentBox = nullptr;
 	}
 	if(submitCommentButton)
 	{
 		RemoveComponent(submitCommentButton);
 		delete submitCommentButton;
-		submitCommentButton = NULL;
+		submitCommentButton = nullptr;
 	}
 	if(sender->GetCommentBoxEnabled())
 	{

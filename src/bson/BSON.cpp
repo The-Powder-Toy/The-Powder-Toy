@@ -40,8 +40,8 @@ static int _bson_errprintf( const char *, ... );
 bson_printf_func bson_errprintf = _bson_errprintf;
 
 /* ObjectId fuzz functions. */
-static int ( *oid_fuzz_func )( void ) = NULL;
-static int ( *oid_inc_func )( void )  = NULL;
+static int ( *oid_fuzz_func )( void ) = nullptr;
+static int ( *oid_inc_func )( void )  = nullptr;
 
 /* ----------------------------
    READING
@@ -89,7 +89,7 @@ static void _bson_reset( bson *b ) {
 	b->finished = 0;
 	b->stackPos = 0;
 	b->err = 0;
-	b->errstr = NULL;
+	b->errstr = nullptr;
 }
 
 int bson_size( const bson *b ) {
@@ -178,7 +178,7 @@ void bson_oid_gen( bson_oid_t *oid ) {
 	static int incr = 0;
 	static int fuzz = 0;
 	int i;
-	int t = time( NULL );
+	int t = time( nullptr );
 
 	if( oid_inc_func )
 		i = oid_inc_func();
@@ -305,7 +305,7 @@ void bson_iterator_init( bson_iterator *i, const bson *b ) {
 void bson_iterator_from_buffer( bson_iterator *i, const char *buffer ) {
 	i->cur = buffer + 4;
 	i->first = 1;
-	i->last = NULL;
+	i->last = nullptr;
 }
 
 bson_type bson_find( bson_iterator *it, const bson *obj, const char *name ) {
@@ -515,7 +515,7 @@ const char *bson_iterator_code( const bson_iterator *i ) {
 	case BSON_CODEWSCOPE:
 		return bson_iterator_value( i ) + 8;
 	default:
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -581,7 +581,7 @@ void bson_iterator_subiterator( const bson_iterator *i, bson_iterator *sub ) {
 
 static void _bson_init_size( bson *b, int size ) {
 	if( size == 0 )
-		b->data = NULL;
+		b->data = nullptr;
 	else
 		b->data = ( char * )bson_malloc( size );
 	b->dataSize = size;
@@ -667,8 +667,8 @@ void bson_destroy( bson *b ) {
 	if (b->data)
 		bson_free( b->data );
 	b->err = 0;
-	b->data = 0;
-	b->cur = 0;
+	b->data = nullptr;
+	b->cur = nullptr;
 	b->finished = 1;
 }
 
@@ -853,7 +853,7 @@ int bson_append_element( bson *b, const char *name_or_null, const bson_iterator 
 	bson_iterator_next( &next );
 	size = next.cur - elem->cur;
 
-	if ( name_or_null == NULL ) {
+	if ( name_or_null == nullptr ) {
 		if( bson_ensure_space( b, size ) == BSON_ERROR )
 			return BSON_ERROR;
 		bson_append( b, elem->cur, size );
@@ -919,7 +919,7 @@ int bson_append_finish_array( bson *b ) {
 
 /* Error handling and allocators. */
 
-static bson_err_handler err_handler = NULL;
+static bson_err_handler err_handler = nullptr;
 
 bson_err_handler set_bson_err_handler( bson_err_handler func ) {
 	bson_err_handler old = err_handler;

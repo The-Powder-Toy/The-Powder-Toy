@@ -10,9 +10,9 @@
 
 int desktopWidth = 1280;
 int desktopHeight = 1024;
-SDL_Window *sdl_window = NULL;
-SDL_Renderer *sdl_renderer = NULL;
-SDL_Texture *sdl_texture = NULL;
+SDL_Window *sdl_window = nullptr;
+SDL_Renderer *sdl_renderer = nullptr;
+SDL_Texture *sdl_texture = nullptr;
 bool vsyncHint = false;
 WindowFrameOps currentFrameOps;
 bool momentumScroll = true;
@@ -99,11 +99,11 @@ static void CalculateMousePosition(int *x, int *y)
 
 void blit(pixel *vid)
 {
-	SDL_UpdateTexture(sdl_texture, NULL, vid, WINDOWW * sizeof (Uint32));
+	SDL_UpdateTexture(sdl_texture, nullptr, vid, WINDOWW * sizeof (Uint32));
 	// need to clear the renderer if there are black edges (fullscreen, or resizable window)
 	if (currentFrameOps.fullscreen || currentFrameOps.resizable)
 		SDL_RenderClear(sdl_renderer);
-	SDL_RenderCopy(sdl_renderer, sdl_texture, NULL, NULL);
+	SDL_RenderCopy(sdl_renderer, sdl_texture, nullptr, nullptr);
 	SDL_RenderPresent(sdl_renderer);
 }
 
@@ -141,7 +141,7 @@ void SDLClose()
 		//   sdl closes the display. this is an nvidia driver weirdness but
 		//   technically an sdl bug. glfw has this fixed:
 		//   https://github.com/glfw/glfw/commit/9e6c0c747be838d1f3dc38c2924a47a42416c081
-		SDL_GL_LoadLibrary(NULL);
+		SDL_GL_LoadLibrary(nullptr);
 		SDL_QuitSubSystem(SDL_INIT_VIDEO);
 		SDL_GL_UnloadLibrary();
 	}
@@ -197,18 +197,18 @@ void SDLSetScreen()
 		if (sdl_texture)
 		{
 			SDL_DestroyTexture(sdl_texture);
-			sdl_texture = NULL;
+			sdl_texture = nullptr;
 		}
 		if (sdl_renderer)
 		{
 			SDL_DestroyRenderer(sdl_renderer);
-			sdl_renderer = NULL;
+			sdl_renderer = nullptr;
 		}
 		if (sdl_window)
 		{
 			SaveWindowPosition();
 			SDL_DestroyWindow(sdl_window);
-			sdl_window = NULL;
+			sdl_window = nullptr;
 		}
 
 		unsigned int flags = 0;

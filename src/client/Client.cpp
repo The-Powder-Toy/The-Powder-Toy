@@ -310,7 +310,7 @@ void Client::RenameStamp(ByteString stampID, ByteString newName)
 
 ByteString Client::AddStamp(std::unique_ptr<GameSave> saveData)
 {
-	auto now = (uint64_t)time(NULL);
+	auto now = (uint64_t)time(nullptr);
 	if (lastStampTime != now)
 	{
 		lastStampTime = now;

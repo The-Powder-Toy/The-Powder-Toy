@@ -1,7 +1,7 @@
 if platform_clipboard
 	clipboard_impl_factories = []
 	if host_platform == 'windows'
-		powder_files += files('Windows.cpp')
+		powder_source_files += files('Windows.cpp')
 		clipboard_impl_factories += [
 			[ 'SDL_SYSWM_WINDOWS', 'WindowsClipboardFactory' ],
 		]
@@ -12,7 +12,7 @@ if platform_clipboard
 				dependency('Cocoa'),
 			]
 		endif
-		powder_files += files([
+		powder_source_files += files([
 			'Cocoa.mm',
 		])
 		clipboard_impl_factories += [
@@ -23,7 +23,7 @@ if platform_clipboard
 	elif host_platform == 'emscripten'
 		# TODO
 	else
-		powder_files += files([
+		powder_source_files += files([
 			'External.cpp',
 		])
 		clipboard_impl_factories += [
@@ -31,9 +31,9 @@ if platform_clipboard
 			[ 'SDL_SYSWM_WAYLAND', 'ExternalClipboardFactory' ],
 		]
 	endif
-	powder_files += files('Dynamic.cpp')
+	powder_source_files += files('Dynamic.cpp')
 else
-	powder_files += files('Null.cpp')
+	powder_source_files += files('Null.cpp')
 endif
 render_files += files('Null.cpp')
 font_files += files('Null.cpp')

@@ -856,10 +856,10 @@ void LuaElements::Open(lua_State *L)
 		LFUNC(getByName),
 #undef LFUNC
 		{ "free", ffree },
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 #define LCONST(v) lua_pushinteger(L, int(v)); lua_setfield(L, -2, #v)
 #define LCONSTAS(k, v) lua_pushinteger(L, int(v)); lua_setfield(L, -2, k)
 	LCONST(TYPE_PART);

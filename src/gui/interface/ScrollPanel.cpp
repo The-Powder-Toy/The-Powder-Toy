@@ -152,7 +152,7 @@ void ScrollPanel::XOnMouseMoved(int x, int y)
 				{
 					child->MouseDownInside = false;
 				}
-				GetParentWindow()->FocusComponent(NULL);
+				GetParentWindow()->FocusComponent(nullptr);
 			}
 		}
 

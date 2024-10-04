@@ -16,7 +16,7 @@ if host_platform == 'windows'
 		'Windows.cpp',
 		'ExitCommon.cpp',
 	)
-	powder_files += files(
+	powder_source_files += files(
 		'MainCommon.cpp',
 		'DdirCommon.cpp',
 	)
@@ -28,7 +28,7 @@ elif host_platform == 'darwin'
 		'PosixProc.cpp',
 		'ExitCommon.cpp',
 	)
-	powder_files += files(
+	powder_source_files += files(
 		'MainCommon.cpp',
 		'DdirCommon.cpp',
 	)
@@ -40,7 +40,7 @@ elif host_platform == 'android'
 		'PosixProc.cpp',
 		'ExitCommon.cpp',
 	)
-	powder_files += files(
+	powder_source_files += files(
 		'MainCommon.cpp',
 	)
 elif host_platform == 'emscripten'
@@ -59,7 +59,7 @@ elif host_platform == 'linux'
 		'PosixProc.cpp',
 		'ExitCommon.cpp',
 	)
-	powder_files += files(
+	powder_source_files += files(
 		'MainCommon.cpp',
 		'DdirCommon.cpp',
 	)
@@ -71,7 +71,7 @@ else
 		'PosixProc.cpp',
 		'ExitCommon.cpp',
 	)
-	powder_files += files(
+	powder_source_files += files(
 		'MainCommon.cpp',
 		'DdirCommon.cpp',
 	)

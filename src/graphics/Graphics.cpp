@@ -56,7 +56,7 @@ void VideoBuffer::Resize(Vec2<int> size, bool resample)
 	if (resample)
 	{
 		std::array<std::unique_ptr<Resampler>, PIXELCHANNELS> resamplers;
-		Resampler::Contrib_List *clist_x = NULL, *clist_y = NULL;
+		Resampler::Contrib_List *clist_x = nullptr, *clist_y = nullptr;
 		for (auto &ptr : resamplers)
 		{
 			ptr = std::make_unique<Resampler>(

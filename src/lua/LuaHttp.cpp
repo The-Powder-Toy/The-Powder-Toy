@@ -375,13 +375,13 @@ void LuaHttp::Open(lua_State *L)
 			LFUNC(cancel),
 			LFUNC(finish),
 #undef LFUNC
-			{ NULL, NULL }
+			{ nullptr, nullptr }
 		};
 		luaL_newmetatable(L, "HTTPRequest");
 		lua_pushcfunction(L, HTTPRequest_gc);
 		lua_setfield(L, -2, "__gc");
 		lua_newtable(L);
-		luaL_register(L, NULL, reg);
+		luaL_register(L, nullptr, reg);
 		lua_setfield(L, -2, "__index");
 		lua_pop(L, 1);
 	}
@@ -392,10 +392,10 @@ void LuaHttp::Open(lua_State *L)
 			LFUNC(post),
 			LFUNC(getAuthToken),
 #undef LFUNC
-			{ NULL, NULL }
+			{ nullptr, nullptr }
 		};
 		lua_newtable(L);
-		luaL_register(L, NULL, reg);
+		luaL_register(L, nullptr, reg);
 		lua_setglobal(L, "http");
 	}
 }
