@@ -1695,32 +1695,44 @@ void GameModel::AllocCustomGolTool(const CustomGOLData &gd)
 	AllocTool(std::make_unique<ElementTool>(PMAP(gd.rule, PT_LIFE), gd.nameString, "Custom GOL type: " + SerialiseGOLRule(gd.rule), gd.colour1, "DEFAULT_PT_LIFECUST_" + gd.nameString.ToAscii(), nullptr));
 }
 
+void GameModel::UpdateElementTool(int element)
+{
+	auto &sd = SimulationData::Ref();
+	auto &elements = sd.elements;
+	auto &elem = elements[element];
+	auto *tool = GetToolFromIdentifier(elem.Identifier);
+	tool->Name = elem.Name;
+	tool->Description = elem.Description;
+	tool->Colour = elem.Colour;
+	tool->textureGen = elem.IconGenerator;
+}
+
 void GameModel::AllocElementTool(int element)
 {
 	auto &sd = SimulationData::Ref();
 	auto &elements = sd.elements;
 	auto &elem = elements[element];
-	FreeTool(GetToolFromIdentifier(elem.Identifier));
 	switch (element)
 	{
 	case PT_LIGH:
-		AllocTool(std::make_unique<Element_LIGH_Tool>(element, elem.Name, elem.Description, elem.Colour, elem.Identifier, elem.IconGenerator));
+		AllocTool(std::make_unique<Element_LIGH_Tool>(element, elem.Identifier));
 		break;
 
 	case PT_TESC:
-		AllocTool(std::make_unique<Element_TESC_Tool>(element, elem.Name, elem.Description, elem.Colour, elem.Identifier, elem.IconGenerator));
+		AllocTool(std::make_unique<Element_TESC_Tool>(element, elem.Identifier));
 		break;
 
 	case PT_STKM:
 	case PT_FIGH:
 	case PT_STKM2:
-		AllocTool(std::make_unique<PlopTool>(element, elem.Name, elem.Description, elem.Colour, elem.Identifier, elem.IconGenerator));
+		AllocTool(std::make_unique<PlopTool>(element, elem.Identifier));
 		break;
 
 	default:
-		AllocTool(std::make_unique<ElementTool>(element, elem.Name, elem.Description, elem.Colour, elem.Identifier, elem.IconGenerator));
+		AllocTool(std::make_unique<ElementTool>(element, elem.Identifier));
 		break;
 	}
+	UpdateElementTool(element);
 }
 
 void GameModel::InitTools()

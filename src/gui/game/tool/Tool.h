@@ -14,10 +14,9 @@ struct Particle;
 
 class Tool
 {
-private:
+public:
 	std::unique_ptr<VideoBuffer> (*textureGen)(int, Vec2<int>) = nullptr;
 
-public:
 	int ToolID = 0;
 	String Name = "NULL";
 	String Description = "NULL Tool, does NOTHING";
@@ -41,6 +40,9 @@ public:
 		Identifier(identifier),
 		Colour(colour),
 		Blocky(blocky)
+	{}
+
+	Tool(int id, ByteString identifier) : ToolID(id), Identifier(identifier)
 	{}
 
 	virtual ~Tool()

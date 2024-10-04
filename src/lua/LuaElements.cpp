@@ -525,7 +525,7 @@ static int element(lua_State *L)
 
 			sd.graphicscache[id].isready = 0;
 		}
-		lsi->gameModel->AllocElementTool(id);
+		lsi->gameModel->UpdateElementTool(id);
 		lsi->gameModel->BuildMenus();
 		lsi->InitCustomCanMove();
 
@@ -593,7 +593,7 @@ static int property(lua_State *L)
 				manageElementIdentifier(L, id, false);
 				LuaSetProperty(L, *prop, propertyAddress, 3);
 				manageElementIdentifier(L, id, true);
-				lsi->gameModel->AllocElementTool(id);
+				lsi->gameModel->UpdateElementTool(id);
 				lsi->gameModel->BuildMenus();
 				lsi->InitCustomCanMove();
 				sd.graphicscache[id].isready = 0;
