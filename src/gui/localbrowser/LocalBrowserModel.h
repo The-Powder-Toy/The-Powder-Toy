@@ -32,6 +32,6 @@ public:
 	void SetMoveToFront(bool move);
 	std::vector<ByteString> GetSelected() { return selected; }
 	void ClearSelected() { selected.clear(); notifySelectedChanged(); }
-	void SelectSave(ByteString stampID);
-	void DeselectSave(ByteString stampID);
+	void SelectSave(const ByteString& stampID);
+	void DeselectSave(const ByteString& stampID);
 };

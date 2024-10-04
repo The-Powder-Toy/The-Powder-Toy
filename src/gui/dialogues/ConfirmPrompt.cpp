@@ -1,5 +1,7 @@
 #include "ConfirmPrompt.h"
 
+#include <utility>
+
 #include "gui/Style.h"
 
 #include "gui/interface/Button.h"
@@ -11,9 +13,9 @@
 
 #include "graphics/Graphics.h"
 
-ConfirmPrompt::ConfirmPrompt(String title, String message, ResultCallback callback_, String buttonText):
+ConfirmPrompt::ConfirmPrompt(const String& title, const String& message, ResultCallback callback_, String buttonText):
 	ui::Window(ui::Point(-1, -1), ui::Point(250, 50)),
-	callback(callback_)
+	callback(std::move(callback_))
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), title);
 	titleLabel->SetTextColour(style::Colour::WarningTitle);
@@ -51,7 +53,7 @@ ConfirmPrompt::ConfirmPrompt(String title, String message, ResultCallback callba
 	AddComponent(cancelButton);
 	SetCancelButton(cancelButton);
 
-	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), buttonText);
+	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), std::move(buttonText));
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.TextInactive = style::Colour::WarningTitle;

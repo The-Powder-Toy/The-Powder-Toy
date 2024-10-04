@@ -29,7 +29,7 @@ void EngineProcess();
 void StartTextInput();
 void StopTextInput();
 void SetTextInputRect(int x, int y, int w, int h);
-void ClipboardPush(ByteString text);
+void ClipboardPush(const ByteString& text);
 ByteString ClipboardPull();
 int GetModifiers();
 unsigned int GetTicks();

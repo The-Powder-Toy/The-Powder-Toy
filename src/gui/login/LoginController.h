@@ -13,7 +13,7 @@ class LoginController
 public:
 	bool HasExited;
 	LoginController(std::function<void ()> onDone = nullptr);
-	void Login(ByteString username, ByteString password);
+	void Login(const ByteString& username, const ByteString& password);
 	void Logout();
 	void Tick();
 	void Exit();

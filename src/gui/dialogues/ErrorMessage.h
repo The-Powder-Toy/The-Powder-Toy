@@ -13,7 +13,7 @@ class ErrorMessage : public ui::Window
 	DismissCallback callback;
 
 public:
-	ErrorMessage(String title, String message, DismissCallback callback_ = {});
+	ErrorMessage(const String& title, const String& message, DismissCallback callback_ = {});
 	virtual ~ErrorMessage() = default;
 
 	void OnDraw() override;

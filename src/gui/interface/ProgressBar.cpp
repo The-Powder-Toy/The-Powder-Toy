@@ -5,6 +5,7 @@
 #include "gui/Style.h"
 
 #include <algorithm>
+#include <utility>
 
 using namespace ui;
 
@@ -14,7 +15,7 @@ ProgressBar::ProgressBar(Point position, Point size, int startProgress, String s
 	intermediatePos(0.0f),
 	progressStatus("")
 {
-	SetStatus(startStatus);
+	SetStatus(std::move(startStatus));
 	SetProgress(startProgress);
 }
 
@@ -32,7 +33,7 @@ int ProgressBar::GetProgress()
 
 void ProgressBar::SetStatus(String status)
 {
-	progressStatus = status;
+	progressStatus = std::move(status);
 }
 
 String ProgressBar::GetStatus()

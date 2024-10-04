@@ -1,9 +1,10 @@
 #include "ElementSearchActivity.h"
 
-#include <set>
-#include <map>
-#include <algorithm>
 #include <SDL.h>
+#include <algorithm>
+#include <map>
+#include <set>
+#include <utility>
 
 #include "gui/interface/Textbox.h"
 #include "gui/interface/ScrollPanel.h"
@@ -20,9 +21,9 @@
 
 ElementSearchActivity::ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 302)),
-	firstResult(NULL),
+	firstResult(nullptr),
 	gameController(gameController),
-	tools(tools),
+	tools(std::move(tools)),
 	toolTip(""),
 	toolTipPresence(0),
 	shiftPressed(false),
@@ -59,9 +60,9 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	searchTools("");
 }
 
-void ElementSearchActivity::searchTools(String query)
+void ElementSearchActivity::searchTools(const String& query)
 {
-	firstResult = NULL;
+	firstResult = nullptr;
 	for (auto &toolButton : toolButtons) {
 		scrollPanel->RemoveChild(toolButton);
 		delete toolButton;
@@ -105,7 +106,7 @@ void ElementSearchActivity::searchTools(String query)
 		}
 	};
 
-	auto pushIfMatches = [ &queryLower, &push ](String infoLower, int toolIndex, int favouritePriority, int haystackRelevance) {
+	auto pushIfMatches = [ &queryLower, &push ](const String& infoLower, int toolIndex, int favouritePriority, int haystackRelevance) {
 		if (infoLower == queryLower)
 		{
 			push(Match{ favouritePriority, toolIndex, haystackRelevance, 0 });

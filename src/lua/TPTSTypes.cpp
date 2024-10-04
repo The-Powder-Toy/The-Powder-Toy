@@ -1,8 +1,10 @@
 #include "TPTSTypes.h"
 
+#include <utility>
+
 AnyType::AnyType(ValueType type_, ValueValue value_):
 	type(type_),
-	value(value_)
+	value(std::move(value_))
 {
 }
 
@@ -97,7 +99,7 @@ float FloatType::Value()
 
 //String type
 
-StringType::StringType(String string):	AnyType(TypeString, ValueValue())
+StringType::StringType(const String& string):	AnyType(TypeString, ValueValue())
 {
 	value = string;
 }

@@ -27,9 +27,9 @@ public:
 
 	std::pair<String, int> GetOption();
 	void SetOption(int option);
-	void SetOption(String option);
-	void AddOption(std::pair<String, int> option);
-	void RemoveOption(String option);
+	void SetOption(const String& option);
+	void AddOption(const std::pair<String, int>& option);
+	void RemoveOption(const String& option);
 	void SetOptions(std::vector<std::pair<String, int> > options);
 	inline void SetActionCallback(DropDownAction action) { actionCallback = action; }
 	void Draw(const Point& screenPos) override;

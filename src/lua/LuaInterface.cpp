@@ -490,10 +490,10 @@ void LuaInterface::Open(lua_State *L)
 		LFUNC(mousePosition),
 		LFUNC(activeTool),
 #undef LFUNC
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 #define LCONSTAS(k, v) lua_pushinteger(L, int(v)); lua_setfield(L, -2, k)
 	LCONSTAS("MOUSEUP_NORMAL" , GameController::mouseUpNormal);
 	LCONSTAS("MOUSEUP_BLUR"   , GameController::mouseUpBlur);

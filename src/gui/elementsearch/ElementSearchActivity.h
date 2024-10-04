@@ -28,7 +28,7 @@ class ElementSearchActivity: public WindowActivity
 	bool ctrlPressed;
 	bool altPressed;
 	bool isToolTipFadingIn;
-	void searchTools(String query);
+	void searchTools(const String& query);
 
 public:
 	bool exit;

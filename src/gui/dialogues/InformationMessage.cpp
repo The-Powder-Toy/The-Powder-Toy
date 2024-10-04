@@ -1,5 +1,7 @@
 #include "InformationMessage.h"
 
+#include <utility>
+
 #include "gui/Style.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Engine.h"
@@ -8,9 +10,9 @@
 
 #include "graphics/Graphics.h"
 
-InformationMessage::InformationMessage(String title, String message, bool large, DismissCallback callback_):
+InformationMessage::InformationMessage(const String& title, const String& message, bool large, DismissCallback callback_):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 35)),
-	callback(callback_)
+	callback(std::move(callback_))
 {
 	if (large) //Maybe also use this large mode for changelogs eventually, or have it as a customizable size?
 	{

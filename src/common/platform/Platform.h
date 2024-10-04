@@ -12,35 +12,35 @@ namespace Platform
 	ByteString ExecutableName();
 	void DoRestart();
 
-	void OpenURI(ByteString uri);
+	void OpenURI(const ByteString& uri);
 
 	void Millisleep(long int t);
 	long unsigned int GetTime();
 
-	bool Stat(ByteString filename);
-	bool FileExists(ByteString filename);
-	bool DirectoryExists(ByteString directory);
-	bool IsLink(ByteString path);
+	bool Stat(const ByteString& filename);
+	bool FileExists(const ByteString& filename);
+	bool DirectoryExists(const ByteString& directory);
+	bool IsLink(const ByteString& path);
 	/**
 	 * @return true on success
 	 */
-	bool RemoveFile(ByteString filename);
-	bool RenameFile(ByteString filename, ByteString newFilename, bool replace);
+	bool RemoveFile(const ByteString& filename);
+	bool RenameFile(const ByteString& filename, const ByteString& newFilename, bool replace);
 
 	/**
 	 * @return true on success
 	 */
-	bool DeleteDirectory(ByteString folder);
+	bool DeleteDirectory(const ByteString& folder);
 
 	/**
 	 * @return true on success
 	 */
-	bool MakeDirectory(ByteString dir);
-	std::vector<ByteString> DirectoryList(ByteString directory);
-	std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search, std::vector<ByteString> extensions);
+	bool MakeDirectory(const ByteString& dir);
+	std::vector<ByteString> DirectoryList(const ByteString& directory);
+	std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search, const std::vector<ByteString>& extensions);
 
-	bool ReadFile(std::vector<char> &fileData, ByteString filename);
-	bool WriteFile(const std::vector<char> &fileData, ByteString filename);
+	bool ReadFile(std::vector<char> &fileData, const ByteString& filename);
+	bool WriteFile(const std::vector<char> &fileData, const ByteString& filename);
 
 	// TODO: Remove these and switch to *A Win32 API variants when we stop fully supporting windows
 	//       versions older than win10 1903, for example when win10 reaches EOL, see 18084d5aa0e5.
@@ -54,7 +54,7 @@ namespace Platform
 
 	bool Install();
 
-	bool ChangeDir(ByteString toDir);
+	bool ChangeDir(const ByteString& toDir);
 
 	bool UpdateStart(const std::vector<char> &data);
 	bool UpdateFinish();

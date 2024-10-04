@@ -1,5 +1,7 @@
 #include "DropDown.h"
 
+#include <utility>
+
 #include "graphics/Graphics.h"
 #include "gui/Style.h"
 #include "Button.h"
@@ -42,7 +44,7 @@ public:
 		Graphics * g = GetGraphics();
 		g->DrawFilledRect(RectSized(Position, Size), 0x000000_rgb);
 	}
-	void setOption(String option)
+	void setOption(const String& option)
 	{
 		dropDown->SetOption(option);
 		if (dropDown->actionCallback.change)
@@ -124,7 +126,7 @@ std::pair<String, int> DropDown::GetOption()
 	return std::pair<String, int>("", -1);
 }
 
-void DropDown::SetOption(String option)
+void DropDown::SetOption(const String& option)
 {
 	for (size_t i = 0; i < options.size(); i++)
 	{
@@ -150,7 +152,7 @@ void DropDown::SetOption(int option)
 	}
 }
 
-void DropDown::AddOption(std::pair<String, int> option)
+void DropDown::AddOption(const std::pair<String, int>& option)
 {
 	for (size_t i = 0; i < options.size(); i++)
 	{
@@ -160,7 +162,7 @@ void DropDown::AddOption(std::pair<String, int> option)
 	options.push_back(option);
 }
 
-void DropDown::RemoveOption(String option)
+void DropDown::RemoveOption(const String& option)
 {
 start:
 	for (size_t i = 0; i < options.size(); i++)
@@ -177,7 +179,7 @@ start:
 
 void DropDown::SetOptions(std::vector<std::pair<String, int> > options)
 {
-	this->options = options;
+	this->options = std::move(options);
 }
 
 } /* namespace ui */

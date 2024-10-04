@@ -7,13 +7,14 @@
 #include "gui/dialogues/ConfirmPrompt.h"
 #include <cmath>
 #include <cstring>
+#include <utility>
 
 using namespace ui;
 
 Engine::Engine():
 	drawingFrequencyLimit(0),
 	FrameIndex(0),
-	state_(NULL),
+	state_(nullptr),
 	windowTargetPosition(0, 0),
 	FastQuit(1),
 	lastTick(0),
@@ -131,7 +132,7 @@ int Engine::CloseWindow()
 	}
 	else
 	{
-		state_ = NULL;
+		state_ = nullptr;
 		return 1;
 	}
 }
@@ -151,7 +152,7 @@ int Engine::CloseWindow()
 
 void Engine::Tick()
 {
-	if(state_ != NULL)
+	if(state_ != nullptr)
 		state_->DoTick(dt);
 
 
@@ -229,7 +230,7 @@ void Engine::onKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl,
 		state_->DoKeyRelease(key, scan, repeat, shift, ctrl, alt);
 }
 
-void Engine::onTextInput(String text)
+void Engine::onTextInput(const String& text)
 {
 	if (textInput)
 	{
@@ -238,7 +239,7 @@ void Engine::onTextInput(String text)
 	}
 }
 
-void Engine::onTextEditing(String text, int start)
+void Engine::onTextEditing(const String& text, int start)
 {
 	if (textInput)
 	{
@@ -317,7 +318,7 @@ void Engine::onClose()
 void Engine::onFileDrop(ByteString filename)
 {
 	if (state_)
-		state_->DoFileDrop(filename);
+		state_->DoFileDrop(std::move(filename));
 }
 
 void Engine::StartTextInput()

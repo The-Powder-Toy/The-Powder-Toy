@@ -40,7 +40,7 @@ ConsoleCommand ConsoleModel::GetCurrentCommand()
 	return previousCommands[currentCommandIndex];
 }
 
-void ConsoleModel::AddLastCommand(ConsoleCommand command)
+void ConsoleModel::AddLastCommand(const ConsoleCommand& command)
 {
 	previousCommands.push_back(command);
 	if(previousCommands.size()>25)

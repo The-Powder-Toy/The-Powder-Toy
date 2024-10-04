@@ -26,9 +26,9 @@ public:
 	virtual ~ContextMenu() = default;
 	
 	void ActionCallbackItem(ui::Button *sender, int item);
-	void AddItem(ContextMenuItem item);
+	void AddItem(const ContextMenuItem& item);
 	void RemoveItem(int id);
-	void SetItem(int id, String text);
+	void SetItem(int id, const String& text);
 	void Show(ui::Point position);
 	void OnDraw() override;
 	void OnMouseDown(int x, int y, unsigned button) override;

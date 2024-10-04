@@ -12,13 +12,15 @@
 
 #include <SDL.h>
 
+#include <utility>
+
 ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, OnPicked onPicked_) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(266, 215)),
 	currentHue(0),
 	currentSaturation(0),
 	currentValue(0),
 	mouseDown(false),
-	onPicked(onPicked_)
+	onPicked(std::move(onPicked_))
 {
 	auto colourChange = [this] {
 		int r, g, b, alpha;

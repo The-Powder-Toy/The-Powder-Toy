@@ -28,13 +28,13 @@ namespace http
 		Request &operator =(const Request &) = delete;
 		~Request();
 
-		void FailEarly(ByteString error);
+		void FailEarly(const ByteString& error);
 
-		void Verb(ByteString newVerb);
-		void AddHeader(Header header);
+		void Verb(const ByteString& newVerb);
+		void AddHeader(const Header& header);
 
 		void AddPostData(PostData data);
-		void AuthHeaders(ByteString ID, ByteString session);
+		void AuthHeaders(const ByteString& ID, const ByteString& session);
 
 		void Start();
 		bool CheckDone() const;

@@ -12,7 +12,7 @@
 
 namespace Platform
 {
-void OpenURI(ByteString uri)
+void OpenURI(const ByteString& uri)
 {
 	if (system(("xdg-open \"" + uri + "\"").c_str()))
 	{
@@ -59,7 +59,7 @@ bool CanUpdate()
 bool Install()
 {
 	bool ok = true;
-	auto desktopEscapeString = [](ByteString str) {
+	auto desktopEscapeString = [](const ByteString& str) {
 		ByteString escaped;
 		for (auto ch : str)
 		{
@@ -77,7 +77,7 @@ bool Install()
 		}
 		return escaped;
 	};
-	auto desktopEscapeExec = [](ByteString str) {
+	auto desktopEscapeExec = [](const ByteString& str) {
 		ByteString escaped;
 		for (auto ch : str)
 		{

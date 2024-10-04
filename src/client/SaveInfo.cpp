@@ -1,6 +1,8 @@
 #include "SaveInfo.h"
 #include "GameSave.h"
 
+#include <utility>
+
 SaveInfo::SaveInfo(int _id, time_t _createdDate, time_t _updatedDate, int _votesUp, int _votesDown, ByteString _userName, String _name):
 	id(_id),
 	createdDate(_createdDate),
@@ -12,8 +14,8 @@ SaveInfo::SaveInfo(int _id, time_t _createdDate, time_t _updatedDate, int _votes
 	Comments(0),
 	Views(0),
 	Version(0),
-	userName(_userName),
-	name(_name),
+	userName(std::move(_userName)),
+	name(std::move(_name)),
 	Description(""),
 	Published(false)
 {
@@ -31,19 +33,19 @@ SaveInfo::SaveInfo(int _id, time_t _createdDate, time_t _updatedDate, int _votes
 	Comments(0),
 	Views(0),
 	Version(0),
-	userName(_userName),
-	name(_name),
-	Description(description_),
+	userName(std::move(_userName)),
+	name(std::move(_name)),
+	Description(std::move(description_)),
 	Published(published_)
 {
-	std::list<ByteString> tagsSorted = tags_;
+	std::list<ByteString> tagsSorted = std::move(tags_);
 	tagsSorted.sort();
 	tags=tagsSorted;
 }
 
 void SaveInfo::SetName(String name)
 {
-	this->name = name;
+	this->name = std::move(name);
 }
 const String &SaveInfo::GetName() const
 {
@@ -52,7 +54,7 @@ const String &SaveInfo::GetName() const
 
 void SaveInfo::SetDescription(String description)
 {
-	Description = description;
+	Description = std::move(description);
 }
 const String &SaveInfo::GetDescription() const
 {
@@ -79,7 +81,7 @@ int SaveInfo::GetVote() const
 
 void SaveInfo::SetUserName(ByteString userName)
 {
-	this->userName = userName;
+	this->userName = std::move(userName);
 }
 
 const ByteString &SaveInfo::GetUserName() const
@@ -125,7 +127,7 @@ int SaveInfo::GetVersion() const
 
 void SaveInfo::SetTags(std::list<ByteString> tags)
 {
-	std::list<ByteString> tagsSorted = tags;
+	std::list<ByteString> tagsSorted = std::move(tags);
 	tagsSorted.sort();
 	this->tags=tagsSorted;
 }

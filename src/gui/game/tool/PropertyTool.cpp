@@ -18,6 +18,7 @@
 #include "graphics/Graphics.h"
 #include "Config.h"
 #include <iostream>
+#include <utility>
 #include <SDL.h>
 
 class PropertyWindow: public ui::Window
@@ -284,7 +285,7 @@ void PropertyWindow::CheckProperty()
 
 void PropertyTool::SetConfiguration(std::optional<Configuration> newConfiguration)
 {
-	configuration = newConfiguration;
+	configuration = std::move(newConfiguration);
 	if (configuration)
 	{
 		auto &prefs = GlobalPrefs::Ref();

@@ -40,7 +40,7 @@ namespace ui
 		void copySelection();
 	public:
 		//Label(Window* parent_state, String labelText);
-		Label(Point position, Point size, String labelText);
+		Label(Point position, Point size, const String& labelText);
 		//Label(String labelText);
 		virtual ~Label();
 

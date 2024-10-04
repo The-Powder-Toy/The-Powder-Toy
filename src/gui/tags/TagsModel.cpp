@@ -78,12 +78,12 @@ void TagsModel::Tick()
 	}
 }
 
-void TagsModel::RemoveTag(ByteString tag)
+void TagsModel::RemoveTag(const ByteString& tag)
 {
 	queuedTags[tag] = false;
 }
 
-void TagsModel::AddTag(ByteString tag)
+void TagsModel::AddTag(const ByteString& tag)
 {
 	queuedTags[tag] = true;
 }

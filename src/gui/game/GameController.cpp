@@ -67,18 +67,19 @@
 #include "Config.h"
 #include <SDL.h>
 #include <iostream>
+#include <utility>
 
 GameController::GameController():
 	firstTick(true),
 	foundSignID(-1),
-	activePreview(NULL),
-	search(NULL),
-	renderOptions(NULL),
-	loginWindow(NULL),
-	console(NULL),
-	tagsWindow(NULL),
-	localBrowser(NULL),
-	options(NULL),
+	activePreview(nullptr),
+	search(nullptr),
+	renderOptions(nullptr),
+	loginWindow(nullptr),
+	console(nullptr),
+	tagsWindow(nullptr),
+	localBrowser(nullptr),
+	options(nullptr),
 	debugFlags(0),
 	HasDone(false)
 {
@@ -484,7 +485,7 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 		Json::Value clipboardInfo;
 		clipboardInfo["type"] = "clipboard";
 		clipboardInfo["username"] = Client::Ref().GetAuthUser().Username;
-		clipboardInfo["date"] = (Json::Value::UInt64)time(NULL);
+		clipboardInfo["date"] = (Json::Value::UInt64)time(nullptr);
 		Client::Ref().SaveAuthorInfo(&clipboardInfo);
 		newSave->authors = clipboardInfo;
 
@@ -584,12 +585,12 @@ bool GameController::MouseWheel(int x, int y, int d)
 
 bool GameController::TextInput(String text)
 {
-	return commandInterface->HandleEvent(TextInputEvent{ text });
+	return commandInterface->HandleEvent(TextInputEvent{ std::move(text) });
 }
 
 bool GameController::TextEditing(String text)
 {
-	return commandInterface->HandleEvent(TextEditingEvent{ text });
+	return commandInterface->HandleEvent(TextEditingEvent{ std::move(text) });
 }
 
 bool GameController::KeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
@@ -906,31 +907,31 @@ void GameController::Update()
 	if(renderOptions && renderOptions->HasExited)
 	{
 		delete renderOptions;
-		renderOptions = NULL;
+		renderOptions = nullptr;
 	}
 
 	if(search && search->HasExited)
 	{
 		delete search;
-		search = NULL;
+		search = nullptr;
 	}
 
 	if(activePreview && activePreview->HasExited)
 	{
 		delete activePreview;
-		activePreview = NULL;
+		activePreview = nullptr;
 	}
 
 	if(loginWindow && loginWindow->HasExited)
 	{
 		delete loginWindow;
-		loginWindow = NULL;
+		loginWindow = nullptr;
 	}
 
 	if(localBrowser && localBrowser->HasDone)
 	{
 		delete localBrowser;
-		localBrowser = NULL;
+		localBrowser = nullptr;
 	}
 }
 
@@ -1134,7 +1135,7 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 	}
 }
 
-void GameController::SetActiveTool(int toolSelection, ByteString identifier)
+void GameController::SetActiveTool(int toolSelection, const ByteString& identifier)
 {
 	Tool *tool = gameModel->GetToolFromIdentifier(identifier);
 	if (!tool)
@@ -1178,7 +1179,7 @@ void GameController::SetReplaceModeFlags(int flags)
 	gameModel->GetSimulation()->replaceModeFlags = flags;
 }
 
-void GameController::OpenSearch(String searchText)
+void GameController::OpenSearch(const String& searchText)
 {
 	if(!search)
 		search = new SearchController([this] {
@@ -1232,7 +1233,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			localSaveInfo["type"] = "localsave";
 			localSaveInfo["username"] = Client::Ref().GetAuthUser().Username;
 			localSaveInfo["title"] = gameModel->GetSaveFile()->GetName();
-			localSaveInfo["date"] = (Json::Value::UInt64)time(NULL);
+			localSaveInfo["date"] = (Json::Value::UInt64)time(nullptr);
 			Client::Ref().SaveAuthorInfo(&localSaveInfo);
 			gameSave->authors = localSaveInfo;
 
@@ -1387,7 +1388,7 @@ void GameController::OpenOptions()
 void GameController::ShowConsole()
 {
 	if (!console)
-		console = new ConsoleController(NULL, commandInterface.get());
+		console = new ConsoleController(nullptr, commandInterface.get());
 	if (console->GetView() != ui::Engine::Ref().GetWindow())
 		ui::Engine::Ref().ShowWindow(console->GetView());
 }
@@ -1401,7 +1402,7 @@ void GameController::HideConsole()
 
 void GameController::OpenRenderOptions()
 {
-	renderOptions = new RenderController(gameModel->GetSimulation(), gameModel->GetRenderer(), &gameModel->GetRendererSettings(), NULL);
+	renderOptions = new RenderController(gameModel->GetSimulation(), gameModel->GetRenderer(), &gameModel->GetRendererSettings(), nullptr);
 	ui::Engine::Ref().ShowWindow(renderOptions->GetView());
 }
 
@@ -1507,7 +1508,7 @@ void GameController::ChangeBrush()
 void GameController::ClearSim()
 {
 	HistorySnapshot();
-	gameModel->SetSave(NULL, false);
+	gameModel->SetSave(nullptr, false);
 	gameModel->ClearSimulation();
 }
 
@@ -1577,7 +1578,7 @@ void GameController::NotifyNewNotification(Client * sender, ServerNotification n
 	{
 		ByteString link;
 	public:
-		LinkNotification(ByteString link_, String message) : Notification(message), link(link_) {}
+		LinkNotification(ByteString link_, String message) : Notification(std::move(message)), link(std::move(link_)) {}
 		virtual ~LinkNotification() {}
 
 		void Action() override
@@ -1594,7 +1595,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 	{
 		GameController * c;
 	public:
-		UpdateNotification(GameController * c, String message) : Notification(message), c(c) {}
+		UpdateNotification(GameController * c, String message) : Notification(std::move(message)), c(c) {}
 		virtual ~UpdateNotification() {}
 
 		void Action() override
@@ -1692,7 +1693,7 @@ void GameController::RemoveNotification(Notification * notification)
 	gameModel->RemoveNotification(notification);
 }
 
-void GameController::RunUpdater(UpdateInfo info)
+void GameController::RunUpdater(const UpdateInfo& info)
 {
 	if (Platform::CanUpdate())
 	{
@@ -1730,7 +1731,7 @@ bool GameController::ThreadedRenderingAllowed()
 	return gameModel->GetThreadedRendering() && !commandInterface->HaveSimGraphicsEventHandlers();
 }
 
-void GameController::SetToolIndex(ByteString identifier, std::optional<int> index)
+void GameController::SetToolIndex(const ByteString& identifier, std::optional<int> index)
 {
 	if (commandInterface)
 	{

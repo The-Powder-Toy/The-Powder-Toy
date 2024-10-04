@@ -7,6 +7,8 @@
 
 #include "lua/CommandInterface.h"
 
+#include <utility>
+
 ConsoleController::ConsoleController(std::function<void ()> onDone_, CommandInterface * commandInterface):
 	HasDone(false)
 {
@@ -15,11 +17,11 @@ ConsoleController::ConsoleController(std::function<void ()> onDone_, CommandInte
 	consoleView->AttachController(this);
 	consoleModel->AddObserver(consoleView);
 
-	onDone = onDone_;
+	onDone = std::move(onDone_);
 	this->commandInterface = commandInterface;
 }
 
-void ConsoleController::EvaluateCommand(String command)
+void ConsoleController::EvaluateCommand(const String& command)
 {
 	if(command.length())
 	{
@@ -39,7 +41,7 @@ void ConsoleController::CloseConsole()
 
 String ConsoleController::FormatCommand(String command)
 {
-	return commandInterface->FormatCommand(command);
+	return commandInterface->FormatCommand(std::move(command));
 }
 
 void ConsoleController::NextCommand()

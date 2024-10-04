@@ -15,7 +15,7 @@ public:
 	bool HasDone;
 	ConsoleController(std::function<void ()> onDone, CommandInterface * commandInterface);
 	String FormatCommand(String command);
-	void EvaluateCommand(String command);
+	void EvaluateCommand(const String& command);
 	void NextCommand();
 	void PreviousCommand();
 	void Exit();

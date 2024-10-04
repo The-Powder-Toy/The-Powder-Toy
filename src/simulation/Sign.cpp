@@ -1,5 +1,7 @@
 #include "Sign.h"
 
+#include <utility>
+
 #include "graphics/Renderer.h"
 #include "Simulation.h"
 #include "SimulationData.h"
@@ -8,7 +10,7 @@ sign::sign(String text_, int x_, int y_, Justification justification_):
 	x(x_),
 	y(y_),
 	ju(justification_),
-	text(text_)
+	text(std::move(text_))
 {
 }
 

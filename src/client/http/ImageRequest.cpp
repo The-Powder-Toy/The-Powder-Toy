@@ -1,11 +1,13 @@
 #include "ImageRequest.h"
-#include "graphics/VideoBuffer.h"
 #include "client/Client.h"
+#include "graphics/VideoBuffer.h"
+
 #include <iostream>
+#include <utility>
 
 namespace http
 {
-	ImageRequest::ImageRequest(ByteString url, Vec2<int> newRequestedSize) : Request(url), requestedSize(newRequestedSize)
+	ImageRequest::ImageRequest(ByteString url, Vec2<int> newRequestedSize) : Request(std::move(url)), requestedSize(newRequestedSize)
 	{
 	}
 

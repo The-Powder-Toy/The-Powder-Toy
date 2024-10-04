@@ -63,7 +63,7 @@ private:
 	std::vector<std::unique_ptr<Tool>> tools;
 
 	void SanitizeToolsets();
-	void DeselectTool(ByteString identifier);
+	void DeselectTool(const ByteString& identifier);
 	void InitTools();
 
 	Simulation * sim;
@@ -122,7 +122,7 @@ private:
 	void notifyColourPresetsChanged();
 	void notifyColourActivePresetChanged();
 	void notifyNotificationsChanged();
-	void notifyLogChanged(String entry);
+	void notifyLogChanged(const String& entry);
 	void notifyInfoTipChanged();
 	void notifyToolTipChanged();
 	void notifyQuickOptionsChanged();
@@ -270,7 +270,7 @@ public:
 	void SetClipboard(std::unique_ptr<GameSave> save);
 	void SetPlaceSave(std::unique_ptr<GameSave> save);
 	void TransformPlaceSave(Mat2<int> transform, Vec2<int> nudge);
-	void Log(String message, bool printToFile);
+	void Log(const String& message, bool printToFile);
 	std::deque<String> GetLog();
 	const GameSave *GetClipboard() const;
 	const GameSave *GetPlaceSave() const;
@@ -289,11 +289,11 @@ public:
 	void AddNotification(Notification * notification);
 	void RemoveNotification(Notification * notification);
 
-	bool AddCustomGol(String ruleString, String nameString, RGB<uint8_t> color1, RGB<uint8_t> color2);
+	bool AddCustomGol(const String& ruleString, const String& nameString, RGB<uint8_t> color1, RGB<uint8_t> color2);
 	bool RemoveCustomGol(const ByteString &identifier);
 	void LoadCustomGol();
 	void SaveCustomGol();
-	std::optional<CustomGOLData> CheckCustomGol(String ruleString, String nameString, RGB<uint8_t> color1, RGB<uint8_t> color2);
+	std::optional<CustomGOLData> CheckCustomGol(const String& ruleString, const String& nameString, RGB<uint8_t> color1, RGB<uint8_t> color2);
 
 	ByteString SelectNextIdentifier;
 	int SelectNextTool;

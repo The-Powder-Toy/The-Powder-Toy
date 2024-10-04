@@ -7,6 +7,8 @@
 #include "client/SaveInfo.h"
 #include "Controller.h"
 
+#include <utility>
+
 TagsController::TagsController(std::function<void ()> onDone_, SaveInfo * save):
 	HasDone(false)
 {
@@ -17,7 +19,7 @@ TagsController::TagsController(std::function<void ()> onDone_, SaveInfo * save):
 
 	tagsModel->SetSave(save);
 
-	onDone = onDone_;
+	onDone = std::move(onDone_);
 }
 
 SaveInfo * TagsController::GetSave()
@@ -25,13 +27,13 @@ SaveInfo * TagsController::GetSave()
 	return tagsModel->GetSave();
 }
 
-void TagsController::RemoveTag(ByteString tag)
+void TagsController::RemoveTag(const ByteString& tag)
 {
 	tagsModel->RemoveTag(tag);
 }
 
 
-void TagsController::AddTag(ByteString tag)
+void TagsController::AddTag(const ByteString& tag)
 {
 	tagsModel->AddTag(tag);
 }

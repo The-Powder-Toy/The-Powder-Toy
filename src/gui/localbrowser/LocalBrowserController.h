@@ -19,7 +19,7 @@ public:
 	void removeSelectedC();
 	void RenameSelected();
 	void ClearSelection();
-	void Selected(ByteString stampID, bool selected);
+	void Selected(const ByteString& stampID, bool selected);
 	void RescanStamps();
 	void RefreshSavesList();
 	void OpenSave(int index);

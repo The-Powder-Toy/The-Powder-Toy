@@ -7,7 +7,7 @@ namespace http
 	class GetUserInfoRequest : public APIRequest
 	{
 	public:
-		GetUserInfoRequest(ByteString username);
+		GetUserInfoRequest(const ByteString& username);
 
 		UserInfo Finish();
 	};

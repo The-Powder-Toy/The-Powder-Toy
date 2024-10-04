@@ -105,7 +105,7 @@ int LocalBrowserModel::GetPageCount()
 	return count ? count : 1; // there is always at least one page; there may not be anything on it though
 }
 
-void LocalBrowserModel::SelectSave(ByteString stampID)
+void LocalBrowserModel::SelectSave(const ByteString& stampID)
 {
 	if (std::find(selected.begin(), selected.end(), stampID) != selected.end())
 	{
@@ -115,7 +115,7 @@ void LocalBrowserModel::SelectSave(ByteString stampID)
 	notifySelectedChanged();
 }
 
-void LocalBrowserModel::DeselectSave(ByteString stampID)
+void LocalBrowserModel::DeselectSave(const ByteString& stampID)
 {
 	auto it = std::remove(selected.begin(), selected.end(), stampID);
 	if (it != selected.end())

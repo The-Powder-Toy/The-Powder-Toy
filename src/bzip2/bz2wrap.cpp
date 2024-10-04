@@ -10,9 +10,9 @@ static size_t outputSizeIncrement = 0x100000U;
 BZ2WCompressResult BZ2WCompress(std::vector<char> &dest, const char *srcData, size_t srcSize, size_t maxSize)
 {
 	bz_stream stream;
-	stream.bzalloc = NULL;
-	stream.bzfree = NULL;
-	stream.opaque = NULL;
+	stream.bzalloc = nullptr;
+	stream.bzfree = nullptr;
+	stream.opaque = nullptr;
 	if (BZ2_bzCompressInit(&stream, 9, 0, 0) != BZ_OK)
 	{
 		return BZ2WCompressNomem;
@@ -56,9 +56,9 @@ BZ2WCompressResult BZ2WCompress(std::vector<char> &dest, const char *srcData, si
 BZ2WDecompressResult BZ2WDecompress(std::vector<char> &dest, const char *srcData, size_t srcSize, size_t maxSize)
 {
 	bz_stream stream;
-	stream.bzalloc = NULL;
-	stream.bzfree = NULL;
-	stream.opaque = NULL;
+	stream.bzalloc = nullptr;
+	stream.bzfree = nullptr;
+	stream.opaque = nullptr;
 	if (BZ2_bzDecompressInit(&stream, 0, 0) != BZ_OK)
 	{
 		return BZ2WDecompressNomem;

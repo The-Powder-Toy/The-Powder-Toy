@@ -18,10 +18,10 @@ class SearchModel
 {
 private:
 	std::unique_ptr<http::SearchSavesRequest> searchSaves;
-	void BeginSearchSaves(int start, int count, String query, http::Period period, http::Sort sort, http::Category category);
+	void BeginSearchSaves(int start, int count, const String& query, http::Period period, http::Sort sort, http::Category category);
 	std::vector<std::unique_ptr<SaveInfo>> EndSearchSaves();
 
-	void BeginGetTags(int start, int count, String query);
+	void BeginGetTags(int start, int count, const String& query);
 	std::vector<std::pair<ByteString, int>> EndGetTags();
 	std::unique_ptr<http::SearchTagsRequest> getTags;
 
@@ -56,7 +56,7 @@ public:
     void SetShowTags(bool show);
     bool GetShowTags();
 	void AddObserver(SearchView * observer);
-	bool UpdateSaveList(int pageNumber, String query);
+	bool UpdateSaveList(int pageNumber, const String& query);
 	std::vector<SaveInfo *> GetSaveList(); // non-owning
 	std::vector<std::pair<ByteString, int> > GetTagList();
 	String GetLastError() { return lastError; }

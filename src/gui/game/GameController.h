@@ -137,7 +137,7 @@ public:
 	void RebuildFavoritesMenu();
 	Tool * GetActiveTool(int selection);
 	void SetActiveTool(int toolSelection, Tool * tool);
-	void SetActiveTool(int toolSelection, ByteString identifier);
+	void SetActiveTool(int toolSelection, const ByteString& identifier);
 	void SetLastTool(Tool * tool);
 	Tool *GetLastTool();
 	int GetReplaceModeFlags();
@@ -147,7 +147,7 @@ public:
 	void SetToolStrength(float value);
 	void LoadSaveFile(std::unique_ptr<SaveFile> file);
 	void LoadSave(std::unique_ptr<SaveInfo> save);
-	void OpenSearch(String searchText);
+	void OpenSearch(const String& searchText);
 	void OpenLogin();
 	void OpenProfile();
 	void OpenTags();
@@ -198,7 +198,7 @@ public:
 	void NotifyUpdateAvailable(Client * sender) override;
 	void NotifyAuthUserChanged(Client * sender) override;
 	void NotifyNewNotification(Client * sender, ServerNotification notification) override;
-	void RunUpdater(UpdateInfo info);
+	void RunUpdater(const UpdateInfo& info);
 	bool GetMouseClickRequired();
 
 	void RemoveCustomGol(const ByteString &identifier);
@@ -207,5 +207,5 @@ public:
 	void AfterSimDraw();
 	bool ThreadedRenderingAllowed();
 
-	void SetToolIndex(ByteString identifier, std::optional<int> index);
+	void SetToolIndex(const ByteString& identifier, std::optional<int> index);
 };

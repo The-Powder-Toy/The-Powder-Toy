@@ -15,8 +15,8 @@ public:
 	TagsController(std::function<void ()> onDone, SaveInfo * save);
 	TagsView * GetView() {return tagsView;}
 	SaveInfo * GetSave();
-	void RemoveTag(ByteString tag);
-	void AddTag(ByteString tag);
+	void RemoveTag(const ByteString& tag);
+	void AddTag(const ByteString& tag);
 	void Exit();
 	void Tick();
 	virtual ~TagsController();

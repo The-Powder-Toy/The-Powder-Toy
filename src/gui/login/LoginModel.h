@@ -28,7 +28,7 @@ class LoginModel
 	void notifyStatusChanged();
 
 public:
-	void Login(ByteString username, ByteString password);
+	void Login(const ByteString& username, const ByteString& password);
 	void Logout();
 	void AddObserver(LoginView * observer);
 	String GetStatusText();

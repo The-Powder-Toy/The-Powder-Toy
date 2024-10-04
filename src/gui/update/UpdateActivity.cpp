@@ -9,11 +9,12 @@
 #include "Config.h"
 #include <bzlib.h>
 #include <memory>
+#include <utility>
 
 class UpdateDownloadTask : public Task
 {
 public:
-	UpdateDownloadTask(ByteString updateName, UpdateActivity * a) : a(a), updateName(updateName) {}
+	UpdateDownloadTask(ByteString updateName, UpdateActivity * a) : a(a), updateName(std::move(updateName)) {}
 private:
 	UpdateActivity * a;
 	ByteString updateName;
@@ -28,7 +29,7 @@ private:
 	{
 		auto &prefs = GlobalPrefs::Ref();
 
-		auto niceNotifyError = [this](String error) {
+		auto niceNotifyError = [this](const String& error) {
 			notifyError("Downloaded update is corrupted\n" + error);
 			return false;
 		};
@@ -115,7 +116,7 @@ private:
 	}
 };
 
-UpdateActivity::UpdateActivity(UpdateInfo info)
+UpdateActivity::UpdateActivity(const UpdateInfo& info)
 {
 	updateDownloadTask = new UpdateDownloadTask(info.file, this);
 	updateWindow = new TaskWindow("Downloading update...", updateDownloadTask, true);

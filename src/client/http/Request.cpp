@@ -4,13 +4,14 @@
 #include <iostream>
 #include <cstring>
 #include <json/json.h>
+#include <utility>
 
 namespace http
 {
 	Request::Request(ByteString newUri)
 	{
 		handle = RequestHandle::Create();
-		handle->uri = newUri;
+		handle->uri = std::move(newUri);
 	}
 
 	Request::~Request()
@@ -31,19 +32,19 @@ namespace http
 		}
 	}
 
-	void Request::FailEarly(ByteString error)
+	void Request::FailEarly(const ByteString& error)
 	{
 		assert(handle->state == RequestHandle::ready);
 		handle->failEarly = error;
 	}
 
-	void Request::Verb(ByteString newVerb)
+	void Request::Verb(const ByteString& newVerb)
 	{
 		assert(handle->state == RequestHandle::ready);
 		handle->verb = newVerb;
 	}
 
-	void Request::AddHeader(Header header)
+	void Request::AddHeader(const Header& header)
 	{
 		assert(handle->state == RequestHandle::ready);
 		handle->headers.push_back(header);
@@ -54,10 +55,10 @@ namespace http
 		assert(handle->state == RequestHandle::ready);
 		// Even if the map is empty, calling this function signifies you want to do a POST request
 		handle->isPost = true;
-		handle->postData = data;
+		handle->postData = std::move(data);
 	}
 
-	void Request::AuthHeaders(ByteString ID, ByteString session)
+	void Request::AuthHeaders(const ByteString& ID, const ByteString& session)
 	{
 		assert(handle->state == RequestHandle::ready);
 		if (ID.size() && ID != "-1") // -1 is an emscripten hack, see AuthUserEmscripten.cpp

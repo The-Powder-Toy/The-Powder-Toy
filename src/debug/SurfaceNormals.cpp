@@ -36,7 +36,7 @@ void SurfaceNormals::Draw()
 		{
 			return;
 		}
-		if (sim->eval_move(PT_PHOT, mr.fin_x, mr.fin_y, NULL))
+		if (sim->eval_move(PT_PHOT, mr.fin_x, mr.fin_y, nullptr))
 		{
 			int rt = TYP(sim->pmap[mr.fin_y][mr.fin_x]);
 			int lt = TYP(sim->pmap[y][x]);

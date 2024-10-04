@@ -46,7 +46,7 @@ namespace http
 			if constexpr (!IGNORE_UPDATES)
 			{
 				auto &versions = document["Updates"];
-				auto parseUpdate = [this, &versions, &startupInfo](ByteString key, UpdateInfo::Channel channel) {
+				auto parseUpdate = [this, &versions, &startupInfo](const ByteString& key, UpdateInfo::Channel channel) {
 					if (!versions.isMember(key))
 					{
 						return;
@@ -56,7 +56,7 @@ namespace http
 					{
 						return;
 					}
-					auto getOr = [&info](ByteString key, int defaultValue) -> int {
+					auto getOr = [&info](const ByteString& key, int defaultValue) -> int {
 						if (!info.isMember(key))
 						{
 							return defaultValue;

@@ -4,9 +4,11 @@
 #include "Favorite.h"
 #include <SDL.h>
 
+#include <utility>
+
 ToolButton::ToolButton(ui::Point position, ui::Point size, String text, ByteString toolIdentifier, String toolTip):
-	ui::Button(position, size, text, toolTip),
-	toolIdentifier(toolIdentifier)
+	ui::Button(position, size, std::move(text), std::move(toolTip)),
+	toolIdentifier(std::move(toolIdentifier))
 {
 	SetSelectionState(-1);
 	Appearance.BorderActive = ui::Colour(255, 0, 0);

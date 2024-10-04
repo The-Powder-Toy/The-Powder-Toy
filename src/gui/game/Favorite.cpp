@@ -13,7 +13,7 @@ std::vector<ByteString> Favorite::GetFavoritesList()
 	return favoritesList;
 }
 
-bool Favorite::IsFavorite(ByteString identifier)
+bool Favorite::IsFavorite(const ByteString& identifier)
 {
 	return std::find(favoritesList.begin(), favoritesList.end(), identifier) != favoritesList.end();
 }
@@ -23,7 +23,7 @@ bool Favorite::AnyFavorites()
 	return favoritesList.size() != 0;
 }
 
-void Favorite::AddFavorite(ByteString identifier)
+void Favorite::AddFavorite(const ByteString& identifier)
 {
 	if (!IsFavorite(identifier))
 	{
@@ -32,7 +32,7 @@ void Favorite::AddFavorite(ByteString identifier)
 	}
 }
 
-void Favorite::RemoveFavorite(ByteString identifier)
+void Favorite::RemoveFavorite(const ByteString& identifier)
 {
 	favoritesList.erase(std::remove(favoritesList.begin(), favoritesList.end(), identifier), favoritesList.end());
 	SaveFavoritesToPrefs();

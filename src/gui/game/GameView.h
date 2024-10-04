@@ -226,7 +226,7 @@ public:
 	void NotifyPlaceSaveChanged(GameModel * sender);
 	void NotifyTransformedPlaceSaveChanged(GameModel *sender);
 	void NotifyNotificationsChanged(GameModel * sender);
-	void NotifyLogChanged(GameModel * sender, String entry);
+	void NotifyLogChanged(GameModel * sender, const String& entry);
 	void NotifyToolTipChanged(GameModel * sender);
 	void NotifyInfoTipChanged(GameModel * sender);
 	void NotifyQuickOptionsChanged(GameModel * sender);
@@ -253,8 +253,8 @@ public:
 	void DoMouseDown(int x, int y, unsigned button) override;
 	void DoMouseUp(int x, int y, unsigned button) override;
 	void DoMouseWheel(int x, int y, int d) override;
-	void DoTextInput(String text) override;
-	void DoTextEditing(String text) override;
+	void DoTextInput(const String& text) override;
+	void DoTextEditing(const String& text) override;
 	void DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 

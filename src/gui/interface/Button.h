@@ -27,7 +27,7 @@ public:
 
 	void Draw(const Point& screenPos) override;
 
-	void TextPosition(String) override;
+	void TextPosition(const String&) override;
 	inline bool GetState() { return state; }
 	void DoAction(); //action of button what ever it may be
 	void DoAltAction(); //action of button what ever it may be

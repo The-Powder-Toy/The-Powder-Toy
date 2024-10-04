@@ -4,6 +4,7 @@
 #include "CurlError.h"
 #include "Config.h"
 #include <iostream>
+#include <utility>
 
 #if defined(CURL_AT_LEAST_VERSION) && CURL_AT_LEAST_VERSION(7, 55, 0)
 # define REQUEST_USE_CURL_OFFSET_T
@@ -52,14 +53,14 @@ namespace http
 
 	struct RequestHandleHttp : public RequestHandle
 	{
-		curl_slist *curlHeaders = NULL;
+		curl_slist *curlHeaders = nullptr;
 #ifdef REQUEST_USE_CURL_MIMEPOST
-		curl_mime *curlPostFields = NULL;
+		curl_mime *curlPostFields = nullptr;
 #else
 		curl_httppost *curlPostFieldsFirst = NULL;
 		curl_httppost *curlPostFieldsLast = NULL;
 #endif
-		CURL *curlEasy = NULL;
+		CURL *curlEasy = nullptr;
 		char curlErrorBuffer[CURL_ERROR_SIZE];
 		bool curlAddedToMulti = false;
 		bool gotStatusLine = false;
@@ -136,10 +137,10 @@ namespace http
 
 		std::vector<std::shared_ptr<RequestHandle>> requestHandles;
 		void RegisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle);
-		void UnregisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle);
+		void UnregisterRequestHandle(const std::shared_ptr<RequestHandle>& requestHandle);
 
 		bool curlGlobalInit = false;
-		CURLM *curlMulti = NULL;
+		CURLM *curlMulti = nullptr;
 
 		void Wake()
 		{
@@ -152,7 +153,7 @@ namespace http
 		{
 			int dontcare;
 #ifdef REQUEST_USE_CURL_MULTI_POLL
-			HandleCURLMcode(curl_multi_poll(curlMulti, NULL, 0, 100000, &dontcare));
+			HandleCURLMcode(curl_multi_poll(curlMulti, nullptr, 0, 100000, &dontcare));
 #else
 			constexpr auto TickMs = 100;
 			if (requestHandles.size())
@@ -169,7 +170,7 @@ namespace http
 	};
 
 	RequestManagerImpl::RequestManagerImpl(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork) :
-		RequestManager(newProxy, newCafile, newCapath, newDisableNetwork)
+		RequestManager(std::move(newProxy), std::move(newCafile), std::move(newCapath), newDisableNetwork)
 	{
 		worker = std::thread([this]() {
 			Worker();
@@ -285,7 +286,7 @@ namespace http
 	void RequestManagerImpl::WorkerExit()
 	{
 		curl_multi_cleanup(curlMulti);
-		curlMulti = NULL;
+		curlMulti = nullptr;
 		curl_global_cleanup();
 	}
 
@@ -366,7 +367,7 @@ namespace http
 	{
 		auto manager = static_cast<RequestManagerImpl *>(this);
 		auto handle = static_cast<RequestHandleHttp *>(requestHandle.get());
-		auto failEarly = [&requestHandle](int statusCode, ByteString error) {
+		auto failEarly = [&requestHandle](int statusCode, const ByteString& error) {
 			requestHandle->statusCode = statusCode;
 			requestHandle->error = error;
 		};
@@ -514,7 +515,7 @@ namespace http
 		handle->curlAddedToMulti = true;
 	}
 
-	void RequestManagerImpl::UnregisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle)
+	void RequestManagerImpl::UnregisterRequestHandle(const std::shared_ptr<RequestHandle>& requestHandle)
 	{
 		auto manager = static_cast<RequestManagerImpl *>(this);
 		auto handle = static_cast<RequestHandleHttp *>(requestHandle.get());
@@ -534,7 +535,7 @@ namespace http
 
 	RequestManagerPtr RequestManager::Create(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork)
 	{
-		return RequestManagerPtr(new RequestManagerImpl(newProxy, newCafile, newCapath, newDisableNetwork));
+		return RequestManagerPtr(new RequestManagerImpl(std::move(newProxy), std::move(newCafile), std::move(newCapath), newDisableNetwork));
 	}
 
 	void RequestManagerDeleter::operator ()(RequestManager *ptr) const

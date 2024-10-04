@@ -7,7 +7,7 @@ namespace http
 	class AddTagRequest : public APIRequest
 	{
 	public:
-		AddTagRequest(int saveID, ByteString tag);
+		AddTagRequest(int saveID, const ByteString& tag);
 
 		std::list<ByteString> Finish();
 	};

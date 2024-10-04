@@ -41,6 +41,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <iostream>
+#include <utility>
 #include <SDL.h>
 
 class SplitButton : public ui::Button
@@ -59,16 +60,16 @@ class SplitButton : public ui::Button
 
 public:
 	SplitButton(ui::Point position, ui::Point size, String buttonText, String toolTip, String toolTip2, int split) :
-		Button(position, size, buttonText, toolTip),
+		Button(position, size, std::move(buttonText), std::move(toolTip)),
 		showSplit(true),
 		splitPosition(split),
-		toolTip2(toolTip2)
+		toolTip2(std::move(toolTip2))
 	{
 
 	}
 	virtual ~SplitButton() = default;
 
-	void SetRightToolTip(String tooltip) { toolTip2 = tooltip; }
+	void SetRightToolTip(String tooltip) { toolTip2 = std::move(tooltip); }
 	bool GetShowSplit() { return showSplit; }
 	void SetShowSplit(bool split) { showSplit = split; }
 	inline SplitButtonAction const &GetSplitActionCallback() { return actionCallback; }
@@ -113,15 +114,15 @@ public:
 			return;
 		SetToolTip(x, y);
 	}
-	void TextPosition(String ButtonText) override
+	void TextPosition(const String& ButtonText) override
 	{
 		ui::Button::TextPosition(ButtonText);
 		textPosition.X += 3;
 	}
 	void SetToolTips(String newToolTip1, String newToolTip2)
 	{
-		toolTip = newToolTip1;
-		toolTip2 = newToolTip2;
+		toolTip = std::move(newToolTip1);
+		toolTip2 = std::move(newToolTip2);
 	}
 	void OnMouseDown(int x, int y, unsigned int button) override
 	{
@@ -204,7 +205,7 @@ GameView::GameView():
 	recordingFolder(0),
 	currentPoint(ui::Point(0, 0)),
 	lastPoint(ui::Point(0, 0)),
-	activeBrush(NULL),
+	activeBrush(nullptr),
 	saveSimulationButtonEnabled(false),
 	saveReuploadAllowed(true),
 	drawMode(DrawPoints),
@@ -660,11 +661,11 @@ void GameView::NotifyColourSelectorVisibilityChanged(GameModel * sender)
 	{
 		ToolButton * button = *iter;
 		RemoveComponent(button);
-		button->SetParentWindow(NULL);
+		button->SetParentWindow(nullptr);
 	}
 
 	RemoveComponent(colourPicker);
-	colourPicker->SetParentWindow(NULL);
+	colourPicker->SetParentWindow(nullptr);
 
 	if(sender->GetColourSelectorVisibility())
 	{
@@ -992,7 +993,7 @@ int GameView::Record(bool record)
 	}
 	else if (!recording)
 	{
-		time_t startTime = time(NULL);
+		time_t startTime = time(nullptr);
 		recordingFolder = startTime;
 		Platform::MakeDirectory("recordings");
 		Platform::MakeDirectory(ByteString::Build("recordings", PATH_SEP_CHAR, recordingFolder));
@@ -1834,13 +1835,13 @@ void GameView::DoMouseWheel(int x, int y, int d)
 		Window::DoMouseWheel(x, y, d);
 }
 
-void GameView::DoTextInput(String text)
+void GameView::DoTextInput(const String& text)
 {
 	if (c->TextInput(text))
 		Window::DoTextInput(text);
 }
 
-void GameView::DoTextEditing(String text)
+void GameView::DoTextEditing(const String& text)
 {
 	if (c->TextEditing(text))
 		Window::DoTextEditing(text);
@@ -1946,7 +1947,7 @@ void GameView::NotifyZoomChanged(GameModel * sender)
 	zoomEnabled = sender->GetZoomEnabled();
 }
 
-void GameView::NotifyLogChanged(GameModel * sender, String entry)
+void GameView::NotifyLogChanged(GameModel * sender, const String& entry)
 {
 	logEntries.push_front(std::pair<String, int>(entry, 600));
 	if (logEntries.size() > 20)

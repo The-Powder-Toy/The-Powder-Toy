@@ -5,6 +5,8 @@
 
 #include "Controller.h"
 
+#include <utility>
+
 RenderController::RenderController(Simulation *sim, Renderer * ren, RendererSettings *rendererSettings, std::function<void ()> onDone_):
 	HasExited(false)
 {
@@ -18,7 +20,7 @@ RenderController::RenderController(Simulation *sim, Renderer * ren, RendererSett
 
 	renderModel->SetSimulation(sim);
 
-	onDone = onDone_;
+	onDone = std::move(onDone_);
 }
 
 void RenderController::SetRenderMode(uint32_t newRenderMode)

@@ -4,7 +4,7 @@
 
 namespace http
 {
-	AddTagRequest::AddTagRequest(int saveID, ByteString tag) :
+	AddTagRequest::AddTagRequest(int saveID, const ByteString& tag) :
 		APIRequest(ByteString::Build(SERVER, "/Browse/EditTag.json?Op=add&ID=", saveID, "&Tag=", tag, "&Key=", Client::Ref().GetAuthUser().SessionKey), authRequire, true)
 	{
 	}

@@ -6,7 +6,7 @@ class GameSave;
 
 class SaveFile {
 public:
-	SaveFile(ByteString filename, bool newLazyLoad = false);
+	SaveFile(const ByteString& filename, bool newLazyLoad = false);
 
 	const GameSave *LazyGetGameSave();
 	const GameSave *GetGameSave() const;

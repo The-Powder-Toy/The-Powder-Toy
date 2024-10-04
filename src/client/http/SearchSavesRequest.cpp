@@ -1,4 +1,5 @@
 #include <ctime>
+#include <utility>
 #include "SearchSavesRequest.h"
 #include "Config.h"
 #include "client/Client.h"
@@ -11,7 +12,7 @@ namespace http
 	{
 		ByteStringBuilder builder;
 		builder << SERVER << "/Browse.json?Start=" << start << "&Count=" << count;
-		auto appendToQuery = [&query](ByteString str) {
+		auto appendToQuery = [&query](const ByteString& str) {
 			if (query.size())
 			{
 				query += " ";
@@ -19,7 +20,7 @@ namespace http
 			query += str;
 		};
 
-		time_t currentTime = time(NULL);
+		time_t currentTime = time(nullptr);
 
 		if(period)
 		{
@@ -81,7 +82,7 @@ namespace http
 		return builder.Build();
 	}
 
-	SearchSavesRequest::SearchSavesRequest(int start, int count, ByteString query, Period period, Sort sort, Category category) : APIRequest(Url(start, count, query, period, sort, category), authUse, false)
+	SearchSavesRequest::SearchSavesRequest(int start, int count, ByteString query, Period period, Sort sort, Category category) : APIRequest(Url(start, count, std::move(query), period, sort, category), authUse, false)
 	{
 	}
 

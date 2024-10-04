@@ -211,13 +211,13 @@ void CommandInterface::Init()
 	}
 }
 
-void CommandInterface::SetToolIndex(ByteString identifier, std::optional<int> index)
+void CommandInterface::SetToolIndex(const ByteString& identifier, std::optional<int> index)
 {
 	auto *lsi = static_cast<LuaScriptInterface *>(this);
 	LuaTools::SetToolIndex(lsi->L, identifier, index);
 }
 
-void LuaGetProperty(lua_State *L, StructProperty property, intptr_t propertyAddress)
+void LuaGetProperty(lua_State *L, const StructProperty& property, intptr_t propertyAddress)
 {
 	switch (property.Type)
 	{
@@ -262,7 +262,7 @@ static int32_t int32_truncate(double n)
 	return int32_t(n);
 }
 
-void LuaSetProperty(lua_State *L, StructProperty property, intptr_t propertyAddress, int stackPos)
+void LuaSetProperty(lua_State *L, const StructProperty& property, intptr_t propertyAddress, int stackPos)
 {
 	switch (property.Type)
 	{
@@ -294,7 +294,7 @@ void LuaSetProperty(lua_State *L, StructProperty property, intptr_t propertyAddr
 	}
 }
 
-void LuaSetParticleProperty(lua_State *L, int particleID, StructProperty property, intptr_t propertyAddress, int stackPos)
+void LuaSetParticleProperty(lua_State *L, int particleID, const StructProperty& property, intptr_t propertyAddress, int stackPos)
 {
 	auto *lsi = GetLSI();
 	auto *sim = lsi->sim;
@@ -544,7 +544,7 @@ int CommandInterface::Command(String command)
 	}
 }
 
-static String highlight(String command)
+static String highlight(const String& command)
 {
 	StringBuilder result;
 	int pos = 0;

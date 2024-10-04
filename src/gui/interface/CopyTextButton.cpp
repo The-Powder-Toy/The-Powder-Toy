@@ -1,5 +1,7 @@
 #include "CopyTextButton.h"
 
+#include <utility>
+
 #include "Colour.h"
 #include "gui/Style.h"
 #include "Label.h"
@@ -9,7 +11,7 @@
 namespace ui
 {
 	CopyTextButton::CopyTextButton(Point position, Point size, String buttonText, Label *copyTextLabel_):
-		Button(position, size, buttonText)
+		Button(position, size, std::move(buttonText))
 	{
 		copyTextLabel = copyTextLabel_;
 		Appearance.HorizontalAlign = ui::Appearance::AlignCentre;

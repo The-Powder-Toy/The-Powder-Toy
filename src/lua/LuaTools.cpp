@@ -361,10 +361,10 @@ void LuaTools::Open(lua_State *L)
 		LFUNC(exists),
 #undef LFUNC
 		{ "free", ffree },
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 	lua_setglobal(L, "tools");
 	auto &toolList = lsi->gameModel->GetTools();
 	for (int i = 0; i < int(toolList.size()); ++i)
@@ -377,7 +377,7 @@ void LuaTools::Open(lua_State *L)
 	}
 }
 
-void LuaTools::SetToolIndex(lua_State *L, ByteString identifier, std::optional<int> index)
+void LuaTools::SetToolIndex(lua_State *L, const ByteString& identifier, std::optional<int> index)
 {
 	lua_getglobal(L, "tools");
 	tpt_lua_pushByteString(L, identifier);

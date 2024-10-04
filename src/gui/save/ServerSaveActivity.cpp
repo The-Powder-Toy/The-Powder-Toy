@@ -16,6 +16,8 @@
 #include "tasks/Task.h"
 #include "gui/Style.h"
 
+#include <utility>
+
 class SaveUploadTask: public Task
 {
 	SaveInfo &save;
@@ -60,8 +62,8 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	WindowActivity(ui::Point(-1, -1), ui::Point(440, 200)),
 	thumbnailRenderer(nullptr),
 	save(std::move(newSave)),
-	onUploaded(onUploaded_),
-	saveUploadTask(NULL)
+	onUploaded(std::move(onUploaded_)),
+	saveUploadTask(nullptr)
 {
 	titleLabel = new ui::Label(ui::Point(4, 5), ui::Point((Size.X/2)-8, 16), "");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
@@ -157,8 +159,8 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, bool s
 	WindowActivity(ui::Point(-1, -1), ui::Point(200, 50)),
 	thumbnailRenderer(nullptr),
 	save(std::move(newSave)),
-	onUploaded(onUploaded_),
-	saveUploadTask(NULL)
+	onUploaded(std::move(onUploaded_)),
+	saveUploadTask(nullptr)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(0, 0), Size, "Saving to server...");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
@@ -218,7 +220,7 @@ void ServerSaveActivity::AddAuthorInfo()
 	serverSaveInfo["title"] = save->GetName().ToUtf8();
 	serverSaveInfo["description"] = save->GetDescription().ToUtf8();
 	serverSaveInfo["published"] = (int)save->GetPublished();
-	serverSaveInfo["date"] = (Json::Value::UInt64)time(NULL);
+	serverSaveInfo["date"] = (Json::Value::UInt64)time(nullptr);
 	Client::Ref().SaveAuthorInfo(&serverSaveInfo);
 	{
 		auto gameSave = save->TakeGameSave();
@@ -343,7 +345,7 @@ void ServerSaveActivity::ShowRules()
 	new InformationMessage("Save Uploading Rules", rules, true);
 }
 
-void ServerSaveActivity::CheckName(String newname)
+void ServerSaveActivity::CheckName(const String& newname)
 {
 	if (newname.length() && newname == save->GetName() && save->GetUserName() == Client::Ref().GetAuthUser().Username)
 		titleLabel->SetText("Modify simulation properties:");

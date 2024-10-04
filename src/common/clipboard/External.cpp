@@ -52,7 +52,7 @@ namespace Clipboard
 		std::optional<ByteString> name = GlobalPrefs::Ref().Get("NativeClipboard.External.Type", ByteString("auto"));
 		if (name == "custom")
 		{
-			auto getCommand = [](ByteString key) -> std::optional<ByteString> {
+			auto getCommand = [](const ByteString& key) -> std::optional<ByteString> {
 				auto fullKey = "NativeClipboard.External." + key;
 				auto value = GlobalPrefs::Ref().Get<ByteString>(fullKey);
 				if (!value)
@@ -170,7 +170,7 @@ namespace Clipboard
 				std::cerr << "cannot get save from clipboard: clipboard driver not initialized" << std::endl;
 				return GetClipboardDataUnknown{};
 			}
-			auto getTarget = [](ByteString command) -> std::optional<std::vector<char>> {
+			auto getTarget = [](const ByteString& command) -> std::optional<std::vector<char>> {
 				if (!command.size())
 				{
 					return std::nullopt;

@@ -11,7 +11,7 @@ class InformationMessage : public ui::Window
 	DismissCallback callback;
 
 public:
-	InformationMessage(String title, String message, bool large, DismissCallback callback_ = {});
+	InformationMessage(const String& title, const String& message, bool large, DismissCallback callback_ = {});
 	virtual ~InformationMessage() = default;
 
 	void OnDraw() override;

@@ -17,7 +17,7 @@ SaveRenderer::SaveRenderer()
 
 SaveRenderer::~SaveRenderer() = default;
 
-std::unique_ptr<VideoBuffer> SaveRenderer::Render(const GameSave *save, bool fire, RendererSettings rendererSettings)
+std::unique_ptr<VideoBuffer> SaveRenderer::Render(const GameSave *save, bool fire, const RendererSettings& rendererSettings)
 {
 	// this function usually runs on a thread different from where element info in SimulationData may be written, so we acquire a read-only lock on it
 	auto &sd = SimulationData::CRef();

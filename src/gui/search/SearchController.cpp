@@ -24,9 +24,10 @@
 #include "gui/preview/PreviewView.h"
 #include "SimulationConfig.h"
 #include <algorithm>
+#include <utility>
 
 SearchController::SearchController(std::function<void ()> onDone_):
-	activePreview(NULL),
+	activePreview(nullptr),
 	nextQueryTime(0.0f),
 	nextQueryDone(true),
 	instantOpen(false),
@@ -40,7 +41,7 @@ SearchController::SearchController(std::function<void ()> onDone_):
 
 	searchModel->UpdateSaveList(1, "");
 
-	onDone = onDone_;
+	onDone = std::move(onDone_);
 }
 
 const SaveInfo *SearchController::GetLoadedSave() const
@@ -72,7 +73,7 @@ void SearchController::Update()
 	if(activePreview && activePreview->HasExited)
 	{
 		delete activePreview;
-		activePreview = NULL;
+		activePreview = nullptr;
 		if(searchModel->GetLoadedSave())
 		{
 			Exit();
@@ -101,7 +102,7 @@ SearchController::~SearchController()
 
 void SearchController::DoSearch(String query, bool now)
 {
-	nextQuery = query;
+	nextQuery = std::move(query);
 	if (!now)
 	{
 		nextQueryTime = Platform::GetTime()+600;
@@ -113,7 +114,7 @@ void SearchController::DoSearch(String query, bool now)
 	}
 }
 
-void SearchController::DoSearch2(String query)
+void SearchController::DoSearch2(const String& query)
 {
 	// calls SearchView function to set textbox text, then calls DoSearch
 	searchView->Search(query);
@@ -272,7 +273,7 @@ void SearchController::removeSelectedC()
 		SearchController *c;
 		std::vector<int> saves;
 	public:
-		RemoveSavesTask(std::vector<int> saves_, SearchController *c_) { saves = saves_; c = c_; }
+		RemoveSavesTask(std::vector<int> saves_, SearchController *c_) { saves = std::move(saves_); c = c_; }
 		bool doWork() override
 		{
 			for (size_t i = 0; i < saves.size(); i++)
@@ -324,7 +325,7 @@ void SearchController::unpublishSelectedC(bool publish)
 		SearchController *c;
 		bool publish;
 	public:
-		UnpublishSavesTask(std::vector<int> saves_, SearchController *c_, bool publish_) { saves = saves_; c = c_; publish = publish_; }
+		UnpublishSavesTask(std::vector<int> saves_, SearchController *c_, bool publish_) { saves = std::move(saves_); c = c_; publish = publish_; }
 
 		void PublishSave(int saveID)
 		{
@@ -389,7 +390,7 @@ void SearchController::FavouriteSelected()
 	{
 		std::vector<int> saves;
 	public:
-		FavouriteSavesTask(std::vector<int> saves_) { saves = saves_; }
+		FavouriteSavesTask(std::vector<int> saves_) { saves = std::move(saves_); }
 		bool doWork() override
 		{
 			for (size_t i = 0; i < saves.size(); i++)
@@ -417,7 +418,7 @@ void SearchController::FavouriteSelected()
 	{
 		std::vector<int> saves;
 	public:
-		UnfavouriteSavesTask(std::vector<int> saves_) { saves = saves_; }
+		UnfavouriteSavesTask(std::vector<int> saves_) { saves = std::move(saves_); }
 		bool doWork() override
 		{
 			for (size_t i = 0; i < saves.size(); i++)

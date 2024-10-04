@@ -19,9 +19,9 @@
 
 SearchView::SearchView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH)),
-	c(NULL),
+	c(nullptr),
 	saveButtons(std::vector<ui::SaveButton*>()),
-	errorLabel(NULL),
+	errorLabel(nullptr),
 	changed(true),
 	lastChanged(0),
 	pageCount(0),
@@ -242,7 +242,7 @@ SearchView::~SearchView()
 	saveButtons.clear();
 }
 
-void SearchView::Search(String query)
+void SearchView::Search(const String& query)
 {
 	searchField->SetText(query);
 	c->DoSearch(query, true);
@@ -409,11 +409,11 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 	if (motdLabel)
 	{
 		RemoveComponent(motdLabel);
-		motdLabel->SetParentWindow(NULL);
+		motdLabel->SetParentWindow(nullptr);
 	}
 
 	RemoveComponent(tagsLabel);
-	tagsLabel->SetParentWindow(NULL);
+	tagsLabel->SetParentWindow(nullptr);
 
 	for (size_t i = 0; i < tagButtons.size(); i++)
 	{
@@ -564,7 +564,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		{
 			RemoveComponent(errorLabel);
 			delete errorLabel;
-			errorLabel = NULL;
+			errorLabel = nullptr;
 		}
 		for (size_t i = 0; i < saveButtons.size(); i++)
 		{

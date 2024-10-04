@@ -11,8 +11,9 @@
 #include "gui/interface/ScrollPanel.h"
 #include "gui/interface/Textbox.h"
 #include "Config.h"
+#include <utility>
 
-ProfileActivity::ProfileActivity(ByteString username) :
+ProfileActivity::ProfileActivity(const ByteString& username) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 300)),
 	loading(false),
 	saving(false),
@@ -55,7 +56,7 @@ ProfileActivity::ProfileActivity(ByteString username) :
 
 void ProfileActivity::setUserInfo(UserInfo newInfo)
 {
-	info = newInfo;
+	info = std::move(newInfo);
 
 	if (!info.biography.length() && !editable)
 		info.biography = "\bgNot Provided";

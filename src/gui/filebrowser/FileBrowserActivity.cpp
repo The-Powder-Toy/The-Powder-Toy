@@ -18,6 +18,7 @@
 
 #include "Config.h"
 #include <algorithm>
+#include <utility>
 
 //Currently, reading is done on another thread, we can't render outside the main thread due to some bullshit with OpenGL
 class LoadFilesTask: public Task
@@ -39,7 +40,7 @@ class LoadFilesTask: public Task
 	bool doWork() override
 	{
 		std::vector<ByteString> files = Platform::DirectorySearch(directory, search, { ".cps" });
-		std::sort(files.rbegin(), files.rend(), [](ByteString a, ByteString b) { return a.ToLower() > b.ToLower(); });
+		std::sort(files.rbegin(), files.rend(), [](const ByteString& a, const ByteString& b) { return a.ToLower() > b.ToLower(); });
 
 		notifyProgress(-1);
 		for(std::vector<ByteString>::iterator iter = files.begin(), end = files.end(); iter != end; ++iter)
@@ -61,16 +62,16 @@ public:
 	}
 
 	LoadFilesTask(ByteString directory, ByteString search):
-		directory(directory),
-		search(search)
+		directory(std::move(directory)),
+		search(std::move(search))
 	{
 
 	}
 };
 
-FileBrowserActivity::FileBrowserActivity(ByteString directory, OnSelected onSelected_):
+FileBrowserActivity::FileBrowserActivity(const ByteString& directory, OnSelected onSelected_):
 	WindowActivity(ui::Point(-1, -1), ui::Point(500, 350)),
-	onSelected(onSelected_),
+	onSelected(std::move(onSelected_)),
 	directory(directory),
 	hasQueuedSearch(false),
 	totalFiles(0)
@@ -115,7 +116,7 @@ FileBrowserActivity::FileBrowserActivity(ByteString directory, OnSelected onSele
 	loadDirectory(directory, "");
 }
 
-void FileBrowserActivity::DoSearch(ByteString search)
+void FileBrowserActivity::DoSearch(const ByteString& search)
 {
 	if (loadFiles)
 	{
@@ -199,7 +200,7 @@ void FileBrowserActivity::loadDirectory(ByteString directory, ByteString search)
 	progressBar->Visible = true;
 	progressBar->SetProgress(-1);
 	progressBar->SetStatus("Loading files");
-	loadFiles = new LoadFilesTask(directory, search);
+	loadFiles = new LoadFilesTask(std::move(directory), std::move(search));
 	loadFiles->AddTaskListener(this);
 	loadFiles->Start();
 }
@@ -212,7 +213,7 @@ void FileBrowserActivity::NotifyDone(Task * task)
 	createButtons = true;
 	totalFiles = files.size();
 	delete loadFiles;
-	loadFiles = NULL;
+	loadFiles = nullptr;
 	if (!files.size())
 	{
 		progressBar->Visible = false;

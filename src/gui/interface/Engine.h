@@ -35,8 +35,8 @@ namespace ui
 		void onMouseWheel(int x, int y, int delta);
 		void onKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
 		void onKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt);
-		void onTextInput(String text);
-		void onTextEditing(String text, int start);
+		void onTextInput(const String& text);
+		void onTextEditing(const String& text, int start);
 		void onClose();
 		void onFileDrop(ByteString filename);
 

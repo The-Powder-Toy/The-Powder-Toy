@@ -6,7 +6,7 @@ namespace http
 	class AddCommentRequest : public APIRequest
 	{
 	public:
-		AddCommentRequest(int saveID, String comment);
+		AddCommentRequest(int saveID, const String& comment);
 
 		void Finish();
 	};

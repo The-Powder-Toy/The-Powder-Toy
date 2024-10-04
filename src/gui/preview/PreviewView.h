@@ -75,7 +75,7 @@ class PreviewView: public ui::Window
 	void commentBoxAutoHeight();
 	void submitComment();
 	void CheckCommentSubmitEnabled();
-	bool CheckSwearing(String text);
+	bool CheckSwearing(const String& text);
 	void CheckComment();
 	void ShowMissingCustomElements();
 	void ShowLoadError();

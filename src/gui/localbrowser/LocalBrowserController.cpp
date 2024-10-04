@@ -15,6 +15,7 @@
 #include "Controller.h"
 
 #include <algorithm>
+#include <utility>
 
 LocalBrowserController::LocalBrowserController(std::function<void ()> onDone_):
 	HasDone(false)
@@ -24,7 +25,7 @@ LocalBrowserController::LocalBrowserController(std::function<void ()> onDone_):
 	browserView->AttachController(this);
 	browserModel->AddObserver(browserView);
 
-	onDone = onDone_;
+	onDone = std::move(onDone_);
 
 	browserModel->UpdateSavesList(0);
 }
@@ -56,7 +57,7 @@ void LocalBrowserController::removeSelectedC()
 		std::vector<ByteString> saves;
 		LocalBrowserController * c;
 	public:
-		RemoveSavesTask(LocalBrowserController * c, std::vector<ByteString> saves_) : c(c) { saves = saves_; }
+		RemoveSavesTask(LocalBrowserController * c, std::vector<ByteString> saves_) : c(c) { saves = std::move(saves_); }
 		bool doWork() override
 		{
 			for (size_t i = 0; i < saves.size(); i++)
@@ -132,7 +133,7 @@ void LocalBrowserController::Update()
 	}
 }
 
-void LocalBrowserController::Selected(ByteString saveName, bool selected)
+void LocalBrowserController::Selected(const ByteString& saveName, bool selected)
 {
 	if(selected)
 		browserModel->SelectSave(saveName);

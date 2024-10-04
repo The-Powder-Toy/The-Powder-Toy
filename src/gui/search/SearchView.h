@@ -66,7 +66,7 @@ public:
     SearchView();
 	virtual ~SearchView();
 	void AttachController(SearchController * _c) { c = _c; }
-	virtual void Search(String);
+	virtual void Search(const String&);
 	void OnTick(float dt) override;
 	void OnMouseWheel(int x, int y, int d) override;
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
