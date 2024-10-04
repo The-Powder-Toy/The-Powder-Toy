@@ -5,6 +5,7 @@
 #include "graphics/VideoBuffer.h"
 #include "gui/interface/Point.h"
 #include "simulation/StructProperty.h"
+#include "simulation/MenuSection.h"
 #include <memory>
 #include <optional>
 
@@ -27,6 +28,8 @@ public:
 	bool shiftBehaviour = false;
 	bool ctrlBehaviour = false;
 	bool altBehaviour = false;
+	int MenuSection = SC_TOOL;
+	bool MenuVisible = true;
 
 	Tool() = default;
 

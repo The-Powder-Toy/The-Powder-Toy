@@ -18,7 +18,9 @@ public:
 		Tool(decoMode, name, description, colour, identifier),
 		Colour(0x000000_rgb .WithAlpha(0x00)),
 		gameView(newGameView)
-	{}
+	{
+		MenuSection = SC_DECO;
+	}
 
 	void Draw(Simulation * sim, Brush const &brush, ui::Point position) override;
 	void DrawLine(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2, bool dragging) override;

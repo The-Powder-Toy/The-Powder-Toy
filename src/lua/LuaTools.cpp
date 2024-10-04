@@ -306,7 +306,7 @@ static int property(lua_State *L)
 		return 0;
 	}
 	int returnValueCount = 0;
-	auto handleProperty = [L, tool, &propertyName, &returnValueCount](auto simToolMember, const char *luaPropertyName) {
+	auto handleProperty = [L, lsi, tool, &propertyName, &returnValueCount](auto simToolMember, const char *luaPropertyName, bool buildMenusIfChanged) {
 		if (propertyName == luaPropertyName)
 		{
 			auto &thing = tool->*simToolMember;
@@ -314,12 +314,20 @@ static int property(lua_State *L)
 			if (lua_gettop(L) > 2)
 			{
 				if      constexpr (std::is_same_v<PropertyType, String      >) thing = tpt_lua_checkString(L, 3);
+				else if constexpr (std::is_same_v<PropertyType, bool        >) thing = lua_toboolean(L, 3);
+				else if constexpr (std::is_same_v<PropertyType, int         >) thing = luaL_checkinteger(L, 3);
 				else if constexpr (std::is_same_v<PropertyType, RGB<uint8_t>>) thing = RGB<uint8_t>::Unpack(luaL_checkinteger(L, 3));
 				else static_assert(DependentFalse<PropertyType>::value);
+				if (buildMenusIfChanged)
+				{
+					lsi->gameModel->BuildMenus();
+				}
 			}
 			else
 			{
 				if      constexpr (std::is_same_v<PropertyType, String      >) tpt_lua_pushString(L, thing);
+				else if constexpr (std::is_same_v<PropertyType, bool        >) lua_pushboolean(L, thing);
+				else if constexpr (std::is_same_v<PropertyType, int         >) lua_pushinteger(L, thing);
 				else if constexpr (std::is_same_v<PropertyType, RGB<uint8_t>>) lua_pushinteger(L, thing.Pack());
 				else static_assert(DependentFalse<PropertyType>::value);
 				returnValueCount = 1;
@@ -328,10 +336,12 @@ static int property(lua_State *L)
 		}
 		return false;
 	};
-	if (handleProperty(&SimTool::Name       , "Name"       ) ||
-	    handleProperty(&SimTool::Description, "Description") ||
-	    handleProperty(&SimTool::Colour     , "Colour"     ) ||
-	    handleProperty(&SimTool::Colour     , "Color"      ))
+	if (handleProperty(&SimTool::Name       , "Name"       , false) ||
+	    handleProperty(&SimTool::Description, "Description", false) ||
+	    handleProperty(&SimTool::Colour     , "Colour"     , false) ||
+	    handleProperty(&SimTool::Colour     , "Color"      , false) ||
+	    handleProperty(&SimTool::MenuSection, "MenuSection",  true) ||
+	    handleProperty(&SimTool::MenuVisible, "MenuVisible",  true))
 	{
 		return returnValueCount;
 	}

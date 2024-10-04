@@ -12,7 +12,9 @@ public:
 			0xFEA900_rgb, "DEFAULT_UI_ADDLIFE", NULL
 		),
 		gameModel(gameModel)
-	{}
+	{
+		MenuSection = SC_LIFE;
+	}
 
 	void OpenWindow(Simulation *sim, int toolSelection, int rule = 0, RGB<uint8_t> colour1 = 0x000000_rgb, RGB<uint8_t> colour2 = 0x000000_rgb);
 	void Click(Simulation * sim, Brush const &brush, ui::Point position) override { }
