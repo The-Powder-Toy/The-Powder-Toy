@@ -336,10 +336,10 @@ static int property(lua_State *L)
 		}
 		return false;
 	};
-	if (handleProperty(&SimTool::Name       , "Name"       , false) ||
-	    handleProperty(&SimTool::Description, "Description", false) ||
-	    handleProperty(&SimTool::Colour     , "Colour"     , false) ||
-	    handleProperty(&SimTool::Colour     , "Color"      , false) ||
+	if (handleProperty(&SimTool::Name       , "Name"       ,  true) ||
+	    handleProperty(&SimTool::Description, "Description",  true) ||
+	    handleProperty(&SimTool::Colour     , "Colour"     ,  true) ||
+	    handleProperty(&SimTool::Colour     , "Color"      ,  true) ||
 	    handleProperty(&SimTool::MenuSection, "MenuSection",  true) ||
 	    handleProperty(&SimTool::MenuVisible, "MenuVisible",  true))
 	{
