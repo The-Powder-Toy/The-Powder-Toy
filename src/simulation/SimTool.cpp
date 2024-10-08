@@ -87,7 +87,9 @@ static void defaultPerformDrawRect(SimTool *tool, Simulation *sim, const Brush &
 {
 	int brushX = ((position1.X + position2.X) / 2);
 	int brushY = ((position1.Y + position2.Y) / 2);
-	for (auto p : RectBetween(position1, position2))
+	auto tl = ui::Point{ std::min(position1.X, position2.X), std::min(position1.Y, position2.Y) };
+	auto br = ui::Point{ std::max(position1.X, position2.X), std::max(position1.Y, position2.Y) };
+	for (auto p : RectBetween(tl, br))
 	{
 		tool->CallPerform(sim, p, { brushX, brushY });
 	}
