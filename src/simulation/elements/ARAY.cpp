@@ -64,8 +64,12 @@ static int update(UPDATE_FUNC_ARGS)
 				if (TYP(r) == PT_SPRK && parts[ID(r)].life == 3)
 				{
 					bool isBlackDeco = false;
-					int destroy = (parts[ID(r)].ctype==PT_PSCN) ? 1 : 0;
-					int nostop = (parts[ID(r)].ctype==PT_INST) ? 1 : 0;
+					bool destroy = parts[ID(r)].ctype==PT_PSCN;
+					bool nostop = parts[ID(r)].ctype==PT_INST;
+					
+					if (parts[ID(r)].ctype == PT_INWR && rx && ry && !(parts[i].flags & FLAG_INWRDIAGONAL)) // INWR doesn't spark from diagonals
+						continue;
+					
 					int colored = 0, rt;
 					for (int docontinue = 1, nxx = 0, nyy = 0, nxi = rx*-1, nyi = ry*-1; docontinue; nyy+=nyi, nxx+=nxi)
 					{
