@@ -189,7 +189,7 @@ void Window::DoDraw()
 		{
 			auto rect = RectSized(Position + child->Position, child->Size);
 			if (AllowExclusiveDrawing || bool(rect & GetGraphics()->Size().OriginRect()))
-				child->Draw(rect.TopLeft);
+				child->Draw(rect.pos);
 		}
 	};
 	for (auto child : Components)

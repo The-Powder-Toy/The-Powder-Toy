@@ -46,7 +46,7 @@ void ProgressBar::Draw(const Point &screenPos)
 	g->DrawRect(RectSized(screenPos, Size), 0xFFFFFF_rgb);
 	auto inner = RectSized(screenPos + Vec2{ 2, 2 }, Size - Vec2{ 4, 4 });
 	auto drawContent = [this, screenPos, g, inner](int beginX, int endX, ui::Colour bgColour, ui::Colour textColour) {
-		auto clip = RectSized(inner.TopLeft + Vec2{ beginX, 0 }, Vec2{ endX - beginX, inner.Size().Y }) & g->GetClipRect();
+		auto clip = RectSized(inner.pos + Vec2{ beginX, 0 }, Vec2{ endX - beginX, inner.size.Y }) & g->GetClipRect();
 		g->SwapClipRect(clip);
 		if (bgColour.Alpha)
 		{
@@ -58,18 +58,18 @@ void ProgressBar::Draw(const Point &screenPos)
 		}, progressStatus, textColour);
 		g->SwapClipRect(clip);
 	};
-	drawContent(0, inner.Size().X, 0x000000_rgb .WithAlpha(0), 0xFFFFFF_rgb .WithAlpha(255));
+	drawContent(0, inner.size.X, 0x000000_rgb .WithAlpha(0), 0xFFFFFF_rgb .WithAlpha(255));
 	if (progress == -1)
 	{
 		constexpr auto size = 40;
-		auto pos = int(inner.Size().X * intermediatePos / 100);
+		auto pos = int(inner.size.X * intermediatePos / 100);
 		drawContent(pos, pos + size, style::Colour::WarningTitle, 0x000000_rgb .WithAlpha(255));
-		pos -= inner.Size().X;
+		pos -= inner.size.X;
 		drawContent(pos, pos + size, style::Colour::WarningTitle, 0x000000_rgb .WithAlpha(255));
 	}
 	else
 	{
-		drawContent(0, inner.Size().X * progress / 100, style::Colour::WarningTitle, 0x000000_rgb .WithAlpha(255));
+		drawContent(0, inner.size.X * progress / 100, style::Colour::WarningTitle, 0x000000_rgb .WithAlpha(255));
 	}
 }
 

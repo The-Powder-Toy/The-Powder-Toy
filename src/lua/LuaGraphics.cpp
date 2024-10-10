@@ -261,10 +261,10 @@ static int setClipRect(lua_State *L)
 	int h = luaL_optinteger(L, 4, WINDOWH);
 	auto rect = RectSized(Vec2(x, y), Vec2(w, h));
 	lsi->g->SwapClipRect(rect);
-	lua_pushinteger(L, rect.TopLeft.X);
-	lua_pushinteger(L, rect.TopLeft.Y);
-	lua_pushinteger(L, rect.Size().X);
-	lua_pushinteger(L, rect.Size().Y);
+	lua_pushinteger(L, rect.pos.X);
+	lua_pushinteger(L, rect.pos.Y);
+	lua_pushinteger(L, rect.size.X);
+	lua_pushinteger(L, rect.size.Y);
 	return 4;
 }
 

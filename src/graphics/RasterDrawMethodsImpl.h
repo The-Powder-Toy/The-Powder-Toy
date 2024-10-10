@@ -135,8 +135,8 @@ void RasterDrawMethods<Derived>::DrawFilledRect(Rect<int> rect, RGB<uint8_t> col
 	pixel packed = colour.Pack();
 	auto &video = static_cast<Derived &>(*this).video;
 	if (rect)
-		for (int y = rect.TopLeft.Y; y <= rect.BottomRight.Y; y++)
-			std::fill_n(video.RowIterator(Vec2(rect.TopLeft.X, y)), rect.Size().X, packed);
+		for (int y = rect.pos.Y; y < rect.pos.Y + rect.size.Y; y++)
+			std::fill_n(video.RowIterator(Vec2(rect.pos.X, y)), rect.size.X, packed);
 }
 
 template<typename Derived>
@@ -166,22 +166,22 @@ void RasterDrawMethods<Derived>::BlendFilledEllipse(Vec2<int> center, Vec2<int> 
 template<typename Derived>
 void RasterDrawMethods<Derived>::BlendImage(pixel const *data, uint8_t alpha, Rect<int> rect)
 {
-	BlendImage(data, alpha, rect, rect.Size().X);
+	BlendImage(data, alpha, rect, rect.size.X);
 }
 
 template<typename Derived>
 void RasterDrawMethods<Derived>::BlendImage(pixel const *data, uint8_t alpha, Rect<int> rect, size_t rowStride)
 {
-	auto origin = rect.TopLeft;
+	auto origin = rect.pos;
 	rect &= clipRect();
 	if (alpha == 0xFF)
 	{
 		auto &video = static_cast<Derived &>(*this).video;
-		for (int y = rect.TopLeft.Y; y <= rect.BottomRight.Y; y++)
+		for (int y = rect.pos.Y; y < rect.pos.Y + rect.size.Y; y++)
 			std::copy_n(
-				data + (rect.TopLeft.X - origin.X) + (y - origin.Y) * rowStride,
-				rect.Size().X,
-				video.RowIterator(Vec2(rect.TopLeft.X, y))
+				data + (rect.pos.X - origin.X) + (y - origin.Y) * rowStride,
+				rect.size.X,
+				video.RowIterator(Vec2(rect.pos.X, y))
 			);
 	}
 	else
@@ -197,13 +197,13 @@ void RasterDrawMethods<Derived>::BlendImage(pixel const *data, uint8_t alpha, Re
 template<typename Derived>
 void RasterDrawMethods<Derived>::XorImage(unsigned char const *data, Rect<int> rect)
 {
-	XorImage(data, rect, rect.Size().X);
+	XorImage(data, rect, rect.size.X);
 }
 
 template<typename Derived>
 void RasterDrawMethods<Derived>::XorImage(unsigned char const *data, Rect<int> rect, size_t rowStride)
 {
-	auto origin = rect.TopLeft;
+	auto origin = rect.pos;
 	rect &= clipRect();
 	for (auto pos : rect)
 		if (data[(pos.X - origin.X) + (pos.Y - origin.Y) * rowStride])
@@ -213,13 +213,13 @@ void RasterDrawMethods<Derived>::XorImage(unsigned char const *data, Rect<int> r
 template<typename Derived>
 void RasterDrawMethods<Derived>::BlendRGBAImage(pixel_rgba const *data, Rect<int> rect)
 {
-	BlendRGBAImage(data, rect, rect.Size().X);
+	BlendRGBAImage(data, rect, rect.size.X);
 }
 
 template<typename Derived>
 void RasterDrawMethods<Derived>::BlendRGBAImage(pixel_rgba const *data, Rect<int> rect, size_t rowStride)
 {
-	auto origin = rect.TopLeft;
+	auto origin = rect.pos;
 	rect &= clipRect();
 	for (auto pos : rect)
 	{
