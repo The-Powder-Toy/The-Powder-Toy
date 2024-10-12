@@ -1,5 +1,7 @@
 #include "LuaCompat.h"
 
+extern "C"
+{
 #if LUA_VERSION_NUM >= 502
 // Implement missing luaL_typerror function
 int luaL_typerror(lua_State *L, int narg, const char *tname)
@@ -27,3 +29,4 @@ void lua_pushglobaltable(lua_State *L)
 }
 # endif
 #endif
+}
