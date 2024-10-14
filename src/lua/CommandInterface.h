@@ -47,6 +47,7 @@ public:
 	AnyType eval(std::deque<String> * words);
 	int parseNumber(String str);
 	AnyType tptS_set(std::deque<String> * words);
+	AnyType tptS_get(std::deque<String> * words);
 	AnyType tptS_create(std::deque<String> * words);
 	AnyType tptS_delete(std::deque<String> * words);
 	AnyType tptS_load(std::deque<String> * words);

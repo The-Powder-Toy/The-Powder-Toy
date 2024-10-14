@@ -94,6 +94,7 @@ struct Function
 };
 static const std::vector<Function> functions = {
 	{ U"set"   , &CommandInterface::tptS_set    },
+	{ U"get"   , &CommandInterface::tptS_get    },
 	{ U"create", &CommandInterface::tptS_create },
 	{ U"delete", &CommandInterface::tptS_delete },
 	{ U"kill"  , &CommandInterface::tptS_delete },
@@ -280,9 +281,73 @@ String CommandInterface::PlainFormatCommand(String command)
 	return outputData;
 }
 
-AnyType CommandInterface::tptS_set(std::deque<String> * words)
+static std::vector<int> EvaluateSelector(Simulation *sim, AnyType selector)
 {
 	auto &sd = SimulationData::CRef();
+	std::vector<int> indices;
+	if (selector.GetType() == TypePoint || selector.GetType() == TypeNumber)
+	{
+		int partIndex = -1;
+		if(selector.GetType() == TypePoint)
+		{
+			ui::Point tempPoint = ((PointType)selector).Value();
+			if(tempPoint.X<0 || tempPoint.Y<0 || tempPoint.Y >= YRES || tempPoint.X >= XRES)
+				throw GeneralException("Invalid position");
+
+			auto r = sim->pmap[tempPoint.Y][tempPoint.X];
+			if (!r)
+			{
+				r = sim->photons[tempPoint.Y][tempPoint.X];
+			}
+			if (r)
+			{
+				partIndex = ID(r);
+			}
+		}
+		else
+			partIndex = ((NumberType)selector).Value();
+		if(partIndex<0 || partIndex>=NPART || sim->parts[partIndex].type==0)
+			throw GeneralException("Invalid particle");
+
+		indices.push_back(partIndex);
+	}
+	else if (selector.GetType() == TypeString && ((StringType)selector).Value() == "all")
+	{
+		for(int j = 0; j < NPART; j++)
+		{
+			if(sim->parts[j].type)
+			{
+				indices.push_back(j);
+			}
+		}
+	}
+	else if(selector.GetType() == TypeString || selector.GetType() == TypeNumber)
+	{
+		int type = 0;
+		if (selector.GetType() == TypeNumber)
+			type = ((NumberType)selector).Value();
+		else if (selector.GetType() == TypeString)
+			type = sd.GetParticleType(((StringType)selector).Value().ToUtf8());
+
+		if (type<0 || type>=PT_NUM)
+			throw GeneralException("Invalid particle type");
+		if (type==0)
+			throw GeneralException("Cannot access properties of particles that do not exist");
+		for (int j = 0; j < NPART; j++)
+		{
+			if (sim->parts[j].type == type)
+			{
+				indices.push_back(j);
+			}
+		}
+	}
+	else
+		throw GeneralException("Invalid selector");
+	return indices;
+}
+
+AnyType CommandInterface::tptS_set(std::deque<String> * words)
+{
 	//Arguments from stack
 	StringType property = eval(words);
 	AnyType selector = eval(words);
@@ -294,9 +359,7 @@ AnyType CommandInterface::tptS_set(std::deque<String> * words)
 	{
 		throw GeneralException("Invalid property");
 	}
-	auto &propInfo = Particle::GetProperties()[*prop]; 
-
-	int returnValue = 0;
+	auto &propInfo = Particle::GetProperties()[*prop];
 
 	if (value.GetType() == TypeNumber && propInfo.Type == StructProperty::Float)
 	{
@@ -339,68 +402,52 @@ AnyType CommandInterface::tptS_set(std::deque<String> * words)
 		throw GeneralException(ByteString(ex.what()).FromUtf8());
 	}
 
-	//Selector
-	if (selector.GetType() == TypePoint || selector.GetType() == TypeNumber)
+	int returnValue = 0;
+	for (auto index : EvaluateSelector(sim, selector))
 	{
-		int partIndex = -1;
-		if(selector.GetType() == TypePoint)
-		{
-			ui::Point tempPoint = ((PointType)selector).Value();
-			if(tempPoint.X<0 || tempPoint.Y<0 || tempPoint.Y >= YRES || tempPoint.X >= XRES)
-				throw GeneralException("Invalid position");
-			auto r = sim->pmap[tempPoint.Y][tempPoint.X];
-			if (!r)
-			{
-				r = sim->photons[tempPoint.Y][tempPoint.X];
-			}
-			if (r)
-			{
-				partIndex = ID(r);
-			}
-		}
-		else
-			partIndex = ((NumberType)selector).Value();
-		if(partIndex<0 || partIndex>=NPART || sim->parts[partIndex].type==0)
-			throw GeneralException("Invalid particle");
-
-		changeProperty.Set(sim, partIndex);
-		returnValue = 1;
+		returnValue++;
+		changeProperty.Set(sim, index);
 	}
-	else if (selector.GetType() == TypeString && ((StringType)selector).Value() == "all")
-	{
-		for(int j = 0; j < NPART; j++)
-		{
-			if(sim->parts[j].type)
-			{
-				returnValue++;
-				changeProperty.Set(sim, j);
-			}
-		}
-	}
-	else if(selector.GetType() == TypeString || selector.GetType() == TypeNumber)
-	{
-		int type = 0;
-		if (selector.GetType() == TypeNumber)
-			type = ((NumberType)selector).Value();
-		else if (selector.GetType() == TypeString)
-			type = sd.GetParticleType(((StringType)selector).Value().ToUtf8());
-
-		if (type<0 || type>=PT_NUM)
-			throw GeneralException("Invalid particle type");
-		if (type==0)
-			throw GeneralException("Cannot set properties of particles that do not exist");
-		for (int j = 0; j < NPART; j++)
-		{
-			if (sim->parts[j].type == type)
-			{
-				returnValue++;
-				changeProperty.Set(sim, j);
-			}
-		}
-	}
-	else
-		throw GeneralException("Invalid selector");
 	return NumberType(returnValue);
+}
+
+AnyType CommandInterface::tptS_get(std::deque<String> * words)
+{
+	StringType property = eval(words);
+	AnyType selector = eval(words);
+
+	Simulation *sim = m->GetSimulation();
+	auto prop = GetPropertyOffset(property.Value().ToUtf8());
+	if (!prop)
+	{
+		throw GeneralException("Invalid property");
+	}
+	auto &propInfo = Particle::GetProperties()[*prop];
+	AccessProperty accessProperty{ *prop };
+
+	auto indices = EvaluateSelector(sim, selector);
+	if (indices.size() > 1)
+	{
+		throw GeneralException("Multiple matching particles");
+	}
+	if (indices.size() < 1)
+	{
+		throw GeneralException("No matching particles");
+	}
+
+	auto value = accessProperty.Get(sim, indices[0]);
+	switch (propInfo.Type)
+	{
+	case StructProperty::Float:
+		return FloatType(std::get<float>(value));
+
+	case StructProperty::UInteger:
+		return NumberType(std::get<unsigned int>(value));
+
+	default:
+		break;
+	}
+	return NumberType(std::get<int>(value));
 }
 
 AnyType CommandInterface::tptS_create(std::deque<String> * words)
