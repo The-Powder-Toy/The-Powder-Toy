@@ -87,27 +87,34 @@ int CommandInterface::PlainCommand(String command)
 	return retCode;
 }
 
+struct Function
+{
+	const char32_t *name;
+	AnyType (CommandInterface::*member)(std::deque<String> *);
+};
+static const std::vector<Function> functions = {
+	{ U"set"   , &CommandInterface::tptS_set    },
+	{ U"create", &CommandInterface::tptS_create },
+	{ U"delete", &CommandInterface::tptS_delete },
+	{ U"kill"  , &CommandInterface::tptS_delete },
+	{ U"load"  , &CommandInterface::tptS_load   },
+	{ U"reset" , &CommandInterface::tptS_reset  },
+	{ U"bubble", &CommandInterface::tptS_bubble },
+	{ U"quit"  , &CommandInterface::tptS_quit   },
+};
+
 ValueType CommandInterface::testType(String word)
 {
 	size_t i = 0;
 	String::value_type const *rawWord = word.c_str();
 	//Function
-	if (word == "set")
-		return TypeFunction;
-	else if (word == "create")
-		return TypeFunction;
-	else if (word == "delete")
-		return TypeFunction;
-	else if (word == "kill")
-		return TypeFunction;
-	else if (word == "load")
-		return TypeFunction;
-	else if (word == "reset")
-		return TypeFunction;
-	else if (word == "bubble")
-		return TypeFunction;
-	else if (word == "quit")
-		return TypeFunction;
+	for (auto &function : functions)
+	{
+		if (word == function.name)
+		{
+			return TypeFunction;
+		}
+	}
 
 	//Basic type
 	for (i = 0; i < word.length(); i++)
@@ -211,20 +218,12 @@ AnyType CommandInterface::eval(std::deque<String> * words)
 	switch(wordType)
 	{
 	case TypeFunction:
-		if(word == "set")
-			return tptS_set(words);
-		else if(word == "create")
-			return tptS_create(words);
-		else if(word == "delete" || word == "kill")
-			return tptS_delete(words);
-		else if(word == "load")
-			return tptS_load(words);
-		else if(word == "reset")
-			return tptS_reset(words);
-		else if(word == "bubble")
-			return tptS_bubble(words);
-		else if(word == "quit")
-			return tptS_quit(words);
+		{
+			auto it = std::find_if(functions.begin(), functions.end(), [&word](auto &func) {
+				return func.name == word;
+			});
+			return (this->*(it->member))(words);
+		}
 		break;
 	case TypeNumber:
 		return NumberType(parseNumber(word));
