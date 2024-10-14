@@ -1,5 +1,6 @@
 simulation_files = files(
 	'Air.cpp',
+	'AccessProperty.cpp',
 	'Element.cpp',
 	'ElementClasses.cpp',
 	'GOLString.cpp',
@@ -8,6 +9,7 @@ simulation_files = files(
 	'Sign.cpp',
 	'SimulationData.cpp',
 	'Simulation.cpp',
+	'StructProperty.cpp',
 )
 
 subdir('elements')
@@ -18,6 +20,7 @@ powder_files += simulation_files
 render_files += simulation_files
 
 powder_files += files(
+	'AccessPropertyParse.cpp',
 	'Editing.cpp',
 	'SimTool.cpp',
 	'ToolClasses.cpp',

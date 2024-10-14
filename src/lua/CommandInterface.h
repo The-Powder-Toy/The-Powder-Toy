@@ -27,7 +27,6 @@ public:
 
 	enum LogType { LogError, LogWarning, LogNotice };
 	enum FormatType { FormatInt, FormatString, FormatChar, FormatFloat, FormatElement };
-	int GetPropertyOffset(ByteString key, FormatType & format);
 	void Log(LogType type, String message);
 	//void AttachGameModel(GameModel * m);
 

@@ -484,7 +484,7 @@ CoordStack& Simulation::getCoordStackSingleton()
 	return cs;
 }
 
-int Simulation::flood_prop(int x, int y, StructProperty prop, PropertyValue propvalue)
+int Simulation::flood_prop(int x, int y, const AccessProperty &changeProperty)
 {
 	int i, x1, x2, dy = 1;
 	int did_something = 0;
@@ -526,23 +526,7 @@ int Simulation::flood_prop(int x, int y, StructProperty prop, PropertyValue prop
 					i = photons[y][x];
 				if (!i)
 					continue;
-				switch (prop.Type) {
-					case StructProperty::Float:
-						*((float*)(((char*)&parts[ID(i)])+prop.Offset)) = std::get<float>(propvalue);
-						break;
-
-					case StructProperty::ParticleType:
-					case StructProperty::Integer:
-						*((int*)(((char*)&parts[ID(i)])+prop.Offset)) = std::get<int>(propvalue);
-						break;
-
-					case StructProperty::UInteger:
-						*((unsigned int*)(((char*)&parts[ID(i)])+prop.Offset)) = std::get<unsigned int>(propvalue);
-						break;
-
-					default:
-						break;
-				}
+				changeProperty.Set(this, ID(i));
 				bitmap[(y*XRES)+x] = 1;
 				did_something = 1;
 			}

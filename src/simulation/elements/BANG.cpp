@@ -75,7 +75,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		if (pmap[y][x] && ID(pmap[y][x]) == i)
 		{
-			sim->flood_prop(x, y, Particle::GetProperties()[FIELD_TMP], 2);
+			sim->flood_prop(x, y, AccessProperty{ FIELD_TMP, 2 });
 		}
 		parts[i].tmp = 2;
 	}

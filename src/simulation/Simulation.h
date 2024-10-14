@@ -6,6 +6,7 @@
 #include "ElementDefs.h"
 #include "BuiltinGOL.h"
 #include "MenuSection.h"
+#include "AccessProperty.h"
 #include "CoordStack.h"
 #include "common/tpt-rand.h"
 #include "gravity/Gravity.h"
@@ -154,7 +155,7 @@ public:
 	void create_gain_photon(int pp);
 	void kill_part(int i);
 	bool FloodFillPmapCheck(int x, int y, int type) const;
-	int flood_prop(int x, int y, StructProperty prop, PropertyValue propvalue);
+	int flood_prop(int x, int y, const AccessProperty &changeProperty);
 	bool flood_water(int x, int y, int i);
 	int FloodINST(int x, int y);
 	void detach(int i);

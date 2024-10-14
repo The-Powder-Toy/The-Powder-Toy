@@ -1126,7 +1126,7 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 	}
 	if (tool->Identifier == "DEFAULT_UI_PROPERTY")
 	{
-		static_cast<PropertyTool *>(tool)->OpenWindow(gameModel->GetSimulation(), nullptr);
+		static_cast<PropertyTool *>(tool)->OpenWindow(gameModel->GetSimulation(), std::nullopt);
 	}
 	if(tool->Identifier == "DEFAULT_UI_ADDLIFE")
 	{
