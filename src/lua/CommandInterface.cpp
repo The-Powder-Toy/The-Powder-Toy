@@ -349,7 +349,15 @@ AnyType CommandInterface::tptS_set(std::deque<String> * words)
 			ui::Point tempPoint = ((PointType)selector).Value();
 			if(tempPoint.X<0 || tempPoint.Y<0 || tempPoint.Y >= YRES || tempPoint.X >= XRES)
 				throw GeneralException("Invalid position");
-
+			auto r = sim->pmap[tempPoint.Y][tempPoint.X];
+			if (!r)
+			{
+				r = sim->photons[tempPoint.Y][tempPoint.X];
+			}
+			if (r)
+			{
+				partIndex = ID(r);
+			}
 		}
 		else
 			partIndex = ((NumberType)selector).Value();
