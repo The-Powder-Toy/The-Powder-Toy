@@ -312,7 +312,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 
 std::unique_ptr<GameSave> Simulation::Save(bool includePressure, Rect<int> partR) // particle coordinates
 {
-	auto blockR = RectSized(partR.pos / CELL, partR.size / CELL);
+	auto blockR = RectBetween(partR.pos / CELL, (partR.pos + partR.size) / CELL);
 	auto blockP = blockR.pos;
 
 	auto newSave = std::make_unique<GameSave>(blockR.size);
