@@ -380,6 +380,18 @@ public:
 		return point.X >= pos.X && point.X < pos.X + size.X && point.Y >= pos.Y && point.Y < pos.Y + size.Y;
 	}
 
+	template<typename S = T, typename = std::enable_if_t<std::is_integral_v<S>>>
+	inline Vec2<T> TopLeft() const
+	{
+		return pos;
+	}
+
+	template<typename S = T, typename = std::enable_if_t<std::is_integral_v<S>>>
+	inline Vec2<T> BottomRight() const
+	{
+		return pos + size - Vec2<T>(1, 1);
+	}
+
 	template<typename S>
 	Rect<decltype(std::declval<T>() + std::declval<S>())> Inset(S delta) const
 	{
