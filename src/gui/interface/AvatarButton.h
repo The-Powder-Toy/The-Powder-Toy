@@ -3,7 +3,6 @@
 
 #include "Component.h"
 #include "graphics/Graphics.h"
-#include "gui/interface/Colour.h"
 #include "client/http/ImageRequest.h"
 
 #include <memory>
@@ -15,6 +14,7 @@ class AvatarButton : public Component
 {
 	std::unique_ptr<VideoBuffer> avatar;
 	ByteString name;
+	int avatarSize;
 	bool tried;
 
 	struct AvatarButtonAction
@@ -26,7 +26,7 @@ class AvatarButton : public Component
 	std::unique_ptr<http::ImageRequest> imageRequest;
 
 public:
-	AvatarButton(Point position, Point size, ByteString username);
+	AvatarButton(Point position, Point size, ByteString username, int avatarSize = 0);
 	virtual ~AvatarButton() = default;
 
 	void OnMouseClick(int x, int y, unsigned int button) override;
@@ -46,6 +46,6 @@ public:
 	ByteString GetUsername() { return name; }
 	inline void SetActionCallback(AvatarButtonAction const &action) { actionCallback = action; };
 protected:
-	bool isMouseInside, isButtonDown;
+	bool isMouseInside = false, isButtonDown = false;
 };
 }

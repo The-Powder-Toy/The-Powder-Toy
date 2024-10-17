@@ -10,9 +10,10 @@
 
 namespace ui {
 
-AvatarButton::AvatarButton(Point position, Point size, ByteString username):
+AvatarButton::AvatarButton(Point position, Point size, ByteString username, int avatarSize):
 	Component(position, size),
 	name(username),
+	avatarSize(avatarSize),
 	tried(false)
 {
 
@@ -23,7 +24,14 @@ void AvatarButton::Tick(float dt)
 	if (!avatar && !tried && name.size() > 0)
 	{
 		tried = true;
-		imageRequest = std::make_unique<http::ImageRequest>(ByteString::Build(STATICSERVER, "/avatars/", name, ".png"), Size);
+		ByteStringBuilder urlBuilder;
+		urlBuilder << STATICSERVER << "/avatars/" << name;
+		if (avatarSize)
+		{
+			urlBuilder << "." << avatarSize;
+		}
+		urlBuilder << ".png";
+		imageRequest = std::make_unique<http::ImageRequest>(urlBuilder.Build(), Size);
 		imageRequest->Start();
 	}
 
@@ -45,7 +53,7 @@ void AvatarButton::Draw(const Point& screenPos)
 {
 	Graphics * g = GetGraphics();
 
-	if(avatar)
+	if (avatar)
 	{
 		auto *tex = avatar.get();
 		g->BlendImage(tex->Data(), 255, RectSized(screenPos, tex->Size()));

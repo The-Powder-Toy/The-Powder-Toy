@@ -64,10 +64,6 @@ inline ByteString IntroText()
 	      "Use 'S' to save parts of the window as 'stamps'. 'L' loads the most recent stamp, 'K' shows a library of stamps you saved.\n"
 	      "Use 'P' to take a screenshot and save it into the current directory.\n"
 	      "Use 'H' to toggle the HUD. Use 'D' to toggle debug mode in the HUD.\n"
-	      "\n"
-	      "Contributors: \bgStanislaw K Skowronek (Designed the original Powder Toy),\n"
-	      "\bgSimon Robertshaw, Skresanov Savely, Pilihp64, Catelite, Victoria Hoyle, Nathan Cousins, jacksonmj,\n"
-	      "\bgFelix Wallin, Lieuwe Mosch, Anthony Boot, Me4502, MaksProg, jacob1, mniip, LBPHacker\n"
 	      "\n";
 	if constexpr (BETA)
 	{
