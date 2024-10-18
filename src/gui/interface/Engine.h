@@ -79,6 +79,8 @@ namespace ui
 		Graphics * g;
 		bool GraveExitsConsole;
 
+		bool confirmingExit = false;
+
 		unsigned int FrameIndex;
 	private:
 		FpsLimit fpsLimit;
