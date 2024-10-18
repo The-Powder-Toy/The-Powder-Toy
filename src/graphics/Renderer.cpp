@@ -65,11 +65,11 @@ void Renderer::render_gravlensing(const RendererFrame &source)
 		    RES.OriginRect().Contains(bp))
 		{
 			auto v = RGB::Unpack(video[p]);
-			auto s = RGB::Unpack(source[rp]);
+			
 			video[p] = RGB(
-				std::min(0xFF, s.Red   + v.Red  ),
-				std::min(0xFF, s.Green + v.Green),
-				std::min(0xFF, s.Blue  + v.Blue )
+				std::min(0xFF, RGB::unpack(source[rp]).Red   + v.Red  ),
+				std::min(0xFF, RGB::unpack(source[gp]).Green + v.Green),
+				std::min(0xFF, RGB::unpack(source[gp]).Blue  + v.Blue)
 			).Pack();
 		}
 	}

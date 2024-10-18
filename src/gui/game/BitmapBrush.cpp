@@ -14,25 +14,25 @@ BitmapBrush::BitmapBrush(ui::Point inputSize, unsigned char const *inputBitmap)
 		newSize.Y += 1;
 
 	origSize = newSize;
-	origBitmap = std::make_unique<unsigned char []>(newSize.X * newSize.Y);
-	std::fill(&origBitmap[0], &origBitmap[newSize.X * newSize.Y], 0);
+	origBitmap = PlaneAdapter<std::vector<unsigned char>>(newSize, 0);
 	for (int y = 0; y < inputSize.Y; y++)
 		for (int x = 0; x < inputSize.X; x++)
-			origBitmap[x + y * newSize.X] = inputBitmap[x + y * inputSize.X];
+			origBitmap[{ x, y }] = inputBitmap[x + y * inputSize.X];
 }
 
-BitmapBrush::BitmapBrush(const BitmapBrush &other) : BitmapBrush(other.origSize, &other.origBitmap[0])
+BitmapBrush::BitmapBrush(const BitmapBrush &other) : BitmapBrush(other.origSize, other.origBitmap.data())
 {
 }
 
-std::unique_ptr<unsigned char []> BitmapBrush::GenerateBitmap() const
+PlaneAdapter<std::vector<unsigned char>> BitmapBrush::GenerateBitmap() const
 {
 	ui::Point size = radius * 2 + Vec2{ 1, 1 };
-	auto bitmap = std::make_unique<unsigned char []>(size.X * size.Y);
+	PlaneAdapter<std::vector<unsigned char>> bitmap;
 	if (size == origSize)
-		std::copy(&origBitmap[0], &origBitmap[origSize.X * origSize.Y], &bitmap[0]);
+		bitmap = origBitmap;
 	else
 	{
+		bitmap = PlaneAdapter<std::vector<unsigned char>>(size);
 		//Bilinear interpolation
 		float factorX = ((float)origSize.X)/((float)size.X);
 		float factorY = ((float)origSize.Y)/((float)size.Y);
@@ -48,14 +48,14 @@ std::unique_ptr<unsigned char []> BitmapBrush::GenerateBitmap() const
 				auto lowerY = int(std::floor(originalY));
 				auto upperY = int(std::min((float)(origSize.Y-1), std::floor(originalY+1.0f)));
 
-				unsigned char topRight = origBitmap[(lowerY*origSize.X)+upperX];
-				unsigned char topLeft = origBitmap[(lowerY*origSize.X)+lowerX];
-				unsigned char bottomRight = origBitmap[(upperY*origSize.X)+upperX];
-				unsigned char bottomLeft = origBitmap[(upperY*origSize.X)+lowerX];
+				unsigned char topRight = origBitmap[{ upperX, lowerY }];
+				unsigned char topLeft = origBitmap[{ lowerX, lowerY }];
+				unsigned char bottomRight = origBitmap[{ upperX, upperY }];
+				unsigned char bottomLeft = origBitmap[{ lowerX, upperY }];
 				float top = LinearInterpolate<float>(topLeft, topRight, float(lowerX), float(upperX), originalX);
 				float bottom = LinearInterpolate<float>(bottomLeft, bottomRight, float(lowerX), float(upperX), originalX);
 				float mid = LinearInterpolate<float>(top, bottom, float(lowerY), float(upperY), originalY);
-				bitmap[(y*size.X)+x] = mid > 128 ? 255 : 0;
+				bitmap[{ x, y }] = mid > 128 ? 255 : 0;
 			}
 		}
 	}

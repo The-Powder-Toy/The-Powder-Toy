@@ -28,22 +28,23 @@ void SampleTool::Draw(Simulation * sim, Brush const &brush, ui::Point position)
 	}
 	else
 	{
-		Particle *part = nullptr;
+		int i = -1;
 		if (sim->photons[position.Y][position.X])
 		{
-			part = &sim->parts[ID(sim->photons[position.Y][position.X])];
+			i = ID(sim->photons[position.Y][position.X]);
 		}
 		else if (sim->pmap[position.Y][position.X])
 		{
-			part = &sim->parts[ID(sim->pmap[position.Y][position.X])];
+			i = ID(sim->pmap[position.Y][position.X]);
 		}
-		if (part)
+		if (i != -1)
 		{
+			auto *part = &sim->parts[i];
 			if (shiftBehaviour)
 			{
 				auto *propTool = static_cast<PropertyTool *>(gameModel.GetToolFromIdentifier("DEFAULT_UI_PROPERTY"));
 				gameModel.SetActiveTool(0, propTool);
-				propTool->OpenWindow(gameModel.GetSimulation(), part);
+				propTool->OpenWindow(gameModel.GetSimulation(), i);
 			}
 			else if (part->type == PT_LIFE)
 			{

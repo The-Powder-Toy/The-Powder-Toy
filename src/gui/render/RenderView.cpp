@@ -50,15 +50,7 @@ RenderView::RenderView():
 		renderModeCheckbox->mode = mode;
 		renderModeCheckbox->SetIcon(icon);
 		renderModeCheckbox->SetActionCallback({ [this, renderModeCheckbox] {
-			auto renderMode = c->GetRenderMode();
-			if (renderModeCheckbox->GetChecked())
-			{
-				renderMode |= renderModeCheckbox->mode;
-			}
-			else
-			{
-				renderMode &= ~renderModeCheckbox->mode;
-			}
+			auto renderMode = CalculateRenderMode();
 			c->SetRenderMode(renderMode);
 		} });
 		AddComponent(renderModeCheckbox);
@@ -78,6 +70,11 @@ RenderView::RenderView():
 		displayModeCheckbox->SetIcon(icon);
 		displayModeCheckbox->SetActionCallback({ [this, displayModeCheckbox] {
 			auto displayMode = c->GetDisplayMode();
+			// Air display modes are mutually exclusive
+			if (displayModeCheckbox->mode & DISPLAY_AIR)
+			{
+				displayMode &= ~DISPLAY_AIR;
+			}
 			if (displayModeCheckbox->GetChecked())
 			{
 				displayMode |= displayModeCheckbox->mode;
@@ -126,6 +123,18 @@ RenderView::RenderView():
 	addColourModeCheckbox(COLOUR_GRAD, IconGradient, ui::Point(307, 22), "Changes colors of elements slightly to show heat diffusing through them");
 	addColourModeCheckbox(COLOUR_BASC, IconBasic   , ui::Point(307,  4), "No special effects at all for anything, overrides all other options and deco");
 	line4 = 340;
+}
+
+uint32_t RenderView::CalculateRenderMode()
+{
+	uint32_t renderMode = 0;
+	for (auto &checkbox : renderModes)
+	{
+		if (checkbox->GetChecked())
+			renderMode |= checkbox->mode;
+	}
+
+	return renderMode;
 }
 
 void RenderView::OnMouseDown(int x, int y, unsigned button)

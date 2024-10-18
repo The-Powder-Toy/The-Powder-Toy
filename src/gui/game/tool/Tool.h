@@ -5,6 +5,7 @@
 #include "graphics/VideoBuffer.h"
 #include "gui/interface/Point.h"
 #include "simulation/StructProperty.h"
+#include "simulation/MenuSection.h"
 #include <memory>
 #include <optional>
 
@@ -14,10 +15,9 @@ struct Particle;
 
 class Tool
 {
-private:
+public:
 	std::unique_ptr<VideoBuffer> (*textureGen)(int, Vec2<int>) = nullptr;
 
-public:
 	int ToolID = 0;
 	String Name = "NULL";
 	String Description = "NULL Tool, does NOTHING";
@@ -28,6 +28,8 @@ public:
 	bool shiftBehaviour = false;
 	bool ctrlBehaviour = false;
 	bool altBehaviour = false;
+	int MenuSection = SC_TOOL;
+	bool MenuVisible = true;
 
 	Tool() = default;
 
@@ -41,6 +43,9 @@ public:
 		Identifier(identifier),
 		Colour(colour),
 		Blocky(blocky)
+	{}
+
+	Tool(int id, ByteString identifier) : ToolID(id), Identifier(identifier)
 	{}
 
 	virtual ~Tool()

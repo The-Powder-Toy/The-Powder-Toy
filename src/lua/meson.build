@@ -2,7 +2,7 @@ luaconsole_files = files(
 	'LuaButton.cpp',
 	'LuaBz2.cpp',
 	'LuaCheckbox.cpp',
-	'LuaCompat.c',
+	'LuaCompat.cpp',
 	'LuaComponent.cpp',
 	'LuaElements.cpp',
 	'LuaEvent.cpp',

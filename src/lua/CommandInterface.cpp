@@ -28,9 +28,8 @@ void CommandInterface::Log(LogType type, String message)
 	m->Log(message, type == LogError || type == LogNotice);
 }
 
-int CommandInterface::GetPropertyOffset(ByteString key, FormatType & format)
+static std::optional<int> GetPropertyOffset(ByteString key)
 {
-	int offset = -1;
 	for (auto &alias : Particle::GetPropertyAliases())
 	{
 		if (key == alias.from)
@@ -38,32 +37,16 @@ int CommandInterface::GetPropertyOffset(ByteString key, FormatType & format)
 			key = alias.to;
 		}
 	}
-	for (auto &prop : Particle::GetProperties())
+	auto &properties = Particle::GetProperties();
+	for (int i = 0; i < int(properties.size()); ++i)
 	{
+		auto &prop = properties[i];
 		if (key == prop.Name)
 		{
-			offset = prop.Offset;
-			switch (prop.Type)
-			{
-			case StructProperty::ParticleType:
-				format = byteStringEqualsLiteral(key, "type") ? FormatElement : FormatInt; // FormatElement is tightly coupled with "type"
-				break;
-
-			case StructProperty::Integer:
-			case StructProperty::UInteger:
-				format = FormatInt;
-				break;
-
-			case StructProperty::Float:
-				format = FormatFloat;
-				break;
-
-			default:
-				break;
-			}
+			return i;
 		}
 	}
-	return offset;
+	return std::nullopt;
 }
 
 String CommandInterface::GetLastError()
@@ -104,27 +87,35 @@ int CommandInterface::PlainCommand(String command)
 	return retCode;
 }
 
+struct Function
+{
+	const char32_t *name;
+	AnyType (CommandInterface::*member)(std::deque<String> *);
+};
+static const std::vector<Function> functions = {
+	{ U"set"   , &CommandInterface::tptS_set    },
+	{ U"get"   , &CommandInterface::tptS_get    },
+	{ U"create", &CommandInterface::tptS_create },
+	{ U"delete", &CommandInterface::tptS_delete },
+	{ U"kill"  , &CommandInterface::tptS_delete },
+	{ U"load"  , &CommandInterface::tptS_load   },
+	{ U"reset" , &CommandInterface::tptS_reset  },
+	{ U"bubble", &CommandInterface::tptS_bubble },
+	{ U"quit"  , &CommandInterface::tptS_quit   },
+};
+
 ValueType CommandInterface::testType(String word)
 {
 	size_t i = 0;
 	String::value_type const *rawWord = word.c_str();
 	//Function
-	if (word == "set")
-		return TypeFunction;
-	else if (word == "create")
-		return TypeFunction;
-	else if (word == "delete")
-		return TypeFunction;
-	else if (word == "kill")
-		return TypeFunction;
-	else if (word == "load")
-		return TypeFunction;
-	else if (word == "reset")
-		return TypeFunction;
-	else if (word == "bubble")
-		return TypeFunction;
-	else if (word == "quit")
-		return TypeFunction;
+	for (auto &function : functions)
+	{
+		if (word == function.name)
+		{
+			return TypeFunction;
+		}
+	}
 
 	//Basic type
 	for (i = 0; i < word.length(); i++)
@@ -228,20 +219,12 @@ AnyType CommandInterface::eval(std::deque<String> * words)
 	switch(wordType)
 	{
 	case TypeFunction:
-		if(word == "set")
-			return tptS_set(words);
-		else if(word == "create")
-			return tptS_create(words);
-		else if(word == "delete" || word == "kill")
-			return tptS_delete(words);
-		else if(word == "load")
-			return tptS_load(words);
-		else if(word == "reset")
-			return tptS_reset(words);
-		else if(word == "bubble")
-			return tptS_bubble(words);
-		else if(word == "quit")
-			return tptS_quit(words);
+		{
+			auto it = std::find_if(functions.begin(), functions.end(), [&word](auto &func) {
+				return func.name == word;
+			});
+			return (this->*(it->member))(words);
+		}
 		break;
 	case TypeNumber:
 		return NumberType(parseNumber(word));
@@ -298,80 +281,10 @@ String CommandInterface::PlainFormatCommand(String command)
 	return outputData;
 }
 
-AnyType CommandInterface::tptS_set(std::deque<String> * words)
+static std::vector<int> EvaluateSelector(Simulation *sim, AnyType selector)
 {
 	auto &sd = SimulationData::CRef();
-	//Arguments from stack
-	StringType property = eval(words);
-	AnyType selector = eval(words);
-	AnyType value = eval(words);
-
-	Simulation * sim = m->GetSimulation();
-	unsigned char * partsBlock = reinterpret_cast<unsigned char *>(&sim->parts[0]);
-
-	int returnValue = 0;
-
-	FormatType propertyFormat;
-	int propertyOffset = GetPropertyOffset(property.Value().ToUtf8(), propertyFormat);
-	if (propertyOffset == -1)
-		throw GeneralException("Invalid property");
-
-	//Selector
-	int newValue = 0;
-	float newValuef = 0.0f;
-	if (property.Value() == "temp")
-	{
-		// convert non-string temperature values to strings to format::StringToTemperature can take care of them
-		switch (value.GetType())
-		{
-		case TypeNumber:
-			value = StringType(String::Build(((NumberType)value).Value()));
-			break;
-		case TypeFloat:
-			value = StringType(String::Build(((FloatType)value).Value()));
-			break;
-		default:
-			break;
-		}
-	}
-	if (value.GetType() == TypeNumber)
-	{
-		newValuef = float(newValue = ((NumberType)value).Value());
-	}
-	else if (value.GetType() == TypeFloat)
-	{
-		newValue = int(newValuef = ((FloatType)value).Value());
-	}
-	else if(value.GetType() == TypeString)
-	{
-		if (property.Value() == "temp")
-		{
-			try
-			{
-				newValuef = format::StringToTemperature(((StringType)value).Value(), c->GetTemperatureScale());
-			}
-			catch (const std::exception &ex)
-			{
-				throw GeneralException("Invalid value for assignment");
-			}
-		}
-		else
-		{
-			newValue = sd.GetParticleType(((StringType)value).Value().ToUtf8());
-			if (newValue < 0 || newValue >= PT_NUM)
-			{
-				// TODO: add element CAKE to invalidate this
-				if (((StringType)value).Value().ToUpper() == "CAKE")
-					throw GeneralException("Cake is a lie, not an element");
-				throw GeneralException("Invalid element");
-			}
-		}
-	}
-	else
-		throw GeneralException("Invalid value for assignment");
-	if (property.Value() == "type" && (newValue < 0 || newValue >= PT_NUM || !sd.elements[newValue].Enabled))
-		throw GeneralException("Invalid element");
-
+	std::vector<int> indices;
 	if (selector.GetType() == TypePoint || selector.GetType() == TypeNumber)
 	{
 		int partIndex = -1;
@@ -381,64 +294,31 @@ AnyType CommandInterface::tptS_set(std::deque<String> * words)
 			if(tempPoint.X<0 || tempPoint.Y<0 || tempPoint.Y >= YRES || tempPoint.X >= XRES)
 				throw GeneralException("Invalid position");
 
+			auto r = sim->pmap[tempPoint.Y][tempPoint.X];
+			if (!r)
+			{
+				r = sim->photons[tempPoint.Y][tempPoint.X];
+			}
+			if (r)
+			{
+				partIndex = ID(r);
+			}
 		}
 		else
 			partIndex = ((NumberType)selector).Value();
 		if(partIndex<0 || partIndex>=NPART || sim->parts[partIndex].type==0)
 			throw GeneralException("Invalid particle");
 
-		switch(propertyFormat)
-		{
-		case FormatInt:
-			*((int*)(partsBlock+(partIndex*sizeof(Particle))+propertyOffset)) = newValue;
-			break;
-		case FormatFloat:
-			*((float*)(partsBlock+(partIndex*sizeof(Particle))+propertyOffset)) = newValuef;
-			break;
-		case FormatElement:
-			sim->part_change_type(partIndex, int(sim->parts[partIndex].x + 0.5f), int(sim->parts[partIndex].y + 0.5f), newValue);
-			break;
-		default:
-			break;
-		}
-		returnValue = 1;
+		indices.push_back(partIndex);
 	}
 	else if (selector.GetType() == TypeString && ((StringType)selector).Value() == "all")
 	{
-		switch(propertyFormat)
+		for(int j = 0; j < NPART; j++)
 		{
-		case FormatInt:
+			if(sim->parts[j].type)
 			{
-				for(int j = 0; j < NPART; j++)
-					if(sim->parts[j].type)
-					{
-						returnValue++;
-						*((int*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValue;
-					}
+				indices.push_back(j);
 			}
-			break;
-		case FormatFloat:
-			{
-				for(int j = 0; j < NPART; j++)
-					if(sim->parts[j].type)
-					{
-						returnValue++;
-						*((float*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValuef;
-					}
-			}
-			break;
-		case FormatElement:
-			{
-				for (int j = 0; j < NPART; j++)
-					if (sim->parts[j].type)
-					{
-						returnValue++;
-						sim->part_change_type(j, int(sim->parts[j].x + 0.5f), int(sim->parts[j].y + 0.5f), newValue);
-					}
-			}
-			break;
-		default:
-			break;
 		}
 	}
 	else if(selector.GetType() == TypeString || selector.GetType() == TypeNumber)
@@ -452,46 +332,122 @@ AnyType CommandInterface::tptS_set(std::deque<String> * words)
 		if (type<0 || type>=PT_NUM)
 			throw GeneralException("Invalid particle type");
 		if (type==0)
-			throw GeneralException("Cannot set properties of particles that do not exist");
-		switch(propertyFormat)
+			throw GeneralException("Cannot access properties of particles that do not exist");
+		for (int j = 0; j < NPART; j++)
 		{
-		case FormatInt:
+			if (sim->parts[j].type == type)
 			{
-				for (int j = 0; j < NPART; j++)
-					if (sim->parts[j].type == type)
-					{
-						returnValue++;
-						*((int*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValue;
-					}
+				indices.push_back(j);
 			}
-			break;
-		case FormatFloat:
-			{
-				for (int j = 0; j < NPART; j++)
-					if (sim->parts[j].type == type)
-					{
-						returnValue++;
-						*((float*)(partsBlock+(j*sizeof(Particle))+propertyOffset)) = newValuef;
-					}
-			}
-			break;
-		case FormatElement:
-			{
-				for (int j = 0; j < NPART; j++)
-					if (sim->parts[j].type == type)
-					{
-						returnValue++;
-						sim->part_change_type(j, int(sim->parts[j].x + 0.5f), int(sim->parts[j].y + 0.5f), newValue);
-					}
-			}
-			break;
-		default:
-			break;
 		}
 	}
 	else
 		throw GeneralException("Invalid selector");
+	return indices;
+}
+
+AnyType CommandInterface::tptS_set(std::deque<String> * words)
+{
+	//Arguments from stack
+	StringType property = eval(words);
+	AnyType selector = eval(words);
+	AnyType value = eval(words);
+
+	Simulation * sim = m->GetSimulation();
+	auto prop = GetPropertyOffset(property.Value().ToUtf8());
+	if (!prop)
+	{
+		throw GeneralException("Invalid property");
+	}
+	auto &propInfo = Particle::GetProperties()[*prop];
+
+	if (value.GetType() == TypeNumber && propInfo.Type == StructProperty::Float)
+	{
+		value = FloatType(NumberType(value).Value());
+	}
+	if (value.GetType() == TypeFloat && propInfo.Type != StructProperty::Float)
+	{
+		value = NumberType(FloatType(value).Value());
+	}
+	AccessProperty changeProperty;
+	try
+	{
+		switch (value.GetType())
+		{
+		case TypeNumber:
+			changeProperty.propertyIndex = *prop;
+			changeProperty.propertyValue = NumberType(value).Value();
+			break;
+
+		case TypeFloat:
+			changeProperty.propertyIndex = *prop;
+			changeProperty.propertyValue = FloatType(value).Value();
+			break;
+
+		case TypeString:
+			changeProperty = AccessProperty::Parse(*prop, StringType(value).Value());
+			break;
+
+		default:
+			break;
+		}
+	}
+	catch (const AccessProperty::ParseError &ex)
+	{
+		// TODO: add element CAKE to invalidate this
+		if (value.GetType() == TypeString && StringType(value).Value().ToUpper() == "CAKE")
+		{
+			throw GeneralException("Cake is a lie, not an element");
+		}
+		throw GeneralException(ByteString(ex.what()).FromUtf8());
+	}
+
+	int returnValue = 0;
+	for (auto index : EvaluateSelector(sim, selector))
+	{
+		returnValue++;
+		changeProperty.Set(sim, index);
+	}
 	return NumberType(returnValue);
+}
+
+AnyType CommandInterface::tptS_get(std::deque<String> * words)
+{
+	StringType property = eval(words);
+	AnyType selector = eval(words);
+
+	Simulation *sim = m->GetSimulation();
+	auto prop = GetPropertyOffset(property.Value().ToUtf8());
+	if (!prop)
+	{
+		throw GeneralException("Invalid property");
+	}
+	auto &propInfo = Particle::GetProperties()[*prop];
+	AccessProperty accessProperty{ *prop };
+
+	auto indices = EvaluateSelector(sim, selector);
+	if (indices.size() > 1)
+	{
+		throw GeneralException("Multiple matching particles");
+	}
+	if (indices.size() < 1)
+	{
+		throw GeneralException("No matching particles");
+	}
+
+	auto value = accessProperty.Get(sim, indices[0]);
+	switch (propInfo.Type)
+	{
+	case StructProperty::Float:
+		return FloatType(std::get<float>(value));
+
+	case StructProperty::UInteger:
+		return NumberType(std::get<unsigned int>(value));
+
+	default:
+		break;
+	}
+	return NumberType(std::get<int>(value));
 }
 
 AnyType CommandInterface::tptS_create(std::deque<String> * words)

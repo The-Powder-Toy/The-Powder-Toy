@@ -53,20 +53,20 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 	std::sort(existingParticles.begin(), existingParticles.end(), [](const auto &lhs, const auto &rhs) {
 		return std::tie(lhs.pos.Y, lhs.pos.X) < std::tie(rhs.pos.Y, rhs.pos.X);
 	});
-	PlaneAdapter<std::vector<size_t>> existingParticleIndices(pasteArea.Size(), existingParticles.size());
+	PlaneAdapter<std::vector<size_t>> existingParticleIndices(pasteArea.size, existingParticles.size());
 	{
 		auto lastPos = Vec2<int>{ -1, -1 }; // not a valid pos in existingParticles
 		for (auto it = existingParticles.begin(); it != existingParticles.end(); ++it)
 		{
 			if (lastPos != it->pos)
 			{
-				existingParticleIndices[it->pos - pasteArea.TopLeft] = it - existingParticles.begin();
+				existingParticleIndices[it->pos - pasteArea.pos] = it - existingParticles.begin();
 				lastPos = it->pos;
 			}
 		}
 	}
 	auto removeExistingParticles = [this, pasteArea, &existingParticles, &existingParticleIndices](Vec2<int> p) {
-		auto rp = p - pasteArea.TopLeft;
+		auto rp = p - pasteArea.pos;
 		if (existingParticleIndices.Size().OriginRect().Contains(rp))
 		{
 			auto index = existingParticleIndices[rp];
@@ -312,10 +312,10 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 
 std::unique_ptr<GameSave> Simulation::Save(bool includePressure, Rect<int> partR) // particle coordinates
 {
-	auto blockR = RectBetween(partR.TopLeft / CELL, partR.BottomRight / CELL);
-	auto blockP = blockR.TopLeft;
+	auto blockR = RectBetween(partR.TopLeft() / CELL, partR.BottomRight() / CELL);
+	auto blockP = blockR.pos;
 
-	auto newSave = std::make_unique<GameSave>(blockR.Size());
+	auto newSave = std::make_unique<GameSave>(blockR.size);
 	newSave->frameCount = frameCount;
 	newSave->rngState = rng.state();
 
@@ -484,7 +484,7 @@ CoordStack& Simulation::getCoordStackSingleton()
 	return cs;
 }
 
-int Simulation::flood_prop(int x, int y, StructProperty prop, PropertyValue propvalue)
+int Simulation::flood_prop(int x, int y, const AccessProperty &changeProperty)
 {
 	int i, x1, x2, dy = 1;
 	int did_something = 0;
@@ -526,23 +526,7 @@ int Simulation::flood_prop(int x, int y, StructProperty prop, PropertyValue prop
 					i = photons[y][x];
 				if (!i)
 					continue;
-				switch (prop.Type) {
-					case StructProperty::Float:
-						*((float*)(((char*)&parts[ID(i)])+prop.Offset)) = std::get<float>(propvalue);
-						break;
-
-					case StructProperty::ParticleType:
-					case StructProperty::Integer:
-						*((int*)(((char*)&parts[ID(i)])+prop.Offset)) = std::get<int>(propvalue);
-						break;
-
-					case StructProperty::UInteger:
-						*((unsigned int*)(((char*)&parts[ID(i)])+prop.Offset)) = std::get<unsigned int>(propvalue);
-						break;
-
-					default:
-						break;
-				}
+				changeProperty.Set(this, ID(i));
 				bitmap[(y*XRES)+x] = 1;
 				did_something = 1;
 			}
@@ -1216,7 +1200,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 				if (!portalp[parts[ID(r)].tmp][count][nnx].type)
 				{
 					portalp[parts[ID(r)].tmp][count][nnx] = parts[i];
-					parts[i].type=PT_NONE;
+					kill_part(i);
 					break;
 				}
 		}

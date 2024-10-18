@@ -1502,6 +1502,28 @@ static int listCustomGol(lua_State *L)
 	return 1;
 }
 
+static int listDefaultGol(lua_State *L)
+{
+	int i = 0;
+	lua_newtable(L);
+	for (auto &gol : SimulationData::builtinGol)
+	{
+		lua_newtable(L);
+		tpt_lua_pushString(L, gol.name);
+		lua_setfield(L, -2, "name");
+		tpt_lua_pushString(L, SerialiseGOLRule(gol.ruleset));
+		lua_setfield(L, -2, "rulestr");
+		lua_pushnumber(L, gol.ruleset);
+		lua_setfield(L, -2, "rule");
+		lua_pushnumber(L, gol.colour.Pack());
+		lua_setfield(L, -2, "color1");
+		lua_pushnumber(L, gol.colour2.Pack());
+		lua_setfield(L, -2, "color2");
+		lua_rawseti(L, -2, ++i);
+	}
+	return 1;
+}
+
 static int addCustomGol(lua_State *L)
 {
 	auto &sd = SimulationData::CRef();
@@ -1918,6 +1940,7 @@ void LuaSimulation::Open(lua_State *L)
 		LFUNC(decoSpace),
 		LFUNC(fanVelocityX),
 		LFUNC(fanVelocityY),
+		LFUNC(listDefaultGol),
 #undef LFUNC
 		{ NULL, NULL }
 	};

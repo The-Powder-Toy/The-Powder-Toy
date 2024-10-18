@@ -85,10 +85,10 @@ void Simulation::Restore(const Snapshot &snap)
 void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 {
 	auto intersection = RES.OriginRect() & RectSized(Vec2{ area_x, area_y }, Vec2{ area_w, area_h });
-	area_x = intersection.TopLeft.X;
-	area_y = intersection.TopLeft.Y;
-	area_w = intersection.Size().X;
-	area_h = intersection.Size().Y;
+	area_x = intersection.pos.X;
+	area_y = intersection.pos.Y;
+	area_w = intersection.size.X;
+	area_h = intersection.size.Y;
 	float fx = area_x-.5f, fy = area_y-.5f;
 	for (int i = 0; i <= parts_lastActiveIndex; i++)
 	{

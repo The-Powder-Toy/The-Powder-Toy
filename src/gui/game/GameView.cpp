@@ -2595,16 +2595,17 @@ ui::Point GameView::rectSnapCoords(ui::Point point1, ui::Point point2)
 std::optional<FindingElement> GameView::FindingElementCandidate() const
 {
 	Tool *active = c->GetActiveTool(0);
+	auto &properties = Particle::GetProperties();
 	if (active->Identifier.Contains("_PT_"))
 	{
-		return FindingElement{ Particle::GetProperties()[FIELD_TYPE], active->ToolID };
+		return FindingElement{ properties[FIELD_TYPE], active->ToolID };
 	}
 	else if (active->Identifier == "DEFAULT_UI_PROPERTY")
 	{
 		auto configuration = static_cast<PropertyTool *>(active)->GetConfiguration();
 		if (configuration)
 		{
-			return FindingElement{ configuration->prop, configuration->propValue };
+			return FindingElement{ properties[configuration->changeProperty.propertyIndex], configuration->changeProperty.propertyValue };
 		}
 	}
 	return std::nullopt;

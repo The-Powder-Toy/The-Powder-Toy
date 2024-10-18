@@ -202,6 +202,7 @@ public:
 	std::vector<Tool *> GetActiveMenuToolList();
 	void AllocTool(std::unique_ptr<Tool> tool);
 	void AllocElementTool(int element);
+	void UpdateElementTool(int element);
 	void AllocCustomGolTool(const CustomGOLData &gd);
 	void FreeTool(Tool *tool);
 

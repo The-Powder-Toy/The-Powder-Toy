@@ -27,7 +27,6 @@ public:
 
 	enum LogType { LogError, LogWarning, LogNotice };
 	enum FormatType { FormatInt, FormatString, FormatChar, FormatFloat, FormatElement };
-	int GetPropertyOffset(ByteString key, FormatType & format);
 	void Log(LogType type, String message);
 	//void AttachGameModel(GameModel * m);
 
@@ -48,6 +47,7 @@ public:
 	AnyType eval(std::deque<String> * words);
 	int parseNumber(String str);
 	AnyType tptS_set(std::deque<String> * words);
+	AnyType tptS_get(std::deque<String> * words);
 	AnyType tptS_create(std::deque<String> * words);
 	AnyType tptS_delete(std::deque<String> * words);
 	AnyType tptS_load(std::deque<String> * words);

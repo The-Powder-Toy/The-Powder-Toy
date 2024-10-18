@@ -13,10 +13,10 @@ public:
 	}
 	virtual ~EllipseBrush() override = default;
 
-	std::unique_ptr<unsigned char []> GenerateBitmap() const override
+	PlaneAdapter<std::vector<unsigned char>> GenerateBitmap() const override
 	{
 		ui::Point size = radius * 2 + Vec2{ 1, 1 };
-		auto bitmap = std::make_unique<unsigned char []>(size.X * size.Y);
+		PlaneAdapter<std::vector<unsigned char>> bitmap(size);
 
 		int rx = radius.X;
 		int ry = radius.Y;
@@ -25,7 +25,7 @@ public:
 		{
 			for (int j = 0; j <= 2*ry; j++)
 			{
-				bitmap[j*(size.X)+rx] = 255;
+				bitmap[{ rx, j }] = 255;
 			}
 		}
 		else
@@ -48,18 +48,18 @@ public:
 				{
 					if (j > yBottom && j < yTop)
 					{
-						bitmap[j*(size.X)+i] = 255;
-						bitmap[j*(size.X)+2*rx-i] = 255;
+						bitmap[{ i, j }] = 255;
+						bitmap[{ 2*rx-i, j }] = 255;
 					}
 					else
 					{
-						bitmap[j*(size.X)+i] = 0;
-						bitmap[j*(size.X)+2*rx-i] = 0;
+						bitmap[{ i, j }] = 0;
+						bitmap[{ 2*rx-i, j }] = 0;
 					}
 				}
 			}
-			bitmap[size.X/2] = 255;
-			bitmap[size.X*size.Y-size.X/2-1] = 255;
+			bitmap[{ size.X/2, 0 }] = 255;
+			bitmap[{ size.X/2, size.Y-1 }] = 255;
 		}
 		return bitmap;
 	}
