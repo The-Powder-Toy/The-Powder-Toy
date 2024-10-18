@@ -51,8 +51,8 @@ void Element::Element_LIFE()
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	auto &builtinGol = SimulationData::builtinGol;
-	auto colour1 = RGB<uint8_t>::Unpack(cpart->dcolour);
-	auto colour2 = RGB<uint8_t>::Unpack(cpart->tmp);
+	auto colour1 = RGB::Unpack(cpart->dcolour);
+	auto colour2 = RGB::Unpack(cpart->tmp);
 	if (!cpart->dcolour)
 	{
 		colour1 = 0xFFFFFF_rgb;

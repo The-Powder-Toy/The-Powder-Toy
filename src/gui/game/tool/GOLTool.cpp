@@ -26,7 +26,7 @@ class GOLWindow: public ui::Window
 	void validate();
 
 public:
-	GOLWindow(GameModel &gameModel, int toolSelection, int rule, RGB<uint8_t> colour1, RGB<uint8_t> colour2);
+	GOLWindow(GameModel &gameModel, int toolSelection, int rule, RGB colour1, RGB colour2);
 
 	virtual ~GOLWindow()
 	{}
@@ -35,7 +35,7 @@ public:
 	void OnTryExit(ExitMethod method) override;
 };
 
-GOLWindow::GOLWindow(GameModel &gameModel_, int toolSelection, int rule, RGB<uint8_t> colour1, RGB<uint8_t> colour2):
+GOLWindow::GOLWindow(GameModel &gameModel_, int toolSelection, int rule, RGB colour1, RGB colour2):
 	ui::Window(ui::Point(-1, -1), ui::Point(200, 108)),
 	highColour(colour1.WithAlpha(0xFF)),
 	lowColour(colour2.WithAlpha(0xFF)),
@@ -191,12 +191,12 @@ void GOLWindow::OnDraw()
 			auto rr = int(highColour.Red * (1.f - f) + lowColour.Red * f);
 			auto gg = int(highColour.Green * (1.f - f) + lowColour.Green * f);
 			auto bb = int(highColour.Blue * (1.f - f) + lowColour.Blue * f);
-			g->DrawPixel(Position + Vec2{ xx + 30, yy + 67 }, RGB<uint8_t>(rr, gg, bb));
+			g->DrawPixel(Position + Vec2{ xx + 30, yy + 67 }, RGB(rr, gg, bb));
 		}
 	}
 }
 
-void GOLTool::OpenWindow(Simulation *sim, int toolSelection, int rule, RGB<uint8_t> colour1, RGB<uint8_t> colour2)
+void GOLTool::OpenWindow(Simulation *sim, int toolSelection, int rule, RGB colour1, RGB colour2)
 {
 	new GOLWindow(gameModel, toolSelection, rule, colour1, colour2);
 }
