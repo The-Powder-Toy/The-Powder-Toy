@@ -4,5 +4,5 @@
 
 namespace ui
 {
-	using Colour = RGBA<uint8_t>;
+	using Colour = RGBA;
 }

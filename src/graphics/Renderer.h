@@ -47,7 +47,7 @@ class Renderer : private RendererSettings, public RasterDrawMethods<Renderer>
 	unsigned char fire_b[YCELLS][XCELLS];
 	unsigned int fire_alpha[CELL*3][CELL*3];
 
-	void DrawBlob(Vec2<int> pos, RGB<uint8_t> colour);
+	void DrawBlob(Vec2<int> pos, RGB colour);
 	void DrawWalls();
 	void DrawSigns();
 	void render_gravlensing(const RendererFrame &source);
@@ -82,18 +82,18 @@ public:
 
 	struct GradientStop
 	{
-		RGB<uint8_t> color;
+		RGB color;
 		float point;
 
 		bool operator <(const GradientStop &other) const;
 	};
-	static std::vector<RGB<uint8_t>> Gradient(std::vector<GradientStop> stops, int resolution);
+	static std::vector<RGB> Gradient(std::vector<GradientStop> stops, int resolution);
 	static std::unique_ptr<VideoBuffer> WallIcon(int wallID, Vec2<int> size);
 	static const std::vector<RenderPreset> renderModePresets;
 
 #define RENDERER_TABLE(name) \
-	static std::vector<RGB<uint8_t>> name; \
-	static inline RGB<uint8_t> name ## At(int index) \
+	static std::vector<RGB> name; \
+	static inline RGB name ## At(int index) \
 	{ \
 		auto size = int(name.size()); \
 		if (index <        0) index =        0; \

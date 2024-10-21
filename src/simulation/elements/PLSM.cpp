@@ -52,7 +52,7 @@ void Element::Element_PLSM()
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	RGB<uint8_t> color = Renderer::plasmaTableAt(cpart->life);
+	RGB color = Renderer::plasmaTableAt(cpart->life);
 	*colr = color.Red;
 	*colg = color.Green;
 	*colb = color.Blue;
