@@ -150,8 +150,6 @@ PreviewController::~PreviewController()
 {
 	Client::Ref().RemoveListener(this);
 	delete previewModel;
-	if (previewView->CloseActiveWindow())
-	{
-		delete previewView;
-	}
+	previewView->CloseActiveWindow();
+	delete previewView;
 }

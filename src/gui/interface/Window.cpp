@@ -141,14 +141,9 @@ void Window::MakeActiveWindow()
 		Engine::Ref().ShowWindow(this);
 }
 
-bool Window::CloseActiveWindow()
+void Window::CloseActiveWindow()
 {
-	if (Engine::Ref().GetWindow() == this)
-	{
-		Engine::Ref().CloseWindow();
-		return true;
-	}
-	return false;
+	Engine::Ref().CloseWindowAndEverythingAbove(this);
 }
 
 Graphics * Window::GetGraphics()

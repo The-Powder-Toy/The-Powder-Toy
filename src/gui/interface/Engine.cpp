@@ -32,8 +32,8 @@ Engine::~Engine()
 	//Dispose of any Windows.
 	while (!windows.empty())
 	{
-		delete windows.top();
-		windows.pop();
+		delete windows.back();
+		windows.pop_back();
 	}
 }
 
@@ -79,6 +79,7 @@ void Engine::ConfirmExit()
 
 void Engine::ShowWindow(Window * window)
 {
+	CloseWindowAndEverythingAbove(window);
 	if (state_)
 		ignoreEvents = true;
 	if(window->Position.X==-1)
@@ -101,7 +102,7 @@ void Engine::ShowWindow(Window * window)
 		frozenGraphics.emplace(FrozenGraphics{0, std::make_unique<pixel []>(g->Size().X * g->Size().Y)});
 		std::copy_n(g->Data(), g->Size().X * g->Size().Y, frozenGraphics.top().screen.get());
 
-		windows.push(state_);
+		windows.push_back(state_);
 		mousePositions.push(ui::Point(mousex_, mousey_));
 	}
 	if(state_)
@@ -111,13 +112,31 @@ void Engine::ShowWindow(Window * window)
 
 }
 
+void Engine::CloseWindowAndEverythingAbove(Window *window)
+{
+	if (window == state_)
+	{
+		CloseWindow();
+		return;
+	}
+	auto it = std::find(windows.begin(), windows.end(), window);
+	if (it != windows.end())
+	{
+		auto toPop = int(windows.end() - it) + 1; // including state_
+		for (int i = 0; i < toPop; ++i)
+		{
+			CloseWindow();
+		}
+	}
+}
+
 int Engine::CloseWindow()
 {
 	if(!windows.empty())
 	{
 		frozenGraphics.pop();
-		state_ = windows.top();
-		windows.pop();
+		state_ = windows.back();
+		windows.pop_back();
 
 		if(state_)
 			state_->DoFocus();

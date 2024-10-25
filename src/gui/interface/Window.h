@@ -82,7 +82,7 @@ namespace ui
 		enum ExitMethod { MouseOutside, Escape, ExitButton };
 
 		void MakeActiveWindow();
-		bool CloseActiveWindow();
+		void CloseActiveWindow();
 		Graphics * GetGraphics();
 
 	protected:

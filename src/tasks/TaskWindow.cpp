@@ -62,10 +62,8 @@ void TaskWindow::NotifyDone(Task * task)
 
 void TaskWindow::Exit()
 {
-	if (CloseActiveWindow())
-	{
-		SelfDestruct();
-	}
+	CloseActiveWindow();
+	SelfDestruct();
 }
 
 void TaskWindow::NotifyProgress(Task * task)

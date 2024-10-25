@@ -67,9 +67,7 @@ void RenderController::Exit()
 RenderController::~RenderController()
 {
 	delete renderModel;
-	if (renderView->CloseActiveWindow())
-	{
-		delete renderView;
-	}
+	renderView->CloseActiveWindow();
+	delete renderView;
 }
 

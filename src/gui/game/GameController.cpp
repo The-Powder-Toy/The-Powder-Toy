@@ -150,10 +150,8 @@ GameController::~GameController()
 	}
 	commandInterface.reset();
 	delete gameModel;
-	if (gameView->CloseActiveWindow())
-	{
-		delete gameView;
-	}
+	gameView->CloseActiveWindow();
+	delete gameView;
 }
 
 bool GameController::HistoryRestore()
