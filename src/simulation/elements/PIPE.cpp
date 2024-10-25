@@ -265,9 +265,9 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 					transfer_part_to_pipe(parts+(ID(r)), parts+i);
 					sim->kill_part(ID(r));
 				}
-				else if (!TYP(parts[i].ctype) && TYP(r)==PT_STOR && sd.IsElement(parts[ID(r)].tmp) && (elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
+				else if (!TYP(parts[i].ctype) && (TYP(r)==PT_STOR || TYP(r)==PT_CSTO) && sd.IsElement(parts[ID(r)].tmp) && (elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 				{
-					// STOR stores properties in the same places as PIPE does
+					// STOR/CSTO stores properties in the same places as PIPE does
 					transfer_pipe_to_pipe(parts+(ID(r)), parts+i, true);
 				}
 			}
@@ -429,8 +429,8 @@ static void props_pipe_to_part(const Particle *pipe, Particle *part, bool STOR)
 {
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
-	// STOR also calls this function to move particles from STOR to PRTI
-	// PIPE was changed, so now PIPE and STOR don't use the same particle storage format
+	// STOR/CSTO also calls this function to move particles from STOR/CSTO to PRTI
+	// PIPE was changed, so now PIPE and STOR/CSTO don't use the same particle storage format
 	if (STOR)
 	{
 		part->type = TYP(pipe->tmp);

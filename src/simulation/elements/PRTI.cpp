@@ -78,9 +78,9 @@ static int update(UPDATE_FUNC_ARGS)
 		if (rx || ry)
 		{
 			int r = pmap[y+ry][x+rx];
-			if (!r || TYP(r) == PT_STOR)
+			if (!r || TYP(r) == PT_STOR || TYP(r) == PT_CSTO)
 				fe = 1;
-			if (!r || (!(elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)) && TYP(r)!=PT_SPRK && TYP(r)!=PT_STOR))
+			if (!r || (!(elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)) && TYP(r)!=PT_SPRK && TYP(r)!=PT_STOR && TYP(r)!=PT_CSTO))
 			{
 				r = sim->photons[y+ry][x+rx];
 				if (!r)
@@ -96,7 +96,7 @@ static int update(UPDATE_FUNC_ARGS)
 			for (int nnx=0; nnx<80; nnx++)
 				if (!sim->portalp[parts[i].tmp][count][nnx].type)
 				{
-					if (TYP(r) == PT_STOR)
+					if (TYP(r) == PT_STOR || TYP(r) == PT_CSTO)
 					{
 						if (sd.IsElement(parts[ID(r)].tmp) && (elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
 						{

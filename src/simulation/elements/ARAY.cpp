@@ -138,11 +138,11 @@ static int update(UPDATE_FUNC_ARGS)
 								isBlackDeco = (parts[r].dcolour==0xFF000000);
 								parts[r].life = 4;
 							}
-							else if (rt == PT_STOR)
+							else if (rt == PT_STOR || rt == PT_CSTO)
 							{
 								if (parts[r].tmp)
 								{
-									//Cause STOR to release
+									//Cause STOR/CSTO to release
 									for (int ry1 = 1; ry1 >= -1; ry1--)
 									{
 										for (int rx1 = 0; rx1 >= -1 && rx1 <= 1; rx1 = -rx1 - rx1 + 1)
@@ -189,9 +189,9 @@ static int update(UPDATE_FUNC_ARGS)
 									parts[r].dcolour = 0xFF000000;
 							//this if prevents red BRAY from stopping on certain materials
 							}
-							else if (rt==PT_STOR || rt==PT_INWR || (rt==PT_SPRK && parts[r].ctype==PT_INWR) || rt==PT_ARAY || rt==PT_WIFI || rt==PT_FILT || (rt==PT_SWCH && parts[r].life>=10))
+							else if (rt==PT_STOR || rt==PT_CSTO || rt==PT_INWR || (rt==PT_SPRK && parts[r].ctype==PT_INWR) || rt==PT_ARAY || rt==PT_WIFI || rt==PT_FILT || (rt==PT_SWCH && parts[r].life>=10))
 							{
-								if (rt == PT_STOR)
+								if (rt == PT_STOR || rt == PT_CSTO)
 								{
 									parts[r].tmp = 0;
 									parts[r].life = 0;

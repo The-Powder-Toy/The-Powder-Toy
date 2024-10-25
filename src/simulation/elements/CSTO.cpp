@@ -5,11 +5,11 @@ static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);
 
-void Element::Element_STOR()
+void Element::Element_CSTO()
 {
-	Identifier = "DEFAULT_PT_STOR";
-	Name = "STOR";
-	Colour = 0x50DFDF_rgb;
+	Identifier = "DEFAULT_PT_CSTO";
+	Name = "CSTO";
+	Colour = 0xDFDF50_rgb;
 	MenuVisible = 1;
 	MenuSection = SC_POWERED;
 	Enabled = 1;
@@ -21,7 +21,7 @@ void Element::Element_STOR()
 	Collision = 0.0f;
 	Gravity = 0.0f;
 	Diffusion = 0.00f;
-	HotAir = 0.000f	* CFDS;
+	HotAir = 0.000f * CFDS;
 	Falldown = 0;
 
 	Flammable = 0;
@@ -32,7 +32,7 @@ void Element::Element_STOR()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Storage. Captures and stores a single particle. Releases when charged with PSCN, also passes to PIPE.";
+	Description = "Ctype-based Storage. If CSTO has a ctype, it will only store particles which also have that ctype.";
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);
@@ -53,11 +53,11 @@ void Element::Element_STOR()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	auto &sd = SimulationData::CRef();
-	auto &elements = sd.elements;
+	auto& sd = SimulationData::CRef();
+	auto& elements = sd.elements;
 	if (!sd.IsElementOrNone(parts[i].tmp))
 		parts[i].tmp = 0;
-	if(parts[i].life && !parts[i].tmp)
+	if (parts[i].life && !parts[i].tmp)
 		parts[i].life--;
 	for (auto rx = -2; rx <= 2; rx++)
 	{
@@ -65,10 +65,10 @@ static int update(UPDATE_FUNC_ARGS)
 		{
 			if (rx || ry)
 			{
-				auto r = pmap[y+ry][x+rx];
-				if ((ID(r))>=NPART || !r)
+				auto r = pmap[y + ry][x + rx];
+				if ((ID(r)) >= NPART || !r)
 					continue;
-				if (!parts[i].tmp && !parts[i].life && TYP(r)!=PT_STOR && TYP(r) != PT_CSTO && !(elements[TYP(r)].Properties&TYPE_SOLID) && (!parts[i].ctype || TYP(r)==parts[i].ctype))
+				if (!parts[i].tmp && !parts[i].life && TYP(r) != PT_STOR && TYP(r) != PT_CSTO && !(elements[TYP(r)].Properties & TYPE_SOLID) && (!parts[i].ctype || parts[ID(r)].ctype == parts[i].ctype))
 				{
 					if (TYP(r) == PT_SOAP)
 						Element_SOAP_detach(sim, ID(r));
@@ -79,14 +79,14 @@ static int update(UPDATE_FUNC_ARGS)
 					parts[i].tmp4 = parts[ID(r)].ctype;
 					sim->kill_part(ID(r));
 				}
-				if(parts[i].tmp && TYP(r)==PT_SPRK && parts[ID(r)].ctype==PT_PSCN && parts[ID(r)].life>0 && parts[ID(r)].life<4)
+				if (parts[i].tmp && TYP(r) == PT_SPRK && parts[ID(r)].ctype == PT_PSCN && parts[ID(r)].life > 0 && parts[ID(r)].life < 4)
 				{
-					for(auto ry1 = 1; ry1 >= -1; ry1--)
+					for (auto ry1 = 1; ry1 >= -1; ry1--)
 					{
-						for(auto rx1 = 0; rx1 >= -1 && rx1 <= 1; rx1 = -rx1-rx1+1) // Oscillate the X starting at 0, 1, -1, 3, -5, etc (Though stop at -1)
+						for (auto rx1 = 0; rx1 >= -1 && rx1 <= 1; rx1 = -rx1 - rx1 + 1) // Oscillate the X starting at 0, 1, -1, 3, -5, etc (Though stop at -1)
 						{
-							auto np = sim->create_part(-1,x+rx1,y+ry1,TYP(parts[i].tmp));
-							if (np!=-1)
+							auto np = sim->create_part(-1, x + rx1, y + ry1, TYP(parts[i].tmp));
+							if (np != -1)
 							{
 								parts[np].temp = parts[i].temp;
 								parts[np].life = parts[i].tmp2;
@@ -107,23 +107,24 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	if(cpart->tmp){
+	if (cpart->tmp) {
 		*pixel_mode |= PMODE_GLOW;
-		*colr = 0x50;
+		*colr = 0xDF;
 		*colg = 0xDF;
-		*colb = 0xDF;
-	} else {
-		*colr = 0x20;
+		*colb = 0x50;
+	}
+	else {
+		*colr = 0xAF;
 		*colg = 0xAF;
-		*colb = 0xAF;
+		*colb = 0x20;
 	}
 	return 0;
 }
 
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 {
-	auto &sd = SimulationData::CRef();
-	auto &elements = sd.elements;
+	auto& sd = SimulationData::CRef();
+	auto& elements = sd.elements;
 	if (elements[t].Properties & TYPE_SOLID)
 	{
 		return false;
