@@ -30,7 +30,7 @@ void Spinner::Draw(const Point& screenPos)
 		g->DrawLine(
 			{ int(baseX+(sin(cValue+t)*lineInner)), int(baseY+(cos(cValue+t)*lineInner)) },
 			{ int(baseX+(sin(cValue+t)*lineOuter)), int(baseY+(cos(cValue+t)*lineOuter)) },
-			RGB<uint8_t>(int((t/6)*255), int((t/6)*255), int((t/6)*255)));
+			RGB(int((t/6)*255), int((t/6)*255), int((t/6)*255)));
 	}
 }
 Spinner::~Spinner()
