@@ -1216,7 +1216,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			switch (TYP(r))
 			{
 			case PT_GLOW:
-				if (!parts[ID(r)].life && rng.chance(29, 30))
+				if (!parts[ID(r)].life && rng.chance(1, 30))
 				{
 					parts[ID(r)].life = 120;
 					create_gain_photon(i);
@@ -1303,7 +1303,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		}
 		case PT_NEUT:
 			if (TYP(r) == PT_GLAS || TYP(r) == PT_BGLA)
-				if (rng.chance(9, 10))
+				if (rng.chance(1, 10))
 					create_cherenkov_photon(i);
 			break;
 		case PT_ELEC:
