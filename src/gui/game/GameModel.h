@@ -133,8 +133,10 @@ private:
 	std::optional<int> queuedVote;
 	bool threadedRendering = false;
 
+	GameView *view;
+
 public:
-	GameModel();
+	GameModel(GameView *newView);
 	~GameModel();
 
 	void Tick();
@@ -302,5 +304,8 @@ public:
 	void BeforeSim();
 	void AfterSim();
 
-	GameView *view = nullptr;
+	GameView *GetView() const
+	{
+		return view;
+	}
 };

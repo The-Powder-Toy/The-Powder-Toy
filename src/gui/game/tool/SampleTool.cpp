@@ -23,7 +23,7 @@ void SampleTool::Draw(Simulation * sim, Brush const &brush, ui::Point position)
 {
 	if(gameModel.GetColourSelectorVisibility())
 	{
-		pixel colour = gameModel.view->GetPixelUnderMouse();
+		pixel colour = gameModel.GetView()->GetPixelUnderMouse();
 		gameModel.SetColourSelectorColour(RGB<uint8_t>::Unpack(colour).WithAlpha(0xFF));
 	}
 	else

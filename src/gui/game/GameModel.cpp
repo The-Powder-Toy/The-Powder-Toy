@@ -50,7 +50,7 @@ HistoryEntry::~HistoryEntry()
 	//   so the default dtor for ~HistoryEntry cannot be generated.
 }
 
-GameModel::GameModel():
+GameModel::GameModel(GameView *newView):
 	activeMenu(SC_POWDERS),
 	currentBrush(0),
 	currentUser(0, ""),
@@ -61,7 +61,8 @@ GameModel::GameModel():
 	colour(255, 0, 0, 255),
 	edgeMode(EDGE_VOID),
 	ambientAirTemp(R_TEMP + 273.15f),
-	decoSpace(DECOSPACE_SRGB)
+	decoSpace(DECOSPACE_SRGB),
+	view(newView)
 {
 	sim = new Simulation();
 	sim->useLuaCallbacks = true;
