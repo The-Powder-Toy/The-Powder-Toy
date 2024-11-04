@@ -368,6 +368,15 @@ if host_platform == 'windows'
 		endif
 	endforeach
 	project_cpp_args += args_ccomp_win
+elif host_platform == 'darwin'
+	# work around assertion failure with LTO symbols
+	# https://developer.apple.com/documentation/xcode-release-notes/xcode-15-release-notes#Linking
+	# otherwise we get ld: Assertion failed: (0 && "lto symbol should not be in layout"), function symbolForAtom, file Layout.cpp, line 1447.
+	# TODO: remove when appropriate
+	if is_static and cpp_compiler.has_link_argument('-ld_classic')
+		warning('applying broken apple clang linker workaround with -ld_classic')
+		project_link_args += [ '-ld_classic' ]
+	endif
 elif host_platform == 'android'
 	args_ccomp_android = []
 	if not is_64bit
