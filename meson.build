@@ -1,18 +1,14 @@
-project(
-	'the-powder-toy',
-	'cpp',
-	version: 'the.cake.is.a.lie',
-	default_options: [
-		'cpp_std=c++17',
-		'cpp_rtti=false',
-	],
-	meson_version: '>=0.64.0',
-)
+project('the-powder-toy', 'cpp', version: 'the.cake.is.a.lie', meson_version: '>=0.64.0')
 
 if get_option('prepare')
 	# we're being run by prepare.py in a ghactions workflow only to determine the values of options; exit early
 	subdir_done()
 endif
+
+target_options = [
+	'cpp_std=c++20',
+	'cpp_rtti=false',
+]
 
 python = import('python')
 python3_prog = python.find_installation('python3')
@@ -473,6 +469,7 @@ if get_option('build_powder')
 			link_args: project_link_args,
 			dependencies: powder_deps,
 			link_depends: copied_dlls,
+			override_options: target_options,
 		)
 		subdir('android')
 	else
@@ -487,6 +484,7 @@ if get_option('build_powder')
 			export_dynamic: project_export_dynamic,
 			install: true,
 			link_depends: copied_dlls,
+			override_options: target_options,
 		)
 	endif
 endif
@@ -515,6 +513,7 @@ if get_option('build_render')
 		dependencies: render_deps,
 		export_dynamic: project_export_dynamic,
 		link_depends: copied_dlls,
+		override_options: target_options,
 	)
 endif
 
@@ -539,5 +538,6 @@ if get_option('build_font')
 		dependencies: font_deps,
 		export_dynamic: project_export_dynamic,
 		link_depends: copied_dlls,
+		override_options: target_options,
 	)
 endif
