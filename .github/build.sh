@@ -86,6 +86,9 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 		else
 			sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev libbz2-dev libjsoncpp-dev
 		fi
+		if [[ $PACKAGE_MODE == appimage ]]; then
+			sudo apt install libfuse2
+		fi
 		;;
 	darwin)
 		brew install pkg-config binutils
