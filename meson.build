@@ -358,6 +358,11 @@ if host_platform == 'windows'
 			endif
 		endforeach
 	endif
+	if tpt_libs_static == 'static' and host_libc == 'msvc'
+		target_options += [
+			'b_vscrt=static_from_buildtype',
+		]
+	endif
 	foreach def : defs_ccomp_win
 		if cpp_compiler.get_argument_syntax() == 'msvc'
 			args_ccomp_win += [ '/D' + def ]

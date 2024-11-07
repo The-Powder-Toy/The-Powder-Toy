@@ -231,14 +231,10 @@ if [[ $PACKAGE_MODE == backendvs ]]; then
 fi
 if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 	meson_configure+=$'\t'-Dstatic=prebuilt
-	if [[ $BSH_HOST_PLATFORM == windows ]]; then
-		if [[ $BSH_HOST_LIBC == msvc ]]; then
-			meson_configure+=$'\t'-Db_vscrt=static_from_buildtype
-		else
-			c_link_args+=\'-static\',
-			c_link_args+=\'-static-libgcc\',
-			c_link_args+=\'-static-libstdc++\',
-		fi
+	if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
+		c_link_args+=\'-static\',
+		c_link_args+=\'-static-libgcc\',
+		c_link_args+=\'-static-libstdc++\',
 	elif [[ $BSH_HOST_PLATFORM == linux ]]; then
 		c_link_args+=\'-static-libgcc\',
 		c_link_args+=\'-static-libstdc++\',
