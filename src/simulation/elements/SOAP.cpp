@@ -53,15 +53,20 @@ void Element::Element_SOAP()
 	ChangeType = &changeType;
 }
 
+static bool validIndex(int i)
+{
+	return i >= 0 && i < NPART;
+}
+
 void Element_SOAP_detach(Simulation * sim, int i)
 {
-	if ((sim->parts[i].ctype&2) == 2 && sim->parts[i].tmp >= 0 && sim->parts[i].tmp < NPART && sim->parts[sim->parts[i].tmp].type == PT_SOAP)
+	if ((sim->parts[i].ctype&2) == 2 && validIndex(sim->parts[i].tmp) && sim->parts[sim->parts[i].tmp].type == PT_SOAP)
 	{
 		if ((sim->parts[sim->parts[i].tmp].ctype&4) == 4)
 			sim->parts[sim->parts[i].tmp].ctype ^= 4;
 	}
 
-	if ((sim->parts[i].ctype&4) == 4 && sim->parts[i].tmp2 >= 0 && sim->parts[i].tmp2 < NPART && sim->parts[sim->parts[i].tmp2].type == PT_SOAP)
+	if ((sim->parts[i].ctype&4) == 4 && validIndex(sim->parts[i].tmp2) && sim->parts[sim->parts[i].tmp2].type == PT_SOAP)
 	{
 		if ((sim->parts[sim->parts[i].tmp2].ctype&2) == 2)
 			sim->parts[sim->parts[i].tmp2].ctype ^= 2;
@@ -104,7 +109,7 @@ static int update(UPDATE_FUNC_ARGS)
 	if (parts[i].ctype&1)
 	{
 		// reset invalid SOAP links
-		if (parts[i].tmp < 0 || parts[i].tmp >= NPART || parts[i].tmp2 < 0 || parts[i].tmp2 >= NPART)
+		if (!validIndex(parts[i].tmp) || !validIndex(parts[i].tmp2))
 		{
 			parts[i].tmp = parts[i].tmp2 = parts[i].ctype = 0;
 			return 0;
@@ -123,18 +128,26 @@ static int update(UPDATE_FUNC_ARGS)
 						if (parts[target].ctype&2)
 						{
 							target = parts[target].tmp;
+							if (!validIndex(target))
+							{
+								break;
+							}
 							Element_SOAP_detach(sim, target);
 						}
 						if (parts[target].ctype&4)
 						{
 							target = parts[target].tmp2;
+							if (!validIndex(target))
+							{
+								break;
+							}
 							Element_SOAP_detach(sim, target);
 						}
 					}
 				}
 				if ((parts[i].ctype&6) != 6)
 					parts[i].ctype = 0;
-				if ((parts[i].ctype&6) == 6 && (parts[parts[i].tmp].ctype&6) == 6 && parts[parts[i].tmp].tmp == i)
+				if (validIndex(parts[i].tmp) && (parts[i].ctype&6) == 6 && (parts[parts[i].tmp].ctype&6) == 6 && parts[parts[i].tmp].tmp == i)
 					Element_SOAP_detach(sim, i);
 			}
 			parts[i].vy = (parts[i].vy-0.1f)*0.5f;
@@ -187,7 +200,7 @@ static int update(UPDATE_FUNC_ARGS)
 									int buf = parts[i].tmp;
 
 									parts[i].tmp = ID(r);
-									if (parts[buf].type == PT_SOAP)
+									if (validIndex(buf) && parts[buf].type == PT_SOAP)
 										parts[buf].tmp2 = ID(r);
 									parts[ID(r)].tmp2 = i;
 									parts[ID(r)].tmp = buf;
@@ -195,9 +208,9 @@ static int update(UPDATE_FUNC_ARGS)
 								}
 								else if (parts[ID(r)].ctype == 7 && parts[i].tmp != ID(r) && parts[i].tmp2 != ID(r))
 								{
-									if (parts[parts[i].tmp].type == PT_SOAP)
+									if (validIndex(parts[i].tmp) && parts[parts[i].tmp].type == PT_SOAP)
 										parts[parts[i].tmp].tmp2 = parts[ID(r)].tmp2;
-									if (parts[parts[ID(r)].tmp2].type == PT_SOAP)
+									if (validIndex(parts[ID(r)].tmp2) && parts[parts[ID(r)].tmp2].type == PT_SOAP)
 										parts[parts[ID(r)].tmp2].tmp = parts[i].tmp;
 									parts[ID(r)].tmp2 = i;
 									parts[i].tmp = ID(r);
@@ -208,7 +221,7 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 			}
 		}
-		if(parts[i].ctype&2)
+		if(parts[i].ctype&2 && validIndex(parts[i].tmp))
 		{
 			float d, dx, dy;
 			dx = parts[i].x - parts[parts[i].tmp].x;
@@ -219,11 +232,11 @@ static int update(UPDATE_FUNC_ARGS)
 			parts[i].vx += dx*d;
 			parts[i].vy += dy*d;
 			if ((parts[parts[i].tmp].ctype&2) && (parts[parts[i].tmp].ctype&1)
-					&& (parts[parts[i].tmp].tmp >= 0 && parts[parts[i].tmp].tmp < NPART)
+					&& validIndex(parts[parts[i].tmp].tmp)
 					&& (parts[parts[parts[i].tmp].tmp].ctype&2) && (parts[parts[parts[i].tmp].tmp].ctype&1))
 			{
 				int ii = parts[parts[parts[i].tmp].tmp].tmp;
-				if (ii >= 0 && ii < NPART)
+				if (validIndex(ii))
 				{
 					dx = parts[ii].x - parts[parts[i].tmp].x;
 					dy = parts[ii].y - parts[parts[i].tmp].y;
