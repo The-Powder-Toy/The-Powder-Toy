@@ -208,6 +208,7 @@ meson_configure+=$'\t'-Dapp_vendor=$APP_VENDOR
 meson_configure+=$'\t'-Dstrip=false
 meson_configure+=$'\t'-Db_staticpic=false
 meson_configure+=$'\t'-Dmod_id=$MOD_ID
+meson_configure+=$'\t'-Dpackage_mode=$PACKAGE_MODE
 case $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_DEBUG_RELEASE in
 x86_64-linux-gnu-debug) ;&
 x86_64-windows-mingw-debug) ;&
@@ -429,6 +430,12 @@ if [[ $PACKAGE_MODE == appimage ]]; then
 	meson configure -Dcan_install=no -Dignore_updates=true -Dbuild_render=false -Dbuild_font=false
 	strip_target=$APP_EXE
 fi
+if [[ $PACKAGE_MODE == steam ]]; then
+	meson configure -Dshared_data_folder=false -Dignore_updates=true
+	if [[ $BSH_HOST_PLATFORM != darwin ]]; then
+		meson configure -Dcan_install=yes
+	fi
+fi
 meson_compile=meson$'\t'compile
 meson_compile+=$'\t'-v
 if [[ $BSH_BUILD_PLATFORM == windows ]] && [[ $PACKAGE_MODE != backendvs ]]; then
@@ -463,7 +470,7 @@ if [[ $BSH_HOST_PLATFORM == android ]]; then
 	ANDROID_KEYSTORE_PASS=bagelsbagels ninja android/$APP_EXE.apk
 	mv android/$APP_EXE.apk $APP_EXE.apk
 fi
-if [[ $PACKAGE_MODE == dmg ]]; then
+if [[ $BSH_HOST_PLATFORM == darwin ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == darwin-macos
 	appdir=$APP_NAME.app
 	mkdir $appdir

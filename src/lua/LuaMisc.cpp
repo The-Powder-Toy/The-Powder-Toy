@@ -294,6 +294,8 @@ void LuaMisc::Open(lua_State *L)
 			tpt_lua_pushByteString(L, vcsTag);
 			lua_setfield(L, -2, "vcstag");
 		}
+		lua_pushstring(L, PACKAGE_MODE);
+		lua_setfield(L, -2, "packagemode");
 		lua_setfield(L, -2, "version");
 	}
 	lua_setglobal(L, "tpt");

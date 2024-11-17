@@ -321,7 +321,7 @@ int Main(int argc, char *argv[])
 		else
 			perror("failed to chdir to requested ddir");
 	}
-	else
+	else if constexpr (SHARED_DATA_FOLDER)
 	{
 		auto ddir = Platform::DefaultDdir();
 		if (!Platform::FileExists("powder.pref"))

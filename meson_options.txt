@@ -25,6 +25,12 @@ option(
 	description: 'Disable (\'no\') or enable (\'yes\') setting up file and URL associations, or even offer to do it at startup (\'yes_check\')'
 )
 option(
+	'shared_data_folder',
+	type: 'boolean',
+	value: true,
+	description: 'Handle the shared data folder, e.g. automatically chdir over to it and offering migration to it'
+)
+option(
 	'http',
 	type: 'boolean',
 	value: true,
@@ -182,6 +188,12 @@ option(
 	type: 'string',
 	value: '',
 	description: 'tpt-libs vtag override, only used for tpt-libs development'
+)
+option(
+	'package_mode',
+	type: 'string',
+	value: 'default',
+	description: 'Package mode override, only used by official builds, see prepare.py'
 )
 option(
 	'android_keystore',

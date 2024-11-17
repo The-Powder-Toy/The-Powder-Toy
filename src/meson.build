@@ -90,6 +90,7 @@ conf_data.set('APPEXE', app_exe)
 conf_data.set('APPID', app_id)
 conf_data.set('APPDATA', get_option('app_data'))
 conf_data.set('APPVENDOR', get_option('app_vendor'))
+conf_data.set('PACKAGE_MODE', get_option('package_mode'))
 
 if host_platform == 'android'
 	android_permissions = [
