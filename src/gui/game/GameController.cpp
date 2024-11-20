@@ -147,10 +147,10 @@ GameController::~GameController()
 	{
 		delete *iter;
 	}
-	commandInterface.reset();
-	delete gameModel;
 	gameView->CloseActiveWindow();
 	delete gameView;
+	commandInterface.reset();
+	delete gameModel;
 }
 
 bool GameController::HistoryRestore()
