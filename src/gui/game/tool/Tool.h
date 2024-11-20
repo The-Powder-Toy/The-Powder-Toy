@@ -61,6 +61,8 @@ public:
 	virtual void Drag(Simulation *sim, const Brush &brush, ui::Point position1, ui::Point position2)
 	{
 	}
+
+	virtual void Select(int toolSelection)
+	{
+	}
 };
-
-

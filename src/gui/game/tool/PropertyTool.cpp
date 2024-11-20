@@ -2,6 +2,7 @@
 #include "prefs/GlobalPrefs.h"
 #include "gui/Style.h"
 #include "gui/game/Brush.h"
+#include "gui/game/GameModel.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Textbox.h"
@@ -279,4 +280,9 @@ void PropertyTool::DrawFill(Simulation *sim, Brush const &cBrush, ui::Point posi
 {
 	if (configuration)
 		sim->flood_prop(position.X, position.Y, configuration->changeProperty);
+}
+
+void PropertyTool::Select(int toolSelection)
+{
+	OpenWindow(gameModel.GetSimulation(), std::nullopt);
 }

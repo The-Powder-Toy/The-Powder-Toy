@@ -67,6 +67,7 @@ struct CustomTool
 	LuaSmartRef drawLine;
 	LuaSmartRef drawRect;
 	LuaSmartRef drawFill;
+	LuaSmartRef select;
 };
 
 class LuaScriptInterface : public CommandInterface

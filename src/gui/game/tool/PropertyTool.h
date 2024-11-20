@@ -18,15 +18,16 @@ private:
 	void SetProperty(Simulation *sim, ui::Point position);
 	void SetConfiguration(std::optional<Configuration> newConfiguration);
 
+	GameModel &gameModel;
 	std::optional<Configuration> configuration;
 
 	friend class PropertyWindow;
 
 public:
-	PropertyTool():
+	PropertyTool(GameModel &newGameModel):
 		Tool(0, "PROP", "Property Drawing Tool. Use to alter the properties of elements in the field.",
 			0xFEA900_rgb, "DEFAULT_UI_PROPERTY", NULL
-		)
+		), gameModel(newGameModel)
 	{}
 
 	void OpenWindow(Simulation *sim, std::optional<int> takePropertyFrom);
@@ -40,4 +41,6 @@ public:
 	{
 		return configuration;
 	}
+
+	void Select(int toolSelection) final override;
 };

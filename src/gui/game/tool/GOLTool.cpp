@@ -200,3 +200,8 @@ void GOLTool::OpenWindow(Simulation *sim, int toolSelection, int rule, RGB<uint8
 {
 	new GOLWindow(gameModel, toolSelection, rule, colour1, colour2);
 }
+
+void GOLTool::Select(int toolSelection)
+{
+	OpenWindow(gameModel.GetSimulation(), toolSelection);
+}

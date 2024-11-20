@@ -15,6 +15,7 @@ public:
 	void (*PerformDrawLine)(SimTool *tool, Simulation *sim, const Brush &brush, ui::Point position1, ui::Point position2, bool dragging);
 	void (*PerformDrawRect)(SimTool *tool, Simulation *sim, const Brush &brush, ui::Point position1, ui::Point position2);
 	void (*PerformDrawFill)(SimTool *tool, Simulation *sim, const Brush &brush, ui::Point position);
+	void (*PerformSelect  )(SimTool *tool, int toolSelection);
 
 
 #define TOOL_NUMBERS_DECLARE
@@ -30,4 +31,5 @@ public:
 	void DrawLine(Simulation *sim, const Brush &brush, ui::Point position1, ui::Point position2, bool dragging) override;
 	void DrawRect(Simulation *sim, const Brush &brush, ui::Point position1, ui::Point position2) override;
 	void DrawFill(Simulation * sim, Brush const &brush, ui::Point position) override;
+	void Select(int toolSelection) override;
 };

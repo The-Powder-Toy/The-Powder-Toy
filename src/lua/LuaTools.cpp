@@ -250,6 +250,24 @@ static void luaDrawFillWrapper(SimTool *tool, Simulation *sim, const Brush &brus
 	}
 }
 
+static void luaSelectWrapper(SimTool *tool, int toolSelection)
+{
+	auto *lsi = GetLSI();
+	auto L = lsi->L;
+	auto index = *lsi->gameModel->GetToolIndex(tool);
+	auto &customTools = lsi->customTools;
+	if (customTools[index].select)
+	{
+		lua_rawgeti(L, LUA_REGISTRYINDEX, customTools[index].select);
+		lua_pushinteger(L, toolSelection);
+		if (tpt_lua_pcall(L, 1, 0, 0, eventTraitNone))
+		{
+			lsi->Log(CommandInterface::LogError, "In select func: " + LuaGetError());
+			lua_pop(L, 1);
+		}
+	}
+}
+
 template <typename T>
 struct DependentFalse : std::false_type
 {
@@ -301,7 +319,8 @@ static int property(lua_State *L)
 	    handleCallback(&CustomTool::draw    , &SimTool::PerformDraw    , luaDrawWrapper    , "Draw"    ) ||
 	    handleCallback(&CustomTool::drawLine, &SimTool::PerformDrawLine, luaDrawLineWrapper, "DrawLine") ||
 	    handleCallback(&CustomTool::drawRect, &SimTool::PerformDrawRect, luaDrawRectWrapper, "DrawRect") ||
-	    handleCallback(&CustomTool::drawFill, &SimTool::PerformDrawFill, luaDrawFillWrapper, "DrawFill"))
+	    handleCallback(&CustomTool::drawFill, &SimTool::PerformDrawFill, luaDrawFillWrapper, "DrawFill") ||
+	    handleCallback(&CustomTool::select  , &SimTool::PerformSelect  , luaSelectWrapper  , "Select"  ))
 	{
 		return 0;
 	}

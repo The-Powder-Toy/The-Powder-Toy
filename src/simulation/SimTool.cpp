@@ -104,6 +104,7 @@ SimTool::SimTool()
 	PerformDrawLine = defaultPerformDrawLine;
 	PerformDrawRect = defaultPerformDrawRect;
 	PerformDrawFill = nullptr;
+	PerformSelect = nullptr;
 }
 
 void SimTool::Click(Simulation * sim, const Brush &brush, ui::Point position)
@@ -151,5 +152,13 @@ void SimTool::DrawFill(Simulation * sim, const Brush &brush, ui::Point position)
 	if (PerformDrawFill)
 	{
 		PerformDrawFill(this, sim, brush, position);
+	}
+}
+
+void SimTool::Select(int toolSelection)
+{
+	if (PerformSelect)
+	{
+		PerformSelect(this, toolSelection);
 	}
 }
