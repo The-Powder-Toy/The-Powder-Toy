@@ -91,11 +91,14 @@ static int luaPerformWrapper(SimTool *tool, Simulation *sim, Particle *cpart, in
 			lsi->Log(CommandInterface::LogError, "In perform func: " + LuaGetError());
 			lua_pop(L, 1);
 		}
-		if (lua_isboolean(L, -1))
+		else
 		{
-			ok = lua_toboolean(L, -1);
+			if (lua_isboolean(L, -1))
+			{
+				ok = lua_toboolean(L, -1);
+			}
+			lua_pop(L, 1);
 		}
-		lua_pop(L, 1);
 	}
 	return ok;
 }
