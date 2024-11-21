@@ -126,7 +126,7 @@ void Element_EMP_Trigger(Simulation *sim, int triggerCount)
 						sim->part_change_type(r, rx, ry, PT_NTCT);
 				}
 			}
-			for (int nx =-2; nx <= 3; nx++)
+			for (int nx =-2; nx <= 2; nx++)
 				for (int ny =-2; ny <= 2; ny++)
 					if (rx+nx>=0 && ry+ny>=0 && rx+nx<XRES && ry+ny<YRES && (rx || ry))
 					{
