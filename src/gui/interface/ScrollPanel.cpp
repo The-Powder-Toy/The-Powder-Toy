@@ -156,14 +156,13 @@ void ScrollPanel::XOnMouseMoved(int x, int y)
 			}
 		}
 
-		if (x > (Size.X-scrollBarWidth) && x < (Size.X-scrollBarWidth)+scrollBarWidth)
+		if (x > (Size.X-scrollBarWidth) && x < Size.X)
 		{
-			if (y > scrollPos && y < scrollPos+scrollHeight)
-				isMouseInsideScrollbar = true;
+			isMouseInsideScrollbar = y > scrollPos && y < scrollPos+scrollHeight;
 			isMouseInsideScrollbarArea = true;
 		}
 		else
-			isMouseInsideScrollbar = false;
+			isMouseInsideScrollbar = isMouseInsideScrollbarArea = false;
 
 		if (oldViewportPositionY != ViewportPosition.Y)
 		{
