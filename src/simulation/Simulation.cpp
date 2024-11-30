@@ -2355,7 +2355,7 @@ void Simulation::UpdateParticles(int start, int end)
 				//heat transfer code
 				auto h_count = 0;
 				bool cond;
-				cond = t && (t!=PT_HSWC||parts[i].life==10) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250);
+				cond = t && (t!=PT_HSWC||parts[i].life==10) && (t!=PT_HPIP||parts[i].ctype!=0) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250);
 
 				if (cond)
 				{
@@ -2381,7 +2381,8 @@ void Simulation::UpdateParticles(int start, int end)
 						        && (t!=PT_ELEC||rt!=PT_DEUT)
 						        && (t!=PT_DEUT||rt!=PT_ELEC)
 						        && (t!=PT_HSWC || rt!=PT_FILT || parts[i].tmp != 1)
-						        && (t!=PT_FILT || rt!=PT_HSWC || parts[ID(r)].tmp != 1))
+						        && (t!=PT_FILT || rt!=PT_HSWC || parts[ID(r)].tmp != 1)
+								&& (rt!=PT_HPIP||parts[ID(r)].ctype!=0))
 						{
 							surround_hconduct[j] = ID(r);
 							c_heat += parts[ID(r)].temp;
