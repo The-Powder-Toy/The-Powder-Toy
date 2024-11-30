@@ -196,7 +196,7 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 						auto r = pmap[y+ry][x+rx];
 						if (!r)
 							continue;
-						if (TYP(r) != PT_PIPE && TYP(r) != PT_PPIP)
+						if (TYP(r) != PT_PIPE && TYP(r) != PT_PPIP && TYP(r) != PT_HPIP)
 							continue;
 						unsigned int next = nextColor(parts[i].tmp);
 						unsigned int prev = prevColor(parts[i].tmp);
@@ -518,7 +518,7 @@ static void pushParticle(Simulation * sim, int i, int count, int original)
 			auto r = sim->pmap[y+ry][x+rx];
 			if (!r)
 				continue;
-			else if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP) && (sim->parts[ID(r)].tmp&PFLAG_COLORS) != notctype && !TYP(sim->parts[ID(r)].ctype))
+			else if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP || TYP(r) == PT_HPIP) && (sim->parts[ID(r)].tmp&PFLAG_COLORS) != notctype && !TYP(sim->parts[ID(r)].ctype))
 			{
 				transfer_pipe_to_pipe(sim->parts+i, sim->parts+(ID(r)), false);
 				if (ID(r) > original)
@@ -547,7 +547,7 @@ static void pushParticle(Simulation * sim, int i, int count, int original)
 	{
 		int coords = 7 - ((sim->parts[i].tmp>>10)&7);
 		auto r = sim->pmap[y+ Element_PIPE_offsets[coords].Y][x+ Element_PIPE_offsets[coords].X];
-		if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP) && (sim->parts[ID(r)].tmp&PFLAG_COLORS) != notctype && !TYP(sim->parts[ID(r)].ctype))
+		if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP || TYP(r) == PT_HPIP) && (sim->parts[ID(r)].tmp&PFLAG_COLORS) != notctype && !TYP(sim->parts[ID(r)].ctype))
 		{
 			transfer_pipe_to_pipe(sim->parts+i, sim->parts+(ID(r)), false);
 			if (ID(r) > original)
