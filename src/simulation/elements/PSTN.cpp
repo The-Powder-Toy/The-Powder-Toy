@@ -6,7 +6,7 @@ static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);
 static StackData CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block);
-static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth = 0);
+static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, int minextend, int minretract, bool sticky, int callDepth = 0);
 
 void Element::Element_PSTN()
 {
@@ -75,14 +75,18 @@ constexpr int PISTON_EXTEND     = 0x02;
 constexpr int MAX_FRAME         = 0x0F;
 constexpr int DEFAULT_LIMIT     = 0x1F;
 constexpr int DEFAULT_ARM_LIMIT = 0xFF;
+constexpr int DEFAULT_MIN_EXTEND = 0x00;
+constexpr int DEFAULT_MIN_RETRACT = 0x00;
 
 static int update(UPDATE_FUNC_ARGS)
 {
- 	if(parts[i].life)
- 		return 0;
- 	int maxSize = parts[i].tmp ? parts[i].tmp : DEFAULT_LIMIT;
- 	int armLimit = parts[i].tmp2 ? parts[i].tmp2 : DEFAULT_ARM_LIMIT;
- 	int state = 0;
+	if(parts[i].life)
+		return 0;
+	int maxSize = parts[i].tmp ? parts[i].tmp : DEFAULT_LIMIT;
+	int armLimit = parts[i].tmp2 ? parts[i].tmp2 : DEFAULT_ARM_LIMIT;
+	int minextend = parts[i].tmp3 ? parts[i].tmp3 : DEFAULT_MIN_EXTEND;
+	int minretract = parts[i].tmp4 ? parts[i].tmp4 : DEFAULT_MIN_RETRACT;
+	int state = 0;
 	int directionX = 0, directionY = 0;
 	if (state == PISTON_INACTIVE)
 	{
@@ -168,8 +172,8 @@ static int update(UPDATE_FUNC_ARGS)
 							if(state == PISTON_EXTEND) {
 								if(armCount+pistonCount > armLimit)
 									pistonCount = armLimit-armCount;
-								if(pistonCount > 0) {
-									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, true);
+								if(pistonCount >=minextend) {
+									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, minextend, minretract, true);
 									if(newSpace) {
 										//Create new piston section
 										for(int j = 0; j < newSpace; j++) {
@@ -189,8 +193,8 @@ static int update(UPDATE_FUNC_ARGS)
 							} else if(state == PISTON_RETRACT) {
 								if(pistonCount > armCount)
 									pistonCount = armCount;
-								if(armCount && pistonCount > 0) {
-									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true, parts[i].ctype, true);
+								if(armCount && pistonCount >= minretract) {
+									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true, parts[i].ctype, minextend, minretract, true);
 									movedPiston = true;
 								}
 							}
@@ -236,7 +240,7 @@ static StackData CanMoveStack(Simulation * sim, int stackX, int stackY, int dire
 	return StackData(currentPos - spaces, spaces);
 }
 
-static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth)
+static int MoveStack(Simulation* sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, int minextend, int minretract, bool sticky, int callDepth)
 {
 	int posX, posY, r;
 	r = sim->pmap[stackY][stackX];
@@ -271,24 +275,31 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 				break;
 			}
 		}
+		if (!retract) {
+			if (amount < minextend)
+				amount = 0;
+		} else {
+			if (amount < minretract)
+				amount = 0;
+		}
 
 		//If the piston is pushing frame, iterate out from the centre to the edge and push everything resting on frame
 		for(int c = 1; c < maxRight; c++) {
 			posY = stackY + (c*newY);
 			posX = stackX + (c*newX);
-			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[posY][posX])].tmp, 1);
+			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, minextend, minretract, !sim->parts[ID(sim->pmap[posY][posX])].tmp, 1);
 		}
 		for(int c = 1; c < maxLeft; c++) {
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
-			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[posY][posX])].tmp, 1);
+			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, minextend, minretract, !sim->parts[ID(sim->pmap[posY][posX])].tmp, 1);
 		}
 
 		//Remove arm section if retracting with FRME
 		if (retract)
 			for(int j = 1; j <= amount; j++)
 				sim->kill_part(ID(sim->pmap[stackY+(directionY*-j)][stackX+(directionX*-j)]));
-		return MoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[stackY][stackX])].tmp, 1);
+		return MoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, minextend, minretract, !sim->parts[ID(sim->pmap[stackY][stackX])].tmp, 1);
 	}
 	if(retract){
 		bool foundParts = false;
@@ -323,27 +334,30 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 			return amount;
 		}
 	} else {
-		StackData stackData = CanMoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block);
+		StackData stackData = CanMoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, minextend, minretract);
 		int currentPos = stackData.pushed + stackData.spaces;
-		if(currentPos){
-			//Move particles
-			int possibleMovement = 0;
-			for(int j = currentPos-1; j >= 0; j--) {
-				int jP = tempParts[j];
-				if(jP < 0) {
-					possibleMovement++;
-					continue;
+		if (stackData.spaces>=minextend)
+		{
+			if(currentPos>0){
+				//Move particles
+				int possibleMovement = 0;
+				for(int j = currentPos-1; j >= 0; j--) {
+					int jP = tempParts[j];
+					if(jP < 0) {
+						possibleMovement++; //increased count when no particle at j spot in stack
+						continue;
+					}
+					if(!possibleMovement)
+						continue;
+					int srcX = (int)(sim->parts[jP].x + 0.5f), srcY = (int)(sim->parts[jP].y + 0.5f);
+					int destX = srcX + directionX * possibleMovement, destY = srcY + directionY * possibleMovement;
+					sim->pmap[srcY][srcX] = 0;
+					sim->parts[jP].x = float(destX);
+					sim->parts[jP].y = float(destY);
+					sim->pmap[destY][destX] = PMAP(jP, sim->parts[jP].type);
 				}
-				if(!possibleMovement)
-					continue;
-				int srcX = (int)(sim->parts[jP].x + 0.5f), srcY = (int)(sim->parts[jP].y + 0.5f);
-				int destX = srcX+directionX*possibleMovement, destY = srcY+directionY*possibleMovement;
-				sim->pmap[srcY][srcX] = 0;
-				sim->parts[jP].x = float(destX);
-				sim->parts[jP].y = float(destY);
-				sim->pmap[destY][destX] = PMAP(jP, sim->parts[jP].type);
+				return possibleMovement;
 			}
-			return possibleMovement;
 		}
 	}
 	return 0;
