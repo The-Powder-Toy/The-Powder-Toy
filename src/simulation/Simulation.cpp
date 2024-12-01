@@ -2372,31 +2372,34 @@ void Simulation::UpdateParticles(int start, int end)
 					{
 						surround_hconduct[j] = i;
 						auto r = surround[j];
+
 						if (!r)
 							continue;
+
 						auto rt = TYP(r);
-						if (rt && elements[rt].HeatConduct && (rt!=PT_HSWC||parts[ID(r)].life==10)
-						        && (t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
-						        && (rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG))
-						        && (t!=PT_ELEC||rt!=PT_DEUT)
-						        && (t!=PT_DEUT||rt!=PT_ELEC)
-						        && (t!=PT_HSWC || rt!=PT_FILT || parts[i].tmp != 1)
-						        && (t!=PT_FILT || rt!=PT_HSWC || parts[ID(r)].tmp != 1))
+
+						if (!rt || !elements[rt].HeatConduct || (rt == PT_HSWC && parts[ID(r)].life != 10)
+						        || (t == PT_FILT && (rt == PT_BRAY || rt == PT_BIZR || rt == PT_BIZRG))
+						        || (rt == PT_FILT && (t == PT_BRAY || t == PT_PHOT || t == PT_BIZR || t == PT_BIZRG))
+						        || (t == PT_ELEC && rt == PT_DEUT)
+						        || (t == PT_DEUT && rt == PT_ELEC)
+						        || (t == PT_HSWC && rt == PT_FILT && parts[i].tmp == 1)
+						        || (t == PT_FILT && rt == PT_HSWC && parts[ID(r)].tmp == 1))
+							continue;
+
+						surround_hconduct[j] = ID(r);
+						c_heat += parts[ID(r)].temp;
+
+						if (rt == PT_HPIP && parts[ID(r)].ctype != 0)
 						{
-							surround_hconduct[j] = ID(r);
-							c_heat += parts[ID(r)].temp;
+							c_heat += parts[ID(r)].temp; // double count the particle
+						}
 
-							if (rt == PT_HPIP && parts[ID(r)].ctype != 0)
-							{
-								c_heat += parts[ID(r)].temp; // double count the particle
-							}
+						h_count++;
 
-							h_count++;
-
-							if (rt == PT_HPIP && parts[ID(r)].ctype != 0)
-							{
-								h_count++; // double count the particle
-							}
+						if (rt == PT_HPIP && parts[ID(r)].ctype != 0)
+						{
+							h_count++; // double count the particle
 						}
 					}
 					float pt = R_TEMP;
