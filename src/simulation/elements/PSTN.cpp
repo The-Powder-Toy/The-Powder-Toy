@@ -334,7 +334,7 @@ static int MoveStack(Simulation* sim, int stackX, int stackY, int directionX, in
 			return amount;
 		}
 	} else {
-		StackData stackData = CanMoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, minextend, minretract);
+		StackData stackData = CanMoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block);
 		int currentPos = stackData.pushed + stackData.spaces;
 		if (stackData.spaces>=minextend)
 		{
