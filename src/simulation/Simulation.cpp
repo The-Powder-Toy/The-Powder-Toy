@@ -2355,7 +2355,7 @@ void Simulation::UpdateParticles(int start, int end)
 				//heat transfer code
 				auto h_count = 0;
 				bool cond;
-				cond = t && (t!=PT_HSWC||parts[i].life==10) && (t!=PT_HPIP||parts[i].ctype!=0) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250);
+				cond = t && (t!=PT_HSWC||parts[i].life==10) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250);
 
 				if (cond)
 				{
@@ -2381,16 +2381,31 @@ void Simulation::UpdateParticles(int start, int end)
 						        && (t!=PT_ELEC||rt!=PT_DEUT)
 						        && (t!=PT_DEUT||rt!=PT_ELEC)
 						        && (t!=PT_HSWC || rt!=PT_FILT || parts[i].tmp != 1)
-						        && (t!=PT_FILT || rt!=PT_HSWC || parts[ID(r)].tmp != 1)
-								&& (rt!=PT_HPIP||parts[ID(r)].ctype!=0))
+						        && (t!=PT_FILT || rt!=PT_HSWC || parts[ID(r)].tmp != 1))
 						{
 							surround_hconduct[j] = ID(r);
 							c_heat += parts[ID(r)].temp;
+
+							if (rt == PT_HPIP && parts[ID(r)].ctype != 0)
+							{
+								c_heat += parts[ID(r)].temp; // double count the particle
+							}
+
 							h_count++;
+
+							if (rt == PT_HPIP && parts[ID(r)].ctype != 0)
+							{
+								h_count++; // double count the particle
+							}
 						}
 					}
 					float pt = R_TEMP;
-					pt = (c_heat+parts[i].temp)/(h_count+1);
+
+					if (t == PT_HPIP && parts[i].ctype != 0)
+						pt = (c_heat+parts[i].temp*2.0f)/(h_count+2); // double count the current particle
+					else
+						pt = (c_heat+parts[i].temp)/(h_count+1);
+
 					pt = parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
 					for (auto j=0; j<8; j++)
 					{
