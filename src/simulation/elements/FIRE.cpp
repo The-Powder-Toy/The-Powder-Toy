@@ -68,7 +68,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 				parts[i].life = 0;
 			}
 			else if ((parts[i].tmp&0x3) == 3){
-				sim->part_change_type(i,x,y,PT_DSTW);
+				sim->part_change_type(i,x,y,PT_WTRV);
 				parts[i].life = 0;
 				parts[i].ctype = PT_FIRE;
 			}
@@ -78,7 +78,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 		if (parts[i].life <=1)
 		{
 			if ((parts[i].tmp&0x3) == 3){
-				sim->part_change_type(i,x,y,PT_DSTW);
+				sim->part_change_type(i,x,y,PT_WTRV);
 				parts[i].life = 0;
 				parts[i].ctype = PT_FIRE;
 			}
