@@ -28,10 +28,10 @@ void Element::Element_PPIP()
 	Weight = 100;
 
 	DefaultProperties.temp = 273.15f;
-	HeatConduct = 0;
+	HeatConduct = 251;
 	Description = "Powered version of PIPE, use PSCN/NSCN to Activate/Deactivate.";
 
-	Properties = TYPE_SOLID|PROP_LIFE_DEC;
+	Properties = TYPE_SOLID;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;

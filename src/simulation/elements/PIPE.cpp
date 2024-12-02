@@ -34,10 +34,10 @@ void Element::Element_PIPE()
 	Weight = 100;
 
 	DefaultProperties.temp = 273.15f;
-	HeatConduct = 0;
+	HeatConduct = 251; // TODO: conditionally disable heat conduction in the 13 places in the codebase that check for HSWC's heat conduction
 	Description = "PIPE, moves particles around. Once the BRCK generates, erase some for the exit. Then the PIPE generates and is usable.";
 
-	Properties = TYPE_SOLID|PROP_LIFE_DEC;
+	Properties = TYPE_SOLID;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
@@ -120,6 +120,10 @@ static unsigned int nextColor(unsigned int flags)
 
 int Element_PIPE_update(UPDATE_FUNC_ARGS)
 {
+	if (parts[i].life > 0 && parts[i].life <= 60) {
+		parts[i].life--;
+	}
+
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
 	if (parts[i].ctype && !elements[TYP(parts[i].ctype)].Enabled)
@@ -196,7 +200,7 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 						auto r = pmap[y+ry][x+rx];
 						if (!r)
 							continue;
-						if (TYP(r) != PT_PIPE && TYP(r) != PT_PPIP && TYP(r) != PT_HPIP)
+						if (TYP(r) != PT_PIPE && TYP(r) != PT_PPIP)
 							continue;
 						unsigned int next = nextColor(parts[i].tmp);
 						unsigned int prev = prevColor(parts[i].tmp);
@@ -470,7 +474,12 @@ void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Partic
 static void transfer_part_to_pipe(Particle *part, Particle *pipe)
 {
 	pipe->ctype = part->type;
-	pipe->temp = part->temp;
+
+	if (pipe->life != 100)
+		pipe->temp = part->temp;
+	else
+		pipe->temp = (part->temp + pipe->temp) / 2.0f;
+
 	pipe->tmp2 = part->life;
 	pipe->tmp3 = part->tmp;
 	pipe->tmp4 = part->ctype;
@@ -489,7 +498,12 @@ static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR)
 		dest->ctype = src->ctype;
 		src->ctype = 0;
 	}
-	dest->temp = src->temp;
+
+	if (dest->life != 100)
+		dest->temp = src->temp;
+	else
+		dest->temp = (src->temp + dest->temp) / 2.0f;
+
 	dest->tmp2 = src->tmp2;
 	dest->tmp3 = src->tmp3;
 	dest->tmp4 = src->tmp4;
@@ -518,7 +532,7 @@ static void pushParticle(Simulation * sim, int i, int count, int original)
 			auto r = sim->pmap[y+ry][x+rx];
 			if (!r)
 				continue;
-			else if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP || TYP(r) == PT_HPIP) && (sim->parts[ID(r)].tmp&PFLAG_COLORS) != notctype && !TYP(sim->parts[ID(r)].ctype))
+			else if ((TYP(r) == PT_PIPE || TYP(r) == PT_PPIP) && (sim->parts[ID(r)].tmp&PFLAG_COLORS) != notctype && !TYP(sim->parts[ID(r)].ctype))
 			{
 				transfer_pipe_to_pipe(sim->parts+i, sim->parts+(ID(r)), false);
 				if (ID(r) > original)
@@ -547,7 +561,7 @@ static void pushParticle(Simulation * sim, int i, int count, int original)
 	{
 		int coords = 7 - ((sim->parts[i].tmp>>10)&7);
 		auto r = sim->pmap[y+ Element_PIPE_offsets[coords].Y][x+ Element_PIPE_offsets[coords].X];
-		if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP || TYP(r) == PT_HPIP) && (sim->parts[ID(r)].tmp&PFLAG_COLORS) != notctype && !TYP(sim->parts[ID(r)].ctype))
+		if ((TYP(r) == PT_PIPE || TYP(r) == PT_PPIP) && (sim->parts[ID(r)].tmp&PFLAG_COLORS) != notctype && !TYP(sim->parts[ID(r)].ctype))
 		{
 			transfer_pipe_to_pipe(sim->parts+i, sim->parts+(ID(r)), false);
 			if (ID(r) > original)
