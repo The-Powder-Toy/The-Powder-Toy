@@ -3431,7 +3431,7 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 				}
 
 				unsigned int elem_properties = elements[t].Properties;
-				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC) && !(inBounds && bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
+				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC) && !((t == PT_PIPE || t == PT_PPIP) && parts[i].life > 60) && !(inBounds && bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
 				{
 					// automatically decrease life
 					parts[i].life--;
