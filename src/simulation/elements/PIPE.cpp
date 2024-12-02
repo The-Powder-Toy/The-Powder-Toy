@@ -34,10 +34,10 @@ void Element::Element_PIPE()
 	Weight = 100;
 
 	DefaultProperties.temp = 273.15f;
-	HeatConduct = 251; // TODO: conditionally disable heat conduction in the 13 places in the codebase that check for HSWC's heat conduction
+	HeatConduct = 251;
 	Description = "PIPE, moves particles around. Once the BRCK generates, erase some for the exit. Then the PIPE generates and is usable.";
 
-	Properties = TYPE_SOLID;
+	Properties = TYPE_SOLID | PROP_LIFE_DEC;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
@@ -120,10 +120,6 @@ static unsigned int nextColor(unsigned int flags)
 
 int Element_PIPE_update(UPDATE_FUNC_ARGS)
 {
-	if (parts[i].life > 0 && parts[i].life <= 60) {
-		parts[i].life--;
-	}
-
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
 	if (parts[i].ctype && !elements[TYP(parts[i].ctype)].Enabled)
