@@ -57,6 +57,8 @@ public:
 	void SetBlurryScaling(bool newBlurryScaling);
 	bool GetFastQuit();
 	void SetFastQuit(bool fastquit);
+	bool GetGlobalQuit();
+	void SetGlobalQuit(bool newGlobalQuit);
 	int GetDecoSpace();
 	void SetDecoSpace(int decoSpace);
 	bool GetMouseClickRequired();

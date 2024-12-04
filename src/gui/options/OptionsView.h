@@ -33,6 +33,7 @@ class OptionsView: public ui::Window
 	ui::Checkbox *forceIntegerScaling{};
 	ui::Checkbox *blurryScaling{};
 	ui::Checkbox *fastquit{};
+	ui::Checkbox *globalQuit{};
 	ui::DropDown *decoSpace{};
 	ui::Checkbox *showAvatars{};
 	ui::Checkbox *momentumScroll{};
