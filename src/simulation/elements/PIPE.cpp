@@ -55,21 +55,6 @@ void Element::Element_PIPE()
 	Graphics = &Element_PIPE_graphics;
 }
 
-// 0x000000FF element
-// 0x00000100 is single pixel pipe
-// 0x00000200 will transfer like a single pixel pipe when in forward mode
-// 0x00001C00 forward single pixel pipe direction
-// 0x00002000 will transfer like a single pixel pipe when in reverse mode
-// 0x0001C000 reverse single pixel pipe direction
-// 0x000E0000 PIPE color data stored here
-
-constexpr int PFLAG_NORMALSPEED            = 0x00010000;
-constexpr int PFLAG_INITIALIZING           = 0x00020000; // colors haven't been set yet
-constexpr int PFLAG_COLOR_RED              = 0x00040000;
-constexpr int PFLAG_COLOR_GREEN            = 0x00080000;
-constexpr int PFLAG_COLOR_BLUE             = 0x000C0000;
-constexpr int PFLAG_COLORS                 = 0x000C0000;
-
 constexpr int PPIP_TMPFLAG_REVERSED        = 0x01000000;
 constexpr int PPIP_TMPFLAG_PAUSED          = 0x02000000;
 constexpr int PPIP_TMPFLAG_TRIGGER_REVERSE = 0x04000000;
@@ -471,7 +456,7 @@ static void transfer_part_to_pipe(Particle *part, Particle *pipe)
 {
 	pipe->ctype = part->type;
 
-	if (pipe->life != 100)
+	if ((pipe->tmp & PFLAG_CAN_CONDUCT) == 0)
 		pipe->temp = part->temp;
 	else
 		pipe->temp = (part->temp + pipe->temp) / 2.0f;
@@ -495,7 +480,7 @@ static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR)
 		src->ctype = 0;
 	}
 
-	if (dest->life != 100)
+	if ((dest->tmp & PFLAG_CAN_CONDUCT) == 0)
 		dest->temp = src->temp;
 	else
 		dest->temp = (src->temp + dest->temp) / 2.0f;
