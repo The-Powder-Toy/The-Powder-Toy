@@ -1176,7 +1176,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			if (rt == PT_COAL || rt == PT_BCOL)
 				parts[ID(r)].temp = parts[i].temp;
 
-			if (rt < PT_NUM && elements[rt].HeatConduct && (rt!=PT_HSWC||parts[ID(r)].life==10) && rt!=PT_FILT)
+			if (rt < PT_NUM && !IsHeatInsulator(parts[ID(r)]) && rt != PT_FILT)
 				parts[i].temp = parts[ID(r)].temp = restrict_flt((parts[ID(r)].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
 		}
 		else if ((parts[i].type==PT_NEUT || parts[i].type==PT_ELEC) && (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN || rt==PT_PBCN))
@@ -2210,6 +2210,11 @@ Simulation::PlanMoveResult Simulation::PlanMove(Sim &sim, int i, int x, int y)
 template
 Simulation::PlanMoveResult Simulation::PlanMove<false, const Simulation>(const Simulation &sim, int i, int x, int y);
 
+bool Simulation::IsHeatInsulator(Particle p) const
+{
+	return SimulationData::CRef().elements[p.type].HeatConduct == 0 || (p.type == PT_HSWC && p.life != 10) || ((p.type == PT_PIPE || p.type == PT_PPIP) && (p.tmp & PFLAG_CAN_CONDUCT) == 0);
+}
+
 void Simulation::UpdateParticles(int start, int end)
 {
 	//the main particle loop function, goes over all particles.
@@ -2374,11 +2379,11 @@ void Simulation::UpdateParticles(int start, int end)
 				bool cond;
 				if constexpr (LATENTHEAT)
 				{
-					cond = t && (t!=PT_HSWC||parts[i].life==10) && elements[t].HeatConduct*gel_scale > 0;
+					cond = t && !IsHeatInsulator(parts[i]) && elements[t].HeatConduct*gel_scale > 0;
 				}
 				else
 				{
-					cond = t && (t!=PT_HSWC||parts[i].life==10) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250);
+					cond = t && !IsHeatInsulator(parts[i]) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250);
 				}
 				if (cond)
 				{
@@ -2410,32 +2415,46 @@ void Simulation::UpdateParticles(int start, int end)
 					{
 						surround_hconduct[j] = i;
 						auto r = surround[j];
+
 						if (!r)
 							continue;
-						auto rt = TYP(r);
-						if (rt && elements[rt].HeatConduct && (rt!=PT_HSWC||parts[ID(r)].life==10)
-						        && (t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
-						        && (rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG))
-						        && (t!=PT_ELEC||rt!=PT_DEUT)
-						        && (t!=PT_DEUT||rt!=PT_ELEC)
-						        && (t!=PT_HSWC || rt!=PT_FILT || parts[i].tmp != 1)
-						        && (t!=PT_FILT || rt!=PT_HSWC || parts[ID(r)].tmp != 1))
-						{
-							surround_hconduct[j] = ID(r);
-							if constexpr (LATENTHEAT)
-							{
-								if (rt==PT_GEL)
-									gel_scale = parts[ID(r)].tmp*2.55f;
-								else gel_scale = 1.0f;
 
-								c_heat += parts[ID(r)].temp*96.645/elements[rt].HeatConduct*gel_scale*std::fabs(elements[rt].Weight);
-								c_Cm += 96.645/elements[rt].HeatConduct*gel_scale*std::fabs(elements[rt].Weight);
-							}
-							else
+						auto rt = TYP(r);
+
+						if (!rt || IsHeatInsulator(parts[ID(r)])
+						        || (t == PT_FILT && (rt == PT_BRAY || rt == PT_BIZR || rt == PT_BIZRG))
+						        || (rt == PT_FILT && (t == PT_BRAY || t == PT_PHOT || t == PT_BIZR || t == PT_BIZRG))
+						        || (t == PT_ELEC && rt == PT_DEUT)
+						        || (t == PT_DEUT && rt == PT_ELEC)
+						        || (t == PT_HSWC && rt == PT_FILT && parts[i].tmp == 1)
+						        || (t == PT_FILT && rt == PT_HSWC && parts[ID(r)].tmp == 1))
+							continue;
+
+						surround_hconduct[j] = ID(r);
+						if constexpr (LATENTHEAT)
+						{
+							if (rt==PT_GEL)
+								gel_scale = parts[ID(r)].tmp*2.55f;
+							else gel_scale = 1.0f;
+
+							c_heat += parts[ID(r)].temp*96.645/elements[rt].HeatConduct*gel_scale*std::fabs(elements[rt].Weight);
+							c_Cm += 96.645/elements[rt].HeatConduct*gel_scale*std::fabs(elements[rt].Weight);
+						}
+						else
+						{
+							c_heat += parts[ID(r)].temp;
+
+							if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
 							{
-								c_heat += parts[ID(r)].temp;
+								c_heat += parts[ID(r)].temp; // double count the particle
 							}
-							h_count++;
+						}
+
+						h_count++;
+
+						if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
+						{
+							h_count++; // double count the particle
 						}
 					}
 					float pt = R_TEMP;
@@ -2456,7 +2475,11 @@ void Simulation::UpdateParticles(int start, int end)
 					}
 					else
 					{
-						pt = (c_heat+parts[i].temp)/(h_count+1);
+						if ((t == PT_PIPE || t == PT_PPIP) && parts[i].ctype != 0)
+							pt = (c_heat+parts[i].temp*2.0f)/(h_count+2); // double count the current particle
+						else
+							pt = (c_heat+parts[i].temp)/(h_count+1);
+
 						pt = parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
 						for (auto j=0; j<8; j++)
 						{

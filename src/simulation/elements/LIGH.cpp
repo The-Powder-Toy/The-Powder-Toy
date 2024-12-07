@@ -154,7 +154,7 @@ static int update(UPDATE_FUNC_ARGS)
 				if ((elements[TYP(r)].Properties&PROP_CONDUCTS) && parts[ID(r)].life==0)
 					sim->create_part(ID(r),x+rx,y+ry,PT_SPRK);
 				sim->pv[y/CELL][x/CELL] += powderful/400;
-				if (elements[TYP(r)].HeatConduct) parts[ID(r)].temp = restrict_flt(parts[ID(r)].temp+powderful/1.3, MIN_TEMP, MAX_TEMP);
+				if (!sim->IsHeatInsulator(parts[ID(r)])) parts[ID(r)].temp = restrict_flt(parts[ID(r)].temp+powderful/1.3, MIN_TEMP, MAX_TEMP);
 			}
 		}
 	}
