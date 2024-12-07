@@ -193,7 +193,6 @@ GameModel::~GameModel()
 		prefs.Set("Decoration.Alpha", (int)colour.Alpha);
 	}
 
-	view->PauseRendererThread();
 	delete sim;
 	delete ren;
 	//if(activeTools)

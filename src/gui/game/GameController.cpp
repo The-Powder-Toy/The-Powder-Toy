@@ -147,6 +147,7 @@ GameController::~GameController()
 	{
 		delete *iter;
 	}
+	gameView->PauseRendererThread();
 	gameView->CloseActiveWindow();
 	delete gameView;
 	commandInterface.reset();
