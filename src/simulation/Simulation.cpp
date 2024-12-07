@@ -2212,7 +2212,7 @@ Simulation::PlanMoveResult Simulation::PlanMove<false, const Simulation>(const S
 
 bool Simulation::IsHeatInsulator(Particle p) const
 {
-	return SimulationData::CRef().elements[p.type].HeatConduct == 0 || (p.type == PT_HSWC && p.life != 10) || ((p.type == PT_PIPE || p.type == PT_PPIP) && p.life != 100);
+	return SimulationData::CRef().elements[p.type].HeatConduct == 0 || (p.type == PT_HSWC && p.life != 10) || ((p.type == PT_PIPE || p.type == PT_PPIP) && p.tmp & PFLAG_CAN_CONDUCT);
 }
 
 void Simulation::UpdateParticles(int start, int end)
@@ -3431,7 +3431,7 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 				}
 
 				unsigned int elem_properties = elements[t].Properties;
-				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC) && !((t == PT_PIPE || t == PT_PPIP) && parts[i].life > 60) && !(inBounds && bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
+				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC) && !(inBounds && bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
 				{
 					// automatically decrease life
 					parts[i].life--;

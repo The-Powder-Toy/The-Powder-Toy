@@ -37,7 +37,7 @@ void Element::Element_PIPE()
 	HeatConduct = 251;
 	Description = "PIPE, moves particles around. Once the BRCK generates, erase some for the exit. Then the PIPE generates and is usable.";
 
-	Properties = TYPE_SOLID | PROP_LIFE_DEC;
+	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
@@ -63,6 +63,7 @@ void Element::Element_PIPE()
 // 0x0001C000 reverse single pixel pipe direction
 // 0x000E0000 PIPE color data stored here
 
+constexpr int PFLAG_CAN_CONDUCT            = 0x00000001;
 constexpr int PFLAG_NORMALSPEED            = 0x00010000;
 constexpr int PFLAG_INITIALIZING           = 0x00020000; // colors haven't been set yet
 constexpr int PFLAG_COLOR_RED              = 0x00040000;
@@ -471,7 +472,7 @@ static void transfer_part_to_pipe(Particle *part, Particle *pipe)
 {
 	pipe->ctype = part->type;
 
-	if (pipe->life != 100)
+	if (pipe->tmp & PFLAG_CAN_CONDUCT)
 		pipe->temp = part->temp;
 	else
 		pipe->temp = (part->temp + pipe->temp) / 2.0f;
@@ -495,7 +496,7 @@ static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR)
 		src->ctype = 0;
 	}
 
-	if (dest->life != 100)
+	if (dest->tmp & PFLAG_CAN_CONDUCT)
 		dest->temp = src->temp;
 	else
 		dest->temp = (src->temp + dest->temp) / 2.0f;
