@@ -2,6 +2,7 @@
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
+static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);
 
 // Element overview:
 // PAPR (Paper) is a flammable solid element that can be colored by certain other elements.
@@ -39,7 +40,7 @@ void Element::Element_PAPR()
 	Weight = 100;
 
 	HeatConduct = 80;
-	Description = "Paper. Flammable, can be marked by BCOL. Lets non-solids through when unmarked.";
+	Description = "Paper. Flammable, can be marked by BCOL or erased by SOAP. Lets non-solids through when unmarked.";
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS;
 
@@ -54,6 +55,7 @@ void Element::Element_PAPR()
 
 	Update = &update;
 	Graphics = &graphics;
+	CtypeDraw = &ctypeDraw;
 }
 
 static int update(UPDATE_FUNC_ARGS)
@@ -195,4 +197,20 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	}
 	*pixel_mode |= NO_DECO;
 	return 0;
+}
+
+static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
+{
+	// Allow "drawing" directly on PAPR like a pencil
+	if (t == PT_BCOL || t == PT_COAL)
+	{
+		sim->parts[i].life = 1;
+		sim->parts[i].dcolour = 0xFF22222A;
+	}
+	// Similarly, erase with SOAP
+	if (t == PT_SOAP)
+	{
+		sim->parts[i].life = 0;
+	}
+	return Element::basicCtypeDraw(CTYPEDRAW_FUNC_SUBCALL_ARGS);
 }
