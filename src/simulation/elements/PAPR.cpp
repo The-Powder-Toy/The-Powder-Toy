@@ -151,25 +151,24 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 		return 0;
 	}
 	float burnAmount = std::max((float)cpart->tmp2, cpart->temp);
-	if (cpart->life)
+
+	// Render deco color with custom blending for burnt paper
+	if (gfctx.ren->decorationLevel == RendererSettings::decorationEnabled)
 	{
-		// Render deco color when marked
-		if(gfctx.ren->decorationLevel == RendererSettings::decorationEnabled)
-		{
-			// Burnt paper has more faded colors
-			float alpha = restrict_flt(((cpart->dcolour >> 24) & 0xFF) - restrict_flt((burnAmount - 450) * 1.7f, 0, 255), 0, 255) / 255.f;
-			*colr = int(*colr * (1 - alpha) + ((cpart->dcolour >> 16) & 0xFF) * alpha);
-			*colg = int(*colg * (1 - alpha) + ((cpart->dcolour >> 8) & 0xFF) * alpha);
-			*colb = int(*colb * (1 - alpha) + ((cpart->dcolour) & 0xFF) * alpha);
-		}
-		else // If deco is disabled or blackDecorations is on, become a generic dark gray color
-		{
-			float alpha = 1 - restrict_flt((burnAmount - 450) * 1.7f, 0, 255) / 255.f;
-			*colr = int(*colr * (1 - alpha) + 20 * alpha);
-			*colg = int(*colg * (1 - alpha) + 20 * alpha);
-			*colb = int(*colb * (1 - alpha) + 20 * alpha);
-		}
+		// Burnt paper has more faded colors
+		float alpha = restrict_flt(((cpart->dcolour >> 24) & 0xFF) - restrict_flt((burnAmount - 450) * 1.7f, 0, 255), 0, 255) / 255.f;
+		*colr = int(*colr * (1 - alpha) + ((cpart->dcolour >> 16) & 0xFF) * alpha);
+		*colg = int(*colg * (1 - alpha) + ((cpart->dcolour >> 8) & 0xFF) * alpha);
+		*colb = int(*colb * (1 - alpha) + ((cpart->dcolour) & 0xFF) * alpha);
 	}
+	else if (cpart->life) // If deco is disabled or blackDecorations is on, marks become a generic dark gray color
+	{
+		float alpha = 1 - restrict_flt((burnAmount - 450) * 1.7f, 0, 255) / 255.f;
+		*colr = int(*colr * (1 - alpha) + 20 * alpha);
+		*colg = int(*colg * (1 - alpha) + 20 * alpha);
+		*colb = int(*colb * (1 - alpha) + 20 * alpha);
+	}
+
 	// Darken when burnt
 	if (burnAmount > 450)
 	{
@@ -195,6 +194,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 			*colb += int(255 * flash);
 		}
 	}
+	// Disable deco since we're doing it ourselves
 	*pixel_mode |= NO_DECO;
 	return 0;
 }
@@ -211,6 +211,7 @@ static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 	if (t == PT_SOAP)
 	{
 		sim->parts[i].life = 0;
+		sim->parts[i].dcolour = 0x00000000;
 	}
 	return Element::basicCtypeDraw(CTYPEDRAW_FUNC_SUBCALL_ARGS);
 }
