@@ -1,6 +1,5 @@
 #include "Simulation.h"
 #include "Sample.h"
-#include "SimTool.h"
 #include "Snapshot.h"
 #include "Air.h"
 #include "gravity/Gravity.h"
@@ -86,10 +85,10 @@ void Simulation::Restore(const Snapshot &snap)
 void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 {
 	auto intersection = RES.OriginRect() & RectSized(Vec2{ area_x, area_y }, Vec2{ area_w, area_h });
-	area_x = intersection.TopLeft.X;
-	area_y = intersection.TopLeft.Y;
-	area_w = intersection.Size().X;
-	area_h = intersection.Size().Y;
+	area_x = intersection.pos.X;
+	area_y = intersection.pos.Y;
+	area_w = intersection.size.X;
+	area_h = intersection.size.Y;
 	float fx = area_x-.5f, fy = area_y-.5f;
 	for (int i = 0; i <= parts_lastActiveIndex; i++)
 	{
@@ -164,18 +163,6 @@ void Simulation::SetDecoSpace(int newDecoSpace)
 		newDecoSpace = DECOSPACE_SRGB;
 	}
 	deco_space = newDecoSpace;
-}
-
-int Simulation::Tool(int x, int y, int tool, int brushX, int brushY, float strength)
-{
-	Particle * cpart = NULL;
-	int r;
-	if ((r = pmap[y][x]))
-		cpart = &(parts[ID(r)]);
-	else if ((r = photons[y][x]))
-		cpart = &(parts[ID(r)]);
-	auto &sd = SimulationData::CRef();
-	return sd.tools[tool].Perform(this, cpart, x, y, brushX, brushY, strength);
 }
 
 int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush const *cBrush)
@@ -747,90 +734,6 @@ void Simulation::ApplyDecorationFill(const RendererFrame &frame, int x, int y, i
 		return;
 	}
 	free(bitmap);
-}
-
-int Simulation::ToolBrush(int positionX, int positionY, int tool, Brush const &cBrush, float strength)
-{
-	for (ui::Point off : cBrush)
-	{
-		ui::Point coords = ui::Point(positionX, positionY) + off;
-		if (coords.X >= 0 && coords.Y >= 0 && coords.X < XRES && coords.Y < YRES)
-			Tool(coords.X, coords.Y, tool, positionX, positionY, strength);
-	}
-	return 0;
-}
-
-void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush const &cBrush, float strength)
-{
-	bool reverseXY = abs(y2-y1) > abs(x2-x1);
-	int x, y, dx, dy, sy, rx = cBrush.GetRadius().X, ry = cBrush.GetRadius().Y;
-	float e = 0.0f, de;
-	if (reverseXY)
-	{
-		y = x1;
-		x1 = y1;
-		y1 = y;
-		y = x2;
-		x2 = y2;
-		y2 = y;
-	}
-	if (x1 > x2)
-	{
-		y = x1;
-		x1 = x2;
-		x2 = y;
-		y = y1;
-		y1 = y2;
-		y2 = y;
-	}
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
-	de = dx ? dy/(float)dx : 0.0f;
-	y = y1;
-	sy = (y1<y2) ? 1 : -1;
-	for (x=x1; x<=x2; x++)
-	{
-		if (reverseXY)
-			ToolBrush(y, x, tool, cBrush, strength);
-		else
-			ToolBrush(x, y, tool, cBrush, strength);
-		e += de;
-		if (e >= 0.5f)
-		{
-			y += sy;
-			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
-			{
-				if (reverseXY)
-					ToolBrush(y, x, tool, cBrush, strength);
-				else
-					ToolBrush(x, y, tool, cBrush, strength);
-			}
-			e -= 1.0f;
-		}
-	}
-}
-
-void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, float strength)
-{
-	int brushX, brushY;
-	brushX = ((x1 + x2) / 2);
-	brushY = ((y1 + y2) / 2);
-	int i, j;
-	if (x1>x2)
-	{
-		i = x2;
-		x2 = x1;
-		x1 = i;
-	}
-	if (y1>y2)
-	{
-		j = y2;
-		y2 = y1;
-		y1 = j;
-	}
-	for (j=y1; j<=y2; j++)
-		for (i=x1; i<=x2; i++)
-			Tool(i, j, tool, brushX, brushY, strength);
 }
 
 int Simulation::CreateParts(int positionX, int positionY, int c, Brush const &cBrush, int flags)

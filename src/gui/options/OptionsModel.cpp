@@ -256,6 +256,17 @@ void OptionsModel::SetFastQuit(bool fastquit)
 	notifySettingsChanged();
 }
 
+bool OptionsModel::GetGlobalQuit()
+{
+	return ui::Engine::Ref().GetGlobalQuit();
+}
+void OptionsModel::SetGlobalQuit(bool newGlobalQuit)
+{
+	ui::Engine::Ref().SetGlobalQuit(newGlobalQuit);
+	GlobalPrefs::Ref().Set("GlobalQuit", newGlobalQuit);
+	notifySettingsChanged();
+}
+
 int OptionsModel::GetDecoSpace()
 {
 	return gModel->GetDecoSpace();

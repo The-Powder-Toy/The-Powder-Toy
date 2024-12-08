@@ -67,6 +67,7 @@ void GameSave::MapPalette()
 
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
+	std::map<ByteString, int> missingElementIdentifiers;
 	if(palette.size())
 	{
 		if (version >= Version(98, 0))
@@ -94,7 +95,7 @@ void GameSave::MapPalette()
 				}
 				else
 				{
-					missingElements.identifiers.insert(pi);
+					missingElementIdentifiers.insert(pi);
 				}
 			}
 		}
@@ -135,6 +136,13 @@ void GameSave::MapPalette()
 				carriedType = paletteLookup(carriedType, ignoreMissingErrors[tempPart.type]);
 				*prop = PMAP(extra, carriedType);
 			}
+		}
+	}
+	for (const auto &pi : missingElementIdentifiers)
+	{
+		if (missingElements.ids.find(pi.second) != missingElements.ids.end())
+		{
+			missingElements.identifiers.insert(pi);
 		}
 	}
 }

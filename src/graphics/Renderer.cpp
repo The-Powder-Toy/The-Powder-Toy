@@ -65,11 +65,10 @@ void Renderer::render_gravlensing(const RendererFrame &source)
 		    RES.OriginRect().Contains(bp))
 		{
 			auto v = RGB<uint8_t>::Unpack(video[p]);
-			auto s = RGB<uint8_t>::Unpack(source[rp]);
 			video[p] = RGB<uint8_t>(
-				std::min(0xFF, s.Red   + v.Red  ),
-				std::min(0xFF, s.Green + v.Green),
-				std::min(0xFF, s.Blue  + v.Blue )
+				std::min(0xFF, RGB<uint8_t>::Unpack(source[rp]).Red   + v.Red  ),
+				std::min(0xFF, RGB<uint8_t>::Unpack(source[gp]).Green + v.Green),
+				std::min(0xFF, RGB<uint8_t>::Unpack(source[bp]).Blue  + v.Blue )
 			).Pack();
 		}
 	}
@@ -262,7 +261,7 @@ void Renderer::render_parts()
 					BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
 			}
 	}
-	foundElements = 0;
+	foundParticles = 0;
 	for(i = 0; i<=sim->parts_lastActiveIndex; i++) {
 		if (sim->parts[i].type && sim->parts[i].type >= 0 && sim->parts[i].type < PT_NUM) {
 			t = sim->parts[i].type;
@@ -483,7 +482,7 @@ void Renderer::render_parts()
 					{
 						colr = firer = 255;
 						colg = fireg = colb = fireb = 0;
-						foundElements++;
+						foundParticles++;
 					}
 					else
 					{

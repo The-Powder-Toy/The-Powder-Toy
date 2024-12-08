@@ -14,7 +14,7 @@ on:
 
 jobs:
   prepare:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       do_release: ${{ steps.prepare.outputs.do_release }}
       build_matrix: ${{ steps.prepare.outputs.build_matrix }}
@@ -35,17 +35,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - run: python -m pip install meson==1.2.3 ninja # TODO: go back to using latest meson once https://github.com/mesonbuild/meson/pull/12544 is live
+      - run: python -m pip install meson ninja
       - id: prepare
         run: python ./.github/prepare.py
         env:
-          PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
+          PUBLISH_HOSTPORT: ${{ vars.STARCATCHER_PUBLISH_HOSTPORT }}
           GITHUB_REF: ${{ github.ref }}
       - if: steps.prepare.outputs.do_publish == 'yes'
-        run: sudo apt update && sudo apt install curlftpfs && bash -c './.github/starcatcher-publish.sh'
+        run: bash -c './.github/starcatcher-publish.sh'
         env:
-          PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
-          PUBLISH_USERNAME: ${{ secrets.STARCATCHER_PUBLISH_USERNAME }}
+          PUBLISH_HOSTPORT: ${{ vars.STARCATCHER_PUBLISH_HOSTPORT }}
+          PUBLISH_USERNAME: ${{ vars.STARCATCHER_PUBLISH_USERNAME }}
           PUBLISH_PASSWORD: ${{ secrets.STARCATCHER_PUBLISH_PASSWORD }}
           PUBLISH_ACCESSCHECK: yes
       - if: steps.prepare.outputs.do_release == 'yes'
@@ -100,7 +100,7 @@ jobs:
         with:
           python-version: '3.10'
       - if: matrix.force_msys2_bash != 'yes'
-        run: python -m pip install meson==1.2.3 ninja # TODO: go back to using latest meson once https://github.com/mesonbuild/meson/pull/12544 is live
+        run: python -m pip install meson ninja
       - if: matrix.bsh_build_platform == 'darwin'
         run: brew install bash coreutils
       - run: bash -c './.github/build.sh'
@@ -147,7 +147,7 @@ jobs:
           path: build/${{ matrix.debug_asset_path }}
           name: ${{ matrix.debug_asset_name }}
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [build, prepare]
     strategy:
       fail-fast: false
@@ -160,15 +160,15 @@ jobs:
         with:
           name: ${{ matrix.asset_name }}
       - run: mv ${{ matrix.asset_path }} ${{ matrix.starcatcher_name }}
-      - run: sudo apt update && sudo apt install curlftpfs && bash -c './.github/starcatcher-publish.sh'
+      - run: bash -c './.github/starcatcher-publish.sh'
         env:
-          PUBLISH_HOSTPORT: ${{ secrets.STARCATCHER_PUBLISH_HOSTPORT }}
-          PUBLISH_USERNAME: ${{ secrets.STARCATCHER_PUBLISH_USERNAME }}
+          PUBLISH_HOSTPORT: ${{ vars.STARCATCHER_PUBLISH_HOSTPORT }}
+          PUBLISH_USERNAME: ${{ vars.STARCATCHER_PUBLISH_USERNAME }}
           PUBLISH_PASSWORD: ${{ secrets.STARCATCHER_PUBLISH_PASSWORD }}
-          PUBLISH_DIRECTORY: ${{ secrets.STARCATCHER_PUBLISH_DIRECTORY }}
+          PUBLISH_DIRECTORY: ${{ vars.STARCATCHER_PUBLISH_DIRECTORY }}
           PUBLISH_FILENAME: ${{ matrix.starcatcher_name }}
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [build, publish, prepare]
     if: needs.prepare.outputs.do_publish == 'yes'
     steps:

@@ -1,9 +1,7 @@
 #pragma once
 
-#ifdef __cplusplus
 extern "C"
 {
-#endif
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -23,6 +21,4 @@ LUALIB_API void (lua_pushglobaltable) (lua_State *L);
 # endif
 #endif
 
-#ifdef __cplusplus
 }
-#endif

@@ -1,14 +1,16 @@
 #pragma once
 #include "gui/interface/Point.h"
+#include "common/Plane.h"
 #include <memory>
+#include <vector>
 
 class Graphics;
 class Brush
 {
 private:
 	// 2D arrays indexed by coordinates from [-radius.X, radius.X] by [-radius.Y, radius.Y]
-	std::unique_ptr<unsigned char []> bitmap;
-	std::unique_ptr<unsigned char []> outline;
+	PlaneAdapter<std::vector<unsigned char>> bitmap;
+	PlaneAdapter<std::vector<unsigned char>> outline;
 
 	void InitBitmap();
 	void InitOutline();
@@ -28,7 +30,7 @@ private:
 					--y;
 					x = -radius.X;
 				}
-			} while (y >= -radius.Y && !parent.bitmap[x + radius.X + (y + radius.Y) * (2 * radius.X + 1)]);
+			} while (y >= -radius.Y && !parent.bitmap[radius + Vec2<int>{ x, y }]);
 			return *this;
 		}
 
@@ -52,11 +54,9 @@ private:
 protected:
 	ui::Point radius{ 0, 0 };
 
-	virtual std::unique_ptr<unsigned char []> GenerateBitmap() const = 0;
+	virtual PlaneAdapter<std::vector<unsigned char>> GenerateBitmap() const = 0;
 
 public:
-	Brush() = default;
-	Brush(const Brush &other);
 	virtual ~Brush() = default;
 	virtual void AdjustSize(int delta, bool logarithmic, bool keepX, bool keepY);
 	virtual std::unique_ptr<Brush> Clone() const = 0;

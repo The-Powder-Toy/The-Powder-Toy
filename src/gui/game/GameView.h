@@ -61,7 +61,6 @@ private:
 	bool wallBrush;
 	bool toolBrush;
 	bool decoBrush;
-	bool windTool;
 	int toolIndex;
 	int currentSaveType;
 	int lastMenu;
@@ -172,6 +171,7 @@ private:
 	void DispatchRendererThread();
 	std::unique_ptr<RenderableSimulation> rendererThreadSim;
 	std::unique_ptr<RendererFrame> rendererThreadResult;
+	int foundParticles = 0;
 	const RendererFrame *rendererFrame = nullptr;
 
 public:
@@ -215,7 +215,7 @@ public:
 	void NotifySaveChanged(GameModel * sender);
 	void NotifyBrushChanged(GameModel * sender);
 	void NotifyMenuListChanged(GameModel * sender);
-	void NotifyToolListChanged(GameModel * sender);
+	void NotifyActiveMenuToolListChanged(GameModel * sender);
 	void NotifyActiveToolsChanged(GameModel * sender);
 	void NotifyUserChanged(GameModel * sender);
 	void NotifyZoomChanged(GameModel * sender);
@@ -267,7 +267,7 @@ public:
 	{
 		return *rendererFrame;
 	}
-	// Call this before accessing Renderer "out of turn", e.g. from RenderView. This *does not*
+	// Call this before accessing Renderer "out of turn", e.g. from RenderView or GameModel. This *does not*
 	// include OptionsModel or Lua setting functions because they only access the RendererSettings
 	// in GameModel, or Lua drawing functions because they only access Renderer in eventTraitSimGraphics
 	// and *SimDraw events, and the renderer thread gets paused anyway if there are handlers

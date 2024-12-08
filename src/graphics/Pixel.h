@@ -24,6 +24,8 @@ struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) 
 {
 	T Blue, Green, Red;
 
+	constexpr RGB() = default;
+
 	constexpr RGB(T r, T g, T b):
 		Blue(b),
 		Green(g),
@@ -120,6 +122,8 @@ template<typename T, typename>
 struct alignas(alignof(uint32_t) > alignof(T) ? alignof(uint32_t) : alignof(T)) RGBA
 {
 	T Blue, Green, Red, Alpha;
+
+	constexpr RGBA() = default;
 
 	constexpr RGBA(T r, T g, T b, T a):
 		Blue(b),

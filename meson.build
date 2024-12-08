@@ -1,19 +1,14 @@
-project(
-	'the-powder-toy',
-	[ 'c', 'cpp' ],
-	version: 'the.cake.is.a.lie',
-	default_options: [
-		'c_std=c99',
-		'cpp_std=c++17',
-		'cpp_rtti=false',
-	],
-	meson_version: '>=0.64.0',
-)
+project('the-powder-toy', 'cpp', version: 'the.cake.is.a.lie', meson_version: '>=0.64.0')
 
 if get_option('prepare')
 	# we're being run by prepare.py in a ghactions workflow only to determine the values of options; exit early
 	subdir_done()
 endif
+
+target_options = [
+	'cpp_std=c++20',
+	'cpp_rtti=false',
+]
 
 python = import('python')
 python3_prog = python.find_installation('python3')
@@ -29,7 +24,7 @@ to_array = generator(
 render_icons_with_inkscape = get_option('render_icons_with_inkscape')
 inkscape = find_program('inkscape', required: render_icons_with_inkscape)
 
-c_compiler = meson.get_compiler('c')
+cpp_compiler = meson.get_compiler('cpp')
 
 is_x86 = host_machine.cpu_family() in [ 'x86', 'x86_64' ]
 is_64bit = host_machine.cpu_family() in [ 'aarch64', 'x86_64' ]
@@ -37,12 +32,12 @@ is_64bit = host_machine.cpu_family() in [ 'aarch64', 'x86_64' ]
 host_arch = host_machine.cpu_family()
 host_platform = host_machine.system()
 # educated guesses follow, PRs welcome
-if c_compiler.get_id() in [ 'msvc', 'clang-cl' ]
+if cpp_compiler.get_id() in [ 'msvc', 'clang-cl' ]
 	if host_platform != 'windows'
 		error('this seems fishy')
 	endif
 	host_libc = 'msvc'
-elif c_compiler.get_id() in [ 'gcc' ] and host_platform == 'windows'
+elif cpp_compiler.get_id() in [ 'gcc' ] and host_platform == 'windows'
 	host_libc = 'mingw'
 elif host_platform in [ 'darwin' ]
 	host_libc = 'macos'
@@ -86,7 +81,7 @@ tpt_libs_debug = is_debug ? 'debug' : 'release'
 tpt_libs_variant = '@0@-@1@-@2@-@3@'.format(host_arch, host_platform, host_libc, tpt_libs_static)
 tpt_libs_vtag = get_option('tpt_libs_vtag')
 if tpt_libs_vtag == ''
-	tpt_libs_vtag = 'v20240112165024'
+	tpt_libs_vtag = 'v20241107133630'
 endif
 if tpt_libs_static != 'none'
 	if tpt_libs_variant not in [
@@ -96,6 +91,8 @@ if tpt_libs_static != 'none'
 		'x86_64-windows-msvc-dynamic',
 		'x86-windows-msvc-static',
 		'x86-windows-msvc-dynamic',
+		'aarch64-windows-msvc-static',
+		'aarch64-windows-msvc-dynamic',
 		'x86_64-darwin-macos-static',
 		'aarch64-darwin-macos-static',
 		'x86-android-bionic-static',
@@ -115,7 +112,7 @@ else
 		bzip2_include_dir = include_directories(get_option('workaround_elusive_bzip2_include_dir'))
 		bzip2_static = get_option('workaround_elusive_bzip2_static')
 		meson.override_dependency('bzip2', declare_dependency(
-			dependencies: c_compiler.find_library(
+			dependencies: cpp_compiler.find_library(
 				bzip2_lib_name,
 				has_headers: bzip2_include_name,
 				dirs: bzip2_lib_dir,
@@ -199,7 +196,6 @@ if enable_http and host_platform != 'emscripten'
 endif
 
 project_link_args = []
-project_c_args = []
 project_cpp_args = []
 
 fftw_dep = dependency('fftw3f', static: is_static)
@@ -234,7 +230,6 @@ if host_platform == 'emscripten'
 		emcc_args += [ '-gsource-map' ]
 	endif
 	project_link_args += emcc_args
-	project_c_args += emcc_args
 	project_cpp_args += emcc_args
 else
 	zlib_dep = dependency('zlib', static: is_static)
@@ -246,7 +241,7 @@ json_dep = dependency('jsoncpp', static: is_static)
 
 if not is_debug
 	args_ccomp_opt = []
-	if c_compiler.get_argument_syntax() == 'msvc'
+	if cpp_compiler.get_argument_syntax() == 'msvc'
 		args_ccomp_opt += [
 			'/Oy-',
 			'/fp:fast',
@@ -263,34 +258,31 @@ if not is_debug
 			'-fomit-frame-pointer',
 		]
 	endif
-	project_c_args += args_ccomp_opt
 	project_cpp_args += args_ccomp_opt
 endif
 
 if not is_debug
 	args_ccomp_lto = []
-	if c_compiler.get_id() in [ 'clang', 'clang-cl' ]
+	if cpp_compiler.get_id() in [ 'clang', 'clang-cl' ]
 		# use ThinLTO for Clang/LLVM
 		args_ccomp_lto += [ '-flto=thin' ]
-	elif c_compiler.get_argument_syntax() == 'msvc'
+	elif cpp_compiler.get_argument_syntax() == 'msvc'
 		args_ccomp_lto += [ '/GL' ]
 		project_link_args += [ '/LTCG' ]
 	endif
-	project_c_args += args_ccomp_lto
 	project_cpp_args += args_ccomp_lto
 endif
 
-if c_compiler.get_argument_syntax() == 'msvc'
+if cpp_compiler.get_argument_syntax() == 'msvc'
 	args_msvc = [
 		'/GS',
 		'/D_SCL_SECURE_NO_WARNINGS',
 	]
-	project_c_args += args_msvc
 	project_cpp_args += args_msvc
 endif
 
 # clang-cl supports both syntaxes. use the GCC one.
-if c_compiler.get_argument_syntax() == 'msvc' and c_compiler.get_id() not in [ 'clang-cl' ]
+if cpp_compiler.get_argument_syntax() == 'msvc' and cpp_compiler.get_id() not in [ 'clang-cl' ]
 	args_ccomp_sse = []
 	if x86_sse_level == 30
 		warning('SSE3 configured to be enabled but unavailable in msvc')
@@ -306,7 +298,6 @@ if c_compiler.get_argument_syntax() == 'msvc' and c_compiler.get_id() not in [ '
 	elif x86_sse_level >= 10 and host_machine.cpu_family() == 'x86'
 		args_ccomp_sse += [ '/arch:SSE' ]
 	endif
-	project_c_args += args_ccomp_sse
 	project_cpp_args += args_ccomp_sse
 else
 	args_ccomp_sse = []
@@ -331,7 +322,6 @@ else
 	elif x86_sse_level >= 10
 		args_ccomp_sse += [ '-msse' ]
 	endif
-	project_c_args += args_ccomp_sse
 	project_cpp_args += args_ccomp_sse
 endif
 
@@ -368,15 +358,28 @@ if host_platform == 'windows'
 			endif
 		endforeach
 	endif
+	if tpt_libs_static == 'static' and host_libc == 'msvc'
+		target_options += [
+			'b_vscrt=static_from_buildtype',
+		]
+	endif
 	foreach def : defs_ccomp_win
-		if c_compiler.get_argument_syntax() == 'msvc'
+		if cpp_compiler.get_argument_syntax() == 'msvc'
 			args_ccomp_win += [ '/D' + def ]
 		else
 			args_ccomp_win += [ '-D' + def ]
 		endif
 	endforeach
-	project_c_args += args_ccomp_win
 	project_cpp_args += args_ccomp_win
+elif host_platform == 'darwin'
+	# work around assertion failure with LTO symbols
+	# https://developer.apple.com/documentation/xcode-release-notes/xcode-15-release-notes#Linking
+	# otherwise we get ld: Assertion failed: (0 && "lto symbol should not be in layout"), function symbolForAtom, file Layout.cpp, line 1447.
+	# TODO: remove when appropriate
+	if is_static and cpp_compiler.has_link_argument('-ld_classic')
+		warning('applying broken apple clang linker workaround with -ld_classic')
+		project_link_args += [ '-ld_classic' ]
+	endif
 elif host_platform == 'android'
 	args_ccomp_android = []
 	if not is_64bit
@@ -386,27 +389,15 @@ elif host_platform == 'android'
 	# the alternative would be to grab libc++_shared.so from the NDK and ship it with
 	# the app alongside libpowder.so, and possibly add it to SDL's list of libraries to load
 	project_link_args += [ '-static-libstdc++' ]
-	project_c_args += args_ccomp_android
 	project_cpp_args += args_ccomp_android
 endif
 
-if c_compiler.get_argument_syntax() == 'msvc' and c_compiler.get_id() not in [ 'clang-cl' ]
-	project_c_args += [
-		'/wd5262',
-		'/wd4834',
-		'/wd4100',
-	]
+if cpp_compiler.get_argument_syntax() == 'msvc' and cpp_compiler.get_id() not in [ 'clang-cl' ]
 	project_cpp_args += [
 		'/wd4834',
 		'/wd4100',
 	]
 else
-	project_c_args += [
-		'-Wno-implicit-fallthrough',
-		'-Wno-missing-field-initializers',
-		'-Wno-unused-result',
-		'-Wno-unused-parameter',
-	]
 	project_cpp_args += [
 		'-Wno-invalid-offsetof',
 		'-Wno-unused-result',
@@ -449,7 +440,7 @@ if get_option('export_lua_symbols')
 	if is_static and lua_variant != 'none' and not project_export_dynamic
 		if host_platform == 'windows'
 			error('Lua symbols are currently impossible to export correctly on Windows')
-		elif c_compiler.has_link_argument('-Wl,--export-dynamic-symbol')
+		elif cpp_compiler.has_link_argument('-Wl,--export-dynamic-symbol')
 			project_link_args += [
 				'-Wl,--export-dynamic-symbol=lua_*',
 				'-Wl,--export-dynamic-symbol=luaL_*',
@@ -479,11 +470,11 @@ if get_option('build_powder')
 			app_exe,
 			sources: powder_files,
 			include_directories: project_inc,
-			c_args: project_c_args,
 			cpp_args: project_cpp_args,
 			link_args: project_link_args,
 			dependencies: powder_deps,
 			link_depends: copied_dlls,
+			override_options: target_options,
 		)
 		subdir('android')
 	else
@@ -491,7 +482,6 @@ if get_option('build_powder')
 			app_exe,
 			sources: powder_files,
 			include_directories: project_inc,
-			c_args: project_c_args,
 			cpp_args: project_cpp_args,
 			win_subsystem: is_debug ? 'console' : 'windows',
 			link_args: project_link_args,
@@ -499,6 +489,7 @@ if get_option('build_powder')
 			export_dynamic: project_export_dynamic,
 			install: true,
 			link_depends: copied_dlls,
+			override_options: target_options,
 		)
 	endif
 endif
@@ -522,12 +513,12 @@ if get_option('build_render')
 		'render',
 		sources: render_files,
 		include_directories: project_inc,
-		c_args: project_c_args,
 		cpp_args: project_cpp_args,
 		link_args: render_link_args,
 		dependencies: render_deps,
 		export_dynamic: project_export_dynamic,
 		link_depends: copied_dlls,
+		override_options: target_options,
 	)
 endif
 
@@ -547,11 +538,11 @@ if get_option('build_font')
 		'font',
 		sources: font_files,
 		include_directories: project_inc,
-		c_args: project_c_args,
 		cpp_args: project_cpp_args,
 		link_args: project_link_args,
 		dependencies: font_deps,
 		export_dynamic: project_export_dynamic,
 		link_depends: copied_dlls,
+		override_options: target_options,
 	)
 endif

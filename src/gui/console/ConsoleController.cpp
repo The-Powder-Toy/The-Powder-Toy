@@ -72,9 +72,7 @@ ConsoleView * ConsoleController::GetView()
 ConsoleController::~ConsoleController()
 {
 	delete consoleModel;
-	if (consoleView->CloseActiveWindow())
-	{
-		delete consoleView;
-	}
+	consoleView->CloseActiveWindow();
+	delete consoleView;
 }
 

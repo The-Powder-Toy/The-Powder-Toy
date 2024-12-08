@@ -105,5 +105,3 @@ public:
 	
 	String DoMigration(ByteString fromDir, ByteString toDir);
 };
-
-bool AddCustomGol(String ruleString, String nameString, unsigned int highColor, unsigned int lowColor);

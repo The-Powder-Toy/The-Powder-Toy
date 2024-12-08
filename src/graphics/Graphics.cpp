@@ -36,10 +36,10 @@ void VideoBuffer::Crop(Rect<int> rect)
 	if (rect == Size().OriginRect())
 		return;
 
-	PlaneAdapter<std::vector<pixel> &> newVideo(rect.Size(), std::in_place, video.Base);
+	PlaneAdapter<std::vector<pixel> &> newVideo(rect.size, std::in_place, video.Base);
 	for (auto y = 0; y < newVideo.Size().Y; y++)
 		std::copy_n(
-			video.RowIterator(rect.TopLeft + Vec2(0, y)),
+			video.RowIterator(rect.pos + Vec2(0, y)),
 			newVideo.Size().X,
 			newVideo.RowIterator(Vec2(0, y))
 		);

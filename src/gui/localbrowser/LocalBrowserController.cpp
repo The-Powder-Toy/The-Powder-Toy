@@ -161,9 +161,7 @@ void LocalBrowserController::Exit()
 LocalBrowserController::~LocalBrowserController()
 {
 	delete browserModel;
-	if (browserView->CloseActiveWindow())
-	{
-		delete browserView;
-	}
+	browserView->CloseActiveWindow();
+	delete browserView;
 }
 

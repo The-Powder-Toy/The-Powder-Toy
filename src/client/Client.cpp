@@ -122,7 +122,7 @@ void Client::Tick()
 		try
 		{
 			auto info = versionCheckRequest->Finish();
-			if (!info.sessionGood)
+			if (!info.sessionGood && authUser.UserID)
 			{
 				SetAuthUser(User(0, ""));
 			}
@@ -509,34 +509,6 @@ void Client::SaveAuthorInfo(Json::Value *saveInto)
 		else if (authors["links"].size())
 			(*saveInto)["links"] = authors["links"];
 	}
-}
-
-bool AddCustomGol(String ruleString, String nameString, unsigned int highColor, unsigned int lowColor)
-{
-	auto &prefs = GlobalPrefs::Ref();
-	auto customGOLTypes = prefs.Get("CustomGOL.Types", std::vector<ByteString>{});
-	std::vector<ByteString> newCustomGOLTypes;
-	bool nameTaken = false;
-	for (auto gol : customGOLTypes)
-	{
-		auto parts = gol.FromUtf8().PartitionBy(' ');
-		if (parts.size())
-		{
-			if (parts[0] == nameString)
-			{
-				nameTaken = true;
-			}
-		}
-		newCustomGOLTypes.push_back(gol);
-	}
-	if (nameTaken)
-		return false;
-
-	StringBuilder sb;
-	sb << nameString << " " << ruleString << " " << highColor << " " << lowColor;
-	newCustomGOLTypes.push_back(sb.Build().ToUtf8());
-	prefs.Set("CustomGOL.Types", newCustomGOLTypes);
-	return true;
 }
 
 String Client::DoMigration(ByteString fromDir, ByteString toDir)

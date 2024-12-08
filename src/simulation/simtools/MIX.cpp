@@ -3,7 +3,7 @@
 #include "common/tpt-rand.h"
 #include <cmath>
 
-static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
+static int perform(SimTool *tool, Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
 
 void SimTool::Tool_MIX()
 {
@@ -14,7 +14,7 @@ void SimTool::Tool_MIX()
 	Perform = &perform;
 }
 
-static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
+static int perform(SimTool *tool, Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;

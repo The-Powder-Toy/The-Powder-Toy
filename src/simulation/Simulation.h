@@ -6,6 +6,7 @@
 #include "ElementDefs.h"
 #include "BuiltinGOL.h"
 #include "MenuSection.h"
+#include "AccessProperty.h"
 #include "CoordStack.h"
 #include "common/tpt-rand.h"
 #include "gravity/Gravity.h"
@@ -154,7 +155,7 @@ public:
 	void create_gain_photon(int pp);
 	void kill_part(int i);
 	bool FloodFillPmapCheck(int x, int y, int type) const;
-	int flood_prop(int x, int y, StructProperty prop, PropertyValue propvalue);
+	int flood_prop(int x, int y, const AccessProperty &changeProperty);
 	bool flood_water(int x, int y, int i);
 	int FloodINST(int x, int y);
 	void detach(int i);
@@ -186,12 +187,6 @@ public:
 	void ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode);
 	bool ColorCompare(const RendererFrame &frame, int x, int y, int replaceR, int replaceG, int replaceB);
 	void ApplyDecorationFill(const RendererFrame &frame, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB);
-
-	//Drawing Tools like HEAT, AIR, and GRAV
-	int Tool(int x, int y, int tool, int brushX, int brushY, float strength = 1.0f);
-	int ToolBrush(int x, int y, int tool, Brush const &cBrush, float strength = 1.0f);
-	void ToolLine(int x1, int y1, int x2, int y2, int tool, Brush const &cBrush, float strength = 1.0f);
-	void ToolBox(int x1, int y1, int x2, int y2, int tool, float strength = 1.0f);
 
 	//Drawing Walls
 	int CreateWalls(int x, int y, int rx, int ry, int wall, Brush const *cBrush = nullptr);

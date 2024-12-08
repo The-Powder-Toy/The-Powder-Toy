@@ -68,6 +68,7 @@ int main(int argc, char * argv[])
 
 	engine.Begin();
 	engine.SetFastQuit(true);
+	engine.SetGlobalQuit(true);
 
 	if (argc >= 2)
 	{

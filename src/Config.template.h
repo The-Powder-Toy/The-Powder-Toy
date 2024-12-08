@@ -13,6 +13,7 @@ constexpr bool LUACONSOLE               = @LUACONSOLE@;
 constexpr bool ALLOW_FAKE_NEWER_VERSION = @ALLOW_FAKE_NEWER_VERSION@;
 constexpr bool USE_UPDATESERVER         = @USE_UPDATESERVER@;
 constexpr bool CAN_INSTALL              = @CAN_INSTALL@;
+constexpr bool SHARED_DATA_FOLDER       = @SHARED_DATA_FOLDER@;
 constexpr bool USE_BLUESCREEN           = @USE_BLUESCREEN@;
 constexpr bool INSTALL_CHECK            = @INSTALL_CHECK@;
 constexpr bool IGNORE_UPDATES           = @IGNORE_UPDATES@;
@@ -45,6 +46,7 @@ constexpr char APPEXE[]         = "@APPEXE@";
 constexpr char APPID[]          = "@APPID@";
 constexpr char APPDATA[]        = "@APPDATA@";
 constexpr char APPVENDOR[]      = "@APPVENDOR@";
+constexpr char PACKAGE_MODE[]   = "@PACKAGE_MODE@";
 
 constexpr int MOD_ID               = @MOD_ID@;
 

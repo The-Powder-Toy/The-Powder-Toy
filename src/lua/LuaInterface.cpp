@@ -7,7 +7,7 @@
 #include "gui/game/GameController.h"
 #include "gui/game/GameModel.h"
 #include "gui/game/GameView.h"
-#include "gui/game/Tool.h"
+#include "gui/game/tool/Tool.h"
 #include "gui/interface/Engine.h"
 #include "LuaButton.h"
 #include "LuaCheckbox.h"

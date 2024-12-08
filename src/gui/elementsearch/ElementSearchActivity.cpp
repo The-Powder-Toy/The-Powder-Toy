@@ -8,7 +8,7 @@
 #include "gui/interface/Textbox.h"
 #include "gui/interface/ScrollPanel.h"
 #include "gui/interface/Label.h"
-#include "gui/game/Tool.h"
+#include "gui/game/tool/Tool.h"
 #include "gui/game/Menu.h"
 #include "gui/Style.h"
 #include "gui/game/Favorite.h"

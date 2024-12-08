@@ -3,18 +3,21 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-cat << NETRC > ~/.netrc
-machine $(echo $PUBLISH_HOSTPORT | cut -d ':' -f 1)
-login $PUBLISH_USERNAME
-password $PUBLISH_PASSWORD
-NETRC
-chmod 660 ~/.netrc
+host=$(echo "$PUBLISH_HOSTPORT" | cut -d ':' -f 1)
+port=$(echo "$PUBLISH_HOSTPORT" | cut -d ':' -f 2)
 
-mountpoint=ftpmnt
-mkdir $mountpoint
-curlftpfs "$PUBLISH_HOSTPORT" $mountpoint -o ssl,ciphers='ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES128-GCM-SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256:TLS_AES_128_CCM_8_SHA256:TLS_AES_128_CCM_SHA256'
+set +e
+mkdir ~/.ssh
+chmod 700 ~/.ssh
+touch ~/.ssh/known_hosts
+chmod 600 ~/.ssh/known_hosts
+set -e
+
+echo "[$host]:$port ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDsmJkDd7Rxnuuf4kpbJCDZvkO03lp4lmpzGmFW6LCqG" >> ~/.ssh/known_hosts
+
+commands="quit"$'\n'
 if [[ -z ${PUBLISH_ACCESSCHECK-} ]]; then
-	cp $PUBLISH_FILENAME $mountpoint/${PUBLISH_DIRECTORY:-.}/
+	commands="put $PUBLISH_FILENAME"$'\n'"$commands"
+	commands="cd ${PUBLISH_DIRECTORY:-.}"$'\n'"$commands"
 fi
-fusermount -u $mountpoint
-rmdir $mountpoint
+SSHPASS="$PUBLISH_PASSWORD" sshpass -e sftp -oPort="$port" -oBatchMode=no -b - "$PUBLISH_USERNAME@$host" <<< "$commands"

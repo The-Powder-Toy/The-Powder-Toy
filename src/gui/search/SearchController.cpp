@@ -93,10 +93,8 @@ SearchController::~SearchController()
 {
 	delete activePreview;
 	delete searchModel;
-	if (searchView->CloseActiveWindow())
-	{
-		delete searchView;
-	}
+	searchView->CloseActiveWindow();
+	delete searchView;
 }
 
 void SearchController::DoSearch(String query, bool now)

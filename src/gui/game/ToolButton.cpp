@@ -50,7 +50,7 @@ void ToolButton::Draw(const ui::Point& screenPos)
 {
 	Graphics * g = GetGraphics();
 	auto rect = ClipRect;
-	if (ClipRect.Size().X && ClipRect.Size().Y)
+	if (ClipRect.size.X && ClipRect.size.Y)
 		g->SwapClipRect(rect); // old cliprect is now in rect
 
 	int totalColour = Appearance.BackgroundInactive.Blue + (3*Appearance.BackgroundInactive.Green) + (2*Appearance.BackgroundInactive.Red);
@@ -87,7 +87,7 @@ void ToolButton::Draw(const ui::Point& screenPos)
 		g->BlendText(screenPos + textPosition, buttonDisplayText, 0x000000_rgb .WithAlpha(255));
 	}
 
-	if (ClipRect.Size().X && ClipRect.Size().Y)
+	if (ClipRect.size.X && ClipRect.size.Y)
 		g->SwapClipRect(rect); // apply old clip rect
 }
 

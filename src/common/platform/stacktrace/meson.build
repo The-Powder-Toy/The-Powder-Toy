@@ -1,8 +1,8 @@
 if host_platform == 'windows'
 	if use_bluescreen
 		project_deps += [
-			c_compiler.find_library('dbghelp'),
-			c_compiler.find_library('psapi'),
+			cpp_compiler.find_library('dbghelp'),
+			cpp_compiler.find_library('psapi'),
 		]
 	endif
 	stacktrace_files = files('Windows.cpp')
@@ -18,7 +18,7 @@ elif host_platform == 'linux'
 	bluescreen_export_symbols = true
 	if host_machine.system() in [ 'freebsd' ]
 		project_deps += [
-			c_compiler.find_library('execinfo'),
+			cpp_compiler.find_library('execinfo'),
 		]
 	endif
 else

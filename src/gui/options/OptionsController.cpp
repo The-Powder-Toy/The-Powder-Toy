@@ -127,6 +127,11 @@ void OptionsController::SetFastQuit(bool fastquit)
 	model->SetFastQuit(fastquit);
 }
 
+void OptionsController::SetGlobalQuit(bool newGlobalQuit)
+{
+	model->SetGlobalQuit(newGlobalQuit);
+}
+
 void OptionsController::SetDecoSpace(int decoSpace)
 {
 	model->SetDecoSpace(decoSpace);
@@ -170,9 +175,7 @@ void OptionsController::Exit()
 OptionsController::~OptionsController()
 {
 	delete model;
-	if (view->CloseActiveWindow())
-	{
-		delete view;
-	}
+	view->CloseActiveWindow();
+	delete view;
 }
 

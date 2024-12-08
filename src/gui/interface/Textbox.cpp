@@ -625,12 +625,9 @@ void Textbox::Draw(const Point& screenPos)
 			screenPos + tp + Vec2{ cursorPositionX, cursorPositionY+9 },
 			0xFFFFFF_rgb);
 	}
-	else
+	if(!text.length())
 	{
-		if(!text.length())
-		{
-			g->BlendText(screenPos + tp, placeHolder, textColour.NoAlpha().WithAlpha(170));
-		}
+		g->BlendText(screenPos + tp + Vec2{ 3, 0 }, placeHolder, textColour.NoAlpha().WithAlpha(170));
 	}
 	if(Appearance.icon)
 		g->draw_icon(screenPos.X+iconPosition.X, screenPos.Y+iconPosition.Y, Appearance.icon);

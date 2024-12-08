@@ -10,7 +10,7 @@ import java.util.Base64;
 
 public class PowderActivity extends SDLActivity
 {
-	public static String getCertificateBundle()
+	public String getCertificateBundle()
 	{
 		String allPems = "";
 		try {
@@ -38,5 +38,10 @@ public class PowderActivity extends SDLActivity
 			return "";
 		}
 		return allPems;
+	}
+
+	public String getDefaultDdir()
+	{
+		return getExternalFilesDir(null).getAbsolutePath();
 	}
 }
