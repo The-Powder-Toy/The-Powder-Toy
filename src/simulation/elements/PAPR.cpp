@@ -39,7 +39,7 @@ void Element::Element_PAPR()
 	Weight = 100;
 
 	HeatConduct = 80;
-	Description = "Paper. Flammable, can be marked by BCOL or deco. Lets non-solids through when unmarked.";
+	Description = "Paper. Flammable, can be marked by BCOL. Lets non-solids through when unmarked.";
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS;
 
@@ -125,12 +125,6 @@ static int update(UPDATE_FUNC_ARGS)
 
 		default:
 			break;
-	}
-
-	// Generally, these should correspond, but correct if they don't.
-	if (!parts[i].life != !parts[i].dcolour)
-	{
-		parts[i].life = parts[i].dcolour ? 1 : 0;
 	}
 
 	// Decrement tmp counter for laser reading/writing
