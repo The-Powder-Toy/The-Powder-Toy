@@ -296,6 +296,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 			gravIn.mask   [bpos] = save->gravMask  [spos];
 			gravOut.forceX[bpos] = save->gravForceX[spos];
 			gravOut.forceY[bpos] = save->gravForceY[spos];
+			gravForceRecalc = true; // gravOut changed outside DispatchNewtonianGravity
 		}
 	}
 	if (useGravityMaps)
@@ -3957,7 +3958,8 @@ void Simulation::DispatchNewtonianGravity()
 {
 	if (grav)
 	{
-		grav->Exchange(gravOut, gravIn);
+		grav->Exchange(gravOut, gravIn, gravForceRecalc);
+		gravForceRecalc = false;
 	}
 }
 
@@ -3970,6 +3972,7 @@ void Simulation::ResetNewtonianGravity(GravityInput newGravIn, GravityOutput new
 	if (grav)
 	{
 		gravOut = newGravOut;
+		gravForceRecalc = true; // gravOut changed outside DispatchNewtonianGravity
 		gravWallChanged = true;
 	}
 }
@@ -3980,6 +3983,7 @@ void Simulation::EnableNewtonianGravity(bool enable)
 	{
 		grav.reset();
 		gravOut = {}; // reset as per the invariant
+		gravForceRecalc = true; // gravOut changed outside DispatchNewtonianGravity
 	}
 	if (!grav && enable)
 	{

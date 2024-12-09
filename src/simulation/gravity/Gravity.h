@@ -9,7 +9,7 @@ protected:
 
 public:
 	// potentially clobbers gravIn
-	void Exchange(GravityOutput &gravOut, GravityInput &gravIn);
+	void Exchange(GravityOutput &gravOut, GravityInput &gravIn, bool forceRecalc);
 
 	static GravityPtr Create();
 };

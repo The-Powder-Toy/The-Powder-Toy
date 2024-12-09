@@ -38,6 +38,7 @@ struct RenderableSimulation
 {
 	GravityInput gravIn;
 	GravityOutput gravOut; // invariant: when grav is empty, this is in its default-constructed state
+	bool gravForceRecalc = true;
 	std::vector<sign> signs;
 
 	int currentTick = 0;
