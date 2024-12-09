@@ -32,13 +32,15 @@ static int allocate(lua_State *L)
 	lsi->gameModel->BuildMenus();
 	auto index = *lsi->gameModel->GetToolIndex(lsi->gameModel->GetToolFromIdentifier(identifier));
 	lsi->customTools.resize(std::max(int(lsi->customTools.size()), index + 1));
+	lsi->customTools[index].valid = true;
 	lua_pushinteger(L, index);
 	return 1;
 }
 
-static bool IsDefault(Tool *tool)
+static bool IsCustom(int index)
 {
-	return tool->Identifier.BeginsWith("DEFAULT_");
+	auto *lsi = GetLSI();
+	return index >= 0 && index < int(lsi->customTools.size()) && lsi->customTools[index].valid;
 }
 
 static int ffree(lua_State *L)
@@ -50,9 +52,9 @@ static int ffree(lua_State *L)
 	{
 		return luaL_error(L, "Invalid tool");
 	}
-	if (IsDefault(tool))
+	if (!IsCustom(index))
 	{
-		return luaL_error(L, "Cannot free default tools");
+		return luaL_error(L, "Can only free custom tools");
 	}
 	lsi->customTools[index] = {};
 	lsi->gameModel->FreeTool(tool);
@@ -285,6 +287,10 @@ static int property(lua_State *L)
 	{
 		return luaL_error(L, "Invalid tool");
 	}
+	if (lua_gettop(L) > 2 && !IsCustom(index))
+	{
+		return luaL_error(L, "Can only change properties of custom tools");
+	}
 	ByteString propertyName = tpt_lua_checkByteString(L, 2);
 	auto handleCallback = [lsi, L, index, tool, &propertyName](
 		auto customToolMember,
@@ -296,10 +302,6 @@ static int property(lua_State *L)
 		{
 			if (lua_gettop(L) > 2)
 			{
-				if (IsDefault(tool))
-				{
-					luaL_error(L, "Cannot change callbacks of default tools");
-				}
 				if (lua_type(L, 3) == LUA_TFUNCTION)
 				{
 					(lsi->customTools[index].*customToolMember).Assign(L, 3);
@@ -383,6 +385,19 @@ static int exists(lua_State *L)
 	return 1;
 }
 
+static int isCustom(lua_State *L)
+{
+	auto *lsi = GetLSI();
+	int index = luaL_checkinteger(L, 1);
+	auto *tool = lsi->gameModel->GetToolByIndex(index);
+	if (!tool)
+	{
+		return luaL_error(L, "Invalid tool");
+	}
+	lua_pushboolean(L, IsCustom(index));
+	return 1;
+}
+
 void LuaTools::Open(lua_State *L)
 {
 	auto *lsi = GetLSI();
@@ -391,6 +406,7 @@ void LuaTools::Open(lua_State *L)
 		LFUNC(allocate),
 		LFUNC(property),
 		LFUNC(exists),
+		LFUNC(isCustom),
 #undef LFUNC
 		{ "free", ffree },
 		{ NULL, NULL }

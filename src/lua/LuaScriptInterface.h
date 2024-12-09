@@ -60,6 +60,7 @@ struct CustomElement
 
 struct CustomTool
 {
+	bool valid = false;
 	LuaSmartRef perform;
 	LuaSmartRef click;
 	LuaSmartRef drag;
