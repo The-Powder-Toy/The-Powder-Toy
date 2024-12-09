@@ -261,16 +261,23 @@ if not is_debug
 	project_cpp_args += args_ccomp_opt
 endif
 
-if not is_debug
-	args_ccomp_lto = []
-	if cpp_compiler.get_id() in [ 'clang', 'clang-cl' ]
-		# use ThinLTO for Clang/LLVM
-		args_ccomp_lto += [ '-flto=thin' ]
-	elif cpp_compiler.get_argument_syntax() == 'msvc'
-		args_ccomp_lto += [ '/GL' ]
+lto = get_option('lto')
+if cpp_compiler.get_argument_syntax() == 'msvc'
+	if lto
+		# apparently meson doesn't know how to tell msvc to use lto: b_lto doesn't even exist when using msvc
+		# https://github.com/mesonbuild/meson/blob/1.4.2/mesonbuild/compilers/mixins/visualstudio.py#L113
+		# so we do it ourselves
+		project_cpp_args += [ '/GL' ]
 		project_link_args += [ '/LTCG' ]
 	endif
-	project_cpp_args += args_ccomp_lto
+else
+	target_options += [ 'b_lto=@0@'.format(lto) ]
+	if lto
+		if cpp_compiler.get_id() in [ 'clang', 'clang-cl' ]
+			# use ThinLTO for Clang/LLVM
+			project_cpp_args += [ '-flto=thin' ]
+		endif
+	endif
 endif
 
 if cpp_compiler.get_argument_syntax() == 'msvc'
@@ -358,10 +365,12 @@ if host_platform == 'windows'
 			endif
 		endforeach
 	endif
-	if tpt_libs_static == 'static' and host_libc == 'msvc'
-		target_options += [
-			'b_vscrt=static_from_buildtype',
-		]
+	if host_libc == 'msvc'
+		if tpt_libs_static == 'static'
+			target_options += [ 'b_vscrt=static_from_buildtype' ]
+		else
+			target_options += [ 'b_vscrt=from_buildtype' ]
+		endif
 	endif
 	foreach def : defs_ccomp_win
 		if cpp_compiler.get_argument_syntax() == 'msvc'

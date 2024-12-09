@@ -6,6 +6,12 @@ option(
 	description: 'Build statically using libraries present on the system (\'system\') or using prebuilt libraries official builds use (\'prebuilt\')'
 )
 option(
+	'lto',
+	type: 'boolean',
+	value: false,
+	description: 'Link-time optimization, mostly a wrapper around the b_lto built-in option'
+)
+option(
 	'beta',
 	type: 'boolean',
 	value: false,
