@@ -280,13 +280,22 @@ else
 	endif
 endif
 
+cpp_eh = 'default'
 if cpp_compiler.get_argument_syntax() == 'msvc'
-	args_msvc = [
+	project_cpp_args += [
 		'/GS',
 		'/D_SCL_SECURE_NO_WARNINGS',
 	]
-	project_cpp_args += args_msvc
+	# https://learn.microsoft.com/en-us/cpp/build/reference/eh-exception-handling-model?view=msvc-170&redirectedfrom=MSDN
+	# the default exception handling mode is 'sc', which guarantees to the compiler that functions with C linkage never throw
+	# exceptions. C++-aware Lua throws exceptions, but its functions are designed have C++ linkage, so this is normally not an issue.
+	# LuaJIT also throws exceptions, but its functions are designed to have C linkage, which is sad >_> not much we can do there.
+	# further, the functions in our builds of C++-aware Lua actually have C linkage for the sake of simplicity (since the codebase works
+	# with both kinds of Lua and LuaJIT uses C linkage). the fact that functions with C linkage may throw exceptions means that the
+	# correct exception handling mode to use is 's'
+	cpp_eh = 's'
 endif
+target_options += [ 'cpp_eh=@0@'.format(cpp_eh) ]
 
 # clang-cl supports both syntaxes. use the GCC one.
 if cpp_compiler.get_argument_syntax() == 'msvc' and cpp_compiler.get_id() not in [ 'clang-cl' ]
