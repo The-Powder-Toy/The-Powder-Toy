@@ -3740,6 +3740,7 @@ void Simulation::BeforeSim()
 			air->update_airh();
 
 		DispatchNewtonianGravity();
+		// gravIn is now potentially garbage, which is ok, we were going to clear it for the frame anyway
 		for (auto p : gravIn.mass.Size().OriginRect())
 		{
 			gravIn.mass[p] = 0.f;
@@ -3964,6 +3965,8 @@ void Simulation::ResetNewtonianGravity(GravityInput newGravIn, GravityOutput new
 {
 	gravIn = newGravIn;
 	DispatchNewtonianGravity();
+	// gravIn is now potentially garbage, set it again
+	gravIn = newGravIn;
 	if (grav)
 	{
 		gravOut = newGravOut;
@@ -3981,7 +3984,10 @@ void Simulation::EnableNewtonianGravity(bool enable)
 	if (!grav && enable)
 	{
 		grav = Gravity::Create();
+		auto oldGravIn = gravIn;
 		DispatchNewtonianGravity();
+		// gravIn is now potentially garbage, set it again
+		gravIn = std::move(oldGravIn);
 	}
 }
 

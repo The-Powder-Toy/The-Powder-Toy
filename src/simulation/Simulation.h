@@ -220,10 +220,11 @@ public:
 	~Simulation();
 
 	void EnableNewtonianGravity(bool enable);
-	void ResetNewtonianGravity(GravityInput newGravIn, GravityOutput newGravOut);
-	void DispatchNewtonianGravity();
-	void UpdateGravityMask();
 
 private:
 	CoordStack& getCoordStackSingleton();
+
+	void ResetNewtonianGravity(GravityInput newGravIn, GravityOutput newGravOut);
+	void DispatchNewtonianGravity();
+	void UpdateGravityMask();
 };

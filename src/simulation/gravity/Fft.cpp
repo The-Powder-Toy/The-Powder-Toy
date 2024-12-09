@@ -204,7 +204,7 @@ void GravityImpl::Init()
 	});
 }
 
-void Gravity::Exchange(GravityOutput &gravOut, const GravityInput &gravIn)
+void Gravity::Exchange(GravityOutput &gravOut, GravityInput &gravIn)
 {
 	auto *fftGravity = static_cast<GravityImpl *>(this);
 
@@ -231,7 +231,7 @@ void Gravity::Exchange(GravityOutput &gravOut, const GravityInput &gravIn)
 	    std::memcmp(&fftGravity->gravIn.mask[{ 0, 0 }], &gravIn.mask[{ 0, 0 }], NCELL * sizeof(float)))
 	{
 		fftGravity->copyGravOut = true;
-		fftGravity->gravIn = gravIn;
+		std::swap(gravIn, fftGravity->gravIn);
 	}
 
 	fftGravity->Dispatch();
