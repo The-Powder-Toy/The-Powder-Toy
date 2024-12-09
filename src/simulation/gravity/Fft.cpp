@@ -232,9 +232,8 @@ void Gravity::Exchange(GravityOutput &gravOut, GravityInput &gravIn)
 	{
 		fftGravity->copyGravOut = true;
 		std::swap(gravIn, fftGravity->gravIn);
+		fftGravity->Dispatch();
 	}
-
-	fftGravity->Dispatch();
 }
 
 GravityPtr Gravity::Create()
