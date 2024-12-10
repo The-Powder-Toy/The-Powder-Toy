@@ -436,7 +436,7 @@ void Air::ApproximateBlockAirMaps()
 			}
 		}
 		// mostly accurate insulator blocking, besides checking GEL
-		else if ((type == PT_HSWC && sim.parts[i].life != 10) || elements[type].HeatConduct <= (sim.rng()%250))
+		else if (sim.IsHeatInsulator(sim.parts[i]) || elements[type].HeatConduct <= (sim.rng()%250))
 		{
 			int x = ((int)(sim.parts[i].x+0.5f))/CELL, y = ((int)(sim.parts[i].y+0.5f))/CELL;
 			if (InBounds(x, y) && !(bmap_blockairh[y][x]&0x8))
