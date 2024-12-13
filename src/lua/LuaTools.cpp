@@ -24,6 +24,10 @@ static int allocate(lua_State *L)
 	}
 	auto *lsi = GetLSI();
 	auto identifier = group + "_TOOL_" + name;
+	if (lsi->gameModel->GetToolFromIdentifier(identifier))
+	{
+		return luaL_error(L, "Tool identifier already in use.");
+	}
 	{
 		SimTool tool;
 		tool.Identifier = identifier;
