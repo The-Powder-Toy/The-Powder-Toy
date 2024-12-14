@@ -52,6 +52,7 @@ tpt.reset_velocity      = sim.resetVelocity
 tpt.set_clipboard       = plat.clipboardPaste
 tpt.setdrawcap          = tpt.drawCap
 tpt.setfpscap           = tpt.fpsCap
+tpt.get_numOfParts      = sim.partCount
 ui.MOUSE_UP_BLUR        = ui.MOUSEUP_BLUR
 ui.MOUSE_UP_DRAW_END    = ui.MOUSEUP_DRAWEND
 ui.MOUSE_UP_NORMAL      = ui.MOUSEUP_NORMAL
@@ -425,10 +426,6 @@ do
 	function tpt.getPartIndex()
 		return index
 	end
-end
-
-function tpt.get_numOfParts()
-	return sim.NUM_PARTS
 end
 
 function tpt.element(thing)

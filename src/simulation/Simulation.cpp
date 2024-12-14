@@ -131,6 +131,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 			break;
 		auto i = pfree;
 		pfree = parts[i].life;
+		NUM_PARTS += 1;
 		if (i > parts_lastActiveIndex)
 			parts_lastActiveIndex = i;
 		parts[i] = tempPart;
@@ -990,6 +991,7 @@ void Simulation::clear_sim(void)
 		parts[i].life = i+1;
 	parts[NPART-1].life = -1;
 	pfree = 0;
+	NUM_PARTS = 0;
 	parts_lastActiveIndex = 0;
 	memset(pmap, 0, sizeof(pmap));
 	memset(fvx, 0, sizeof(fvx));
@@ -1743,6 +1745,7 @@ void Simulation::kill_part(int i)//kills particle number i
 	parts[i].type = PT_NONE;
 	parts[i].life = pfree;
 	pfree = i;
+	NUM_PARTS -= 1;
 }
 
 // Changes the type of particle number i, to t.  This also changes pmap at the same time
@@ -1847,34 +1850,26 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			return -1;
 	}
 
-	if (p == -1)//creating from anything but brush
+	if (p == -1 || //creating from anything but brush
+	    p == -2 || //creating from brush
+	    p == -3) //skip pmap checks, e.g. for sing explosion
 	{
-		// If there is a particle, only allow creation if the new particle can occupy the same space as the existing particle
-		// If there isn't a particle but there is a wall, check whether the new particle is allowed to be in it
-		//   (not "!=2" for wall check because eval_move returns 1 for moving into empty space)
-		// If there's no particle and no wall, assume creation is allowed
-		if (pmap[y][x] ? (eval_move(t, x, y, NULL) != 2) : (bmap[y/CELL][x/CELL] && eval_move(t, x, y, NULL) == 0))
+		if (p == -1)
 		{
-			return -1;
+			// If there is a particle, only allow creation if the new particle can occupy the same space as the existing particle
+			// If there isn't a particle but there is a wall, check whether the new particle is allowed to be in it
+			//   (not "!=2" for wall check because eval_move returns 1 for moving into empty space)
+			// If there's no particle and no wall, assume creation is allowed
+			if (pmap[y][x] ? (eval_move(t, x, y, NULL) != 2) : (bmap[y/CELL][x/CELL] && eval_move(t, x, y, NULL) == 0))
+			{
+				return -1;
+			}
 		}
 		if (pfree == -1)
 			return -1;
 		i = pfree;
 		pfree = parts[i].life;
-	}
-	else if (p == -2)//creating from brush
-	{
-		if (pfree == -1)
-			return -1;
-		i = pfree;
-		pfree = parts[i].life;
-	}
-	else if (p == -3)//skip pmap checks, e.g. for sing explosion
-	{
-		if (pfree == -1)
-			return -1;
-		i = pfree;
-		pfree = parts[i].life;
+		NUM_PARTS += 1;
 	}
 	else
 	{
@@ -1997,6 +1992,7 @@ void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLO
 		return;
 
 	pfree = parts[i].life;
+	NUM_PARTS += 1;
 	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
 
 	parts[i].type = PT_PHOT;
@@ -2035,6 +2031,7 @@ void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going throug
 		return;
 
 	pfree = parts[i].life;
+	NUM_PARTS += 1;
 	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
 
 	lr = rng.between(0, 1);

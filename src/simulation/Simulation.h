@@ -114,7 +114,6 @@ public:
 	int deco_space = DECOSPACE_SRGB;
 
 	// initialized in clear_sim
-	int pfree;
 	bool elementRecount;
 	unsigned char fighcount; //Contains the number of fighters
 	uint64_t frameCount;
@@ -222,10 +221,17 @@ public:
 
 	void EnableNewtonianGravity(bool enable);
 
+	bool MaxPartsReached() const
+	{
+		return pfree == -1;
+	}
+
 private:
 	CoordStack& getCoordStackSingleton();
 
 	void ResetNewtonianGravity(GravityInput newGravIn, GravityOutput newGravOut);
 	void DispatchNewtonianGravity();
 	void UpdateGravityMask();
+
+	int pfree;
 };
