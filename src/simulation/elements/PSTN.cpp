@@ -172,7 +172,7 @@ static int update(UPDATE_FUNC_ARGS)
 							if(state == PISTON_EXTEND) {
 								if(armCount+pistonCount > armLimit)
 									pistonCount = armLimit-armCount;
-								if(pistonCount >=minextend) {
+								if((pistonCount >= minextend)||(pistonCount > 0)) {
 									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, minextend, minretract, true);
 									if(newSpace) {
 										//Create new piston section
@@ -193,7 +193,7 @@ static int update(UPDATE_FUNC_ARGS)
 							} else if(state == PISTON_RETRACT) {
 								if(pistonCount > armCount)
 									pistonCount = armCount;
-								if(armCount && pistonCount >= minretract) {
+								if((armCount && pistonCount >= minretract)||(armCount && pistonCount > 0)) {
 									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true, parts[i].ctype, minextend, minretract, true);
 									movedPiston = true;
 								}
@@ -277,10 +277,10 @@ static int MoveStack(Simulation* sim, int stackX, int stackY, int directionX, in
 		}
 		if (!retract) {
 			if (amount < minextend)
-				amount = 0;
+				return 0;
 		} else {
 			if (amount < minretract)
-				amount = 0;
+				return 0;
 		}
 
 		//If the piston is pushing frame, iterate out from the centre to the edge and push everything resting on frame
@@ -336,28 +336,26 @@ static int MoveStack(Simulation* sim, int stackX, int stackY, int directionX, in
 	} else {
 		StackData stackData = CanMoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block);
 		int currentPos = stackData.pushed + stackData.spaces;
-		if (stackData.spaces>=minextend)
+		if (currPos && stackData.spaces >= minextend)
 		{
-			if(currentPos>0){
-				//Move particles
-				int possibleMovement = 0;
-				for(int j = currentPos-1; j >= 0; j--) {
-					int jP = tempParts[j];
-					if(jP < 0) {
-						possibleMovement++; //increased count when no particle at j spot in stack
-						continue;
-					}
-					if(!possibleMovement)
-						continue;
-					int srcX = (int)(sim->parts[jP].x + 0.5f), srcY = (int)(sim->parts[jP].y + 0.5f);
-					int destX = srcX + directionX * possibleMovement, destY = srcY + directionY * possibleMovement;
-					sim->pmap[srcY][srcX] = 0;
-					sim->parts[jP].x = float(destX);
-					sim->parts[jP].y = float(destY);
-					sim->pmap[destY][destX] = PMAP(jP, sim->parts[jP].type);
+			//Move particles
+			int possibleMovement = 0;
+			for(int j = currentPos-1; j >= 0; j--) {
+				int jP = tempParts[j];
+				if(jP < 0) {
+					possibleMovement++; //increased count when no particle at j spot in stack
+					continue;
 				}
-				return possibleMovement;
+				if(!possibleMovement)
+					continue;
+				int srcX = (int)(sim->parts[jP].x + 0.5f), srcY = (int)(sim->parts[jP].y + 0.5f);
+				int destX = srcX + directionX * possibleMovement, destY = srcY + directionY * possibleMovement;
+				sim->pmap[srcY][srcX] = 0;
+				sim->parts[jP].x = float(destX);
+				sim->parts[jP].y = float(destY);
+				sim->pmap[destY][destX] = PMAP(jP, sim->parts[jP].type);
 			}
+			return possibleMovement;
 		}
 	}
 	return 0;
