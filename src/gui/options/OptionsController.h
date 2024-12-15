@@ -34,6 +34,7 @@ public:
 	void SetNativeClipoard(bool nativeClipoard);
 	void SetResizable(bool resizable);
 	void SetFastQuit(bool fastquit);
+	void SetGlobalQuit(bool newGlobalQuit);
 	void SetDecoSpace(int decoSpace);
 	void SetShowAvatars(bool showAvatars);
 	void SetMouseClickrequired(bool mouseClickRequired);

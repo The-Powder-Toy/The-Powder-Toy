@@ -361,6 +361,7 @@ AnyType CommandInterface::tptS_set(std::deque<String> * words)
 	}
 	auto &propInfo = Particle::GetProperties()[*prop];
 
+	// assume that value can be anything
 	if (value.GetType() == TypeNumber && propInfo.Type == StructProperty::Float)
 	{
 		value = FloatType(NumberType(value).Value());
@@ -369,27 +370,38 @@ AnyType CommandInterface::tptS_set(std::deque<String> * words)
 	{
 		value = NumberType(FloatType(value).Value());
 	}
+	// value can still be almost anything, but if it was NumberType or FloatType,
+	// at least it now matches the float-ness, if not the signedness, of prop
 	AccessProperty changeProperty;
 	try
 	{
 		switch (value.GetType())
 		{
 		case TypeNumber:
+			// get a number (an int) => take an int
 			changeProperty.propertyIndex = *prop;
 			changeProperty.propertyValue = NumberType(value).Value();
+			if (propInfo.Type == StructProperty::UInteger)
+			{
+				// actually want an unsigned int => convert the int taken to one
+				changeProperty.propertyValue = static_cast<unsigned int>(std::get<int>(changeProperty.propertyValue));
+			}
 			break;
 
 		case TypeFloat:
+			// get a float => take a float
 			changeProperty.propertyIndex = *prop;
 			changeProperty.propertyValue = FloatType(value).Value();
 			break;
 
 		case TypeString:
+			// AccessProperty::Parse returns the appropriate variant
 			changeProperty = AccessProperty::Parse(*prop, StringType(value).Value());
 			break;
 
 		default:
-			break;
+			// get something else => bail
+			throw GeneralException("Invalid property value");
 		}
 	}
 	catch (const AccessProperty::ParseError &ex)

@@ -286,6 +286,9 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		fastquit = addCheckbox(0, "Fast quit", "Always exit completely when hitting close", [this] {
 			c->SetFastQuit(fastquit->GetChecked());
 		});
+		globalQuit = addCheckbox(0, "Global quit shortcut", "Ctrl+q works everywhere", [this] {
+			c->SetGlobalQuit(globalQuit->GetChecked());
+		});
 	}
 	showAvatars = addCheckbox(0, "Show avatars", "Disable if you have a slow connection", [this] {
 		c->SetShowAvatars(showAvatars->GetChecked());
@@ -486,6 +489,10 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	if (fastquit)
 	{
 		fastquit->SetChecked(sender->GetFastQuit());
+	}
+	if (globalQuit)
+	{
+		globalQuit->SetChecked(sender->GetGlobalQuit());
 	}
 	if (nativeClipoard)
 	{

@@ -51,7 +51,6 @@ struct HistoryEntry
 
 class GameModel
 {
-	std::unique_ptr<http::ExecVoteRequest> execVoteRequest;
 
 private:
 	std::vector<Notification*> notifications;
@@ -74,7 +73,13 @@ private:
 	int activeMenu;
 	int currentBrush;
 	std::vector<std::unique_ptr<Brush>> brushList;
-	std::unique_ptr<SaveInfo> currentSave;
+	struct SaveInfoWrapper
+	{
+		std::unique_ptr<SaveInfo> saveInfo;
+		std::optional<int> queuedVote;
+		std::unique_ptr<http::ExecVoteRequest> execVoteRequest;
+	};
+	SaveInfoWrapper currentSave;
 	std::unique_ptr<SaveFile> currentFile;
 	Tool *lastTool = nullptr;
 	Tool **activeTools = nullptr;
@@ -130,7 +135,6 @@ private:
 
 	void SaveToSimParameters(const GameSave &saveData);
 
-	std::optional<int> queuedVote;
 	bool threadedRendering = false;
 
 	GameView *view;

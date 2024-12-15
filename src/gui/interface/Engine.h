@@ -51,6 +51,8 @@ namespace ui
 		inline int GetDrawingFrequencyLimit() {return drawingFrequencyLimit;}
 		void SetFastQuit(bool fastquit) { FastQuit = fastquit; }
 		inline bool GetFastQuit() {return FastQuit; }
+		void SetGlobalQuit(bool newGlobalQuit) { GlobalQuit = newGlobalQuit; }
+		inline bool GetGlobalQuit() {return GlobalQuit; }
 
 		void Tick();
 		void Draw();
@@ -110,6 +112,7 @@ namespace ui
 
 		bool running_;
 		bool FastQuit;
+		bool GlobalQuit;
 
 		long unsigned int lastTick;
 		int mouseb_;

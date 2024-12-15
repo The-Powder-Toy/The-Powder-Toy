@@ -308,7 +308,7 @@ if [[ "$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "windows-mingw" ]]; then
 	meson_configure+=$'\t'-Dwindows_icons=false
 fi
 if [[ $BSH_DEBUG_RELEASE-$BSH_STATIC_DYNAMIC == release-static ]]; then
-	meson_configure+=$'\t'-Db_lto=true
+	meson_configure+=$'\t'-Dlto=true
 fi
 if [[ $BSH_HOST_PLATFORM-$BSH_HOST_ARCH == darwin-aarch64 ]]; then
 	meson_configure+=$'\t'--cross-file=.github/macaa64-ghactions.ini

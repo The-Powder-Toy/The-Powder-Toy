@@ -193,7 +193,6 @@ GameModel::~GameModel()
 		prefs.Set("Decoration.Alpha", (int)colour.Alpha);
 	}
 
-	view->PauseRendererThread();
 	delete sim;
 	delete ren;
 	//if(activeTools)
@@ -557,33 +556,33 @@ void GameModel::SetUndoHistoryLimit(unsigned int undoHistoryLimit_)
 
 void GameModel::SetVote(int direction)
 {
-	queuedVote = direction;
+	currentSave.queuedVote = direction;
 }
 
 void GameModel::Tick()
 {
-	if (execVoteRequest && execVoteRequest->CheckDone())
+	if (currentSave.execVoteRequest && currentSave.execVoteRequest->CheckDone())
 	{
 		try
 		{
-			execVoteRequest->Finish();
-			currentSave->vote = execVoteRequest->Direction();
+			currentSave.execVoteRequest->Finish();
+			currentSave.saveInfo->vote = currentSave.execVoteRequest->Direction();
 			notifySaveChanged();
 		}
 		catch (const http::RequestError &ex)
 		{
 			new ErrorMessage("Error while voting", ByteString(ex.what()).FromUtf8());
 		}
-		execVoteRequest.reset();
+		currentSave.execVoteRequest.reset();
 	}
-	if (!execVoteRequest && queuedVote)
+	if (!currentSave.execVoteRequest && currentSave.queuedVote)
 	{
-		if (currentSave)
+		if (currentSave.saveInfo)
 		{
-			execVoteRequest = std::make_unique<http::ExecVoteRequest>(currentSave->GetID(), *queuedVote);
-			execVoteRequest->Start();
+			currentSave.execVoteRequest = std::make_unique<http::ExecVoteRequest>(currentSave.saveInfo->GetID(), *currentSave.queuedVote);
+			currentSave.execVoteRequest->Start();
 		}
-		queuedVote.reset();
+		currentSave.queuedVote.reset();
 	}
 }
 
@@ -718,13 +717,15 @@ std::vector<Menu *> GameModel::GetMenuList()
 
 SaveInfo *GameModel::GetSave() // non-owning
 {
-	return currentSave.get();
+	return currentSave.saveInfo.get();
 }
 
 std::unique_ptr<SaveInfo> GameModel::TakeSave()
 {
 	// we don't notify listeners because we'll get a new save soon anyway
-	return std::move(currentSave);
+	SaveInfoWrapper empty;
+	std::swap(empty, currentSave);
+	return std::move(empty.saveInfo);
 }
 
 void GameModel::SaveToSimParameters(const GameSave &saveData)
@@ -754,12 +755,12 @@ void GameModel::SaveToSimParameters(const GameSave &saveData)
 
 void GameModel::SetSave(std::unique_ptr<SaveInfo> newSave, bool invertIncludePressure)
 {
-	currentSave = std::move(newSave);
+	currentSave = { std::move(newSave) };
 	currentFile.reset();
 
-	if (currentSave && currentSave->GetGameSave())
+	if (currentSave.saveInfo && currentSave.saveInfo->GetGameSave())
 	{
-		auto *saveData = currentSave->GetGameSave();
+		auto *saveData = currentSave.saveInfo->GetGameSave();
 		SaveToSimParameters(*saveData);
 		sim->clear_sim();
 		view->PauseRendererThread();
@@ -769,23 +770,23 @@ void GameModel::SetSave(std::unique_ptr<SaveInfo> newSave, bool invertIncludePre
 		// Add in the correct info
 		if (saveData->authors.size() == 0)
 		{
-			auto gameSave = currentSave->TakeGameSave();
+			auto gameSave = currentSave.saveInfo->TakeGameSave();
 			gameSave->authors["type"] = "save";
-			gameSave->authors["id"] = currentSave->id;
-			gameSave->authors["username"] = currentSave->userName;
-			gameSave->authors["title"] = currentSave->name.ToUtf8();
-			gameSave->authors["description"] = currentSave->Description.ToUtf8();
-			gameSave->authors["published"] = (int)currentSave->Published;
-			gameSave->authors["date"] = (Json::Value::UInt64)currentSave->updatedDate;
-			currentSave->SetGameSave(std::move(gameSave));
+			gameSave->authors["id"] = currentSave.saveInfo->id;
+			gameSave->authors["username"] = currentSave.saveInfo->userName;
+			gameSave->authors["title"] = currentSave.saveInfo->name.ToUtf8();
+			gameSave->authors["description"] = currentSave.saveInfo->Description.ToUtf8();
+			gameSave->authors["published"] = (int)currentSave.saveInfo->Published;
+			gameSave->authors["date"] = (Json::Value::UInt64)currentSave.saveInfo->updatedDate;
+			currentSave.saveInfo->SetGameSave(std::move(gameSave));
 		}
 		// This save was probably just created, and we didn't know the ID when creating it
 		// Update with the proper ID
 		else if (saveData->authors.get("id", -1) == 0 || saveData->authors.get("id", -1) == -1)
 		{
-			auto gameSave = currentSave->TakeGameSave();
-			gameSave->authors["id"] = currentSave->id;
-			currentSave->SetGameSave(std::move(gameSave));
+			auto gameSave = currentSave.saveInfo->TakeGameSave();
+			gameSave->authors["id"] = currentSave.saveInfo->id;
+			currentSave.saveInfo->SetGameSave(std::move(gameSave));
 		}
 		Client::Ref().OverwriteAuthorInfo(saveData->authors);
 	}
@@ -807,7 +808,7 @@ std::unique_ptr<SaveFile> GameModel::TakeSaveFile()
 void GameModel::SetSaveFile(std::unique_ptr<SaveFile> newSave, bool invertIncludePressure)
 {
 	currentFile = std::move(newSave);
-	currentSave.reset();
+	currentSave = {};
 
 	if (currentFile && currentFile->GetGameSave())
 	{
