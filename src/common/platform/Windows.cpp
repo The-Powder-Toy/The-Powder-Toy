@@ -309,7 +309,7 @@ bool Install()
 	return ok;
 }
 
-bool UpdateStart(const std::vector<char> &data)
+bool UpdateStart(std::span<const char> data)
 {
 	ByteString exeName = Platform::ExecutableName(), updName;
 

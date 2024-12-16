@@ -176,7 +176,8 @@ LuaScriptInterface::LuaScriptInterface(GameController *newGameController, GameMo
 		ref.Assign(L, -1);
 		lua_pop(L, 1);
 	}
-	if (luaL_loadbuffer(L, (const char *)compat_lua, compat_lua_size, "@[built-in compat.lua]") || tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
+	auto compatSpan = compat_lua.AsCharSpan();
+	if (luaL_loadbuffer(L, compatSpan.data(), compatSpan.size(), "@[built-in compat.lua]") || tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
 	{
 		throw std::runtime_error(ByteString("failed to load built-in compat: ") + tpt_lua_toByteString(L, -1));
 	}

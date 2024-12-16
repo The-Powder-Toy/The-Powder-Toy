@@ -142,7 +142,7 @@ void VideoBuffer::ResizeToFit(Vec2<int> bound, bool resample)
 	Resize(size, resample);
 }
 
-std::unique_ptr<VideoBuffer> VideoBuffer::FromPNG(std::vector<char> const &data)
+std::unique_ptr<VideoBuffer> VideoBuffer::FromPNG(std::span<const char> data)
 {
 	auto video = format::PixelsFromPNG(data, 0x000000_rgb);
 	if (video)

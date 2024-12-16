@@ -34,7 +34,7 @@ void FontEditor::ReadDataFile(ByteString dataFile)
 	std::vector<char> fontDataBuf;
 	std::vector<int> fontPtrsBuf;
 	std::vector< std::array<int, 2> > fontRangesBuf;
-	if (BZ2WDecompress(fontDataBuf, fileData.data(), fileData.size()) != BZ2WDecompressOk)
+	if (BZ2WDecompress(fontDataBuf, fileData) != BZ2WDecompressOk)
 	{
 		throw std::runtime_error("Could not decompress font data");
 	}
@@ -131,7 +131,7 @@ void FontEditor::WriteDataFile(ByteString dataFile, std::vector<unsigned char> c
 	}
 
 	std::vector<char> compressed;
-	if (BZ2WCompress(compressed, uncompressed.data(), uncompressed.size()) != BZ2WCompressOk)
+	if (BZ2WCompress(compressed, uncompressed) != BZ2WCompressOk)
 	{
 		throw std::runtime_error("Could not compress font data");
 	}

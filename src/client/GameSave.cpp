@@ -500,7 +500,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 
 	{
 		std::vector<char> bsonData;
-		switch (auto status = BZ2WDecompress(bsonData, (char *)(inputData + 12), inputDataLen - 12, toAlloc))
+		switch (auto status = BZ2WDecompress(bsonData, std::span(reinterpret_cast<const char *>(inputData + 12), inputDataLen - 12), toAlloc))
 		{
 		case BZ2WDecompressOk: break;
 		case BZ2WDecompressNomem: throw ParseException(ParseException::Corrupt, "Cannot allocate memory");
@@ -1393,7 +1393,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		throw ParseException(ParseException::InvalidDimensions, "Save data too large");
 
 	std::vector<char> bsonData;
-	switch (auto status = BZ2WDecompress(bsonData, (char *)(saveData + 12), dataLength - 12, size))
+	switch (auto status = BZ2WDecompress(bsonData, std::span(reinterpret_cast<const char *>(saveData + 12), dataLength - 12), size))
 	{
 	case BZ2WDecompressOk: break;
 	case BZ2WDecompressNomem: throw ParseException(ParseException::Corrupt, "Cannot allocate memory");
@@ -2632,7 +2632,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 
 
 	std::vector<char> outputData;
-	switch (auto status = BZ2WCompress(outputData, (char *)finalData, finalDataLen))
+	switch (auto status = BZ2WCompress(outputData, std::span(reinterpret_cast<const char *>(finalData), finalDataLen)))
 	{
 	case BZ2WCompressOk: break;
 	case BZ2WCompressNomem: throw BuildException(String::Build("Save error, out of memory"));

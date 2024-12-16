@@ -13,7 +13,7 @@ namespace http
 	{
 		auto [ status, data ] = Request::Finish();
 		ParseResponse(data, status, responseData);
-		auto vb = VideoBuffer::FromPNG(std::vector<char>(data.begin(), data.end()));
+		auto vb = VideoBuffer::FromPNG(data);
 		if (vb)
 		{
 			vb->Resize(requestedSize, true);

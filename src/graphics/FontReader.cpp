@@ -23,7 +23,7 @@ static bool InitFontData()
 	static std::vector<char> fontDataBuf;
 	static std::vector<int> fontPtrsBuf;
 	static std::vector< std::array<int, 2> > fontRangesBuf;
-	if (BZ2WDecompress(fontDataBuf, reinterpret_cast<const char *>(compressed_font_data), compressed_font_data_size) != BZ2WDecompressOk)
+	if (BZ2WDecompress(fontDataBuf, compressed_font_data.AsCharSpan()) != BZ2WDecompressOk)
 	{
 		return false;
 	}

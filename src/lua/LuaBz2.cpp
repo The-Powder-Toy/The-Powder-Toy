@@ -6,7 +6,7 @@ static int compress(lua_State *L)
 	auto src = tpt_lua_checkByteString(L, 1);
 	auto maxSize = size_t(luaL_optinteger(L, 2, 0));
 	std::vector<char> dest;
-	auto result = BZ2WCompress(dest, src.data(), src.size(), maxSize);
+	auto result = BZ2WCompress(dest, src, maxSize);
 #define RETURN_ERR(str) lua_pushnil(L); lua_pushinteger(L, int(result)); lua_pushliteral(L, str); return 3
 	switch (result)
 	{
@@ -24,7 +24,7 @@ static int decompress(lua_State *L)
 	auto src = tpt_lua_checkByteString(L, 1);
 	auto maxSize = size_t(luaL_optinteger(L, 2, 0));
 	std::vector<char> dest;
-	auto result = BZ2WDecompress(dest, src.data(), src.size(), maxSize);
+	auto result = BZ2WDecompress(dest, src, maxSize);
 #define RETURN_ERR(str) lua_pushnil(L); lua_pushinteger(L, int(result)); lua_pushliteral(L, str); return 3
 	switch (result)
 	{

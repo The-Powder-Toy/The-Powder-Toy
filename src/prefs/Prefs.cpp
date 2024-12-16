@@ -53,7 +53,7 @@ void Prefs::Write()
 	Json::StreamWriterBuilder wbuilder;
 	wbuilder["indentation"] = "\t";
 	ByteString data = Json::writeString(wbuilder, root);
-	if (!Platform::WriteFile(std::vector<char>(data.begin(), data.end()), path))
+	if (!Platform::WriteFile(data, path))
 	{
 		return;
 	}

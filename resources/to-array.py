@@ -20,15 +20,30 @@ bytes_str = ', '.join([ str(ch) for ch in data ])
 with open(output_cpp_path, 'w') as output_cpp_f:
 	output_cpp_f.write(f'''
 #include "{output_h_path}"
-const unsigned char {symbol_name}[] = {{ {bytes_str} }};
-const unsigned int {symbol_name}_size = {data_size};
+
+const struct {symbol_name}Resource {symbol_name} = {{{{{{ {bytes_str} }}}}}};
 ''')
 
 with open(output_h_path, 'w') as output_h_f:
 	output_h_f.write(f'''
 #pragma once
-extern const unsigned char {symbol_name}[];
-extern const unsigned int {symbol_name}_size;
+#include <array>
+#include <span>
+
+extern const struct {symbol_name}Resource
+{{
+	std::array<unsigned char, {data_size}> data;
+
+	std::span<const char> AsCharSpan() const
+	{{
+		return std::span(reinterpret_cast<const char *>(data.data()), data.size());
+	}}
+
+	std::span<const unsigned char> AsUcharSpan() const
+	{{
+		return std::span(data.data(), data.size());
+	}}
+}} {symbol_name};
 ''')
 
 def dep_escape(s):

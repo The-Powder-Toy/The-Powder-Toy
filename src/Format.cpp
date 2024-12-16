@@ -123,7 +123,7 @@ std::vector<char> format::PixelsToPPM(PlaneAdapter<std::vector<pixel>> const &in
 }
 
 static std::unique_ptr<PlaneAdapter<std::vector<uint32_t>>> readPNG(
-	std::vector<char> const &data,
+	std::span<const char> data,
 	// If omitted,
 	//   RGB data is returned with A=0xFF
 	//   RGBA data is returned as itself
@@ -218,12 +218,12 @@ static std::unique_ptr<PlaneAdapter<std::vector<uint32_t>>> readPNG(
 	return output;
 }
 
-std::unique_ptr<PlaneAdapter<std::vector<pixel_rgba>>> format::PixelsFromPNG(std::vector<char> const &data)
+std::unique_ptr<PlaneAdapter<std::vector<pixel_rgba>>> format::PixelsFromPNG(std::span<const char> data)
 {
 	return readPNG(data, std::nullopt);
 }
 
-std::unique_ptr<PlaneAdapter<std::vector<pixel>>> format::PixelsFromPNG(std::vector<char> const &data, RGB<uint8_t> background)
+std::unique_ptr<PlaneAdapter<std::vector<pixel>>> format::PixelsFromPNG(std::span<const char> data, RGB<uint8_t> background)
 {
 	return readPNG(data, background);
 }

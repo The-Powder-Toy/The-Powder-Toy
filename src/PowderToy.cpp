@@ -137,7 +137,7 @@ static void BlueScreen(String detailMessage, std::optional<std::vector<String>> 
 
 	auto crashLogData = errorText.ToUtf8();
 	std::cerr << crashLogData << std::endl;
-	Platform::WriteFile(std::vector<char>(crashLogData.begin(), crashLogData.end()), crashLogPath);
+	Platform::WriteFile(crashLogData, crashLogPath);
 
 	//Death loop
 	SDL_Event event;

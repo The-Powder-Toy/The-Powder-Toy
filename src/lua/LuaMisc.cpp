@@ -96,7 +96,7 @@ void LuaMisc::Tick(lua_State *L)
 				return;
 			}
 			ByteString filename = "autorun.lua";
-			if (!Platform::WriteFile(std::vector<char>(scriptData.begin(), scriptData.end()), filename))
+			if (!Platform::WriteFile(scriptData, filename))
 			{
 				complete({ Status::GetFailed{ String::Build("Unable to write to ", filename.FromUtf8()) } });
 				return;
@@ -177,7 +177,8 @@ static int record(lua_State *L)
 
 static int compatChunk(lua_State *L)
 {
-	lua_pushlstring(L, reinterpret_cast<const char *>(compat_lua), compat_lua_size);
+	auto data = compat_lua.AsCharSpan();
+	lua_pushlstring(L, data.data(), data.size());
 	return 1;
 }
 static int debug(lua_State *L)

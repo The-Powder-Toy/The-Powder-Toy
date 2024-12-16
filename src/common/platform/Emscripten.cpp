@@ -106,7 +106,7 @@ ByteString ExecutableName()
 	return DefaultDdir() + "/" + ExecutableNameFirstApprox(); // bogus
 }
 
-bool UpdateStart(const std::vector<char> &data)
+bool UpdateStart(std::span<const char> data)
 {
 	return false;
 }
