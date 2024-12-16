@@ -336,7 +336,7 @@ static int MoveStack(Simulation* sim, int stackX, int stackY, int directionX, in
 	} else {
 		StackData stackData = CanMoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block);
 		int currentPos = stackData.pushed + stackData.spaces;
-		if (currPos && stackData.spaces >= minextend)
+		if (currentPos && stackData.spaces >= minextend)
 		{
 			//Move particles
 			int possibleMovement = 0;
