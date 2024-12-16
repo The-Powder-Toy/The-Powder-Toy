@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
 		ren->BlendText({ x+8, y+8 }, "Save file invalid", 0xC0C0F0_rgb .WithAlpha(255));
 	}
 
-	if (auto data = VideoBuffer(ren->GetVideo()).ToPNG())
+	auto &video = ren->GetVideo();
+	if (auto data = VideoBuffer(video.data(), RES, video.Size().X).ToPNG())
 		Platform::WriteFile(*data, outputFilename);
 }
