@@ -172,7 +172,7 @@ static int update(UPDATE_FUNC_ARGS)
 							if(state == PISTON_EXTEND) {
 								if(armCount+pistonCount > armLimit)
 									pistonCount = armLimit-armCount;
-								if(pistonCount >= minextend&&pistonCount > 0) {
+								if (pistonCount >= minextend && pistonCount > 0) {
 									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, minextend, minretract, true);
 									if(newSpace) {
 										//Create new piston section
@@ -193,7 +193,7 @@ static int update(UPDATE_FUNC_ARGS)
 							} else if(state == PISTON_RETRACT) {
 								if(pistonCount > armCount)
 									pistonCount = armCount;
-								if(armCount && pistonCount >= minretract&&armCount && pistonCount > 0) {
+								if (armCount && pistonCount >= minretract && pistonCount > 0) {
 									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true, parts[i].ctype, minextend, minretract, true);
 									movedPiston = true;
 								}
