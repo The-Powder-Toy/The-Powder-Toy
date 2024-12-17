@@ -5,7 +5,7 @@ class ElementTool: public Tool
 {
 public:
 	ElementTool(int id, String name, String description,
-		RGB<uint8_t> colour, ByteString identifier, std::unique_ptr<VideoBuffer> (*textureGen)(int, Vec2<int>) = NULL):
+		RGB colour, ByteString identifier, std::unique_ptr<VideoBuffer> (*textureGen)(int, Vec2<int>) = NULL):
 		Tool(id, name, description, colour, identifier, textureGen)
 	{}
 

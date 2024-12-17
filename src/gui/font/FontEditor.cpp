@@ -479,14 +479,14 @@ void FontEditor::OnDraw()
 		std::array<std::array<char, MAX_WIDTH>, FONT_H> const &pixels = fontPixels[currentChar];
 
 		int areaWidth = 8 + width * FONT_SCALE + 8;
-		g->DrawFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ areaWidth, 8 + FONT_H * FONT_SCALE + 4 + FONT_H + 4 }), RGB<uint8_t>(bgR, bgG, bgB));
+		g->DrawFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ areaWidth, 8 + FONT_H * FONT_SCALE + 4 + FONT_H + 4 }), RGB(bgR, bgG, bgB));
 		for(int j = 0; j < FONT_H; j++)
 			for(int i = 0; i < width; i++)
-				g->BlendFilledRect(RectSized(Vec2{ 8 + i * FONT_SCALE, 8 + j * FONT_SCALE }, Vec2{ FONT_SCALE - grid, FONT_SCALE - grid }), RGBA<uint8_t>(fgR, fgG, fgB, pixels[j][i] * 255 / 3));
+				g->BlendFilledRect(RectSized(Vec2{ 8 + i * FONT_SCALE, 8 + j * FONT_SCALE }, Vec2{ FONT_SCALE - grid, FONT_SCALE - grid }), RGBA(fgR, fgG, fgB, pixels[j][i] * 255 / 3));
 
 		for(int j = 0; j < FONT_H; j++)
 			for(int i = 0; i < width; i++)
-				g->BlendPixel({ 8 + i, 8 + FONT_H * FONT_SCALE + 4 + j }, RGBA<uint8_t>(fgR, fgG, fgB, pixels[j][i] * 255 / 3));
+				g->BlendPixel({ 8 + i, 8 + FONT_H * FONT_SCALE + 4 + j }, RGBA(fgR, fgG, fgB, pixels[j][i] * 255 / 3));
 
 
 		if(rulers)

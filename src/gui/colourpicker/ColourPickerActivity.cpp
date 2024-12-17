@@ -278,7 +278,7 @@ void ColourPickerActivity::OnDraw()
 			int cg = 0;
 			int cb = 0;
 			HSV_to_RGB(hue, 255-saturation, currentValue, &cr, &cg, &cb);
-			g->BlendPixel({ currx, (saturation/2)+offset.Y }, RGBA<uint8_t>(cr, cg, cb, currentAlpha));
+			g->BlendPixel({ currx, (saturation/2)+offset.Y }, RGBA(cr, cg, cb, currentAlpha));
 		}
 	}
 
@@ -293,7 +293,7 @@ void ColourPickerActivity::OnDraw()
 		{
 			g->BlendPixel(
 				offset + hSlider->Position + Vec2{ rx, ry },
-				RGBA<uint8_t>(red, green, blue, currentAlpha)
+				RGBA(red, green, blue, currentAlpha)
 			);
 		}
 	}

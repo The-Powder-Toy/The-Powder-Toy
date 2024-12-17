@@ -16,7 +16,7 @@ class Element
 public:
 	ByteString Identifier;
 	String Name;
-	RGB<uint8_t> Colour;
+	RGB Colour;
 	int MenuVisible;
 	int MenuSection;
 	int Enabled;

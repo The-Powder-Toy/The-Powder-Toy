@@ -8,23 +8,23 @@
 #define clipRect() (static_cast<Derived const &>(*this).GetClipRect())
 
 template<typename Derived, typename V>
-static inline void drawPixelUnchecked(RasterDrawMethods<Derived> &self, V Derived::*video, Vec2<int> pos, RGB<uint8_t> colour)
+static inline void drawPixelUnchecked(RasterDrawMethods<Derived> &self, V Derived::*video, Vec2<int> pos, RGB colour)
 {
 	(static_cast<Derived &>(self).*video)[pos] = colour.Pack();
 }
 
 template<typename Derived, typename V>
-static inline void blendPixelUnchecked(RasterDrawMethods<Derived> &self, V Derived::*video, Vec2<int> pos, RGBA<uint8_t> colour)
+static inline void blendPixelUnchecked(RasterDrawMethods<Derived> &self, V Derived::*video, Vec2<int> pos, RGBA colour)
 {
 	pixel &px = (static_cast<Derived &>(self).*video)[pos];
-	px = RGB<uint8_t>::Unpack(px).Blend(colour).Pack();
+	px = RGB::Unpack(px).Blend(colour).Pack();
 }
 
 template<typename Derived, typename V>
 static inline void xorPixelUnchecked(RasterDrawMethods<Derived> &self, V Derived::*video, Vec2<int> pos)
 {
 	pixel &px = (static_cast<Derived &>(self).*video)[pos];
-	auto const c = RGB<uint8_t>::Unpack(px);
+	auto const c = RGB::Unpack(px);
 	if (2 * c.Red + 3 * c.Green + c.Blue < 512)
 		px = 0xC0C0C0_rgb .Pack();
 	else
@@ -32,36 +32,36 @@ static inline void xorPixelUnchecked(RasterDrawMethods<Derived> &self, V Derived
 }
 
 template<typename Derived>
-inline void RasterDrawMethods<Derived>::DrawPixel(Vec2<int> pos, RGB<uint8_t> colour)
+inline void RasterDrawMethods<Derived>::DrawPixel(Vec2<int> pos, RGB colour)
 {
 	if (clipRect().Contains(pos))
 		drawPixelUnchecked(*this, &Derived::video, pos, colour);
 }
 
 template<typename Derived>
-inline void RasterDrawMethods<Derived>::BlendPixel(Vec2<int> pos, RGBA<uint8_t> colour)
+inline void RasterDrawMethods<Derived>::BlendPixel(Vec2<int> pos, RGBA colour)
 {
 	if (clipRect().Contains(pos))
 		blendPixelUnchecked(*this, &Derived::video, pos, colour);
 }
 
 template<typename Derived>
-inline void RasterDrawMethods<Derived>::AddPixel(Vec2<int> pos, RGBA<uint8_t> colour)
+inline void RasterDrawMethods<Derived>::AddPixel(Vec2<int> pos, RGBA colour)
 {
 	if (clipRect().Contains(pos))
 	{
 		pixel &px = (static_cast<Derived &>(*this).video)[pos];
-		px = RGB<uint8_t>::Unpack(px).Add(colour).Pack();
+		px = RGB::Unpack(px).Add(colour).Pack();
 	}
 }
 
 template<typename Derived>
-inline void RasterDrawMethods<Derived>::AddFirePixel(Vec2<int> pos, RGB<uint8_t> colour, int fireAlpha)
+inline void RasterDrawMethods<Derived>::AddFirePixel(Vec2<int> pos, RGB colour, int fireAlpha)
 {
 	if (clipRect().Contains(pos))
 	{
 		pixel &px = (static_cast<Derived &>(*this).video)[pos];
-		px = RGB<uint8_t>::Unpack(px).AddFire(colour, fireAlpha).Pack();
+		px = RGB::Unpack(px).AddFire(colour, fireAlpha).Pack();
 	}
 }
 
@@ -73,7 +73,7 @@ inline void RasterDrawMethods<Derived>::XorPixel(Vec2<int> pos)
 }
 
 template<typename Derived>
-void RasterDrawMethods<Derived>::DrawLine(Vec2<int> pos1, Vec2<int> pos2, RGB<uint8_t> colour)
+void RasterDrawMethods<Derived>::DrawLine(Vec2<int> pos1, Vec2<int> pos2, RGB colour)
 {
 	RasterizeLine<false>(pos1, pos2, [this, colour](Vec2<int> pos) {
 		DrawPixel(pos, colour);
@@ -81,7 +81,7 @@ void RasterDrawMethods<Derived>::DrawLine(Vec2<int> pos1, Vec2<int> pos2, RGB<ui
 }
 
 template<typename Derived>
-void RasterDrawMethods<Derived>::BlendLine(Vec2<int> pos1, Vec2<int> pos2, RGBA<uint8_t> colour)
+void RasterDrawMethods<Derived>::BlendLine(Vec2<int> pos1, Vec2<int> pos2, RGBA colour)
 {
 	RasterizeLine<false>(pos1, pos2, [this, colour](Vec2<int> pos) {
 		BlendPixel(pos, colour);
@@ -89,7 +89,7 @@ void RasterDrawMethods<Derived>::BlendLine(Vec2<int> pos1, Vec2<int> pos2, RGBA<
 }
 
 template<typename Derived>
-void RasterDrawMethods<Derived>::AddLine(Vec2<int> pos1, Vec2<int> pos2, RGBA<uint8_t> colour)
+void RasterDrawMethods<Derived>::AddLine(Vec2<int> pos1, Vec2<int> pos2, RGBA colour)
 {
 	RasterizeLine<false>(pos1, pos2, [this, colour](Vec2<int> pos) {
 		AddPixel(pos, colour);
@@ -105,7 +105,7 @@ void RasterDrawMethods<Derived>::XorLine(Vec2<int> pos1, Vec2<int> pos2)
 }
 
 template<typename Derived>
-void RasterDrawMethods<Derived>::DrawRect(Rect<int> rect, RGB<uint8_t> colour)
+void RasterDrawMethods<Derived>::DrawRect(Rect<int> rect, RGB colour)
 {
 	RasterizeRect(rect, [this, colour](Vec2<int> pos) {
 		DrawPixel(pos, colour);
@@ -113,7 +113,7 @@ void RasterDrawMethods<Derived>::DrawRect(Rect<int> rect, RGB<uint8_t> colour)
 }
 
 template<typename Derived>
-void RasterDrawMethods<Derived>::BlendRect(Rect<int> rect, RGBA<uint8_t> colour)
+void RasterDrawMethods<Derived>::BlendRect(Rect<int> rect, RGBA colour)
 {
 	RasterizeRect(rect, [this, colour](Vec2<int> pos) {
 		BlendPixel(pos, colour);
@@ -129,7 +129,7 @@ void RasterDrawMethods<Derived>::XorDottedRect(Rect<int> rect)
 }
 
 template<typename Derived>
-void RasterDrawMethods<Derived>::DrawFilledRect(Rect<int> rect, RGB<uint8_t> colour)
+void RasterDrawMethods<Derived>::DrawFilledRect(Rect<int> rect, RGB colour)
 {
 	rect &= clipRect();
 	pixel packed = colour.Pack();
@@ -140,14 +140,14 @@ void RasterDrawMethods<Derived>::DrawFilledRect(Rect<int> rect, RGB<uint8_t> col
 }
 
 template<typename Derived>
-void RasterDrawMethods<Derived>::BlendFilledRect(Rect<int> rect, RGBA<uint8_t> colour)
+void RasterDrawMethods<Derived>::BlendFilledRect(Rect<int> rect, RGBA colour)
 {
 	for (auto pos : rect & clipRect())
 		blendPixelUnchecked(*this, &Derived::video, pos, colour);
 }
 
 template<typename Derived>
-void RasterDrawMethods<Derived>::BlendEllipse(Vec2<int> center, Vec2<int> size, RGBA<uint8_t> colour)
+void RasterDrawMethods<Derived>::BlendEllipse(Vec2<int> center, Vec2<int> size, RGBA colour)
 {
 	RasterizeEllipsePoints(Vec2(float(size.X * size.X), float(size.Y * size.Y)), [this, center, colour](Vec2<int> delta) {
 		BlendPixel(center + delta, colour);
@@ -155,7 +155,7 @@ void RasterDrawMethods<Derived>::BlendEllipse(Vec2<int> center, Vec2<int> size, 
 }
 
 template<typename Derived>
-void RasterDrawMethods<Derived>::BlendFilledEllipse(Vec2<int> center, Vec2<int> size, RGBA<uint8_t> colour)
+void RasterDrawMethods<Derived>::BlendFilledEllipse(Vec2<int> center, Vec2<int> size, RGBA colour)
 {
 	RasterizeEllipseRows(Vec2(float(size.X * size.X), float(size.Y * size.Y)), [this, center, colour](int xLim, int dy) {
 		for (auto pos : clipRect() & RectBetween(center + Vec2(-xLim, dy), center + Vec2(xLim, dy)))
@@ -189,7 +189,7 @@ void RasterDrawMethods<Derived>::BlendImage(pixel const *data, uint8_t alpha, Re
 		for (auto pos : rect)
 		{
 			pixel const px = data[(pos.X - origin.X) + (pos.Y - origin.Y) * rowStride];
-			blendPixelUnchecked(*this, &Derived::video, pos, RGB<uint8_t>::Unpack(px).WithAlpha(alpha));
+			blendPixelUnchecked(*this, &Derived::video, pos, RGB::Unpack(px).WithAlpha(alpha));
 		}
 	}
 }
@@ -224,12 +224,12 @@ void RasterDrawMethods<Derived>::BlendRGBAImage(pixel_rgba const *data, Rect<int
 	for (auto pos : rect)
 	{
 		pixel const px = data[(pos.X - origin.X) + (pos.Y - origin.Y) * rowStride];
-		blendPixelUnchecked(*this, &Derived::video, pos, RGBA<uint8_t>::Unpack(px));
+		blendPixelUnchecked(*this, &Derived::video, pos, RGBA::Unpack(px));
 	}
 }
 
 template<typename Derived>
-int RasterDrawMethods<Derived>::BlendChar(Vec2<int> pos, String::value_type ch, RGBA<uint8_t> colour)
+int RasterDrawMethods<Derived>::BlendChar(Vec2<int> pos, String::value_type ch, RGBA colour)
 {
 	FontReader reader(ch);
 	auto const rect = RectSized(Vec2(0, -2), Vec2(reader.GetWidth(), FONT_H));
@@ -239,10 +239,10 @@ int RasterDrawMethods<Derived>::BlendChar(Vec2<int> pos, String::value_type ch, 
 }
 
 template<typename Derived>
-int RasterDrawMethods<Derived>::AddChar(Vec2<int> pos, String::value_type ch, RGBA<uint8_t> colour)
+int RasterDrawMethods<Derived>::AddChar(Vec2<int> pos, String::value_type ch, RGBA colour)
 {
 	FontReader reader(ch);
-	RGB<uint8_t> const c = colour.NoAlpha();
+	RGB const c = colour.NoAlpha();
 	auto const rect = RectSized(Vec2(0, -2), Vec2(reader.GetWidth(), FONT_H));
 	for (auto off : rect.template Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 		AddPixel(pos + off, c.WithAlpha(reader.NextPixel() * colour.Alpha / 3));
@@ -250,11 +250,11 @@ int RasterDrawMethods<Derived>::AddChar(Vec2<int> pos, String::value_type ch, RG
 }
 
 template<typename Derived>
-Vec2<int> RasterDrawMethods<Derived>::BlendText(Vec2<int> orig_pos, String const &str, RGBA<uint8_t> orig_colour)
+Vec2<int> RasterDrawMethods<Derived>::BlendText(Vec2<int> orig_pos, String const &str, RGBA orig_colour)
 {
 	bool underline = false;
 	bool invert = false;
-	RGB<uint8_t> colour = orig_colour.NoAlpha();
+	RGB colour = orig_colour.NoAlpha();
 	uint8_t alpha = orig_colour.Alpha;
 	Vec2<int> pos = orig_pos;
 	for (size_t i = 0; i < str.length(); i++)
@@ -316,7 +316,7 @@ Vec2<int> RasterDrawMethods<Derived>::BlendText(Vec2<int> orig_pos, String const
 }
 
 template<typename Derived>
-Vec2<int> RasterDrawMethods<Derived>::BlendTextOutline(Vec2<int> pos, String const &str, RGBA<uint8_t> colour)
+Vec2<int> RasterDrawMethods<Derived>::BlendTextOutline(Vec2<int> pos, String const &str, RGBA colour)
 {
 	BlendText(pos + Vec2(-1, -1), str, 0x000000_rgb .WithAlpha(0x78));
 	BlendText(pos + Vec2(-1, +1), str, 0x000000_rgb .WithAlpha(0x78));

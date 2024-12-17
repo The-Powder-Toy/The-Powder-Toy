@@ -1432,7 +1432,7 @@ void GameModel::SetPerfectCircle(bool perfectCircle)
 	}
 }
 
-bool GameModel::AddCustomGol(String ruleString, String nameString, RGB<uint8_t> color1, RGB<uint8_t> color2)
+bool GameModel::AddCustomGol(String ruleString, String nameString, RGB color1, RGB color2)
 {
 	if (auto gd = CheckCustomGol(ruleString, nameString, color1, color2))
 	{
@@ -1492,12 +1492,12 @@ void GameModel::LoadCustomGol()
 		auto ruleString = parts[1];
 		auto &colour1String = parts[2];
 		auto &colour2String = parts[3];
-		RGB<uint8_t> color1;
-		RGB<uint8_t> color2;
+		RGB color1;
+		RGB color2;
 		try
 		{
-			color1 = RGB<uint8_t>::Unpack(colour1String.ToNumber<int>());
-			color2 = RGB<uint8_t>::Unpack(colour2String.ToNumber<int>());
+			color1 = RGB::Unpack(colour1String.ToNumber<int>());
+			color2 = RGB::Unpack(colour2String.ToNumber<int>());
 		}
 		catch (std::exception &)
 		{
@@ -1536,7 +1536,7 @@ void GameModel::SaveCustomGol()
 	prefs.Set("CustomGOL.Types", newCustomGOLTypes);
 }
 
-std::optional<CustomGOLData> GameModel::CheckCustomGol(String ruleString, String nameString, RGB<uint8_t> color1, RGB<uint8_t> color2)
+std::optional<CustomGOLData> GameModel::CheckCustomGol(String ruleString, String nameString, RGB color1, RGB color2)
 {
 	if (!ValidateGOLName(nameString))
 	{
