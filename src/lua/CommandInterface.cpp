@@ -364,11 +364,11 @@ AnyType CommandInterface::tptS_set(std::deque<String> * words)
 	// assume that value can be anything
 	if (value.GetType() == TypeNumber && propInfo.Type == StructProperty::Float)
 	{
-		value = FloatType(NumberType(value).Value());
+		value = FloatType(float(NumberType(value).Value()));
 	}
 	if (value.GetType() == TypeFloat && propInfo.Type != StructProperty::Float)
 	{
-		value = NumberType(FloatType(value).Value());
+		value = NumberType(int(FloatType(value).Value()));
 	}
 	// value can still be almost anything, but if it was NumberType or FloatType,
 	// at least it now matches the float-ness, if not the signedness, of prop

@@ -49,7 +49,7 @@ RenderView::RenderView():
 		renderModes.push_back(renderModeCheckbox);
 		renderModeCheckbox->mode = mode;
 		renderModeCheckbox->SetIcon(icon);
-		renderModeCheckbox->SetActionCallback({ [this, renderModeCheckbox] {
+		renderModeCheckbox->SetActionCallback({ [this] {
 			auto renderMode = CalculateRenderMode();
 			c->SetRenderMode(renderMode);
 		} });

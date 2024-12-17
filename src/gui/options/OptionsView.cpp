@@ -359,7 +359,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		addSeparator();
 
 		auto *creditsButton = new ui::Button(ui::Point(10, currentY), ui::Point(90, 16), "Credits");
-		creditsButton->SetActionCallback({ [this] {
+		creditsButton->SetActionCallback({ [] {
 			auto *credits = new Credits();
 			ui::Engine::Ref().ShowWindow(credits);
 		} });
