@@ -332,6 +332,6 @@ option(
 option(
 	'clang_tidy',
 	type: 'boolean',
-	value: true,
+	value: false,
 	description: 'Run clang-tidy to lint programming issues'
 )

@@ -1,4 +1,4 @@
-powder_source_files += files(
+powder_files += files(
 	'LocalSaveActivity.cpp',
 	'ServerSaveActivity.cpp',
 )

@@ -5,5 +5,5 @@ if host_platform == 'emscripten'
 else
 	conf_data.set('FFTW_PLAN_MEASURE', 'true')
 endif
-powder_source_files += files('Fft.cpp')
+powder_files += files('Fft.cpp')
 render_files += files('Null.cpp')

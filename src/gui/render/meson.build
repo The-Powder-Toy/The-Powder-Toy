@@ -1,4 +1,4 @@
-powder_source_files += files(
+powder_files += files(
 	'RenderController.cpp',
 	'RenderModel.cpp',
 	'RenderView.cpp',

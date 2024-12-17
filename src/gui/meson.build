@@ -22,5 +22,5 @@ subdir('search')
 subdir('tags')
 subdir('update')
 
-powder_source_files += gui_files
+powder_files += gui_files
 font_files += gui_files

@@ -19,7 +19,7 @@ gui_files += files(
 	'Window.cpp',
 )
 
-powder_source_files += files(
+powder_files += files(
 	'AvatarButton.cpp',
 	'RichLabel.cpp',
 	'SaveButton.cpp',
