@@ -2,7 +2,7 @@
 
 #include <json/json.h>
 
-#include "credits.json.h"
+#include "credits_json.h"
 #include "gui/Style.h"
 
 #include "common/platform/Platform.h"

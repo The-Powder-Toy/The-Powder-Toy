@@ -1,1 +1,3 @@
-luaconsole_files += to_array.process('compat.lua', extra_args: 'compat_lua')
+embedded_files += [
+	[ 'compat_lua', files('compat.lua') ],
+]

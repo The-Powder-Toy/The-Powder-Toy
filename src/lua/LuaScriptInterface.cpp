@@ -2,7 +2,7 @@
 #include "client/http/Request.h"
 #include "common/platform/Platform.h"
 #include "common/tpt-rand.h"
-#include "compat.lua.h"
+#include "compat_lua.h"
 #include "gui/game/GameController.h"
 #include "gui/game/GameModel.h"
 #include "gui/game/GameView.h"

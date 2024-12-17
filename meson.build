@@ -14,12 +14,6 @@ python = import('python')
 python3_prog = python.find_installation('python3')
 
 fs = import('fs')
-to_array = generator(
-	python3_prog,
-	output: [ '@PLAINNAME@.cpp', '@PLAINNAME@.h' ],
-	depfile: '@PLAINNAME@.dep',
-	arguments: [ join_paths(meson.current_source_dir(), 'resources/to-array.py'), '@OUTPUT0@', '@OUTPUT1@', '@DEPFILE@', '@INPUT@', '@EXTRA_ARGS@' ]
-)
 
 render_icons_with_inkscape = get_option('render_icons_with_inkscape')
 inkscape = find_program('inkscape', required: render_icons_with_inkscape)
@@ -442,8 +436,22 @@ powder_deps = []
 
 project_export_dynamic = false
 
+embedded_files = []
+
 subdir('src')
 subdir('resources')
+
+foreach embedded_file : embedded_files
+	name = embedded_file[0]
+	file = embedded_file[1]
+	data_files += [ custom_target(
+		'embedded-file-@0@'.format(name),
+		input: file,
+		output: [ '@0@.cpp'.format(name), '@0@.h'.format(name) ],
+		depfile: '@0@.dep'.format(name),
+		command: [ python3_prog, files('resources/to-array.py'), '@OUTPUT0@', '@OUTPUT1@', '@DEPFILE@', '@INPUT@', name ]
+	) ]
+endforeach
 
 powder_files += data_files
 render_files += data_files

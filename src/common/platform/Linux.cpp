@@ -1,8 +1,8 @@
 #include "Platform.h"
-#include "icon_cps.png.h"
-#include "icon_exe.png.h"
-#include "save.xml.h"
-#include "powder.desktop.h"
+#include "icon_cps_png.h"
+#include "icon_exe_png.h"
+#include "save_xml.h"
+#include "powder_desktop.h"
 #include "Config.h"
 #include <cstring>
 #include <ctime>

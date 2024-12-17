@@ -11,7 +11,7 @@
 #include "graphics/Pixel.h"
 #include "tasks/TaskListener.h"
 
-#include "save_online.png.h"
+#include "save_online_png.h"
 
 namespace http
 {

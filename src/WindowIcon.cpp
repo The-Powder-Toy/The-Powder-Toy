@@ -2,7 +2,7 @@
 #include "graphics/VideoBuffer.h"
 #include "WindowIcon.h"
 
-#include "icon_exe.png.h"
+#include "icon_exe_png.h"
 
 void WindowIcon(SDL_Window *window)
 {

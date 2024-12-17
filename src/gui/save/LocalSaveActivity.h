@@ -9,7 +9,7 @@
 #include "Format.h"
 #include "graphics/Pixel.h"
 
-#include "save_local.png.h"
+#include "save_local_png.h"
 
 namespace ui
 {

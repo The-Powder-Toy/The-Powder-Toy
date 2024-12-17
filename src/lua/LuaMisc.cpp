@@ -1,7 +1,7 @@
 #include "LuaScriptInterface.h"
 #include "client/http/Request.h"
 #include "common/platform/Platform.h"
-#include "compat.lua.h"
+#include "compat_lua.h"
 #include "Config.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
