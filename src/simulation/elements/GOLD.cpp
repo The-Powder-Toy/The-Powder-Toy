@@ -32,7 +32,7 @@ void Element::Element_GOLD()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Corrosion resistant metal, will reverse corrosion of iron.";
+	Description = "Corrosion resistant metal, will reverse corrosion of iron. Excellent conductor.";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC|PROP_NEUTPASS;
 

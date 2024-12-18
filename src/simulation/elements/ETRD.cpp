@@ -31,7 +31,7 @@ void Element::Element_ETRD()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)";
+	Description = "Electrode. When electricity flows through, creates plasma arcs to other ETRD particles. (Use sparingly)";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

@@ -30,7 +30,7 @@ void Element::Element_HEAC()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Rapid heat conductor.";
+	Description = "Rapid heat conductor. Can only be melted by LIGH.";
 
 	Properties = TYPE_SOLID;
 

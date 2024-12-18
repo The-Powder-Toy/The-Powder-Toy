@@ -27,7 +27,7 @@ void Element::Element_THRM()
 	Weight = 90;
 
 	HeatConduct = 211;
-	Description = "Thermite. Burns at extremely high temperature.";
+	Description = "Thermite powder. Explodes into extremely hot molten metal when ignited!";
 
 	Properties = TYPE_PART;
 

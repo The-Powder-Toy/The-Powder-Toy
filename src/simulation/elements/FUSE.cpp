@@ -29,7 +29,7 @@ void Element::Element_FUSE()
 	Weight = 100;
 
 	HeatConduct = 200;
-	Description = "Burns slowly. Ignites at somewhat high temperatures or with electricity.";
+	Description = "Slow-burning solid that ignites at high temperatures or with electricity.";
 
 	Properties = TYPE_SOLID;
 

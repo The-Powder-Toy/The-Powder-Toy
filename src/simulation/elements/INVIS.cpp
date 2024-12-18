@@ -30,7 +30,7 @@ void Element::Element_INVIS()
 	Weight = 100;
 
 	HeatConduct = 164;
-	Description = "Invisible to particles while under pressure.";
+	Description = "Allows particles to move through when pressurized.";
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS | PROP_PHOTPASS;
 
