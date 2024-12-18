@@ -453,6 +453,7 @@ foreach embedded_file : embedded_files
 	) ]
 endforeach
 
+powder_files += powder_external_files
 powder_files += data_files
 render_files += data_files
 font_files += data_files
@@ -478,6 +479,8 @@ if get_option('export_lua_symbols')
 		endif
 	endif
 endif
+
+clang_tidy_sources = []
 
 if get_option('build_powder')
 	powder_deps += project_deps + [
@@ -518,6 +521,7 @@ if get_option('build_powder')
 			override_options: target_options,
 		)
 	endif
+	clang_tidy_sources += powder_files
 endif
 
 if get_option('build_render')
@@ -546,6 +550,7 @@ if get_option('build_render')
 		link_depends: copied_dlls,
 		override_options: target_options,
 	)
+	clang_tidy_sources += render_files
 endif
 
 if get_option('build_font')
@@ -570,5 +575,21 @@ if get_option('build_font')
 		export_dynamic: project_export_dynamic,
 		link_depends: copied_dlls,
 		override_options: target_options,
+	)
+	clang_tidy_sources += font_files
+endif
+
+if get_option('clang_tidy')
+	clang_tidy = find_program('run-clang-tidy')
+	run_target(
+		'clang-tidy',
+		command: [
+			clang_tidy,
+			'-p', meson.project_build_root(),
+			'-config-file', files('.clang-tidy'),
+			'-quiet',
+			'-warnings-as-errors=*',
+			clang_tidy_sources,
+		],
 	)
 endif

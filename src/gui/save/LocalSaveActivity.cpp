@@ -109,7 +109,7 @@ void LocalSaveActivity::saveWrite(ByteString finalFilename)
 	localSaveInfo["type"] = "localsave";
 	localSaveInfo["username"] = Client::Ref().GetAuthUser().Username;
 	localSaveInfo["title"] = finalFilename;
-	localSaveInfo["date"] = (Json::Value::UInt64)time(NULL);
+	localSaveInfo["date"] = (Json::Value::UInt64)time(nullptr);
 	Client::Ref().SaveAuthorInfo(&localSaveInfo);
 	{
 		auto gameSave = save->TakeGameSave();

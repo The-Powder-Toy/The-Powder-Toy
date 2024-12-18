@@ -95,56 +95,56 @@ app_name_slug = re.sub('[^A-Za-z0-9]', '_', app_name)
 build_matrix = []
 publish_matrix = []
 # consider disabling line wrapping to edit this monstrosity
-for        arch,     platform,         libc,   statdyn, bplatform,         runson, suffix,          reason, dbgsuffix,         mode,              starcatcher,    dbgrel, priority in [
-	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None,   'debug',        0 ), # priority = 0: static debug build
-	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-22.04',     '',       'publish',    '.dbg',         None,  'x86_64-lin-gcc-static', 'release',       10 ),
-	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-22.04',     '',       'publish',    '.dbg',      'steam',  'x86_64-lin-gcc-static', 'release',       -5 ), # priority = -5: steam build
-	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-22.04',     '',       'archive',    '.dbg',   'appimage',                     None, 'release',        0 ), # priority = 0: appimage release
-	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None,   'debug',       10 ),
-	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,     'nohttp',                     None,   'debug',       10 ),
-	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,      'nolua',                     None,   'debug',       10 ),
-	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None, 'release',       10 ),
-#	(  'x86_64',    'windows',      'mingw',  'static',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None,   'debug',       10 ), # ubuntu-22.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them; worse, it's a different toolchain
-#	(  'x86_64',    'windows',      'mingw',  'static',   'linux', 'ubuntu-22.04',     '',       'archive',    '.dbg',         None,                     None, 'release',       10 ), # ubuntu-22.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them; worse, it's a different toolchain
-#	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None,   'debug',       10 ), # ubuntu-22.04 doesn't have ucrt64-capable mingw >_>
-#	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None, 'release',       10 ), # ubuntu-22.04 doesn't have ucrt64-capable mingw >_>
-	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',        0 ), # priority = 0: static debug build
-	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2019', '.exe',       'archive',    '.dbg',         None,                     None, 'release',       10 ),
-	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',       10 ),
-	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None, 'release',       10 ),
-	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',        0 ), # priority = 0: static debug build
-	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',       'publish',    '.pdb',         None, 'x86_64-win-msvc-static', 'release',       10 ),
-	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',       'publish',    '.pdb',      'steam', 'x86_64-win-msvc-static', 'release',       -5 ), # priority = -5: steam build
-	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',       10 ),
-#	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,  'backendvs',                     None,   'debug',        0 ), # priority = 0: backend=vs build
-	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None, 'release',       10 ),
-	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',        0 ), # priority = 0: static debug build
-	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',       'publish',    '.pdb',         None,   'i686-win-msvc-static', 'release',       10 ),
-	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',       10 ),
-	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None, 'release',       10 ),
-	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',        0 ), # priority = 0: static debug build
-	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',       'publish',    '.pdb',         None,  'arm64-win-msvc-static', 'release',       10 ),
-	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',       10 ),
-	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None, 'release',       10 ),
-	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',        0 ), # priority = 0: static debug build
-	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',       'publish',      None,         None,  'x86_64-mac-gcc-static', 'release',       10 ), # I have no idea how to separate debug info on macos
-	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',       'publish',      None,      'steam',  'x86_64-mac-gcc-static', 'release',       -5 ), # priority = -5: steam build, see above regarding debug info
-	(  'x86_64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',       10 ),
-	(  'x86_64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None, 'release',       10 ),
-	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',        0 ), # priority = 0: static debug build
-	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',       'publish',      None,         None,   'arm64-mac-gcc-static', 'release',       10 ),
-#	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',       10 ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
-#	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None, 'release',       10 ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
-	(     'x86',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0 ), # priority = 0: rarely used debug build
-	(     'x86',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,    'i686-and-gcc-static', 'release',       10 ),
-	(  'x86_64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0 ), # priority = 0: rarely used debug build
-	(  'x86_64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,  'x86_64-and-gcc-static', 'release',       10 ),
-	(     'arm',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0 ), # priority = 0: rarely used debug build
-	(     'arm',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,     'arm-and-gcc-static', 'release',       10 ),
-	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0 ), # priority = 0: rarely used debug build
-	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,   'arm64-and-gcc-static', 'release',       10 ),
-	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',         'check',      None,         None,                     None,   'debug',        0 ), # priority = 0: rarely used debug build
-	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',       'publish',      None, 'emscripten',      'wasm32-ems-static', 'release',       10 ), # I have no idea how to separate debug info on emscripten
+for        arch,     platform,         libc,   statdyn, bplatform,         runson, suffix,          reason, dbgsuffix,         mode,              starcatcher,    dbgrel, priority,  lint in [
+	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
+	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-22.04',     '',       'publish',    '.dbg',         None,  'x86_64-lin-gcc-static', 'release',       10, False ),
+	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-22.04',     '',       'publish',    '.dbg',      'steam',  'x86_64-lin-gcc-static', 'release',       -5, False ), # priority = -5: steam build
+	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-22.04',     '',       'archive',    '.dbg',   'appimage',                     None, 'release',        0, False ), # priority = 0: appimage release
+	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None,   'debug',       10,  True ), # the only debug job that lints; this covers the font editor and the renderer
+	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,     'nohttp',                     None,   'debug',       10, False ),
+	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,      'nolua',                     None,   'debug',       10, False ),
+	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None, 'release',       10, False ),
+#	(  'x86_64',    'windows',      'mingw',  'static',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None,   'debug',       10, False ), # ubuntu-22.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them; worse, it's a different toolchain
+#	(  'x86_64',    'windows',      'mingw',  'static',   'linux', 'ubuntu-22.04',     '',       'archive',    '.dbg',         None,                     None, 'release',       10, False ), # ubuntu-22.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them; worse, it's a different toolchain
+#	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None,   'debug',       10, False ), # ubuntu-22.04 doesn't have ucrt64-capable mingw >_>
+#	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None, 'release',       10, False ), # ubuntu-22.04 doesn't have ucrt64-capable mingw >_>
+	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
+	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2019', '.exe',       'archive',    '.dbg',         None,                     None, 'release',       10, False ),
+	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
+	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None, 'release',       10,  True ),
+	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
+	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',       'publish',    '.pdb',         None, 'x86_64-win-msvc-static', 'release',       10, False ),
+	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',       'publish',    '.pdb',      'steam', 'x86_64-win-msvc-static', 'release',       -5, False ), # priority = -5: steam build
+	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
+#	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,  'backendvs',                     None,   'debug',        0, False ), # priority = 0: backend=vs build
+	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
+	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
+	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',       'publish',    '.pdb',         None,   'i686-win-msvc-static', 'release',       10, False ),
+	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
+	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
+	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
+	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',       'publish',    '.pdb',         None,  'arm64-win-msvc-static', 'release',       10, False ),
+	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
+	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
+	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
+	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',       'publish',      None,         None,  'x86_64-mac-gcc-static', 'release',       10, False ), # I have no idea how to separate debug info on macos
+	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',       'publish',      None,      'steam',  'x86_64-mac-gcc-static', 'release',       -5, False ), # priority = -5: steam build, see above regarding debug info
+	(  'x86_64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',       10, False ),
+	(  'x86_64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None, 'release',       10, False ), # TODO: enable lint once apple clang ships clang-tidy
+	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
+	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',       'publish',      None,         None,   'arm64-mac-gcc-static', 'release',       10, False ),
+#	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',       10, False ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
+#	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None, 'release',       10, False ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
+	(     'x86',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
+	(     'x86',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,    'i686-and-gcc-static', 'release',       10, False ),
+	(  'x86_64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
+	(  'x86_64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,  'x86_64-and-gcc-static', 'release',       10, False ),
+	(     'arm',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
+	(     'arm',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,     'arm-and-gcc-static', 'release',       10, False ),
+	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
+	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,   'arm64-and-gcc-static', 'release',       10,  True ),
+	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
+	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',       'publish',      None, 'emscripten',      'wasm32-ems-static', 'release',       10, False ), # I have no idea how to separate debug info on emscripten, TODO: enable lint once emscripten ships clang-tidy
 ]:
 	if priority < do_priority:
 		continue
@@ -193,13 +193,14 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	shell = 'bash'
 	if msys2_bash:
 		shell = 'msys2 {0}'
-	build_matrix.append({
+	item = {
 		'bsh_build_platform': bplatform, # part of the unique portion of the matrix
 		'bsh_host_arch': arch, # part of the unique portion of the matrix
 		'bsh_host_platform': platform, # part of the unique portion of the matrix
 		'bsh_host_libc': libc, # part of the unique portion of the matrix
 		'bsh_static_dynamic': statdyn, # part of the unique portion of the matrix
 		'bsh_debug_release': dbgrel, # part of the unique portion of the matrix
+		'bsh_lint': 'no',
 		'runs_on': runson,
 		'force_msys2_bash': msys2_bash and 'yes' or 'no',
 		'package_suffix': suffix,
@@ -213,7 +214,18 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 		'debug_asset_name': debug_asset_name,
 		'job_name': job_name,
 		'shell': shell,
-	})
+	}
+	build_matrix.append(item)
+	if lint:
+		lint_item = item.copy()
+		lint_item['publish'] = 'no'
+		lint_item['artifact'] = 'no'
+		lint_item['separate_debug'] = 'no'
+		lint_item['bsh_lint'] = 'yes'
+		if lint_item['runs_on'] == 'ubuntu-22.04':
+			lint_item['runs_on'] = 'ubuntu-24.04'
+		lint_item['job_name'] = lint_item['job_name'].replace('build', 'lint', 1)
+		build_matrix.append(lint_item)
 	if publish:
 		publish_matrix.append({
 			'bsh_build_platform': bplatform, # part of the unique portion of the matrix

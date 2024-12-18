@@ -538,7 +538,7 @@ void FontEditor::Translate(std::array<std::array<char, MAX_WIDTH>, FONT_H> &pixe
 
 void FontEditor::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	if (IsFocused(NULL))
+	if (IsFocused(nullptr))
 	{
 		switch(scan)
 		{

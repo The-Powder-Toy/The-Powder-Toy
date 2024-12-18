@@ -69,6 +69,9 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 			export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/tools/bin:$PATH
 			sdkmanager "platforms;$android_platform"
 		)
+		if [[ $BSH_LINT == yes ]]; then
+			sudo apt install clang-tidy
+		fi
 		;;
 	windows)
 		if [[ $BSH_BUILD_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
@@ -79,6 +82,9 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,meson,fftw,jq}
 			fi
 			export PKG_CONFIG=$(which pkg-config.exe)
+			if [[ $BSH_LINT == yes ]]; then
+				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-clang-tools-extra
+			fi
 		fi
 		;;
 	linux)
@@ -86,16 +92,28 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 		if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 			sudo apt install libc6-dev libc6-dev-i386
 		else
-			sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev libbz2-dev libjsoncpp-dev
+			sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev libbz2-dev libjsoncpp-dev libpng-dev
 		fi
 		if [[ $PACKAGE_MODE == appimage ]]; then
 			sudo apt install libfuse2
+		fi
+		if [[ $BSH_LINT == yes ]]; then
+			sudo apt install clang-tidy
 		fi
 		;;
 	darwin)
 		brew install binutils # pkg-config
 		if [[ $BSH_STATIC_DYNAMIC != static ]]; then
 			brew install luajit fftw zlib sdl2 bzip2 jsoncpp # curl
+		fi
+		if [[ $BSH_LINT == yes ]]; then
+			# gg brew :(
+			# https://stackoverflow.com/questions/53111082/how-to-install-clang-tidy-on-macos
+			brew install llvm
+			ln -s "$(brew --prefix llvm)/bin/clang-format" "/usr/local/bin/clang-format"
+			ln -s "$(brew --prefix llvm)/bin/clang-tidy" "/usr/local/bin/clang-tidy"
+			ln -s "$(brew --prefix llvm)/bin/clang-apply-replacements" "/usr/local/bin/clang-apply-replacements"
+			ln -s "$(brew --prefix llvm)/bin/run-clang-tidy" "/usr/local/bin/run-clang-tidy"
 		fi
 		;;
 	emscripten)
@@ -218,6 +236,9 @@ x86_64-darwin-macos-debug)
 	meson_configure+=$'\t'-Dbuild_font=true
 	;;
 esac
+if [[ $BSH_LINT == yes ]]; then
+	meson_configure+=$'\t'-Dclang_tidy=true
+fi
 if [[ $PACKAGE_MODE == nohttp ]]; then
 	meson_configure+=$'\t'-Dhttp=false
 fi
@@ -436,6 +457,12 @@ if [[ $PACKAGE_MODE == steam ]]; then
 		meson configure -Dcan_install=yes
 	fi
 fi
+
+if [[ $BSH_LINT == yes ]]; then
+	meson compile -v clang-tidy
+	exit 0
+fi
+
 meson_compile=meson$'\t'compile
 meson_compile+=$'\t'-v
 if [[ $BSH_BUILD_PLATFORM == windows ]] && [[ $PACKAGE_MODE != backendvs ]]; then

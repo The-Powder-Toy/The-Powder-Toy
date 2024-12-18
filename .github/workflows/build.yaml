@@ -111,6 +111,7 @@ jobs:
           BSH_STATIC_DYNAMIC: ${{ matrix.bsh_static_dynamic }}
           BSH_BUILD_PLATFORM: ${{ matrix.bsh_build_platform }}
           BSH_DEBUG_RELEASE: ${{ matrix.bsh_debug_release }}
+          BSH_LINT: ${{ matrix.bsh_lint }}
           RELEASE_NAME: ${{ needs.prepare.outputs.release_name }}
           RELEASE_TYPE: ${{ needs.prepare.outputs.release_type }}
           MOD_ID: ${{ needs.prepare.outputs.mod_id }}

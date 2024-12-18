@@ -10,7 +10,7 @@ Luna<LuaLabel>::RegType LuaLabel::methods[] = {
 	method(LuaLabel, position),
 	method(LuaLabel, size),
 	method(LuaLabel, visible),
-	{0, 0}
+	{nullptr, nullptr}
 };
 
 LuaLabel::LuaLabel(lua_State *L) :

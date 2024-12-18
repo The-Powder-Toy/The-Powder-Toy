@@ -40,5 +40,5 @@ void Element::Element_SAWD()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
-	Graphics = NULL; // is this needed?
+	Graphics = nullptr; // is this needed?
 }

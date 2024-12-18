@@ -413,10 +413,10 @@ void LuaTools::Open(lua_State *L)
 		LFUNC(isCustom),
 #undef LFUNC
 		{ "free", ffree },
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 	lua_newtable(L);
 	lua_setfield(L, -2, "index");
 	lua_setglobal(L, "tools");

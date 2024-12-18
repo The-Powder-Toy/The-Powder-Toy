@@ -284,10 +284,10 @@ void LuaGraphics::Open(lua_State *L)
 		LFUNC(getHexColor),
 		LFUNC(setClipRect),
 #undef LFUNC
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 #define LCONSTAS(k, v) lua_pushinteger(L, int(v)); lua_setfield(L, -2, k)
 	LCONSTAS("WIDTH",  WINDOWW);
 	LCONSTAS("HEIGHT", WINDOWH);

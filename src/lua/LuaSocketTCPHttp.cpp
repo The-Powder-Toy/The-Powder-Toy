@@ -622,9 +622,9 @@ namespace LuaSocket
 			{  "settimeout", LuaSocket::SetTimeout  },
 			{   "setoption", LuaSocket::SetOption   },
 			{    "shutdown", LuaSocket::Shutdown    },
-			{          NULL, NULL                      },
+			{          nullptr, nullptr                      },
 		};
-		luaL_register(L, NULL, tcpSocketIndexMethods);
+		luaL_register(L, nullptr, tcpSocketIndexMethods);
 		lua_setfield(L, -2, "__index");
 		lua_pop(L, 1);
 		lua_getglobal(L, "socket");

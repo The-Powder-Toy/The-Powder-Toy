@@ -62,7 +62,7 @@ static int update(UPDATE_FUNC_ARGS)
 			gy += cosf(angle)*elements[PT_FWRK].Gravity*0.5f;
 		}
 		gmax = std::max(fabsf(gx), fabsf(gy));
-		if (sim->eval_move(PT_FWRK, (int)(x-(gx/gmax)+0.5f), (int)(y-(gy/gmax)+0.5f), NULL))
+		if (sim->eval_move(PT_FWRK, (int)(x-(gx/gmax)+0.5f), (int)(y-(gy/gmax)+0.5f), nullptr))
 		{
 			multiplier = 15.0f/sqrtf(gx*gx+gy*gy);
 

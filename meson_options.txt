@@ -329,3 +329,9 @@ option(
 	value: false,
 	description: 'Export Lua symbols to enable loading of Lua shared modules'
 )
+option(
+	'clang_tidy',
+	type: 'boolean',
+	value: false,
+	description: 'Run clang-tidy to lint programming issues'
+)
