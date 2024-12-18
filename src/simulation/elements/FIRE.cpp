@@ -410,7 +410,7 @@ static int updateLegacy(UPDATE_FUNC_ARGS)
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	RGB color = cpart->tmp2&1 ? Renderer::flameAchromaTableAt(cpart->life) : Renderer::flameTableAt(cpart->life);
-	RGB c = RGB:Unpack(cpart->dcolour & 0xFFFFFF);
+	RGB c = RGB::Unpack(cpart->dcolour & 0xFFFFFF);
 
 	*firea = 255;
 	*firer = *colr = color.Red*(255-c.Red)/255;

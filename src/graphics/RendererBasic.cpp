@@ -121,13 +121,6 @@ void Renderer::prepare_alpha(int size, float intensity)
 
 }
 
-pixel Renderer::GetPixel(Vec2<int> pos) const
-{
-	if (pos.X<0 || pos.Y<0 || pos.X>=VIDXRES || pos.Y>=VIDYRES)
-		return 0;
-	return video[pos];
-}
-
 std::vector<RGB> Renderer::flameTable;
 std::vector<RGB> Renderer::plasmaTable;
 std::vector<RGB> Renderer::heatTable;
@@ -186,7 +179,7 @@ void Renderer::PopulateTables()
 			{ 0xFFFF00_rgb, 0.80f },
 			{ 0xFF0000_rgb, 1.00f },
 		}, 200);
-		flameAchromaTable = Graphics::Gradient({
+		flameAchromaTable = Gradient({
 			{ 0x000000_rgb, 0.00f },
 			{ 0xFFFFFF_rgb, 1.00f },
 		}, 200);
