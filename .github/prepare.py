@@ -218,6 +218,9 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	build_matrix.append(item)
 	if lint:
 		lint_item = item.copy()
+		lint_item['publish'] = 'no'
+		lint_item['artifact'] = 'no'
+		lint_item['separate_debug'] = 'no'
 		lint_item['bsh_lint'] = 'yes'
 		if lint_item['runs_on'] == 'ubuntu-22.04':
 			lint_item['runs_on'] = 'ubuntu-24.04'

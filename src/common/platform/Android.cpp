@@ -65,7 +65,7 @@ std::optional<ByteString> CallActivityStringFunc(const char *funcName)
 		auto funcMth           = CHECK(env->GetMethodID(mPowderActivity, funcName, "()Ljava/lang/String;"));
 		auto resultRef         = CHECK((jstring)env->CallObjectMethod(activityInst, funcMth));
 		Defer deleteStr([env, resultRef]() { env->DeleteLocalRef(resultRef); });
-		auto *resultBytes      = CHECK(env->GetStringUTFChars(resultRef, 0));
+		auto *resultBytes      = CHECK(env->GetStringUTFChars(resultRef, nullptr));
 		Defer deleteUtf([env, resultRef, resultBytes]() { env->ReleaseStringUTFChars(resultRef, resultBytes); });
 		result = resultBytes;
 	}

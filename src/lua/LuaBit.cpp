@@ -152,7 +152,7 @@ static const struct luaL_Reg bit_funcs[] = {
   { "ror",	bit_ror },
   { "bswap",	bit_bswap },
   { "tohex",	bit_tohex },
-  { NULL, NULL }
+  { nullptr, nullptr }
 };
 
 /* Signed right-shifts are implementation-defined per C89/C99.

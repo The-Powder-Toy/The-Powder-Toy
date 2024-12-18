@@ -113,6 +113,7 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 			ln -s "$(brew --prefix llvm)/bin/clang-format" "/usr/local/bin/clang-format"
 			ln -s "$(brew --prefix llvm)/bin/clang-tidy" "/usr/local/bin/clang-tidy"
 			ln -s "$(brew --prefix llvm)/bin/clang-apply-replacements" "/usr/local/bin/clang-apply-replacements"
+			ln -s "$(brew --prefix llvm)/bin/run-clang-tidy" "/usr/local/bin/run-clang-tidy"
 		fi
 		;;
 	emscripten)
