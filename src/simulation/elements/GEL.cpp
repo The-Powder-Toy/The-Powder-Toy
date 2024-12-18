@@ -31,7 +31,7 @@ void Element::Element_GEL()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = "Thick liquid, becomes thinner and conducts heat better the more water it absorbs.";
+	Description = "Becomes thinner and conducts heat better the more water it absorbs.";
 
 	Properties = TYPE_LIQUID|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
 

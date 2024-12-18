@@ -28,7 +28,7 @@ void Element::Element_NTCT()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "NTC Thermistor. Conducts electricity with PSCN and NSCN, but only when heated above 100C.";
+	Description = "NTC Thermistor. Conducts with PSCN and NSCN, but only when heated above 100C.";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 
