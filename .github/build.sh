@@ -399,7 +399,6 @@ java_runtime_jar = '$JAVA_HOME_8_X64/jre/lib/rt.jar'
 # android_ndk_toolchain_prefix comes from the correct cross-file in ./android/cross
 cpp = andriod_ndk_toolchain_bin / (android_ndk_toolchain_prefix + 'clang++')
 strip = andriod_ndk_toolchain_bin / 'llvm-strip'
-clang-tidy = andriod_ndk_toolchain_bin / 'clang-tidy'
 javac = '$JAVA_HOME_8_X64/bin/javac'
 jar = '$JAVA_HOME_8_X64/bin/jar'
 d8 = andriod_sdk_build_tools / 'd8'

@@ -130,7 +130,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',       'publish',      None,         None,  'x86_64-mac-gcc-static', 'release',       10, False ), # I have no idea how to separate debug info on macos
 	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',       'publish',      None,      'steam',  'x86_64-mac-gcc-static', 'release',       -5, False ), # priority = -5: steam build, see above regarding debug info
 	(  'x86_64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',       10, False ),
-	(  'x86_64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None, 'release',       10,  True ),
+	(  'x86_64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None, 'release',       10, False ), # TODO: enable lint once apple clang ships clang-tidy
 	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
 	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',       'publish',      None,         None,   'arm64-mac-gcc-static', 'release',       10, False ),
 #	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',       10, False ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
@@ -144,7 +144,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
 	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,   'arm64-and-gcc-static', 'release',       10,  True ),
 	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
-	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',       'publish',      None, 'emscripten',      'wasm32-ems-static', 'release',       10,  True ), # I have no idea how to separate debug info on emscripten
+	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',       'publish',      None, 'emscripten',      'wasm32-ems-static', 'release',       10, False ), # I have no idea how to separate debug info on emscripten, TODO: enable lint once emscripten ships clang-tidy
 ]:
 	if priority < do_priority:
 		continue
