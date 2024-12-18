@@ -16,8 +16,10 @@
 #include <cmath>
 #include <algorithm>
 
-constexpr auto currentVersion   = UPSTREAM_VERSION.displayVersion;
-constexpr auto nextVersion      = Version(98, 0);
+constexpr auto currentVersion = UPSTREAM_VERSION.displayVersion;
+constexpr auto nextVersion = Version(99, 0);
+static_assert(nextVersion >= currentVersion);
+
 constexpr auto effectiveVersion = ALLOW_FAKE_NEWER_VERSION ? nextVersion : currentVersion;
 
 static void ConvertJsonToBson(bson *b, Json::Value j, int depth = 0);
