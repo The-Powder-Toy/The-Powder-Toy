@@ -35,7 +35,7 @@ void Element::Element_SPRK()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Spark. Click on a conductor to create an electrical pulse that flows through conductive materials.";
+	Description = "Electricity. The basis of all electronics in TPT, travels along conductive elements.";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

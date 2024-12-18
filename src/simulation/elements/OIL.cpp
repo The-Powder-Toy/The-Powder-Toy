@@ -27,7 +27,7 @@ void Element::Element_OIL()
 	Weight = 20;
 
 	HeatConduct = 42;
-	Description = "Highly flammable liquid. When heated or exposed to low pressures, turns into GAS.";
+	Description = "Flammable, turns into GAS at low pressure or high temperature.";
 
 	Properties = TYPE_LIQUID | PROP_NEUTPASS;
 

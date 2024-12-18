@@ -29,7 +29,7 @@ void Element::Element_DTEC()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Detector. Draw over it with another element selected, and it will produce electricity when that element is close.";
+	Description = "Detector. When drawn over with another element, it creates a spark when that element is nearby.";
 
 	Properties = TYPE_SOLID;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

@@ -30,7 +30,7 @@ void Element::Element_ANAR()
 	Weight = 85;
 
 	HeatConduct = 70;
-	Description = "Very light powder that defies gravity. Burns cold instead of hot.";
+	Description = "Anti-air. Very light gravity-defying dust. Burns cold instead of hot!";
 
 	Properties = TYPE_PART;
 

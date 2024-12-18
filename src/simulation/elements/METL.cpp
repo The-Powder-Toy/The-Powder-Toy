@@ -28,7 +28,7 @@ void Element::Element_METL()
 
 	HeatConduct = 251;
 	LatentHeat = 919;
-	Description = "Metal. Solid electrical conductor that can be used to build circuits.";
+	Description = "Metal, the basic conductor. Meltable.";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

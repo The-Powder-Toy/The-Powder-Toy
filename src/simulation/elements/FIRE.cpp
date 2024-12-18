@@ -34,7 +34,7 @@ void Element::Element_FIRE()
 
 	DefaultProperties.temp = R_TEMP + 400.0f + 273.15f;
 	HeatConduct = 88;
-	Description = "Ignites flammable materials and heats particles.";
+	Description = "Ignites flammable materials. Heats air.";
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

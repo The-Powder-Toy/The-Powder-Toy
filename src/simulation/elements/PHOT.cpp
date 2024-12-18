@@ -34,7 +34,7 @@ void Element::Element_PHOT()
 
 	DefaultProperties.temp = R_TEMP + 900.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Photons. Color changes when reflected off of certain elements. Ignites flammable materials.";
+	Description = "Photons. Refracts through glass, different elements change its color. Ignites flammable materials.";
 
 	Properties = TYPE_ENERGY | PROP_PHOTPASS | PROP_LIFE_DEC | PROP_LIFE_KILL_DEC;
 

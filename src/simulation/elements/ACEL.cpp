@@ -30,8 +30,8 @@ void Element::Element_ACEL()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Accelerator. A solid that accelerates particles touching it.";
-
+	Description = "Accelerator, speeds up nearby elements.";
+	
 	Properties = TYPE_SOLID;
 
 	LowPressure = IPL;

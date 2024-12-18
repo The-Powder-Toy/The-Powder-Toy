@@ -30,7 +30,7 @@ void Element::Element_QRTZ()
 	Weight = 100;
 
 	HeatConduct = 3;
-	Description = "Quartz, tough breakable mineral. Conducts but becomes brittle when supercooled. Scatters photons.";
+	Description = "Quartz, breakable mineral. When super cold, conducts but becomes brittle. Scatters photons.";
 
 	Properties = TYPE_SOLID | PROP_PHOTPASS | PROP_HOT_GLOW | PROP_LIFE_DEC;
 
