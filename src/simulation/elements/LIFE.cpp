@@ -51,17 +51,17 @@ void Element::Element_LIFE()
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	auto &builtinGol = SimulationData::builtinGol;
-	auto colour1 = RGB<uint8_t>::Unpack(cpart->dcolour);
-	auto colour2 = RGB<uint8_t>::Unpack(cpart->tmp);
+	auto colour1 = RGB::Unpack(cpart->dcolour);
+	auto colour2 = RGB::Unpack(cpart->tmp);
 	if (!cpart->dcolour)
 	{
 		colour1 = 0xFFFFFF_rgb;
 	}
 	auto ruleset = cpart->ctype;
-	bool renderDeco = !gfctx.ren->blackDecorations;
+	bool renderDeco = gfctx.ren->decorationLevel != RendererSettings::decorationAntiClickbait;
 	if (ruleset >= 0 && ruleset < NGOL)
 	{
-		if (!renderDeco || !gfctx.ren->decorations_enable)
+		if (!renderDeco || gfctx.ren->decorationLevel == RendererSettings::decorationDisabled)
 		{
 			colour1 = builtinGol[ruleset].colour;
 			colour2 = builtinGol[ruleset].colour2;
@@ -111,8 +111,8 @@ static void create(ELEMENT_CREATE_FUNC_ARGS)
 		auto *cgol = sd.GetCustomGOLByRule(v);
 		if (cgol)
 		{
-			sim->parts[i].dcolour = cgol->colour1;
-			sim->parts[i].tmp = cgol->colour2;
+			sim->parts[i].dcolour = cgol->colour1.Pack();
+			sim->parts[i].tmp = cgol->colour2.Pack();
 		}
 	}
 	sim->parts[i].tmp2 = ((v >> 17) & 0xF) + 1;

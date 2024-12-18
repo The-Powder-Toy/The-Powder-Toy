@@ -31,6 +31,8 @@ public:
 	void SetEdgeMode(int edgeMode);
 	int GetTemperatureScale();
 	void SetTemperatureScale(int temperatureScale);
+	int GetThreadedRendering();
+	void SetThreadedRendering(bool newThreadedRendering);
 	int GetGravityMode();
 	void SetGravityMode(int gravityMode);
 	float GetCustomGravityX();
@@ -55,6 +57,8 @@ public:
 	void SetBlurryScaling(bool newBlurryScaling);
 	bool GetFastQuit();
 	void SetFastQuit(bool fastquit);
+	bool GetGlobalQuit();
+	void SetGlobalQuit(bool newGlobalQuit);
 	int GetDecoSpace();
 	void SetDecoSpace(int decoSpace);
 	bool GetMouseClickRequired();

@@ -42,7 +42,6 @@ elif host_platform == 'android'
 	)
 	powder_files += files(
 		'MainCommon.cpp',
-		'DdirCommon.cpp',
 	)
 elif host_platform == 'emscripten'
 	use_bluescreen = false
@@ -108,4 +107,5 @@ if can_install != 'no' and can_install_enforce_no
 	error('cannot provide install support, configure with -Dcan_install=no to fix this error')
 endif
 conf_data.set('CAN_INSTALL', (can_install != 'no').to_string())
+conf_data.set('SHARED_DATA_FOLDER', get_option('shared_data_folder').to_string())
 conf_data.set('INSTALL_CHECK', (can_install == 'yes_check').to_string())

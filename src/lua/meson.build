@@ -2,7 +2,7 @@ luaconsole_files = files(
 	'LuaButton.cpp',
 	'LuaBz2.cpp',
 	'LuaCheckbox.cpp',
-	'LuaCompat.c',
+	'LuaCompat.cpp',
 	'LuaComponent.cpp',
 	'LuaElements.cpp',
 	'LuaEvent.cpp',
@@ -21,6 +21,7 @@ luaconsole_files = files(
 	'LuaSocket.cpp',
 	'LuaSmartRef.cpp',
 	'LuaTextbox.cpp',
+	'LuaTools.cpp',
 	'LuaWindow.cpp',
 )
 if lua_variant != 'luajit'

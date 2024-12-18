@@ -53,7 +53,8 @@ void Element::Element_DEUT()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	float gravtot = fabs(sim->gravy[(y/CELL)*XCELLS+(x/CELL)])+fabs(sim->gravx[(y/CELL)*XCELLS+(x/CELL)]);
+	auto gravtot = std::abs(sim->gravOut.forceX[Vec2{ x, y } / CELL]) +
+	               std::abs(sim->gravOut.forceY[Vec2{ x, y } / CELL]);
 	// Prevent division by 0
 	float temp = std::max(1.0f, (parts[i].temp + 1));
 	auto maxlife = int(((10000/(temp + 1))-1));

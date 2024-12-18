@@ -11,6 +11,7 @@
 #include "client/http/FavouriteSaveRequest.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/login/LoginController.h"
@@ -19,7 +20,7 @@
 
 PreviewController::PreviewController(int saveID, int saveDate, SavePreviewType savePreviewType, std::function<void ()> onDone_, std::unique_ptr<VideoBuffer> thumbnail):
 	saveId(saveID),
-	loginWindow(NULL),
+	loginWindow(nullptr),
 	HasExited(false)
 {
 	previewModel = new PreviewModel();
@@ -47,7 +48,7 @@ void PreviewController::Update()
 	if (loginWindow && loginWindow->HasExited == true)
 	{
 		delete loginWindow;
-		loginWindow = NULL;
+		loginWindow = nullptr;
 	}
 	if (previewModel->GetDoOpen() && previewModel->GetSaveInfo() && previewModel->GetSaveInfo()->GetGameSave())
 	{
@@ -102,7 +103,7 @@ void PreviewController::FavouriteSave()
 
 void PreviewController::OpenInBrowser()
 {
-	ByteString uri = ByteString::Build(SCHEME, SERVER, "/Browse/View.html?ID=", saveId);
+	ByteString uri = ByteString::Build(SERVER, "/Browse/View.html?ID=", saveId);
 	Platform::OpenURI(uri);
 }
 
@@ -126,10 +127,15 @@ bool PreviewController::PrevCommentPage()
 	return false;
 }
 
+void PreviewController::RefreshComments()
+{
+	previewModel->UpdateComments(1);
+}
+
 void PreviewController::CommentAdded()
 {
 	previewModel->CommentAdded();
-	previewModel->UpdateComments(1);
+	RefreshComments();
 }
 
 void PreviewController::Exit()
@@ -144,8 +150,6 @@ PreviewController::~PreviewController()
 {
 	Client::Ref().RemoveListener(this);
 	delete previewModel;
-	if (previewView->CloseActiveWindow())
-	{
-		delete previewView;
-	}
+	previewView->CloseActiveWindow();
+	delete previewView;
 }

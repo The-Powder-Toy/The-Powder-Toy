@@ -1,7 +1,7 @@
 #include "LuaScriptInterface.h"
 #include "client/http/Request.h"
 #include "common/platform/Platform.h"
-#include "compat.lua.h"
+#include "compat_lua.h"
 #include "Config.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
@@ -36,7 +36,7 @@ static int installScriptManager(lua_State *L)
 		new ErrorMessage("Script download", "You must run this function from the console");
 		return 0;
 	}
-	lsi->scriptManagerDownload = std::make_unique<http::Request>(ByteString::Build(SCHEME, "starcatcher.us/scripts/main.lua?get=1"));
+	lsi->scriptManagerDownload = std::make_unique<http::Request>(ByteString::Build("https://starcatcher.us/scripts/main.lua?get=1"));
 	lsi->scriptManagerDownload->Start();
 	return 0;
 }
@@ -96,7 +96,7 @@ void LuaMisc::Tick(lua_State *L)
 				return;
 			}
 			ByteString filename = "autorun.lua";
-			if (!Platform::WriteFile(std::vector<char>(scriptData.begin(), scriptData.end()), filename))
+			if (!Platform::WriteFile(scriptData, filename))
 			{
 				complete({ Status::GetFailed{ String::Build("Unable to write to ", filename.FromUtf8()) } });
 				return;
@@ -177,7 +177,8 @@ static int record(lua_State *L)
 
 static int compatChunk(lua_State *L)
 {
-	lua_pushlstring(L, reinterpret_cast<const char *>(compat_lua), compat_lua_size);
+	auto data = compat_lua.AsCharSpan();
+	lua_pushlstring(L, data.data(), data.size());
 	return 1;
 }
 static int debug(lua_State *L)
@@ -262,10 +263,10 @@ void LuaMisc::Open(lua_State *L)
 		LFUNC(compatChunk),
 #undef LFUNC
 		{ "log", flog },
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 #define LCONST(v) lua_pushinteger(L, int(v)); lua_setfield(L, -2, #v)
 	LCONST(DEBUG_PARTS);
 	LCONST(DEBUG_ELEMENTPOP);
@@ -294,6 +295,8 @@ void LuaMisc::Open(lua_State *L)
 			tpt_lua_pushByteString(L, vcsTag);
 			lua_setfield(L, -2, "vcstag");
 		}
+		lua_pushstring(L, PACKAGE_MODE);
+		lua_setfield(L, -2, "packagemode");
 		lua_setfield(L, -2, "version");
 	}
 	lua_setglobal(L, "tpt");

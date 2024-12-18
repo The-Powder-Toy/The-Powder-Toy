@@ -6,11 +6,14 @@
 #include "ElementDefs.h"
 #include "BuiltinGOL.h"
 #include "MenuSection.h"
+#include "AccessProperty.h"
 #include "CoordStack.h"
-#include "gravity/GravityPtr.h"
 #include "common/tpt-rand.h"
+#include "gravity/Gravity.h"
+#include "graphics/RendererFrame.h"
 #include "Element.h"
 #include "SimulationConfig.h"
+#include "SimulationSettings.h"
 #include <cstring>
 #include <cstddef>
 #include <vector>
@@ -22,96 +25,104 @@ constexpr int CHANNELS = int(MAX_TEMP - 73) / 100 + 2;
 
 class Snapshot;
 class Brush;
-class SimulationSample;
+struct SimulationSample;
 struct matrix2d;
 struct vector2d;
 
 class Simulation;
 class Renderer;
-class Gravity;
 class Air;
 class GameSave;
 
-class Simulation
+struct RenderableSimulation
+{
+	GravityInput gravIn;
+	GravityOutput gravOut; // invariant: when grav is empty, this is in its default-constructed state
+	bool gravForceRecalc = true;
+	std::vector<sign> signs;
+
+	int currentTick = 0;
+	int emp_decor = 0;
+
+	playerst player;
+	playerst player2;
+	playerst fighters[MAX_FIGHTERS]; //Defined in Stickman.h
+
+	float vx[YCELLS][XCELLS];
+	float vy[YCELLS][XCELLS];
+	float pv[YCELLS][XCELLS];
+	float hv[YCELLS][XCELLS];
+
+	unsigned char bmap[YCELLS][XCELLS];
+	unsigned char emap[YCELLS][XCELLS];
+
+	Particle parts[NPART];
+	int pmap[YRES][XRES];
+	int photons[YRES][XRES];
+
+	int aheat_enable = 0;
+
+	// initialized in clear_sim
+	int parts_lastActiveIndex;
+
+	bool useLuaCallbacks = false;
+};
+
+class Simulation : public RenderableSimulation
 {
 public:
 	GravityPtr grav;
 	std::unique_ptr<Air> air;
+
 	RNG rng;
 
-	std::vector<sign> signs;
-	//Element * elements;
-
-	int currentTick;
-	int replaceModeSelected;
-	int replaceModeFlags;
-
-	int debug_nextToUpdate;
+	int replaceModeSelected = 0;
+	int replaceModeFlags = 0;
+	int debug_nextToUpdate = 0;
 	int debug_mostRecentlyUpdated = -1; // -1 when between full update loops
-	int parts_lastActiveIndex;
-	int pfree;
-	int NUM_PARTS;
-	bool elementRecount;
 	int elementCount[PT_NUM];
-	int ISWIRE;
-	bool force_stacking_check;
-	int emp_decor;
-	int emp_trigger_count;
-	bool etrd_count_valid;
-	int etrd_life0_count;
-	int lightningRecreate;
-	//Stickman
-	playerst player;
-	playerst player2;
-	playerst fighters[MAX_FIGHTERS]; //Defined in Stickman.h
-	unsigned char fighcount; //Contains the number of fighters
-	bool gravWallChanged;
-	//Portals and Wifi
+	int ISWIRE = 0;
+	bool force_stacking_check = false;
+	int emp_trigger_count = 0;
+	bool etrd_count_valid = false;
+	int etrd_life0_count = 0;
+	int lightningRecreate = 0;
+	bool gravWallChanged = false;
+
 	Particle portalp[CHANNELS][8][80];
-	int portal_rx[8];
-	int portal_ry[8];
 	int wireless[CHANNELS][2];
-	//Gol sim
-	int CGOL;
-	int GSPEED;
+
+	int CGOL = 0;
+	int GSPEED = 1;
 	unsigned int gol[YRES][XRES][5];
-	//Air sim
-	float (*vx)[XCELLS];
-	float (*vy)[XCELLS];
-	float (*pv)[XCELLS];
-	float (*hv)[XCELLS];
-	//Gravity sim
-	float *gravx;//gravx[YCELLS * XCELLS];
-	float *gravy;//gravy[YCELLS * XCELLS];
-	float *gravp;//gravp[YCELLS * XCELLS];
-	float *gravmap;//gravmap[YCELLS * XCELLS];
-	//Walls
-	unsigned char bmap[YCELLS][XCELLS];
-	unsigned char emap[YCELLS][XCELLS];
+
 	float fvx[YCELLS][XCELLS];
 	float fvy[YCELLS][XCELLS];
-	//Particles
-	Particle parts[NPART];
-	int pmap[YRES][XRES];
-	int photons[YRES][XRES];
+
 	unsigned int pmap_count[YRES][XRES];
-	//Simulation Settings
-	int edgeMode;
-	int gravityMode;
-	float customGravityX;
-	float customGravityY;
-	int legacy_enable;
-	int aheat_enable;
-	int water_equal_test;
-	int sys_pause;
-	int framerender;
-	int pretty_powder;
-	int sandcolour;
-	int sandcolour_interface;
-	int sandcolour_frame;
-	int deco_space;
+
+	int edgeMode = EDGE_VOID;
+	int gravityMode = GRAV_VERTICAL;
+	float customGravityX = 0;
+	float customGravityY = 0;
+	int legacy_enable = 0;
+	int water_equal_test = 0;
+	int sys_pause = 0;
+	int framerender = 0;
+	int pretty_powder = 0;
+	int sandcolour_frame = 0;
+	int deco_space = DECOSPACE_SRGB;
+
+	// initialized in clear_sim
+	bool elementRecount;
+	unsigned char fighcount; //Contains the number of fighters
 	uint64_t frameCount;
 	bool ensureDeterminism;
+
+	// initialized very late >_>
+	int NUM_PARTS;
+	int sandcolour;
+	int sandcolour_interface;
 
 	void Load(const GameSave *save, bool includePressure, Vec2<int> blockP); // block coordinates
 	std::unique_ptr<GameSave> Save(bool includePressure, Rect<int> partR); // particle coordinates
@@ -144,7 +155,7 @@ public:
 	void create_gain_photon(int pp);
 	void kill_part(int i);
 	bool FloodFillPmapCheck(int x, int y, int type) const;
-	int flood_prop(int x, int y, StructProperty prop, PropertyValue propvalue);
+	int flood_prop(int x, int y, const AccessProperty &changeProperty);
 	bool flood_water(int x, int y, int i);
 	int FloodINST(int x, int y);
 	void detach(int i);
@@ -174,14 +185,8 @@ public:
 	void ApplyDecorationPoint(int x, int y, int colR, int colG, int colB, int colA, int mode, Brush const &cBrush);
 	void ApplyDecorationLine(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode, Brush const &cBrush);
 	void ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, int colG, int colB, int colA, int mode);
-	bool ColorCompare(Renderer *ren, int x, int y, int replaceR, int replaceG, int replaceB);
-	void ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB);
-
-	//Drawing Tools like HEAT, AIR, and GRAV
-	int Tool(int x, int y, int tool, int brushX, int brushY, float strength = 1.0f);
-	int ToolBrush(int x, int y, int tool, Brush const &cBrush, float strength = 1.0f);
-	void ToolLine(int x1, int y1, int x2, int y2, int tool, Brush const &cBrush, float strength = 1.0f);
-	void ToolBox(int x1, int y1, int x2, int y2, int tool, float strength = 1.0f);
+	bool ColorCompare(const RendererFrame &frame, int x, int y, int replaceR, int replaceG, int replaceB);
+	void ApplyDecorationFill(const RendererFrame &frame, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB);
 
 	//Drawing Walls
 	int CreateWalls(int x, int y, int rx, int ry, int wall, Brush const *cBrush = nullptr);
@@ -214,8 +219,19 @@ public:
 	Simulation();
 	~Simulation();
 
-	bool useLuaCallbacks = false;
+	void EnableNewtonianGravity(bool enable);
+
+	bool MaxPartsReached() const
+	{
+		return pfree == -1;
+	}
 
 private:
 	CoordStack& getCoordStackSingleton();
+
+	void ResetNewtonianGravity(GravityInput newGravIn, GravityOutput newGravOut);
+	void DispatchNewtonianGravity();
+	void UpdateGravityMask();
+
+	int pfree;
 };

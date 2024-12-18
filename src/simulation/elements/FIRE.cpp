@@ -68,7 +68,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 				parts[i].life = 0;
 			}
 			else if ((parts[i].tmp&0x3) == 3){
-				sim->part_change_type(i,x,y,PT_DSTW);
+				sim->part_change_type(i,x,y,PT_WTRV);
 				parts[i].life = 0;
 				parts[i].ctype = PT_FIRE;
 			}
@@ -78,7 +78,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 		if (parts[i].life <=1)
 		{
 			if ((parts[i].tmp&0x3) == 3){
-				sim->part_change_type(i,x,y,PT_DSTW);
+				sim->part_change_type(i,x,y,PT_WTRV);
 				parts[i].life = 0;
 				parts[i].ctype = PT_FIRE;
 			}
@@ -409,8 +409,13 @@ static int updateLegacy(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	RGB<uint8_t> color = cpart->tmp2&1 ? Renderer::flameAchromaTableAt(cpart->life) : Renderer::flameTableAt(cpart->life);
-	RGB<uint8_t> c = RGB<uint8_t>::Unpack(cpart->dcolour & 0xFFFFFF);
+	RGB color = cpart->tmp2&1 ? Renderer::flameAchromaTableAt(cpart->life) : Renderer::flameTableAt(cpart->life);
+	RGB c = RGB:Unpack(cpart->dcolour & 0xFFFFFF);
+
+	*firea = 255;
+	*firer = *colr = color.Red*(255-c.Red)/255;
+	*fireg = *colg = color.Green*(255-c.Green)/255;
+	*fireb = *colb = color.Blue*(255-c.Blue)/255;
 
 	*firea = 255;
 	*firer = *colr = color.Red*(255-c.Red)/255;

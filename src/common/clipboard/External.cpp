@@ -141,7 +141,7 @@ namespace Clipboard
 			auto bail = false;
 			std::vector<char> saveData;
 			SerializeClipboard(saveData);
-			if (fwrite(&saveData[0], 1, saveData.size(), handle) != saveData.size())
+			if (fwrite(saveData.data(), 1, saveData.size(), handle) != saveData.size())
 			{
 				std::cerr << "failed to set clipboard data: fwrite: " << strerror(errno) << std::endl;
 				bail = true;

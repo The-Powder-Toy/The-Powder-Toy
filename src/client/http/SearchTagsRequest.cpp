@@ -7,7 +7,7 @@ namespace http
 	static ByteString Url(int start, int count, ByteString query)
 	{
 		ByteStringBuilder builder;
-		builder << SCHEME << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
+		builder << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
 		if (query.size())
 		{
 			builder << "&Search_Query=" << format::URLEncode(query);

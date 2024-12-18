@@ -6,6 +6,12 @@ option(
 	description: 'Build statically using libraries present on the system (\'system\') or using prebuilt libraries official builds use (\'prebuilt\')'
 )
 option(
+	'lto',
+	type: 'boolean',
+	value: false,
+	description: 'Link-time optimization, mostly a wrapper around the b_lto built-in option'
+)
+option(
 	'beta',
 	type: 'boolean',
 	value: false,
@@ -25,6 +31,12 @@ option(
 	description: 'Disable (\'no\') or enable (\'yes\') setting up file and URL associations, or even offer to do it at startup (\'yes_check\')'
 )
 option(
+	'shared_data_folder',
+	type: 'boolean',
+	value: true,
+	description: 'Handle the shared data folder, e.g. automatically chdir over to it and offering migration to it'
+)
+option(
 	'http',
 	type: 'boolean',
 	value: true,
@@ -40,42 +52,42 @@ option(
 	'display_version_major',
 	type: 'integer',
 	min: 0,
-	value: 98,
+	value: 99,
 	description: 'Major component of the display version, should more or less map to the MINOR version in semantic versioning'
 )
 option(
 	'display_version_minor',
 	type: 'integer',
 	min: 0,
-	value: 2,
+	value: 0,
 	description: 'Minor component of the display version, should more or less map to the PATCH version in semantic versioning'
 )
 option(
 	'build_num',
 	type: 'integer',
 	min: 0,
-	value: 366,
+	value: 375,
 	description: 'Build number, should be strictly monotonously increasing across public releases'
 )
 option(
 	'upstream_version_major',
 	type: 'integer',
 	min: 0,
-	value: 98,
+	value: 99,
 	description: 'Major component of the upstream display version, mod owners should not change this but merge upstream changes to it'
 )
 option(
 	'upstream_version_minor',
 	type: 'integer',
 	min: 0,
-	value: 2,
+	value: 0,
 	description: 'Minor component of the upstream display version, mod owners should not change this but merge upstream changes to it'
 )
 option(
 	'upstream_build_num',
 	type: 'integer',
 	min: 0,
-	value: 366,
+	value: 375,
 	description: 'Upstream build number, mod owners should not change this but merge upstream changes to it'
 )
 option(
@@ -95,7 +107,7 @@ option(
 option(
 	'x86_sse',
 	type: 'combo',
-	choices: [ 'none', 'sse', 'sse2', 'sse3', 'auto' ],
+	choices: [ 'none', 'sse', 'sse2', 'sse3', 'sse4.1', 'sse4.2', 'avx', 'avx2', 'avx512', 'auto' ],
 	value: 'auto',
 	description: 'Enable SSE (available only on x86)'
 )
@@ -182,6 +194,12 @@ option(
 	type: 'string',
 	value: '',
 	description: 'tpt-libs vtag override, only used for tpt-libs development'
+)
+option(
+	'package_mode',
+	type: 'string',
+	value: 'default',
+	description: 'Package mode override, only used by official builds, see prepare.py'
 )
 option(
 	'android_keystore',
@@ -310,4 +328,10 @@ option(
 	type: 'boolean',
 	value: false,
 	description: 'Export Lua symbols to enable loading of Lua shared modules'
+)
+option(
+	'clang_tidy',
+	type: 'boolean',
+	value: false,
+	description: 'Run clang-tidy to lint programming issues'
 )

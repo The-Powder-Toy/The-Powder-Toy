@@ -7,10 +7,10 @@ class TriangleBrush: public Brush
 public:
 	virtual ~TriangleBrush() override = default;
 
-	std::unique_ptr<unsigned char []> GenerateBitmap() const override
+	PlaneAdapter<std::vector<unsigned char>> GenerateBitmap() const override
 	{
 		ui::Point size = radius * 2 + Vec2{ 1, 1 };
-		auto bitmap = std::make_unique<unsigned char []>(size.X * size.Y);
+		PlaneAdapter<std::vector<unsigned char>> bitmap(size);
 
 		int rx = radius.X;
 		int ry = radius.Y;
@@ -20,11 +20,11 @@ public:
 			{
 				if ((abs((rx+2*x)*ry+rx*y) + abs(2*rx*(y-ry)) + abs((rx-2*x)*ry+rx*y))<=(4*rx*ry))
 				{
-					bitmap[(y+ry)*(size.X)+x+rx] = 255;
+					bitmap[{ x+rx, y+ry }] = 255;
 				}
 				else
 				{
-					bitmap[(y+ry)*(size.X)+x+rx] = 0;
+					bitmap[{ x+rx, y+ry }] = 0;
 				}
 			}
 		}

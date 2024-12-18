@@ -52,14 +52,14 @@ namespace http
 
 	struct RequestHandleHttp : public RequestHandle
 	{
-		curl_slist *curlHeaders = NULL;
+		curl_slist *curlHeaders = nullptr;
 #ifdef REQUEST_USE_CURL_MIMEPOST
-		curl_mime *curlPostFields = NULL;
+		curl_mime *curlPostFields = nullptr;
 #else
 		curl_httppost *curlPostFieldsFirst = NULL;
 		curl_httppost *curlPostFieldsLast = NULL;
 #endif
-		CURL *curlEasy = NULL;
+		CURL *curlEasy = nullptr;
 		char curlErrorBuffer[CURL_ERROR_SIZE];
 		bool curlAddedToMulti = false;
 		bool gotStatusLine = false;
@@ -139,7 +139,7 @@ namespace http
 		void UnregisterRequestHandle(std::shared_ptr<RequestHandle> requestHandle);
 
 		bool curlGlobalInit = false;
-		CURLM *curlMulti = NULL;
+		CURLM *curlMulti = nullptr;
 
 		void Wake()
 		{
@@ -152,7 +152,7 @@ namespace http
 		{
 			int dontcare;
 #ifdef REQUEST_USE_CURL_MULTI_POLL
-			HandleCURLMcode(curl_multi_poll(curlMulti, NULL, 0, 100000, &dontcare));
+			HandleCURLMcode(curl_multi_poll(curlMulti, nullptr, 0, 100000, &dontcare));
 #else
 			constexpr auto TickMs = 100;
 			if (requestHandles.size())
@@ -285,7 +285,7 @@ namespace http
 	void RequestManagerImpl::WorkerExit()
 	{
 		curl_multi_cleanup(curlMulti);
-		curlMulti = NULL;
+		curlMulti = nullptr;
 		curl_global_cleanup();
 	}
 
@@ -338,7 +338,7 @@ namespace http
 			}
 			WorkerPerform();
 		}
-		assert(!requestHandles.size());
+		// assert(!requestHandles.size()); // TODO: enable again once the rest of the codebase is actual c++
 		WorkerExit();
 	}
 
@@ -415,7 +415,7 @@ namespace http
 							// Hopefully this is what a NULL from curl_mime_addpart means.
 							HandleCURLcode(CURLE_OUT_OF_MEMORY);
 						}
-						HandleCURLcode(curl_mime_data(part, &field.value[0], field.value.size()));
+						HandleCURLcode(curl_mime_data(part, field.value.data(), field.value.size()));
 						HandleCURLcode(curl_mime_name(part, field.name.c_str()));
 						if (field.filename.has_value())
 						{
@@ -431,7 +431,7 @@ namespace http
 							HandleCURLFORMcode(curl_formadd(&handle->curlPostFieldsFirst, &handle->curlPostFieldsLast,
 								CURLFORM_COPYNAME, field.name.c_str(),
 								CURLFORM_BUFFER, field.filename->c_str(),
-								CURLFORM_BUFFERPTR, &field.value[0],
+								CURLFORM_BUFFERPTR, field.value.data(),
 								CURLFORM_BUFFERLENGTH, field.value.size(),
 							CURLFORM_END));
 						}
@@ -439,7 +439,7 @@ namespace http
 						{
 							HandleCURLFORMcode(curl_formadd(&handle->curlPostFieldsFirst, &handle->curlPostFieldsLast,
 								CURLFORM_COPYNAME, field.name.c_str(),
-								CURLFORM_PTRCONTENTS, &field.value[0],
+								CURLFORM_PTRCONTENTS, field.value.data(),
 								CURLFORM_CONTENTLEN, field.value.size(),
 							CURLFORM_END));
 						}
@@ -450,7 +450,7 @@ namespace http
 				else if (std::holds_alternative<http::StringData>(postData) && std::get<http::StringData>(postData).size())
 				{
 					auto &stringData = std::get<http::StringData>(postData);
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDS, &stringData[0]));
+					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDS, stringData.data()));
 					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_POSTFIELDSIZE_LARGE, curl_off_t(stringData.size())));
 				}
 				else if (handle->isPost)

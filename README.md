@@ -1,4 +1,4 @@
-The Powder Toy - April 2024
+The Powder Toy - December 2024
 ==========================
 
 Get the latest version [from the Powder Toy website](https://powdertoy.co.uk/Download.html).
@@ -23,7 +23,7 @@ Thanks
 * Stanislaw K Skowronek - Designed the original
 * Simon Robertshaw
 * Skresanov Savely
-* cracker64
+* Pilihp64
 * Catelite
 * Victoria Hoyle
 * Nathan Cousins

@@ -11,16 +11,6 @@ static int32_t int32Truncate(double n)
 	return int32_t(n);
 }
 
-static std::variant<Graphics *, Renderer *> currentGraphics()
-{
-	auto *lsi = GetLSI();
-	if (lsi->eventTraits & eventTraitSimGraphics)
-	{
-		return lsi->ren;
-	}
-	return lsi->g;
-}
-
 static int textSize(lua_State *L)
 {
 	auto text = tpt_lua_optString(L, 1, "");
@@ -50,8 +40,8 @@ static int drawText(lua_State *L)
 	else if (a>255) a = 255;
 
 	std::visit([x, y, r, g, b, a, &text](auto p) {
-		p->BlendText({ x, y }, text, RGBA<uint8_t>(r, g, b, a));
-	}, currentGraphics());
+		p->BlendText({ x, y }, text, RGBA(r, g, b, a));
+	}, GetLSI()->GetGraphics());
 	return 0;
 }
 
@@ -71,8 +61,9 @@ static int drawPixel(lua_State *L)
 	else if (b > 255) b = 255;
 	if      (a < 0  ) a = 0  ;
 	else if (a > 255) a = 255;
-	auto *lsi = GetLSI();
-	lsi->g->BlendPixel({ x, y }, RGBA<uint8_t>(r, g, b, a));
+	std::visit([x, y, r, g, b, a](auto p) {
+		p->BlendPixel({ x, y }, RGBA(r, g, b, a));
+	}, GetLSI()->GetGraphics());
 	return 0;
 }
 
@@ -99,13 +90,13 @@ static int drawLine(lua_State *L)
 	std::visit([x1, y1, x2, y2, r, g, b, a](auto p) {
 		if (a == 255)
 		{
-			p->DrawLine({ x1, y1 }, { x2, y2 }, RGB<uint8_t>(r, g, b));
+			p->DrawLine({ x1, y1 }, { x2, y2 }, RGB(r, g, b));
 		}
 		else
 		{
-			p->BlendLine({ x1, y1 }, { x2, y2 }, RGBA<uint8_t>(r, g, b, a));
+			p->BlendLine({ x1, y1 }, { x2, y2 }, RGBA(r, g, b, a));
 		}
-	}, currentGraphics());
+	}, GetLSI()->GetGraphics());
 	return 0;
 }
 
@@ -132,13 +123,13 @@ static int drawRect(lua_State *L)
 	std::visit([x, y, width, height, r, g, b, a](auto p) {
 		if (a == 255)
 		{
-			p->DrawRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGB<uint8_t>(r, g, b));
+			p->DrawRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGB(r, g, b));
 		}
 		else
 		{
-			p->BlendRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGBA<uint8_t>(r, g, b, a));
+			p->BlendRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGBA(r, g, b, a));
 		}
-	}, currentGraphics());
+	}, GetLSI()->GetGraphics());
 	return 0;
 }
 
@@ -165,13 +156,13 @@ static int fillRect(lua_State *L)
 	std::visit([x, y, width, height, r, g, b, a](auto p) {
 		if (a == 255)
 		{
-			p->DrawFilledRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGB<uint8_t>(r, g, b));
+			p->DrawFilledRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGB(r, g, b));
 		}
 		else
 		{
-			p->BlendFilledRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGBA<uint8_t>(r, g, b, a));
+			p->BlendFilledRect(RectSized(Vec2{ x, y }, Vec2{ width, height }), RGBA(r, g, b, a));
 		}
-	}, currentGraphics());
+	}, GetLSI()->GetGraphics());
 	return 0;
 }
 
@@ -196,8 +187,8 @@ static int drawCircle(lua_State *L)
 	else if (a>255) a = 255;
 
 	std::visit([x, y, rx, ry, r, g, b, a](auto p) {
-		p->BlendEllipse({ x, y }, { abs(rx), abs(ry) }, RGBA<uint8_t>(r, g, b, a));
-	}, currentGraphics());
+		p->BlendEllipse({ x, y }, { abs(rx), abs(ry) }, RGBA(r, g, b, a));
+	}, GetLSI()->GetGraphics());
 	return 0;
 }
 
@@ -222,8 +213,8 @@ static int fillCircle(lua_State *L)
 	else if (a>255) a = 255;
 
 	std::visit([x, y, rx, ry, r, g, b, a](auto p) {
-		p->BlendFilledEllipse({ x, y }, { abs(rx), abs(ry) }, RGBA<uint8_t>(r, g, b, a));
-	}, currentGraphics());
+		p->BlendFilledEllipse({ x, y }, { abs(rx), abs(ry) }, RGBA(r, g, b, a));
+	}, GetLSI()->GetGraphics());
 	return 0;
 }
 
@@ -270,10 +261,10 @@ static int setClipRect(lua_State *L)
 	int h = luaL_optinteger(L, 4, WINDOWH);
 	auto rect = RectSized(Vec2(x, y), Vec2(w, h));
 	lsi->g->SwapClipRect(rect);
-	lua_pushinteger(L, rect.TopLeft.X);
-	lua_pushinteger(L, rect.TopLeft.Y);
-	lua_pushinteger(L, rect.Size().X);
-	lua_pushinteger(L, rect.Size().Y);
+	lua_pushinteger(L, rect.pos.X);
+	lua_pushinteger(L, rect.pos.Y);
+	lua_pushinteger(L, rect.size.X);
+	lua_pushinteger(L, rect.size.Y);
 	return 4;
 }
 
@@ -293,10 +284,10 @@ void LuaGraphics::Open(lua_State *L)
 		LFUNC(getHexColor),
 		LFUNC(setClipRect),
 #undef LFUNC
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 #define LCONSTAS(k, v) lua_pushinteger(L, int(v)); lua_setfield(L, -2, k)
 	LCONSTAS("WIDTH",  WINDOWW);
 	LCONSTAS("HEIGHT", WINDOWH);

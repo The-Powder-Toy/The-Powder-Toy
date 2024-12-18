@@ -3,7 +3,7 @@
 
 #include <cmath>
 
-static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
+static int perform(SimTool *tool, Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
 
 void SimTool::Tool_CYCL()
 {
@@ -14,7 +14,7 @@ void SimTool::Tool_CYCL()
 	Perform = &perform;
 }
 
-static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
+static int perform(SimTool *tool, Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
 	/*
 		Air velocity calculation.
@@ -26,8 +26,8 @@ static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX,
 		if(brushX == x && brushY == y)
 			return 1;
 
-		float *vx = &sim->air->vx[y / CELL][x / CELL];
-		float *vy = &sim->air->vy[y / CELL][x / CELL];
+		float *vx = &sim->vx[y / CELL][x / CELL];
+		float *vy = &sim->vy[y / CELL][x / CELL];
 
 		auto dvx = float(brushX - x);
 		auto dvy = float(brushY - y);

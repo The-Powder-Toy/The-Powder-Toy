@@ -33,6 +33,7 @@ class OptionsView: public ui::Window
 	ui::Checkbox *forceIntegerScaling{};
 	ui::Checkbox *blurryScaling{};
 	ui::Checkbox *fastquit{};
+	ui::Checkbox *globalQuit{};
 	ui::DropDown *decoSpace{};
 	ui::Checkbox *showAvatars{};
 	ui::Checkbox *momentumScroll{};
@@ -41,6 +42,7 @@ class OptionsView: public ui::Window
 	ui::Checkbox *perfectCircle{};
 	ui::Checkbox *graveExitsConsole{};
 	ui::Checkbox *nativeClipoard{};
+	ui::Checkbox *threadedRendering{};
 	ui::ScrollPanel *scrollPanel{};
 	float customGravityX, customGravityY;
 	void UpdateAmbientAirTempPreview(float airTemp, bool isValid);

@@ -1,6 +1,6 @@
 #include "simulation/ToolCommon.h"
 
-static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
+static int perform(SimTool *tool, Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
 
 void SimTool::Tool_AMBM()
 {
@@ -11,7 +11,7 @@ void SimTool::Tool_AMBM()
 	Perform = &perform;
 }
 
-static int perform(Simulation *sim, Particle *cpart, int x, int y, int brushX, int brushY, float strength)
+static int perform(SimTool *tool, Simulation *sim, Particle *cpart, int x, int y, int brushX, int brushY, float strength)
 {
 	if (!sim->aheat_enable)
 	{

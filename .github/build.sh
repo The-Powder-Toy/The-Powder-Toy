@@ -32,6 +32,8 @@ x86_64-windows-msvc-static) ;;
 x86_64-windows-msvc-dynamic) ;;
 x86-windows-msvc-static) ;;
 x86-windows-msvc-dynamic) ;;
+aarch64-windows-msvc-static) ;;
+aarch64-windows-msvc-dynamic) ;;
 x86_64-darwin-macos-static) ;;
 x86_64-darwin-macos-dynamic) ;;
 aarch64-darwin-macos-static) ;;
@@ -67,6 +69,9 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 			export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/tools/bin:$PATH
 			sdkmanager "platforms;$android_platform"
 		)
+		if [[ $BSH_LINT == yes ]]; then
+			sudo apt install clang-tidy
+		fi
 		;;
 	windows)
 		if [[ $BSH_BUILD_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
@@ -77,6 +82,9 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,meson,fftw,jq}
 			fi
 			export PKG_CONFIG=$(which pkg-config.exe)
+			if [[ $BSH_LINT == yes ]]; then
+				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-clang-tools-extra
+			fi
 		fi
 		;;
 	linux)
@@ -84,13 +92,28 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 		if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 			sudo apt install libc6-dev libc6-dev-i386
 		else
-			sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev libbz2-dev libjsoncpp-dev
+			sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev libbz2-dev libjsoncpp-dev libpng-dev
+		fi
+		if [[ $PACKAGE_MODE == appimage ]]; then
+			sudo apt install libfuse2
+		fi
+		if [[ $BSH_LINT == yes ]]; then
+			sudo apt install clang-tidy
 		fi
 		;;
 	darwin)
-		brew install pkg-config binutils
+		brew install binutils # pkg-config
 		if [[ $BSH_STATIC_DYNAMIC != static ]]; then
-			brew install luajit curl fftw zlib sdl2 bzip2 jsoncpp
+			brew install luajit fftw zlib sdl2 bzip2 jsoncpp # curl
+		fi
+		if [[ $BSH_LINT == yes ]]; then
+			# gg brew :(
+			# https://stackoverflow.com/questions/53111082/how-to-install-clang-tidy-on-macos
+			brew install llvm
+			ln -s "$(brew --prefix llvm)/bin/clang-format" "/usr/local/bin/clang-format"
+			ln -s "$(brew --prefix llvm)/bin/clang-tidy" "/usr/local/bin/clang-tidy"
+			ln -s "$(brew --prefix llvm)/bin/clang-apply-replacements" "/usr/local/bin/clang-apply-replacements"
+			ln -s "$(brew --prefix llvm)/bin/run-clang-tidy" "/usr/local/bin/run-clang-tidy"
 		fi
 		;;
 	emscripten)
@@ -116,10 +139,11 @@ function inplace_sed() {
 
 if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == windows-msvc ]]; then
 	case $BSH_HOST_ARCH in
-	x86_64) vs_env_arch=x64;;
-	x86)    vs_env_arch=x86;;
+	x86_64)  vs_env_arch=x64      ; vcvars_ver=14.29;;
+	x86)     vs_env_arch=x86      ; vcvars_ver=14.29;;
+	aarch64) vs_env_arch=x64_arm64; vcvars_ver=14.29;;
 	esac
-	VS_ENV_PARAMS=$vs_env_arch$'\t'-vcvars_ver=14.1
+	VS_ENV_PARAMS=$vs_env_arch$'\t'-vcvars_ver=${BSH_VS_TOOLSET-$vcvars_ver}
 	. ./.github/vs-env.sh
 elif [[ $BSH_HOST_PLATFORM == darwin ]]; then
 	# may need export SDKROOT=$(xcrun --show-sdk-path --sdk macosx11.1)
@@ -202,6 +226,7 @@ meson_configure+=$'\t'-Dapp_vendor=$APP_VENDOR
 meson_configure+=$'\t'-Dstrip=false
 meson_configure+=$'\t'-Db_staticpic=false
 meson_configure+=$'\t'-Dmod_id=$MOD_ID
+meson_configure+=$'\t'-Dpackage_mode=$PACKAGE_MODE
 case $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_DEBUG_RELEASE in
 x86_64-linux-gnu-debug) ;&
 x86_64-windows-mingw-debug) ;&
@@ -211,6 +236,9 @@ x86_64-darwin-macos-debug)
 	meson_configure+=$'\t'-Dbuild_font=true
 	;;
 esac
+if [[ $BSH_LINT == yes ]]; then
+	meson_configure+=$'\t'-Dclang_tidy=true
+fi
 if [[ $PACKAGE_MODE == nohttp ]]; then
 	meson_configure+=$'\t'-Dhttp=false
 fi
@@ -225,14 +253,10 @@ if [[ $PACKAGE_MODE == backendvs ]]; then
 fi
 if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 	meson_configure+=$'\t'-Dstatic=prebuilt
-	if [[ $BSH_HOST_PLATFORM == windows ]]; then
-		if [[ $BSH_HOST_LIBC == msvc ]]; then
-			meson_configure+=$'\t'-Db_vscrt=static_from_buildtype
-		else
-			c_link_args+=\'-static\',
-			c_link_args+=\'-static-libgcc\',
-			c_link_args+=\'-static-libstdc++\',
-		fi
+	if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
+		c_link_args+=\'-static\',
+		c_link_args+=\'-static-libgcc\',
+		c_link_args+=\'-static-libstdc++\',
 	elif [[ $BSH_HOST_PLATFORM == linux ]]; then
 		c_link_args+=\'-static-libgcc\',
 		c_link_args+=\'-static-libstdc++\',
@@ -305,10 +329,13 @@ if [[ "$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "windows-mingw" ]]; then
 	meson_configure+=$'\t'-Dwindows_icons=false
 fi
 if [[ $BSH_DEBUG_RELEASE-$BSH_STATIC_DYNAMIC == release-static ]]; then
-	meson_configure+=$'\t'-Db_lto=true
+	meson_configure+=$'\t'-Dlto=true
 fi
 if [[ $BSH_HOST_PLATFORM-$BSH_HOST_ARCH == darwin-aarch64 ]]; then
 	meson_configure+=$'\t'--cross-file=.github/macaa64-ghactions.ini
+fi
+if [[ $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC == aarch64-windows-msvc ]]; then
+	meson_configure+=$'\t'--cross-file=.github/msvca64-ghactions.ini
 fi
 if [[ $BSH_HOST_PLATFORM == emscripten ]]; then
 	meson_configure+=$'\t'--cross-file=.github/emscripten-ghactions.ini
@@ -370,7 +397,6 @@ java_runtime_jar = '$JAVA_HOME_8_X64/jre/lib/rt.jar'
 
 [binaries]
 # android_ndk_toolchain_prefix comes from the correct cross-file in ./android/cross
-c = andriod_ndk_toolchain_bin / (android_ndk_toolchain_prefix + 'clang')
 cpp = andriod_ndk_toolchain_bin / (android_ndk_toolchain_prefix + 'clang++')
 strip = andriod_ndk_toolchain_bin / 'llvm-strip'
 javac = '$JAVA_HOME_8_X64/bin/javac'
@@ -425,6 +451,18 @@ if [[ $PACKAGE_MODE == appimage ]]; then
 	meson configure -Dcan_install=no -Dignore_updates=true -Dbuild_render=false -Dbuild_font=false
 	strip_target=$APP_EXE
 fi
+if [[ $PACKAGE_MODE == steam ]]; then
+	meson configure -Dshared_data_folder=false -Dignore_updates=true
+	if [[ $BSH_HOST_PLATFORM != darwin ]]; then
+		meson configure -Dcan_install=yes
+	fi
+fi
+
+if [[ $BSH_LINT == yes ]]; then
+	meson compile -v clang-tidy
+	exit 0
+fi
+
 meson_compile=meson$'\t'compile
 meson_compile+=$'\t'-v
 if [[ $BSH_BUILD_PLATFORM == windows ]] && [[ $PACKAGE_MODE != backendvs ]]; then
@@ -436,7 +474,7 @@ if [[ $BSH_BUILD_PLATFORM == windows ]] && [[ $PACKAGE_MODE != backendvs ]]; the
 	cat $APP_EXE.exe.rsp
 	[[ $ninja_code == 0 ]];
 	echo # rsps don't usually have a newline at the end
-	if [[ "$BSH_HOST_PLATFORM-$BSH_STATIC_DYNAMIC $BSH_BUILD_PLATFORM" == "windows-dynamic windows" ]]; then
+	if [[ "$BSH_HOST_PLATFORM-$BSH_STATIC_DYNAMIC $BSH_BUILD_PLATFORM" == "windows-dynamic windows" ]] && [[ $BSH_HOST_ARCH != aarch64 ]]; then
 		# on windows we provide the dynamic dependencies also; makes sense to check for their presence
 		# msys ldd works fine but only on windows build machines
 		if ldd $APP_EXE | grep "not found"; then
@@ -459,7 +497,7 @@ if [[ $BSH_HOST_PLATFORM == android ]]; then
 	ANDROID_KEYSTORE_PASS=bagelsbagels ninja android/$APP_EXE.apk
 	mv android/$APP_EXE.apk $APP_EXE.apk
 fi
-if [[ $PACKAGE_MODE == dmg ]]; then
+if [[ $BSH_HOST_PLATFORM == darwin ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == darwin-macos
 	appdir=$APP_NAME.app
 	mkdir $appdir
@@ -486,7 +524,18 @@ if [[ $PACKAGE_MODE == dmg ]]; then
 	cp ../README.md dmgroot/README.md
 	# apparently using sudo here fixes the occasional "resource is busy"
 	# see https://github.com/actions/runner-images/issues/7522
-	sudo hdiutil create -format UDZO -volname $APP_NAME -fs HFS+ -srcfolder dmgroot -o $ASSET_PATH
+	# actually never mind, it does not, amazing. I'll just go spam it I guess
+	for ((i = 0; i < 100; ++i)); do
+		if sudo hdiutil create -format UDZO -volname $APP_NAME -fs HFS+ -srcfolder dmgroot -o $ASSET_PATH; then
+			break
+		fi
+		>&2 echo "hdiutil is a joke, trying again in a bit..."
+		sleep 1
+	done
+	if [[ ! -f $ASSET_PATH ]]; then
+		>&2 echo "hdiutil is a joke"
+		exit 1
+	fi
 elif [[ $PACKAGE_MODE == emscripten ]]; then
 	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.worker.js $APP_EXE.wasm
 elif [[ $PACKAGE_MODE == appimage ]]; then

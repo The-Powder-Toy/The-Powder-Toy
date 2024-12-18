@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <span>
 #include <vector>
 
 enum BZ2WCompressResult
@@ -8,7 +9,7 @@ enum BZ2WCompressResult
 	BZ2WCompressNomem,
 	BZ2WCompressLimit,
 };
-BZ2WCompressResult BZ2WCompress(std::vector<char> &dest, const char *srcData, size_t srcSize, size_t maxSize = 0);
+BZ2WCompressResult BZ2WCompress(std::vector<char> &dest, std::span<const char> srcData, size_t maxSize = 0);
 
 enum BZ2WDecompressResult
 {
@@ -19,4 +20,4 @@ enum BZ2WDecompressResult
 	BZ2WDecompressBad,
 	BZ2WDecompressEof,
 };
-BZ2WDecompressResult BZ2WDecompress(std::vector<char> &dest, const char *srcData, size_t srcSize, size_t maxSize = 0);
+BZ2WDecompressResult BZ2WDecompress(std::vector<char> &dest, std::span<const char> srcData, size_t maxSize = 0);

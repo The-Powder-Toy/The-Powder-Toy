@@ -10,28 +10,28 @@ class VideoBuffer;
 template<typename Derived>
 struct RasterDrawMethods
 {
-	void DrawPixel(Vec2<int>, RGB<uint8_t>);
-	void BlendPixel(Vec2<int>, RGBA<uint8_t>);
-	void AddPixel(Vec2<int>, RGBA<uint8_t>);
-	void AddFirePixel(Vec2<int>, RGB<uint8_t>, int fireAlpha);
+	void DrawPixel(Vec2<int>, RGB);
+	void BlendPixel(Vec2<int>, RGBA);
+	void AddPixel(Vec2<int>, RGBA);
+	void AddFirePixel(Vec2<int>, RGB, int fireAlpha);
 	void XorPixel(Vec2<int>);
 
-	void DrawLine(Vec2<int>, Vec2<int>, RGB<uint8_t>);
-	void BlendLine(Vec2<int>, Vec2<int>, RGBA<uint8_t>);
-	void AddLine(Vec2<int>, Vec2<int>, RGBA<uint8_t>);
+	void DrawLine(Vec2<int>, Vec2<int>, RGB);
+	void BlendLine(Vec2<int>, Vec2<int>, RGBA);
+	void AddLine(Vec2<int>, Vec2<int>, RGBA);
 	void XorLine(Vec2<int>, Vec2<int>);
 
-	void DrawRect(Rect<int>, RGB<uint8_t>);
-	void BlendRect(Rect<int>, RGBA<uint8_t>);
+	void DrawRect(Rect<int>, RGB);
+	void BlendRect(Rect<int>, RGBA);
 
 	void XorDottedRect(Rect<int>);
 
-	void DrawFilledRect(Rect<int>, RGB<uint8_t>);
-	void BlendFilledRect(Rect<int>, RGBA<uint8_t>);
+	void DrawFilledRect(Rect<int>, RGB);
+	void BlendFilledRect(Rect<int>, RGBA);
 
-	void BlendEllipse(Vec2<int> center, Vec2<int> size, RGBA<uint8_t>);
+	void BlendEllipse(Vec2<int> center, Vec2<int> size, RGBA);
 
-	void BlendFilledEllipse(Vec2<int> center, Vec2<int> size, RGBA<uint8_t>);
+	void BlendFilledEllipse(Vec2<int> center, Vec2<int> size, RGBA);
 
 	void BlendImage(pixel const *, uint8_t alpha, Rect<int>);
 	void BlendImage(pixel const *, uint8_t alpha, Rect<int>, size_t rowStride);
@@ -42,14 +42,14 @@ struct RasterDrawMethods
 	void BlendRGBAImage(pixel_rgba const *, Rect<int>, size_t rowStride);
 
 	// Returns width of character
-	int BlendChar(Vec2<int>, String::value_type, RGBA<uint8_t>);
-	int AddChar(Vec2<int>, String::value_type, RGBA<uint8_t>);
+	int BlendChar(Vec2<int>, String::value_type, RGBA);
+	int AddChar(Vec2<int>, String::value_type, RGBA);
 
 	// Returns the offset between the first character and the
 	// would-be-next character
-	Vec2<int> BlendText(Vec2<int>, String const &, RGBA<uint8_t>);
+	Vec2<int> BlendText(Vec2<int>, String const &, RGBA);
 
-	Vec2<int> BlendTextOutline(Vec2<int>, String const &, RGBA<uint8_t>);
+	Vec2<int> BlendTextOutline(Vec2<int>, String const &, RGBA);
 
 	static int CharWidth(String::value_type);
 	// Considers the first line to be FONT_H-2 tall with successive lines adding

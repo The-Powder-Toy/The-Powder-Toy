@@ -1,6 +1,5 @@
 #include "Simulation.h"
 #include "Sample.h"
-#include "SimTool.h"
 #include "Snapshot.h"
 #include "Air.h"
 #include "gravity/Gravity.h"
@@ -26,16 +25,15 @@ std::unique_ptr<Snapshot> Simulation::CreateSnapshot() const
 	snap->BlockAirH      .insert   (snap->BlockAirH      .begin(), &air->bmap_blockairh[0][0], &air->bmap_blockairh[0][0] + NCELL);
 	snap->FanVelocityX   .insert   (snap->FanVelocityX   .begin(), &fvx [0][0]      , &fvx [0][0] + NCELL);
 	snap->FanVelocityY   .insert   (snap->FanVelocityY   .begin(), &fvy [0][0]      , &fvy [0][0] + NCELL);
-	snap->GravVelocityX  .insert   (snap->GravVelocityX  .begin(), &gravx  [0]      , &gravx  [0] + NCELL);
-	snap->GravVelocityY  .insert   (snap->GravVelocityY  .begin(), &gravy  [0]      , &gravy  [0] + NCELL);
-	snap->GravValue      .insert   (snap->GravValue      .begin(), &gravp  [0]      , &gravp  [0] + NCELL);
-	snap->GravMap        .insert   (snap->GravMap        .begin(), &gravmap[0]      , &gravmap[0] + NCELL);
 	snap->Particles      .insert   (snap->Particles      .begin(), &parts  [0]      , &parts  [0] + parts_lastActiveIndex + 1);
 	snap->PortalParticles.insert   (snap->PortalParticles.begin(), &portalp[0][0][0], &portalp[0][0][0] + CHANNELS * 8 * 80);
 	snap->WirelessData   .insert   (snap->WirelessData   .begin(), &wireless[0][0]  , &wireless[0][0] + CHANNELS * 2);
 	snap->stickmen       .insert   (snap->stickmen       .begin(), &fighters[0]     , &fighters[0] + MAX_FIGHTERS);
 	snap->stickmen       .push_back(player2);
 	snap->stickmen       .push_back(player);
+	snap->GravMass  .insert(snap->GravMass  .begin(), &gravIn.mass[{ 0, 0 }]   , &gravIn.mass[{ 0, 0 }]    + NCELL);
+	snap->GravForceX.insert(snap->GravForceX.begin(), &gravOut.forceX[{ 0, 0 }], &gravOut.forceX[{ 0, 0 }] + NCELL);
+	snap->GravForceY.insert(snap->GravForceY.begin(), &gravOut.forceY[{ 0, 0 }], &gravOut.forceY[{ 0, 0 }] + NCELL);
 	snap->signs = signs;
 	snap->FrameCount = frameCount;
 	snap->RngState = rng.state();
@@ -61,35 +59,36 @@ void Simulation::Restore(const Snapshot &snap)
 	std::copy(snap.BlockAirH      .begin(), snap.BlockAirH      .end(), &air->bmap_blockairh[0][0]);
 	std::copy(snap.FanVelocityX   .begin(), snap.FanVelocityX   .end(), &fvx[0][0]       );
 	std::copy(snap.FanVelocityY   .begin(), snap.FanVelocityY   .end(), &fvy[0][0]       );
-	if (grav->IsEnabled())
-	{
-		grav->Clear();
-		std::copy(snap.GravVelocityX.begin(), snap.GravVelocityX.end(), &gravx  [0]      );
-		std::copy(snap.GravVelocityY.begin(), snap.GravVelocityY.end(), &gravy  [0]      );
-		std::copy(snap.GravValue    .begin(), snap.GravValue    .end(), &gravp  [0]      );
-		std::copy(snap.GravMap      .begin(), snap.GravMap      .end(), &gravmap[0]      );
-	}
 	std::copy(snap.Particles      .begin(), snap.Particles      .end(), &parts[0]        );
 	std::copy(snap.PortalParticles.begin(), snap.PortalParticles.end(), &portalp[0][0][0]);
 	std::copy(snap.WirelessData   .begin(), snap.WirelessData   .end(), &wireless[0][0]  );
 	std::copy(snap.stickmen       .begin(), snap.stickmen.end() - 2   , &fighters[0]     );
 	player  = snap.stickmen[snap.stickmen.size() - 1];
 	player2 = snap.stickmen[snap.stickmen.size() - 2];
+	{
+		GravityInput newGravIn;
+		GravityOutput newGravOut;
+		std::copy(snap.GravMass  .begin(), snap.GravMass  .end(), &newGravIn.mass[{ 0, 0 }]   );
+		std::copy(snap.GravForceX.begin(), snap.GravForceX.end(), &newGravOut.forceX[{ 0, 0 }]);
+		std::copy(snap.GravForceY.begin(), snap.GravForceY.end(), &newGravOut.forceY[{ 0, 0 }]);
+		// we apply the old grav values but Newtonian gravity enable state is not part of the snapshot so this may be pointless
+		// TODO: maybe track settings like Newtonian gravity enable state in the history
+		ResetNewtonianGravity(newGravIn, newGravOut);
+	}
 	signs = snap.signs;
 	frameCount = snap.FrameCount;
 	rng.state(snap.RngState);
 	parts_lastActiveIndex = NPART - 1;
 	RecalcFreeParticles(false);
-	gravWallChanged = true;
 }
 
 void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 {
 	auto intersection = RES.OriginRect() & RectSized(Vec2{ area_x, area_y }, Vec2{ area_w, area_h });
-	area_x = intersection.TopLeft.X;
-	area_y = intersection.TopLeft.Y;
-	area_w = intersection.Size().X;
-	area_h = intersection.Size().Y;
+	area_x = intersection.pos.X;
+	area_y = intersection.pos.Y;
+	area_w = intersection.size.X;
+	area_h = intersection.size.Y;
 	float fx = area_x-.5f, fy = area_y-.5f;
 	for (int i = 0; i <= parts_lastActiveIndex; i++)
 	{
@@ -120,6 +119,7 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 SimulationSample Simulation::GetSample(int x, int y)
 {
 	SimulationSample sample;
+	sample.particle.type = 0;
 	sample.PositionX = x;
 	sample.PositionY = y;
 	if (x >= 0 && x < XRES && y >= 0 && y < YRES)
@@ -143,11 +143,10 @@ SimulationSample Simulation::GetSample(int x, int y)
 		sample.AirVelocityX = vx[y/CELL][x/CELL];
 		sample.AirVelocityY = vy[y/CELL][x/CELL];
 
-		if(grav->IsEnabled())
+		if (grav)
 		{
-			sample.Gravity = gravp[(y/CELL)*XCELLS+(x/CELL)];
-			sample.GravityVelocityX = gravx[(y/CELL)*XCELLS+(x/CELL)];
-			sample.GravityVelocityY = gravy[(y/CELL)*XCELLS+(x/CELL)];
+			sample.GravityVelocityX = gravOut.forceX[Vec2{ x, y } / CELL];
+			sample.GravityVelocityY = gravOut.forceY[Vec2{ x, y } / CELL];
 		}
 	}
 	else
@@ -164,18 +163,6 @@ void Simulation::SetDecoSpace(int newDecoSpace)
 		newDecoSpace = DECOSPACE_SRGB;
 	}
 	deco_space = newDecoSpace;
-}
-
-int Simulation::Tool(int x, int y, int tool, int brushX, int brushY, float strength)
-{
-	Particle * cpart = NULL;
-	int r;
-	if ((r = pmap[y][x]))
-		cpart = &(parts[ID(r)]);
-	else if ((r = photons[y][x]))
-		cpart = &(parts[ID(r)]);
-	auto &sd = SimulationData::CRef();
-	return sd.tools[tool].Perform(this, cpart, x, y, brushX, brushY, strength);
 }
 
 int Simulation::CreateWalls(int x, int y, int rx, int ry, int wall, Brush const *cBrush)
@@ -305,7 +292,7 @@ void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int wall)
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			CreateWalls(i, j, 0, 0, wall, NULL);
+			CreateWalls(i, j, 0, 0, wall, nullptr);
 }
 
 int Simulation::FloodWalls(int x, int y, int wall, int bm)
@@ -348,7 +335,7 @@ int Simulation::FloodWalls(int x, int y, int wall, int bm)
 	// fill span
 	for (x=x1; x<=x2; x++)
 	{
-		if (!CreateWalls(x, y, 0, 0, wall, NULL))
+		if (!CreateWalls(x, y, 0, 0, wall, nullptr))
 			return 0;
 	}
 	// fill children
@@ -671,9 +658,9 @@ void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, in
 			ApplyDecoration(i, j, colR, colG, colB, colA, mode);
 }
 
-bool Simulation::ColorCompare(Renderer *ren, int x, int y, int replaceR, int replaceG, int replaceB)
+bool Simulation::ColorCompare(const RendererFrame &frame, int x, int y, int replaceR, int replaceG, int replaceB)
 {
-	auto pix = RGB<uint8_t>::Unpack(ren->GetPixel({ x, y }));
+	auto pix = RGB::Unpack(frame[{ x, y }]);
 	int r = pix.Red;
 	int g = pix.Green;
 	int b = pix.Blue;
@@ -681,7 +668,7 @@ bool Simulation::ColorCompare(Renderer *ren, int x, int y, int replaceR, int rep
 	return diff < 15;
 }
 
-void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB)
+void Simulation::ApplyDecorationFill(const RendererFrame &frame, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB)
 {
 	int x1, x2;
 	char *bitmap = (char*)malloc(XRES*YRES); //Bitmap for checking
@@ -689,7 +676,7 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 		return;
 	memset(bitmap, 0, XRES*YRES);
 
-	if (!ColorCompare(ren, x, y, replaceR, replaceG, replaceB)) {
+	if (!ColorCompare(frame, x, y, replaceR, replaceG, replaceB)) {
 		free(bitmap);
 		return;
 	}
@@ -707,7 +694,7 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 			// go left as far as possible
 			while (x1>0)
 			{
-				if (bitmap[(x1-1)+y*XRES] || !ColorCompare(ren, x1-1, y, replaceR, replaceG, replaceB))
+				if (bitmap[(x1-1)+y*XRES] || !ColorCompare(frame, x1-1, y, replaceR, replaceG, replaceB))
 				{
 					break;
 				}
@@ -716,7 +703,7 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 			// go right as far as possible
 			while (x2<XRES-1)
 			{
-				if (bitmap[(x1+1)+y*XRES] || !ColorCompare(ren, x2+1, y, replaceR, replaceG, replaceB))
+				if (bitmap[(x1+1)+y*XRES] || !ColorCompare(frame, x2+1, y, replaceR, replaceG, replaceB))
 				{
 					break;
 				}
@@ -731,12 +718,12 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 
 			if (y >= 1)
 				for (x=x1; x<=x2; x++)
-					if (!bitmap[x+(y-1)*XRES] && ColorCompare(ren, x, y-1, replaceR, replaceG, replaceB))
+					if (!bitmap[x+(y-1)*XRES] && ColorCompare(frame, x, y-1, replaceR, replaceG, replaceB))
 						cs.push(x, y-1);
 
 			if (y < YRES-1)
 				for (x=x1; x<=x2; x++)
-					if (!bitmap[x+(y+1)*XRES] && ColorCompare(ren, x, y+1, replaceR, replaceG, replaceB))
+					if (!bitmap[x+(y+1)*XRES] && ColorCompare(frame, x, y+1, replaceR, replaceG, replaceB))
 						cs.push(x, y+1);
 		} while (cs.getSize() > 0);
 	}
@@ -747,90 +734,6 @@ void Simulation::ApplyDecorationFill(Renderer *ren, int x, int y, int colR, int 
 		return;
 	}
 	free(bitmap);
-}
-
-int Simulation::ToolBrush(int positionX, int positionY, int tool, Brush const &cBrush, float strength)
-{
-	for (ui::Point off : cBrush)
-	{
-		ui::Point coords = ui::Point(positionX, positionY) + off;
-		if (coords.X >= 0 && coords.Y >= 0 && coords.X < XRES && coords.Y < YRES)
-			Tool(coords.X, coords.Y, tool, positionX, positionY, strength);
-	}
-	return 0;
-}
-
-void Simulation::ToolLine(int x1, int y1, int x2, int y2, int tool, Brush const &cBrush, float strength)
-{
-	bool reverseXY = abs(y2-y1) > abs(x2-x1);
-	int x, y, dx, dy, sy, rx = cBrush.GetRadius().X, ry = cBrush.GetRadius().Y;
-	float e = 0.0f, de;
-	if (reverseXY)
-	{
-		y = x1;
-		x1 = y1;
-		y1 = y;
-		y = x2;
-		x2 = y2;
-		y2 = y;
-	}
-	if (x1 > x2)
-	{
-		y = x1;
-		x1 = x2;
-		x2 = y;
-		y = y1;
-		y1 = y2;
-		y2 = y;
-	}
-	dx = x2 - x1;
-	dy = abs(y2 - y1);
-	de = dx ? dy/(float)dx : 0.0f;
-	y = y1;
-	sy = (y1<y2) ? 1 : -1;
-	for (x=x1; x<=x2; x++)
-	{
-		if (reverseXY)
-			ToolBrush(y, x, tool, cBrush, strength);
-		else
-			ToolBrush(x, y, tool, cBrush, strength);
-		e += de;
-		if (e >= 0.5f)
-		{
-			y += sy;
-			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
-			{
-				if (reverseXY)
-					ToolBrush(y, x, tool, cBrush, strength);
-				else
-					ToolBrush(x, y, tool, cBrush, strength);
-			}
-			e -= 1.0f;
-		}
-	}
-}
-
-void Simulation::ToolBox(int x1, int y1, int x2, int y2, int tool, float strength)
-{
-	int brushX, brushY;
-	brushX = ((x1 + x2) / 2);
-	brushY = ((y1 + y2) / 2);
-	int i, j;
-	if (x1>x2)
-	{
-		i = x2;
-		x2 = x1;
-		x1 = i;
-	}
-	if (y1>y2)
-	{
-		j = y2;
-		y2 = y1;
-		y1 = j;
-	}
-	for (j=y1; j<=y2; j++)
-		for (i=x1; i<=x2; i++)
-			Tool(i, j, tool, brushX, brushY, strength);
 }
 
 int Simulation::CreateParts(int positionX, int positionY, int c, Brush const &cBrush, int flags)

@@ -63,7 +63,7 @@ static int update(UPDATE_FUNC_ARGS)
 		if (parts[i].temp<= -256.0f+273.15f)
 			parts[i].temp = -256.0f+273.15f;
 
-		sim->gravmap[(y/CELL)*XCELLS+(x/CELL)] = 0.2f*(parts[i].temp-273.15);
+		sim->gravIn.mass[Vec2{ x, y } / CELL] = 0.2f * (parts[i].temp - 273.15);
 		for (auto rx = -2; rx <= 2; rx++)
 		{
 			for (auto ry = -2; ry <= 2; ry++)

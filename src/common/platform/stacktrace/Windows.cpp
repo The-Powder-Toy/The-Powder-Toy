@@ -20,7 +20,7 @@ static std::optional<SymbolInfo> GetSymbolInfo(HANDLE process, uintptr_t offset)
 {
 	DWORD64 displacement;
 	std::array<char, sizeof(SYMBOL_INFOW) + 1000> symbolData{};
-	auto &symbol = *reinterpret_cast<SYMBOL_INFOW *>(&symbolData[0]);
+	auto &symbol = *reinterpret_cast<SYMBOL_INFOW *>(symbolData.data());
 	symbol.SizeOfStruct = sizeof(symbol);
 	symbol.MaxNameLen = symbolData.size() - sizeof(symbol);
 	if (SymFromAddrW(process, offset, &displacement, &symbol))
@@ -57,7 +57,7 @@ std::optional<std::vector<String>> StackTrace()
 	Defer symCleanup([process]() {
 		SymCleanup(process);
 	});
-	SymInitialize(process, NULL, TRUE);
+	SymInitialize(process, nullptr, TRUE);
 
 	CONTEXT context{};
 	context.ContextFlags = CONTEXT_FULL;
@@ -106,7 +106,7 @@ std::optional<std::vector<String>> StackTrace()
 	std::vector<String> res;
 	for (auto i = 0; i < 100; ++i)
 	{
-		if (!StackWalk64(machine, process, thread, &frame, &context, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL))
+		if (!StackWalk64(machine, process, thread, &frame, &context, nullptr, SymFunctionTableAccess64, SymGetModuleBase64, nullptr))
 		{
 			break;
 		}

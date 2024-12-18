@@ -12,7 +12,7 @@ else
 	if host_platform == 'windows'
 		use_system_cert_provider = true
 		client_files += files('WindowsCertProvider.cpp')
-		powder_deps += c_compiler.find_library('crypt32')
+		powder_deps += cpp_compiler.find_library('crypt32')
 	endif
 	if host_platform == 'android'
 		use_system_cert_provider = true

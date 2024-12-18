@@ -1,24 +1,21 @@
 #pragma once
 #include "Particle.h"
 
-class SimulationSample
+struct SimulationSample
 {
-public:
 	Particle particle;
-	int ParticleID;
-	int PositionX, PositionY;
-	float AirPressure;
-	float AirTemperature;
-	float AirVelocityX;
-	float AirVelocityY;
+	int ParticleID = 0;
+	int PositionX = 0;
+	int PositionY = 0;
+	float AirPressure = 0;
+	float AirTemperature = 0;
+	float AirVelocityX = 0;
+	float AirVelocityY = 0;
 
-	int WallType;
-	float Gravity;
-	float GravityVelocityX;
-	float GravityVelocityY;
+	int WallType = 0;
+	float GravityVelocityX = 0;
+	float GravityVelocityY = 0;
 
-	int NumParts;
-	bool isMouseInSim;
-
-	SimulationSample() : particle(), ParticleID(0), PositionX(0), PositionY(0), AirPressure(0), AirTemperature(0), AirVelocityX(0), AirVelocityY(0), WallType(0), Gravity(0), GravityVelocityX(0), GravityVelocityY(0), NumParts(0), isMouseInSim(true) {}
+	int NumParts = 0;
+	bool isMouseInSim = true;
 };

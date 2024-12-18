@@ -9,7 +9,7 @@ namespace http
 	static ByteString Url(int saveID, int saveDate)
 	{
 		ByteStringBuilder builder;
-		builder << SCHEME << SERVER  << "/Browse/View.json?ID=" << saveID;
+		builder << SERVER << "/Browse/View.json?ID=" << saveID;
 		if (saveDate)
 		{
 			builder << "&Date=" << saveDate;

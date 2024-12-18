@@ -9,7 +9,7 @@
 #include "Format.h"
 #include "graphics/Pixel.h"
 
-#include "save_local.png.h"
+#include "save_local_png.h"
 
 namespace ui
 {
@@ -23,9 +23,7 @@ class ThumbnailRendererTask;
 class LocalSaveActivity: public WindowActivity
 {
 	using OnSaved = std::function<void (std::unique_ptr<SaveFile>)>;
-	std::unique_ptr<PlaneAdapter<std::vector<pixel_rgba>>> saveToDiskImage = format::PixelsFromPNG(
-		std::vector<char>(save_local_png, save_local_png + save_local_png_size)
-	);
+	std::unique_ptr<PlaneAdapter<std::vector<pixel_rgba>>> saveToDiskImage = format::PixelsFromPNG(save_local_png.AsCharSpan());
 
 	std::unique_ptr<SaveFile> save;
 	ThumbnailRendererTask *thumbnailRenderer;

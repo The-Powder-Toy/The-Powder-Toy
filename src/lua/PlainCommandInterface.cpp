@@ -23,6 +23,11 @@ bool CommandInterface::HandleEvent(const GameControllerEvent &event)
 	return true;
 }
 
+bool CommandInterface::HaveSimGraphicsEventHandlers()
+{
+	return false;
+}
+
 int CommandInterface::Command(String command)
 {
 	return PlainCommand(command);
@@ -31,4 +36,8 @@ int CommandInterface::Command(String command)
 String CommandInterface::FormatCommand(String command)
 {
 	return PlainFormatCommand(command);
+}
+
+void CommandInterface::SetToolIndex(ByteString identifier, std::optional<int> index)
+{
 }

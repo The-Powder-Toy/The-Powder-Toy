@@ -9,7 +9,7 @@ void LoginModel::Login(ByteString username, ByteString password)
 {
 	if (username.Contains("@"))
 	{
-		statusText = String::Build("Use your Powder Toy account to log in, not your email. If you don't have a Powder Toy account, you can create one at https://", SERVER, "/Register.html");
+		statusText = String::Build("Use your Powder Toy account to log in, not your email. If you don't have a Powder Toy account, you can create one at ", SERVER, "/Register.html");
 		loginStatus = loginIdle;
 		notifyStatusChanged();
 		return;

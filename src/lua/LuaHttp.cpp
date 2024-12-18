@@ -352,7 +352,7 @@ static int request(lua_State *L, bool isPost)
 
 static int getAuthToken(lua_State *L)
 {
-	return RequestHandle::Make(L, ByteString::Build(SCHEME, SERVER, "/ExternalAuth.api?Action=Get&Audience=", format::URLEncode(tpt_lua_checkByteString(L, 1))), false, {}, RequestHandle::getAuthToken, {}, {});
+	return RequestHandle::Make(L, ByteString::Build(SERVER, "/ExternalAuth.api?Action=Get&Audience=", format::URLEncode(tpt_lua_checkByteString(L, 1))), false, {}, RequestHandle::getAuthToken, {}, {});
 }
 
 static int get(lua_State *L)
@@ -375,13 +375,13 @@ void LuaHttp::Open(lua_State *L)
 			LFUNC(cancel),
 			LFUNC(finish),
 #undef LFUNC
-			{ NULL, NULL }
+			{ nullptr, nullptr }
 		};
 		luaL_newmetatable(L, "HTTPRequest");
 		lua_pushcfunction(L, HTTPRequest_gc);
 		lua_setfield(L, -2, "__gc");
 		lua_newtable(L);
-		luaL_register(L, NULL, reg);
+		luaL_register(L, nullptr, reg);
 		lua_setfield(L, -2, "__index");
 		lua_pop(L, 1);
 	}
@@ -392,10 +392,10 @@ void LuaHttp::Open(lua_State *L)
 			LFUNC(post),
 			LFUNC(getAuthToken),
 #undef LFUNC
-			{ NULL, NULL }
+			{ nullptr, nullptr }
 		};
 		lua_newtable(L);
-		luaL_register(L, NULL, reg);
+		luaL_register(L, nullptr, reg);
 		lua_setglobal(L, "http");
 	}
 }

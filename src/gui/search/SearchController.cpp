@@ -15,6 +15,7 @@
 #include "client/http/SearchTagsRequest.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "tasks/Task.h"
 #include "tasks/TaskWindow.h"
 
@@ -25,7 +26,7 @@
 #include <algorithm>
 
 SearchController::SearchController(std::function<void ()> onDone_):
-	activePreview(NULL),
+	activePreview(nullptr),
 	nextQueryTime(0.0f),
 	nextQueryDone(true),
 	instantOpen(false),
@@ -71,7 +72,7 @@ void SearchController::Update()
 	if(activePreview && activePreview->HasExited)
 	{
 		delete activePreview;
-		activePreview = NULL;
+		activePreview = nullptr;
 		if(searchModel->GetLoadedSave())
 		{
 			Exit();
@@ -92,10 +93,8 @@ SearchController::~SearchController()
 {
 	delete activePreview;
 	delete searchModel;
-	if (searchView->CloseActiveWindow())
-	{
-		delete searchView;
-	}
+	searchView->CloseActiveWindow();
+	delete searchView;
 }
 
 void SearchController::DoSearch(String query, bool now)

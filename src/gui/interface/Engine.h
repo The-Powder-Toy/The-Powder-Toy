@@ -27,6 +27,7 @@ namespace ui
 
 		void ShowWindow(Window * window);
 		int CloseWindow();
+		void CloseWindowAndEverythingAbove(Window *window);
 
 		void initialMouse(int x, int y);
 		void onMouseMove(int x, int y);
@@ -50,6 +51,8 @@ namespace ui
 		inline int GetDrawingFrequencyLimit() {return drawingFrequencyLimit;}
 		void SetFastQuit(bool fastquit) { FastQuit = fastquit; }
 		inline bool GetFastQuit() {return FastQuit; }
+		void SetGlobalQuit(bool newGlobalQuit) { GlobalQuit = newGlobalQuit; }
+		inline bool GetGlobalQuit() {return GlobalQuit; }
 
 		void Tick();
 		void Draw();
@@ -79,6 +82,8 @@ namespace ui
 		Graphics * g;
 		bool GraveExitsConsole;
 
+		bool confirmingExit = false;
+
 		unsigned int FrameIndex;
 	private:
 		FpsLimit fpsLimit;
@@ -88,7 +93,7 @@ namespace ui
 
 		float dt;
 		float fps;
-		std::stack<Window*> windows;
+		std::deque<Window*> windows;
 		std::stack<Point> mousePositions;
 		//Window* statequeued_;
 		Window* state_;
@@ -107,6 +112,7 @@ namespace ui
 
 		bool running_;
 		bool FastQuit;
+		bool GlobalQuit;
 
 		long unsigned int lastTick;
 		int mouseb_;

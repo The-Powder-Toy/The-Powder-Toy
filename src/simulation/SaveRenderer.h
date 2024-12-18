@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 #include "common/ExplicitSingleton.h"
+#include "graphics/RendererSettings.h"
 #include "common/String.h"
 
 class GameSave;
@@ -20,5 +21,5 @@ class SaveRenderer: public ExplicitSingleton<SaveRenderer>
 public:
 	SaveRenderer();
 	~SaveRenderer();
-	std::unique_ptr<VideoBuffer> Render(const GameSave *save, bool decorations = true, bool fire = true, Renderer *renderModeSource = nullptr);
+	std::unique_ptr<VideoBuffer> Render(const GameSave *save, bool fire, RendererSettings rendererSettings);
 };

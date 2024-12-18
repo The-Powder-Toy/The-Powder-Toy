@@ -1,7 +1,7 @@
 #include "simulation/ToolCommon.h"
 #include "simulation/Air.h"
 
-static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
+static int perform(SimTool *tool, Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
 
 void SimTool::Tool_VAC()
 {
@@ -12,13 +12,13 @@ void SimTool::Tool_VAC()
 	Perform = &perform;
 }
 
-static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
+static int perform(SimTool *tool, Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
-	sim->air->pv[y/CELL][x/CELL] -= strength*0.05f;
+	sim->pv[y/CELL][x/CELL] -= strength*0.05f;
 
-	if (sim->air->pv[y/CELL][x/CELL] > MAX_PRESSURE)
-		sim->air->pv[y/CELL][x/CELL] = MAX_PRESSURE;
-	else if (sim->air->pv[y/CELL][x/CELL] < MIN_PRESSURE)
-		sim->air->pv[y/CELL][x/CELL] = MIN_PRESSURE;
+	if (sim->pv[y/CELL][x/CELL] > MAX_PRESSURE)
+		sim->pv[y/CELL][x/CELL] = MAX_PRESSURE;
+	else if (sim->pv[y/CELL][x/CELL] < MIN_PRESSURE)
+		sim->pv[y/CELL][x/CELL] = MIN_PRESSURE;
 	return 1;
 }

@@ -81,9 +81,8 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	if (parts[i].temp > 9973.15 && sim->pv[y/CELL][x/CELL] > 250.0f)
 	{
-		int gravPos = ((y/CELL)*XCELLS)+(x/CELL);
-		float gravx = sim->gravx[gravPos];
-		float gravy = sim->gravy[gravPos];
+		auto gravx = sim->gravOut.forceX[Vec2{ x, y } / CELL];
+		auto gravy = sim->gravOut.forceY[Vec2{ x, y } / CELL];
 		if (gravx*gravx + gravy*gravy > 400)
 		{
 			if (sim->rng.chance(1, 5))

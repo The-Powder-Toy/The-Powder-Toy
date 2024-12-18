@@ -43,15 +43,12 @@ void OptionsModel::SetAmbientHeatSimulation(bool state)
 
 bool OptionsModel::GetNewtonianGravity()
 {
-	return sim->grav->IsEnabled();
+	return bool(sim->grav);
 }
 
 void OptionsModel::SetNewtonianGravity(bool state)
 {
-	if(state)
-		sim->grav->start_grav_async();
-	else
-		sim->grav->stop_grav_async();
+	sim->EnableNewtonianGravity(state);
 	notifySettingsChanged();
 }
 
@@ -95,6 +92,18 @@ void OptionsModel::SetTemperatureScale(int temperatureScale)
 {
 	GlobalPrefs::Ref().Set("Renderer.TemperatureScale", temperatureScale);
 	gModel->SetTemperatureScale(temperatureScale);
+	notifySettingsChanged();
+}
+
+int OptionsModel::GetThreadedRendering()
+{
+	return gModel->GetThreadedRendering();
+}
+
+void OptionsModel::SetThreadedRendering(bool newThreadedRendering)
+{
+	GlobalPrefs::Ref().Set("Renderer.SeparateThread", newThreadedRendering);
+	gModel->SetThreadedRendering(newThreadedRendering);
 	notifySettingsChanged();
 }
 
@@ -244,6 +253,17 @@ void OptionsModel::SetFastQuit(bool fastquit)
 {
 	ui::Engine::Ref().SetFastQuit(fastquit);
 	GlobalPrefs::Ref().Set("FastQuit", bool(fastquit));
+	notifySettingsChanged();
+}
+
+bool OptionsModel::GetGlobalQuit()
+{
+	return ui::Engine::Ref().GetGlobalQuit();
+}
+void OptionsModel::SetGlobalQuit(bool newGlobalQuit)
+{
+	ui::Engine::Ref().SetGlobalQuit(newGlobalQuit);
+	GlobalPrefs::Ref().Set("GlobalQuit", newGlobalQuit);
 	notifySettingsChanged();
 }
 

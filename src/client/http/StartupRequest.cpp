@@ -6,7 +6,7 @@ namespace http
 {
 	// TODO: update Client::messageOfTheDay
 	StartupRequest::StartupRequest(bool newAlternate) :
-		Request(ByteString::Build(SCHEME, newAlternate ? UPDATESERVER : SERVER, "/Startup.json")),
+		Request(ByteString::Build(newAlternate ? UPDATESERVER : SERVER, "/Startup.json")),
 		alternate(newAlternate)
 	{
 		auto user = Client::Ref().GetAuthUser();
@@ -46,7 +46,7 @@ namespace http
 			if constexpr (!IGNORE_UPDATES)
 			{
 				auto &versions = document["Updates"];
-				auto parseUpdate = [this, &versions, &startupInfo](ByteString key, UpdateInfo::Channel channel, std::function<bool (int)> updateAvailableFunc) {
+				auto parseUpdate = [this, &versions, &startupInfo](ByteString key, UpdateInfo::Channel channel) {
 					if (!versions.isMember(key))
 					{
 						return;
@@ -64,13 +64,13 @@ namespace http
 						return info[key].asInt();
 					};
 					auto build = getOr(key == "Snapshot" ? "Snapshot" : "Build", 0);
-					if (!updateAvailableFunc(build))
+					if (size_t(build) <= APP_VERSION.build)
 					{
 						return;
 					}
 					startupInfo.updateInfo = UpdateInfo{
 						channel,
-						ByteString::Build(SCHEME, alternate ? UPDATESERVER : SERVER, info["File"].asString()),
+						ByteString::Build(alternate ? UPDATESERVER : SERVER, info["File"].asString()),
 						ByteString(info["Changelog"].asString()).FromUtf8(),
 						getOr("Major", 0),
 						getOr("Minor", 0),
@@ -79,20 +79,14 @@ namespace http
 				};
 				if constexpr (SNAPSHOT || MOD)
 				{
-					parseUpdate("Snapshot", UpdateInfo::channelSnapshot, [](int build) -> bool {
-						return size_t(build) > APP_VERSION.build;
-					});
+					parseUpdate("Snapshot", UpdateInfo::channelSnapshot);
 				}
 				else
 				{
-					parseUpdate("Stable", UpdateInfo::channelStable, [](int build) -> bool {
-						return size_t(build) > APP_VERSION.build;
-					});
+					parseUpdate("Stable", UpdateInfo::channelStable);
 					if (!startupInfo.updateInfo.has_value())
 					{
-						parseUpdate("Beta", UpdateInfo::channelBeta, [](int build) -> bool {
-							return size_t(build) > APP_VERSION.build;
-						});
+						parseUpdate("Beta", UpdateInfo::channelBeta);
 					}
 				}
 			}

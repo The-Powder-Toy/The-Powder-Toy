@@ -50,7 +50,7 @@ void Element::Element_CFLM()
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	RGB<uint8_t> color = Renderer::clfmTableAt(cpart->life / 2);
+	RGB color = Renderer::clfmTableAt(cpart->life / 2);
 	*colr = color.Red;
 	*colg = color.Green;
 	*colb = color.Blue;

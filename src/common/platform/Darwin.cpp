@@ -27,12 +27,12 @@ ByteString ExecutableNameFirstApprox()
 	ByteString firstApproximation("?");
 	{
 		auto bufSize = uint32_t(firstApproximation.size());
-		auto ret = _NSGetExecutablePath(&firstApproximation[0], &bufSize);
+		auto ret = _NSGetExecutablePath(firstApproximation.data(), &bufSize);
 		if (ret == -1)
 		{
 			// Buffer not large enough; likely to happen since it's initially a single byte.
 			firstApproximation.resize(bufSize);
-			ret = _NSGetExecutablePath(&firstApproximation[0], &bufSize);
+			ret = _NSGetExecutablePath(firstApproximation.data(), &bufSize);
 		}
 		if (ret != 0)
 		{

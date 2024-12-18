@@ -6,8 +6,9 @@
 #include "Format.h"
 #include "gui/game/GameController.h"
 #include "gui/game/GameModel.h"
+#include "gui/game/GameView.h"
 #include "gui/game/Brush.h"
-#include "gui/game/Tool.h"
+#include "gui/game/tool/Tool.h"
 #include "simulation/Air.h"
 #include "simulation/ElementCommon.h"
 #include "simulation/GOLString.h"
@@ -52,14 +53,10 @@ static int newtonianGravity(lua_State *L)
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
-		lua_pushboolean(L, lsi->sim->grav->IsEnabled());
+		lua_pushboolean(L, bool(lsi->sim->grav));
 		return 1;
 	}
-	int gravstate = lua_toboolean(L, 1);
-	if(gravstate)
-		lsi->sim->grav->start_grav_async();
-	else
-		lsi->sim->grav->stop_grav_async();
+	lsi->sim->EnableNewtonianGravity(lua_toboolean(L, 1));
 	lsi->gameModel->UpdateQuickOptions();
 	return 0;
 }
@@ -205,7 +202,7 @@ static int gravityMass(lua_State *L)
 {
 	auto *lsi = GetLSI();
 	return LuaBlockMap(L, [lsi](Vec2<int> p) -> float & {
-		return lsi->sim->gravmap[p.Y * XCELLS + p.X];
+		return lsi->sim->gravIn.mass[p];
 	});
 }
 
@@ -217,8 +214,8 @@ static int gravityField(lua_State *L)
 	{
 		return luaL_error(L, "Coordinates (%i, %i) out of range", pos.X, pos.Y);
 	}
-	lua_pushnumber(L, lsi->sim->gravx[pos.Y * XCELLS + pos.X]);
-	lua_pushnumber(L, lsi->sim->gravy[pos.Y * XCELLS + pos.X]);
+	lua_pushnumber(L, lsi->sim->gravOut.forceX[pos]);
+	lua_pushnumber(L, lsi->sim->gravOut.forceY[pos]);
 	return 2;
 }
 
@@ -571,7 +568,7 @@ static int createWalls(lua_State *L)
 		return luaL_error(L, "Unrecognised wall id '%d'", c);
 
 	auto *lsi = GetLSI();
-	int ret = lsi->sim->CreateWalls(x, y, rx, ry, c, NULL);
+	int ret = lsi->sim->CreateWalls(x, y, rx, ry, c, nullptr);
 	lua_pushinteger(L, ret);
 	return 1;
 }
@@ -592,7 +589,7 @@ static int createWallLine(lua_State *L)
 		return luaL_error(L, "Unrecognised wall id '%d'", c);
 
 	auto *lsi = GetLSI();
-	lsi->sim->CreateWallLine(x1, y1, x2, y2, rx, ry, c, NULL);
+	lsi->sim->CreateWallLine(x1, y1, x2, y2, rx, ry, c, nullptr);
 	return 0;
 }
 
@@ -637,7 +634,6 @@ static int floodWalls(lua_State *L)
 
 static int toolBrush(lua_State *L)
 {
-	auto &sd = SimulationData::CRef();
 	int x = luaL_optint(L,1,-1);
 	int y = luaL_optint(L,2,-1);
 	int rx = luaL_optint(L,3,5);
@@ -645,29 +641,26 @@ static int toolBrush(lua_State *L)
 	int tool = luaL_optint(L,5,0);
 	int brushID = luaL_optint(L,6,BRUSH_CIRCLE);
 	float strength = luaL_optnumber(L,7,1.0f);
-	if (tool == (int)sd.tools.size())
-	{
-		lua_pushinteger(L, 0);
-		return 1;
-	}
-	else if (tool < 0 || tool > (int)sd.tools.size())
-		return luaL_error(L, "Invalid tool id '%d'", tool);
-
 	auto *lsi = GetLSI();
+	auto *toolPtr = lsi->gameModel->GetToolByIndex(tool);
+	if (!toolPtr)
+	{
+		return luaL_error(L, "Invalid tool id '%d'", tool);
+	}
+
 	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
 	if (!brush)
 		return luaL_error(L, "Invalid brush id '%d'", brushID);
 	auto newBrush = brush->Clone();
 	newBrush->SetRadius(ui::Point(rx, ry));
 
-	int ret = lsi->sim->ToolBrush(x, y, tool, *newBrush, strength);
-	lua_pushinteger(L, ret);
-	return 1;
+	toolPtr->Strength = strength;
+	toolPtr->Draw(lsi->sim, *newBrush, { x, y });
+	return 0;
 }
 
 static int toolLine(lua_State *L)
 {
-	auto &sd = SimulationData::CRef();
 	int x1 = luaL_optint(L,1,-1);
 	int y1 = luaL_optint(L,2,-1);
 	int x2 = luaL_optint(L,3,-1);
@@ -680,32 +673,25 @@ static int toolLine(lua_State *L)
 
 	if (x1 < 0 || x2 < 0 || x1 >= XRES || x2 >= XRES || y1 < 0 || y2 < 0 || y1 >= YRES || y2 >= YRES)
 		return luaL_error(L, "coordinates out of range (%d,%d),(%d,%d)", x1, y1, x2, y2);
-	if (tool < 0 || tool >= (int)sd.tools.size()+1)
-		return luaL_error(L, "Invalid tool id '%d'", tool);
-
 	auto *lsi = GetLSI();
+	auto *toolPtr = lsi->gameModel->GetToolByIndex(tool);
+	if (!toolPtr)
+	{
+		return luaL_error(L, "Invalid tool id '%d'", tool);
+	}
+
 	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
 	if (!brush)
 		return luaL_error(L, "Invalid brush id '%d'", brushID);
 	auto newBrush = brush->Clone();
 	newBrush->SetRadius(ui::Point(rx, ry));
-
-	if (tool == (int)sd.tools.size())
-	{
-		Tool *windTool = lsi->gameModel->GetToolFromIdentifier("DEFAULT_UI_WIND");
-		float oldStrength = windTool->Strength;
-		windTool->Strength = strength;
-		windTool->DrawLine(lsi->sim, *newBrush, ui::Point(x1, y1), ui::Point(x2, y2));
-		windTool->Strength = oldStrength;
-	}
-	else
-		lsi->sim->ToolLine(x1, y1, x2, y2, tool, *newBrush, strength);
+	toolPtr->Strength = strength;
+	toolPtr->DrawLine(lsi->sim, *newBrush, { x1, y1 }, { x2, y2 }, false);
 	return 0;
 }
 
 static int toolBox(lua_State *L)
 {
-	auto &sd = SimulationData::CRef();
 	int x1 = luaL_optint(L,1,-1);
 	int y1 = luaL_optint(L,2,-1);
 	int x2 = luaL_optint(L,3,-1);
@@ -714,16 +700,24 @@ static int toolBox(lua_State *L)
 		return luaL_error(L, "coordinates out of range (%d,%d),(%d,%d)", x1, y1, x2, y2);
 	int tool = luaL_optint(L,5,0);
 	float strength = luaL_optnumber(L,6,1.0f);
-	if (tool == (int)sd.tools.size())
-	{
-		lua_pushinteger(L, 0);
-		return 1;
-	}
-	else if (tool < 0 || tool >= (int)sd.tools.size())
-		return luaL_error(L, "Invalid tool id '%d'", tool);
-
+	int brushID = luaL_optint(L,7,BRUSH_CIRCLE);
+	int rx = luaL_optint(L,5,0);
+	int ry = luaL_optint(L,6,0);
 	auto *lsi = GetLSI();
-	lsi->sim->ToolBox(x1, y1, x2, y2, tool, strength);
+	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
+	if (!brush)
+	{
+		return luaL_error(L, "Invalid brush id '%d'", brushID);
+	}
+	auto *toolPtr = lsi->gameModel->GetToolByIndex(tool);
+	if (!toolPtr)
+	{
+		return luaL_error(L, "Invalid tool id '%d'", tool);
+	}
+	auto newBrush = brush->Clone();
+	newBrush->SetRadius(ui::Point(rx, ry));
+	toolPtr->Strength = strength;
+	toolPtr->DrawRect(lsi->sim, *newBrush, { x1, y1 }, { x2, y2 });
 	return 0;
 }
 
@@ -804,14 +798,14 @@ static int decoColor(lua_State *L)
 {
 	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
-	RGBA<uint8_t> color(0, 0, 0, 0);
+	RGBA color(0, 0, 0, 0);
 	if (acount == 0)
 	{
 		lua_pushnumber(L, lsi->gameModel->GetColourSelectorColour().Pack());
 		return 1;
 	}
 	else if (acount == 1)
-		color = RGBA<uint8_t>::Unpack(pixel_rgba(luaL_optnumber(L, 1, 0xFFFF0000)));
+		color = RGBA::Unpack(pixel_rgba(luaL_optnumber(L, 1, 0xFFFF0000)));
 	else
 	{
 		color.Red   = std::clamp(luaL_optint(L, 1, 255), 0, 255);
@@ -837,8 +831,9 @@ static int floodDeco(lua_State *L)
 
 	auto *lsi = GetLSI();
 	// hilariously broken, intersects with console and all Lua graphics
-	auto loc = RGB<uint8_t>::Unpack(lsi->ren->GetPixel({ x, y }));
-	lsi->sim->ApplyDecorationFill(lsi->ren, x, y, r, g, b, a, loc.Red, loc.Green, loc.Blue);
+	auto &rendererFrame = lsi->gameModel->GetView()->GetRendererFrame();
+	auto loc = RGB::Unpack(rendererFrame[{ x, y }]);
+	lsi->sim->ApplyDecorationFill(rendererFrame, x, y, r, g, b, a, loc.Red, loc.Green, loc.Blue);
 	return 0;
 }
 
@@ -904,7 +899,7 @@ static int resetPressure(lua_State *L)
 	for (int nx = x1; nx<x1+width; nx++)
 		for (int ny = y1; ny<y1+height; ny++)
 		{
-			lsi->sim->air->pv[ny][nx] = 0;
+			lsi->sim->pv[ny][nx] = 0;
 		}
 	return 0;
 }
@@ -1494,13 +1489,35 @@ static int listCustomGol(lua_State *L)
 		lua_newtable(L);
 		tpt_lua_pushString(L, cgol.nameString);
 		lua_setfield(L, -2, "name");
-		tpt_lua_pushString(L, cgol.ruleString);
+		tpt_lua_pushString(L, SerialiseGOLRule(cgol.rule));
 		lua_setfield(L, -2, "rulestr");
 		lua_pushnumber(L, cgol.rule);
 		lua_setfield(L, -2, "rule");
-		lua_pushnumber(L, cgol.colour1);
+		lua_pushnumber(L, cgol.colour1.Pack());
 		lua_setfield(L, -2, "color1");
-		lua_pushnumber(L, cgol.colour2);
+		lua_pushnumber(L, cgol.colour2.Pack());
+		lua_setfield(L, -2, "color2");
+		lua_rawseti(L, -2, ++i);
+	}
+	return 1;
+}
+
+static int listDefaultGol(lua_State *L)
+{
+	int i = 0;
+	lua_newtable(L);
+	for (auto &gol : SimulationData::builtinGol)
+	{
+		lua_newtable(L);
+		tpt_lua_pushString(L, gol.name);
+		lua_setfield(L, -2, "name");
+		tpt_lua_pushString(L, SerialiseGOLRule(gol.ruleset));
+		lua_setfield(L, -2, "rulestr");
+		lua_pushnumber(L, gol.ruleset);
+		lua_setfield(L, -2, "rule");
+		lua_pushnumber(L, gol.colour.Pack());
+		lua_setfield(L, -2, "color1");
+		lua_pushnumber(L, gol.colour2.Pack());
 		lua_setfield(L, -2, "color2");
 		lua_rawseti(L, -2, ++i);
 	}
@@ -1534,10 +1551,9 @@ static int addCustomGol(lua_State *L)
 	if (sd.GetCustomGOLByRule(rule))
 		return luaL_error(L, "This Custom GoL rule already exists");
 
-	if (!AddCustomGol(ruleString, nameString, color1, color2))
-		return luaL_error(L, "Duplicate name, cannot add");
 	auto *lsi = GetLSI();
-	lsi->gameModel->BuildMenus();
+	if (!lsi->gameModel->AddCustomGol(ruleString, nameString, RGB::Unpack(color1), RGB::Unpack(color2)))
+		return luaL_error(L, "Duplicate name, cannot add");
 	return 0;
 }
 
@@ -1545,9 +1561,7 @@ static int removeCustomGol(lua_State *L)
 {
 	auto *lsi = GetLSI();
 	ByteString nameString = tpt_lua_checkByteString(L, 1);
-	bool removedAny = lsi->gameModel->RemoveCustomGOLType("DEFAULT_PT_LIFECUST_" + nameString);
-	if (removedAny)
-		lsi->gameModel->BuildMenus();
+	bool removedAny = lsi->gameModel->RemoveCustomGol("DEFAULT_PT_LIFECUST_" + nameString);
 	lua_pushboolean(L, removedAny);
 	return 1;
 }
@@ -1798,34 +1812,6 @@ static int resetSpark(lua_State *L)
 	return 0;
 }
 
-static int resetGravityField(lua_State *L)
-{
-	int nx, ny;
-	int x1, y1, width, height;
-	x1 = abs(luaL_optint(L, 1, 0));
-	y1 = abs(luaL_optint(L, 2, 0));
-	width = abs(luaL_optint(L, 3, XCELLS));
-	height = abs(luaL_optint(L, 4, YCELLS));
-	if(x1 > XCELLS-1)
-		x1 = XCELLS-1;
-	if(y1 > YCELLS-1)
-		y1 = YCELLS-1;
-	if(x1+width > XCELLS-1)
-		width = XCELLS-x1;
-	if(y1+height > YCELLS-1)
-		height = YCELLS-y1;
-	auto *lsi = GetLSI();
-	auto *sim = lsi->sim;
-	for (nx = x1; nx<x1+width; nx++)
-		for (ny = y1; ny<y1+height; ny++)
-		{
-			sim->gravx[ny*XCELLS+nx] = 0;
-			sim->gravy[ny*XCELLS+nx] = 0;
-			sim->gravp[ny*XCELLS+nx] = 0;
-		}
-	return 0;
-}
-
 static int randomSeed(lua_State *L)
 {
 	auto *lsi = GetLSI();
@@ -1946,7 +1932,6 @@ void LuaSimulation::Open(lua_State *L)
 		LFUNC(paused),
 		LFUNC(gravityMass),
 		LFUNC(gravityField),
-		LFUNC(resetGravityField),
 		LFUNC(resetSpark),
 		LFUNC(resetVelocity),
 		LFUNC(wallMap),
@@ -1955,11 +1940,12 @@ void LuaSimulation::Open(lua_State *L)
 		LFUNC(decoSpace),
 		LFUNC(fanVelocityX),
 		LFUNC(fanVelocityY),
+		LFUNC(listDefaultGol),
 #undef LFUNC
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 
 #define LCONST(v) lua_pushinteger(L, int(v)); lua_setfield(L, -2, #v)
 #define LCONSTF(v) lua_pushnumber(L, float(v)); lua_setfield(L, -2, #v)
@@ -1989,16 +1975,6 @@ void LuaSimulation::Open(lua_State *L)
 	LCONST(ISTP);
 	LCONSTF(CFDS);
 	LCONSTF(MAX_VELOCITY);
-
-	LCONST(TOOL_HEAT);
-	LCONST(TOOL_COOL);
-	LCONST(TOOL_VAC);
-	LCONST(TOOL_PGRV);
-	LCONST(TOOL_AIR);
-	LCONST(TOOL_NGRV);
-	LCONST(TOOL_MIX);
-	LCONST(TOOL_CYCL);
-	LCONSTAS("TOOL_WIND", sd.tools.size());
 
 	LCONST(DECO_DRAW);
 	LCONST(DECO_CLEAR);
@@ -2046,6 +2022,12 @@ void LuaSimulation::Open(lua_State *L)
 	LCONST(DECOSPACE_GAMMA18);
 	LCONST(NUM_DECOSPACES);
 
+	LCONSTAS("CANMOVE_BOUNCE", 0);
+	LCONSTAS("CANMOVE_SWAP", 1);
+	LCONSTAS("CANMOVE_ENTER", 2);
+	LCONSTAS("CANMOVE_BUILTIN", 3);
+	LCONSTAS("NUM_CANMOVEMODES", 4);
+
 	{
 		lua_newtable(L);
 		for (int i = 0; i < UI_WALLCOUNT; i++)
@@ -2060,9 +2042,11 @@ void LuaSimulation::Open(lua_State *L)
 		lua_setfield(L, -2, "walls");
 		LCONSTAS("NUM_WALLS", UI_WALLCOUNT);
 	}
+
 #undef LCONSTAS
 #undef LCONSTF
 #undef LCONST
+
 	{
 		int particlePropertiesCount = 0;
 		for (auto &prop : Particle::GetProperties())

@@ -49,7 +49,7 @@ void Panel::RemoveChild(Component* c)
 			//remove child from parent. Does not free memory
 			children.erase(children.begin() + i);
 			if (this->GetParentWindow()->IsFocused(c))
-				this->GetParentWindow()->FocusComponent(NULL);
+				this->GetParentWindow()->FocusComponent(nullptr);
 			break;
 		}
 	}
@@ -80,7 +80,7 @@ void Panel::Draw(const Point& screenPos)
 			//check if the component is in the screen, draw if it is
 			if (rect & Size.OriginRect())
 			{
-				child->Draw(screenPos + rect.TopLeft);
+				child->Draw(screenPos + rect.pos);
 			}
 		}
 

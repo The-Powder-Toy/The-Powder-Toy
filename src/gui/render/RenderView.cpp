@@ -1,27 +1,27 @@
 #include "RenderView.h"
-
 #include "simulation/ElementGraphics.h"
 #include "simulation/SimulationData.h"
-
+#include "simulation/Simulation.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
-
+#include "graphics/VideoBuffer.h"
 #include "RenderController.h"
 #include "RenderModel.h"
-
 #include "gui/interface/Checkbox.h"
 #include "gui/interface/Button.h"
+#include "gui/game/GameController.h"
+#include "gui/game/GameView.h"
 
 class ModeCheckbox : public ui::Checkbox
 {
 public:
 	using ui::Checkbox::Checkbox;
-	unsigned int mode;
+	uint32_t mode;
 };
 
 RenderView::RenderView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES, WINDOWH)),
-	ren(NULL),
+	ren(nullptr),
 	toolTip(""),
 	toolTipPresence(0),
 	isToolTipFadingIn(false)
@@ -49,11 +49,9 @@ RenderView::RenderView():
 		renderModes.push_back(renderModeCheckbox);
 		renderModeCheckbox->mode = mode;
 		renderModeCheckbox->SetIcon(icon);
-		renderModeCheckbox->SetActionCallback({ [this, renderModeCheckbox] {
-			if (renderModeCheckbox->GetChecked())
-				c->SetRenderMode(renderModeCheckbox->mode);
-			else
-				c->UnsetRenderMode(renderModeCheckbox->mode);
+		renderModeCheckbox->SetActionCallback({ [this] {
+			auto renderMode = CalculateRenderMode();
+			c->SetRenderMode(renderMode);
 		} });
 		AddComponent(renderModeCheckbox);
 	};
@@ -71,10 +69,21 @@ RenderView::RenderView():
 		displayModeCheckbox->mode = mode;
 		displayModeCheckbox->SetIcon(icon);
 		displayModeCheckbox->SetActionCallback({ [this, displayModeCheckbox] {
+			auto displayMode = c->GetDisplayMode();
+			// Air display modes are mutually exclusive
+			if (displayModeCheckbox->mode & DISPLAY_AIR)
+			{
+				displayMode &= ~DISPLAY_AIR;
+			}
 			if (displayModeCheckbox->GetChecked())
-				c->SetDisplayMode(displayModeCheckbox->mode);
+			{
+				displayMode |= displayModeCheckbox->mode;
+			}
 			else
-				c->UnsetDisplayMode(displayModeCheckbox->mode);
+			{
+				displayMode &= ~displayModeCheckbox->mode;
+			}
+			c->SetDisplayMode(displayMode);
 		} });
 		AddComponent(displayModeCheckbox);
 	};
@@ -95,10 +104,17 @@ RenderView::RenderView():
 		colourModeCheckbox->mode = mode;
 		colourModeCheckbox->SetIcon(icon);
 		colourModeCheckbox->SetActionCallback({ [this, colourModeCheckbox] {
-			if(colourModeCheckbox->GetChecked())
-				c->SetColourMode(colourModeCheckbox->mode);
+			auto colorMode = c->GetColorMode();
+			// exception: looks like an independent set of settings but behaves more like an index
+			if (colourModeCheckbox->GetChecked())
+			{
+				colorMode = colourModeCheckbox->mode;
+			}
 			else
-				c->SetColourMode(0);
+			{
+				colorMode = 0;
+			}
+			c->SetColorMode(colorMode);
 		} });
 		AddComponent(colourModeCheckbox);
 	};
@@ -107,6 +123,18 @@ RenderView::RenderView():
 	addColourModeCheckbox(COLOUR_GRAD, IconGradient, ui::Point(307, 22), "Changes colors of elements slightly to show heat diffusing through them");
 	addColourModeCheckbox(COLOUR_BASC, IconBasic   , ui::Point(307,  4), "No special effects at all for anything, overrides all other options and deco");
 	line4 = 340;
+}
+
+uint32_t RenderView::CalculateRenderMode()
+{
+	uint32_t renderMode = 0;
+	for (auto &checkbox : renderModes)
+	{
+		if (checkbox->GetChecked())
+			renderMode |= checkbox->mode;
+	}
+
+	return renderMode;
 }
 
 void RenderView::OnMouseDown(int x, int y, unsigned button)
@@ -123,6 +151,12 @@ void RenderView::OnTryExit(ExitMethod method)
 void RenderView::NotifyRendererChanged(RenderModel * sender)
 {
 	ren = sender->GetRenderer();
+	rendererSettings = sender->GetRendererSettings();
+}
+
+void RenderView::NotifySimulationChanged(RenderModel * sender)
+{
+	sim = sender->GetSimulation();
 }
 
 void RenderView::NotifyRenderChanged(RenderModel * sender)
@@ -148,8 +182,8 @@ void RenderView::NotifyColourChanged(RenderModel * sender)
 {
 	for (size_t i = 0; i < colourModes.size(); i++)
 	{
-		auto colourMode = colourModes[i]->mode;
-		colourModes[i]->SetChecked(colourMode == sender->GetColourMode());
+		auto colorMode = colourModes[i]->mode;
+		colourModes[i]->SetChecked(colorMode == sender->GetColorMode());
 	}
 }
 
@@ -157,18 +191,14 @@ void RenderView::OnDraw()
 {
 	Graphics * g = GetGraphics();
 	g->DrawFilledRect(WINDOW.OriginRect(), 0x000000_rgb);
-	if(ren)
+	auto *view = GameController::Ref().GetView();
+	view->PauseRendererThread();
+	ren->ApplySettings(*rendererSettings);
+	view->RenderSimulation(*sim, true);
+	for (auto y = 0; y < YRES; ++y)
 	{
-		// we're the main thread, we may write graphicscache
-		auto &sd = SimulationData::Ref();
-		std::unique_lock lk(sd.elementGraphicsMx);
-		ren->clearScreen();
-		ren->RenderBegin();
-		ren->RenderEnd();
-		for (auto y = 0; y < YRES; ++y)
-		{
-			std::copy_n(ren->Data() + ren->Size().X * y, ren->Size().X, g->Data() + g->Size().X * y);
-		}
+		auto &video = ren->GetVideo();
+		std::copy_n(video.data() + video.Size().X * y, video.Size().X, g->Data() + g->Size().X * y);
 	}
 	g->DrawLine({ 0, YRES }, { XRES-1, YRES }, 0xC8C8C8_rgb);
 	g->DrawLine({ line1, YRES }, { line1, WINDOWH }, 0xC8C8C8_rgb);

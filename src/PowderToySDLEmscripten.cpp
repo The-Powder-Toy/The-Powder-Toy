@@ -22,7 +22,7 @@ void SetFpsLimit(FpsLimit newFpsLimit)
 		emscripten_set_main_loop(MainLoopBody, 0, 0);
 		mainLoopSet = true;
 	}
-	if (auto *fpsLimitVsync = std::get_if<FpsLimitVsync>(&newFpsLimit))
+	if (std::get_if<FpsLimitVsync>(&newFpsLimit))
 	{
 		emscripten_set_main_loop_timing(EM_TIMING_RAF, 1);
 		std::cerr << "implicit fps limit via vsync" << std::endl;

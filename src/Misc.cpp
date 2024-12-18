@@ -76,16 +76,6 @@ void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v)//convert 0-255 RGB value
 	}
 }
 
-void membwand(void * destv, void * srcv, size_t destsize, size_t srcsize)
-{
-	size_t i;
-	unsigned char * dest = (unsigned char*)destv;
-	unsigned char * src = (unsigned char*)srcv;
-	for(i = 0; i < destsize; i++){
-		dest[i] = dest[i] & src[i%srcsize];
-	}
-}
-
 bool byteStringEqualsString(const ByteString &str, const char *data, size_t size)
 {
 	return str.size() == size && !memcmp(str.data(), data, size);

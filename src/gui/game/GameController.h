@@ -2,6 +2,7 @@
 #include "lua/CommandInterfacePtr.h"
 #include "client/ClientListener.h"
 #include "client/StartupInfo.h"
+#include "common/ExplicitSingleton.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Colour.h"
 #include "gui/SavePreviewType.h"
@@ -37,7 +38,7 @@ class GameSave;
 class LoginController;
 class TagsController;
 class ConsoleController;
-class GameController: public ClientListener
+class GameController : public ClientListener, public ExplicitSingleton<GameController>
 {
 	CommandInterfacePtr commandInterface;
 
@@ -103,6 +104,7 @@ public:
 	void SetBrushSize(ui::Point newSize);
 	void AdjustZoomSize(int direction, bool logarithmic = false);
 	void ToolClick(int toolSelection, ui::Point point);
+	void ToolDrag(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawPoints(int toolSelection, ui::Point oldPos, ui::Point newPos, bool held);
 	void DrawRect(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawLine(int toolSelection, ui::Point point1, ui::Point point2);
@@ -171,7 +173,6 @@ public:
 	void TransformPlaceSave(Mat2<int> transform, Vec2<int> nudge);
 	bool MouseInZoom(ui::Point position);
 	ui::Point PointTranslate(ui::Point point);
-	ui::Point PointTranslateNoClamp(ui::Point point);
 	ui::Point NormaliseBlockCoord(ui::Point point);
 	String ElementResolve(int type, int ctype);
 	String BasicParticleInfo(Particle const &sample_part);
@@ -200,8 +201,11 @@ public:
 	void RunUpdater(UpdateInfo info);
 	bool GetMouseClickRequired();
 
-	void RemoveCustomGOLType(const ByteString &identifier);
+	void RemoveCustomGol(const ByteString &identifier);
 
 	void BeforeSimDraw();
 	void AfterSimDraw();
+	bool ThreadedRenderingAllowed();
+
+	void SetToolIndex(ByteString identifier, std::optional<int> index);
 };

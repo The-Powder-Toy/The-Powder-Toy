@@ -10,7 +10,8 @@
 #include "Notification.h"
 #include "QuickOptions.h"
 #include "RenderPreset.h"
-#include "Tool.h"
+#include "tool/PropertyTool.h"
+#include "tool/GOLTool.h"
 
 #include "GameControllerEvents.h"
 #include "lua/CommandInterface.h"
@@ -70,19 +71,19 @@
 GameController::GameController():
 	firstTick(true),
 	foundSignID(-1),
-	activePreview(NULL),
-	search(NULL),
-	renderOptions(NULL),
-	loginWindow(NULL),
-	console(NULL),
-	tagsWindow(NULL),
-	localBrowser(NULL),
-	options(NULL),
+	activePreview(nullptr),
+	search(nullptr),
+	renderOptions(nullptr),
+	loginWindow(nullptr),
+	console(nullptr),
+	tagsWindow(nullptr),
+	localBrowser(nullptr),
+	options(nullptr),
 	debugFlags(0),
 	HasDone(false)
 {
 	gameView = new GameView();
-	gameModel = new GameModel();
+	gameModel = new GameModel(gameView); // mvc is a joke
 	gameModel->BuildQuickOptionMenu(this);
 
 	gameView->AttachController(this);
@@ -146,12 +147,11 @@ GameController::~GameController()
 	{
 		delete *iter;
 	}
+	gameView->PauseRendererThread();
+	gameView->CloseActiveWindow();
+	delete gameView;
 	commandInterface.reset();
 	delete gameModel;
-	if (gameView->CloseActiveWindow())
-	{
-		delete gameView;
-	}
 }
 
 bool GameController::HistoryRestore()
@@ -270,9 +270,9 @@ void GameController::Install()
 void GameController::AdjustGridSize(int direction)
 {
 	if(direction > 0)
-		gameModel->GetRenderer()->SetGridSize((gameModel->GetRenderer()->GetGridSize()+1)%10);
+		gameModel->GetRendererSettings().gridSize = (gameModel->GetRendererSettings().gridSize+1)%10;
 	else
-		gameModel->GetRenderer()->SetGridSize((gameModel->GetRenderer()->GetGridSize()+9)%10);
+		gameModel->GetRendererSettings().gridSize = (gameModel->GetRendererSettings().gridSize+9)%10;
 }
 
 void GameController::InvertAirSim()
@@ -338,11 +338,6 @@ ui::Point GameController::PointTranslate(ui::Point point)
 	return gameModel->AdjustZoomCoords(point);
 }
 
-ui::Point GameController::PointTranslateNoClamp(ui::Point point)
-{
-	return gameModel->AdjustZoomCoords(point);
-}
-
 ui::Point GameController::NormaliseBlockCoord(ui::Point point)
 {
 	return (point/CELL)*CELL;
@@ -369,7 +364,7 @@ void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point poi
 	if (!activeTool)
 		return;
 	activeTool->Strength = 1.0f;
-	activeTool->DrawLine(sim, cBrush, point1, point2);
+	activeTool->DrawLine(sim, cBrush, point1, point2, false);
 }
 
 void GameController::DrawFill(int toolSelection, ui::Point point)
@@ -435,6 +430,16 @@ void GameController::ToolClick(int toolSelection, ui::Point point)
 	activeTool->Click(sim, cBrush, point);
 }
 
+void GameController::ToolDrag(int toolSelection, ui::Point point1, ui::Point point2)
+{
+	Simulation * sim = gameModel->GetSimulation();
+	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
+	Brush &cBrush = gameModel->GetBrush();
+	if (!activeTool)
+		return;
+	activeTool->Drag(sim, cBrush, point1, point2);
+}
+
 static Rect<int> SaneSaveRect(Vec2<int> point1, Vec2<int> point2)
 {
 	point1 = point1.Clamp(RES.OriginRect());
@@ -477,7 +482,7 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 		Json::Value clipboardInfo;
 		clipboardInfo["type"] = "clipboard";
 		clipboardInfo["username"] = Client::Ref().GetAuthUser().Username;
-		clipboardInfo["date"] = (Json::Value::UInt64)time(NULL);
+		clipboardInfo["date"] = (Json::Value::UInt64)time(nullptr);
 		Client::Ref().SaveAuthorInfo(&clipboardInfo);
 		newSave->authors = clipboardInfo;
 
@@ -552,7 +557,7 @@ bool GameController::MouseUp(int x, int y, unsigned button, MouseupReason reason
 						}
 						break;
 					case sign::Type::Thread:
-						Platform::OpenURI(ByteString::Build(SCHEME, SERVER, "/Discussions/Thread/View.html?Thread=", str.Substr(3, si.first - 3).ToUtf8()));
+						Platform::OpenURI(ByteString::Build(SERVER, "/Discussions/Thread/View.html?Thread=", str.Substr(3, si.first - 3).ToUtf8()));
 						break;
 					case sign::Type::Search:
 						OpenSearch(str.Substr(3, si.first - 3));
@@ -850,19 +855,19 @@ void GameController::ToggleNewtonianGravity()
 
 void GameController::LoadRenderPreset(int presetNum)
 {
-	Renderer * renderer = gameModel->GetRenderer();
-	RenderPreset preset = renderer->renderModePresets[presetNum];
+	auto &settings = gameModel->GetRendererSettings();
+	RenderPreset preset = Renderer::renderModePresets[presetNum];
 	gameModel->SetInfoTip(preset.Name);
-	renderer->SetRenderMode(preset.RenderModes);
-	renderer->SetDisplayMode(preset.DisplayModes);
-	renderer->SetColourMode(preset.ColourMode);
+	settings.renderMode = preset.renderMode;
+	settings.displayMode = preset.displayMode;
+	settings.colorMode = preset.colorMode;
 }
 
 void GameController::Update()
 {
 	auto &sd = SimulationData::CRef();
 	ui::Point pos = gameView->GetMousePosition();
-	gameModel->GetRenderer()->mousePos = PointTranslate(pos);
+	gameModel->GetRendererSettings().mousePos = PointTranslate(pos);
 	if (pos.X < XRES && pos.Y < YRES)
 		gameView->SetSample(gameModel->GetSimulation()->GetSample(PointTranslate(pos).X, PointTranslate(pos).Y));
 	else
@@ -899,31 +904,31 @@ void GameController::Update()
 	if(renderOptions && renderOptions->HasExited)
 	{
 		delete renderOptions;
-		renderOptions = NULL;
+		renderOptions = nullptr;
 	}
 
 	if(search && search->HasExited)
 	{
 		delete search;
-		search = NULL;
+		search = nullptr;
 	}
 
 	if(activePreview && activePreview->HasExited)
 	{
 		delete activePreview;
-		activePreview = NULL;
+		activePreview = nullptr;
 	}
 
 	if(loginWindow && loginWindow->HasExited)
 	{
 		delete loginWindow;
-		loginWindow = NULL;
+		loginWindow = nullptr;
 	}
 
 	if(localBrowser && localBrowser->HasDone)
 	{
 		delete localBrowser;
-		localBrowser = NULL;
+		localBrowser = nullptr;
 	}
 }
 
@@ -1092,7 +1097,7 @@ int GameController::GetNumMenus(bool onlyEnabled)
 
 void GameController::RebuildFavoritesMenu()
 {
-	gameModel->BuildFavoritesMenu();
+	gameModel->BuildMenus();
 }
 
 Tool * GameController::GetActiveTool(int selection)
@@ -1105,7 +1110,7 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 	if (gameModel->GetActiveMenu() == SC_DECO && toolSelection == 2)
 		toolSelection = 0;
 	gameModel->SetActiveTool(toolSelection, tool);
-	gameModel->GetRenderer()->gravityZonesEnabled = false;
+	gameModel->GetRendererSettings().gravityZonesEnabled = false;
 	if (toolSelection == 3)
 		gameModel->GetSimulation()->replaceModeSelected = tool->ToolID;
 	gameModel->SetLastTool(tool);
@@ -1114,17 +1119,10 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 		auto *activeTool = gameModel->GetActiveTool(i);
 		if (activeTool && activeTool->Identifier == "DEFAULT_WL_GRVTY")
 		{
-			gameModel->GetRenderer()->gravityZonesEnabled = true;
+			gameModel->GetRendererSettings().gravityZonesEnabled = true;
 		}
 	}
-	if (tool->Identifier == "DEFAULT_UI_PROPERTY")
-	{
-		static_cast<PropertyTool *>(tool)->OpenWindow(gameModel->GetSimulation(), nullptr);
-	}
-	if(tool->Identifier == "DEFAULT_UI_ADDLIFE")
-	{
-		((GOLTool *)tool)->OpenWindow(gameModel->GetSimulation(), toolSelection);
-	}
+	tool->Select(toolSelection);
 }
 
 void GameController::SetActiveTool(int toolSelection, ByteString identifier)
@@ -1225,7 +1223,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			localSaveInfo["type"] = "localsave";
 			localSaveInfo["username"] = Client::Ref().GetAuthUser().Username;
 			localSaveInfo["title"] = gameModel->GetSaveFile()->GetName();
-			localSaveInfo["date"] = (Json::Value::UInt64)time(NULL);
+			localSaveInfo["date"] = (Json::Value::UInt64)time(nullptr);
 			Client::Ref().SaveAuthorInfo(&localSaveInfo);
 			gameSave->authors = localSaveInfo;
 
@@ -1319,24 +1317,15 @@ void GameController::OpenProfile()
 
 void GameController::OpenElementSearch()
 {
-	std::vector<Tool*> toolList;
-	std::vector<Menu*> menuList = gameModel->GetMenuList();
-	for (auto i = 0U; i < menuList.size(); ++i)
+	std::vector<Tool *> toolList;
+	for (auto &ptr : gameModel->GetTools())
 	{
-		if (i == SC_FAVORITES)
+		if (!ptr)
 		{
 			continue;
 		}
-		auto *mm = menuList[i];
-		if(!mm)
-			continue;
-		std::vector<Tool*> menuToolList = mm->GetToolList();
-		if(!menuToolList.size())
-			continue;
-		toolList.insert(toolList.end(), menuToolList.begin(), menuToolList.end());
+		toolList.push_back(ptr.get());
 	}
-	std::vector<Tool*> hiddenTools = gameModel->GetUnlistedTools();
-	toolList.insert(toolList.end(), hiddenTools.begin(), hiddenTools.end());
 	new ElementSearchActivity(this, toolList);
 }
 
@@ -1389,7 +1378,7 @@ void GameController::OpenOptions()
 void GameController::ShowConsole()
 {
 	if (!console)
-		console = new ConsoleController(NULL, commandInterface.get());
+		console = new ConsoleController(nullptr, commandInterface.get());
 	if (console->GetView() != ui::Engine::Ref().GetWindow())
 		ui::Engine::Ref().ShowWindow(console->GetView());
 }
@@ -1403,7 +1392,7 @@ void GameController::HideConsole()
 
 void GameController::OpenRenderOptions()
 {
-	renderOptions = new RenderController(gameModel->GetRenderer(), NULL);
+	renderOptions = new RenderController(gameModel->GetSimulation(), gameModel->GetRenderer(), &gameModel->GetRendererSettings(), nullptr);
 	ui::Engine::Ref().ShowWindow(renderOptions->GetView());
 }
 
@@ -1509,7 +1498,7 @@ void GameController::ChangeBrush()
 void GameController::ClearSim()
 {
 	HistorySnapshot();
-	gameModel->SetSave(NULL, false);
+	gameModel->SetSave(nullptr, false);
 	gameModel->ClearSimulation();
 }
 
@@ -1712,9 +1701,9 @@ bool GameController::GetMouseClickRequired()
 	return gameModel->GetMouseClickRequired();
 }
 
-void GameController::RemoveCustomGOLType(const ByteString &identifier)
+void GameController::RemoveCustomGol(const ByteString &identifier)
 {
-	gameModel->RemoveCustomGOLType(identifier);
+	gameModel->RemoveCustomGol(identifier);
 }
 
 void GameController::BeforeSimDraw()
@@ -1725,4 +1714,17 @@ void GameController::BeforeSimDraw()
 void GameController::AfterSimDraw()
 {
 	commandInterface->HandleEvent(AfterSimDrawEvent{});
+}
+
+bool GameController::ThreadedRenderingAllowed()
+{
+	return gameModel->GetThreadedRendering() && !commandInterface->HaveSimGraphicsEventHandlers();
+}
+
+void GameController::SetToolIndex(ByteString identifier, std::optional<int> index)
+{
+	if (commandInterface)
+	{
+		commandInterface->SetToolIndex(identifier, index);
+	}
 }

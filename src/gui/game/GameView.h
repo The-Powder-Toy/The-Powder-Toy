@@ -3,11 +3,15 @@
 #include "gui/interface/Window.h"
 #include "simulation/Sample.h"
 #include "graphics/FindingElement.h"
+#include "graphics/RendererFrame.h"
 #include <ctime>
 #include <deque>
 #include <memory>
 #include <vector>
 #include <optional>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
 enum DrawMode
 {
@@ -27,9 +31,12 @@ namespace ui
 }
 
 class SplitButton;
+class Simulation;
+struct RenderableSimulation;
 
 class MenuButton;
 class Renderer;
+struct RendererSettings;
 class VideoBuffer;
 class ToolButton;
 class GameController;
@@ -54,7 +61,6 @@ private:
 	bool wallBrush;
 	bool toolBrush;
 	bool decoBrush;
-	bool windTool;
 	int toolIndex;
 	int currentSaveType;
 	int lastMenu;
@@ -80,7 +86,9 @@ private:
 
 	ui::Point currentPoint, lastPoint;
 	GameController * c;
-	Renderer * ren;
+	Renderer *ren = nullptr;
+	RendererSettings *rendererSettings = nullptr;
+	Simulation *sim = nullptr;
 	Brush const *activeBrush;
 	//UI Elements
 	std::vector<ui::Button*> quickOptionButtons;
@@ -144,10 +152,31 @@ private:
 	Vec2<int> PlaceSavePos() const;
 
 	std::optional<FindingElement> FindingElementCandidate() const;
+	enum RendererThreadState
+	{
+		rendererThreadAbsent,
+		rendererThreadRunning,
+		rendererThreadPaused,
+		rendererThreadStopping,
+	};
+	RendererThreadState rendererThreadState = rendererThreadAbsent;
+	std::thread rendererThread;
+	std::mutex rendererThreadMx;
+	std::condition_variable rendererThreadCv;
+	bool rendererThreadOwnsRenderer = false;
+	void StartRendererThread();
+	void StopRendererThread();
+	void RendererThread();
+	void WaitForRendererThread();
+	void DispatchRendererThread();
+	std::unique_ptr<RenderableSimulation> rendererThreadSim;
+	std::unique_ptr<RendererFrame> rendererThreadResult;
+	int foundParticles = 0;
+	const RendererFrame *rendererFrame = nullptr;
 
 public:
 	GameView();
-	virtual ~GameView();
+	~GameView();
 
 	//Breaks MVC, but any other way is going to be more of a mess.
 	ui::Point GetMousePosition();
@@ -186,7 +215,7 @@ public:
 	void NotifySaveChanged(GameModel * sender);
 	void NotifyBrushChanged(GameModel * sender);
 	void NotifyMenuListChanged(GameModel * sender);
-	void NotifyToolListChanged(GameModel * sender);
+	void NotifyActiveMenuToolListChanged(GameModel * sender);
 	void NotifyActiveToolsChanged(GameModel * sender);
 	void NotifyUserChanged(GameModel * sender);
 	void NotifyZoomChanged(GameModel * sender);
@@ -232,4 +261,18 @@ public:
 	class OptionListener;
 
 	void SkipIntroText();
+	pixel GetPixelUnderMouse() const;
+
+	const RendererFrame &GetRendererFrame() const
+	{
+		return *rendererFrame;
+	}
+	// Call this before accessing Renderer "out of turn", e.g. from RenderView or GameModel. This *does not*
+	// include OptionsModel or Lua setting functions because they only access the RendererSettings
+	// in GameModel, or Lua drawing functions because they only access Renderer in eventTraitSimGraphics
+	// and *SimDraw events, and the renderer thread gets paused anyway if there are handlers
+	// installed for such events.
+	void PauseRendererThread();
+
+	void RenderSimulation(const RenderableSimulation &sim, bool handleEvents);
 };

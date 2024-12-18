@@ -65,11 +65,11 @@ static int update(UPDATE_FUNC_ARGS)
 	//Randomly kill GRVT inside RSSS
 	if((utype == PT_RSSS) && sim->rng.chance(1, 5))
 	{
+
 		sim->kill_part(i);
 		return 1;
 	}
-
-	sim->gravmap[(y/CELL)*XCELLS+(x/CELL)] = 0.2f*parts[i].tmp;
+	sim->gravIn.mass[Vec2{ x, y } / CELL] = 0.2f * parts[i].tmp;
 	return 0;
 }
 

@@ -13,9 +13,10 @@ using namespace ui;
 Engine::Engine():
 	drawingFrequencyLimit(0),
 	FrameIndex(0),
-	state_(NULL),
+	state_(nullptr),
 	windowTargetPosition(0, 0),
 	FastQuit(1),
+	GlobalQuit(true),
 	lastTick(0),
 	mouseb_(0),
 	mousex_(0),
@@ -32,8 +33,8 @@ Engine::~Engine()
 	//Dispose of any Windows.
 	while (!windows.empty())
 	{
-		delete windows.top();
-		windows.pop();
+		delete windows.back();
+		windows.pop_back();
 	}
 }
 
@@ -66,13 +67,20 @@ void Engine::Exit()
 
 void Engine::ConfirmExit()
 {
-	new ConfirmPrompt("You are about to quit", "Are you sure you want to exit the game?", { [] {
-		ui::Engine::Ref().Exit();
-	} });
+	if (!confirmingExit)
+	{
+		confirmingExit = true;
+		new ConfirmPrompt("You are about to quit", "Are you sure you want to exit the game?", { [] {
+			ui::Engine::Ref().Exit();
+		}, [this] {
+			confirmingExit = false;
+		} });
+	}
 }
 
 void Engine::ShowWindow(Window * window)
 {
+	CloseWindowAndEverythingAbove(window);
 	if (state_)
 		ignoreEvents = true;
 	if(window->Position.X==-1)
@@ -95,7 +103,7 @@ void Engine::ShowWindow(Window * window)
 		frozenGraphics.emplace(FrozenGraphics{0, std::make_unique<pixel []>(g->Size().X * g->Size().Y)});
 		std::copy_n(g->Data(), g->Size().X * g->Size().Y, frozenGraphics.top().screen.get());
 
-		windows.push(state_);
+		windows.push_back(state_);
 		mousePositions.push(ui::Point(mousex_, mousey_));
 	}
 	if(state_)
@@ -105,13 +113,31 @@ void Engine::ShowWindow(Window * window)
 
 }
 
+void Engine::CloseWindowAndEverythingAbove(Window *window)
+{
+	if (window == state_)
+	{
+		CloseWindow();
+		return;
+	}
+	auto it = std::find(windows.begin(), windows.end(), window);
+	if (it != windows.end())
+	{
+		auto toPop = int(windows.end() - it) + 1; // including state_
+		for (int i = 0; i < toPop; ++i)
+		{
+			CloseWindow();
+		}
+	}
+}
+
 int Engine::CloseWindow()
 {
 	if(!windows.empty())
 	{
 		frozenGraphics.pop();
-		state_ = windows.top();
-		windows.pop();
+		state_ = windows.back();
+		windows.pop_back();
 
 		if(state_)
 			state_->DoFocus();
@@ -131,7 +157,7 @@ int Engine::CloseWindow()
 	}
 	else
 	{
-		state_ = NULL;
+		state_ = nullptr;
 		return 1;
 	}
 }
@@ -151,7 +177,7 @@ int Engine::CloseWindow()
 
 void Engine::Tick()
 {
-	if(state_ != NULL)
+	if(state_ != nullptr)
 		state_->DoTick(dt);
 
 

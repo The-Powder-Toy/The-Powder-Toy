@@ -46,7 +46,7 @@ void Client::MigrateStampsDef()
 	}
 	for (auto i = 0; i < int(data.size()); i += 10)
 	{
-		stampIDs.push_back(ByteString(&data[0] + i, &data[0] + i + 10));
+		stampIDs.push_back(ByteString(data.data() + i, data.data() + i + 10));
 	}
 }
 
@@ -117,12 +117,12 @@ void Client::Tick()
 	{
 		if (versionCheckRequest->StatusCode() == 618)
 		{
-			AddServerNotification({ "Failed to load SSL certificates", ByteString::Build(SCHEME, SERVER, "/FAQ.html") });
+			AddServerNotification({ "Failed to load SSL certificates", ByteString::Build(SERVER, "/FAQ.html") });
 		}
 		try
 		{
 			auto info = versionCheckRequest->Finish();
-			if (!info.sessionGood)
+			if (!info.sessionGood && authUser.UserID)
 			{
 				SetAuthUser(User(0, ""));
 			}
@@ -310,7 +310,7 @@ void Client::RenameStamp(ByteString stampID, ByteString newName)
 
 ByteString Client::AddStamp(std::unique_ptr<GameSave> saveData)
 {
-	auto now = (uint64_t)time(NULL);
+	auto now = (uint64_t)time(nullptr);
 	if (lastStampTime != now)
 	{
 		lastStampTime = now;
@@ -509,34 +509,6 @@ void Client::SaveAuthorInfo(Json::Value *saveInto)
 		else if (authors["links"].size())
 			(*saveInto)["links"] = authors["links"];
 	}
-}
-
-bool AddCustomGol(String ruleString, String nameString, unsigned int highColor, unsigned int lowColor)
-{
-	auto &prefs = GlobalPrefs::Ref();
-	auto customGOLTypes = prefs.Get("CustomGOL.Types", std::vector<ByteString>{});
-	std::vector<ByteString> newCustomGOLTypes;
-	bool nameTaken = false;
-	for (auto gol : customGOLTypes)
-	{
-		auto parts = gol.FromUtf8().PartitionBy(' ');
-		if (parts.size())
-		{
-			if (parts[0] == nameString)
-			{
-				nameTaken = true;
-			}
-		}
-		newCustomGOLTypes.push_back(gol);
-	}
-	if (nameTaken)
-		return false;
-
-	StringBuilder sb;
-	sb << nameString << " " << ruleString << " " << highColor << " " << lowColor;
-	newCustomGOLTypes.push_back(sb.Build().ToUtf8());
-	prefs.Set("CustomGOL.Types", newCustomGOLTypes);
-	return true;
 }
 
 String Client::DoMigration(ByteString fromDir, ByteString toDir)

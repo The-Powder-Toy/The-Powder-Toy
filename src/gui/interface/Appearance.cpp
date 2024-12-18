@@ -1,5 +1,6 @@
 #include "Appearance.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include <iostream>
 
 namespace ui

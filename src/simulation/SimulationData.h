@@ -5,32 +5,15 @@
 #include "common/String.h"
 #include "MenuSection.h"
 #include "BuiltinGOL.h"
-#include "SimTool.h"
 #include "Element.h"
 #include "Particle.h"
 #include "WallType.h"
 #include "graphics/gcache_item.h"
+#include "CustomGOLData.h"
 #include <cstdint>
 #include <vector>
 #include <array>
 #include <shared_mutex>
-
-constexpr int SC_WALL      =  0;
-constexpr int SC_ELEC      =  1;
-constexpr int SC_POWERED   =  2;
-constexpr int SC_SENSOR    =  3;
-constexpr int SC_FORCE     =  4;
-constexpr int SC_EXPLOSIVE =  5;
-constexpr int SC_GAS       =  6;
-constexpr int SC_LIQUID    =  7;
-constexpr int SC_POWDERS   =  8;
-constexpr int SC_SOLIDS    =  9;
-constexpr int SC_NUCLEAR   = 10;
-constexpr int SC_SPECIAL   = 11;
-constexpr int SC_LIFE      = 12;
-constexpr int SC_TOOL      = 13;
-constexpr int SC_FAVORITES = 14;
-constexpr int SC_DECO      = 15;
 
 constexpr int O_WL_WALLELEC     = 122;
 constexpr int O_WL_EWALL        = 123;
@@ -141,47 +124,11 @@ constexpr int NGT_BRAN = 23;
 constexpr auto REPLACE_MODE    = UINT32_C(0x00000001);
 constexpr auto SPECIFIC_DELETE = UINT32_C(0x00000002);
 
-enum EdgeMode
-{
-	EDGE_VOID, EDGE_SOLID, EDGE_LOOP, NUM_EDGEMODES
-};
-
-enum AirMode
-{
-	AIR_ON, AIR_PRESSUREOFF, AIR_VELOCITYOFF, AIR_OFF, AIR_NOUPDATE, NUM_AIRMODES
-};
-
-enum GravityMode
-{
-	GRAV_VERTICAL, GRAV_OFF, GRAV_RADIAL, GRAV_CUSTOM, NUM_GRAVMODES
-};
-
-enum DecoSpace
-{
-	DECOSPACE_SRGB,
-	DECOSPACE_LINEAR,
-	DECOSPACE_GAMMA22,
-	DECOSPACE_GAMMA18,
-	NUM_DECOSPACES,
-};
-
-struct CustomGOLData
-{
-	int rule, colour1, colour2;
-	String nameString, ruleString;
-
-	inline bool operator <(const CustomGOLData &other) const
-	{
-		return rule < other.rule;
-	}
-};
-
 class SimulationData : public ExplicitSingleton<SimulationData>
 {
 public:
 	std::array<Element, PT_NUM> elements;
 	std::array<gcache_item, PT_NUM> graphicscache;
-	std::vector<SimTool> tools;
 	std::vector<wall_type> wtypes;
 	std::vector<menu_section> msections;
 	char can_move[PT_NUM][PT_NUM];

@@ -1,7 +1,7 @@
 #include "FontReader.h"
 
 #include "bzip2/bz2wrap.h"
-#include "font.bz2.h"
+#include "font_bz2.h"
 
 #include <array>
 #include <cstdint>
@@ -23,15 +23,15 @@ static bool InitFontData()
 	static std::vector<char> fontDataBuf;
 	static std::vector<int> fontPtrsBuf;
 	static std::vector< std::array<int, 2> > fontRangesBuf;
-	if (BZ2WDecompress(fontDataBuf, reinterpret_cast<const char *>(compressed_font_data), compressed_font_data_size) != BZ2WDecompressOk)
+	if (BZ2WDecompress(fontDataBuf, font_bz2.AsCharSpan()) != BZ2WDecompressOk)
 	{
 		return false;
 	}
 	int first = -1;
 	int last = -1;
-	char *begin = &fontDataBuf[0];
-	char *ptr = &fontDataBuf[0];
-	char *end = &fontDataBuf[0] + fontDataBuf.size();
+	char *begin = fontDataBuf.data();
+	char *ptr = fontDataBuf.data();
+	char *end = fontDataBuf.data() + fontDataBuf.size();
 	while (ptr != end)
 	{
 		if (ptr + 4 > end)

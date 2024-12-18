@@ -81,7 +81,7 @@ void ScrollPanel::XOnMouseDown(int x, int y, unsigned int button)
 			scrollbarSelected = true;
 			scrollbarInitialYOffset = int(offsetY);
 		}
-		initialOffsetY = offsetY;
+		initialOffsetY = int(offsetY);
 		scrollbarInitialYClick = y - Position.Y;
 		scrollbarClickLocation = 100;
 	}
@@ -152,18 +152,17 @@ void ScrollPanel::XOnMouseMoved(int x, int y)
 				{
 					child->MouseDownInside = false;
 				}
-				GetParentWindow()->FocusComponent(NULL);
+				GetParentWindow()->FocusComponent(nullptr);
 			}
 		}
 
-		if (x > (Size.X-scrollBarWidth) && x < (Size.X-scrollBarWidth)+scrollBarWidth)
+		if (x > (Size.X-scrollBarWidth) && x < Size.X)
 		{
-			if (y > scrollPos && y < scrollPos+scrollHeight)
-				isMouseInsideScrollbar = true;
+			isMouseInsideScrollbar = y > scrollPos && y < scrollPos+scrollHeight;
 			isMouseInsideScrollbarArea = true;
 		}
 		else
-			isMouseInsideScrollbar = false;
+			isMouseInsideScrollbar = isMouseInsideScrollbarArea = false;
 
 		if (oldViewportPositionY != ViewportPosition.Y)
 		{

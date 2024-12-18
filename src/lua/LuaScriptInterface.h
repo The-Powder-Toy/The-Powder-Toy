@@ -58,9 +58,24 @@ struct CustomElement
 	LuaSmartRef changeType;
 };
 
+struct CustomTool
+{
+	bool valid = false;
+	LuaSmartRef perform;
+	LuaSmartRef click;
+	LuaSmartRef drag;
+	LuaSmartRef draw;
+	LuaSmartRef drawLine;
+	LuaSmartRef drawRect;
+	LuaSmartRef drawFill;
+	LuaSmartRef select;
+};
+
 class LuaScriptInterface : public CommandInterface
 {
 	LuaStatePtr luaState;
+
+	Renderer *ren;
 
 public:
 	lua_State *L{};
@@ -70,9 +85,21 @@ public:
 	ui::Window *window;
 	Simulation *sim;
 	Graphics *g;
-	Renderer *ren;
+
+	std::variant<Graphics *, Renderer *> GetGraphics()
+	{
+		if (eventTraits & eventTraitSimGraphics)
+		{
+			// This is ok without calling gameModel->view->PauseRendererThread() because
+			// the renderer thread gets paused anyway if there are handlers
+			// installed for eventTraitSimGraphics and *SimDraw events.
+			return ren;
+		}
+		return g;
+	}
 
 	std::vector<CustomElement> customElements; // must come after luaState
+	std::vector<CustomTool> customTools;
 
 	EventTraits eventTraits = eventTraitNone;
 
@@ -189,6 +216,12 @@ namespace LuaSocket
 	void Timeout(double timeout);
 	void Open(lua_State *L);
 	void OpenTCP(lua_State *L);
+}
+
+namespace LuaTools
+{
+	void Open(lua_State *L);
+	void SetToolIndex(lua_State *L, ByteString identifier, std::optional<int> index);
 }
 
 inline LuaScriptInterface *GetLSI()

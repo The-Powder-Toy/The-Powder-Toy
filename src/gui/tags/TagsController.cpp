@@ -52,9 +52,7 @@ void TagsController::Exit()
 TagsController::~TagsController()
 {
 	delete tagsModel;
-	if (tagsView->CloseActiveWindow())
-	{
-		delete tagsView;
-	}
+	tagsView->CloseActiveWindow();
+	delete tagsView;
 }
 

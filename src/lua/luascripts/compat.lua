@@ -47,15 +47,24 @@ tpt.get_name            = tpt.getUserName
 tpt.menu_enabled        = ui.menuEnabled
 tpt.num_menus           = ui.numMenus
 tpt.perfectCircleBrush  = ui.perfectCircleBrush
-tpt.reset_gravity_field = sim.resetGravityField
 tpt.reset_spark         = sim.resetSpark
 tpt.reset_velocity      = sim.resetVelocity
 tpt.set_clipboard       = plat.clipboardPaste
 tpt.setdrawcap          = tpt.drawCap
 tpt.setfpscap           = tpt.fpsCap
+tpt.get_numOfParts      = sim.partCount
 ui.MOUSE_UP_BLUR        = ui.MOUSEUP_BLUR
 ui.MOUSE_UP_DRAW_END    = ui.MOUSEUP_DRAWEND
 ui.MOUSE_UP_NORMAL      = ui.MOUSEUP_NORMAL
+sim.TOOL_HEAT           = tools.DEFAULT_TOOL_HEAT
+sim.TOOL_COOL           = tools.DEFAULT_TOOL_COOL
+sim.TOOL_VAC            = tools.DEFAULT_TOOL_VAC
+sim.TOOL_PGRV           = tools.DEFAULT_TOOL_PGRV
+sim.TOOL_AIR            = tools.DEFAULT_TOOL_AIR
+sim.TOOL_NGRV           = tools.DEFAULT_TOOL_NGRV
+sim.TOOL_MIX            = tools.DEFAULT_TOOL_MIX
+sim.TOOL_CYCL           = tools.DEFAULT_TOOL_CYCL
+sim.TOOL_WIND           = tools.DEFAULT_TOOL_WIND
 if socket then
 	socket.gettime = socket.getTime
 end
@@ -419,10 +428,6 @@ do
 	end
 end
 
-function tpt.get_numOfParts()
-	return sim.NUM_PARTS
-end
-
 function tpt.element(thing)
 	if type(thing) == "string" then
 		local id = elem.getByName(thing)
@@ -701,3 +706,27 @@ function tpt_mt:__newindex(key, value)
 	rawset(self, key, value)
 end
 setmetatable(tpt, tpt_mt)
+
+function ren.renderModes(tbl)
+	if tbl then
+		local combined = 0
+		for i = 1, #tbl do
+			combined = bit.bor(combined, tbl[i])
+		end
+		ren.renderMode(combined)
+		return
+	end
+	return { ren.renderMode() }
+end
+
+function ren.displayModes(tbl)
+	if tbl then
+		local combined = 0
+		for i = 1, #tbl do
+			combined = bit.bor(combined, tbl[i])
+		end
+		ren.displayMode(combined)
+		return
+	end
+	return { ren.displayMode() }
+end

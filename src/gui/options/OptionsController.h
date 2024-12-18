@@ -24,6 +24,7 @@ public:
 	void SetAmbientAirTemperature(float ambientAirTemp);
 	void SetEdgeMode(int edgeMode);
 	void SetTemperatureScale(int temperatureScale);
+	void SetThreadedRendering(bool newThreadedRendering);
 	void SetFullscreen(bool fullscreen);
 	void SetChangeResolution(bool newChangeResolution);
 	void SetForceIntegerScaling(bool forceIntegerScaling);
@@ -33,6 +34,7 @@ public:
 	void SetNativeClipoard(bool nativeClipoard);
 	void SetResizable(bool resizable);
 	void SetFastQuit(bool fastquit);
+	void SetGlobalQuit(bool newGlobalQuit);
 	void SetDecoSpace(int decoSpace);
 	void SetShowAvatars(bool showAvatars);
 	void SetMouseClickrequired(bool mouseClickRequired);

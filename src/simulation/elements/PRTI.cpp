@@ -2,6 +2,7 @@
 #include "simulation/orbitalparts.h"
 #include "PIPE.h"
 #include "SOAP.h"
+#include "PRTI.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -72,8 +73,8 @@ static int update(UPDATE_FUNC_ARGS)
 
 	for (int count = 0; count < 8; count++)
 	{
-		int rx = sim->portal_rx[count];
-		int ry = sim->portal_ry[count];
+		int rx = portal_rx[count];
+		int ry = portal_ry[count];
 		if (rx || ry)
 		{
 			int r = pmap[y+ry][x+rx];

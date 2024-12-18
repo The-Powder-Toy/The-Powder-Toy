@@ -1,4 +1,5 @@
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "graphics/Renderer.h"
 #include "common/String.h"
 #include "common/tpt-rand.h"
@@ -43,36 +44,31 @@ int main(int argc, char *argv[])
 	}
 
 	Simulation * sim = new Simulation();
-	Renderer * ren = new Renderer(sim);
+	Renderer * ren = new Renderer();
+	ren->sim = sim;
 
 	if (gameSave)
 	{
 		sim->Load(gameSave.get(), true, { 0, 0 });
 
 		//Render save
-		ren->decorations_enable = true;
-		ren->blackDecorations = true;
-
-		int frame = 15;
-		while(frame)
-		{
-			frame--;
-			ren->render_parts();
-			ren->render_fire();
-			ren->clearScreen();
-		}
+		RendererSettings rendererSettings;
+		rendererSettings.decorationLevel = RendererSettings::decorationAntiClickbait;
+		ren->ApplySettings(rendererSettings);
+		ren->ClearAccumulation();
+		ren->Clear();
+		ren->ApproximateAccumulation();
+		ren->RenderSimulation();
 	}
 	else
 	{
-		ren->clearScreen();
+		ren->Clear();
 		int w = Graphics::TextSize("Save file invalid").X + 15, x = (XRES-w)/2, y = (YRES-24)/2;
 		ren->DrawRect(RectSized(Vec2{ x, y }, Vec2{ w, 24 }), 0xC0C0C0_rgb);
 		ren->BlendText({ x+8, y+8 }, "Save file invalid", 0xC0C0F0_rgb .WithAlpha(255));
 	}
 
-	ren->RenderBegin();
-	ren->RenderEnd();
-
-	if (auto data = ren->DumpFrame().ToPNG())
+	auto &video = ren->GetVideo();
+	if (auto data = VideoBuffer(video.data(), RES, video.Size().X).ToPNG())
 		Platform::WriteFile(*data, outputFilename);
 }

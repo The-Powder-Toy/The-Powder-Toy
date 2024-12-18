@@ -30,14 +30,15 @@
 #include "Format.h"
 #include "Misc.h"
 
+#include "graphics/VideoBuffer.h"
 #include "SimulationConfig.h"
 #include <SDL.h>
 
 PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+210, (YRES/2)+150)),
-	submitCommentButton(NULL),
-	addCommentBox(NULL),
-	commentWarningLabel(NULL),
+	submitCommentButton(nullptr),
+	addCommentBox(nullptr),
+	commentWarningLabel(nullptr),
 	userIsAuthor(false),
 	doOpen(false),
 	doError(false),
@@ -427,6 +428,7 @@ void PreviewView::OnTick(float dt)
 	{
 		try
 		{
+			addCommentRequest->Finish();
 			addCommentBox->SetText("");
 			c->CommentAdded();
 		}
@@ -434,7 +436,8 @@ void PreviewView::OnTick(float dt)
 		{
 			new ErrorMessage("Error submitting comment", ByteString(ex.what()).FromUtf8());
 		}
-		submitCommentButton->Enabled = true;
+		isSubmittingComment = false;
+		CheckCommentSubmitEnabled();
 		commentBoxAutoHeight();
 		addCommentRequest.reset();
 		CheckComment();
@@ -572,7 +575,9 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		if(save->GetGameSave())
 		{
 			missingElements = save->GetGameSave()->missingElements;
-			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
+			RendererSettings rendererSettings;
+			rendererSettings.decorationLevel = RendererSettings::decorationAntiClickbait;
+			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), true, rendererSettings);
 			if (savePreview)
 				savePreview->ResizeToFit(RES / 2, true);
 			missingElementsButton->Visible = missingElements;
@@ -600,20 +605,34 @@ void PreviewView::submitComment()
 	if (addCommentBox)
 	{
 		String comment = addCommentBox->GetText();
-		if (comment.length() < 4)
+		if (comment.length() == 0)
+		{
+			c->RefreshComments();
+			isRefreshingComments = true;
+		}
+		else if (comment.length() < 4)
 		{
 			new ErrorMessage("Error", "Comment is too short");
-			return;
+		}
+		else
+		{
+			isSubmittingComment = true;
+			FocusComponent(nullptr);
+
+			addCommentRequest = std::make_unique<http::AddCommentRequest>(c->SaveID(), comment);
+			addCommentRequest->Start();
+
+			CheckComment();
 		}
 
-		submitCommentButton->Enabled = false;
-		FocusComponent(NULL);
-
-		addCommentRequest = std::make_unique<http::AddCommentRequest>(c->SaveID(), comment);
-		addCommentRequest->Start();
-
-		CheckComment();
+		CheckCommentSubmitEnabled();
 	}
+}
+
+void PreviewView::CheckCommentSubmitEnabled()
+{
+	if (submitCommentButton)
+		submitCommentButton->Enabled = !isRefreshingComments && !isSubmittingComment;
 }
 
 void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
@@ -622,13 +641,13 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	{
 		RemoveComponent(addCommentBox);
 		delete addCommentBox;
-		addCommentBox = NULL;
+		addCommentBox = nullptr;
 	}
 	if(submitCommentButton)
 	{
 		RemoveComponent(submitCommentButton);
 		delete submitCommentButton;
-		submitCommentButton = NULL;
+		submitCommentButton = nullptr;
 	}
 	if(sender->GetCommentBoxEnabled())
 	{
@@ -648,7 +667,6 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 		AddComponent(addCommentBox);
 		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), "Submit");
 		submitCommentButton->SetActionCallback({ [this] { submitComment(); } });
-		//submitCommentButton->Enabled = false;
 		AddComponent(submitCommentButton);
 
 		commentWarningLabel = new ui::Label(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 16), "If you see this it is a bug");
@@ -689,6 +707,9 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 	commentComponents.clear();
 	commentTextComponents.clear();
 	commentsPanel->InnerSize = ui::Point(0, 0);
+
+	isRefreshingComments = false;
+	CheckCommentSubmitEnabled();
 
 	if (commentsPtr)
 	{

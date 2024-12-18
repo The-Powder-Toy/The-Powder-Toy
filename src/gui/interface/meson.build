@@ -23,4 +23,5 @@ powder_files += files(
 	'AvatarButton.cpp',
 	'RichLabel.cpp',
 	'SaveButton.cpp',
+	'Separator.cpp',
 )
