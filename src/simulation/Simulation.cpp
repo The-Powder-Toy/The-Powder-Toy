@@ -2344,6 +2344,8 @@ void Simulation::UpdateParticles(int start, int end)
 			if (t==PT_GEL)
 				gel_scale = parts[i].tmp*2.55f;
 
+			bool killed = false;
+
 			if (!legacy_enable)
 			{
 				if ((elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale > (1 + rng.between(0, 254))))
@@ -2697,41 +2699,44 @@ void Simulation::UpdateParticles(int start, int end)
 						if (t == PT_NONE)
 						{
 							kill_part(i);
-							goto killed;
 						}
 						// part_change_type could refuse to change the type and kill the particle
 						// for example, changing type to STKM but one already exists
 						// we need to account for that to not cause simulation corruption issues
-						if (part_change_type(i,x,y,t))
-							goto killed;
-
-						if (t==PT_FIRE || t==PT_PLSM || t==PT_CFLM)
-							parts[i].life = rng.between(120, 169);
-						if (t == PT_LAVA)
-						{
-							if (parts[i].ctype == PT_BRMT) parts[i].ctype = PT_BMTL;
-							else if (parts[i].ctype == PT_SAND) parts[i].ctype = PT_GLAS;
-							else if (parts[i].ctype == PT_BGLA) parts[i].ctype = PT_GLAS;
-							else if (parts[i].ctype == PT_PQRT) parts[i].ctype = PT_QRTZ;
-							else if (parts[i].ctype == PT_LITH && parts[i].tmp2 > 3) parts[i].ctype = PT_GLAS;
-							parts[i].life = rng.between(240, 359);
+						if (t == PT_NONE || part_change_type(i,x,y,t)) {
+							killed = true;
 						}
-						transitionOccurred = true;
+						else {
+							if (t==PT_FIRE || t==PT_PLSM || t==PT_CFLM)
+								parts[i].life = rng.between(120, 169);
+							if (t == PT_LAVA)
+							{
+								if (parts[i].ctype == PT_BRMT) parts[i].ctype = PT_BMTL;
+								else if (parts[i].ctype == PT_SAND) parts[i].ctype = PT_GLAS;
+								else if (parts[i].ctype == PT_BGLA) parts[i].ctype = PT_GLAS;
+								else if (parts[i].ctype == PT_PQRT) parts[i].ctype = PT_QRTZ;
+								else if (parts[i].ctype == PT_LITH && parts[i].tmp2 > 3) parts[i].ctype = PT_GLAS;
+								parts[i].life = rng.between(240, 359);
+							}
+							transitionOccurred = true;
+						}
 					}
 
-					pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
-					if (t == PT_LAVA)
-					{
-						parts[i].life = int(restrict_flt((parts[i].temp-700)/7, 0, 400));
-						if (parts[i].ctype==PT_THRM&&parts[i].tmp>0)
+					if (!killed) {
+						pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
+						if (t == PT_LAVA)
 						{
-							parts[i].tmp--;
-							parts[i].temp = 3500;
-						}
-						if (parts[i].ctype==PT_PLUT&&parts[i].tmp>0)
-						{
-							parts[i].tmp--;
-							parts[i].temp = MAX_TEMP;
+							parts[i].life = int(restrict_flt((parts[i].temp-700)/7, 0, 400));
+							if (parts[i].ctype==PT_THRM&&parts[i].tmp>0)
+							{
+								parts[i].tmp--;
+								parts[i].temp = 3500;
+							}
+							if (parts[i].ctype==PT_PLUT&&parts[i].tmp>0)
+							{
+								parts[i].tmp--;
+								parts[i].temp = MAX_TEMP;
+							}
 						}
 					}
 				}
@@ -2743,126 +2748,133 @@ void Simulation::UpdateParticles(int start, int end)
 				}
 			}
 
-			if (t==PT_LIFE)
-			{
-				parts[i].temp = restrict_flt(parts[i].temp-50.0f, MIN_TEMP, MAX_TEMP);
-			}
-			if (t==PT_WIRE)
-			{
-				//wire_placed = 1;
-			}
-			//spark updates from walls
-			if ((elements[t].Properties&PROP_CONDUCTS) || t==PT_SPRK)
-			{
-				auto nx = x % CELL;
-				if (nx == 0)
-					nx = x/CELL - 1;
-				else if (nx == CELL-1)
-					nx = x/CELL + 1;
-				else
-					nx = x/CELL;
-				auto ny = y % CELL;
-				if (ny == 0)
-					ny = y/CELL - 1;
-				else if (ny == CELL-1)
-					ny = y/CELL + 1;
-				else
-					ny = y/CELL;
-				if (nx>=0 && ny>=0 && nx<XCELLS && ny<YCELLS)
+			if (!killed) {
+				if (t==PT_LIFE)
 				{
-					if (t!=PT_SPRK)
+					parts[i].temp = restrict_flt(parts[i].temp-50.0f, MIN_TEMP, MAX_TEMP);
+				}
+				if (t==PT_WIRE)
+				{
+					//wire_placed = 1;
+				}
+				//spark updates from walls
+				if ((elements[t].Properties&PROP_CONDUCTS) || t==PT_SPRK)
+				{
+					auto nx = x % CELL;
+					if (nx == 0)
+						nx = x/CELL - 1;
+					else if (nx == CELL-1)
+						nx = x/CELL + 1;
+					else
+						nx = x/CELL;
+					auto ny = y % CELL;
+					if (ny == 0)
+						ny = y/CELL - 1;
+					else if (ny == CELL-1)
+						ny = y/CELL + 1;
+					else
+						ny = y/CELL;
+					if (nx>=0 && ny>=0 && nx<XCELLS && ny<YCELLS)
 					{
-						if (emap[ny][nx]==12 && !parts[i].life && bmap[ny][nx] != WL_STASIS)
+						if (t!=PT_SPRK)
 						{
-							part_change_type(i,x,y,PT_SPRK);
-							parts[i].life = 4;
-							parts[i].ctype = t;
-							t = PT_SPRK;
+							if (emap[ny][nx]==12 && !parts[i].life && bmap[ny][nx] != WL_STASIS)
+							{
+								part_change_type(i,x,y,PT_SPRK);
+								parts[i].life = 4;
+								parts[i].ctype = t;
+								t = PT_SPRK;
+							}
+						}
+						else if (bmap[ny][nx]==WL_DETECT || bmap[ny][nx]==WL_EWALL || bmap[ny][nx]==WL_ALLOWLIQUID || bmap[ny][nx]==WL_WALLELEC || bmap[ny][nx]==WL_ALLOWALLELEC || bmap[ny][nx]==WL_EHOLE)
+							set_emap(nx, ny);
+					}
+				}
+
+				//the basic explosion, from the .explosive variable
+				if ((elements[t].Explosive&2) && pv[y/CELL][x/CELL]>2.5f)
+				{
+					parts[i].life = rng.between(180, 259);
+					parts[i].temp = restrict_flt(elements[PT_FIRE].DefaultProperties.temp + (elements[t].Flammable/2), MIN_TEMP, MAX_TEMP);
+					t = PT_FIRE;
+					part_change_type(i,x,y,t);
+					pv[y/CELL][x/CELL] += 0.25f * CFDS;
+				}
+
+				{
+					auto s = 1;
+					auto gravtot = std::abs(gravOut.forceX[Vec2{ x, y } / CELL]) +
+								   std::abs(gravOut.forceY[Vec2{ x, y } / CELL]);
+					if (elements[t].HighPressureTransition != NT && pv[y/CELL][x/CELL]>elements[t].HighPressure) {
+						// particle type change due to high pressure
+						if (elements[t].HighPressureTransition != ST)
+							t = elements[t].HighPressureTransition;
+						else if (t==PT_BMTL) {
+							if (pv[y/CELL][x/CELL]>2.5f)
+								t = PT_BRMT;
+							else if (pv[y/CELL][x/CELL]>1.0f && parts[i].tmp==1)
+								t = PT_BRMT;
+							else s = 0;
+						}
+						else s = 0;
+					} else if (elements[t].LowPressureTransition != NT && pv[y/CELL][x/CELL]<elements[t].LowPressure && gravtot<=(elements[t].LowPressure/4.0f)) {
+						// particle type change due to low pressure
+						if (elements[t].LowPressureTransition != ST)
+							t = elements[t].LowPressureTransition;
+						else s = 0;
+					} else if (elements[t].HighPressureTransition != NT && gravtot>(elements[t].HighPressure/4.0f)) {
+						// particle type change due to high gravity
+						if (elements[t].HighPressureTransition != ST)
+							t = elements[t].HighPressureTransition;
+						else if (t==PT_BMTL) {
+							if (gravtot>0.625f)
+								t = PT_BRMT;
+							else if (gravtot>0.25f && parts[i].tmp==1)
+								t = PT_BRMT;
+							else s = 0;
+						}
+						else s = 0;
+					} else s = 0;
+
+					// particle type change occurred
+					if (s)
+					{
+						if (t == PT_NONE)
+						{
+							kill_part(i);
+							killed = true;
+						}
+						else {
+							parts[i].life = 0;
+							// part_change_type could refuse to change the type and kill the particle
+							// for example, changing type to STKM but one already exists
+							// we need to account for that to not cause simulation corruption issues
+							if (part_change_type(i,x,y,t))
+								killed = true;
+							else {
+								if (t == PT_FIRE)
+									parts[i].life = rng.between(120, 169);
+								transitionOccurred = true;
+							}
 						}
 					}
-					else if (bmap[ny][nx]==WL_DETECT || bmap[ny][nx]==WL_EWALL || bmap[ny][nx]==WL_ALLOWLIQUID || bmap[ny][nx]==WL_WALLELEC || bmap[ny][nx]==WL_ALLOWALLELEC || bmap[ny][nx]==WL_EHOLE)
-						set_emap(nx, ny);
 				}
-			}
 
-			//the basic explosion, from the .explosive variable
-			if ((elements[t].Explosive&2) && pv[y/CELL][x/CELL]>2.5f)
-			{
-				parts[i].life = rng.between(180, 259);
-				parts[i].temp = restrict_flt(elements[PT_FIRE].DefaultProperties.temp + (elements[t].Flammable/2), MIN_TEMP, MAX_TEMP);
-				t = PT_FIRE;
-				part_change_type(i,x,y,t);
-				pv[y/CELL][x/CELL] += 0.25f * CFDS;
-			}
-
-			{
-				auto s = 1;
-				auto gravtot = std::abs(gravOut.forceX[Vec2{ x, y } / CELL]) +
-				               std::abs(gravOut.forceY[Vec2{ x, y } / CELL]);
-				if (elements[t].HighPressureTransition != NT && pv[y/CELL][x/CELL]>elements[t].HighPressure) {
-					// particle type change due to high pressure
-					if (elements[t].HighPressureTransition != ST)
-						t = elements[t].HighPressureTransition;
-					else if (t==PT_BMTL) {
-						if (pv[y/CELL][x/CELL]>2.5f)
-							t = PT_BRMT;
-						else if (pv[y/CELL][x/CELL]>1.0f && parts[i].tmp==1)
-							t = PT_BRMT;
-						else s = 0;
-					}
-					else s = 0;
-				} else if (elements[t].LowPressureTransition != NT && pv[y/CELL][x/CELL]<elements[t].LowPressure && gravtot<=(elements[t].LowPressure/4.0f)) {
-					// particle type change due to low pressure
-					if (elements[t].LowPressureTransition != ST)
-						t = elements[t].LowPressureTransition;
-					else s = 0;
-				} else if (elements[t].HighPressureTransition != NT && gravtot>(elements[t].HighPressure/4.0f)) {
-					// particle type change due to high gravity
-					if (elements[t].HighPressureTransition != ST)
-						t = elements[t].HighPressureTransition;
-					else if (t==PT_BMTL) {
-						if (gravtot>0.625f)
-							t = PT_BRMT;
-						else if (gravtot>0.25f && parts[i].tmp==1)
-							t = PT_BRMT;
-						else s = 0;
-					}
-					else s = 0;
-				} else s = 0;
-
-				// particle type change occurred
-				if (s)
-				{
-					if (t == PT_NONE)
+				if (!killed) {
+					//call the particle update function, if there is one
+					if (elements[t].Update)
 					{
-						kill_part(i);
-						goto killed;
+						if ((*(elements[t].Update))(this, i, x, y, surround_space, nt, parts, pmap))
+							continue;
+						x = (int)(parts[i].x+0.5f);
+						y = (int)(parts[i].y+0.5f);
 					}
-					parts[i].life = 0;
-					// part_change_type could refuse to change the type and kill the particle
-					// for example, changing type to STKM but one already exists
-					// we need to account for that to not cause simulation corruption issues
-					if (part_change_type(i,x,y,t))
-						goto killed;
-					if (t == PT_FIRE)
-						parts[i].life = rng.between(120, 169);
-					transitionOccurred = true;
+
+					if(legacy_enable)//if heat sim is off
+						Element::legacyUpdate(this, i,x,y,surround_space,nt, parts, pmap);
 				}
 			}
 
-			//call the particle update function, if there is one
-			if (elements[t].Update)
-			{
-				if ((*(elements[t].Update))(this, i, x, y, surround_space, nt, parts, pmap))
-					continue;
-				x = (int)(parts[i].x+0.5f);
-				y = (int)(parts[i].y+0.5f);
-			}
-
-			if(legacy_enable)//if heat sim is off
-				Element::legacyUpdate(this, i,x,y,surround_space,nt, parts, pmap);
-
-killed:
 			if (parts[i].type == PT_NONE)//if its dead, skip to next particle
 				continue;
 
@@ -3125,14 +3137,15 @@ killed:
 			}
 			else
 			{
+				bool movedone = false;
 				// Checking stagnant is cool, but then it doesn't update when you change it later.
 				if (water_equal_test && elements[t].Falldown == 2 && rng.chance(1, 200))
 				{
 					if (flood_water(x, y, i))
-						goto movedone;
+						movedone = true;
 				}
 				// liquids and powders
-				if (!do_move(i, x, y, fin_xf, fin_yf))
+				if (!movedone && !do_move(i, x, y, fin_xf, fin_yf))
 				{
 					if (parts[i].type == PT_NONE)
 						continue;
@@ -3150,8 +3163,7 @@ killed:
 					{
 						auto r = rng.between(0, 1) * 2 - 1;// position search direction (left/right first)
 						if ((clear_x!=x || clear_y!=y || nt || surround_space) &&
-							(fabsf(parts[i].vx)>0.01f || fabsf(parts[i].vy)>0.01f))
-						{
+							(fabsf(parts[i].vx)>0.01f || fabsf(parts[i].vy)>0.01f)) {
 							// allow diagonal movement if target position is blocked
 							// but no point trying this if particle is stuck in a block of identical particles
 							auto dx = parts[i].vx - parts[i].vy*r;
@@ -3164,137 +3176,88 @@ killed:
 							{
 								parts[i].vx *= elements[t].Collision;
 								parts[i].vy *= elements[t].Collision;
-								goto movedone;
+								movedone = true;
 							}
-							{
-								auto swappage = dx;
-								dx = dy*r;
-								dy = -swappage*r;
-							}
-							if (do_move(i, x, y, clear_xf+dx, clear_yf+dy))
-							{
-								parts[i].vx *= elements[t].Collision;
-								parts[i].vy *= elements[t].Collision;
-								goto movedone;
+							if (!movedone) {
+								{
+									auto swappage = dx;
+									dx = dy*r;
+									dy = -swappage*r;
+								}
+								if (do_move(i, x, y, clear_xf+dx, clear_yf+dy))
+								{
+									parts[i].vx *= elements[t].Collision;
+									parts[i].vy *= elements[t].Collision;
+									movedone = true;
+								}
 							}
 						}
-						if (elements[t].Falldown>1 && !grav && gravityMode==GRAV_VERTICAL && parts[i].vy>fabsf(parts[i].vx))
-						{
-							auto s = 0;
-							// stagnant is true if FLAG_STAGNANT was set for this particle in previous frame
-							int rt;
-							if (!stagnant || nt) //nt is if there is an something else besides the current particle type, around the particle
-								rt = 30;//slight less water lag, although it changes how it moves a lot
-							else
-								rt = 10;
-
-							if (t==PT_GEL)
-								rt = int(parts[i].tmp*0.20f+5.0f);
-
-							auto nx = -1, ny = -1;
-							for (auto j=clear_x+r; j>=0 && j>=clear_x-rt && j<clear_x+rt && j<XRES; j+=r)
+						if (!movedone) {
+							if (elements[t].Falldown>1 && !grav && gravityMode==GRAV_VERTICAL && parts[i].vy>fabsf(parts[i].vx))
 							{
-								if ((TYP(pmap[fin_y][j])!=t || bmap[fin_y/CELL][j/CELL])
-									&& (s=do_move(i, x, y, (float)j, fin_yf)))
-								{
-									nx = (int)(parts[i].x+0.5f);
-									ny = (int)(parts[i].y+0.5f);
-									break;
-								}
-								if (fin_y!=clear_y && (TYP(pmap[clear_y][j])!=t || bmap[clear_y/CELL][j/CELL])
-									&& (s=do_move(i, x, y, (float)j, clear_yf)))
-								{
-									nx = (int)(parts[i].x+0.5f);
-									ny = (int)(parts[i].y+0.5f);
-									break;
-								}
-								if (TYP(pmap[clear_y][j])!=t || (bmap[clear_y/CELL][j/CELL] && bmap[clear_y/CELL][j/CELL]!=WL_STREAM))
-									break;
-							}
-
-							r = (parts[i].vy>0) ? 1 : -1;
-
-							if (s==1)
-								for (auto j=ny+r; j>=0 && j<YRES && j>=ny-rt && j<ny+rt; j+=r)
-								{
-									if ((TYP(pmap[j][nx])!=t || bmap[j/CELL][nx/CELL]) && do_move(i, nx, ny, (float)nx, (float)j))
-										break;
-									if (TYP(pmap[j][nx])!=t || (bmap[j/CELL][nx/CELL] && bmap[j/CELL][nx/CELL]!=WL_STREAM))
-										break;
-								}
-							else if (s==-1) {} // particle is out of bounds
-							else if ((clear_x!=x||clear_y!=y) && do_move(i, x, y, clear_xf, clear_yf)) {}
-							else parts[i].flags |= FLAG_STAGNANT;
-							parts[i].vx *= elements[t].Collision;
-							parts[i].vy *= elements[t].Collision;
-						}
-						else if (elements[t].Falldown>1 && fabsf(pGravX*parts[i].vx+pGravY*parts[i].vy)>fabsf(pGravY*parts[i].vx-pGravX*parts[i].vy))
-						{
-							float nxf, nyf, prev_pGravX, prev_pGravY, ptGrav = elements[t].Gravity;
-							auto s = 0;
-							// stagnant is true if FLAG_STAGNANT was set for this particle in previous frame
-							// nt is if there is something else besides the current particle type around the particle
-							// 30 gives slightly less water lag, although it changes how it moves a lot
-							auto rt = (!stagnant || nt) ? 30 : 10;
-
-							// clear_xf, clear_yf is the last known position that the particle should almost certainly be able to move to
-							nxf = clear_xf;
-							nyf = clear_yf;
-							auto nx = clear_x;
-							auto ny = clear_y;
-							// Look for spaces to move horizontally (perpendicular to gravity direction), keep going until a space is found or the number of positions examined = rt
-							for (auto j=0;j<rt;j++)
-							{
-								// Calculate overall gravity direction
-								GetGravityField(nx, ny, ptGrav, 1.0f, pGravX, pGravY);
-								// Scale gravity vector so that the largest component is 1 pixel
-								auto mv = std::max(fabsf(pGravX), fabsf(pGravY));
-								if (mv<0.0001f) break;
-								pGravX /= mv;
-								pGravY /= mv;
-								// Move 1 pixel perpendicularly to gravity
-								// r is +1/-1, to try moving left or right at random
-								if (j)
-								{
-									// Not quite the gravity direction
-									// Gravity direction + last change in gravity direction
-									// This makes liquid movement a bit less frothy, particularly for balls of liquid in radial gravity. With radial gravity, instead of just moving along a tangent, the attempted movement will follow the curvature a bit better.
-									nxf += r*(pGravY*2.0f-prev_pGravY);
-									nyf += -r*(pGravX*2.0f-prev_pGravX);
-								}
+								auto s = 0;
+								// stagnant is true if FLAG_STAGNANT was set for this particle in previous frame
+								int rt;
+								if (!stagnant || nt) //nt is if there is an something else besides the current particle type, around the particle
+									rt = 30;//slight less water lag, although it changes how it moves a lot
 								else
+									rt = 10;
+
+								if (t==PT_GEL)
+									rt = int(parts[i].tmp*0.20f+5.0f);
+
+								auto nx = -1, ny = -1;
+								for (auto j=clear_x+r; j>=0 && j>=clear_x-rt && j<clear_x+rt && j<XRES; j+=r)
 								{
-									nxf += r*pGravY;
-									nyf += -r*pGravX;
-								}
-								prev_pGravX = pGravX;
-								prev_pGravY = pGravY;
-								// Check whether movement is allowed
-								nx = (int)(nxf+0.5f);
-								ny = (int)(nyf+0.5f);
-								if (nx<0 || ny<0 || nx>=XRES || ny >=YRES)
-									break;
-								if (TYP(pmap[ny][nx])!=t || bmap[ny/CELL][nx/CELL])
-								{
-									s = do_move(i, x, y, nxf, nyf);
-									if (s)
+									if ((TYP(pmap[fin_y][j])!=t || bmap[fin_y/CELL][j/CELL])
+										&& (s=do_move(i, x, y, (float)j, fin_yf)))
 									{
-										// Movement was successful
 										nx = (int)(parts[i].x+0.5f);
 										ny = (int)(parts[i].y+0.5f);
 										break;
 									}
-									// A particle of a different type, or a wall, was found. Stop trying to move any further horizontally unless the wall should be completely invisible to particles.
-									if (TYP(pmap[ny][nx])!=t || bmap[ny/CELL][nx/CELL]!=WL_STREAM)
+									if (fin_y!=clear_y && (TYP(pmap[clear_y][j])!=t || bmap[clear_y/CELL][j/CELL])
+										&& (s=do_move(i, x, y, (float)j, clear_yf)))
+									{
+										nx = (int)(parts[i].x+0.5f);
+										ny = (int)(parts[i].y+0.5f);
+										break;
+									}
+									if (TYP(pmap[clear_y][j])!=t || (bmap[clear_y/CELL][j/CELL] && bmap[clear_y/CELL][j/CELL]!=WL_STREAM))
 										break;
 								}
+
+								r = (parts[i].vy>0) ? 1 : -1;
+
+								if (s==1)
+									for (auto j=ny+r; j>=0 && j<YRES && j>=ny-rt && j<ny+rt; j+=r)
+									{
+										if ((TYP(pmap[j][nx])!=t || bmap[j/CELL][nx/CELL]) && do_move(i, nx, ny, (float)nx, (float)j))
+											break;
+										if (TYP(pmap[j][nx])!=t || (bmap[j/CELL][nx/CELL] && bmap[j/CELL][nx/CELL]!=WL_STREAM))
+											break;
+									}
+								else if (s==-1) {} // particle is out of bounds
+								else if ((clear_x!=x||clear_y!=y) && do_move(i, x, y, clear_xf, clear_yf)) {}
+								else parts[i].flags |= FLAG_STAGNANT;
+								parts[i].vx *= elements[t].Collision;
+								parts[i].vy *= elements[t].Collision;
 							}
-							if (s==1)
+							else if (elements[t].Falldown>1 && fabsf(pGravX*parts[i].vx+pGravY*parts[i].vy)>fabsf(pGravY*parts[i].vx-pGravX*parts[i].vy))
 							{
-								// The particle managed to move horizontally, now try to move vertically (parallel to gravity direction)
-								// Keep going until the particle is blocked (by something that isn't the same element) or the number of positions examined = rt
-								clear_x = nx;
-								clear_y = ny;
+								float nxf, nyf, prev_pGravX, prev_pGravY, ptGrav = elements[t].Gravity;
+								auto s = 0;
+								// stagnant is true if FLAG_STAGNANT was set for this particle in previous frame
+								// nt is if there is something else besides the current particle type around the particle
+								// 30 gives slightly less water lag, although it changes how it moves a lot
+								auto rt = (!stagnant || nt) ? 30 : 10;
+
+								// clear_xf, clear_yf is the last known position that the particle should almost certainly be able to move to
+								nxf = clear_xf;
+								nyf = clear_yf;
+								auto nx = clear_x;
+								auto ny = clear_y;
+								// Look for spaces to move horizontally (perpendicular to gravity direction), keep going until a space is found or the number of positions examined = rt
 								for (auto j=0;j<rt;j++)
 								{
 									// Calculate overall gravity direction
@@ -3304,41 +3267,92 @@ killed:
 									if (mv<0.0001f) break;
 									pGravX /= mv;
 									pGravY /= mv;
-									// Move 1 pixel in the direction of gravity
-									nxf += pGravX;
-									nyf += pGravY;
+									// Move 1 pixel perpendicularly to gravity
+									// r is +1/-1, to try moving left or right at random
+									if (j)
+									{
+										// Not quite the gravity direction
+										// Gravity direction + last change in gravity direction
+										// This makes liquid movement a bit less frothy, particularly for balls of liquid in radial gravity. With radial gravity, instead of just moving along a tangent, the attempted movement will follow the curvature a bit better.
+										nxf += r*(pGravY*2.0f-prev_pGravY);
+										nyf += -r*(pGravX*2.0f-prev_pGravX);
+									}
+									else
+									{
+										nxf += r*pGravY;
+										nyf += -r*pGravX;
+									}
+									prev_pGravX = pGravX;
+									prev_pGravY = pGravY;
+									// Check whether movement is allowed
 									nx = (int)(nxf+0.5f);
 									ny = (int)(nyf+0.5f);
-									if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
+									if (nx<0 || ny<0 || nx>=XRES || ny >=YRES)
 										break;
-									// If the space is anything except the same element (a wall, empty space, or occupied by a particle of a different element), try to move into it
 									if (TYP(pmap[ny][nx])!=t || bmap[ny/CELL][nx/CELL])
 									{
-										s = do_move(i, clear_x, clear_y, nxf, nyf);
-										if (s || TYP(pmap[ny][nx])!=t || bmap[ny/CELL][nx/CELL]!=WL_STREAM)
-											break; // found the edge of the liquid and movement into it succeeded, so stop moving down
+										s = do_move(i, x, y, nxf, nyf);
+										if (s)
+										{
+											// Movement was successful
+											nx = (int)(parts[i].x+0.5f);
+											ny = (int)(parts[i].y+0.5f);
+											break;
+										}
+										// A particle of a different type, or a wall, was found. Stop trying to move any further horizontally unless the wall should be completely invisible to particles.
+										if (TYP(pmap[ny][nx])!=t || bmap[ny/CELL][nx/CELL]!=WL_STREAM)
+											break;
 									}
 								}
+								if (s==1)
+								{
+									// The particle managed to move horizontally, now try to move vertically (parallel to gravity direction)
+									// Keep going until the particle is blocked (by something that isn't the same element) or the number of positions examined = rt
+									clear_x = nx;
+									clear_y = ny;
+									for (auto j=0;j<rt;j++)
+									{
+										// Calculate overall gravity direction
+										GetGravityField(nx, ny, ptGrav, 1.0f, pGravX, pGravY);
+										// Scale gravity vector so that the largest component is 1 pixel
+										auto mv = std::max(fabsf(pGravX), fabsf(pGravY));
+										if (mv<0.0001f) break;
+										pGravX /= mv;
+										pGravY /= mv;
+										// Move 1 pixel in the direction of gravity
+										nxf += pGravX;
+										nyf += pGravY;
+										nx = (int)(nxf+0.5f);
+										ny = (int)(nyf+0.5f);
+										if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
+											break;
+										// If the space is anything except the same element (a wall, empty space, or occupied by a particle of a different element), try to move into it
+										if (TYP(pmap[ny][nx])!=t || bmap[ny/CELL][nx/CELL])
+										{
+											s = do_move(i, clear_x, clear_y, nxf, nyf);
+											if (s || TYP(pmap[ny][nx])!=t || bmap[ny/CELL][nx/CELL]!=WL_STREAM)
+												break; // found the edge of the liquid and movement into it succeeded, so stop moving down
+										}
+									}
+								}
+								else if (s==-1) {} // particle is out of bounds
+								else if ((clear_x!=x||clear_y!=y) && do_move(i, x, y, clear_xf, clear_yf)) {} // try moving to the last clear position
+								else parts[i].flags |= FLAG_STAGNANT;
+								parts[i].vx *= elements[t].Collision;
+								parts[i].vy *= elements[t].Collision;
 							}
-							else if (s==-1) {} // particle is out of bounds
-							else if ((clear_x!=x||clear_y!=y) && do_move(i, x, y, clear_xf, clear_yf)) {} // try moving to the last clear position
-							else parts[i].flags |= FLAG_STAGNANT;
-							parts[i].vx *= elements[t].Collision;
-							parts[i].vy *= elements[t].Collision;
-						}
-						else
-						{
-							// if interpolation was done, try moving to last clear position
-							if ((clear_x!=x||clear_y!=y) && do_move(i, x, y, clear_xf, clear_yf)) {}
-							else parts[i].flags |= FLAG_STAGNANT;
-							parts[i].vx *= elements[t].Collision;
-							parts[i].vy *= elements[t].Collision;
+							else
+							{
+								// if interpolation was done, try moving to last clear position
+								if ((clear_x!=x||clear_y!=y) && do_move(i, x, y, clear_xf, clear_yf)) {}
+								else parts[i].flags |= FLAG_STAGNANT;
+								parts[i].vx *= elements[t].Collision;
+								parts[i].vy *= elements[t].Collision;
+							}
 						}
 					}
 				}
 			}
-movedone:
-			continue;
 		}
 	}
 
