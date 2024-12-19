@@ -27,6 +27,7 @@ enum Icon
 	IconClose,
 	IconEffect,
 	IconFire,
+	IconFireColor,
 	IconGlow,
 	IconBlur,
 	IconBlob,
