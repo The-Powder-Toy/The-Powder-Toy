@@ -69,5 +69,7 @@ public:
 	void SetPerfectCircle(bool perfectCircle);
 	bool GetMomentumScroll();
 	void SetMomentumScroll(bool momentumScroll);
+	bool GetRedirectStd();
+	void SetRedirectStd(bool newRedirectStd);
 	virtual ~OptionsModel();
 };

@@ -7,6 +7,7 @@
 #include "common/clipboard/Clipboard.h"
 #include "gui/interface/Engine.h"
 #include "gui/game/GameModel.h"
+#include "client/Client.h"
 
 OptionsModel::OptionsModel(GameModel * gModel_) {
 	gModel = gModel_;
@@ -335,6 +336,18 @@ void OptionsModel::SetMomentumScroll(bool state)
 {
 	GlobalPrefs::Ref().Set("MomentumScroll", state);
 	ui::Engine::Ref().MomentumScroll = state;
+	notifySettingsChanged();
+}
+
+bool OptionsModel::GetRedirectStd()
+{
+	return Client::Ref().GetRedirectStd();
+}
+
+void OptionsModel::SetRedirectStd(bool newRedirectStd)
+{
+	GlobalPrefs::Ref().Set("RedirectStd", newRedirectStd);
+	Client::Ref().SetRedirectStd(newRedirectStd);
 	notifySettingsChanged();
 }
 

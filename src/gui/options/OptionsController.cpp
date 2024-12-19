@@ -162,6 +162,11 @@ void OptionsController::SetMomentumScroll(bool momentumScroll)
 	model->SetMomentumScroll(momentumScroll);
 }
 
+void OptionsController::SetRedirectStd(bool newRedirectStd)
+{
+	model->SetRedirectStd(newRedirectStd);
+}
+
 void OptionsController::Exit()
 {
 	view->CloseActiveWindow();

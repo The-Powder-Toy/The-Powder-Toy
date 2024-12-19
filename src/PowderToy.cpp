@@ -379,7 +379,8 @@ int Main(int argc, char *argv[])
 		prefs.Set("Fullscreen", windowFrameOps.fullscreen);
 	}
 
-	if (true_arg(arguments["redirect"]))
+	auto redirectStd = prefs.Get("RedirectStd", false);
+	if (true_arg(arguments["redirect"]) || redirectStd)
 	{
 		FILE *new_stdout = freopen("stdout.log", "w", stdout);
 		FILE *new_stderr = freopen("stderr.log", "w", stderr);
@@ -428,6 +429,7 @@ int Main(int argc, char *argv[])
 
 	explicitSingletons->client = std::make_unique<Client>();
 	Client::Ref().Initialize();
+	Client::Ref().SetRedirectStd(redirectStd);
 
 	explicitSingletons->saveRenderer = std::make_unique<SaveRenderer>();
 	explicitSingletons->favorite = std::make_unique<Favorite>();

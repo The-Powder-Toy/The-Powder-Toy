@@ -33,6 +33,7 @@ private:
 	std::optional<UpdateInfo> updateInfo;
 
 	bool firstRun;
+	bool redirectStd = false;
 
 	std::vector<ByteString> stampIDs;
 	uint64_t lastStampTime = 0;
@@ -104,4 +105,14 @@ public:
 	void Tick();
 	
 	String DoMigration(ByteString fromDir, ByteString toDir);
+
+	bool GetRedirectStd()
+	{
+		return redirectStd;
+	}
+
+	void SetRedirectStd(bool newRedirectStd)
+	{
+		redirectStd = newRedirectStd;
+	}
 };

@@ -354,6 +354,9 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		}
 		currentY += 26;
 	}
+	redirectStd = addCheckbox(0, "Save errors and other messages to a file", "Developers may ask for this when trying to fix problems", [this] {
+		c->SetRedirectStd(redirectStd->GetChecked());
+	});
 
 	{
 		addSeparator();
@@ -511,6 +514,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	graveExitsConsole->SetChecked(sender->GetGraveExitsConsole());
 	threadedRendering->SetChecked(sender->GetThreadedRendering());
 	momentumScroll->SetChecked(sender->GetMomentumScroll());
+	redirectStd->SetChecked(sender->GetRedirectStd());
 }
 
 void OptionsView::AttachController(OptionsController * c_)

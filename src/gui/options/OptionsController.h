@@ -41,6 +41,7 @@ public:
 	void SetIncludePressure(bool includePressure);
 	void SetPerfectCircle(bool perfectCircle);
 	void SetMomentumScroll(bool momentumScroll);
+	void SetRedirectStd(bool newRedirectStd);
 	
 	void Exit();
 	OptionsView * GetView();
