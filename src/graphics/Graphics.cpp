@@ -380,6 +380,10 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		BlendChar({ x + 1, y + 1 }, 0xE01B, 0xFF0000_rgb .WithAlpha(alpha));
 		BlendChar({ x + 1, y + 1 }, 0xE01C, 0xFFFF40_rgb .WithAlpha(alpha));
 		break;
+	case IconFireColor:
+		BlendChar({ x + 1, y + 1 }, 0xE01B, 0x05E005_rgb .WithAlpha(alpha));
+		BlendChar({ x + 1, y + 1 }, 0xE01C, 0x0000FF_rgb .WithAlpha(alpha));
+		break;
 	case IconBlob:
 		if(invert)
 			BlendChar({ x + 1, y }, 0xE03F, 0x37B437_rgb .WithAlpha(alpha));
