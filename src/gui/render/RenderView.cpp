@@ -55,13 +55,14 @@ RenderView::RenderView():
 		} });
 		AddComponent(renderModeCheckbox);
 	};
-	addRenderModeCheckbox(RENDER_EFFE, IconEffect, ui::Point( 1,  4), "Adds Special flare effects to some elements");
-	addRenderModeCheckbox(RENDER_FIRE, IconFire  , ui::Point( 1, 22), "Fire effect for gasses");
-	addRenderModeCheckbox(RENDER_GLOW, IconGlow  , ui::Point(33,  4), "Glow effect on some elements");
-	addRenderModeCheckbox(RENDER_BLUR, IconBlur  , ui::Point(33, 22), "Blur effect for liquids");
-	addRenderModeCheckbox(RENDER_BLOB, IconBlob  , ui::Point(65,  4), "Makes everything be drawn like a blob");
-	addRenderModeCheckbox(RENDER_BASC, IconBasic , ui::Point(65, 22), "Basic rendering, without this, most things will be invisible");
-	addRenderModeCheckbox(RENDER_SPRK, IconEffect, ui::Point(97,  4), "Glow effect on sparks");
+	addRenderModeCheckbox(RENDER_EFFE, IconEffect   , ui::Point( 1,  4), "Adds Special flare effects to some elements");
+	addRenderModeCheckbox(RENDER_FIRE, IconFire     , ui::Point( 1, 22), "Fire effect for gasses");
+	addRenderModeCheckbox(RENDER_GLOW, IconGlow     , ui::Point(33,  4), "Glow effect on some elements");
+	addRenderModeCheckbox(RENDER_BLUR, IconBlur     , ui::Point(33, 22), "Blur effect for liquids");
+	addRenderModeCheckbox(RENDER_BLOB, IconBlob     , ui::Point(65,  4), "Makes everything be drawn like a blob");
+	addRenderModeCheckbox(RENDER_BASC, IconBasic    , ui::Point(65, 22), "Basic rendering, without this, most things will be invisible");
+	addRenderModeCheckbox(RENDER_SPRK, IconEffect   , ui::Point(97,  4), "Glow effect on sparks");
+	addRenderModeCheckbox(RENDER_CFIR, IconFireColor, ui::Point(97, 22), "Colorful fire");
 
 	auto addDisplayModeCheckbox = [this](unsigned int mode, Icon icon, ui::Point offset, String tooltip) {
 		auto *displayModeCheckbox = new ModeCheckbox(ui::Point(0, YRES) + offset, ui::Point(30, 16), "", tooltip);
