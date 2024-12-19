@@ -232,7 +232,8 @@ void Gravity::Exchange(GravityOutput &gravOut, GravityInput &gravIn, bool forceR
 	    std::memcmp(&fftGravity->gravIn.mask[{ 0, 0 }], &gravIn.mask[{ 0, 0 }], NCELL * sizeof(float)))
 	{
 		fftGravity->copyGravOut = true;
-		std::swap(gravIn, fftGravity->gravIn);
+		std::swap(gravIn.mass, fftGravity->gravIn.mass);
+		fftGravity->gravIn.mask = gravIn.mask;
 		fftGravity->Dispatch();
 	}
 }
