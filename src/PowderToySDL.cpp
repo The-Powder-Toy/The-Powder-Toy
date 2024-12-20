@@ -27,9 +27,46 @@ bool mouseDown = false;
 bool calculatedInitialMouse = false;
 bool hasMouseMoved = false;
 double correctedFrameTimeAvg = 0;
-uint64_t drawingTimer = 0;
-uint64_t frameStart = 0;
-uint64_t oldFrameStart = 0;
+
+class FrameSchedule
+{
+	uint64_t startNs = 0;
+	uint64_t oldStartNs = 0;
+
+public:
+	void SetNow(uint64_t nowNs)
+	{
+		oldStartNs = startNs;
+		startNs = nowNs;
+	}
+
+	uint64_t GetNow() const
+	{
+		return startNs;
+	}
+
+	uint64_t GetFrameTime() const
+	{
+		return startNs - oldStartNs;
+	}
+
+	uint64_t Arm(float fps)
+	{
+		auto oldNowNs = startNs;
+		auto timeBlockDurationNs = uint64_t(UINT64_C(1'000'000'000) / fps);
+		auto oldStartTimeBlock = oldStartNs / timeBlockDurationNs;
+		auto startTimeBlock = oldStartTimeBlock + 1U;
+		startNs = std::max(startNs, startTimeBlock * timeBlockDurationNs);
+		return startNs - oldNowNs;
+	}
+
+	bool HasElapsed(uint64_t nowNs) const
+	{
+		return nowNs >= startNs;
+	}
+};
+static FrameSchedule tickSchedule;
+static FrameSchedule drawSchedule;
 
 void StartTextInput()
 {
@@ -396,17 +433,16 @@ static void EventProcess(const SDL_Event &event)
 void EngineProcess()
 {
 	auto &engine = ui::Engine::Ref();
-	auto correctedFrameTime = frameStart - oldFrameStart;
-	drawingTimer += correctedFrameTime;
+	auto correctedFrameTime = tickSchedule.GetFrameTime();
 	correctedFrameTimeAvg = correctedFrameTimeAvg + (correctedFrameTime - correctedFrameTimeAvg) * 0.05;
-	if (correctedFrameTime && frameStart - lastFpsUpdate > UINT64_C(200'000'000))
+	if (correctedFrameTime && tickSchedule.GetNow() - lastFpsUpdate > UINT64_C(200'000'000))
 	{
 		engine.SetFps(1e9f / correctedFrameTimeAvg);
-		lastFpsUpdate = frameStart;
+		lastFpsUpdate = tickSchedule.GetNow();
 	}
-	if (frameStart - lastTick > UINT64_C(100'000'000))
+	if (tickSchedule.GetNow() - lastTick > UINT64_C(100'000'000))
 	{
-		lastTick = frameStart;
+		lastTick = tickSchedule.GetNow();
 		TickClient();
 	}
 	if (showLargeScreenDialog)
@@ -423,24 +459,28 @@ void EngineProcess()
 
 	engine.Tick();
 
-	auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
-	int drawcap = ui::Engine::Ref().GetDrawingFrequencyLimit();
-	if (!drawcap || drawingTimer > 1e9f / drawcap)
 	{
-		engine.Draw();
-		drawingTimer = 0;
-		SDLSetScreen();
-		blit(engine.g->Data());
+		int drawcap = ui::Engine::Ref().GetDrawingFrequencyLimit();
+		auto nowNs = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
+		if (!drawcap || drawSchedule.HasElapsed(nowNs))
+		{
+			engine.Draw();
+			drawSchedule.SetNow(nowNs);
+			if (drawcap)
+			{
+				drawSchedule.Arm(float(drawcap));
+			}
+			SDLSetScreen();
+			blit(engine.g->Data());
+		}
 	}
-	auto now = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
-	oldFrameStart = frameStart;
-	frameStart = now;
-	if (auto *fpsLimitExplicit = std::get_if<FpsLimitExplicit>(&fpsLimit))
 	{
-		auto timeBlockDuration = uint64_t(UINT64_C(1'000'000'000) / fpsLimitExplicit->value);
-		auto oldFrameStartTimeBlock = oldFrameStart / timeBlockDuration;
-		auto frameStartTimeBlock = oldFrameStartTimeBlock + 1U;
-		frameStart = std::max(frameStart, frameStartTimeBlock * timeBlockDuration);
-		SDL_Delay((frameStart - now) / UINT64_C(1'000'000));
+		auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
+		auto nowNs = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
+		tickSchedule.SetNow(nowNs);
+		if (auto *fpsLimitExplicit = std::get_if<FpsLimitExplicit>(&fpsLimit))
+		{
+			SDL_Delay(tickSchedule.Arm(fpsLimitExplicit->value) / UINT64_C(1'000'000));
+		}
 	}
 }
