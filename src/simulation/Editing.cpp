@@ -25,7 +25,7 @@ std::unique_ptr<Snapshot> Simulation::CreateSnapshot() const
 	snap->BlockAirH      .insert   (snap->BlockAirH      .begin(), &air->bmap_blockairh[0][0], &air->bmap_blockairh[0][0] + NCELL);
 	snap->FanVelocityX   .insert   (snap->FanVelocityX   .begin(), &fvx [0][0]      , &fvx [0][0] + NCELL);
 	snap->FanVelocityY   .insert   (snap->FanVelocityY   .begin(), &fvy [0][0]      , &fvy [0][0] + NCELL);
-	snap->Particles      .insert   (snap->Particles      .begin(), &parts  [0]      , &parts  [0] + parts_lastActiveIndex + 1);
+	snap->Particles      .insert   (snap->Particles      .begin(), &parts  [0]      , &parts  [0] + parts.lastActiveIndex + 1);
 	snap->PortalParticles.insert   (snap->PortalParticles.begin(), &portalp[0][0][0], &portalp[0][0][0] + CHANNELS * 8 * 80);
 	snap->WirelessData   .insert   (snap->WirelessData   .begin(), &wireless[0][0]  , &wireless[0][0] + CHANNELS * 2);
 	snap->stickmen       .insert   (snap->stickmen       .begin(), &fighters[0]     , &fighters[0] + MAX_FIGHTERS);
@@ -45,7 +45,7 @@ void Simulation::Restore(const Snapshot &snap)
 	std::fill(elementCount, elementCount + PT_NUM, 0);
 	elementRecount = true;
 	force_stacking_check = true;
-	for (auto &part : parts)
+	for (auto &part : parts.data)
 	{
 		part.type = 0;
 	}
@@ -78,7 +78,7 @@ void Simulation::Restore(const Snapshot &snap)
 	signs = snap.signs;
 	frameCount = snap.FrameCount;
 	rng.state(snap.RngState);
-	parts_lastActiveIndex = NPART - 1;
+	parts.lastActiveIndex = NPART - 1;
 	RecalcFreeParticles(false);
 }
 
@@ -90,7 +90,7 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 	area_w = intersection.size.X;
 	area_h = intersection.size.Y;
 	float fx = area_x-.5f, fy = area_y-.5f;
-	for (int i = 0; i <= parts_lastActiveIndex; i++)
+	for (int i = 0; i <= parts.lastActiveIndex; i++)
 	{
 		if (parts[i].type)
 			if (parts[i].x >= fx && parts[i].x <= fx+area_w+1 && parts[i].y >= fy && parts[i].y <= fy+area_h+1)

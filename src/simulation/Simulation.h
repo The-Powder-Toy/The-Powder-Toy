@@ -34,6 +34,30 @@ class Renderer;
 class Air;
 class GameSave;
 
+struct Parts
+{
+	std::array<Particle, NPART> data;
+	// initialized in clear_sim
+	int lastActiveIndex;
+
+	operator const Particle *() const
+	{
+		return data.data();
+	}
+
+	operator Particle *()
+	{
+		return data.data();
+	}
+
+	Parts &operator =(const Parts &other)
+	{
+		std::copy(other.data.begin(), other.data.begin() + lastActiveIndex + 1, data.begin());
+		lastActiveIndex = other.lastActiveIndex;
+		return *this;
+	}
+};
+
 struct RenderableSimulation
 {
 	GravityInput gravIn;
@@ -56,14 +80,11 @@ struct RenderableSimulation
 	unsigned char bmap[YCELLS][XCELLS];
 	unsigned char emap[YCELLS][XCELLS];
 
-	Particle parts[NPART];
+	Parts parts;
 	int pmap[YRES][XRES];
 	int photons[YRES][XRES];
 
 	int aheat_enable = 0;
-
-	// initialized in clear_sim
-	int parts_lastActiveIndex;
 
 	bool useLuaCallbacks = false;
 };

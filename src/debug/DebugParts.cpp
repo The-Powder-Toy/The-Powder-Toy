@@ -18,7 +18,7 @@ void DebugParts::Draw()
 	Graphics * g = ui::Engine::Ref().g;
 
 	int x = 0, y = 0, lpx = 0, lpy = 0;
-	String info = String::Build(sim->parts_lastActiveIndex, "/", NPART, " (", Format::Precision((float)sim->parts_lastActiveIndex/(NPART)*100.0f, 2), "%)");
+	String info = String::Build(sim->parts.lastActiveIndex, "/", NPART, " (", Format::Precision((float)sim->parts.lastActiveIndex/(NPART)*100.0f, 2), "%)");
 	for (int i = 0; i < NPART; i++)
 	{
 		if (sim->parts[i].type)
@@ -26,7 +26,7 @@ void DebugParts::Draw()
 		else
 			g->AddPixel({ x, y }, 0x000000_rgb .WithAlpha(180));
 
-		if (i == sim->parts_lastActiveIndex)
+		if (i == sim->parts.lastActiveIndex)
 		{
 			lpx = x;
 			lpy = y;

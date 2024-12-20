@@ -249,7 +249,7 @@ void Renderer::render_parts()
 	int orbd[4] = {0, 0, 0, 0}, orbl[4] = {0, 0, 0, 0};
 	int drawing_budget = 1000000; //Serves as an upper bound for costly effects such as SPARK, FLARE and LFLARE
 
-	auto *parts = sim->parts;
+	auto &parts = sim->parts;
 	if (gridSize)//draws the grid
 	{
 		for (ny=0; ny<YRES; ny++)
@@ -262,7 +262,7 @@ void Renderer::render_parts()
 			}
 	}
 	foundParticles = 0;
-	for(i = 0; i<=sim->parts_lastActiveIndex; i++) {
+	for(i = 0; i<=sim->parts.lastActiveIndex; i++) {
 		if (sim->parts[i].type && sim->parts[i].type >= 0 && sim->parts[i].type < PT_NUM) {
 			t = sim->parts[i].type;
 
@@ -801,7 +801,7 @@ void Renderer::render_parts()
 							type = PT_PRTO;
 						else if (type == PT_PRTO)
 							type = PT_PRTI;
-						for (int z = 0; z <= sim->parts_lastActiveIndex; z++)
+						for (int z = 0; z <= sim->parts.lastActiveIndex; z++)
 						{
 							if (parts[z].type == type)
 							{

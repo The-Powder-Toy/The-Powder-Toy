@@ -39,7 +39,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 	};
 	std::vector<ExistingParticle> existingParticles;
 	auto pasteArea = RES.OriginRect() & RectSized(partP, save->blockSize * CELL);
-	for (int i = 0; i <= parts_lastActiveIndex; i++)
+	for (int i = 0; i <= parts.lastActiveIndex; i++)
 	{
 		if (parts[i].type)
 		{
@@ -132,8 +132,8 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 		auto i = pfree;
 		pfree = parts[i].life;
 		NUM_PARTS += 1;
-		if (i > parts_lastActiveIndex)
-			parts_lastActiveIndex = i;
+		if (i > parts.lastActiveIndex)
+			parts.lastActiveIndex = i;
 		parts[i] = tempPart;
 		elementCount[tempPart.type]++;
 
@@ -219,7 +219,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 			parts[i].tmp3 = 0;
 		}
 	}
-	parts_lastActiveIndex = NPART-1;
+	parts.lastActiveIndex = NPART-1;
 	force_stacking_check = true;
 	Element_PPIP_ppip_changed = 1;
 
@@ -992,7 +992,7 @@ void Simulation::clear_sim(void)
 	parts[NPART-1].life = -1;
 	pfree = 0;
 	NUM_PARTS = 0;
-	parts_lastActiveIndex = 0;
+	parts.lastActiveIndex = 0;
 	memset(pmap, 0, sizeof(pmap));
 	memset(fvx, 0, sizeof(fvx));
 	memset(fvy, 0, sizeof(fvy));
@@ -1890,7 +1890,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		i = p;
 	}
 
-	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
+	if (i>parts.lastActiveIndex) parts.lastActiveIndex = i;
 
 	parts[i] = elements[t].DefaultProperties;
 	parts[i].type = t;
@@ -1993,7 +1993,7 @@ void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLO
 
 	pfree = parts[i].life;
 	NUM_PARTS += 1;
-	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
+	if (i>parts.lastActiveIndex) parts.lastActiveIndex = i;
 
 	parts[i].type = PT_PHOT;
 	parts[i].life = 680;
@@ -2032,7 +2032,7 @@ void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going throug
 
 	pfree = parts[i].life;
 	NUM_PARTS += 1;
-	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
+	if (i>parts.lastActiveIndex) parts.lastActiveIndex = i;
 
 	lr = rng.between(0, 1);
 
@@ -2210,7 +2210,7 @@ void Simulation::UpdateParticles(int start, int end)
 	//the main particle loop function, goes over all particles.
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
-	for (auto i = start; i < end && i <= parts_lastActiveIndex; i++)
+	for (auto i = start; i < end && i <= parts.lastActiveIndex; i++)
 	{
 		if (parts[i].type)
 		{
@@ -3363,7 +3363,7 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
 	//the particle loop that resets the pmap/photon maps every frame, to update them.
-	for (int i = 0; i <= parts_lastActiveIndex; i++)
+	for (int i = 0; i <= parts.lastActiveIndex; i++)
 	{
 		if (parts[i].type)
 		{
@@ -3431,13 +3431,13 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 	}
 	if (lastPartUnused == -1)
 	{
-		pfree = (parts_lastActiveIndex>=(NPART-1)) ? -1 : parts_lastActiveIndex+1;
+		pfree = (parts.lastActiveIndex>=(NPART-1)) ? -1 : parts.lastActiveIndex+1;
 	}
 	else
 	{
-		parts[lastPartUnused].life = (parts_lastActiveIndex>=(NPART-1)) ? -1 : parts_lastActiveIndex+1;
+		parts[lastPartUnused].life = (parts.lastActiveIndex>=(NPART-1)) ? -1 : parts.lastActiveIndex+1;
 	}
-	parts_lastActiveIndex = lastPartUsed;
+	parts.lastActiveIndex = lastPartUsed;
 	if (elementRecount)
 		elementRecount = false;
 }
@@ -3446,7 +3446,7 @@ void Simulation::SimulateGoL()
 {
 	auto &builtinGol = SimulationData::builtinGol;
 	CGOL = 0;
-	for (int i = 0; i <= parts_lastActiveIndex; ++i)
+	for (int i = 0; i <= parts.lastActiveIndex; ++i)
 	{
 		auto &part = parts[i];
 		if (part.type != PT_LIFE)
@@ -3652,7 +3652,7 @@ void Simulation::CheckStacking()
 	}
 	if (excessive_stacking_found)
 	{
-		for (int i = 0; i <= parts_lastActiveIndex; i++)
+		for (int i = 0; i <= parts.lastActiveIndex; i++)
 		{
 			if (parts[i].type)
 			{
@@ -3877,7 +3877,7 @@ void Simulation::BeforeSim()
 		// update PPIP tmp?
 		if (Element_PPIP_ppip_changed)
 		{
-			for (int i = 0; i <= parts_lastActiveIndex; i++)
+			for (int i = 0; i <= parts.lastActiveIndex; i++)
 			{
 				if (parts[i].type==PT_PPIP)
 				{
