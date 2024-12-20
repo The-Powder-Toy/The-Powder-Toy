@@ -32,7 +32,7 @@ void Element::Element_DEUT()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Deuterium oxide. Volume changes with temp, radioactive with neutrons.";
+	Description = "Deuterium oxide. Gets more concentrated when cold, explodes with neutrons or protons.";
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 
