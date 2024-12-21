@@ -144,6 +144,21 @@ void blit(pixel *vid)
 	SDL_RenderPresent(sdl_renderer);
 }
 
+void UpdateRefreshRate()
+{
+	std::optional<int> refreshRate;
+	int displayIndex = SDL_GetWindowDisplayIndex(sdl_window);
+	if (displayIndex >= 0)
+	{
+		SDL_DisplayMode displayMode;
+		if (!SDL_GetCurrentDisplayMode(displayIndex, &displayMode) && displayMode.refresh_rate)
+		{
+			refreshRate = displayMode.refresh_rate;
+		}
+	}
+	ui::Engine::Ref().SetRefreshRate(refreshRate);
+}
+
 void SDLOpen()
 {
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
@@ -156,7 +171,6 @@ void SDLOpen()
 	SDLSetScreen();
 
 	int displayIndex = SDL_GetWindowDisplayIndex(sdl_window);
-	std::optional<int> refreshRate;
 	if (displayIndex >= 0)
 	{
 		SDL_Rect rect;
@@ -165,13 +179,8 @@ void SDLOpen()
 			desktopWidth = rect.w;
 			desktopHeight = rect.h;
 		}
-		SDL_DisplayMode displayMode;
-		if (!SDL_GetCurrentDisplayMode(displayIndex, &displayMode) && displayMode.refresh_rate)
-		{
-			refreshRate = displayMode.refresh_rate;
-		}
 	}
-	ui::Engine::Ref().SetRefreshRate(refreshRate);
+	UpdateRefreshRate();
 
 	StopTextInput();
 }
@@ -430,6 +439,10 @@ static void EventProcess(const SDL_Event &event)
 				engine.onMouseMove(mousex, mousey);
 				calculatedInitialMouse = true;
 			}
+			break;
+
+		case SDL_WINDOWEVENT_DISPLAY_CHANGED:
+			UpdateRefreshRate();
 			break;
 		}
 		break;
