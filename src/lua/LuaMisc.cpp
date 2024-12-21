@@ -239,13 +239,35 @@ static int drawCap(lua_State *L)
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
-		lua_pushinteger(L, ui::Engine::Ref().GetDrawingFrequencyLimit());
+		auto drawLimit = ui::Engine::Ref().GetDrawingFrequencyLimit();
+		if (std::holds_alternative<DrawLimitDisplay>(drawLimit))
+		{
+			lua_pushliteral(L, "display");
+		}
+		else if (std::holds_alternative<DrawLimitNone>(drawLimit))
+		{
+			lua_pushinteger(L, 0);
+		}
+		else
+		{
+			lua_pushinteger(L, std::get<DrawLimitExplicit>(drawLimit).value);
+		}
 		return 1;
 	}
-	int drawcap = luaL_checkint(L, 1);
+	if (lua_isstring(L, 1) && byteStringEqualsLiteral(tpt_lua_toByteString(L, 1), "display"))
+	{
+		ui::Engine::Ref().SetDrawingFrequencyLimit(DrawLimitDisplay{});
+		return 0;
+	}
+	int drawcap = luaL_checkinteger(L, 1);
 	if(drawcap < 0)
 		return luaL_error(L, "draw cap too small");
-	ui::Engine::Ref().SetDrawingFrequencyLimit(drawcap);
+	if (drawcap == 0)
+	{
+		ui::Engine::Ref().SetDrawingFrequencyLimit(DrawLimitNone{});
+		return 0;
+	}
+	ui::Engine::Ref().SetDrawingFrequencyLimit(DrawLimitExplicit{ drawcap });
 	return 0;
 }
 

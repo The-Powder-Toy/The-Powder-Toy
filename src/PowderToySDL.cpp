@@ -156,6 +156,7 @@ void SDLOpen()
 	SDLSetScreen();
 
 	int displayIndex = SDL_GetWindowDisplayIndex(sdl_window);
+	std::optional<int> refreshRate;
 	if (displayIndex >= 0)
 	{
 		SDL_Rect rect;
@@ -164,7 +165,13 @@ void SDLOpen()
 			desktopWidth = rect.w;
 			desktopHeight = rect.h;
 		}
+		SDL_DisplayMode displayMode;
+		if (!SDL_GetCurrentDisplayMode(displayIndex, &displayMode) && displayMode.refresh_rate)
+		{
+			refreshRate = displayMode.refresh_rate;
+		}
 	}
+	ui::Engine::Ref().SetRefreshRate(refreshRate);
 
 	StopTextInput();
 }
@@ -460,15 +467,24 @@ void EngineProcess()
 	engine.Tick();
 
 	{
-		int drawcap = ui::Engine::Ref().GetDrawingFrequencyLimit();
+		auto drawLimit = ui::Engine::Ref().GetDrawingFrequencyLimit();
 		auto nowNs = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
-		if (!drawcap || drawSchedule.HasElapsed(nowNs))
+		std::optional<int> effectiveDrawLimit;
+		if (auto *drawLimitExplicit = std::get_if<DrawLimitExplicit>(&drawLimit))
+		{
+			effectiveDrawLimit = drawLimitExplicit->value;
+		}
+		if (std::get_if<DrawLimitDisplay>(&drawLimit))
+		{
+			effectiveDrawLimit = engine.GetRefreshRate();
+		}
+		if (!effectiveDrawLimit || drawSchedule.HasElapsed(nowNs))
 		{
 			engine.Draw();
 			drawSchedule.SetNow(nowNs);
-			if (drawcap)
+			if (effectiveDrawLimit)
 			{
-				drawSchedule.Arm(float(drawcap));
+				drawSchedule.Arm(float(*effectiveDrawLimit));
 			}
 			SDLSetScreen();
 			blit(engine.g->Data());

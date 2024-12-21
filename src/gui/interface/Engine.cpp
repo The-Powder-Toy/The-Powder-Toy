@@ -11,7 +11,7 @@
 using namespace ui;
 
 Engine::Engine():
-	drawingFrequencyLimit(0),
+	drawingFrequencyLimit(DrawLimitDisplay{}),
 	FrameIndex(0),
 	state_(nullptr),
 	windowTargetPosition(0, 0),

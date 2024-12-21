@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <optional>
 #include <stack>
 #include "common/String.h"
 #include "common/ExplicitSingleton.h"
@@ -47,8 +48,8 @@ namespace ui
 		void Exit();
 		void ConfirmExit();
 
-		void SetDrawingFrequencyLimit(int limit) {drawingFrequencyLimit = limit;}
-		inline int GetDrawingFrequencyLimit() {return drawingFrequencyLimit;}
+		void SetDrawingFrequencyLimit(DrawLimit limit) {drawingFrequencyLimit = limit;}
+		inline DrawLimit GetDrawingFrequencyLimit() {return drawingFrequencyLimit;}
 		void SetFastQuit(bool fastquit) { FastQuit = fastquit; }
 		inline bool GetFastQuit() {return FastQuit; }
 		void SetGlobalQuit(bool newGlobalQuit) { GlobalQuit = newGlobalQuit; }
@@ -78,7 +79,7 @@ namespace ui
 			return fpsLimit;
 		}
 
-		int drawingFrequencyLimit;
+		DrawLimit drawingFrequencyLimit;
 		Graphics * g;
 		bool GraveExitsConsole;
 
@@ -99,6 +100,7 @@ namespace ui
 		Window* state_;
 		Point windowTargetPosition;
 		bool ignoreEvents = false;
+		std::optional<int> refreshRate;
 
 		// saved appearances of windows that are in the backround and
 		// thus are not currently being redrawn
@@ -141,5 +143,15 @@ namespace ui
 		bool GetForceIntegerScaling() const { return windowFrameOps.forceIntegerScaling; }
 		bool GetResizable          () const { return windowFrameOps.resizable;           }
 		bool GetBlurryScaling      () const { return windowFrameOps.blurryScaling;       }
+
+		std::optional<int> GetRefreshRate() const
+		{
+			return refreshRate;
+		}
+
+		void SetRefreshRate(std::optional<int> newRefreshRate)
+		{
+			refreshRate = newRefreshRate;
+		}
 	};
 }
