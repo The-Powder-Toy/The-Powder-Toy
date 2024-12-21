@@ -370,3 +370,18 @@ void Engine::TextInputRect(Point position, Point size)
 {
 	::SetTextInputRect(position.X, position.Y, size.X, size.Y);
 }
+
+std::optional<int> Engine::GetEffectiveDrawCap() const
+{
+	auto drawLimit = GetDrawingFrequencyLimit();
+	std::optional<int> effectiveDrawCap;
+	if (auto *drawLimitExplicit = std::get_if<DrawLimitExplicit>(&drawLimit))
+	{
+		effectiveDrawCap = drawLimitExplicit->value;
+	}
+	if (std::get_if<DrawLimitDisplay>(&drawLimit))
+	{
+		effectiveDrawCap = GetRefreshRate();
+	}
+	return effectiveDrawCap;
+}

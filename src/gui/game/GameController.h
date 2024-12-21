@@ -18,6 +18,8 @@ constexpr auto DEBUG_ELEMENTPOP = 0x0002;
 constexpr auto DEBUG_LINES      = 0x0004;
 constexpr auto DEBUG_PARTICLE   = 0x0008;
 constexpr auto DEBUG_SURFNORM   = 0x0010;
+constexpr auto DEBUG_SIMHUD     = 0x0020;
+constexpr auto DEBUG_RENHUD     = 0x0040;
 
 class DebugInfo;
 class SaveFile;
@@ -200,6 +202,7 @@ public:
 	void NotifyNewNotification(Client * sender, ServerNotification notification) override;
 	void RunUpdater(UpdateInfo info);
 	bool GetMouseClickRequired();
+	bool GetThreadedRendering();
 
 	void RemoveCustomGol(const ByteString &identifier);
 

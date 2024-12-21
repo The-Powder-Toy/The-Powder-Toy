@@ -2528,11 +2528,71 @@ void GameView::OnDraw()
 			fpsInfo << " [GRID: " << rendererSettings->gridSize << "]";
 		if (rendererSettings->findingElement)
 			fpsInfo << " [FIND]";
-		if (showDebug)
+		if (c->GetDebugFlags() & DEBUG_SIMHUD)
 		{
-			if (threadedRenderingAllowed)
+			fpsInfo << "\nSimulation";
+			fpsInfo << "\n  FPS cap: ";
+			auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
+			if (std::holds_alternative<FpsLimitVsync>(fpsLimit))
 			{
-				fpsInfo << " [SRT]";
+				fpsInfo << "vsync";
+			}
+			else if (std::holds_alternative<FpsLimitNone>(fpsLimit))
+			{
+				fpsInfo << "none";
+			}
+			else
+			{
+				fpsInfo << std::get<FpsLimitExplicit>(fpsLimit).value;
+			}
+		}
+		if (c->GetDebugFlags() & DEBUG_RENHUD)
+		{
+			fpsInfo << "\nRendering";
+			fpsInfo << "\n  Draw cap: ";
+			auto drawLimit = ui::Engine::Ref().GetDrawingFrequencyLimit();
+			if (std::holds_alternative<DrawLimitDisplay>(drawLimit))
+			{
+				fpsInfo << "display";
+			}
+			else if (std::holds_alternative<DrawLimitNone>(drawLimit))
+			{
+				fpsInfo << "none";
+			}
+			else
+			{
+				fpsInfo << std::get<DrawLimitExplicit>(drawLimit).value;
+			}
+			fpsInfo << ", effective: ";
+			if (auto drawCap = ui::Engine::Ref().GetEffectiveDrawCap())
+			{
+				fpsInfo << *drawCap;
+			}
+			else
+			{
+				fpsInfo << "none";
+			}
+			fpsInfo << "\n  SRT: ";
+			if (!c->GetThreadedRendering())
+			{
+				fpsInfo << "disabled";
+			}
+			else if (threadedRenderingAllowed)
+			{
+				fpsInfo << "enabled";
+			}
+			else
+			{
+				fpsInfo << "hindered";
+			}
+			fpsInfo << "\n  Refresh rate: ";
+			if (auto refreshRate = ui::Engine::Ref().GetRefreshRate())
+			{
+				fpsInfo << *refreshRate;
+			}
+			else
+			{
+				fpsInfo << "unknown";
 			}
 		}
 

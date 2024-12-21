@@ -49,7 +49,8 @@ namespace ui
 		void ConfirmExit();
 
 		void SetDrawingFrequencyLimit(DrawLimit limit) {drawingFrequencyLimit = limit;}
-		inline DrawLimit GetDrawingFrequencyLimit() {return drawingFrequencyLimit;}
+		inline DrawLimit GetDrawingFrequencyLimit() const {return drawingFrequencyLimit;}
+		std::optional<int> GetEffectiveDrawCap() const;
 		void SetFastQuit(bool fastquit) { FastQuit = fastquit; }
 		inline bool GetFastQuit() {return FastQuit; }
 		void SetGlobalQuit(bool newGlobalQuit) { GlobalQuit = newGlobalQuit; }

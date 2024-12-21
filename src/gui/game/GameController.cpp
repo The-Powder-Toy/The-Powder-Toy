@@ -1701,6 +1701,11 @@ bool GameController::GetMouseClickRequired()
 	return gameModel->GetMouseClickRequired();
 }
 
+bool GameController::GetThreadedRendering()
+{
+	return gameModel->GetThreadedRendering();
+}
+
 void GameController::RemoveCustomGol(const ByteString &identifier)
 {
 	gameModel->RemoveCustomGol(identifier);
