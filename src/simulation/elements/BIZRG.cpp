@@ -31,7 +31,7 @@ void Element::Element_BIZRG()
 	HeatConduct = 42;
 	Description = "Bizarre gas.";
 
-	Properties = TYPE_GAS;
+	Properties = TYPE_GAS | PROP_SPECTRUM;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
