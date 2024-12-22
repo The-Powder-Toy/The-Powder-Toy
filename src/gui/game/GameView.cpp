@@ -2338,8 +2338,11 @@ void GameView::OnDraw()
 		if (type)
 		{
 			int ctype = sample.particle.ctype;
-
-			if (type == PT_PHOT || type == PT_BIZR || type == PT_BIZRG || type == PT_BIZRS || type == PT_FILT || type == PT_BRAY || type == PT_C5)
+			
+			//if (type == PT_PHOT || type == PT_BIZR || type == PT_BIZRG || type == PT_BIZRS || type == PT_FILT || type == PT_BRAY || type == PT_C5)
+			auto &sd = SimulationData::CRef();
+			auto &elements = sd.elements;
+			if (elements[type].Properties&PROP_SPECTRUM)
 				wavelengthGfx = (ctype&0x3FFFFFFF);
 
 			if (showDebug)
