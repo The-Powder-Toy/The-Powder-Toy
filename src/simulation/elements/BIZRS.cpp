@@ -31,7 +31,7 @@ void Element::Element_BIZRS()
 	HeatConduct = 251;
 	Description = "Bizarre solid.";
 
-	Properties = TYPE_SOLID;
+	Properties = TYPE_SOLID | PROP_SPECTRUM;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
