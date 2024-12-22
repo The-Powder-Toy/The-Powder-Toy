@@ -30,7 +30,7 @@ void Element::Element_BIZR()
 	HeatConduct = 29;
 	Description = "Bizarre... contradicts the normal state changes. Paints other elements with its deco color.";
 
-	Properties = TYPE_LIQUID;
+	Properties = TYPE_LIQUID | PROP_SPECTRUM;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
