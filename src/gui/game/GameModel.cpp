@@ -107,7 +107,7 @@ GameModel::GameModel(GameView *newView):
 
 	rendererSettings.gravityFieldEnabled = prefs.Get("Renderer.GravityField", false);
 	rendererSettings.decorationLevel = prefs.Get("Renderer.Decorations", true) ? RendererSettings::decorationEnabled : RendererSettings::decorationDisabled;
-	threadedRendering = prefs.Get("Renderer.SeparateThread", false);
+	threadedRendering = prefs.Get("Renderer.SeparateThread", true);
 
 	//Load config into simulation
 	edgeMode = prefs.Get("Simulation.EdgeMode", NUM_EDGEMODES, EDGE_VOID);
