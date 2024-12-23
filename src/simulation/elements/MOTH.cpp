@@ -104,7 +104,14 @@ int Element_MOTH_update(UPDATE_FUNC_ARGS)
 
                 found = true;
 				break;
-            }
+            } else if (r && TYP(r) == PT_GAS)
+			{
+				sim->parts[i].vx = ((dx < 0) ? parts[i].vx+0.5f : parts[i].vx-0.5f);
+				sim->parts[i].vy = ((dy < 0) ? parts[i].vy+0.5f : parts[i].vy-0.5f);
+				found = true;
+				break;
+			}
+			
         }
     }
 	for (auto rx = -1; rx <= 1; rx++)
