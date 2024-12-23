@@ -36,10 +36,10 @@ void Element::Element_MEGG()
 	LowPressureTransition = NT;
 	HighPressure = IPH;
 	HighPressureTransition = NT;
-	LowTemperature = ITL;
-	LowTemperatureTransition = NT;
-	HighTemperature = ITH;
-	HighTemperatureTransition = NT;
+	LowTemperature = 288.15f;
+	LowTemperatureTransition = PT_DUST;
+	HighTemperature = 318.15f;
+	HighTemperatureTransition = PT_DUST;
 
 	Graphics = &Element_MEGG_graphics;
 	Update = &Element_MEGG_update;
