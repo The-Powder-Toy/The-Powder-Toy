@@ -82,8 +82,8 @@ static int update(UPDATE_FUNC_ARGS)
 						sim->create_part(i,x,y,PT_FIRE);
 						parts[i].temp += sim->rng.between(0, 99);
 						parts[i].tmp |= 1;
-						parts[ID(r)].dcolour = 0x00a0b0;
-						parts[i].dcolour = 0x00a0b0;
+						parts[ID(r)].dcolour = 0xFFFF5F4F;
+						parts[i].dcolour = 0xFFFF5F4F;
 						return 1;
 					}
 					else if ((rt==PT_PLSM && !(parts[ID(r)].tmp&4)) || (rt==PT_LAVA && parts[ID(r)].ctype != PT_BMTL))
@@ -91,7 +91,7 @@ static int update(UPDATE_FUNC_ARGS)
 						sim->create_part(i,x,y,PT_FIRE);
 						parts[i].temp += sim->rng.between(0, 99);
 						parts[i].tmp |= 1;
-						parts[i].dcolour = 0x00a050;
+						parts[i].dcolour = 0xFFFF5FAF;
 						return 1;
 					}
 				}

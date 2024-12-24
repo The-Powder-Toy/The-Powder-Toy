@@ -277,21 +277,19 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 						sim->pv[y/CELL][x/CELL] += 0.25f * CFDS;
 					parts[ID(r)].dcolour = 0;
 					if (rt == PT_NITR)
-						parts[ID(r)].dcolour = 0xffa000;
+						parts[ID(r)].dcolour = 0xFF005FFF;
 					if (rt == PT_COAL || rt == PT_BCOL)
-						parts[ID(r)].dcolour = 0x005050;
+						parts[ID(r)].dcolour = 0xFFFFAFAF;
 					if (rt == PT_DUST || rt == PT_WOOD)
-						parts[ID(r)].dcolour = 0x000070;
+						parts[ID(r)].dcolour = 0xFFFFFF8F;
 					if (rt == PT_ACID)
-						parts[ID(r)].dcolour = 0x00a000;
+						parts[ID(r)].dcolour = 0xFFFF5FFF;
 					if (rt == PT_OIL || rt == PT_GAS)
-						parts[ID(r)].dcolour = 0xc0c0ff;
+						parts[ID(r)].dcolour = 0xFF3F3F00;
 					if (rt == PT_INSL)
-						parts[ID(r)].dcolour = 0x500050;
-					if (rt == PT_RBDM || rt == PT_LRBD) {
-						parts[ID(r)].dcolour = 0x505080;
-						parts[ID(r)].tmp2 |= 1;
-					}
+						parts[ID(r)].dcolour = 0xFFAFFFAF;
+					if (rt == PT_RBDM || rt == PT_LRBD)
+						parts[ID(r)].dcolour = 0xFFAFAF7F;
 					// Assign the current part color to be 2/3 of the new one, and 1/3 of the old one
 					// could probably be refactored using `RGB`
 					parts[ID(r)].dcolour = 
@@ -412,13 +410,15 @@ static int updateLegacy(UPDATE_FUNC_ARGS)
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	if (gfctx.ren->renderMode & FIRE_COLOR) {
-		RGB color = (cpart->tmp2&1) ? Renderer::flameAchromaTableAt(cpart->life) : Renderer::flameTableAt(cpart->life);
-		RGB c = RGB::Unpack(cpart->dcolour & 0xFFFFFF);
+		RGB color = Renderer::flameTableAt(cpart->life);
+		RGBA c = RGBA::Unpack(cpart->dcolour) * Renderer::flameAchromaTableAt(cpart->life).WithAlpha(255);
+
+		RGB ptcolor = color.Blend(c);
 
 		*firea = 255;
-		*firer = *colr = color.Red*(255-c.Red)/255;
-		*fireg = *colg = color.Green*(255-c.Green)/255;
-		*fireb = *colb = color.Blue*(255-c.Blue)/255;
+		*firer = *colr = ptcolor.Red;
+		*fireg = *colg = ptcolor.Green;
+		*fireb = *colb = ptcolor.Blue;
 	}
 	else {
 		RGB color = Renderer::flameTableAt(cpart->life);
