@@ -34,7 +34,7 @@ void Element::Element_LIGH()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Lightning. Change the brush size to set the size of the lightning.";
+	Description = "Lightning. Increase your brush size to make a bigger and more destructive bolt.";
 
 	Properties = TYPE_SOLID;
 
