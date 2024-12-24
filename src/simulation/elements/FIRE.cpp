@@ -409,7 +409,7 @@ static int updateLegacy(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	if (gfctx.ren->renderMode & FIRE_COLOR) {
+	if (gfctx.ren->renderMode & PMODE_FIRCLR) {
 		RGB color = Renderer::flameTableAt(cpart->life);
 		RGBA c = RGBA::Unpack(cpart->dcolour) * Renderer::flameAchromaTableAt(cpart->life).WithAlpha(255);
 
