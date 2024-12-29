@@ -2397,20 +2397,20 @@ void Simulation::UpdateParticles(int start, int end)
 
 						if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
 						{
-							c_heat += parts[ID(r)].temp; // double count the particle
+							c_heat += parts[ID(r)].temp; // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
 						}
 
 						h_count++;
 
 						if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
 						{
-							h_count++; // double count the particle
+							h_count++; // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
 						}
 					}
 					float pt = R_TEMP;
 
 					if ((t == PT_PIPE || t == PT_PPIP) && parts[i].ctype != 0)
-						pt = (c_heat+parts[i].temp*2.0f)/(h_count+2); // double count the current particle
+						pt = (c_heat+parts[i].temp*2.0f)/(h_count+2); // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
 					else
 						pt = (c_heat+parts[i].temp)/(h_count+1);
 

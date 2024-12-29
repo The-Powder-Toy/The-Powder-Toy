@@ -27,7 +27,7 @@ void Element::Element_PPIP()
 
 	Weight = 100;
 
-	DefaultProperties.temp = 273.15f;
+	DefaultProperties.temp = 295.15f;
 	HeatConduct = 251;
 	Description = "Powered version of PIPE, use PSCN/NSCN to Activate/Deactivate.";
 
