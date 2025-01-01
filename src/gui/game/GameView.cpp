@@ -2143,10 +2143,13 @@ void GameView::RenderSimulation(const RenderableSimulation &sim, bool handleEven
 		std::unique_lock lk(sd.elementGraphicsMx);
 		ren->RenderSimulation();
 	}
-	if (handleEvents)
-	{
-		c->AfterSimDraw();
-	}
+	ren->sim = nullptr;
+}
+
+void GameView::AfterSimDraw(const RenderableSimulation &sim)
+{
+	ren->sim = &sim;
+	c->AfterSimDraw();
 	ren->sim = nullptr;
 }
 
@@ -2159,6 +2162,7 @@ void GameView::OnDraw()
 	{
 		StartRendererThread();
 		WaitForRendererThread();
+		AfterSimDraw(*sim);
 		foundParticles = ren->GetFoundParticles();
 		*rendererThreadResult = ren->GetVideo();
 		rendererFrame = rendererThreadResult.get();
@@ -2169,6 +2173,7 @@ void GameView::OnDraw()
 		PauseRendererThread();
 		ren->ApplySettings(*rendererSettings);
 		RenderSimulation(*sim, true);
+		AfterSimDraw(*sim);
 		foundParticles = ren->GetFoundParticles();
 		rendererFrame = &ren->GetVideo();
 	}

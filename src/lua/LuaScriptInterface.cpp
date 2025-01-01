@@ -428,7 +428,7 @@ bool CommandInterface::HandleEvent(const GameControllerEvent &event)
 template<size_t Index>
 std::enable_if_t<Index != std::variant_size_v<GameControllerEvent>, bool> HaveSimGraphicsEventHandlersHelper(lua_State *L, std::vector<LuaSmartRef> &gameControllerEventHandlers)
 {
-	if (std::variant_alternative_t<Index, GameControllerEvent>::traits & eventTraitSimGraphics)
+	if (std::variant_alternative_t<Index, GameControllerEvent>::traits & eventTraitHindersSrt)
 	{
 		gameControllerEventHandlers[Index].Push(L);
 		auto have = lua_objlen(L, -1) > 0;

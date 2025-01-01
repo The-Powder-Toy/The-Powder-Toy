@@ -195,6 +195,7 @@ void RenderView::OnDraw()
 	view->PauseRendererThread();
 	ren->ApplySettings(*rendererSettings);
 	view->RenderSimulation(*sim, true);
+	view->AfterSimDraw(*sim);
 	for (auto y = 0; y < YRES; ++y)
 	{
 		auto &video = ren->GetVideo();

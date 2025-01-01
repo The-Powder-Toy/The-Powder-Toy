@@ -275,4 +275,5 @@ public:
 	void PauseRendererThread();
 
 	void RenderSimulation(const RenderableSimulation &sim, bool handleEvents);
+	void AfterSimDraw(const RenderableSimulation &sim);
 };
