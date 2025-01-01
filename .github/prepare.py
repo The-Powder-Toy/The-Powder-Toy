@@ -61,19 +61,22 @@ if int(build_options['mod_id']) == 0 and os.path.exists('.github/mod_id.txt'):
 	with open('.github/mod_id.txt') as f:
 		build_options['mod_id'] = f.read()
 
+steam_builds = False
 if int(build_options['mod_id']) == 0:
 	if release_type == 'stable':
-		pass
+		steam_builds = True
 	elif release_type == 'beta':
 		build_options['app_name'   ] += ' Beta'
 		build_options['app_comment'] += ' - Beta'
 		build_options['app_exe'    ] += 'beta'
 		build_options['app_id'     ] += 'beta'
+		steam_builds = True
 	elif release_type == 'snapshot':
 		build_options['app_name'   ] += ' Snapshot'
 		build_options['app_comment'] += ' - Snapshot'
 		build_options['app_exe'    ] += 'snapshot'
 		build_options['app_id'     ] += 'snapshot'
+		steam_builds = True
 	else:
 		build_options['app_name'   ] += ' Dev'
 		build_options['app_comment'] += ' - Dev'
@@ -167,6 +170,8 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 		starcatcher = 'BOGUS'
 	job_release_name = release_name
 	if mode == 'steam':
+		if not steam_builds:
+			continue
 		job_release_name += '+steam'
 		job_name += '+steam'
 	artifact = False
