@@ -1929,6 +1929,79 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	return i;
 }
 
+void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLOW
+{
+	if (MaxPartsReached())
+	{
+		return;
+	}
+	auto lr = 2 * rng.between(0, 1) - 1; // -1 or 1
+	auto xx = parts[pp].x - lr * 0.3f * parts[pp].vy;
+	auto yy = parts[pp].y + lr * 0.3f * parts[pp].vx;
+	auto nx = int(xx + 0.5f);
+	auto ny = int(yy + 0.5f);
+	if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
+	{
+		return;
+	}
+	auto g = pmap[ny][nx];
+	if (TYP(g) != PT_GLOW)
+	{
+		return;
+	}
+	auto oldTemp = parts[ID(g)].temp;
+	auto i = create_part(-3, nx, ny, PT_PHOT);
+	if (i == -1)
+	{
+		return;
+	}
+	parts[i].x = xx;
+	parts[i].y = yy;
+	parts[i].vx = parts[pp].vx;
+	parts[i].vy = parts[pp].vy;
+	parts[i].temp = oldTemp;
+	auto temp_bin = int((parts[i].temp - 273.0f) * 0.25f);
+	if (temp_bin < 0) temp_bin = 0;
+	if (temp_bin > 25) temp_bin = 25;
+	parts[i].ctype = 0x1F << temp_bin;
+}
+
+void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going through GLAS
+{
+	if (MaxPartsReached())
+	{
+		return;
+	}
+	auto nx = int(parts[pp].x + 0.5f);
+	auto ny = int(parts[pp].y + 0.5f);
+	auto g = pmap[ny][nx];
+	if (TYP(g) != PT_GLAS && TYP(g) != PT_BGLA)
+	{
+		return;
+	}
+	if (std::hypot(parts[pp].vx, parts[pp].vy) < 1.44f)
+	{
+		return;
+	}
+	auto oldTemp = parts[ID(g)].temp;
+	auto i = create_part(-3, nx, ny, PT_PHOT);
+	if (i == -1)
+	{
+		return;
+	}
+	auto lr = 2 * rng.between(0, 1) - 1; // -1 or 1
+	parts[i].ctype = 0x00000F80;
+	parts[i].x = parts[pp].x;
+	parts[i].y = parts[pp].y;
+	parts[i].temp = oldTemp;
+	parts[i].vx = parts[pp].vx - lr * 2.5f * parts[pp].vy;
+	parts[i].vy = parts[pp].vy + lr * 2.5f * parts[pp].vx;
+	/* photons have speed of light. no discussion. */
+	auto r = 1.269f / std::hypot(parts[i].vx, parts[i].vy);
+	parts[i].vx *= r;
+	parts[i].vy *= r;
+}
+
 void Simulation::GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY)
 {
 	switch (gravityMode)
@@ -1966,99 +2039,6 @@ void Simulation::GetGravityField(int x, int y, float particleGrav, float newtonG
 		pGravX += newtonGrav * gravOut.forceX[Vec2{ x, y } / CELL];
 		pGravY += newtonGrav * gravOut.forceY[Vec2{ x, y } / CELL];
 	}
-}
-
-void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLOW
-{
-	float xx, yy;
-	int i, lr, temp_bin, nx, ny;
-
-	if (pfree == -1)
-		return;
-	i = pfree;
-
-	lr = 2*rng.between(0, 1) - 1; // -1 or 1
-
-	xx = parts[pp].x - lr*0.3*parts[pp].vy;
-	yy = parts[pp].y + lr*0.3*parts[pp].vx;
-
-	nx = (int)(xx + 0.5f);
-	ny = (int)(yy + 0.5f);
-
-	if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
-		return;
-
-	if (TYP(pmap[ny][nx]) != PT_GLOW)
-		return;
-
-	pfree = parts[i].life;
-	NUM_PARTS += 1;
-	if (i>parts.lastActiveIndex) parts.lastActiveIndex = i;
-
-	parts[i].type = PT_PHOT;
-	parts[i].life = 680;
-	parts[i].x = xx;
-	parts[i].y = yy;
-	parts[i].vx = parts[pp].vx;
-	parts[i].vy = parts[pp].vy;
-	parts[i].temp = parts[ID(pmap[ny][nx])].temp;
-	parts[i].tmp = 0;
-	parts[i].tmp3 = 0;
-	parts[i].tmp4 = 0;
-	photons[ny][nx] = PMAP(i, PT_PHOT);
-
-	temp_bin = (int)((parts[i].temp-273.0f)*0.25f);
-	if (temp_bin < 0) temp_bin = 0;
-	if (temp_bin > 25) temp_bin = 25;
-	parts[i].ctype = 0x1F << temp_bin;
-}
-
-void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going through GLAS
-{
-	int i, lr, nx, ny;
-	float r;
-
-	if (pfree == -1)
-		return;
-	i = pfree;
-
-	nx = (int)(parts[pp].x + 0.5f);
-	ny = (int)(parts[pp].y + 0.5f);
-	if (TYP(pmap[ny][nx]) != PT_GLAS && TYP(pmap[ny][nx]) != PT_BGLA)
-		return;
-
-	if (hypotf(parts[pp].vx, parts[pp].vy) < 1.44f)
-		return;
-
-	pfree = parts[i].life;
-	NUM_PARTS += 1;
-	if (i>parts.lastActiveIndex) parts.lastActiveIndex = i;
-
-	lr = rng.between(0, 1);
-
-	parts[i].type = PT_PHOT;
-	parts[i].ctype = 0x00000F80;
-	parts[i].life = 680;
-	parts[i].x = parts[pp].x;
-	parts[i].y = parts[pp].y;
-	parts[i].temp = parts[ID(pmap[ny][nx])].temp;
-	parts[i].tmp = 0;
-	parts[i].tmp3 = 0;
-	parts[i].tmp4 = 0;
-	photons[ny][nx] = PMAP(i, PT_PHOT);
-
-	if (lr) {
-		parts[i].vx = parts[pp].vx - 2.5f*parts[pp].vy;
-		parts[i].vy = parts[pp].vy + 2.5f*parts[pp].vx;
-	} else {
-		parts[i].vx = parts[pp].vx + 2.5f*parts[pp].vy;
-		parts[i].vy = parts[pp].vy - 2.5f*parts[pp].vx;
-	}
-
-	/* photons have speed of light. no discussion. */
-	r = 1.269 / hypotf(parts[i].vx, parts[i].vy);
-	parts[i].vx *= r;
-	parts[i].vy *= r;
 }
 
 void Simulation::delete_part(int x, int y)//calls kill_part with the particle located at x,y
