@@ -106,6 +106,15 @@ struct alignas(alignof(uint32_t)) RGBA
 	{
 	}
 
+	constexpr RGBA operator*(const RGBA other) {
+		return RGBA(
+			((int)this->Red * (int)other.Red) / 255,
+			((int)this->Green * (int)other.Green) / 255,
+			((int)this->Blue * (int)other.Blue) / 255,
+			((int)this->Alpha * (int)other.Alpha) / 255
+		);
+	}
+
 	template<typename S> // Disallow brace initialization
 	RGBA(std::initializer_list<S>) = delete;
 

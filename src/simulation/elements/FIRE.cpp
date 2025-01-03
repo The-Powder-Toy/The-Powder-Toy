@@ -275,6 +275,50 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 					parts[ID(r)].tmp = parts[ID(r)].ctype = 0;
 					if (elements[rt].Explosive)
 						sim->pv[y/CELL][x/CELL] += 0.25f * CFDS;
+					parts[ID(r)].dcolour = 0;
+					if (rt == PT_NITR)
+						parts[ID(r)].dcolour = 0xFF005FFF;
+					if (rt == PT_COAL || rt == PT_BCOL)
+						parts[ID(r)].dcolour = 0xFFFFAFAF;
+					if (rt == PT_DUST || rt == PT_WOOD)
+						parts[ID(r)].dcolour = 0xFFFFFF8F;
+					if (rt == PT_ACID)
+						parts[ID(r)].dcolour = 0xFFFF5FFF;
+					if (rt == PT_OIL || rt == PT_GAS)
+						parts[ID(r)].dcolour = 0xFF3F3F00;
+					if (rt == PT_INSL)
+						parts[ID(r)].dcolour = 0xFFAFFFAF;
+					if (rt == PT_RBDM || rt == PT_LRBD)
+						parts[ID(r)].dcolour = 0xFFAFAF7F;
+					// Assign the current part color to be 2/3 of the new one, and 1/3 of the old one
+					// could probably be refactored using `RGB`
+					parts[ID(r)].dcolour = 
+						(
+							(
+								(
+									( (parts[i].dcolour&0xFF000000)>>24 ) + ( (parts[ID(r)].dcolour&0xFF000000)>>24 )*2
+								) /3
+							)<<24
+						) | (
+							(
+								(
+									( (parts[i].dcolour&0x00FF0000)>>16 ) + ( (parts[ID(r)].dcolour&0x00FF0000)>>16 )*2
+								) /3
+							)<<16
+						) | (
+							(
+								(
+									( (parts[i].dcolour&0x0000FF00)>>8 ) + ( (parts[ID(r)].dcolour&0x0000FF00)>>8)*2
+								) /3 
+							)<<8
+						) | (
+							(
+								( 
+									( (parts[i].dcolour&0x000000FF) ) + ( parts[ID(t)].dcolour&0x000000FF )*2
+								) /3
+							)<<0
+						)
+					;
 				}
 			}
 		}
@@ -365,18 +409,29 @@ static int updateLegacy(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	RGB color = Renderer::flameTableAt(cpart->life);
-	*colr = color.Red;
-	*colg = color.Green;
-	*colb = color.Blue;
+	if (gfctx.ren->renderMode & PMODE_FIRCLR) {
+		RGB color = Renderer::flameTableAt(cpart->life);
+		RGBA c = RGBA::Unpack(cpart->dcolour) * Renderer::flameAchromaTableAt(cpart->life).WithAlpha(255);
 
-	*firea = 255;
-	*firer = *colr;
-	*fireg = *colg;
-	*fireb = *colb;
+		RGB ptcolor = color.Blend(c);
+
+		*firea = 255;
+		*firer = *colr = ptcolor.Red;
+		*fireg = *colg = ptcolor.Green;
+		*fireb = *colb = ptcolor.Blue;
+	}
+	else {
+		RGB color = Renderer::flameTableAt(cpart->life);
+
+		*firea = 255;
+		*firer = *colr = color.Red;
+		*fireg = *colg = color.Green;
+		*fireb = *colb = color.Blue;
+	}
 
 	*pixel_mode = PMODE_NONE; //Clear default, don't draw pixel
 	*pixel_mode |= FIRE_ADD;
+
 	//Returning 0 means dynamic, do not cache
 	return 0;
 }
