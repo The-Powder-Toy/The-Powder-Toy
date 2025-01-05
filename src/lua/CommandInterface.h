@@ -57,6 +57,7 @@ public:
 	ValueType testType(String word);
 
 	void SetToolIndex(ByteString identifier, std::optional<int> index);
+	void RemoveComponents();
 
 	static CommandInterfacePtr Create(GameController *newGameController, GameModel *newGameModel);
 };

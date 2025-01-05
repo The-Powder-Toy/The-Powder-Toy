@@ -218,6 +218,18 @@ void CommandInterface::SetToolIndex(ByteString identifier, std::optional<int> in
 	LuaTools::SetToolIndex(lsi->L, identifier, index);
 }
 
+void CommandInterface::RemoveComponents()
+{
+	auto *lsi = static_cast<LuaScriptInterface *>(this);
+	for (auto &[ component, ref ] : lsi->grabbedComponents)
+	{
+		lsi->window->RemoveComponent(component->GetComponent());
+		ref.Clear();
+		component->owner_ref = ref;
+		component->SetParentWindow(nullptr);
+	}
+}
+
 void LuaGetProperty(lua_State *L, StructProperty property, intptr_t propertyAddress)
 {
 	switch (property.Type)
@@ -731,16 +743,7 @@ String CommandInterface::FormatCommand(String command)
 		return highlight(command);
 }
 
-LuaScriptInterface::~LuaScriptInterface()
-{
-	for (auto &[ component, ref ] : grabbedComponents)
-	{
-		window->RemoveComponent(component->GetComponent());
-		ref.Clear();
-		component->owner_ref = ref;
-		component->SetParentWindow(nullptr);
-	}
-}
+LuaScriptInterface::~LuaScriptInterface() = default;
 
 void tpt_lua_pushByteString(lua_State *L, const ByteString &str)
 {
