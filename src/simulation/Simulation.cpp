@@ -127,15 +127,16 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 		removeExistingParticles({ x, y });
 
 		// Allocate particle (this location is guaranteed to be empty due to "full scan" logic above)
-		if (pfree == -1)
+		auto i = create_part(-3, x, y, tempPart.type);
+		if (i == -1)
+		{
 			break;
-		auto i = pfree;
-		pfree = parts[i].life;
-		NUM_PARTS += 1;
+		}
 		if (i > parts.lastActiveIndex)
+		{
 			parts.lastActiveIndex = i;
+		}
 		parts[i] = tempPart;
-		elementCount[tempPart.type]++;
 
 
 		switch (parts[i].type)
@@ -977,6 +978,13 @@ int Simulation::parts_avg(int ci, int ni,int t)
 
 void Simulation::clear_sim(void)
 {
+	for (auto i = 0; i <= parts.lastActiveIndex; i++)
+	{
+		if (parts[i].type)
+		{
+			kill_part(i);
+		}
+	}
 	ensureDeterminism = false;
 	frameCount = 0;
 	debug_nextToUpdate = 0;
