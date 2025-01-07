@@ -1,0 +1,6 @@
+[wrap-file]
+directory = tpt-libs-prebuilt-x86_64-linux-gnu-static-release-v20250105212929
+
+source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20250105212929/tpt-libs-prebuilt-x86_64-linux-gnu-static-release-v20250105212929.zip
+source_filename = tpt-libs-prebuilt-x86_64-linux-gnu-static-release-v20250105212929.zip
+source_hash = 03ef01d387321590617431aba5cf4c070450faca43bd714f3d0e3ec270ace176
