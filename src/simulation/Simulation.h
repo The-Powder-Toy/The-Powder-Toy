@@ -52,7 +52,7 @@ struct Parts
 
 	Parts &operator =(const Parts &other)
 	{
-		std::copy(other.data.begin(), other.data.begin() + lastActiveIndex + 1, data.begin());
+		std::copy(other.data.begin(), other.data.begin() + other.lastActiveIndex + 1, data.begin());
 		lastActiveIndex = other.lastActiveIndex;
 		return *this;
 	}
