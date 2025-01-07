@@ -130,7 +130,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 		auto i = create_part(-3, x, y, tempPart.type);
 		if (i == -1)
 		{
-			break;
+			continue;
 		}
 		if (i > parts.lastActiveIndex)
 		{
