@@ -1812,7 +1812,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	if (x<0 || y<0 || x>=XRES || y>=YRES || t<=0 || t>=PT_NUM || !elements[t].Enabled)
 		return -1;
 
-	if (t == PT_SPRK && !(p == -2 && elements[TYP(pmap[y][x])].CtypeDraw))
+	if (t == PT_SPRK && p != -3 && !(p == -2 && elements[TYP(pmap[y][x])].CtypeDraw))
 	{
 		int type = TYP(pmap[y][x]);
 		int index = ID(pmap[y][x]);
