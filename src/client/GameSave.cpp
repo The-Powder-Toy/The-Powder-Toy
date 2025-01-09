@@ -52,6 +52,24 @@ GameSave::GameSave(const std::vector<char> &data, bool newWantAuthors)
 
 void GameSave::MapPalette()
 {
+	// - the palette is always right
+	//   - there are palettes with missing entries but there are no palettes with incorrect entries
+	//   - for every (identifier, number) pair in the palette
+	//     - if the identifier is recognized, map the number to the appropriate element
+	//     - if not, map it to 0
+	//       - complain about the identifier if the corresponding number is actually used
+	// - to handle every number not covered by the palette
+	//   - in the case of any 98.0+ save, the palette is comprehensive
+	//     - except for the few cases already handled below
+	//       - e.g RSSS et al not having CarriesTypeIn set properly until 98.2
+	//       - can handle mistakes like this with similar extra code later
+	//     - map any number seen used to 0 and complain about the number
+	//   - in the case of any pre-98.0 save, the palette may not be comprehensive
+	//     - do the legacy identity mapping
+	//       - this is not perfect because it lets numbers slip that are clearly invalid
+	//       - TODO: maybe identity-map only ranges of numbers that are known to have existed
+	//         at the point in time in vanilla when the save was made, based on this->version
+
 	int partMap[PT_NUM];
 	bool ignoreMissingErrors[PT_NUM];
 	for(int i = 0; i < PT_NUM; i++)
@@ -91,11 +109,8 @@ void GameSave::MapPalette()
 						myId = i;
 					}
 				}
-				if (myId)
-				{
-					partMap[pi.second] = myId;
-				}
-				else
+				partMap[pi.second] = myId;
+				if (!myId)
 				{
 					missingElementIdentifiers.insert(pi);
 				}
