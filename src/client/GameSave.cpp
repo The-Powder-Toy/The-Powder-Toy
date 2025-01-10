@@ -65,18 +65,16 @@ void GameSave::MapPalette()
 	//       - can handle mistakes like this with similar extra code later
 	//     - map any number seen used to 0 and complain about the number
 	//   - in the case of any pre-98.0 save, the palette may not be comprehensive
-	//     - do the legacy identity mapping
-	//       - this is not perfect because it lets numbers slip that are clearly invalid
-	//       - TODO: maybe identity-map only ranges of numbers that are known to have existed
+	//     - in the case of saves from 78.1 and newer
+	//       - identity-map only ranges of numbers that are known to have existed
 	//         at the point in time in vanilla when the save was made, based on this->version
+	//       - this is still not perfect because it lets numbers slip that a mod freed up a
+	//         vanilla element from and reused for one of its own elements, but that's fine
+	//     - in the case of saves older than that
+	//       - pretend that they are 78.1 in terms of validity of element numbers, this is good enough
 
-	int partMap[PT_NUM];
-	bool ignoreMissingErrors[PT_NUM];
-	for(int i = 0; i < PT_NUM; i++)
-	{
-		partMap[i] = i;
-		ignoreMissingErrors[i] = false;
-	}
+	std::vector<int> partMap(PT_NUM, 0);
+	std::vector<bool> ignoreMissingErrors(PT_NUM, false);
 	if (version <= Version(98, 2))
 	{
 		ignoreMissingErrors[PT_ICEI] = true;
@@ -88,32 +86,68 @@ void GameSave::MapPalette()
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
 	std::map<ByteString, int> missingElementIdentifiers;
-	if(palette.size())
+	if (version < Version(98, 0))
 	{
-		if (version >= Version(98, 0))
+		struct CoarsePaletteInfo
 		{
-			for(int i = 0; i < PT_NUM; i++)
+			Version<2> firstVersion; // the first version to which this entry applies
+			int maxValid;            // almost all element numbers in the range [1, maxValid] are valid, but see golHoleFirst
+			int golHoleFirst;        // the element numbers in the range [golHoleFirst, golHoleLast] are not valid
+			int golHoleLast;
+		};
+		static const std::vector<CoarsePaletteInfo> cpi = {
+			// must be sorted by firstVersion
+			{ Version(78, 1), 160, 144, 146 }, // 147 isn't allocated in this version but other elements
+			                                   // in certain states are loaded as 147, so leave it alone
+			{ Version(79, 0), 160, 145, 146 }, // similarly
+			{ Version(80, 0), 160, 146, 146 }, // similarly
+			{ Version(80, 5), 160, 146, 146 },
+			{ Version(81, 7), 161, 146, 146 },
+			{ Version(83, 0), 162, 146, 146 },
+			{ Version(83, 4), 163, 146, 146 },
+			{ Version(84, 0), 166, 146, 146 },
+			{ Version(86, 0), 169, 146, 146 },
+			{ Version(87, 1), 172, 146, 146 },
+			{ Version(89, 0), 176, 146, 146 },
+			{ Version(90, 0), 178, 146, 146 },
+			{ Version(91, 0), 179, 146, 146 },
+			{ Version(92, 0), 185, 146, 146 },
+			{ Version(94, 0), 186, 146, 146 },
+			{ Version(96, 0), 191, 146, 146 },
+		};
+		auto found = cpi[0]; // pretend everything is at least from the first version in the list
+		for (auto &info : std::span(cpi.begin() + 1, cpi.end()))
+		{
+			if (info.firstVersion <= version)
 			{
-				partMap[i] = 0;
+				found = info;
 			}
 		}
-		for(auto &pi : palette)
+		for (int i = 1; i < found.maxValid; i++)
 		{
-			if (pi.second > 0 && pi.second < PT_NUM)
+			if (i >= found.golHoleFirst && i <= found.golHoleLast)
 			{
-				int myId = 0;
-				for (int i = 0; i < PT_NUM; i++)
+				continue;
+			}
+			partMap[i] = i;
+		}
+	}
+	for (auto &pi : palette)
+	{
+		if (pi.second > 0 && pi.second < PT_NUM)
+		{
+			int myId = 0;
+			for (int i = 0; i < PT_NUM; i++)
+			{
+				if (elements[i].Enabled && elements[i].Identifier == pi.first)
 				{
-					if (elements[i].Enabled && elements[i].Identifier == pi.first)
-					{
-						myId = i;
-					}
+					myId = i;
 				}
-				partMap[pi.second] = myId;
-				if (!myId)
-				{
-					missingElementIdentifiers.insert(pi);
-				}
+			}
+			partMap[pi.second] = myId;
+			if (!myId)
+			{
+				missingElementIdentifiers.insert(pi);
 			}
 		}
 	}
