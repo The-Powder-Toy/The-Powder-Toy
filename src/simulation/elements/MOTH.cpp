@@ -169,7 +169,7 @@ int Element_MOTH_update(UPDATE_FUNC_ARGS)
 	}
 	if (parts[i].life > 800 && parts[i].tmp3 == 0){
 		sim->create_part(-1, x, y+1, PT_MEGG);
-		sim->parts[i].life = 400;
+		sim->parts[i].life -= 400;
 		sim->parts[i].tmp3 = 400;
 	}
 	sim->parts[i].tmp3 = parts[i].tmp3-1;
