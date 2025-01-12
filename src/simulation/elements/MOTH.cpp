@@ -57,7 +57,7 @@ int Element_MOTH_graphics(GRAPHICS_FUNC_ARGS)
 }
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
-	sim->parts[i].tmp  = 0;
+	sim->parts[i].tmp = 0;
 	sim->parts[i].tmp2 = sim->rng.between(0, 10);
 	sim->parts[i].tmp3 = 0;
 	sim->parts[i].tmp4 = 0;
@@ -71,7 +71,9 @@ int Element_MOTH_update(UPDATE_FUNC_ARGS)
 	if (r && (elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID)))
 	{
 		sim->parts[i].tmp4 += 1;
-	} else {
+	}
+	else
+	{
 		sim->parts[i].tmp4 -= 3;
 		if (parts[i].tmp4 < 0)
 		{
@@ -87,15 +89,15 @@ int Element_MOTH_update(UPDATE_FUNC_ARGS)
 	}
 	bool found = false;
 	for (int dx = -moth_search_radius; dx <= moth_search_radius && !found; dx++)
-    {
-        for (int dy = -moth_search_radius; dy <= moth_search_radius; dy++)
-        {
-            int nx = x + dx * SDmultiplier;
-            int ny = y + dy * SDmultiplier;
+	{
+		for (int dy = -moth_search_radius; dy <= moth_search_radius; dy++)
+		{
+			int nx = x + dx * SDmultiplier;
+			int ny = y + dy * SDmultiplier;
 
-            if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES) continue;
+			if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES) continue;
 
-            int r = sim->pmap[ny][nx];
+			int r = sim->pmap[ny][nx];
 			if (parts[i].tmp4 >= 4)
 			{
 				if (ID(r) == 0)
@@ -104,22 +106,23 @@ int Element_MOTH_update(UPDATE_FUNC_ARGS)
 
 					sim->parts[i].vy = ((dy < 0) ? parts[i].vy - 1.0f : parts[i].vy + 1.0f);
 
-        	        found = true;
+					found = true;
 					break;
 				}
 			}
 			else
 			{
-        	    if (r && (TYP(r) == PT_FIRE || TYP(r) == PT_PHOT || TYP(r) == PT_PLNT || (TYP(r) == PT_GEL && parts[ID(r)].tmp >= 5) || TYP(r) == PT_DYST || TYP(r) == PT_YEST || TYP(r) == PT_DUST || TYP(r) == PT_WOOD || TYP(r) == PT_GOO) && parts[i].life <= 1570)
-        	    {
+				if (r && (TYP(r) == PT_FIRE || TYP(r) == PT_PHOT || TYP(r) == PT_PLNT || (TYP(r) == PT_GEL && parts[ID(r)].tmp >= 5) || TYP(r) == PT_DYST || TYP(r) == PT_YEST || TYP(r) == PT_DUST || TYP(r) == PT_WOOD || TYP(r) == PT_GOO) && parts[i].life <= 1570)
+				{
 
 					sim->parts[i].vx = ((dx < 0) ? parts[i].vx - 0.5f : parts[i].vx + 0.5f);
 
 					sim->parts[i].vy = ((dy < 0) ? parts[i].vy - 0.5f : parts[i].vy + 0.5f);
 
-        	        found = true;
+					found = true;
 					break;
-        	    } else if (r && TYP(r) == PT_GAS)
+				} 
+				else if (r && TYP(r) == PT_GAS)
 				{
 					sim->parts[i].vx = ((dx < 0) ? parts[i].vx + 0.5f : parts[i].vx - 0.5f);
 					sim->parts[i].vy = ((dy < 0) ? parts[i].vy + 0.5f : parts[i].vy - 0.5f);
@@ -127,8 +130,8 @@ int Element_MOTH_update(UPDATE_FUNC_ARGS)
 					break;
 				}
 			}
-        }
-    }
+		}
+	}
 	for (auto rx = -1; rx <= 1; rx++)
 	{
 		for (auto ry = -1; ry <= 1; ry++)
@@ -146,7 +149,7 @@ int Element_MOTH_update(UPDATE_FUNC_ARGS)
 							{
 							sim->parts[ID(r)].tmp -= 5;
 							sim->parts[i].life += 10;
-							}  
+							}
 							break;
 						case PT_PLNT:
 							sim->parts[i].life += 30;
