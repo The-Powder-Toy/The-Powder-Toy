@@ -350,6 +350,17 @@ void OptionsModel::SetRedirectStd(bool newRedirectStd)
 	Client::Ref().SetRedirectStd(newRedirectStd);
 	notifySettingsChanged();
 }
+bool OptionsModel::GetAutoStartupRequest()
+{
+	return Client::Ref().GetAutoStartupRequest();
+}
+
+void OptionsModel::SetAutoStartupRequest(bool newAutoStartupRequest)
+{
+	GlobalPrefs::Ref().Set("AutoStartupRequest", newAutoStartupRequest);
+	Client::Ref().SetAutoStartupRequest(newAutoStartupRequest);
+	notifySettingsChanged();
+}
 
 void OptionsModel::notifySettingsChanged()
 {

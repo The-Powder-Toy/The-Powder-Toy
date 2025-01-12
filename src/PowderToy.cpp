@@ -428,6 +428,7 @@ int Main(int argc, char *argv[])
 	explicitSingletons->requestManager = http::RequestManager::Create(proxyString, cafileString, capathString, disableNetwork);
 
 	explicitSingletons->client = std::make_unique<Client>();
+	Client::Ref().SetAutoStartupRequest(prefs.Get("AutoStartupRequest", true));
 	Client::Ref().Initialize();
 	Client::Ref().SetRedirectStd(redirectStd);
 

@@ -35,7 +35,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	};
 	
 	{
-		auto *label = new ui::Label(ui::Point(4, 1), ui::Point(Size.X-8, 22), "Simulation Options");
+		auto *label = new ui::Label(ui::Point(4, 1), ui::Point(Size.X-8, 22), "Settings");
 		label->SetTextColour(style::Colour::InformationTitle);
 		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -61,6 +61,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		label->AutoHeight();
 		scrollPanel->AddChild(label);
 		currentY += label->Size.Y - 1;
+		return label;
 	};
 	auto addCheckbox = [this, &currentY, &autoWidth, &addLabel](int indent, String text, String info, std::function<void ()> action) {
 		auto *checkbox = new ui::Checkbox(ui::Point(8 + indent * 15, currentY), ui::Point(1, 16), text, "");
@@ -354,6 +355,22 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		}
 		currentY += 26;
 	}
+	autoStartupRequest = addCheckbox(0, "Fetch the message of the day and notifications at startup", "Also checks for updates", [this] {
+		auto checked = autoStartupRequest->GetChecked();
+		if (checked)
+		{
+			Client::Ref().BeginStartupRequest();
+		}
+		c->SetAutoStartupRequest(checked);
+	});
+	auto *doStartupRequest = new ui::Button(ui::Point(10, currentY), ui::Point(90, 16), "Fetch them now");
+	doStartupRequest->SetActionCallback({ [] {
+		Client::Ref().BeginStartupRequest();
+	} });
+	scrollPanel->AddChild(doStartupRequest);
+	startupRequestStatus = addLabel(5, "");
+	UpdateStartupRequestStatus();
+	currentY += 13;
 	redirectStd = addCheckbox(0, "Save errors and other messages to a file", "Developers may ask for this when trying to fix problems", [this] {
 		c->SetRedirectStd(redirectStd->GetChecked());
 	});
@@ -406,6 +423,35 @@ void OptionsView::AmbientAirTempToTextBox(float airTemp)
 	sb << Format::Precision(2);
 	format::RenderTemperature(sb, airTemp, temperatureScale->GetOption().second);
 	ambientAirTemp->SetText(sb.Build());
+}
+
+void OptionsView::UpdateStartupRequestStatus()
+{
+	switch (Client::Ref().GetStartupRequestStatus())
+	{
+	case Client::StartupRequestStatus::notYetDone:
+		startupRequestStatus->SetText("\bg - Not yet fetched");
+		break;
+
+	case Client::StartupRequestStatus::inProgress:
+		startupRequestStatus->SetText("\bg - In progress...");
+		break;
+
+	case Client::StartupRequestStatus::succeeded:
+		startupRequestStatus->SetText(String::Build("\bg - OK, ", Client::Ref().GetServerNotifications().size(), " notifications fetched"));
+		break;
+
+	case Client::StartupRequestStatus::failed:
+		{
+			auto error = Client::Ref().GetStartupRequestError();
+			if (!error)
+			{
+				error = "???";
+			}
+			startupRequestStatus->SetText("\bg - Failed: " + error->FromUtf8());
+		}
+		break;
+	}
 }
 
 void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
@@ -515,11 +561,17 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	threadedRendering->SetChecked(sender->GetThreadedRendering());
 	momentumScroll->SetChecked(sender->GetMomentumScroll());
 	redirectStd->SetChecked(sender->GetRedirectStd());
+	autoStartupRequest->SetChecked(sender->GetAutoStartupRequest());
 }
 
 void OptionsView::AttachController(OptionsController * c_)
 {
 	c = c_;
+}
+
+void OptionsView::OnTick(float dt)
+{
+	UpdateStartupRequestStatus();
 }
 
 void OptionsView::OnDraw()

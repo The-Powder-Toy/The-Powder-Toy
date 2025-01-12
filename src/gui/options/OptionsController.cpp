@@ -167,6 +167,11 @@ void OptionsController::SetRedirectStd(bool newRedirectStd)
 	model->SetRedirectStd(newRedirectStd);
 }
 
+void OptionsController::SetAutoStartupRequest(bool newAutoStartupRequest)
+{
+	model->SetAutoStartupRequest(newAutoStartupRequest);
+}
+
 void OptionsController::Exit()
 {
 	view->CloseActiveWindow();
