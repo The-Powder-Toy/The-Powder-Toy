@@ -52,7 +52,8 @@ int Element_MEGG_graphics(GRAPHICS_FUNC_ARGS)
 int Element_MEGG_update(UPDATE_FUNC_ARGS)
 {
     sim->parts[i].life += 1;
-    if (parts[i].life > 600){
+    if (parts[i].life > 600)
+	{
         sim->kill_part(i);
         sim->create_part(-1, x, y, PT_MOTH);
     }
