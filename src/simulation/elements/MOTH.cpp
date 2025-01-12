@@ -93,25 +93,35 @@ int Element_MOTH_update(UPDATE_FUNC_ARGS)
             if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES) continue;
 
             int r = sim->pmap[ny][nx];
+			if (parts[i].tmp4 >= 4){
+				if(ID(r) == 0){
+					sim->parts[i].vx = ((dx < 0) ? parts[i].vx-1.0f : parts[i].vx+1.0f);
 
+					sim->parts[i].vy = ((dy < 0) ? parts[i].vy-1.0f : parts[i].vy+1.0f);
 
-            if (r && (TYP(r) == PT_FIRE || TYP(r) == PT_PHOT || TYP(r) == PT_PLNT || (TYP(r) == PT_GEL && parts[ID(r)].tmp >= 5) || TYP(r) == PT_DYST || TYP(r) == PT_YEST || TYP(r) == PT_DUST || TYP(r) == PT_WOOD || TYP(r) == PT_GOO))
-            {
-				
-				sim->parts[i].vx = ((dx < 0) ? parts[i].vx-0.5f : parts[i].vx+0.5f);
-
-				sim->parts[i].vy = ((dy < 0) ? parts[i].vy-0.5f : parts[i].vy+0.5f);
-
-                found = true;
-				break;
-            } else if (r && TYP(r) == PT_GAS)
-			{
-				sim->parts[i].vx = ((dx < 0) ? parts[i].vx+0.5f : parts[i].vx-0.5f);
-				sim->parts[i].vy = ((dy < 0) ? parts[i].vy+0.5f : parts[i].vy-0.5f);
-				found = true;
-				break;
+        	        found = true;
+					break;
+				}
 			}
-			
+			else
+			{
+        	    if (r && (TYP(r) == PT_FIRE || TYP(r) == PT_PHOT || TYP(r) == PT_PLNT || (TYP(r) == PT_GEL && parts[ID(r)].tmp >= 5) || TYP(r) == PT_DYST || TYP(r) == PT_YEST || TYP(r) == PT_DUST || TYP(r) == PT_WOOD || TYP(r) == PT_GOO))
+        	    {
+
+					sim->parts[i].vx = ((dx < 0) ? parts[i].vx-0.5f : parts[i].vx+0.5f);
+
+					sim->parts[i].vy = ((dy < 0) ? parts[i].vy-0.5f : parts[i].vy+0.5f);
+
+        	        found = true;
+					break;
+        	    } else if (r && TYP(r) == PT_GAS)
+				{
+					sim->parts[i].vx = ((dx < 0) ? parts[i].vx+0.5f : parts[i].vx-0.5f);
+					sim->parts[i].vy = ((dy < 0) ? parts[i].vy+0.5f : parts[i].vy-0.5f);
+					found = true;
+					break;
+				}
+			}
         }
     }
 	for (auto rx = -1; rx <= 1; rx++)
@@ -160,14 +170,16 @@ int Element_MOTH_update(UPDATE_FUNC_ARGS)
 						sim->parts[i].life = 1600;
 					}
 				}
-				sim->parts[i].tmp -= 1;
-				if (parts[i].tmp < 0){
-					sim->parts[i].tmp = 0;
-				}
+				
 			}
 		}
 	}
-	if (parts[i].life > 800 && parts[i].tmp3 == 0){
+	sim->parts[i].tmp -= 1;
+	if (parts[i].tmp < 0){
+		sim->parts[i].tmp = 0;
+	}
+
+	if (parts[i].life > 800 && parts[i].tmp3 == 0 && ID(sim->pmap[y][x+1]) == 0){
 		sim->create_part(-1, x, y+1, PT_MEGG);
 		sim->parts[i].life -= 400;
 		sim->parts[i].tmp3 = 400;
