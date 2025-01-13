@@ -160,7 +160,7 @@ void Air::update_airh(void)
 				auto weight = (hv[y][x] - ambientAirTemp) / 10000.0f;
 
 				// Our approximation works best when the temperature difference is small, so we cap it from above.
-				if (weight > 0.1f) weight = 0.1f;
+				if (weight > 0.01f) weight = 0.01f;
 
 				vx[y][x] += weight * convGravX;
 				vy[y][x] += weight * convGravY;
