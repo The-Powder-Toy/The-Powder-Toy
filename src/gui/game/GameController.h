@@ -211,4 +211,5 @@ public:
 	bool ThreadedRenderingAllowed();
 
 	void SetToolIndex(ByteString identifier, std::optional<int> index);
+	void InitCommandInterface();
 };

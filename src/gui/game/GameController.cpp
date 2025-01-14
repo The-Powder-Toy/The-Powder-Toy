@@ -713,12 +713,16 @@ bool GameController::KeyRelease(int key, int scan, bool repeat, bool shift, bool
 	return ret;
 }
 
+void GameController::InitCommandInterface()
+{
+	commandInterface->Init();
+}
+
 void GameController::Tick()
 {
 	gameModel->Tick();
 	if(firstTick)
 	{
-		commandInterface->Init();
 		if constexpr (INSTALL_CHECK)
 		{
 			if (Client::Ref().IsFirstRun())
