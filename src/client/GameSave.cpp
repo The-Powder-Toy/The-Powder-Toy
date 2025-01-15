@@ -2206,8 +2206,15 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			{
 				if (elements[part.type].CarriesTypeIn & (1U << index))
 				{
-					auto *prop = reinterpret_cast<const int *>(reinterpret_cast<const char *>(&part) + properties[index].Offset);
-					paletteSet.insert(TYP(*prop));
+					auto *prop = reinterpret_cast<int *>(reinterpret_cast<char *>(&part) + properties[index].Offset);
+					if (sd.IsElement(TYP(*prop)))
+					{
+						paletteSet.insert(TYP(*prop));
+					}
+					else
+					{
+						*prop = PMAP(ID(*prop), 0);
+					}
 				}
 			}
 
