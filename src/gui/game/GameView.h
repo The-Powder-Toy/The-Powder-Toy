@@ -106,6 +106,7 @@ private:
 	bool saveReuploadAllowed;
 	ui::Button * downVoteButton;
 	ui::Button * upVoteButton;
+	void ResetVoteButtons();
 	ui::Button * tagSimulationButton;
 	ui::Button * clearSimButton;
 	SplitButton * loginButton;

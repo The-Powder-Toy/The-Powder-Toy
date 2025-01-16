@@ -60,7 +60,11 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	favButton->SetTogglable(true);
 	favButton->SetIcon(IconFavourite);
-	favButton->SetActionCallback({ [this] { c->FavouriteSave(); } });
+	favButton->SetActionCallback({ [this] {
+		favButton->SetToggleState(true);
+		favButton->Appearance.BackgroundPulse = true;
+		c->FavouriteSave();
+	} });
 	favButton->Enabled = Client::Ref().GetAuthUser().UserID?true:false;
 	AddComponent(favButton);
 
@@ -530,6 +534,7 @@ void PreviewView::UpdateLoadStatus()
 
 void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
+	favButton->Appearance.BackgroundPulse = false;
 	auto *save = sender->GetSaveInfo();
 	if(save)
 	{

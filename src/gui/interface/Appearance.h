@@ -30,6 +30,7 @@ namespace ui
 		ui::Colour BackgroundInactive;
 		ui::Colour BackgroundActive;
 		ui::Colour BackgroundDisabled;
+		bool BackgroundPulse = false;
 
 		ui::Colour TextHover;
 		ui::Colour TextInactive;

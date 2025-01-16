@@ -267,19 +267,21 @@ GameView::GameView():
 	SetSaveButtonTooltips();
 	AddComponent(saveSimulationButton);
 
-	upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(39, 15), "", "Like this save");
+	upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(39, 15), "", "");
 	upVoteButton->SetIcon(IconVoteUp);
 	upVoteButton->Appearance.Margin.Top+=2;
 	upVoteButton->Appearance.Margin.Left+=2;
 	currentX+=38;
 	AddComponent(upVoteButton);
 
-	downVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(15, 15), "", "Dislike this save");
+	downVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(15, 15), "", "");
 	downVoteButton->SetIcon(IconVoteDown);
 	downVoteButton->Appearance.Margin.Bottom+=2;
 	downVoteButton->Appearance.Margin.Left+=2;
 	currentX+=16;
 	AddComponent(downVoteButton);
+
+	ResetVoteButtons();
 
 	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(WINDOWW - 402, 15), "[no tags set]", "Add simulation tags");
 	tagSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -779,9 +781,18 @@ void GameView::NotifyInfoTipChanged(GameModel * sender)
 	infoTipPresence = 120;
 }
 
+void GameView::ResetVoteButtons()
+{
+	upVoteButton->SetToolTip("Like this save");
+	downVoteButton->SetToolTip("Dislike this save");
+	upVoteButton->Appearance.BackgroundPulse = false;
+	downVoteButton->Appearance.BackgroundPulse = false;
+}
+
 void GameView::NotifySaveChanged(GameModel * sender)
 {
 	saveReuploadAllowed = true;
+	ResetVoteButtons();
 	if (sender->GetSave())
 	{
 		if (introText > 50)
@@ -794,32 +805,41 @@ void GameView::NotifySaveChanged(GameModel * sender)
 			saveSimulationButton->SetShowSplit(false);
 		reloadButton->Enabled = true;
 		upVoteButton->Enabled = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetUser().Username != sender->GetSave()->GetUserName();
-		if(sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote()==1)
-		{
-			upVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 128, 30, 255));
-			upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 108, 10, 255));
-			upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 108, 10, 255));
-		}
-		else
-		{
-			upVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 20, 20));
-			upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
-			upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
-		}
+
+		auto upVoteButtonColor = [this](bool active) {
+			if(active)
+			{
+				upVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 128, 30, 255));
+				upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 108, 10, 255));
+				upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 108, 10, 255));
+			}
+			else
+			{
+				upVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 20, 20));
+				upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
+				upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
+			}
+		};
+		auto upvoted = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote() == 1;
+		upVoteButtonColor(upvoted);
 
 		downVoteButton->Enabled = upVoteButton->Enabled;
-		if (sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote()==-1)
-		{
-			downVoteButton->Appearance.BackgroundHover = (ui::Colour(128, 20, 30, 255));
-			downVoteButton->Appearance.BackgroundInactive = (ui::Colour(108, 0, 10, 255));
-			downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(108, 0, 10, 255));
-		}
-		else
-		{
-			downVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 20, 20));
-			downVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
-			downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
-		}
+		auto downVoteButtonColor = [this](bool active) {
+			if (active)
+			{
+				downVoteButton->Appearance.BackgroundHover = (ui::Colour(128, 20, 30, 255));
+				downVoteButton->Appearance.BackgroundInactive = (ui::Colour(108, 0, 10, 255));
+				downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(108, 0, 10, 255));
+			}
+			else
+			{
+				downVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 20, 20));
+				downVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
+				downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
+			}
+		};
+		auto downvoted = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote() == -1;
+		downVoteButtonColor(downvoted);
 
 		if (sender->GetUser().UserID)
 		{
@@ -832,15 +852,18 @@ void GameView::NotifySaveChanged(GameModel * sender)
 			downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 		}
 
-		if (sender->GetSave()->GetVote() == 1)
-			upVoteButton->SetActionCallback({ [this] { c->Vote(0); } });
-		else
-			upVoteButton->SetActionCallback({ [this] { c->Vote(1); } });
-
-		if (sender->GetSave()->GetVote() == -1)
-			downVoteButton->SetActionCallback({ [this] { c->Vote(0) ;} });
-		else
-			downVoteButton->SetActionCallback({ [this] { c->Vote(-1) ;} });
+		upVoteButton->SetActionCallback({ [this, upVoteButtonColor, upvoted] {
+			upVoteButtonColor(true);
+			upVoteButton->SetToolTip("Saving vote...");
+			upVoteButton->Appearance.BackgroundPulse = true;
+			c->Vote(upvoted ? 0 : 1);
+		} });
+		downVoteButton->SetActionCallback({ [this, downVoteButtonColor, downvoted] {
+			downVoteButtonColor(true);
+			downVoteButton->SetToolTip("Saving vote...");
+			downVoteButton->Appearance.BackgroundPulse = true;
+			c->Vote(downvoted ? 0 : -1);
+		} });
 
 		tagSimulationButton->Enabled = sender->GetSave()->GetID();
 		if (sender->GetSave()->GetID())

@@ -1,10 +1,11 @@
 #include "gui/interface/Button.h"
-
 #include "gui/interface/Window.h"
-
+#include "gui/interface/Engine.h"
 #include "graphics/Graphics.h"
 #include "Misc.h"
 #include "Colour.h"
+#include <cmath>
+#include <numbers>
 
 namespace ui {
 
@@ -113,6 +114,10 @@ void Button::Draw(const Point& screenPos)
 	}
 
 	bgColour = Appearance.BackgroundInactive;
+	if (Appearance.BackgroundPulse)
+	{
+		backgroundColour.Alpha = uint8_t(backgroundColour.Alpha * ((std::sin(Engine::Ref().LastTick() / 1000.f * std::numbers::pi_v<float> * 2.f) + 1.f) / 2.f));
+	}
 	g->BlendFilledRect(RectSized(Position + Vec2{ 1, 1 }, Size - Vec2{ 2, 2 }), backgroundColour);
 	if(Appearance.Border == 1)
 		g->BlendRect(RectSized(Position, Size), borderColour);
