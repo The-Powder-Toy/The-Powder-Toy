@@ -26,6 +26,8 @@ if [[ -z         ${APP_VENDOR-} ]]; then >&2 echo         "APP_VENDOR not set"; 
 case $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC in
 x86_64-linux-gnu-static) ;;
 x86_64-linux-gnu-dynamic) ;;
+aarch64-linux-gnu-static) ;;
+aarch64-linux-gnu-dynamic) ;;
 x86_64-windows-mingw-static) ;;
 x86_64-windows-mingw-dynamic) ;;
 x86_64-windows-msvc-static) ;;
@@ -90,7 +92,7 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 	linux)
 		sudo apt update
 		if [[ $BSH_STATIC_DYNAMIC == static ]]; then
-			sudo apt install libc6-dev libc6-dev-i386
+			sudo apt install libc6-dev
 		else
 			sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev libbz2-dev libjsoncpp-dev libpng-dev
 		fi

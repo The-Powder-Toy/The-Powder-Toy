@@ -1,6 +1,0 @@
-[wrap-file]
-directory = tpt-libs-prebuilt-x86_64-windows-msvc-dynamic-debug-v20250105212929
-
-source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20250105212929/tpt-libs-prebuilt-x86_64-windows-msvc-dynamic-debug-v20250105212929.zip
-source_filename = tpt-libs-prebuilt-x86_64-windows-msvc-dynamic-debug-v20250105212929.zip
-source_hash = d03900e4a7ffef3d8a5d2de7921b98ac57f54f811ae15600a55a80dc1d2d0b39
