@@ -2444,7 +2444,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			}
 			if (part.type == PT_LSNS)
 			{
-				if (part.tmp >= 1 || part.tmp <= 3)
+				if (part.tmp >= 1 && part.tmp <= 3)
 				{
 					RESTRICTVERSION(95, 0);
 				}

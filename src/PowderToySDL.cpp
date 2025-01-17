@@ -480,7 +480,6 @@ void EngineProcess()
 	engine.Tick();
 
 	{
-		auto drawLimit = ui::Engine::Ref().GetDrawingFrequencyLimit();
 		auto nowNs = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
 		auto effectiveDrawLimit = engine.GetEffectiveDrawCap();
 		if (!effectiveDrawLimit || drawSchedule.HasElapsed(nowNs))
