@@ -2208,13 +2208,6 @@ void GameView::OnDraw()
 		ui::Point finalCurrentMouse = c->PointTranslate(currentMouse);
 		ui::Point initialDrawPoint = drawPoint1;
 
-		//Air velocity line near cursor
-		if (showDebug && (rendererSettings->displayMode & DISPLAY_AIRV))
-		{
-			g->XorLine({finalCurrentMouse.X, finalCurrentMouse.Y},
-					{finalCurrentMouse.X + (int)(10.0f*sample.AirVelocityX), finalCurrentMouse.Y + (int)(10.0f*sample.AirVelocityY)});
-		}
-
 		if (wallBrush)
 		{
 			finalCurrentMouse = c->NormaliseBlockCoord(finalCurrentMouse);

@@ -297,6 +297,7 @@ void LuaMisc::Open(lua_State *L)
 	LCONST(DEBUG_SURFNORM);
 	LCONST(DEBUG_SIMHUD);
 	LCONST(DEBUG_RENHUD);
+	LCONST(DEBUG_AIRVEL);
 #undef LCONST
 	{
 		lua_newtable(L);
