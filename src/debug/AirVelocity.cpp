@@ -41,7 +41,7 @@ void AirVelocity::Draw()
 		if (width*std::abs(dy) < height*std::abs(dx))
 			diff = ((float)width)/((float)std::abs(dx));
 		else
-			diff = ((float)height)/((float)std::abs(dy));
+			diff = (dy == 0) ? 0 : (((float)height)/((float)std::abs(dy)));
 
 		float circx = (diff/1.5f) * (endx - pos.X) + endx;
 		float circy = (diff/1.5f) * (endy - pos.Y) + endy;
