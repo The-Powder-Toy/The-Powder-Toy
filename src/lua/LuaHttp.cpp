@@ -255,37 +255,54 @@ static int request(lua_State *L, bool isPost)
 			{
 				for (auto i = 0U; i < size; ++i)
 				{
+					auto &formItem = formData.emplace_back();
 					lua_rawgeti(L, 2, i + 1);
 					if (!lua_istable(L, -1))
 					{
 						luaL_error(L, "form item %i is not a table", i + 1);
 					}
-					lua_rawgeti(L, -1, 1);
-					if (!lua_isstring(L, -1))
 					{
-						luaL_error(L, "name of form item %i is not a string", i + 1);
-					}
-					auto name = tpt_lua_toByteString(L, -1);
-					lua_pop(L, 1);
-					lua_rawgeti(L, -1, 2);
-					if (!lua_isstring(L, -1))
-					{
-						luaL_error(L, "value of form item %i is not a string", i + 1);
-					}
-					auto value = tpt_lua_toByteString(L, -1);
-					lua_pop(L, 1);
-					std::optional<ByteString> filename;
-					lua_rawgeti(L, -1, 3);
-					if (!lua_isnoneornil(L, -1))
-					{
+						lua_rawgeti(L, -1, 1);
 						if (!lua_isstring(L, -1))
 						{
-							luaL_error(L, "filename of form item %i is not a string", i + 1);
+							luaL_error(L, "name of form item %i is not a string", i + 1);
 						}
-						filename = tpt_lua_toByteString(L, -1);
+						formItem.name = tpt_lua_toByteString(L, -1);
+						lua_pop(L, 1);
 					}
-					lua_pop(L, 1);
-					formData.push_back({ name, value, filename });
+					{
+						lua_rawgeti(L, -1, 2);
+						if (!lua_isstring(L, -1))
+						{
+							luaL_error(L, "value of form item %i is not a string", i + 1);
+						}
+						formItem.value = tpt_lua_toByteString(L, -1);
+						lua_pop(L, 1);
+					}
+					{
+						lua_rawgeti(L, -1, 3);
+						if (!lua_isnoneornil(L, -1))
+						{
+							if (!lua_isstring(L, -1))
+							{
+								luaL_error(L, "filename of form item %i is not a string", i + 1);
+							}
+							formItem.filename = tpt_lua_toByteString(L, -1);
+						}
+						lua_pop(L, 1);
+					}
+					{
+						lua_rawgeti(L, -1, 4);
+						if (!lua_isnoneornil(L, -1))
+						{
+							if (!lua_isstring(L, -1))
+							{
+								luaL_error(L, "content type of form item %i is not a string", i + 1);
+							}
+							formItem.contentType = tpt_lua_toByteString(L, -1);
+						}
+						lua_pop(L, 1);
+					}
 					lua_pop(L, 1);
 				}
 			}
@@ -295,7 +312,9 @@ static int request(lua_State *L, bool isPost)
 				while (lua_next(L, 2))
 				{
 					lua_pushvalue(L, -2);
-					formData.push_back({ tpt_lua_toByteString(L, -1), tpt_lua_toByteString(L, -2) });
+					auto &formItem = formData.emplace_back();
+					formItem.name = tpt_lua_toByteString(L, -1);
+					formItem.value = tpt_lua_toByteString(L, -2);
 					lua_pop(L, 2);
 				}
 			}

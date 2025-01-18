@@ -421,6 +421,10 @@ namespace http
 						{
 							HandleCURLcode(curl_mime_filename(part, field.filename->c_str()));
 						}
+						if (field.contentType.has_value())
+						{
+							HandleCURLcode(curl_mime_type(part, field.contentType->c_str()));
+						}
 					}
 					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_MIMEPOST, handle->curlPostFields));
 #else
