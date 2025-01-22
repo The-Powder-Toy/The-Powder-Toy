@@ -178,7 +178,10 @@ int Engine::CloseWindow()
 void Engine::Tick()
 {
 	if(state_ != nullptr)
+	{
 		state_->DoTick(dt);
+		state_->DoSimTick();
+	}
 
 
 	lastTick = Platform::GetTime();
@@ -198,6 +201,14 @@ void Engine::Tick()
 		if(state_ != NULL)
 			state_->DoInitialized();
 	}*/
+}
+
+void Engine::SimTick()
+{
+	if (state_)
+	{
+		state_->DoSimTick();
+	}
 }
 
 void Engine::Draw()

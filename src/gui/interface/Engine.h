@@ -57,6 +57,7 @@ namespace ui
 		inline bool GetGlobalQuit() {return GlobalQuit; }
 
 		void Tick();
+		void SimTick();
 		void Draw();
 
 		void SetFps(float fps);

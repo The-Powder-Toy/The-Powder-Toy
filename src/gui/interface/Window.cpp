@@ -271,6 +271,11 @@ void Window::DoTick(float dt)
 		finalise();
 }
 
+void Window::DoSimTick()
+{
+	OnSimTick();
+}
+
 void Window::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
 	if (DEBUG && key == SDLK_TAB && ctrl)

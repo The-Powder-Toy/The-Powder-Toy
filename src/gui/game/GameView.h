@@ -243,6 +243,7 @@ public:
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void OnTick(float dt) override;
+	void OnSimTick() override;
 	void OnDraw() override;
 	void OnBlur() override;
 	void OnFileDrop(ByteString filename) override;

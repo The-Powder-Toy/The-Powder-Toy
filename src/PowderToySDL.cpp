@@ -477,13 +477,12 @@ void EngineProcess()
 		EventProcess(event);
 	}
 
-	engine.Tick();
-
 	{
 		auto nowNs = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
 		auto effectiveDrawLimit = engine.GetEffectiveDrawCap();
 		if (!effectiveDrawLimit || drawSchedule.HasElapsed(nowNs))
 		{
+			engine.Tick();
 			engine.Draw();
 			drawSchedule.SetNow(nowNs);
 			if (effectiveDrawLimit)
@@ -492,6 +491,10 @@ void EngineProcess()
 			}
 			SDLSetScreen();
 			blit(engine.g->Data());
+		}
+		else
+		{
+			engine.SimTick();
 		}
 	}
 	{

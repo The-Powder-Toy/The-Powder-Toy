@@ -1827,9 +1827,12 @@ void GameView::OnTick(float dt)
 		if(toolTipPresence<0)
 			toolTipPresence = 0;
 	}
-	c->Update();
 }
 
+void GameView::OnSimTick()
+{
+	c->Update();
+}
 
 void GameView::DoMouseMove(int x, int y, int dx, int dy)
 {

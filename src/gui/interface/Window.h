@@ -55,6 +55,7 @@ namespace ui
 		virtual void DoInitialized();
 		virtual void DoExit();
 		virtual void DoTick(float dt);
+		virtual void DoSimTick();
 		virtual void DoDraw();
 		virtual void DoFocus();
 		virtual void DoBlur();
@@ -92,6 +93,7 @@ namespace ui
 		virtual void OnInitialized() {}
 		virtual void OnExit() {}
 		virtual void OnTick(float dt) {}
+		virtual void OnSimTick() {}
 		virtual void OnDraw() {}
 		virtual void OnFocus() {}
 		virtual void OnBlur() {}
