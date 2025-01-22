@@ -237,7 +237,7 @@ public:
 	void AddObserver(GameView * observer);
 
 	void SetPaused(bool pauseState);
-	bool GetPaused();
+	bool GetPaused() const;
 	void SetDecoration(bool decorationState);
 	bool GetDecoration();
 	void SetAHeatEnable(bool aHeat);

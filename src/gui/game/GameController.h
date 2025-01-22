@@ -117,6 +117,7 @@ public:
 	void CopyRegion(ui::Point point1, ui::Point point2);
 	void CutRegion(ui::Point point1, ui::Point point2);
 	void Update();
+	bool GetPaused() const;
 	void SetPaused(bool pauseState);
 	void SetPaused();
 	void SetDecoration(bool decorationState);

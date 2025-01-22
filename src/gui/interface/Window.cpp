@@ -26,6 +26,7 @@ Window::Window(Point _position, Point _size):
 	destruct(false),
 	stop(false)
 {
+	SetFps(1);
 }
 
 Window::~Window()
@@ -228,7 +229,7 @@ void Window::DoDraw()
 	}
 }
 
-void Window::DoTick(float dt)
+void Window::DoTick()
 {
 	if (debugMode)
 		return;
@@ -610,3 +611,29 @@ void Window::Halt()
 	halt = true;
 }
 
+void Window::SetFps(float newFps)
+{
+	fps = newFps;
+	if (std::holds_alternative<FpsLimitExplicit>(fpsLimit))
+	{
+		dt = 60/fps;
+	}
+	else
+	{
+		dt = 1.0f;
+	}
+}
+
+void Window::SetFpsLimit(FpsLimit newFpsLimit)
+{
+	fpsLimit = newFpsLimit;
+	// Populate dt with whatever that makes any sort of sense.
+	if (auto *explicitFpsLimit = std::get_if<FpsLimitExplicit>(&fpsLimit))
+	{
+		SetFps(explicitFpsLimit->value);
+	}
+	else
+	{
+		SetFps(1);
+	}
+}

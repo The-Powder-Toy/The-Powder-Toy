@@ -1018,7 +1018,7 @@ void GameModel::SetPaused(bool pauseState)
 	notifyPausedChanged();
 }
 
-bool GameModel::GetPaused()
+bool GameModel::GetPaused() const
 {
 	return sim->sys_pause?true:false;
 }

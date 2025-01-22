@@ -175,6 +175,9 @@ private:
 	int foundParticles = 0;
 	const RendererFrame *rendererFrame = nullptr;
 
+	SimFpsLimit simFpsLimit = FpsLimitExplicit{ 60.f };
+	void ApplySimFpsLimit();
+
 public:
 	GameView();
 	~GameView();
@@ -278,4 +281,10 @@ public:
 
 	void RenderSimulation(const RenderableSimulation &sim, bool handleEvents);
 	void AfterSimDraw(const RenderableSimulation &sim);
+
+	void SetSimFpsLimit(SimFpsLimit newSimFpsLimit);
+	SimFpsLimit GetSimFpsLimit() const
+	{
+		return simFpsLimit;
+	}
 };

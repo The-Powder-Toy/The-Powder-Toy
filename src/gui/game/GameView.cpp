@@ -768,6 +768,7 @@ void GameView::NotifyUserChanged(GameModel * sender)
 void GameView::NotifyPausedChanged(GameModel * sender)
 {
 	pauseButton->SetToggleState(sender->GetPaused());
+	ApplySimFpsLimit();
 }
 
 void GameView::NotifyToolTipChanged(GameModel * sender)
@@ -2542,7 +2543,12 @@ void GameView::OnDraw()
 	{
 		//FPS and some version info
 		StringBuilder fpsInfo;
-		fpsInfo << Format::Precision(2) << "FPS: " << ui::Engine::Ref().GetFps();
+		auto fps = 0.f;
+		if (!c->GetPaused())
+		{
+			fps = ui::Engine::Ref().GetFps();
+		}
+		fpsInfo << Format::Precision(2) << "FPS: " << fps;
 
 		if (showDebug)
 		{
@@ -2563,14 +2569,13 @@ void GameView::OnDraw()
 		{
 			fpsInfo << "\nSimulation";
 			fpsInfo << "\n  FPS cap: ";
-			auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
-			if (std::holds_alternative<FpsLimitNone>(fpsLimit))
+			if (std::holds_alternative<FpsLimitNone>(simFpsLimit))
 			{
 				fpsInfo << "none";
 			}
 			else
 			{
-				fpsInfo << std::get<FpsLimitExplicit>(fpsLimit).value;
+				fpsInfo << std::get<FpsLimitExplicit>(simFpsLimit).value;
 			}
 		}
 		if (c->GetDebugFlags() & DEBUG_RENHUD)
@@ -2810,4 +2815,26 @@ void GameView::WaitForRendererThread()
 	rendererThreadCv.wait(lk, [this]() {
 		return !rendererThreadOwnsRenderer;
 	});
+}
+
+void GameView::ApplySimFpsLimit()
+{
+	if (c->GetPaused())
+	{
+		SetFpsLimit(FpsLimitFollowDraw{});
+	}
+	else if (std::holds_alternative<FpsLimitNone>(simFpsLimit))
+	{
+		SetFpsLimit(FpsLimitNone{});
+	}
+	else
+	{
+		SetFpsLimit(std::get<FpsLimitExplicit>(simFpsLimit));
+	}
+}
+
+void GameView::SetSimFpsLimit(SimFpsLimit newSimFpsLimit)
+{
+	simFpsLimit = newSimFpsLimit;
+	ApplySimFpsLimit();
 }

@@ -24,7 +24,6 @@ Engine::Engine():
 	mousexp_(0),
 	mouseyp_(0)
 {
-	SetFpsLimit(FpsLimitExplicit{ 60.0f });
 }
 
 Engine::~Engine()
@@ -38,19 +37,9 @@ Engine::~Engine()
 	}
 }
 
-void Engine::SetFpsLimit(FpsLimit newFpsLimit)
+void Engine::ApplyFpsLimit()
 {
-	fpsLimit = newFpsLimit;
-	::SetFpsLimit(fpsLimit);
-	// Populate dt with whatever that makes any sort of sense.
-	if (auto *explicitFpsLimit = std::get_if<FpsLimitExplicit>(&fpsLimit))
-	{
-		SetFps(explicitFpsLimit->value);
-	}
-	else
-	{
-		SetFps(1);
-	}
+	::SetFpsLimit(GetFpsLimit());
 }
 
 void Engine::Begin()
@@ -110,7 +99,7 @@ void Engine::ShowWindow(Window * window)
 		state_->DoBlur();
 
 	state_ = window;
-
+	ApplyFpsLimit();
 }
 
 void Engine::CloseWindowAndEverythingAbove(Window *window)
@@ -153,11 +142,13 @@ int Engine::CloseWindow()
 			mouseyp_ = mousey_;
 		}
 		ignoreEvents = true;
+		ApplyFpsLimit();
 		return 0;
 	}
 	else
 	{
 		state_ = nullptr;
+		ApplyFpsLimit();
 		return 1;
 	}
 }
@@ -179,7 +170,7 @@ void Engine::Tick()
 {
 	if(state_ != nullptr)
 	{
-		state_->DoTick(dt);
+		state_->DoTick();
 		state_->DoSimTick();
 	}
 
@@ -239,19 +230,6 @@ void Engine::Draw()
 	g->Finalise();
 	FrameIndex++;
 	FrameIndex %= 7200;
-}
-
-void Engine::SetFps(float fps)
-{
-	this->fps = fps;
-	if (std::holds_alternative<FpsLimitExplicit>(fpsLimit))
-	{
-		this->dt = 60/fps;
-	}
-	else
-	{
-		this->dt = 1.0f;
-	}
 }
 
 void Engine::onKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
@@ -395,4 +373,30 @@ std::optional<int> Engine::GetEffectiveDrawCap() const
 		effectiveDrawCap = GetRefreshRate();
 	}
 	return effectiveDrawCap;
+}
+
+void Engine::SetFps(float newFps)
+{
+	if (state_)
+	{
+		return state_->SetFps(newFps);
+	}
+}
+
+float Engine::GetFps() const
+{
+	if (state_)
+	{
+		return state_->GetFps();
+	}
+	return 1;
+}
+
+FpsLimit Engine::GetFpsLimit() const
+{
+	if (state_)
+	{
+		return state_->GetFpsLimit();
+	}
+	return FpsLimitNone{};
 }

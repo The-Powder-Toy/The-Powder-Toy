@@ -970,6 +970,11 @@ void GameController::SetZoomPosition(ui::Point position)
 	gameModel->SetZoomWindowPosition(zoomWindowPosition);
 }
 
+bool GameController::GetPaused() const
+{
+	return gameModel->GetPaused();
+}
+
 void GameController::SetPaused(bool pauseState)
 {
 	gameModel->SetPaused(pauseState);
@@ -1730,7 +1735,7 @@ void GameController::AfterSimDraw()
 
 bool GameController::ThreadedRenderingAllowed()
 {
-	return gameModel->GetThreadedRendering() && !commandInterface->HaveSimGraphicsEventHandlers();
+	return gameModel->GetThreadedRendering() && !GetPaused() && !commandInterface->HaveSimGraphicsEventHandlers();
 }
 
 void GameController::SetToolIndex(ByteString identifier, std::optional<int> index)

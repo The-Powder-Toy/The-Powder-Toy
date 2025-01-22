@@ -60,8 +60,8 @@ namespace ui
 		void SimTick();
 		void Draw();
 
-		void SetFps(float fps);
-		inline float GetFps() { return fps; }
+		void SetFps(float newFps);
+		float GetFps() const;
 
 		inline int GetMouseButton() { return mouseb_; }
 		inline int GetMouseX() { return mousex_; }
@@ -75,11 +75,7 @@ namespace ui
 		//inline State* GetState() { return state_; }
 		inline Window* GetWindow() { return state_; }
 
-		void SetFpsLimit(FpsLimit newFpsLimit);
-		FpsLimit GetFpsLimit() const
-		{
-			return fpsLimit;
-		}
+		FpsLimit GetFpsLimit() const;
 
 		DrawLimit drawingFrequencyLimit;
 		Graphics * g;
@@ -89,13 +85,11 @@ namespace ui
 
 		unsigned int FrameIndex;
 	private:
-		FpsLimit fpsLimit;
 
 		bool textInput = false;
 		int lastTextEditingStart = INT_MAX;
 
-		float dt;
-		float fps;
+		void ApplyFpsLimit();
 		std::deque<Window*> windows;
 		std::stack<Point> mousePositions;
 		//Window* statequeued_;

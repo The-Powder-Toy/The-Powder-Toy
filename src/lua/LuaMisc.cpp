@@ -197,10 +197,11 @@ static int debug(lua_State *L)
 
 static int fpsCap(lua_State *L)
 {
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
-		auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
+		auto fpsLimit = lsi->window->GetSimFpsLimit();
 		if (std::holds_alternative<FpsLimitNone>(fpsLimit))
 		{
 			lua_pushnumber(L, 2);
@@ -218,10 +219,10 @@ static int fpsCap(lua_State *L)
 	}
 	if (fpscap == 2)
 	{
-		ui::Engine::Ref().SetFpsLimit(FpsLimitNone{});
+		lsi->window->SetSimFpsLimit(FpsLimitNone{});
 		return 0;
 	}
-	ui::Engine::Ref().SetFpsLimit(FpsLimitExplicit{ fpscap });
+	lsi->window->SetSimFpsLimit(FpsLimitExplicit{ fpscap });
 	return 0;
 }
 

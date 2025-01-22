@@ -1,6 +1,7 @@
 #pragma once
 #include "common/String.h"
 #include "gui/interface/Point.h"
+#include "FpsLimit.h"
 #include <vector>
 
 class Graphics;
@@ -54,7 +55,7 @@ namespace ui
 
 		virtual void DoInitialized();
 		virtual void DoExit();
-		virtual void DoTick(float dt);
+		virtual void DoTick();
 		virtual void DoSimTick();
 		virtual void DoDraw();
 		virtual void DoFocus();
@@ -85,6 +86,16 @@ namespace ui
 		void MakeActiveWindow();
 		void CloseActiveWindow();
 		Graphics * GetGraphics();
+		void SetFps(float newFps);
+		float GetFps() const
+		{
+			return fps;
+		}
+		void SetFpsLimit(FpsLimit newFpsLimit);
+		FpsLimit GetFpsLimit() const
+		{
+			return fpsLimit;
+		}
 
 	protected:
 		ui::Button * okayButton;
@@ -122,5 +133,8 @@ namespace ui
 		bool destruct;
 		bool stop;
 
+		float dt;
+		float fps;
+		FpsLimit fpsLimit = FpsLimitFollowDraw{};
 	};
 }

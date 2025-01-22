@@ -8,7 +8,11 @@ struct FpsLimitExplicit
 {
 	float value;
 };
-using FpsLimit = std::variant<FpsLimitNone, FpsLimitExplicit>;
+using SimFpsLimit = std::variant<FpsLimitNone, FpsLimitExplicit>;
+struct FpsLimitFollowDraw
+{
+};
+using FpsLimit = std::variant<FpsLimitNone, FpsLimitExplicit, FpsLimitFollowDraw>;
 
 struct DrawLimitDisplay
 {
