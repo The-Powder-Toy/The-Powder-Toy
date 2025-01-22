@@ -3621,15 +3621,14 @@ void Simulation::BeforeSim()
 	if (!sys_pause || framerender)
 	{
 		// decrease wall conduction, make walls block air and ambient heat
-		int x, y;
-		for (y = 0; y < YCELLS; y++)
+		for (int y = 0; y < YCELLS; y++)
 		{
-			for (x = 0; x < XCELLS; x++)
+			for (int x = 0; x < XCELLS; x++)
 			{
 				if (emap[y][x])
 					emap[y][x] --;
 				air->bmap_blockair[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_BLOCKAIR || (bmap[y][x]==WL_EWALL && !emap[y][x]));
-				air->bmap_blockairh[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_BLOCKAIR || bmap[y][x]==WL_GRAV || (bmap[y][x]==WL_EWALL && !emap[y][x])) ? 0x8:0;
+				air->bmap_blockairh[y][x] = (air->bmap_blockair[y][x] || bmap[y][x]==WL_GRAV) ? 0x8 : 0;
 			}
 		}
 
