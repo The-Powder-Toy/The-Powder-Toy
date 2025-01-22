@@ -2564,11 +2564,7 @@ void GameView::OnDraw()
 			fpsInfo << "\nSimulation";
 			fpsInfo << "\n  FPS cap: ";
 			auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
-			if (std::holds_alternative<FpsLimitVsync>(fpsLimit))
-			{
-				fpsInfo << "vsync";
-			}
-			else if (std::holds_alternative<FpsLimitNone>(fpsLimit))
+			if (std::holds_alternative<FpsLimitNone>(fpsLimit))
 			{
 				fpsInfo << "none";
 			}

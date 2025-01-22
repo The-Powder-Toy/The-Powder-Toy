@@ -204,7 +204,7 @@ void SDLClose()
 void SDLSetScreen()
 {
 	auto newFrameOps = ui::Engine::Ref().windowFrameOps;
-	auto newVsyncHint = std::holds_alternative<FpsLimitVsync>(ui::Engine::Ref().GetFpsLimit());
+	auto newVsyncHint = false; // TODO: DrawLimitVsync
 	if (FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsEmbedded)
 	{
 		newFrameOps.resizable = false;

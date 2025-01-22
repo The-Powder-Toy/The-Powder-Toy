@@ -201,11 +201,7 @@ static int fpsCap(lua_State *L)
 	if (acount == 0)
 	{
 		auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
-		if (std::holds_alternative<FpsLimitVsync>(fpsLimit))
-		{
-			lua_pushliteral(L, "vsync");
-		}
-		else if (std::holds_alternative<FpsLimitNone>(fpsLimit))
+		if (std::holds_alternative<FpsLimitNone>(fpsLimit))
 		{
 			lua_pushnumber(L, 2);
 		}
@@ -214,11 +210,6 @@ static int fpsCap(lua_State *L)
 			lua_pushnumber(L, std::get<FpsLimitExplicit>(fpsLimit).value);
 		}
 		return 1;
-	}
-	if (lua_isstring(L, 1) && byteStringEqualsLiteral(tpt_lua_toByteString(L, 1), "vsync"))
-	{
-		ui::Engine::Ref().SetFpsLimit(FpsLimitVsync{});
-		return 0;
 	}
 	float fpscap = luaL_checknumber(L, 1);
 	if (fpscap < 2)
@@ -254,6 +245,7 @@ static int drawCap(lua_State *L)
 		}
 		return 1;
 	}
+	// if (lua_isstring(L, 1) && byteStringEqualsLiteral(tpt_lua_toByteString(L, 1), "vsync")) // TODO: DrawLimitVsync
 	if (lua_isstring(L, 1) && byteStringEqualsLiteral(tpt_lua_toByteString(L, 1), "display"))
 	{
 		ui::Engine::Ref().SetDrawingFrequencyLimit(DrawLimitDisplay{});
