@@ -2618,13 +2618,13 @@ void GameView::OnDraw()
 				fpsInfo << "hindered";
 			}
 			fpsInfo << "\n  Refresh rate: ";
-			if (auto refreshRate = ui::Engine::Ref().GetRefreshRate())
+			auto refreshRate = ui::Engine::Ref().GetRefreshRate();
+			fpsInfo << std::visit([](auto &refreshRate) {
+				return refreshRate.value;
+			}, refreshRate);
+			if (std::holds_alternative<RefreshRateDefault>(refreshRate))
 			{
-				fpsInfo << *refreshRate;
-			}
-			else
-			{
-				fpsInfo << "unknown";
+				fpsInfo << " (default)";
 			}
 		}
 

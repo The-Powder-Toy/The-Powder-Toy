@@ -370,7 +370,9 @@ std::optional<int> Engine::GetEffectiveDrawCap() const
 	}
 	if (std::get_if<DrawLimitDisplay>(&drawLimit))
 	{
-		effectiveDrawCap = GetRefreshRate();
+		effectiveDrawCap = std::visit([](auto &&refreshRate) {
+			return refreshRate.value;
+		}, GetRefreshRate());
 	}
 	return effectiveDrawCap;
 }

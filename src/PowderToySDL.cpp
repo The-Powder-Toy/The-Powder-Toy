@@ -146,14 +146,14 @@ void blit(pixel *vid)
 
 void UpdateRefreshRate()
 {
-	std::optional<int> refreshRate;
+	RefreshRate refreshRate;
 	int displayIndex = SDL_GetWindowDisplayIndex(sdl_window);
 	if (displayIndex >= 0)
 	{
 		SDL_DisplayMode displayMode;
 		if (!SDL_GetCurrentDisplayMode(displayIndex, &displayMode) && displayMode.refresh_rate)
 		{
-			refreshRate = displayMode.refresh_rate;
+			refreshRate = RefreshRateQueried{ displayMode.refresh_rate };
 		}
 	}
 	ui::Engine::Ref().SetRefreshRate(refreshRate);

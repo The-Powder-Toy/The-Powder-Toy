@@ -2,6 +2,7 @@
 #include <memory>
 #include <optional>
 #include <stack>
+#include <variant>
 #include "common/String.h"
 #include "common/ExplicitSingleton.h"
 #include "graphics/Pixel.h"
@@ -9,6 +10,16 @@
 #include "gui/WindowFrameOps.h"
 #include <climits>
 #include "FpsLimit.h"
+
+struct RefreshRateDefault
+{
+	int value = 60;
+};
+struct RefreshRateQueried
+{
+	int value;
+};
+using RefreshRate = std::variant<RefreshRateDefault, RefreshRateQueried>;
 
 class Graphics;
 namespace ui
@@ -96,7 +107,7 @@ namespace ui
 		Window* state_;
 		Point windowTargetPosition;
 		bool ignoreEvents = false;
-		std::optional<int> refreshRate;
+		RefreshRate refreshRate;
 
 		// saved appearances of windows that are in the backround and
 		// thus are not currently being redrawn
@@ -140,12 +151,12 @@ namespace ui
 		bool GetResizable          () const { return windowFrameOps.resizable;           }
 		bool GetBlurryScaling      () const { return windowFrameOps.blurryScaling;       }
 
-		std::optional<int> GetRefreshRate() const
+		RefreshRate GetRefreshRate() const
 		{
 			return refreshRate;
 		}
 
-		void SetRefreshRate(std::optional<int> newRefreshRate)
+		void SetRefreshRate(RefreshRate newRefreshRate)
 		{
 			refreshRate = newRefreshRate;
 		}
