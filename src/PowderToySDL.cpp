@@ -319,7 +319,7 @@ void SDLSetScreen()
 		SDL_SetWindowSize(sdl_window, size.X, size.Y);
 		LoadWindowPosition();
 	}
-	UpdateFpsLimit();
+	ApplyFpsLimit();
 	if (newFrameOpsNorm.fullscreen)
 	{
 		SDL_RaiseWindow(sdl_window);
@@ -450,7 +450,7 @@ static void EventProcess(const SDL_Event &event)
 	}
 }
 
-void EngineProcess()
+std::optional<uint64_t> EngineProcess()
 {
 	auto &engine = ui::Engine::Ref();
 	auto correctedFrameTime = tickSchedule.GetFrameTime();
@@ -509,8 +509,5 @@ void EngineProcess()
 			delay = tickSchedule.Arm(fpsLimitExplicit->value) / UINT64_C(1'000'000);
 		}
 	}
-	if (delay.has_value())
-	{
-		SDL_Delay(std::max(*delay, UINT64_C(1)));
-	}
+	return delay;
 }

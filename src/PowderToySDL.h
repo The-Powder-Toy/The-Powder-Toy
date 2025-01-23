@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <SDL.h>
 #include <variant>
+#include <optional>
 
 extern int desktopWidth;
 extern int desktopHeight;
@@ -25,7 +26,7 @@ extern bool calculatedInitialMouse;
 extern bool hasMouseMoved;
 
 void MainLoop();
-void EngineProcess();
+std::optional<uint64_t> EngineProcess();
 void StartTextInput();
 void StopTextInput();
 void SetTextInputRect(int x, int y, int w, int h);
@@ -37,9 +38,8 @@ void blit(pixel *vid);
 void SDLOpen();
 void SDLClose();
 void SDLSetScreen();
-void SetFpsLimit(FpsLimit newFpsLimit);
 void LoadWindowPosition();
 void SaveWindowPosition();
 void LargeScreenDialog();
 void TickClient();
-void UpdateFpsLimit();
+void ApplyFpsLimit();

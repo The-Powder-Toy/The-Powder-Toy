@@ -39,7 +39,7 @@ Engine::~Engine()
 
 void Engine::ApplyFpsLimit()
 {
-	::SetFpsLimit(GetFpsLimit());
+	::ApplyFpsLimit();
 }
 
 void Engine::Begin()
