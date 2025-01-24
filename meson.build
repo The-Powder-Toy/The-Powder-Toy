@@ -220,10 +220,8 @@ if host_platform == 'emscripten'
 		'-s', 'USE_ZLIB=1',
 		'-s', 'DISABLE_EXCEPTION_CATCHING=0',
 	]
-	if is_debug
-		project_link_args += [ '--source-map-base=./' ]
-		emcc_args += [ '-gsource-map' ]
-	endif
+	project_link_args += [ '--source-map-base=./' ]
+	emcc_args += [ '-gsource-map' ]
 	project_link_args += emcc_args
 	project_cpp_args += emcc_args
 else
