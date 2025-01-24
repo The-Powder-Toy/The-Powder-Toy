@@ -50,12 +50,21 @@ struct Parts
 		return data.data();
 	}
 
+	Parts()
+	{
+		Reset();
+	}
+
+	Parts(const Parts &other) = default;
+
 	Parts &operator =(const Parts &other)
 	{
 		std::copy(other.data.begin(), other.data.begin() + other.lastActiveIndex + 1, data.begin());
 		lastActiveIndex = other.lastActiveIndex;
 		return *this;
 	}
+
+	void Reset();
 };
 
 struct RenderableSimulation

@@ -976,6 +976,12 @@ int Simulation::parts_avg(int ci, int ni,int t)
 	return PT_NONE;
 }
 
+void Parts::Reset()
+{
+	memset(data.data(), 0, sizeof(Particle)*NPART);
+	lastActiveIndex = 0;
+}
+
 void Simulation::clear_sim(void)
 {
 	for (auto i = 0; i <= parts.lastActiveIndex; i++)
@@ -994,13 +1000,12 @@ void Simulation::clear_sim(void)
 	signs.clear();
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
-	memset(parts, 0, sizeof(Particle)*NPART);
+	parts.Reset();
 	for (int i = 0; i < NPART-1; i++)
 		parts[i].life = i+1;
 	parts[NPART-1].life = -1;
 	pfree = 0;
 	NUM_PARTS = 0;
-	parts.lastActiveIndex = 0;
 	memset(pmap, 0, sizeof(pmap));
 	memset(fvx, 0, sizeof(fvx));
 	memset(fvy, 0, sizeof(fvy));
