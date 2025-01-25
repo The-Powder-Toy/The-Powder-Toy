@@ -2340,7 +2340,7 @@ void Simulation::UpdateParticles(int start, int end)
 					if (offsetX != x || offsetY != y)
 					{
 						auto r = pmap[offsetY][offsetX];
-						if (!(!r || parts[i].type != TYP(r)))
+						if (r && parts[i].type == TYP(r))
 						{
 							if (parts[i].temp>parts[ID(r)].temp)
 							{
