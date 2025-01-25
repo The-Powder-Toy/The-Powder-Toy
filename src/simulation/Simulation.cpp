@@ -2336,10 +2336,14 @@ void Simulation::UpdateParticles(int start, int end)
 					GetGravityField(x, y, -2.0f, -2.0f, convGravX, convGravY);
 					auto offsetX = std::clamp(int(std::round(convGravX + x)), x-1, x+1);
 					auto offsetY = std::clamp(int(std::round(convGravY + y)), y-1, y+1);
-					if ((offsetX != x || offsetY != y) && offsetX >= 0 && offsetX < XRES && offsetY >= 0 && offsetY < YRES) {//some heat convection for liquids
+					// Some heat convection for liquids
+					if (offsetX != x || offsetY != y)
+					{
 						auto r = pmap[offsetY][offsetX];
-						if (!(!r || parts[i].type != TYP(r))) {
-							if (parts[i].temp>parts[ID(r)].temp) {
+						if (!(!r || parts[i].type != TYP(r)))
+						{
+							if (parts[i].temp>parts[ID(r)].temp)
+							{
 								auto swappage = parts[i].temp;
 								parts[i].temp = parts[ID(r)].temp;
 								parts[ID(r)].temp = swappage;
