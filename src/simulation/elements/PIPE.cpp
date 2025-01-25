@@ -381,7 +381,7 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 			auto *graphics = elements[t].Graphics;
 			if (graphics)
 			{
-				Particle tpart;
+				Particle tpart{};
 				props_pipe_to_part(cpart, &tpart, false);
 				auto *prevPipeSubcallCpart = gfctx.pipeSubcallCpart;
 				auto *prevPipeSubcallTpart = gfctx.pipeSubcallTpart;
