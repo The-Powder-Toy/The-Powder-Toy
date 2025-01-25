@@ -355,7 +355,12 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		}
 		currentY += 26;
 	}
-	autoStartupRequest = addCheckbox(0, "Fetch the message of the day and notifications at startup", "Also checks for updates", [this] {
+	String autoStartupRequestNote = "Done once at startup";
+	if (!IGNORE_UPDATES)
+	{
+		autoStartupRequestNote += ", also checks for updates";
+	}
+	autoStartupRequest = addCheckbox(0, "Fetch the message of the day and notifications", autoStartupRequestNote, [this] {
 		auto checked = autoStartupRequest->GetChecked();
 		if (checked)
 		{
