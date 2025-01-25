@@ -15,8 +15,6 @@ extern SDL_Renderer *sdl_renderer;
 extern SDL_Texture *sdl_texture;
 extern bool momentumScroll;
 extern bool showAvatars;
-extern uint64_t lastTick;
-extern uint64_t lastFpsUpdate;
 extern bool showLargeScreenDialog;
 extern int mousex;
 extern int mousey;

@@ -110,6 +110,7 @@ void Client::BeginStartupRequest()
 	{
 		return;
 	}
+	serverNotifications.clear();
 	startupRequestError.reset();
 	startupRequestStatus = StartupRequestStatus::inProgress;
 	messageOfTheDay = "Fetching the message of the day...";

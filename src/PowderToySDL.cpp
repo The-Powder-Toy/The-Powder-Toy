@@ -17,8 +17,6 @@ bool vsyncHint = false;
 WindowFrameOps currentFrameOps;
 bool momentumScroll = true;
 bool showAvatars = true;
-uint64_t lastTick = 0;
-uint64_t lastFpsUpdate = 0;
 bool showLargeScreenDialog = false;
 int mousex = 0;
 int mousey = 0;
@@ -53,7 +51,7 @@ public:
 	uint64_t Arm(float fps)
 	{
 		auto oldNowNs = startNs;
-		auto timeBlockDurationNs = uint64_t(UINT64_C(1'000'000'000) / fps);
+		auto timeBlockDurationNs = uint64_t(std::clamp(1e9f / fps, 1.f, 1e9f));
 		auto oldStartTimeBlock = oldStartNs / timeBlockDurationNs;
 		auto startTimeBlock = oldStartTimeBlock + 1U;
 		startNs = std::max(startNs, startTimeBlock * timeBlockDurationNs);
@@ -67,6 +65,8 @@ public:
 };
 static FrameSchedule tickSchedule;
 static FrameSchedule drawSchedule;
+static FrameSchedule clientTickSchedule;
+static FrameSchedule fpsUpdateSchedule;
 
 void StartTextInput()
 {
@@ -455,16 +455,23 @@ std::optional<uint64_t> EngineProcess()
 	auto &engine = ui::Engine::Ref();
 	auto correctedFrameTime = tickSchedule.GetFrameTime();
 	correctedFrameTimeAvg = correctedFrameTimeAvg + (correctedFrameTime - correctedFrameTimeAvg) * 0.05;
-	if (correctedFrameTime && tickSchedule.GetNow() - lastFpsUpdate > UINT64_C(200'000'000))
+
 	{
-		engine.SetFps(1e9f / correctedFrameTimeAvg);
-		lastFpsUpdate = tickSchedule.GetNow();
+		auto nowNs = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
+		if (clientTickSchedule.HasElapsed(nowNs))
+		{
+			TickClient();
+			clientTickSchedule.SetNow(nowNs);
+		}
+		clientTickSchedule.Arm(10);
+		if (fpsUpdateSchedule.HasElapsed(nowNs))
+		{
+			engine.SetFps(1e9f / correctedFrameTimeAvg);
+			fpsUpdateSchedule.SetNow(nowNs);
+		}
+		fpsUpdateSchedule.Arm(5);
 	}
-	if (tickSchedule.GetNow() - lastTick > UINT64_C(100'000'000))
-	{
-		lastTick = tickSchedule.GetNow();
-		TickClient();
-	}
+
 	if (showLargeScreenDialog)
 	{
 		showLargeScreenDialog = false;
