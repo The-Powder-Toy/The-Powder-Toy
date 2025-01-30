@@ -171,7 +171,6 @@ void Engine::Tick()
 	if(state_ != nullptr)
 	{
 		state_->DoTick();
-		state_->DoSimTick();
 	}
 
 
@@ -401,4 +400,13 @@ FpsLimit Engine::GetFpsLimit() const
 		return state_->GetFpsLimit();
 	}
 	return FpsLimitNone{};
+}
+
+bool Engine::GetContributesToFps() const
+{
+	if (state_)
+	{
+		return state_->contributesToFps;
+	}
+	return false;
 }

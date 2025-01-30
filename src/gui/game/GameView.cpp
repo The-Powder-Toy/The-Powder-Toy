@@ -14,6 +14,7 @@
 #include "Notification.h"
 #include "ToolButton.h"
 #include "QuickOptions.h"
+#include "PowderToySDL.h"
 
 #include "client/SaveInfo.h"
 #include "client/SaveFile.h"
@@ -216,6 +217,7 @@ GameView::GameView():
 	currentMouse(0, 0),
 	mousePosition(0, 0)
 {
+	contributesToFps = true;
 
 	int currentX = 1;
 	//Set up UI
@@ -1833,6 +1835,7 @@ void GameView::OnTick(float dt)
 void GameView::OnSimTick()
 {
 	c->Update();
+	wantFrame = true;
 }
 
 void GameView::DoMouseMove(int x, int y, int dx, int dy)
@@ -2185,24 +2188,28 @@ void GameView::OnDraw()
 	Graphics * g = GetGraphics();
 
 	auto threadedRenderingAllowed = c->ThreadedRenderingAllowed();
-	if (threadedRenderingAllowed)
+	if (wantFrame)
 	{
-		StartRendererThread();
-		WaitForRendererThread();
-		AfterSimDraw(*sim);
-		foundParticles = ren->GetFoundParticles();
-		*rendererThreadResult = ren->GetVideo();
-		rendererFrame = rendererThreadResult.get();
-		DispatchRendererThread();
-	}
-	else
-	{
-		PauseRendererThread();
-		ren->ApplySettings(*rendererSettings);
-		RenderSimulation(*sim, true);
-		AfterSimDraw(*sim);
-		foundParticles = ren->GetFoundParticles();
-		rendererFrame = &ren->GetVideo();
+		wantFrame = false;
+		if (threadedRenderingAllowed)
+		{
+			StartRendererThread();
+			WaitForRendererThread();
+			AfterSimDraw(*sim);
+			foundParticles = ren->GetFoundParticles();
+			*rendererThreadResult = ren->GetVideo();
+			rendererFrame = rendererThreadResult.get();
+			DispatchRendererThread();
+		}
+		else
+		{
+			PauseRendererThread();
+			ren->ApplySettings(*rendererSettings);
+			RenderSimulation(*sim, true);
+			AfterSimDraw(*sim);
+			foundParticles = ren->GetFoundParticles();
+			rendererFrame = &ren->GetVideo();
+		}
 	}
 
 	std::copy_n(rendererFrame->data(), rendererFrame->Size().X * rendererFrame->Size().Y, g->Data());
@@ -2543,12 +2550,7 @@ void GameView::OnDraw()
 	{
 		//FPS and some version info
 		StringBuilder fpsInfo;
-		auto fps = 0.f;
-		if (!c->GetPaused())
-		{
-			fps = ui::Engine::Ref().GetFps();
-		}
-		fpsInfo << Format::Precision(2) << "FPS: " << fps;
+		fpsInfo << Format::Precision(2) << "FPS: " << ui::Engine::Ref().GetFps();
 
 		if (showDebug)
 		{
@@ -2819,13 +2821,16 @@ void GameView::WaitForRendererThread()
 
 void GameView::ApplySimFpsLimit()
 {
-	if (c->GetPaused())
+	if (std::holds_alternative<FpsLimitNone>(simFpsLimit))
 	{
-		SetFpsLimit(FpsLimitFollowDraw{});
-	}
-	else if (std::holds_alternative<FpsLimitNone>(simFpsLimit))
-	{
-		SetFpsLimit(FpsLimitNone{});
+		if (c->GetPaused())
+		{
+			SetFpsLimit(FpsLimitFollowDraw{});
+		}
+		else
+		{
+			SetFpsLimit(FpsLimitNone{});
+		}
 	}
 	else
 	{

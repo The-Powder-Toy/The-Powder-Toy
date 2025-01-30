@@ -6,6 +6,7 @@
 #include "graphics/Graphics.h"
 #include "common/platform/Platform.h"
 #include "common/clipboard/Clipboard.h"
+#include "FrameSchedule.h"
 #include <iostream>
 
 int desktopWidth = 1280;
@@ -25,44 +26,8 @@ bool mouseDown = false;
 bool calculatedInitialMouse = false;
 bool hasMouseMoved = false;
 double correctedFrameTimeAvg = 0;
+static bool prevContributesToFps = false;
 
-class FrameSchedule
-{
-	uint64_t startNs = 0;
-	uint64_t oldStartNs = 0;
-
-public:
-	void SetNow(uint64_t nowNs)
-	{
-		oldStartNs = startNs;
-		startNs = nowNs;
-	}
-
-	uint64_t GetNow() const
-	{
-		return startNs;
-	}
-
-	uint64_t GetFrameTime() const
-	{
-		return startNs - oldStartNs;
-	}
-
-	uint64_t Arm(float fps)
-	{
-		auto oldNowNs = startNs;
-		auto timeBlockDurationNs = uint64_t(std::clamp(1e9f / fps, 1.f, 1e9f));
-		auto oldStartTimeBlock = oldStartNs / timeBlockDurationNs;
-		auto startTimeBlock = oldStartTimeBlock + 1U;
-		startNs = std::max(startNs, startTimeBlock * timeBlockDurationNs);
-		return startNs - oldNowNs;
-	}
-
-	bool HasElapsed(uint64_t nowNs) const
-	{
-		return nowNs >= startNs;
-	}
-};
 static FrameSchedule tickSchedule;
 static FrameSchedule drawSchedule;
 static FrameSchedule clientTickSchedule;
@@ -119,6 +84,11 @@ int GetModifiers()
 unsigned int GetTicks()
 {
 	return SDL_GetTicks();
+}
+
+uint64_t GetNowNs()
+{
+	return uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
 }
 
 static void CalculateMousePosition(int *x, int *y)
@@ -453,11 +423,9 @@ static void EventProcess(const SDL_Event &event)
 std::optional<uint64_t> EngineProcess()
 {
 	auto &engine = ui::Engine::Ref();
-	auto correctedFrameTime = tickSchedule.GetFrameTime();
-	correctedFrameTimeAvg = correctedFrameTimeAvg + (correctedFrameTime - correctedFrameTimeAvg) * 0.05;
 
 	{
-		auto nowNs = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
+		auto nowNs = GetNowNs();
 		if (clientTickSchedule.HasElapsed(nowNs))
 		{
 			TickClient();
@@ -485,36 +453,57 @@ std::optional<uint64_t> EngineProcess()
 	}
 
 	std::optional<uint64_t> delay;
+	auto nowNs = GetNowNs();
+	auto effectiveDrawLimit = engine.GetEffectiveDrawCap();
+	auto doDraw = !effectiveDrawLimit || drawSchedule.HasElapsed(nowNs);
+	auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
+	auto doSimTick = true;
+	if (std::holds_alternative<FpsLimitExplicit>(fpsLimit))
 	{
-		auto nowNs = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
-		auto effectiveDrawLimit = engine.GetEffectiveDrawCap();
-		if (!effectiveDrawLimit || drawSchedule.HasElapsed(nowNs))
+		doSimTick = tickSchedule.HasElapsed(nowNs);
+	}
+	else if (std::holds_alternative<FpsLimitFollowDraw>(fpsLimit))
+	{
+		doSimTick = doDraw;
+	}
+	if (doDraw)
+	{
+		engine.Tick();
+	}
+	if (doSimTick)
+	{
+		auto thisContributesToFps = engine.GetContributesToFps();
+		if (prevContributesToFps && thisContributesToFps)
 		{
-			engine.Tick();
-			engine.Draw();
-			drawSchedule.SetNow(nowNs);
-			SDLSetScreen();
-			blit(engine.g->Data());
+			auto correctedFrameTime = tickSchedule.GetFrameTime();
+			correctedFrameTimeAvg = correctedFrameTimeAvg + (correctedFrameTime - correctedFrameTimeAvg) * 0.05;
 		}
-		else
+		prevContributesToFps = thisContributesToFps;
+		engine.SimTick();
+		tickSchedule.SetNow(nowNs);
+	}
+	if (doDraw)
+	{
+		engine.Draw();
+		drawSchedule.SetNow(nowNs);
+		SDLSetScreen();
+		blit(engine.g->Data());
+	}
+	if (effectiveDrawLimit)
+	{
+		delay = drawSchedule.Arm(float(*effectiveDrawLimit)) / UINT64_C(1'000'000);
+	}
+	if (auto *fpsLimitExplicit = std::get_if<FpsLimitExplicit>(&fpsLimit))
+	{
+		auto simDelay = tickSchedule.Arm(fpsLimitExplicit->value) / UINT64_C(1'000'000);
+		if (delay.has_value() && simDelay < *delay)
 		{
-			engine.SimTick();
-		}
-		if (effectiveDrawLimit)
-		{
-			delay = drawSchedule.Arm(float(*effectiveDrawLimit)) / UINT64_C(1'000'000);
+			delay = simDelay;
 		}
 	}
-	auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
-	if (!std::holds_alternative<FpsLimitFollowDraw>(fpsLimit))
+	else if (std::holds_alternative<FpsLimitNone>(fpsLimit))
 	{
 		delay.reset();
-		auto nowNs = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
-		tickSchedule.SetNow(nowNs);
-		if (auto *fpsLimitExplicit = std::get_if<FpsLimitExplicit>(&fpsLimit))
-		{
-			delay = tickSchedule.Arm(fpsLimitExplicit->value) / UINT64_C(1'000'000);
-		}
 	}
 	return delay;
 }

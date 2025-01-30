@@ -88,6 +88,7 @@ private:
 	GameController * c;
 	Renderer *ren = nullptr;
 	RendererSettings *rendererSettings = nullptr;
+	bool wantFrame = false;
 	Simulation *sim = nullptr;
 	Brush const *activeBrush;
 	//UI Elements

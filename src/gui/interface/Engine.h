@@ -87,6 +87,7 @@ namespace ui
 		inline Window* GetWindow() { return state_; }
 
 		FpsLimit GetFpsLimit() const;
+		bool GetContributesToFps() const;
 
 		DrawLimit drawingFrequencyLimit;
 		Graphics * g;

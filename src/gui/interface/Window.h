@@ -24,6 +24,7 @@ namespace ui
 	class Window
 	{
 	public:
+		bool contributesToFps = false;
 		Point Position;
 		Point Size;
 

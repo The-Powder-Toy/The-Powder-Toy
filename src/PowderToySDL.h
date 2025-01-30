@@ -32,6 +32,7 @@ void ClipboardPush(ByteString text);
 ByteString ClipboardPull();
 int GetModifiers();
 unsigned int GetTicks();
+uint64_t GetNowNs();
 void blit(pixel *vid);
 void SDLOpen();
 void SDLClose();
