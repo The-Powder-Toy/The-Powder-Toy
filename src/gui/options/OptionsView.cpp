@@ -574,7 +574,7 @@ void OptionsView::AttachController(OptionsController * c_)
 	c = c_;
 }
 
-void OptionsView::OnTick(float dt)
+void OptionsView::OnTick()
 {
 	UpdateStartupRequestStatus();
 }

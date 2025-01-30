@@ -94,7 +94,7 @@ public:
 	void SaveLoadingError(String errorMessage);
 	void OnDraw() override;
 	void DoDraw() override;
-	void OnTick(float dt) override;
+	void OnTick() override;
 	void OnTryExit(ExitMethod method) override;
 	void OnMouseWheel(int x, int y, int d) override;
 	void OnMouseUp(int x, int y, unsigned int button) override;

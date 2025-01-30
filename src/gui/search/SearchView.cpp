@@ -672,7 +672,7 @@ void SearchView::NotifySelectedChanged(SearchModel * sender)
 	}
 }
 
-void SearchView::OnTick(float dt)
+void SearchView::OnTick()
 {
 	c->Update();
 	if (changed && lastChanged < GetTicks())

@@ -7,6 +7,7 @@ gui_files += files(
 	'CopyTextButton.cpp',
 	'DirectionSelector.cpp',
 	'DropDown.cpp',
+	'Fade.cpp',
 	'Engine.cpp',
 	'Label.cpp',
 	'Panel.cpp',

@@ -39,7 +39,7 @@ namespace ui
 		void SetScrollPosition(int position);
 
 		void Draw(const Point& screenPos) override;
-		void XTick(float dt) override;
+		void XTick() override;
 		void XOnMouseWheelInside(int localx, int localy, int d) override;
 		void XOnMouseDown(int localx, int localy, unsigned int button) override;
 		void XOnMouseUp(int x, int y, unsigned int button) override;

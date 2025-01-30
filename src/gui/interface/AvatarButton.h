@@ -38,7 +38,7 @@ public:
 	void OnContextMenuAction(int item) override;
 
 	void Draw(const Point& screenPos) override;
-	void Tick(float dt) override;
+	void Tick() override;
 
 	void DoAction();
 

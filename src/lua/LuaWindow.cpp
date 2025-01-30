@@ -69,7 +69,7 @@ LuaWindow::LuaWindow(lua_State *L)
 		}
 		void OnInitialized() override { luaWindow->triggerOnInitialized(); }
 		void OnExit() override { luaWindow->triggerOnExit(); }
-		void OnTick(float dt) override { luaWindow->triggerOnTick( dt); }
+		void OnTick() override { luaWindow->triggerOnTick(); }
 		void OnFocus() override { luaWindow->triggerOnFocus(); }
 		void OnBlur() override { luaWindow->triggerOnBlur(); }
 		void OnTryExit(ExitMethod) override { luaWindow->triggerOnTryExit(); }
@@ -226,12 +226,12 @@ void LuaWindow::triggerOnExit()
 	}
 }
 
-void LuaWindow::triggerOnTick(float dt)
+void LuaWindow::triggerOnTick()
 {
 	if(onTickFunction)
 	{
 		lua_rawgeti(L, LUA_REGISTRYINDEX, onTickFunction);
-		lua_pushnumber(L, dt);
+		lua_pushnumber(L, 1); // this used to be dt, which was measured in 60ths of a second; this hardcodes 60fps
 		if(tpt_lua_pcall(L, 1, 0, 0, eventTraitNone))
 		{
 			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));

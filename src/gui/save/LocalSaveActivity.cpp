@@ -61,7 +61,7 @@ LocalSaveActivity::LocalSaveActivity(std::unique_ptr<SaveFile> newSave, OnSaved 
 	}
 }
 
-void LocalSaveActivity::OnTick(float dt)
+void LocalSaveActivity::OnTick()
 {
 	if (thumbnailRenderer)
 	{

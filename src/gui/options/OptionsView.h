@@ -58,6 +58,6 @@ public:
 	void NotifySettingsChanged(OptionsModel * sender);
 	void AttachController(OptionsController * c_);
 	void OnDraw() override;
-	void OnTick(float dt) final override;
+	void OnTick() final override;
 	void OnTryExit(ExitMethod method) override;
 };

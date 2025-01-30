@@ -69,10 +69,8 @@ namespace ui
 
 		///
 		// Called: Every tick.
-		// Params:
-		//	dt: The change in time.
 		///
-		virtual void Tick(float dt);
+		virtual void Tick();
 
 		///
 		// Called: When ready to draw.

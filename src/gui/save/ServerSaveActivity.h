@@ -45,7 +45,7 @@ public:
 	void ShowRules();
 	void CheckName(String newname);
 	virtual void OnDraw() override;
-	virtual void OnTick(float dt) override;
+	virtual void OnTick() override;
 	virtual ~ServerSaveActivity();
 protected:
 	void AddAuthorInfo();

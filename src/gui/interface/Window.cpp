@@ -260,13 +260,13 @@ void Window::DoTick()
 	//tick
 	for (int i = 0, sz = Components.size(); i < sz && !halt; ++i)
 	{
-		Components[i]->Tick(dt);
+		Components[i]->Tick();
 	}
 
 	halt = false;
 	stop = false;
 
-	OnTick(dt);
+	OnTick();
 
 	if (destruct)
 		finalise();
@@ -614,26 +614,9 @@ void Window::Halt()
 void Window::SetFps(float newFps)
 {
 	fps = newFps;
-	if (std::holds_alternative<FpsLimitExplicit>(fpsLimit))
-	{
-		dt = 60/fps;
-	}
-	else
-	{
-		dt = 1.0f;
-	}
 }
 
 void Window::SetFpsLimit(FpsLimit newFpsLimit)
 {
 	fpsLimit = newFpsLimit;
-	// Populate dt with whatever that makes any sort of sense.
-	if (auto *explicitFpsLimit = std::get_if<FpsLimitExplicit>(&fpsLimit))
-	{
-		SetFps(explicitFpsLimit->value);
-	}
-	else
-	{
-		SetFps(1);
-	}
 }

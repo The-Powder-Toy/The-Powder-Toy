@@ -116,7 +116,7 @@ SaveButton::~SaveButton()
 	}
 }
 
-void SaveButton::Tick(float dt)
+void SaveButton::Tick()
 {
 	if (!thumbnail)
 	{

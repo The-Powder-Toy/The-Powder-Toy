@@ -47,7 +47,7 @@ namespace ui
 		//Get child of this component by index.
 		Component* GetChild(unsigned idx);
 
-		void Tick(float dt) override;
+		void Tick() override;
 		void Draw(const Point& screenPos) override;
 
 		void OnMouseHover(int localx, int localy) override;
@@ -67,7 +67,7 @@ namespace ui
 		std::vector<ui::Component*> children;
 
 		// Overridable. Called by XComponent::Tick()
-		virtual void XTick(float dt);
+		virtual void XTick();
 
 		// Overridable. Called by XComponent::Draw()
 		virtual void XDraw(const Point& screenPos);

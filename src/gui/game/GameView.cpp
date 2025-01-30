@@ -185,16 +185,12 @@ GameView::GameView():
 	currentSaveType(0),
 	lastMenu(-1),
 
-	toolTipPresence(0),
 	toolTip(""),
 	isToolTipFadingIn(false),
 	toolTipPosition(-1, -1),
-	infoTipPresence(0),
 	infoTip(""),
-	buttonTipShow(0),
 	buttonTip(""),
 	isButtonTipFadingIn(false),
-	introText(2048),
 	introTextMessage(IntroText().FromUtf8()),
 
 	doScreenshot(false),
@@ -1728,7 +1724,7 @@ void GameView::SkipIntroText()
 	introText = 0;
 }
 
-void GameView::OnTick(float dt)
+void GameView::OnTick()
 {
 	if (selectMode == PlaceSave && !placeSaveThumb)
 		selectMode = SelectNone;
@@ -1786,50 +1782,20 @@ void GameView::OnTick(float dt)
 		}
 	}
 
-	if(introText)
-	{
-		introText -= int(dt)>0?(int(dt) < 5? int(dt):5):1;
-		if(introText < 0)
-			introText  = 0;
-	}
-	if(infoTipPresence>0)
-	{
-		infoTipPresence -= int(dt)>0?int(dt):1;
-		if(infoTipPresence<0)
-			infoTipPresence = 0;
-	}
+	introText.Tick();
+	infoTipPresence.Tick();
 	if (isButtonTipFadingIn || (selectMode != PlaceSave && selectMode != SelectNone))
 	{
 		isButtonTipFadingIn = false;
-		if(buttonTipShow < 120)
-		{
-			buttonTipShow += int(dt*2)>0?int(dt*2):1;
-			if(buttonTipShow>120)
-				buttonTipShow = 120;
-		}
+		buttonTipShow.MarkGoingUpwardThisTick();
 	}
-	else if(buttonTipShow>0)
-	{
-		buttonTipShow -= int(dt)>0?int(dt):1;
-		if(buttonTipShow<0)
-			buttonTipShow = 0;
-	}
+	buttonTipShow.Tick();
 	if (isToolTipFadingIn)
 	{
 		isToolTipFadingIn = false;
-		if(toolTipPresence < 120)
-		{
-			toolTipPresence += int(dt*2)>0?int(dt*2):1;
-			if(toolTipPresence>120)
-				toolTipPresence = 120;
-		}
+		toolTipPresence.MarkGoingUpwardThisTick();
 	}
-	else if(toolTipPresence>0)
-	{
-		toolTipPresence -= int(dt)>0?int(dt):1;
-		if(toolTipPresence<0)
-			toolTipPresence = 0;
-	}
+	toolTipPresence.Tick();
 }
 
 void GameView::OnSimTick()
@@ -2639,7 +2605,7 @@ void GameView::OnDraw()
 	//Tooltips
 	if(infoTipPresence)
 	{
-		int infoTipAlpha = (infoTipPresence>50?50:infoTipPresence)*5;
+		int infoTipAlpha = (infoTipPresence>50?50:int(infoTipPresence))*5;
 		g->BlendTextOutline({ (XRES - (Graphics::TextSize(infoTip).X - 1)) / 2, YRES / 2 - 2 }, infoTip, 0xFFFFFF_rgb .WithAlpha(infoTipAlpha));
 	}
 

@@ -36,6 +36,6 @@ public:
 	void saveWrite(ByteString finalFilename);
 	void Save();
 	void OnDraw() override;
-	void OnTick(float dt) override;
+	void OnTick() override;
 	virtual ~LocalSaveActivity();
 };

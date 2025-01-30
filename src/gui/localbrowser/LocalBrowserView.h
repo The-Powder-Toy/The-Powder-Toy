@@ -31,7 +31,7 @@ class LocalBrowserView: public ui::Window {
 public:
 	LocalBrowserView();
 	//virtual void OnDraw();
-	void OnTick(float dt) override;
+	void OnTick() override;
 	void AttachController(LocalBrowserController * c_) { c = c_; }
 	void NotifyPageChanged(LocalBrowserModel * sender);
 	void NotifySavesListChanged(LocalBrowserModel * sender);

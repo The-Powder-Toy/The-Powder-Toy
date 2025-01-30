@@ -157,7 +157,7 @@ void Component::Draw(const Point& screenPos)
 	drawn = true;
 }
 
-void Component::Tick(float dt)
+void Component::Tick()
 {
 }
 

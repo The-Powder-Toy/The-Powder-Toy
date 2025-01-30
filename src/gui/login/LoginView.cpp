@@ -108,7 +108,7 @@ void LoginView::NotifyStatusChanged(LoginModel * sender)
 	}
 }
 
-void LoginView::OnTick(float dt)
+void LoginView::OnTick()
 {
 	c->Tick();
 	//if(targetSize != Size)

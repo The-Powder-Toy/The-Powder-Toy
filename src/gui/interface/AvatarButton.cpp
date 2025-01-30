@@ -19,7 +19,7 @@ AvatarButton::AvatarButton(Point position, Point size, ByteString username, int 
 
 }
 
-void AvatarButton::Tick(float dt)
+void AvatarButton::Tick()
 {
 	if (!avatar && !tried && name.size() > 0)
 	{

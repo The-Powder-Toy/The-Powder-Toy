@@ -351,7 +351,7 @@ void ServerSaveActivity::CheckName(String newname)
 		titleLabel->SetText("Upload new simulation:");
 }
 
-void ServerSaveActivity::OnTick(float dt)
+void ServerSaveActivity::OnTick()
 {
 	if (thumbnailRenderer)
 	{

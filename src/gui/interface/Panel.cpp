@@ -87,14 +87,14 @@ void Panel::Draw(const Point& screenPos)
 	GetGraphics()->SwapClipRect(clip); // apply old cliprect
 }
 
-void Panel::Tick(float dt)
+void Panel::Tick()
 {
 	// tick ourself first
-	XTick(dt);
+	XTick();
 
 	// tick our children
 	for(unsigned i = 0; i < children.size(); ++i)
-		children[i]->Tick(dt);
+		children[i]->Tick();
 }
 
 void Panel::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
@@ -305,7 +305,7 @@ void Panel::XDraw(const Point& screenPos)
 {
 }
 
-void Panel::XTick(float dt)
+void Panel::XTick()
 {
 }
 

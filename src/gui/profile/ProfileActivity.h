@@ -33,7 +33,7 @@ class ProfileActivity: public WindowActivity {
 public:
 	ProfileActivity(ByteString username);
 	virtual ~ProfileActivity();
-	void OnTick(float dt) override;
+	void OnTick() override;
 	void OnDraw() override;
 	void OnTryExit(ExitMethod method) override;
 

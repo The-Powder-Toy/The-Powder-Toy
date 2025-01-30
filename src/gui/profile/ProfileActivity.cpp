@@ -197,7 +197,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	scrollPanel->InnerSize = ui::Point(Size.X, currentY);
 }
 
-void ProfileActivity::OnTick(float dt)
+void ProfileActivity::OnTick()
 {
 	if (doError)
 	{

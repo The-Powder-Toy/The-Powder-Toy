@@ -63,6 +63,6 @@ namespace ui
 		void OnMouseMoved(int localx, int localy) override;
 		void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 		void Draw(const Point& screenPos) override;
-		void Tick(float dt) override;
+		void Tick() override;
 	};
 }

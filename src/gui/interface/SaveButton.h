@@ -59,7 +59,7 @@ public:
 	void OnContextMenuAction(int item) override;
 
 	void Draw(const Point& screenPos) override;
-	void Tick(float dt) override;
+	void Tick() override;
 
 	void SetSelected(bool selected_) { selected = selected_; }
 	bool GetSelected() { return selected; }

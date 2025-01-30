@@ -1,6 +1,7 @@
 #pragma once
 #include "common/String.h"
 #include "gui/interface/Window.h"
+#include "gui/interface/Fade.h"
 #include "simulation/Sample.h"
 #include "graphics/FindingElement.h"
 #include "graphics/RendererFrame.h"
@@ -65,16 +66,16 @@ private:
 	int currentSaveType;
 	int lastMenu;
 
-	int toolTipPresence;
+	ui::Fade toolTipPresence{ 0, 0, 120, 120, 60, 1000 };
 	String toolTip;
 	bool isToolTipFadingIn;
 	ui::Point toolTipPosition;
-	int infoTipPresence;
+	ui::Fade infoTipPresence{ 0, 0, 120, 60, 60, 1000 };
 	String infoTip;
-	int buttonTipShow;
+	ui::Fade buttonTipShow{ 0, 0, 120, 120, 60, 1000 };
 	String buttonTip;
 	bool isButtonTipFadingIn;
-	int introText;
+	ui::Fade introText{ 2048, 0, 10000, 60, 60, 1000 };
 	String introTextMessage;
 
 	bool doScreenshot;
@@ -246,7 +247,7 @@ public:
 	void OnMouseWheel(int x, int y, int d) override;
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
-	void OnTick(float dt) override;
+	void OnTick() override;
 	void OnSimTick() override;
 	void OnDraw() override;
 	void OnBlur() override;

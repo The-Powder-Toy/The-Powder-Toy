@@ -24,7 +24,6 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	gameController(gameController),
 	tools(tools),
 	toolTip(""),
-	toolTipPresence(0),
 	shiftPressed(false),
 	ctrlPressed(false),
 	altPressed(false),
@@ -231,22 +230,17 @@ void ElementSearchActivity::OnDraw()
 	}
 }
 
-void ElementSearchActivity::OnTick(float dt)
+void ElementSearchActivity::OnTick()
 {
 	if (exit)
 		Exit();
+
 	if (isToolTipFadingIn)
 	{
 		isToolTipFadingIn = false;
-		if (toolTipPresence < 120)
-			toolTipPresence += int(dt*2)>1?int(dt*2):2;
+		toolTipPresence.MarkGoingUpwardThisTick();
 	}
-	else if (toolTipPresence>0)
-	{
-		toolTipPresence -= int(dt)>0?int(dt):1;
-		if (toolTipPresence<0)
-			toolTipPresence = 0;
-	}
+	toolTipPresence.Tick();
 }
 
 void ElementSearchActivity::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)

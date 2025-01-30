@@ -363,7 +363,7 @@ void PreviewView::OnDraw()
 	}
 }
 
-void PreviewView::OnTick(float dt)
+void PreviewView::OnTick()
 {
 	if(addCommentBox)
 	{

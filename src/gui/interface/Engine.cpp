@@ -17,7 +17,7 @@ Engine::Engine():
 	windowTargetPosition(0, 0),
 	FastQuit(1),
 	GlobalQuit(true),
-	lastTick(0),
+	lastTick(Platform::GetTime()),
 	mouseb_(0),
 	mousex_(0),
 	mousey_(0),

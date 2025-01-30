@@ -3,6 +3,7 @@
 #include "graphics/Graphics.h"
 
 #include "gui/Style.h"
+#include "gui/interface/Engine.h"
 
 #include <algorithm>
 
@@ -73,9 +74,7 @@ void ProgressBar::Draw(const Point &screenPos)
 	}
 }
 
-void ProgressBar::Tick(float dt)
+void ProgressBar::Tick()
 {
-	intermediatePos += 1.0f*dt;
-	if(intermediatePos>100.0f)
-		intermediatePos = 0.0f;
+	intermediatePos = std::fmod(ui::Engine::Ref().LastTick() / 600.f, 100.f);
 }

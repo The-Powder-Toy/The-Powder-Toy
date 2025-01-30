@@ -26,7 +26,7 @@ public:
 	void NotifyDone(Task * task) override;
 	void NotifyProgress(Task * task) override;
 	void NotifyError(Task * task) override;
-	void OnTick(float dt) override;
+	void OnTick() override;
 	void OnDraw() override;
 	void Exit();
 };

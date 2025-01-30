@@ -27,5 +27,5 @@ public:
 	void AttachController(LoginController * c_) { c = c_; }
 	void NotifyStatusChanged(LoginModel * sender);
 	void OnDraw() override;
-	void OnTick(float dt) override;
+	void OnTick() override;
 };

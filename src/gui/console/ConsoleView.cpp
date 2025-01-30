@@ -116,7 +116,7 @@ void ConsoleView::OnDraw()
 	g->BlendLine(Position + Vec2{ 0, Size.Y }, Position + Size, 0xFFFFFF_rgb .WithAlpha(200));
 }
 
-void ConsoleView::OnTick(float dt)
+void ConsoleView::OnTick()
 {
 	if (doClose)
 	{

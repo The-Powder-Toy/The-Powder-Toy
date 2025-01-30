@@ -16,6 +16,6 @@ namespace ui
 		void SetStatus(String status);
 		String GetStatus();
 		void Draw(const Point & screenPos) override;
-		void Tick(float dt) override;
+		void Tick() override;
 	};
 }

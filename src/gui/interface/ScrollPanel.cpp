@@ -171,7 +171,7 @@ void ScrollPanel::XOnMouseMoved(int x, int y)
 	}
 }
 
-void ScrollPanel::XTick(float dt)
+void ScrollPanel::XTick()
 {
 	auto oldViewportPositionY = ViewportPosition.Y;
 

@@ -9,7 +9,7 @@ Spinner::Spinner(Point position, Point size):
 	tickInternal(0)
 {
 }
-void Spinner::Tick(float dt)
+void Spinner::Tick()
 {
 	tickInternal++;
 	if(tickInternal == 4)
