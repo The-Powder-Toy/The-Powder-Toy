@@ -217,9 +217,12 @@ void RenderView::OnTick()
 	if (isToolTipFadingIn)
 	{
 		isToolTipFadingIn = false;
-		toolTipPresence.MarkGoingUpwardThisTick();
+		toolTipPresence.SetTarget(120);
 	}
-	toolTipPresence.Tick();
+	else
+	{
+		toolTipPresence.SetTarget(0);
+	}
 }
 
 void RenderView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)

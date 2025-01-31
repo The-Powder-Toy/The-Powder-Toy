@@ -66,16 +66,16 @@ private:
 	int currentSaveType;
 	int lastMenu;
 
-	ui::Fade toolTipPresence{ 0, 0, 120, 120, 60, 1000 };
+	ui::Fade toolTipPresence{ ui::Fade::LinearProfile{ 120.f, 60.f }, 0, 0 };
 	String toolTip;
 	bool isToolTipFadingIn;
 	ui::Point toolTipPosition;
-	ui::Fade infoTipPresence{ 0, 0, 120, 60, 60, 1000 };
+	ui::Fade infoTipPresence{ ui::Fade::LinearProfile{ 60.f, 60.f }, 0, 0 };
 	String infoTip;
-	ui::Fade buttonTipShow{ 0, 0, 120, 120, 60, 1000 };
+	ui::Fade buttonTipShow{ ui::Fade::LinearProfile{ 120.f, 60.f }, 0, 0 };
 	String buttonTip;
 	bool isButtonTipFadingIn;
-	ui::Fade introText{ 2048, 0, 10000, 60, 60, 1000 };
+	ui::Fade introText{ ui::Fade::LinearProfile{ 60.f, 60.f }, 0, 2048 };
 	String introTextMessage;
 
 	bool doScreenshot;

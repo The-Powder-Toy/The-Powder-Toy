@@ -24,7 +24,7 @@ class ElementSearchActivity: public WindowActivity
 	std::vector<ToolButton*> toolButtons;
 	ui::ScrollPanel *scrollPanel = nullptr;
 	String toolTip;
-	ui::Fade toolTipPresence{ 0, 0, 120, 120, 60, 1000 };
+	ui::Fade toolTipPresence{ ui::Fade::LinearProfile{ 120.f, 60.f }, 0, 0 };
 	bool shiftPressed;
 	bool ctrlPressed;
 	bool altPressed;

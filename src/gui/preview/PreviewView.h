@@ -4,6 +4,7 @@
 #include <vector>
 #include "common/String.h"
 #include "gui/interface/Window.h"
+#include "gui/interface/Fade.h"
 #include "simulation/MissingElements.h"
 
 namespace http
@@ -63,10 +64,10 @@ class PreviewView: public ui::Window
 	bool isRefreshingComments = false;
 
 	int commentBoxHeight;
-	float commentBoxPositionX;
-	float commentBoxPositionY;
-	float commentBoxSizeX;
-	float commentBoxSizeY;
+	ui::Fade commentBoxPositionX{ ui::Fade::BasicDimensionProfile };
+	ui::Fade commentBoxPositionY{ ui::Fade::BasicDimensionProfile };
+	ui::Fade commentBoxSizeX{ ui::Fade::BasicDimensionProfile };
+	ui::Fade commentBoxSizeY{ ui::Fade::BasicDimensionProfile };
 	bool commentHelpText;
 
 	std::set<String> swearWords;

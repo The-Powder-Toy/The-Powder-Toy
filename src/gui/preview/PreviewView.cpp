@@ -209,10 +209,10 @@ void PreviewView::commentBoxAutoHeight()
 		addCommentBox->Size.Y = oldSize;
 
 		commentBoxHeight = newSize+22;
-		commentBoxPositionX = (XRES/2)+4;
-		commentBoxPositionY = float(Size.Y-(newSize+21));
-		commentBoxSizeX = float(Size.X-(XRES/2)-8);
-		commentBoxSizeY = float(newSize);
+		commentBoxPositionX.SetTarget((XRES/2)+4);
+		commentBoxPositionY.SetTarget(float(Size.Y-(newSize+21)));
+		commentBoxSizeX.SetTarget(float(Size.X-(XRES/2)-8));
+		commentBoxSizeY.SetTarget(float(newSize));
 
 		if (commentWarningLabel && commentHelpText && !commentWarningLabel->Visible && addCommentBox->Position.Y+addCommentBox->Size.Y < Size.Y-14)
 		{
@@ -224,10 +224,10 @@ void PreviewView::commentBoxAutoHeight()
 		commentBoxHeight = 20;
 		addCommentBox->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 
-		commentBoxPositionX = (XRES/2)+4;
-		commentBoxPositionY = float(Size.Y-19);
-		commentBoxSizeX = float(Size.X-(XRES/2)-48);
-		commentBoxSizeY = 17;
+		commentBoxPositionX.SetTarget((XRES/2)+4);
+		commentBoxPositionY.SetTarget(float(Size.Y-19));
+		commentBoxSizeX.SetTarget(float(Size.X-(XRES/2)-48));
+		commentBoxSizeY.SetTarget(17);
 
 		if (commentWarningLabel && commentWarningLabel->Visible)
 		{
@@ -367,40 +367,19 @@ void PreviewView::OnTick()
 {
 	if(addCommentBox)
 	{
-		ui::Point positionDiff = ui::Point(int(commentBoxPositionX), int(commentBoxPositionY))-addCommentBox->Position;
-		ui::Point sizeDiff = ui::Point(int(commentBoxSizeX), int(commentBoxSizeY))-addCommentBox->Size;
+		addCommentBox->Position.X = commentBoxPositionX;
+		addCommentBox->Position.Y = commentBoxPositionY;
 
-		if(positionDiff.X!=0)
+		if(addCommentBox->Size.X != commentBoxSizeX)
 		{
-			int xdiff = positionDiff.X/5;
-			if(xdiff == 0)
-				xdiff = 1*isign(positionDiff.X);
-			addCommentBox->Position.X += xdiff;
-		}
-		if(positionDiff.Y!=0)
-		{
-			int ydiff = positionDiff.Y/5;
-			if(ydiff == 0)
-				ydiff = 1*isign(positionDiff.Y);
-			addCommentBox->Position.Y += ydiff;
-		}
-
-		if(sizeDiff.X!=0)
-		{
-			int xdiff = sizeDiff.X/5;
-			if(xdiff == 0)
-				xdiff = 1*isign(sizeDiff.X);
-			addCommentBox->Size.X += xdiff;
+			addCommentBox->Size.X = commentBoxSizeX;
 			addCommentBox->Invalidate();
 			commentBoxAutoHeight(); //make sure textbox height is correct after resizes
 			addCommentBox->resetCursorPosition(); //make sure cursor is in correct position after resizes
 		}
-		if(sizeDiff.Y!=0)
+		if(addCommentBox->Size.Y != commentBoxSizeY)
 		{
-			int ydiff = sizeDiff.Y/5;
-			if(ydiff == 0)
-				ydiff = 1*isign(sizeDiff.Y);
-			addCommentBox->Size.Y += ydiff;
+			addCommentBox->Size.Y = commentBoxSizeY;
 			addCommentBox->Invalidate();
 		}
 		commentsPanel->Size.Y = addCommentBox->Position.Y-1;
@@ -656,12 +635,15 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	}
 	if(sender->GetCommentBoxEnabled())
 	{
-		commentBoxPositionX = (XRES/2)+4;
-		commentBoxPositionY = float(Size.Y-19);
-		commentBoxSizeX = float(Size.X-(XRES/2)-48);
-		commentBoxSizeY = 17;
-
 		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", "Add Comment");
+		commentBoxPositionX.SetTarget(addCommentBox->Position.X);
+		commentBoxPositionX.SetValue(addCommentBox->Position.X);
+		commentBoxPositionY.SetTarget(addCommentBox->Position.Y);
+		commentBoxPositionY.SetValue(addCommentBox->Position.Y);
+		commentBoxSizeX.SetTarget(addCommentBox->Size.X);
+		commentBoxSizeX.SetValue(addCommentBox->Size.X);
+		commentBoxSizeY.SetTarget(addCommentBox->Size.Y);
+		commentBoxSizeY.SetValue(addCommentBox->Size.Y);
 		addCommentBox->SetActionCallback({ [this] {
 			CheckComment();
 			commentBoxAutoHeight();

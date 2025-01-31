@@ -1,54 +1,62 @@
 #include "Fade.h"
 #include "Engine.h"
-#include <algorithm>
 
 namespace ui
 {
-	constexpr int64_t bias = 1000;
-
-	void Fade::SetRange(int newMinValue, int newMaxValue)
+	void Fade::SetTarget(float newTarget)
 	{
-		minValueBiased = int64_t(newMinValue) * bias;
-		maxValueBiased = int64_t(newMaxValue) * bias;
-		SetValue(newMinValue);
-	}
-
-	void Fade::SetRateOfChange(int changeUpward, int changeDownward, int ticks)
-	{
-		changeUpwardBiased = changeUpward * bias / ticks;
-		changeDownwardBiased = changeDownward * bias / ticks;
-	}
-
-	void Fade::MarkGoingUpwardThisTick()
-	{
-		goingUpwardThisTick = true;
-	}
-
-	void Fade::Tick()
-	{
-		auto nextGoingUpward = goingUpwardThisTick;
-		goingUpwardThisTick = false;
-		if (goingUpward != nextGoingUpward)
+		if (target == newTarget)
 		{
-			SetValue(GetValue());
-			goingUpward = nextGoingUpward;
+			return;
 		}
+		auto value = GetValue();
+		target = newTarget;
+		SetValue(value);
 	}
 
-	void Fade::SetValue(int newValue)
+	void Fade::SetProfile(Profile newProfile)
 	{
-		uint64_t now = Engine::Ref().LastTick();
-		referenceValueBiased = newValue * bias;
-		referenceTime = now;
+		profile = newProfile;
 	}
 
-	int Fade::GetValue() const
+	void Fade::SetValue(float newValue)
 	{
-		uint64_t now = Engine::Ref().LastTick();
-		auto minValueNow = goingUpward ? referenceValueBiased : minValueBiased;
-		auto maxValueNow = goingUpward ? maxValueBiased : referenceValueBiased;
-		auto changeNow   = goingUpward ? changeUpwardBiased : changeDownwardBiased;
-		auto diff = std::min(int64_t(now - referenceTime), (maxValueNow - minValueNow) / changeNow);
-		return int(goingUpward ? (minValueNow + changeNow * diff) : (maxValueNow - changeNow * diff)) / bias;
+		referenceTick = int64_t(Engine::Ref().LastTick());
+		referenceValue = newValue;
+	}
+
+	float Fade::GetValue() const
+	{
+		constexpr auto tickBias = 1000.f;
+		auto nowTick = int64_t(Engine::Ref().LastTick());
+		auto diffTick = nowTick - referenceTick;
+		if (auto *linearProfile = std::get_if<LinearProfile>(&profile))
+		{
+			auto change = linearProfile->change;
+			if (target < referenceValue)
+			{
+				if (linearProfile->changeDownward.has_value())
+				{
+					change = *linearProfile->changeDownward;
+				}
+				change = -change;
+			}
+			auto maxDiffTick = int64_t((target - referenceValue) / change * tickBias);
+			if (diffTick >= maxDiffTick)
+			{
+				return target;
+			}
+			return referenceValue + diffTick * change / tickBias;
+		}
+		if (auto *exponentialProfile = std::get_if<ExponentialProfile>(&profile))
+		{
+			auto maxDiffTick = int64_t(std::log(exponentialProfile->margin / std::abs(referenceValue - target)) / std::log(exponentialProfile->decay) * tickBias);
+			if (diffTick >= maxDiffTick)
+			{
+				return target;
+			}
+			return target + (referenceValue - target) * std::pow(exponentialProfile->decay, diffTick / tickBias);
+		}
+		return 0.f;
 	}
 }

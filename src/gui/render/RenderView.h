@@ -20,7 +20,7 @@ class RenderView: public ui::Window {
 	std::vector<ModeCheckbox *> displayModes;
 	std::vector<ModeCheckbox *> colourModes;
 	String toolTip;
-	ui::Fade toolTipPresence{ 0, 0, 120, 120, 60, 1000 };
+	ui::Fade toolTipPresence{ ui::Fade::LinearProfile{ 120.f, 60.f }, 0, 0 };
 	bool isToolTipFadingIn;
 	int line1, line2, line3, line4;
 	uint32_t CalculateRenderMode();

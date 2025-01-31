@@ -1782,20 +1782,24 @@ void GameView::OnTick()
 		}
 	}
 
-	introText.Tick();
-	infoTipPresence.Tick();
 	if (isButtonTipFadingIn || (selectMode != PlaceSave && selectMode != SelectNone))
 	{
 		isButtonTipFadingIn = false;
-		buttonTipShow.MarkGoingUpwardThisTick();
+		buttonTipShow.SetTarget(120);
 	}
-	buttonTipShow.Tick();
+	else
+	{
+		buttonTipShow.SetTarget(0);
+	}
 	if (isToolTipFadingIn)
 	{
 		isToolTipFadingIn = false;
-		toolTipPresence.MarkGoingUpwardThisTick();
+		toolTipPresence.SetTarget(120);
 	}
-	toolTipPresence.Tick();
+	else
+	{
+		toolTipPresence.SetTarget(0);
+	}
 }
 
 void GameView::OnSimTick()

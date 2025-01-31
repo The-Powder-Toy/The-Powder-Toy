@@ -79,7 +79,7 @@ void TaskWindow::NotifyProgress(Task * task)
 
 void TaskWindow::OnTick()
 {
-	intermediatePos = std::fmod(ui::Engine::Ref().LastTick() / 600.f, 100.f);
+	intermediatePos = std::fmod(ui::Engine::Ref().LastTick() * 0.06f, 100.f);
 	task->Poll();
 	if (done)
 		Exit();

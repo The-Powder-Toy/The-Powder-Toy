@@ -1,43 +1,65 @@
 #pragma once
 #include <cstdint>
+#include <variant>
+#include <optional>
 
 namespace ui
 {
 	class Fade
 	{
 	public:
-		int64_t minValueBiased;       // real value * 1000
-		int64_t maxValueBiased;       // real value * 1000
-		int64_t referenceValueBiased; // real value * 1000
-		int64_t changeUpwardBiased;   // real value * 1000
-		int64_t changeDownwardBiased; // real value * 1000
-		bool goingUpwardThisTick = false;
-		bool goingUpward = false;
-		uint64_t referenceTime = 0;
-
-		Fade(int currentValue, int minValue, int maxValue, int changeUpward, int changeDownward, int ticks)
+		struct LinearProfile
 		{
-			SetRange(minValue, maxValue);
-			SetRateOfChange(changeUpward, changeDownward, ticks);
-			SetValue(currentValue);
+			float change; // per second
+			std::optional<float> changeDownward; // per second, ::change is upward change if set
+		};
+		struct ExponentialProfile
+		{
+			float decay; // per second
+			float margin; // unit
+		};
+		using Profile = std::variant<
+			LinearProfile,
+			ExponentialProfile
+		>;
+
+	private:
+		float target = 0;
+		int64_t referenceTick = 0;
+		float referenceValue = 0;
+		Profile profile;
+
+	public:
+		Fade(Profile newProfile, float newTarget = 0.f)
+		{
+			SetProfile(newProfile);
+			SetTarget(newTarget);
+			SetValue(newTarget);
 		}
 
-		void SetRange(int newMinValue, int newMaxValue);
-		void SetRateOfChange(int changeUpward, int changeDownward, int ticks);
-		void MarkGoingUpwardThisTick(); // this is retained until the next Tick call
-		void Tick();
-		void SetValue(int newValue);
-		int GetValue() const;
+		Fade(Profile newProfile, float newTarget, float newValue)
+		{
+			SetProfile(newProfile);
+			SetTarget(newTarget);
+			SetValue(newValue);
+		}
+
+		void SetTarget(float newTarget);
+		void SetProfile(Profile newProfile);
+		void SetValue(float newValue);
+		float GetValue() const;
 
 		operator int() const
 		{
-			return GetValue();
+			return int(GetValue());
 		}
 
 		Fade &operator =(int newValue)
 		{
-			SetValue(newValue);
+			SetValue(float(newValue));
 			return *this;
 		}
+
+		static constexpr ExponentialProfile BasicDimensionProfile{ 1.532496e-06f, 0.5f };
 	};
 }

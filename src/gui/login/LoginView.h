@@ -1,5 +1,6 @@
 #pragma once
 #include "gui/interface/Window.h"
+#include "gui/interface/Fade.h"
 
 namespace ui
 {
@@ -19,7 +20,7 @@ class LoginView: public ui::Window
 	ui::Label *infoLabel{};
 	ui::Textbox *usernameField{};
 	ui::Textbox *passwordField{};
-	ui::Point targetSize;
+	ui::Fade targetSize{ ui::Fade::BasicDimensionProfile };
 public:
 	LoginView();
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;

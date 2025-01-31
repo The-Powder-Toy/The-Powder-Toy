@@ -21,9 +21,10 @@ LoginView::LoginView():
 	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), "Server login")),
 	infoLabel(new ui::RichLabel(ui::Point(6, 67), ui::Point(200-12, 16), "")),
 	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), Client::Ref().GetAuthUser().Username.FromUtf8(), "[username]")),
-	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", "[password]")),
-	targetSize(defaultSize)
+	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", "[password]"))
 {
+	targetSize.SetTarget(Size.Y);
+	targetSize.SetValue(Size.Y);
 	FocusComponent(usernameField);
 
 	infoLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -97,10 +98,13 @@ void LoginView::NotifyStatusChanged(LoginModel * sender)
 	cancelButton->Enabled = notWorking && userID;
 	usernameField->Enabled = notWorking;
 	passwordField->Enabled = notWorking;
-	targetSize = defaultSize;
 	if (infoLabel->Visible)
 	{
-		targetSize.Y += infoLabel->Size.Y;
+		targetSize.SetTarget(defaultSize.Y + infoLabel->Size.Y);
+	}
+	else
+	{
+		targetSize.SetTarget(defaultSize.Y);
 	}
 	if (sender->GetStatus() == loginSucceeded)
 	{
@@ -111,27 +115,9 @@ void LoginView::NotifyStatusChanged(LoginModel * sender)
 void LoginView::OnTick()
 {
 	c->Tick();
-	//if(targetSize != Size)
-	{
-		ui::Point difference = targetSize-Size;
-		if(difference.X!=0)
-		{
-			int xdiff = difference.X/5;
-			if(xdiff == 0)
-				xdiff = 1*isign(difference.X);
-			Size.X += xdiff;
-		}
-		if(difference.Y!=0)
-		{
-			int ydiff = difference.Y/5;
-			if(ydiff == 0)
-				ydiff = 1*isign(difference.Y);
-			Size.Y += ydiff;
-		}
-
-		loginButton->Position.Y = Size.Y-17;
-		cancelButton->Position.Y = Size.Y-17;
-	}
+	Size.Y = targetSize.GetValue();
+	loginButton->Position.Y = Size.Y-17;
+	cancelButton->Position.Y = Size.Y-17;
 }
 
 void LoginView::OnDraw()

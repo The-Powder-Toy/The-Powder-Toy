@@ -14,14 +14,13 @@ ScrollPanel::ScrollPanel(Point position, Point size):
 	maxOffset(0, 0),
 	offsetX(0),
 	offsetY(0),
-	yScrollVel(0.0f),
-	xScrollVel(0.0f),
 	isMouseInsideScrollbar(false),
 	isMouseInsideScrollbarArea(false),
 	scrollbarSelected(false),
 	scrollbarInitialYOffset(0),
 	scrollbarInitialYClick(0),
-	scrollbarClickLocation(0)
+	scrollbarClickLocation(0),
+	scrollLastTick(int64_t(Engine::Ref().LastTick()))
 {
 }
 
@@ -45,9 +44,9 @@ void ScrollPanel::XOnMouseWheelInside(int localx, int localy, int d)
 	if (!d)
 		return;
 	if (ui::Engine::Ref().MomentumScroll)
-		yScrollVel -= d * 2;
+		yScrollVel.SetValue(yScrollVel.GetValue() - d * 2);
 	else
-		yScrollVel -= d * 20;
+		yScrollVel.SetValue(yScrollVel.GetValue() - d * 20);
 }
 
 void ScrollPanel::Draw(const Point& screenPos)
@@ -109,7 +108,7 @@ void ScrollPanel::XOnMouseUp(int x, int y, unsigned int button)
 		{
 			auto offsetYDiff = oldPanHistory.back()->offsetY - (*it)->offsetY;
 			auto tickDiff = oldPanHistory.back()->ticks - (*it)->ticks;
-			yScrollVel += offsetYDiff / tickDiff * (1000.f / Engine::Ref().GetFps());
+			yScrollVel.SetValue(yScrollVel.GetValue() + offsetYDiff / tickDiff * (1000.f / Engine::Ref().GetFps()));
 		}
 	}
 	isMouseInsideScrollbarArea = false;
@@ -198,22 +197,23 @@ void ScrollPanel::XTick()
 	maxOffset.X = std::max(0, maxOffset.X);
 
 	auto oldOffsetY = int(offsetY);
-	offsetY += yScrollVel;
-	offsetX += xScrollVel;
-
-
-	if (ui::Engine::Ref().MomentumScroll)
 	{
-		if (yScrollVel > -0.5f && yScrollVel < 0.5)
-			yScrollVel = 0;
-		yScrollVel *= 0.98f;
+		// the correct way to do this would be to add another profile to ui::Fade that analytically
+		// integrates the value of the fade and assign that here; way too much hassle for now though
+		auto now = int64_t(Engine::Ref().LastTick());
+		auto diff = now - scrollLastTick;
+		scrollLastTick = now;
+		offsetY += yScrollVel * diff * 0.06f;
+		offsetX += xScrollVel * diff * 0.06f;
 	}
-	else
+
+
+	if (!ui::Engine::Ref().MomentumScroll)
 	{
 		yScrollVel = 0.0f;
+		xScrollVel = 0.0f;
 	}
 
-	xScrollVel*=0.98f;
 
 	if (oldOffsetY!=int(offsetY))
 	{
