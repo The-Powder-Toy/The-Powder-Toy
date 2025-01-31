@@ -49,48 +49,6 @@ option(
 	description: 'Snapshot build'
 )
 option(
-	'display_version_major',
-	type: 'integer',
-	min: 0,
-	value: 99,
-	description: 'Major component of the display version, should more or less map to the MINOR version in semantic versioning'
-)
-option(
-	'display_version_minor',
-	type: 'integer',
-	min: 0,
-	value: 3,
-	description: 'Minor component of the display version, should more or less map to the PATCH version in semantic versioning'
-)
-option(
-	'build_num',
-	type: 'integer',
-	min: 0,
-	value: 386,
-	description: 'Build number, should be strictly monotonously increasing across public releases'
-)
-option(
-	'upstream_version_major',
-	type: 'integer',
-	min: 0,
-	value: 99,
-	description: 'Major component of the upstream display version, mod owners should not change this but merge upstream changes to it'
-)
-option(
-	'upstream_version_minor',
-	type: 'integer',
-	min: 0,
-	value: 3,
-	description: 'Minor component of the upstream display version, mod owners should not change this but merge upstream changes to it'
-)
-option(
-	'upstream_build_num',
-	type: 'integer',
-	min: 0,
-	value: 386,
-	description: 'Upstream build number, mod owners should not change this but merge upstream changes to it'
-)
-option(
 	'mod_id',
 	type: 'integer',
 	min: 0,
@@ -265,6 +223,12 @@ option(
 	'prepare',
 	type: 'boolean',
 	value: false,
+	description: 'Used by ghactions workflows, not useful otherwise'
+)
+option(
+	'override_display_version',
+	type: 'string',
+	value: '',
 	description: 'Used by ghactions workflows, not useful otherwise'
 )
 option(

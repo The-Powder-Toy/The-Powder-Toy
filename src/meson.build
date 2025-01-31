@@ -1,5 +1,18 @@
 conf_data = configuration_data()
 
+upstream_version = meson.project_version()
+upstream_version_components = upstream_version.split('-')
+if upstream_version_components.length() > 1
+	upstream_version = upstream_version_components[upstream_version_components.length() - 1]
+endif
+display_version = upstream_version
+override_display_version = get_option('override_display_version')
+if override_display_version != ''
+	display_version = override_display_version
+endif
+display_version = display_version.split('.')
+upstream_version = upstream_version.split('.')
+
 app_id = get_option('app_id')
 mod_id = get_option('mod_id')
 is_snapshot = get_option('snapshot')
@@ -11,12 +24,12 @@ conf_data.set('MOD_ID', mod_id)
 conf_data.set('DEBUG', is_debug.to_string())
 conf_data.set('MOD', is_mod.to_string())
 conf_data.set('SNAPSHOT', is_snapshot.to_string())
-conf_data.set('DISPLAY_VERSION_MAJOR', get_option('display_version_major'))
-conf_data.set('DISPLAY_VERSION_MINOR', get_option('display_version_minor'))
-conf_data.set('BUILD_NUM', get_option('build_num'))
-conf_data.set('UPSTREAM_VERSION_MAJOR', get_option('upstream_version_major'))
-conf_data.set('UPSTREAM_VERSION_MINOR', get_option('upstream_version_minor'))
-conf_data.set('UPSTREAM_BUILD_NUM', get_option('upstream_build_num'))
+conf_data.set('DISPLAY_VERSION_MAJOR', display_version[0].to_int())
+conf_data.set('DISPLAY_VERSION_MINOR', display_version[1].to_int())
+conf_data.set('BUILD_NUM', display_version[2].to_int())
+conf_data.set('UPSTREAM_VERSION_MAJOR', upstream_version[0].to_int())
+conf_data.set('UPSTREAM_VERSION_MINOR', upstream_version[1].to_int())
+conf_data.set('UPSTREAM_BUILD_NUM', upstream_version[2].to_int())
 conf_data.set('MANIFEST_COPYRIGHT', get_option('manifest_copyright'))
 conf_data.set('MANIFEST_MACOS_MIN_VER', get_option('manifest_macos_min_ver'))
 conf_data.set('MANIFEST_DATE', get_option('manifest_date'))
