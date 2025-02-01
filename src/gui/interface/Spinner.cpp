@@ -16,8 +16,8 @@ void Spinner::Draw(const Point& screenPos)
 	int baseY = screenPos.Y+(Size.Y/2);
 	int lineInner = (Size.X/2);
 	int lineOuter = (Size.X/2)+3;
-	auto cValue = std::floor(ui::Engine::Ref().LastTick() * 0.015f) * 0.25f;
-	for(float t = 0.0f; t < 6.0f; t+=0.25f)
+	auto cValue = std::floor(ui::Engine::Ref().LastTick() * 0.015) * 0.25;
+	for(double t = 0.0; t < 6.0; t+=0.25)
 	{
 		g->DrawLine(
 			{ int(baseX+(std::sin(cValue+t)*lineInner)), int(baseY+(std::cos(cValue+t)*lineInner)) },

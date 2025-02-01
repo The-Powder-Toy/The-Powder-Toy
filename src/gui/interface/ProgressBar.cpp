@@ -76,5 +76,5 @@ void ProgressBar::Draw(const Point &screenPos)
 
 void ProgressBar::Tick()
 {
-	intermediatePos = std::fmod(ui::Engine::Ref().LastTick() * 0.06f, 100.f);
+	intermediatePos = float(std::fmod(ui::Engine::Ref().LastTick() * 0.06, 100.0));
 }
