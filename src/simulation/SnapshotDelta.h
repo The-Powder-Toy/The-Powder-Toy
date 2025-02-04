@@ -50,6 +50,7 @@ struct SnapshotDelta
 	std::vector<Particle> extraPartsOld, extraPartsNew;
 
 	HunkVector<float> GravMass;
+	HunkVector<uint32_t> GravMask;
 	HunkVector<float> GravForceX;
 	HunkVector<float> GravForceY;
 

@@ -32,6 +32,7 @@ std::unique_ptr<Snapshot> Simulation::CreateSnapshot() const
 	snap->stickmen       .push_back(player2);
 	snap->stickmen       .push_back(player);
 	snap->GravMass  .insert(snap->GravMass  .begin(), &gravIn.mass[{ 0, 0 }]   , &gravIn.mass[{ 0, 0 }]    + NCELL);
+	snap->GravMask  .insert(snap->GravMask  .begin(), &gravIn.mask[{ 0, 0 }]   , &gravIn.mask[{ 0, 0 }]    + NCELL);
 	snap->GravForceX.insert(snap->GravForceX.begin(), &gravOut.forceX[{ 0, 0 }], &gravOut.forceX[{ 0, 0 }] + NCELL);
 	snap->GravForceY.insert(snap->GravForceY.begin(), &gravOut.forceY[{ 0, 0 }], &gravOut.forceY[{ 0, 0 }] + NCELL);
 	snap->signs = signs;
@@ -69,6 +70,7 @@ void Simulation::Restore(const Snapshot &snap)
 		GravityInput newGravIn;
 		GravityOutput newGravOut;
 		std::copy(snap.GravMass  .begin(), snap.GravMass  .end(), &newGravIn.mass[{ 0, 0 }]   );
+		std::copy(snap.GravMask  .begin(), snap.GravMask  .end(), &newGravIn.mask[{ 0, 0 }]   );
 		std::copy(snap.GravForceX.begin(), snap.GravForceX.end(), &newGravOut.forceX[{ 0, 0 }]);
 		std::copy(snap.GravForceY.begin(), snap.GravForceY.end(), &newGravOut.forceY[{ 0, 0 }]);
 		// we apply the old grav values but Newtonian gravity enable state is not part of the snapshot so this may be pointless
