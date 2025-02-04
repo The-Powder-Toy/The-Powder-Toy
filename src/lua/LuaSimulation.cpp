@@ -206,6 +206,14 @@ static int gravityMass(lua_State *L)
 	});
 }
 
+static int gravityMask(lua_State *L)
+{
+	auto *lsi = GetLSI();
+	return LuaBlockMap(L, [lsi](Vec2<int> p) -> uint32_t & {
+		return lsi->sim->gravIn.mask[p];
+	});
+}
+
 static int gravityField(lua_State *L)
 {
 	auto *lsi = GetLSI();
@@ -1931,6 +1939,7 @@ void LuaSimulation::Open(lua_State *L)
 		LFUNC(ensureDeterminism),
 		LFUNC(paused),
 		LFUNC(gravityMass),
+		LFUNC(gravityMask),
 		LFUNC(gravityField),
 		LFUNC(resetSpark),
 		LFUNC(resetVelocity),

@@ -3595,7 +3595,7 @@ void Simulation::BeforeSim()
 			air->update_airh();
 
 		DispatchNewtonianGravity();
-		// gravIn is now potentially garbage, which is ok, we were going to clear it for the frame anyway
+		// gravIn::mass is now potentially garbage, which is ok, we were going to clear it for the frame anyway
 		for (auto p : gravIn.mass.Size().OriginRect())
 		{
 			gravIn.mass[p] = 0.f;
