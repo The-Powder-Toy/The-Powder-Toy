@@ -709,8 +709,8 @@ static int toolBox(lua_State *L)
 	int tool = luaL_optint(L,5,0);
 	float strength = luaL_optnumber(L,6,1.0f);
 	int brushID = luaL_optint(L,7,BRUSH_CIRCLE);
-	int rx = luaL_optint(L,5,0);
-	int ry = luaL_optint(L,6,0);
+	int rx = luaL_optint(L,8,0);
+	int ry = luaL_optint(L,9,0);
 	auto *lsi = GetLSI();
 	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
 	if (!brush)
