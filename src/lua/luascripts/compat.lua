@@ -56,15 +56,15 @@ tpt.get_numOfParts      = sim.partCount
 ui.MOUSE_UP_BLUR        = ui.MOUSEUP_BLUR
 ui.MOUSE_UP_DRAW_END    = ui.MOUSEUP_DRAWEND
 ui.MOUSE_UP_NORMAL      = ui.MOUSEUP_NORMAL
-sim.TOOL_HEAT           = tools.DEFAULT_TOOL_HEAT
-sim.TOOL_COOL           = tools.DEFAULT_TOOL_COOL
-sim.TOOL_VAC            = tools.DEFAULT_TOOL_VAC
-sim.TOOL_PGRV           = tools.DEFAULT_TOOL_PGRV
-sim.TOOL_AIR            = tools.DEFAULT_TOOL_AIR
-sim.TOOL_NGRV           = tools.DEFAULT_TOOL_NGRV
-sim.TOOL_MIX            = tools.DEFAULT_TOOL_MIX
-sim.TOOL_CYCL           = tools.DEFAULT_TOOL_CYCL
-sim.TOOL_WIND           = tools.DEFAULT_TOOL_WIND
+sim.TOOL_HEAT           = tools.index.DEFAULT_TOOL_HEAT
+sim.TOOL_COOL           = tools.index.DEFAULT_TOOL_COOL
+sim.TOOL_VAC            = tools.index.DEFAULT_TOOL_VAC
+sim.TOOL_PGRV           = tools.index.DEFAULT_TOOL_PGRV
+sim.TOOL_AIR            = tools.index.DEFAULT_TOOL_AIR
+sim.TOOL_NGRV           = tools.index.DEFAULT_TOOL_NGRV
+sim.TOOL_MIX            = tools.index.DEFAULT_TOOL_MIX
+sim.TOOL_CYCL           = tools.index.DEFAULT_TOOL_CYCL
+sim.TOOL_WIND           = tools.index.DEFAULT_TOOL_WIND
 if socket then
 	socket.gettime = socket.getTime
 end
