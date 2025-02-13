@@ -53,18 +53,21 @@ AnyType::operator StringType()
 
 AnyType::operator PointType()
 {
-	if(type == TypePoint)
+	if (type == TypePoint)
 	{
 		return PointType(std::get<ui::Point>(value));
 	}
-	else if(type == TypeString)
+	else if (type == TypeString)
 	{
 		int x, y;
-		if(String::Split comma = std::get<String>(value).SplitNumber(x))
-			if(comma.After().BeginsWith(","))
-				if(String::Split end = comma.After().Substr(1).SplitNumber(y))
-					if(!end.After().size())
+		if (String::Split comma = std::get<String>(value).SplitNumber(x))
+			if (comma.After().BeginsWith(","))
+			{
+				String after = comma.After().Substr(1);
+				if (String::Split end = after.SplitNumber(y))
+					if (!end.After().size())
 						return PointType(x, y);
+			}
 		throw InvalidConversionException(type, TypePoint);
 	}
 	else
