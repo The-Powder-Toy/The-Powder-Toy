@@ -361,6 +361,21 @@ AnyType CommandInterface::tptS_set(std::deque<String> * words)
 	}
 	auto &propInfo = Particle::GetProperties()[*prop];
 
+	// convert non-string temperature values to strings so format::StringToTemperature can take care of them
+	if (property.Value() == "temp")
+	{
+		switch (value.GetType())
+		{
+			case TypeNumber:
+				value = StringType(String::Build(((NumberType)value).Value()));
+			break;
+			case TypeFloat:
+				value = StringType(String::Build(((FloatType)value).Value()));
+			break;
+			default:
+				break;
+		}
+	}
 	// assume that value can be anything
 	if (value.GetType() == TypeNumber && propInfo.Type == StructProperty::Float)
 	{
