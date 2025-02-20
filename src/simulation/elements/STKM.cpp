@@ -709,25 +709,25 @@ void Element_STKM_init_legs(Simulation * sim, playerst *playerp, int i)
 	x = (int)(sim->parts[i].x+0.5f);
 	y = (int)(sim->parts[i].y+0.5f);
 
-	playerp->legs[0] = float(x+2);
-	playerp->legs[1] = float(y+5);
-	playerp->legs[2] = float(x+2);
-	playerp->legs[3] = float(y+5);
+	playerp->legs[0] = float(x-1);
+	playerp->legs[1] = float(y+6);
+	playerp->legs[2] = float(x-1);
+	playerp->legs[3] = float(y+6);
 
-	playerp->legs[4] = float(x+2);
-	playerp->legs[5] = float(y+10);
-	playerp->legs[6] = float(x+2);
-	playerp->legs[7] = float(y+10);
+	playerp->legs[4] = float(x-3);
+	playerp->legs[5] = float(y+12);
+	playerp->legs[6] = float(x-3);
+	playerp->legs[7] = float(y+12);
 
-	playerp->legs[8] = float(x-2);
-	playerp->legs[9] = float(y+5);
-	playerp->legs[10] = float(x-2);
-	playerp->legs[11] = float(y+5);
+	playerp->legs[8] = float(x+1);
+	playerp->legs[9] = float(y+6);
+	playerp->legs[10] = float(x+1);
+	playerp->legs[11] = float(y+6);
 
-	playerp->legs[12] = float(x-2);
-	playerp->legs[13] = float(y+10);
-	playerp->legs[14] = float(x-2);
-	playerp->legs[15] = float(y+10);
+	playerp->legs[12] = float(x+3);
+	playerp->legs[13] = float(y+12);
+	playerp->legs[14] = float(x+3);
+	playerp->legs[15] = float(y+12);
 
 	for (int i = 0; i < 8; i++)
 		playerp->accs[i] = 0;
