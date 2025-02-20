@@ -58,6 +58,8 @@ simulation_elem_names = [
 	'SWCH',
 	'SMKE',
 	'DESL',
+	'GSOL',
+	'GSLV',
 	'COAL',
 	'LO2',
 	'O2',
