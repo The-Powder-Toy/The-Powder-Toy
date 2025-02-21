@@ -123,7 +123,7 @@ void GameSave::MapPalette()
 				found = info;
 			}
 		}
-		for (int i = 1; i < found.maxValid; i++)
+		for (int i = 1; i <= found.maxValid; i++)
 		{
 			if (i >= found.golHoleFirst && i <= found.golHoleLast)
 			{
