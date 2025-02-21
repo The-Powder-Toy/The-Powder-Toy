@@ -47,8 +47,8 @@ void Element::Element_HEAC()
 	Update = &update;
 }
 
-static const auto isInsulator = [](Simulation* sim, int i) -> bool {
-	return i && sim->IsHeatInsulator(sim->parts[ID(i)]);
+static const auto isInsulator = [](Simulation* sim, int p) -> bool {
+	return p && sim->IsHeatInsulator(sim->parts[ID(p)]);
 };
 
 // If this is used elsewhere (GOLD), it should be moved into Simulation.h
