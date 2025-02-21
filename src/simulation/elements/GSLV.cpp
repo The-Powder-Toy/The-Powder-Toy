@@ -17,7 +17,7 @@ void Element::Element_GSLV()
 	Gravity = 0.1f;
 	Diffusion = 1.0f;
 	HotAir = 0.0f	* CFDS;
-	Falldown = 1;
+	Falldown = 0;
 
 	Flammable = 1000;
 	Explosive = 0;
@@ -33,7 +33,7 @@ void Element::Element_GSLV()
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
-	HighPressure = 10.0f;
+	HighPressure = 7.0f;
 	HighPressureTransition = PT_FIRE;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;

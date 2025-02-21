@@ -29,13 +29,13 @@ void Element::Element_GSOL()
 	Weight = 7;
 
 	HeatConduct = 42;
-	Description = "Gasoline. Slowly turns into flammable vapors.";
+	Description = "Gasoline. Slowly turns into flammable vapors. Evaporates less when cold.";
 
 	Properties = TYPE_LIQUID;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
-	HighPressure = 10.0f;
+	HighPressure = 7.0f;
 	HighPressureTransition = PT_FIRE;
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
@@ -47,10 +47,11 @@ void Element::Element_GSOL()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	if (sim->rng.chance(1, 200) && !pmap[y-1][x])
+	if (parts[i].temp <= 375.0f ? sim->rng.chance((int)parts[i].temp, 2000000) : sim->rng.chance(375, 2000000))
 	{
 		sim->create_part(i, x, y, PT_GSLV);
-        return -1;
+		return -1;
 	}
+
 	return 0;
 }
