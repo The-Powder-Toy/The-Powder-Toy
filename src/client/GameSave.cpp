@@ -17,7 +17,7 @@
 #include <algorithm>
 
 constexpr auto currentVersion = UPSTREAM_VERSION.displayVersion;
-constexpr auto nextVersion = Version(99, 2);
+constexpr auto nextVersion = Version(99, 3);
 static_assert(!ALLOW_FAKE_NEWER_VERSION || nextVersion >= currentVersion);
 
 constexpr auto effectiveVersion = ALLOW_FAKE_NEWER_VERSION ? nextVersion : currentVersion;
@@ -123,7 +123,7 @@ void GameSave::MapPalette()
 				found = info;
 			}
 		}
-		for (int i = 1; i < found.maxValid; i++)
+		for (int i = 1; i <= found.maxValid; i++)
 		{
 			if (i >= found.golHoleFirst && i <= found.golHoleLast)
 			{
