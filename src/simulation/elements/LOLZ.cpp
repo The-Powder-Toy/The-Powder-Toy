@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "LOLZ.h"
 
 void Element::Element_LOLZ()
 {

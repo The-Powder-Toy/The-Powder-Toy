@@ -1,5 +1,6 @@
 #include "simulation/ElementCommon.h"
 #include "Probability.h"
+#include "EMP.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
 
