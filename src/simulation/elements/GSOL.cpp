@@ -47,7 +47,7 @@ void Element::Element_GSOL()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	if (parts[i].temp <= 375.0f ? sim->rng.chance((int)parts[i].temp, 2000000) : sim->rng.chance(375, 2000000))
+	if (sim->rng.chance(std::min((int)parts[i].temp, 375), 2000000))
 	{
 		sim->create_part(i, x, y, PT_GSLV);
 		return -1;
