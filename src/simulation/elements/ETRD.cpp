@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "ETRD.h"
 #include <algorithm>
 
 static void initDeltaPos();
