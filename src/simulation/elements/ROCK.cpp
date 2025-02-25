@@ -30,7 +30,7 @@ void Element::Element_ROCK()
 	Weight = 100;
 
 	HeatConduct = 200;
-	Description = "Solid, stronger than BRCK. CNCT won't fall off when stacked on top of it.";
+	Description = "Solid, melts into various elements.";
 
 	Properties = TYPE_SOLID | PROP_HOT_GLOW;
 

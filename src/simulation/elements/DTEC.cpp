@@ -29,7 +29,7 @@ void Element::Element_DTEC()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Detector. When drawn over with another element, creates a spark when it's nearby.";
+	Description = "Detector, creates a spark when something with its ctype is nearby.";
 
 	Properties = TYPE_SOLID;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
