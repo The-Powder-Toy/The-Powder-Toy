@@ -27,7 +27,7 @@ void Element::Element_INWR()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Insulated Wire. Doesn't conduct to metal or semiconductors.";
+	Description = "Insulated wire. Only conducts to PSCN, NSCN, WIFI, and SWCH.";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

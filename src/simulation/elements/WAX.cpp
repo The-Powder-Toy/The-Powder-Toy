@@ -27,7 +27,7 @@ void Element::Element_WAX()
 	Weight = 100;
 
 	HeatConduct = 44;
-	Description = "Wax. Melts at moderately high temperatures.";
+	Description = "Flammable, melts at moderately high temperatures.";
 
 	Properties = TYPE_SOLID;
 
