@@ -2012,6 +2012,11 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 
 std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 {
+	if (blockSize.X > 255 || blockSize.Y > 255)
+	{
+		throw BuildException("simulation size not supported by the save format");
+	}
+
 	// minimum version this save is compatible with
 	// when building, this number may be increased depending on what elements are used
 	// or what properties are detected
