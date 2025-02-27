@@ -15,6 +15,7 @@ void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy);
 // 0x000E0000 PIPE color data stored here
 
 constexpr int PFLAG_CAN_CONDUCT            = 0x00000001;
+constexpr int PFLAG_PARTICLE_DECO          = 0x00000002; // differentiate particle deco from pipe deco
 constexpr int PFLAG_NORMALSPEED            = 0x00010000;
 constexpr int PFLAG_INITIALIZING           = 0x00020000; // colors haven't been set yet
 constexpr int PFLAG_COLOR_RED              = 0x00040000;
