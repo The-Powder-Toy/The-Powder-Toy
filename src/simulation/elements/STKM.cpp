@@ -420,7 +420,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 					sim->kill_part(ID(r));
 				}
 
-				if (TYP(r) == PT_NEUT)
+				if (TYP(r) == PT_NEUT || TYP(r) == PT_UVLT)
 				{
 					if (parts[i].life<=100) parts[i].life -= (102-parts[i].life)/2;
 					else parts[i].life = int(parts[i].life * 0.9f);
