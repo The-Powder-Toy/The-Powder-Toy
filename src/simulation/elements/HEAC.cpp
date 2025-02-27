@@ -47,9 +47,8 @@ void Element::Element_HEAC()
 	Update = &update;
 }
 
-static const auto isInsulator = [](Simulation* a, int b) -> bool {
-	auto &sd = SimulationData::CRef();
-	return b && (sd.elements[TYP(b)].HeatConduct == 0 || (TYP(b) == PT_HSWC && a->parts[ID(b)].life != 10));
+static const auto isInsulator = [](Simulation* sim, int p) -> bool {
+	return p && sim->IsHeatInsulator(sim->parts[ID(p)]);
 };
 
 // If this is used elsewhere (GOLD), it should be moved into Simulation.h
@@ -119,8 +118,6 @@ bool CheckLine(Simulation* sim, int x1, int y1, int x2, int y2, BinaryPredicate 
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	auto &sd = SimulationData::CRef();
-	auto &elements = sd.elements;
 	const int rad = 4;
 	int rry, rrx, r, count = 0;
 	float tempAgg = 0;
@@ -133,13 +130,13 @@ static int update(UPDATE_FUNC_ARGS)
 			if (x+rrx >= 0 && x+rrx < XRES && y+rry >= 0 && y+rry < YRES && !CheckLine(sim, x, y, x+rrx, y+rry, isInsulator))
 			{
 				r = pmap[y+rry][x+rrx];
-				if (r && elements[TYP(r)].HeatConduct > 0 && (TYP(r) != PT_HSWC || parts[ID(r)].life == 10))
+				if (r && !sim->IsHeatInsulator(parts[ID(r)]))
 				{
 					count++;
 					tempAgg += parts[ID(r)].temp;
 				}
 				r = sim->photons[y+rry][x+rrx];
-				if (r && elements[TYP(r)].HeatConduct > 0 && (TYP(r) != PT_HSWC || parts[ID(r)].life == 10))
+				if (r && !sim->IsHeatInsulator(parts[ID(r)]))
 				{
 					count++;
 					tempAgg += parts[ID(r)].temp;
@@ -161,12 +158,12 @@ static int update(UPDATE_FUNC_ARGS)
 				if (x+rrx >= 0 && x+rrx < XRES && y+rry >= 0 && y+rry < YRES && !CheckLine(sim, x, y, x+rrx, y+rry, isInsulator))
 				{
 					r = pmap[y+rry][x+rrx];
-					if (r && elements[TYP(r)].HeatConduct > 0 && (TYP(r) != PT_HSWC || parts[ID(r)].life == 10))
+					if (r && !sim->IsHeatInsulator(parts[ID(r)]))
 					{
 						parts[ID(r)].temp = parts[i].temp;
 					}
 					r = sim->photons[y+rry][x+rrx];
-					if (r && elements[TYP(r)].HeatConduct > 0 && (TYP(r) != PT_HSWC || parts[ID(r)].life == 10))
+					if (r && !sim->IsHeatInsulator(parts[ID(r)]))
 					{
 						parts[ID(r)].temp = parts[i].temp;
 					}
