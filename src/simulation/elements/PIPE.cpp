@@ -170,6 +170,7 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 			int lastneighbor = -1;
 			int neighborcount = 0;
 			int count = 0;
+			bool heatPipe = false;
 			// make automatic pipe pattern
 			for (auto rx = -1; rx <= 1; rx++)
 			{
@@ -181,6 +182,11 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 						auto r = pmap[y+ry][x+rx];
 						if (!r)
 							continue;
+						if (TYP(r) == PT_HEAC)
+						{
+							heatPipe = true;
+							continue;
+						}
 						if (TYP(r) != PT_PIPE && TYP(r) != PT_PPIP)
 							continue;
 						unsigned int next = nextColor(parts[i].tmp);
@@ -213,6 +219,8 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 			}
 			if (neighborcount == 1)
 				parts[lastneighbor].tmp |= 0x100;
+			if (heatPipe)
+				Element_PPIP_flood_trigger(sim, x, y, PT_HEAC);
 		}
 		else
 		{
