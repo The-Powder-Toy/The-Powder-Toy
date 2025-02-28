@@ -61,7 +61,7 @@ static int update(UPDATE_FUNC_ARGS)
 
 	switch (utype) {
 		case PT_TUNG: //TUNG absorbs UVLT
-			parts[uID].temp = restrict_flt(parts[uID].temp + 5000.0f, MIN_TEMP, MAX_TEMP); //Absolutely ridiculous number for cool glowing effects
+			parts[uID].temp = restrict_flt(parts[uID].temp + 2500.0f, MIN_TEMP, MAX_TEMP);
 			sim->kill_part(i);
 			return 1;
 		case PT_LCRY: //"Fluorescence"
@@ -105,28 +105,48 @@ static int update(UPDATE_FUNC_ARGS)
 					auto c = sim->create_part(-3, x, y, PT_NEUT);
 					parts[c].temp = MAX_TEMP;
 				}
-				sim->pv[y/CELL][x/CELL] -= 10.0f;
+				sim->pv[y/CELL][x/CELL] -= 15.0f;
 				break;
 			}
 		case PT_ISZS:
 			if (sim->rng.chance(1, 10)) {
 				sim->create_part(uID, x, y, PT_UVLT);
 				parts[uID].temp = restrict_flt(parts[uID].temp + 2000.0f, MIN_TEMP, MAX_TEMP);
-				sim->pv[y/CELL][x/CELL] -= 10.0f;
+				sim->pv[y/CELL][x/CELL] -= 15.0f;
 			}
 			break;
-		case PT_CAUS:
+		case PT_CAUS: //UVLT + CAUS -> ACID
 			if (sim->rng.chance(1, 10)) {
 				sim->create_part(uID, x, y, PT_ACID);
 				parts[uID].temp = 0.0f;
 				parts[i].temp = 0.0f;
-				sim->pv[y/CELL][x/CELL] += 2.0f;
+				sim->pv[y/CELL][x/CELL] += 1.0f;
 			}
+			break;
+		case PT_SAWD: //UVLT + SAWD -> BCOL + CO2
+			if (parts[uID].temp > 750.0f && sim->rng.chance(1, 3)) {
+				if (sim->rng.chance(3, 4))
+					sim->create_part(uID, x, y, PT_BCOL);
+				else
+					sim->create_part(uID, x, y, PT_CO2);
+			}
+			break;
+		case PT_WOOD: //UVLT + WOOD -> COAL + CO2
+			if (parts[uID].temp > 750.0f && sim->rng.chance(1, 3)) {
+				if (sim->rng.chance(3, 4))
+					sim->create_part(uID, x, y, PT_COAL);
+				else
+					sim->create_part(uID, x, y, PT_CO2);
+			}
+			break;
+		case PT_PLNT: //UVLT + PLNT -> CO2
+			if (parts[uID].temp > 400.0f && sim->rng.chance(1, 10))
+				sim->create_part(uID, x, y, PT_CO2);
 	}
 
 	//UVLT will generate heat while inside other elements.
 	if (utype != PT_WIFI)
-		parts[uID].temp = restrict_flt(parts[i].temp + 200.0f, MIN_TEMP, MAX_TEMP);
+		parts[uID].temp = restrict_flt(parts[uID].temp + 200.0f, MIN_TEMP, MAX_TEMP);
 
 	//Absorption
 	if (sim->rng.chance(1, 100)) {
