@@ -213,5 +213,5 @@ static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 		sim->parts[i].life = 0;
 		sim->parts[i].dcolour = 0x00000000;
 	}
-	return Element::basicCtypeDraw(CTYPEDRAW_FUNC_SUBCALL_ARGS);
+	return false;
 }
