@@ -51,6 +51,7 @@ static int update(UPDATE_FUNC_ARGS)
 {
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
+	bool converted = false;
 	for (int rx = -2; rx <= 2; rx++)
 	{
 		for (int ry = -2; ry <= 2; ry++)
@@ -66,6 +67,7 @@ static int update(UPDATE_FUNC_ARGS)
 					{
 						sim->part_change_type(ID(r), x+rx, y+ry, PT_RFRG);
 						sim->part_change_type(i, x, y, PT_RFRG);
+						converted = true;
 					}
 				}
 				else if (TYP(r) != PT_ACID && TYP(r) != PT_CAUS && TYP(r) != PT_RFRG && TYP(r) != PT_RFGL)
@@ -92,5 +94,5 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 		}
 	}
-	return 0;
+	return converted;
 }

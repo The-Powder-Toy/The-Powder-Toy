@@ -16,7 +16,7 @@ namespace Platform
 ByteString GetCwd()
 {
 	ByteString cwd;
-	auto cwdPtr = std::unique_ptr<wchar_t, decltype(&free)>(_wgetcwd(NULL, 0), free);
+	auto cwdPtr = std::unique_ptr<wchar_t, decltype(&free)>(_wgetcwd(nullptr, 0), free);
 	if (cwdPtr)
 	{
 		cwd = WinNarrow(cwdPtr.get());
@@ -26,7 +26,7 @@ ByteString GetCwd()
 
 void OpenURI(ByteString uri)
 {
-	if (int(INT_PTR(ShellExecuteW(NULL, NULL, WinWiden(uri).c_str(), NULL, NULL, SW_SHOWNORMAL))) <= 32)
+	if (int(INT_PTR(ShellExecuteW(nullptr, nullptr, WinWiden(uri).c_str(), nullptr, nullptr, SW_SHOWNORMAL))) <= 32)
 	{
 		fprintf(stderr, "cannot open URI: ShellExecute(...) failed\n");
 	}
@@ -167,13 +167,13 @@ std::vector<ByteString> DirectoryList(ByteString directory)
 
 ByteString WinNarrow(const std::wstring &source)
 {
-	int buffer_size = WideCharToMultiByte(CP_UTF8, 0, source.c_str(), source.size(), nullptr, 0, NULL, NULL);
+	int buffer_size = WideCharToMultiByte(CP_UTF8, 0, source.c_str(), source.size(), nullptr, 0, nullptr, nullptr);
 	if (!buffer_size)
 	{
 		return "";
 	}
 	std::string output(buffer_size, 0);
-	if (!WideCharToMultiByte(CP_UTF8, 0, source.c_str(), source.size(), output.data(), buffer_size, NULL, NULL))
+	if (!WideCharToMultiByte(CP_UTF8, 0, source.c_str(), source.size(), output.data(), buffer_size, nullptr, nullptr))
 	{
 		return "";
 	}
@@ -201,7 +201,7 @@ ByteString ExecutableName()
 	while (true)
 	{
 		SetLastError(ERROR_SUCCESS);
-		if (!GetModuleFileNameW(NULL, buf.data(), DWORD(buf.size())))
+		if (!GetModuleFileNameW(nullptr, buf.data(), DWORD(buf.size())))
 		{
 			std::cerr << "GetModuleFileNameW: " << GetLastError() << std::endl;
 			return "";
@@ -220,7 +220,7 @@ void DoRestart()
 	ByteString exename = ExecutableName();
 	if (exename.length())
 	{
-		int ret = int(INT_PTR(ShellExecuteW(NULL, NULL, WinWiden(exename).c_str(), NULL, NULL, SW_SHOWNORMAL)));
+		int ret = int(INT_PTR(ShellExecuteW(nullptr, nullptr, WinWiden(exename).c_str(), nullptr, nullptr, SW_SHOWNORMAL)));
 		if (ret <= 32)
 		{
 			fprintf(stderr, "cannot restart: ShellExecute(...) failed: code %i\n", ret);
@@ -255,8 +255,8 @@ bool Install()
 		auto wExtraKey = Platform::WinWiden(extraKey);
 		auto wExtraValue = Platform::WinWiden(extraValue);
 		HKEY k;
-		ok = ok && RegCreateKeyExW(HKEY_CURRENT_USER, wPath.c_str(), 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &k, NULL) == ERROR_SUCCESS;
-		ok = ok && RegSetValueExW(k, NULL, 0, REG_SZ, reinterpret_cast<const BYTE *>(wValue.c_str()), (wValue.size() + 1) * 2) == ERROR_SUCCESS;
+		ok = ok && RegCreateKeyExW(HKEY_CURRENT_USER, wPath.c_str(), 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, nullptr, &k, nullptr) == ERROR_SUCCESS;
+		ok = ok && RegSetValueExW(k, nullptr, 0, REG_SZ, reinterpret_cast<const BYTE *>(wValue.c_str()), (wValue.size() + 1) * 2) == ERROR_SUCCESS;
 		if (wExtraKey.size())
 		{
 			ok = ok && RegSetValueExW(k, wExtraKey.c_str(), 0, REG_SZ, reinterpret_cast<const BYTE *>(wExtraValue.c_str()), (wExtraValue.size() + 1) * 2) == ERROR_SUCCESS;
@@ -265,7 +265,7 @@ bool Install()
 		return ok;
 	};
 
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	auto exe = Platform::ExecutableName();
 #ifndef IDI_DOC_ICON
 	// make this fail so I don't remove #include "resource.h" again and get away with it
@@ -287,11 +287,11 @@ bool Install()
 	ok = ok && createKey("Software\\Classes\\PowderToySave", "Powder Toy Save");
 	ok = ok && createKey("Software\\Classes\\PowderToySave\\DefaultIcon", icon);
 	ok = ok && createKey("Software\\Classes\\PowderToySave\\shell\\open\\command", open);
-	IShellLinkW *shellLink = NULL;
-	IPersistFile *shellLinkPersist = NULL;
+	IShellLinkW *shellLink = nullptr;
+	IPersistFile *shellLinkPersist = nullptr;
 	wchar_t programsPath[MAX_PATH];
-	ok = ok && SHGetFolderPathW(NULL, CSIDL_PROGRAMS, NULL, SHGFP_TYPE_CURRENT, programsPath) == S_OK;
-	ok = ok && CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLinkW, (LPVOID *)&shellLink) == S_OK;
+	ok = ok && SHGetFolderPathW(nullptr, CSIDL_PROGRAMS, nullptr, SHGFP_TYPE_CURRENT, programsPath) == S_OK;
+	ok = ok && CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLinkW, (LPVOID *)&shellLink) == S_OK;
 	ok = ok && shellLink->SetPath(Platform::WinWiden(exe).c_str()) == S_OK;
 	ok = ok && shellLink->SetWorkingDirectory(Platform::WinWiden(path).c_str()) == S_OK;
 	ok = ok && shellLink->SetDescription(Platform::WinWiden(APPNAME).c_str()) == S_OK;
@@ -309,7 +309,7 @@ bool Install()
 	return ok;
 }
 
-bool UpdateStart(const std::vector<char> &data)
+bool UpdateStart(std::span<const char> data)
 {
 	ByteString exeName = Platform::ExecutableName(), updName;
 
@@ -331,7 +331,7 @@ bool UpdateStart(const std::vector<char> &data)
 		return false;
 	}
 
-	if ((uintptr_t)ShellExecute(NULL, L"open", Platform::WinWiden(exeName).c_str(), NULL, NULL, SW_SHOWNORMAL) <= 32)
+	if ((uintptr_t)ShellExecute(nullptr, L"open", Platform::WinWiden(exeName).c_str(), nullptr, nullptr, SW_SHOWNORMAL) <= 32)
 	{
 		Platform::RemoveFile(exeName);
 		return false;

@@ -449,14 +449,14 @@ Resampler::Contrib_List* Resampler::make_clist(
    Contrib* Pcpool_next;
    Contrib_Bounds* Pcontrib_bounds;
 
-   if ((Pcontrib = (Contrib_List*)calloc(dst_x, sizeof(Contrib_List))) == NULL)
-      return NULL;
+   if ((Pcontrib = (Contrib_List*)calloc(dst_x, sizeof(Contrib_List))) == nullptr)
+      return nullptr;
 
    Pcontrib_bounds = (Contrib_Bounds*)calloc(dst_x, sizeof(Contrib_Bounds));
    if (!Pcontrib_bounds)
    {
       free(Pcontrib);
-      return (NULL);
+      return (nullptr);
    }
 
    const Resample_Real oo_filter_scale = 1.0f / filter_scale;
@@ -496,11 +496,11 @@ Resampler::Contrib_List* Resampler::make_clist(
 
       /* Allocate memory for contributors. */
 
-      if ((n == 0) || ((Pcpool = (Contrib*)calloc(n, sizeof(Contrib))) == NULL))
+      if ((n == 0) || ((Pcpool = (Contrib*)calloc(n, sizeof(Contrib))) == nullptr))
       {
          free(Pcontrib);
          free(Pcontrib_bounds);
-         return NULL;
+         return nullptr;
       }
       total = n;
 
@@ -578,7 +578,7 @@ Resampler::Contrib_List* Resampler::make_clist(
             free(Pcpool);
             free(Pcontrib);
             free(Pcontrib_bounds);
-            return NULL;
+            return nullptr;
          }
 
          if (total_weight != 1.0f)
@@ -616,11 +616,11 @@ Resampler::Contrib_List* Resampler::make_clist(
       /* Allocate memory for contributors. */
 
       int total = n;
-      if ((total == 0) || ((Pcpool = (Contrib*)calloc(total, sizeof(Contrib))) == NULL))
+      if ((total == 0) || ((Pcpool = (Contrib*)calloc(total, sizeof(Contrib))) == nullptr))
       {
          free(Pcontrib);
          free(Pcontrib_bounds);
-         return NULL;
+         return nullptr;
       }
 
       Pcpool_next = Pcpool;
@@ -698,7 +698,7 @@ Resampler::Contrib_List* Resampler::make_clist(
             free(Pcpool);
             free(Pcontrib);
             free(Pcontrib_bounds);
-            return NULL;
+            return nullptr;
          }
 
          if (total_weight != 1.0f)
@@ -870,7 +870,7 @@ bool Resampler::put_line(const Sample* Psrc)
 
    if (!m_Pscan_buf->scan_buf_l[i])
    {
-      if ((m_Pscan_buf->scan_buf_l[i] = (Sample*)malloc(m_intermediate_x * sizeof(Sample))) == NULL)
+      if ((m_Pscan_buf->scan_buf_l[i] = (Sample*)malloc(m_intermediate_x * sizeof(Sample))) == nullptr)
       {
          m_status = STATUS_OUT_OF_MEMORY;
          return false;
@@ -907,7 +907,7 @@ const Resampler::Sample* Resampler::get_line()
    */
 
    if (m_cur_dst_y == m_resample_dst_y)
-      return NULL;
+      return nullptr;
 
    /* Check to see if all the required
    * contributors are present, if not,
@@ -916,7 +916,7 @@ const Resampler::Sample* Resampler::get_line()
 
    for (i = 0; i < m_Pclist_y[m_cur_dst_y].n; i++)
       if (!m_Psrc_y_flag[resampler_range_check(m_Pclist_y[m_cur_dst_y].p[i].pixel, m_resample_src_y)])
-         return NULL;
+         return nullptr;
 
    resample_y(m_Pdst_buf);
 
@@ -934,12 +934,12 @@ Resampler::~Resampler()
 #endif
 
    free(m_Pdst_buf);
-   m_Pdst_buf = NULL;
+   m_Pdst_buf = nullptr;
 
    if (m_Ptmp_buf)
    {
       free(m_Ptmp_buf);
-      m_Ptmp_buf = NULL;
+      m_Ptmp_buf = nullptr;
    }
 
    /* Don't deallocate a contibutor list
@@ -950,21 +950,21 @@ Resampler::~Resampler()
    {
       free(m_Pclist_x->p);
       free(m_Pclist_x);
-      m_Pclist_x = NULL;
+      m_Pclist_x = nullptr;
    }
 
    if ((m_Pclist_y) && (!m_clist_y_forced))
    {
       free(m_Pclist_y->p);
       free(m_Pclist_y);
-      m_Pclist_y = NULL;
+      m_Pclist_y = nullptr;
    }
 
    free(m_Psrc_y_count);
-   m_Psrc_y_count = NULL;
+   m_Psrc_y_count = nullptr;
 
    free(m_Psrc_y_flag);
-   m_Psrc_y_flag = NULL;
+   m_Psrc_y_flag = nullptr;
 
    if (m_Pscan_buf)
    {
@@ -972,7 +972,7 @@ Resampler::~Resampler()
          free(m_Pscan_buf->scan_buf_l[i]);
 
       free(m_Pscan_buf);
-      m_Pscan_buf = NULL;
+      m_Pscan_buf = nullptr;
    }
 }
 
@@ -1001,7 +1001,7 @@ void Resampler::restart()
       m_Pscan_buf->scan_buf_y[i] = -1;
 
       free(m_Pscan_buf->scan_buf_l[i]);
-      m_Pscan_buf->scan_buf_l[i] = NULL;
+      m_Pscan_buf->scan_buf_l[i] = nullptr;
    }
 }
 
@@ -1034,15 +1034,15 @@ Resampler::Resampler(int src_x, int src_y,
 
    m_delay_x_resample = false;
    m_intermediate_x = 0;
-   m_Pdst_buf = NULL;
-   m_Ptmp_buf = NULL;
+   m_Pdst_buf = nullptr;
+   m_Ptmp_buf = nullptr;
    m_clist_x_forced = false;
-   m_Pclist_x = NULL;
+   m_Pclist_x = nullptr;
    m_clist_y_forced = false;
-   m_Pclist_y = NULL;
-   m_Psrc_y_count = NULL;
-   m_Psrc_y_flag = NULL;
-   m_Pscan_buf = NULL;
+   m_Pclist_y = nullptr;
+   m_Psrc_y_count = nullptr;
+   m_Psrc_y_flag = nullptr;
+   m_Pscan_buf = nullptr;
    m_status = STATUS_OKAY;
 
    m_resample_src_x = src_x;
@@ -1052,7 +1052,7 @@ Resampler::Resampler(int src_x, int src_y,
 
    m_boundary_op = boundary_op;
 
-   if ((m_Pdst_buf = (Sample*)malloc(m_resample_dst_x * sizeof(Sample))) == NULL)
+   if ((m_Pdst_buf = (Sample*)malloc(m_resample_dst_x * sizeof(Sample))) == nullptr)
    {
       m_status = STATUS_OUT_OF_MEMORY;
       return;
@@ -1060,7 +1060,7 @@ Resampler::Resampler(int src_x, int src_y,
 
    // Find the specified filter.
 
-   if (Pfilter_name == NULL)
+   if (Pfilter_name == nullptr)
       Pfilter_name = RESAMPLER_DEFAULT_FILTER;
 
    for (i = 0; i < NUM_FILTERS; i++)
@@ -1108,13 +1108,13 @@ Resampler::Resampler(int src_x, int src_y,
       m_clist_y_forced = true;
    }
 
-   if ((m_Psrc_y_count = (int*)calloc(m_resample_src_y, sizeof(int))) == NULL)
+   if ((m_Psrc_y_count = (int*)calloc(m_resample_src_y, sizeof(int))) == nullptr)
    {
       m_status = STATUS_OUT_OF_MEMORY;
       return;
    }
 
-   if ((m_Psrc_y_flag = (unsigned char*)calloc(m_resample_src_y, sizeof(unsigned char))) == NULL)
+   if ((m_Psrc_y_flag = (unsigned char*)calloc(m_resample_src_y, sizeof(unsigned char))) == nullptr)
    {
       m_status = STATUS_OUT_OF_MEMORY;
       return;
@@ -1128,7 +1128,7 @@ Resampler::Resampler(int src_x, int src_y,
       for (j = 0; j < m_Pclist_y[i].n; j++)
          m_Psrc_y_count[resampler_range_check(m_Pclist_y[i].p[j].pixel, m_resample_src_y)]++;
 
-   if ((m_Pscan_buf = (Scan_Buf*)malloc(sizeof(Scan_Buf))) == NULL)
+   if ((m_Pscan_buf = (Scan_Buf*)malloc(sizeof(Scan_Buf))) == nullptr)
    {
       m_status = STATUS_OUT_OF_MEMORY;
       return;
@@ -1137,7 +1137,7 @@ Resampler::Resampler(int src_x, int src_y,
    for (i = 0; i < MAX_SCAN_BUF_SIZE; i++)
    {
       m_Pscan_buf->scan_buf_y[i] = -1;
-      m_Pscan_buf->scan_buf_l[i] = NULL;
+      m_Pscan_buf->scan_buf_l[i] = nullptr;
    }
 
    m_cur_src_y = m_cur_dst_y = 0;
@@ -1185,7 +1185,7 @@ Resampler::Resampler(int src_x, int src_y,
 
    if (m_delay_x_resample)
    {
-      if ((m_Ptmp_buf = (Sample*)malloc(m_intermediate_x * sizeof(Sample))) == NULL)
+      if ((m_Ptmp_buf = (Sample*)malloc(m_intermediate_x * sizeof(Sample))) == nullptr)
       {
          m_status = STATUS_OUT_OF_MEMORY;
          return;
@@ -1210,7 +1210,7 @@ int Resampler::get_filter_num()
 char* Resampler::get_filter_name(int filter_num)
 {
    if ((filter_num < 0) || (filter_num >= NUM_FILTERS))
-      return NULL;
+      return nullptr;
    else
       return g_filters[filter_num].name;
 }

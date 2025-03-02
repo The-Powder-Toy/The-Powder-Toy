@@ -1,6 +1,7 @@
 #pragma once
 #include "common/String.h"
 #include <cstdint>
+#include <span>
 #include <string>
 #include <vector>
 #include <optional>
@@ -40,7 +41,7 @@ namespace Platform
 	std::vector<ByteString> DirectorySearch(ByteString directory, ByteString search, std::vector<ByteString> extensions);
 
 	bool ReadFile(std::vector<char> &fileData, ByteString filename);
-	bool WriteFile(const std::vector<char> &fileData, ByteString filename);
+	bool WriteFile(std::span<const char> fileData, ByteString filename);
 
 	// TODO: Remove these and switch to *A Win32 API variants when we stop fully supporting windows
 	//       versions older than win10 1903, for example when win10 reaches EOL, see 18084d5aa0e5.
@@ -56,7 +57,7 @@ namespace Platform
 
 	bool ChangeDir(ByteString toDir);
 
-	bool UpdateStart(const std::vector<char> &data);
+	bool UpdateStart(std::span<const char> data);
 	bool UpdateFinish();
 	void UpdateCleanup();
 

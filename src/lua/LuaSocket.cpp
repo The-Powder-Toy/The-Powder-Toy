@@ -18,10 +18,10 @@ void LuaSocket::Open(lua_State *L)
 	static const luaL_Reg reg[] = {
 		{ "sleep", LuaSocket::Sleep },
 		{ "getTime", LuaSocket::GetTime },
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 	lua_setglobal(L, "socket");
 	OpenTCP(L);
 }

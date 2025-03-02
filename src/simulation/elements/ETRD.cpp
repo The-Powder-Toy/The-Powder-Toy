@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "ETRD.h"
 #include <algorithm>
 
 static void initDeltaPos();
@@ -31,7 +32,7 @@ void Element::Element_ETRD()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)";
+	Description = "Electrode. Creates plasma arcs with electricity. (Use sparingly)";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 
@@ -115,7 +116,7 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 		// If the simulation contains lots of particles, check near the target position first since going through all particles will be slow.
 		// Threshold = number of positions checked, *2 because it's likely to access memory all over the place (less cache friendly) and there's extra logic needed
 		// TODO: probably not optimal if excessive stacking is used
-		if (sim->parts_lastActiveIndex > (int)deltaPos.size()*2)
+		if (sim->parts.lastActiveIndex > (int)deltaPos.size()*2)
 		{
 			for (std::vector<ETRD_deltaWithLength>::iterator iter = deltaPos.begin(), end = deltaPos.end(); iter != end; ++iter)
 			{
@@ -145,7 +146,7 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 		// If neighbor search didn't find a suitable particle, search all particles
 		if (foundI < 0)
 		{
-			for (int i = 0; i <= sim->parts_lastActiveIndex; i++)
+			for (int i = 0; i <= sim->parts.lastActiveIndex; i++)
 			{
 				if (parts[i].type == PT_ETRD && !parts[i].life)
 				{
@@ -164,7 +165,7 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 	{
 		// Recalculate countLife0, and search for the closest suitable particle
 		int countLife0 = 0;
-		for (int i = 0; i <= sim->parts_lastActiveIndex; i++)
+		for (int i = 0; i <= sim->parts.lastActiveIndex; i++)
 		{
 			if (parts[i].type == PT_ETRD && !parts[i].life)
 			{

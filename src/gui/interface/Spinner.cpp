@@ -1,22 +1,13 @@
 #include "Spinner.h"
 #include "graphics/Graphics.h"
+#include "Engine.h"
 #include <cmath>
 
 using namespace ui;
 
 Spinner::Spinner(Point position, Point size):
-	Component(position, size), cValue(0),
-	tickInternal(0)
+	Component(position, size)
 {
-}
-void Spinner::Tick(float dt)
-{
-	tickInternal++;
-	if(tickInternal == 4)
-	{
-		cValue += 0.25f;//0.05f;
-		tickInternal = 0;
-	}
 }
 void Spinner::Draw(const Point& screenPos)
 {
@@ -25,12 +16,13 @@ void Spinner::Draw(const Point& screenPos)
 	int baseY = screenPos.Y+(Size.Y/2);
 	int lineInner = (Size.X/2);
 	int lineOuter = (Size.X/2)+3;
-	for(float t = 0.0f; t < 6.0f; t+=0.25f)
+	auto cValue = std::floor(ui::Engine::Ref().LastTick() * 0.015) * 0.25;
+	for(double t = 0.0; t < 6.0; t+=0.25)
 	{
 		g->DrawLine(
-			{ int(baseX+(sin(cValue+t)*lineInner)), int(baseY+(cos(cValue+t)*lineInner)) },
-			{ int(baseX+(sin(cValue+t)*lineOuter)), int(baseY+(cos(cValue+t)*lineOuter)) },
-			RGB<uint8_t>(int((t/6)*255), int((t/6)*255), int((t/6)*255)));
+			{ int(baseX+(std::sin(cValue+t)*lineInner)), int(baseY+(std::cos(cValue+t)*lineInner)) },
+			{ int(baseX+(std::sin(cValue+t)*lineOuter)), int(baseY+(std::cos(cValue+t)*lineOuter)) },
+			RGB(int((t/6)*255), int((t/6)*255), int((t/6)*255)));
 	}
 }
 Spinner::~Spinner()

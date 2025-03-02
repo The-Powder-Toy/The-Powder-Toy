@@ -367,7 +367,8 @@ public:
 	{
 		auto tl  = Vec2<T>(std::max(pos.X         , other.pos.X               ), std::max(pos.Y         , other.pos.Y               ));
 		auto br1 = Vec2<T>(std::min(pos.X + size.X, other.pos.X + other.size.X), std::min(pos.Y + size.Y, other.pos.Y + other.size.Y));
-		return Rect<T>(tl, br1 - tl);
+		auto size = br1 - tl;
+		return Rect<T>(tl, Vec2<T>(std::max(size.X, T(0)), std::max(size.Y, T(0))));
 	}
 
 	inline Rect<T> &operator&=(Rect<T> other)

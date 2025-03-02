@@ -22,7 +22,7 @@ public:
 	String Name = "NULL";
 	String Description = "NULL Tool, does NOTHING";
 	ByteString Identifier = "DEFAULT_TOOL_INVALID";
-	RGB<uint8_t> Colour = 0xFFFFFF_rgb;
+	RGB Colour = 0xFFFFFF_rgb;
 	bool Blocky = false;
 	float Strength = 1.0f;
 	bool shiftBehaviour = false;
@@ -34,7 +34,7 @@ public:
 	Tool() = default;
 
 	Tool(int id, String name, String description,
-		RGB<uint8_t> colour, ByteString identifier, std::unique_ptr<VideoBuffer> (*textureGen)(int, Vec2<int>) = NULL, bool blocky = false
+		RGB colour, ByteString identifier, std::unique_ptr<VideoBuffer> (*textureGen)(int, Vec2<int>) = NULL, bool blocky = false
 	):
 		textureGen(textureGen),
 		ToolID(id),

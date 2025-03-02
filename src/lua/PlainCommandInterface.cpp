@@ -41,3 +41,7 @@ String CommandInterface::FormatCommand(String command)
 void CommandInterface::SetToolIndex(ByteString identifier, std::optional<int> index)
 {
 }
+
+void CommandInterface::RemoveComponents()
+{
+}

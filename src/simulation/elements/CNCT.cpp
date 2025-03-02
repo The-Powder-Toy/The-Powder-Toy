@@ -27,7 +27,7 @@ void Element::Element_CNCT()
 	Weight = 55;
 
 	HeatConduct = 100;
-	Description = "Concrete, stronger than stone.";
+	Description = "Concrete. Can stack on itself or ROCK, collapses with pressure.";
 
 	Properties = TYPE_PART|PROP_HOT_GLOW;
 

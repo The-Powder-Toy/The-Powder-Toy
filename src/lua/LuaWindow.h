@@ -54,7 +54,7 @@ class LuaWindow
 
 	void triggerOnInitialized();
 	void triggerOnExit();
-	void triggerOnTick(float deltaTime);
+	void triggerOnTick();
 	void triggerOnDraw();
 	void triggerOnFocus();
 	void triggerOnBlur();

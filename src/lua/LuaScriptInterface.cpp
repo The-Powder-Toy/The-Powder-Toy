@@ -2,7 +2,7 @@
 #include "client/http/Request.h"
 #include "common/platform/Platform.h"
 #include "common/tpt-rand.h"
-#include "compat.lua.h"
+#include "compat_lua.h"
 #include "gui/game/GameController.h"
 #include "gui/game/GameModel.h"
 #include "gui/game/GameView.h"
@@ -176,7 +176,8 @@ LuaScriptInterface::LuaScriptInterface(GameController *newGameController, GameMo
 		ref.Assign(L, -1);
 		lua_pop(L, 1);
 	}
-	if (luaL_loadbuffer(L, (const char *)compat_lua, compat_lua_size, "@[built-in compat.lua]") || tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
+	auto compatSpan = compat_lua.AsCharSpan();
+	if (luaL_loadbuffer(L, compatSpan.data(), compatSpan.size(), "@[built-in compat.lua]") || tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
 	{
 		throw std::runtime_error(ByteString("failed to load built-in compat: ") + tpt_lua_toByteString(L, -1));
 	}
@@ -215,6 +216,18 @@ void CommandInterface::SetToolIndex(ByteString identifier, std::optional<int> in
 {
 	auto *lsi = static_cast<LuaScriptInterface *>(this);
 	LuaTools::SetToolIndex(lsi->L, identifier, index);
+}
+
+void CommandInterface::RemoveComponents()
+{
+	auto *lsi = static_cast<LuaScriptInterface *>(this);
+	for (auto &[ component, ref ] : lsi->grabbedComponents)
+	{
+		lsi->window->RemoveComponent(component->GetComponent());
+		ref.Clear();
+		component->owner_ref = ref;
+		component->SetParentWindow(nullptr);
+	}
 }
 
 void LuaGetProperty(lua_State *L, StructProperty property, intptr_t propertyAddress)
@@ -427,7 +440,7 @@ bool CommandInterface::HandleEvent(const GameControllerEvent &event)
 template<size_t Index>
 std::enable_if_t<Index != std::variant_size_v<GameControllerEvent>, bool> HaveSimGraphicsEventHandlersHelper(lua_State *L, std::vector<LuaSmartRef> &gameControllerEventHandlers)
 {
-	if (std::variant_alternative_t<Index, GameControllerEvent>::traits & eventTraitSimGraphics)
+	if (std::variant_alternative_t<Index, GameControllerEvent>::traits & eventTraitHindersSrt)
 	{
 		gameControllerEventHandlers[Index].Push(L);
 		auto have = lua_objlen(L, -1) > 0;
@@ -730,16 +743,7 @@ String CommandInterface::FormatCommand(String command)
 		return highlight(command);
 }
 
-LuaScriptInterface::~LuaScriptInterface()
-{
-	for (auto &[ component, ref ] : grabbedComponents)
-	{
-		window->RemoveComponent(component->GetComponent());
-		ref.Clear();
-		component->owner_ref = ref;
-		component->SetParentWindow(nullptr);
-	}
-}
+LuaScriptInterface::~LuaScriptInterface() = default;
 
 void tpt_lua_pushByteString(lua_State *L, const ByteString &str)
 {

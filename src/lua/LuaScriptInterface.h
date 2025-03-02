@@ -14,11 +14,7 @@ namespace http
 	class Request;
 }
 
-namespace ui
-{
-	class Window;
-}
-
+class GameView;
 class Graphics;
 class Renderer;
 class Simulation;
@@ -60,6 +56,7 @@ struct CustomElement
 
 struct CustomTool
 {
+	bool valid = false;
 	LuaSmartRef perform;
 	LuaSmartRef click;
 	LuaSmartRef drag;
@@ -81,7 +78,7 @@ public:
 
 	GameModel *gameModel;
 	GameController *gameController;
-	ui::Window *window;
+	GameView *window;
 	Simulation *sim;
 	Graphics *g;
 

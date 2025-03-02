@@ -52,7 +52,7 @@ public:
 SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Point position_):
 	ui::Window(ui::Point(-1, -1), ui::Point(250, 87)),
 	tool(tool_),
-	movingSign(NULL),
+	movingSign(nullptr),
 	signMoving(false),
 	sim(sim_),
 	signID(signID_),

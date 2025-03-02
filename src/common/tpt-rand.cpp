@@ -52,7 +52,7 @@ float RNG::uniform01()
 
 RNG::RNG()
 {
-	s[0] = time(NULL);
+	s[0] = time(nullptr);
 	s[1] = 614;
 }
 

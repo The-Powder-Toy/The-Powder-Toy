@@ -2,6 +2,7 @@
 #include "Activity.h"
 #include "common/String.h"
 #include "gui/interface/Point.h"
+#include "gui/interface/Fade.h"
 #include <vector>
 
 class Tool;
@@ -23,7 +24,7 @@ class ElementSearchActivity: public WindowActivity
 	std::vector<ToolButton*> toolButtons;
 	ui::ScrollPanel *scrollPanel = nullptr;
 	String toolTip;
-	int toolTipPresence;
+	ui::Fade toolTipPresence{ ui::Fade::LinearProfile{ 120.f, 60.f }, 0, 0 };
 	bool shiftPressed;
 	bool ctrlPressed;
 	bool altPressed;
@@ -36,7 +37,7 @@ public:
 	ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools);
 	void SetActiveTool(int selectionState, Tool * tool);
 	virtual ~ElementSearchActivity();
-	void OnTick(float dt) override;
+	void OnTick() override;
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void OnDraw() override;

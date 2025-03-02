@@ -20,11 +20,10 @@
 
 ElementSearchActivity::ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 302)),
-	firstResult(NULL),
+	firstResult(nullptr),
 	gameController(gameController),
 	tools(tools),
 	toolTip(""),
-	toolTipPresence(0),
 	shiftPressed(false),
 	ctrlPressed(false),
 	altPressed(false),
@@ -61,7 +60,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 
 void ElementSearchActivity::searchTools(String query)
 {
-	firstResult = NULL;
+	firstResult = nullptr;
 	for (auto &toolButton : toolButtons) {
 		scrollPanel->RemoveChild(toolButton);
 		delete toolButton;
@@ -231,21 +230,19 @@ void ElementSearchActivity::OnDraw()
 	}
 }
 
-void ElementSearchActivity::OnTick(float dt)
+void ElementSearchActivity::OnTick()
 {
 	if (exit)
 		Exit();
+
 	if (isToolTipFadingIn)
 	{
 		isToolTipFadingIn = false;
-		if (toolTipPresence < 120)
-			toolTipPresence += int(dt*2)>1?int(dt*2):2;
+		toolTipPresence.SetTarget(120);
 	}
-	else if (toolTipPresence>0)
+	else
 	{
-		toolTipPresence -= int(dt)>0?int(dt):1;
-		if (toolTipPresence<0)
-			toolTipPresence = 0;
+		toolTipPresence.SetTarget(0);
 	}
 }
 

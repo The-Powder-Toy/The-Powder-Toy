@@ -4,6 +4,7 @@ gui_files = files(
 
 subdir('colourpicker')
 subdir('console')
+subdir('credits')
 subdir('dialogues')
 subdir('elementsearch')
 subdir('filebrowser')

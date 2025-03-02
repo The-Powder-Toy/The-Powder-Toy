@@ -61,7 +61,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	thumbnailRenderer(nullptr),
 	save(std::move(newSave)),
 	onUploaded(onUploaded_),
-	saveUploadTask(NULL)
+	saveUploadTask(nullptr)
 {
 	titleLabel = new ui::Label(ui::Point(4, 5), ui::Point((Size.X/2)-8, 16), "");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
@@ -158,7 +158,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, bool s
 	thumbnailRenderer(nullptr),
 	save(std::move(newSave)),
 	onUploaded(onUploaded_),
-	saveUploadTask(NULL)
+	saveUploadTask(nullptr)
 {
 	ui::Label * titleLabel = new ui::Label(ui::Point(0, 0), Size, "Saving to server...");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
@@ -218,7 +218,7 @@ void ServerSaveActivity::AddAuthorInfo()
 	serverSaveInfo["title"] = save->GetName().ToUtf8();
 	serverSaveInfo["description"] = save->GetDescription().ToUtf8();
 	serverSaveInfo["published"] = (int)save->GetPublished();
-	serverSaveInfo["date"] = (Json::Value::UInt64)time(NULL);
+	serverSaveInfo["date"] = (Json::Value::UInt64)time(nullptr);
 	Client::Ref().SaveAuthorInfo(&serverSaveInfo);
 	{
 		auto gameSave = save->TakeGameSave();
@@ -288,7 +288,7 @@ void ServerSaveActivity::ShowRules()
 		"\bt5. Do not advertise third-party games, sites, or other places not related to The Powder Toy.\bw\n"
 		   "- Mainly this rule is intended to prevent people going through and advertising their own games and products.\n"
 		   "- Unauthorized or unofficial community gathering places, such as Discord, are prohibited.\n"
-		"\bt6. Trolling is not allowed.\bw As with some rules, there's no clear definition. Users who repeatedly troll are far more likely to be banned and recieve longer bans than others.\n"
+		"\bt6. Trolling is not allowed.\bw As with some rules, there's no clear definition. Users who repeatedly troll are far more likely to be banned and receive longer bans than others.\n"
 		"\bt7. Do not impersonate anyone.\bw Registering accounts with names intentionally similar to other users in our community or other online communities is prohibited.\n"
 		"\bt8. Do not post about moderator decisions or issues.\bw If there is a problem regarding a ban on your account or content removal, please contact a moderator through the messages system. Otherwise, discussion about moderator actions should be avoided.\n"
 		"\bt9. Avoid backseat moderating.\bw Moderators are the ones who make the decisions. Users should refrain from threatening bans or possible results from breaking a rule. If there is a possible issue or you are unsure, we recommend reporting the issue through the 'Report' button or via the messaging system on the website.\n"
@@ -351,7 +351,7 @@ void ServerSaveActivity::CheckName(String newname)
 		titleLabel->SetText("Upload new simulation:");
 }
 
-void ServerSaveActivity::OnTick(float dt)
+void ServerSaveActivity::OnTick()
 {
 	if (thumbnailRenderer)
 	{

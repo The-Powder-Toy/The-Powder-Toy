@@ -67,7 +67,7 @@ bool ReadFile(std::vector<char> &fileData, ByteString filename)
 	return true;
 }
 
-bool WriteFile(const std::vector<char> &fileData, ByteString filename)
+bool WriteFile(std::span<const char> fileData, ByteString filename)
 {
 	auto replace = FileExists(filename);
 	auto writeFileName = filename;

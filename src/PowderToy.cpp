@@ -116,7 +116,7 @@ static void BlueScreen(String detailMessage, std::optional<std::vector<String>> 
 	crashInfo << "Please attach this file to your report.\n\n";
 	crashInfo << "Version: " << VersionInfo().FromUtf8() << "\n";
 	crashInfo << "Tag: " << VCS_TAG << "\n";
-	crashInfo << "Date: " << format::UnixtimeToDate(time(NULL), "%Y-%m-%dT%H:%M:%SZ", false).FromUtf8() << "\n";
+	crashInfo << "Date: " << format::UnixtimeToDate(time(nullptr), "%Y-%m-%dT%H:%M:%SZ", false).FromUtf8() << "\n";
 	if (stackTrace)
 	{
 		crashInfo << "Stack trace; Main is at 0x" << Format::Hex() << intptr_t(Main) << ":\n";
@@ -137,7 +137,7 @@ static void BlueScreen(String detailMessage, std::optional<std::vector<String>> 
 
 	auto crashLogData = errorText.ToUtf8();
 	std::cerr << crashLogData << std::endl;
-	Platform::WriteFile(std::vector<char>(crashLogData.begin(), crashLogData.end()), crashLogPath);
+	Platform::WriteFile(crashLogData, crashLogPath);
 
 	//Death loop
 	SDL_Event event;
@@ -379,7 +379,8 @@ int Main(int argc, char *argv[])
 		prefs.Set("Fullscreen", windowFrameOps.fullscreen);
 	}
 
-	if (true_arg(arguments["redirect"]))
+	auto redirectStd = prefs.Get("RedirectStd", false);
+	if (true_arg(arguments["redirect"]) || redirectStd)
 	{
 		FILE *new_stdout = freopen("stdout.log", "w", stdout);
 		FILE *new_stderr = freopen("stderr.log", "w", stderr);
@@ -427,7 +428,9 @@ int Main(int argc, char *argv[])
 	explicitSingletons->requestManager = http::RequestManager::Create(proxyString, cafileString, capathString, disableNetwork);
 
 	explicitSingletons->client = std::make_unique<Client>();
+	Client::Ref().SetAutoStartupRequest(prefs.Get("AutoStartupRequest", true));
 	Client::Ref().Initialize();
+	Client::Ref().SetRedirectStd(redirectStd);
 
 	explicitSingletons->saveRenderer = std::make_unique<SaveRenderer>();
 	explicitSingletons->favorite = std::make_unique<Favorite>();
@@ -481,6 +484,7 @@ int Main(int argc, char *argv[])
 	explicitSingletons->gameController = std::make_unique<GameController>();
 	auto *gameController = explicitSingletons->gameController.get();
 	engine.ShowWindow(gameController->GetView());
+	gameController->InitCommandInterface();
 
 	auto openArg = arguments["open"];
 	if (openArg.has_value())

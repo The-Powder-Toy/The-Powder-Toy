@@ -21,7 +21,7 @@ class ConsoleView: public ui::Window
 public:
 	ConsoleView();
 	void OnDraw() override;
-	void OnTick(float dt) override;
+	void OnTick() override;
 	void DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void DoTextInput(String text) override;
 	void AttachController(ConsoleController * c_) { c = c_; }

@@ -251,7 +251,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		bool moved = false;
 		if (dl>dr)
 		{
-			if (InBounds(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL))
+			if (InBounds(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), nullptr))
 			{
 				playerp->accs[2] = -3*mvy-3*mvx;
 				playerp->accs[3] = 3*mvx-3*mvy;
@@ -262,7 +262,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		}
 		else
 		{
-			if (InBounds(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL))
+			if (InBounds(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), nullptr))
 			{
 				playerp->accs[6] = -3*mvy-3*mvx;
 				playerp->accs[7] = 3*mvx-3*mvy;
@@ -301,7 +301,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		bool moved = false;
 		if (dl<dr)
 		{
-			if (InBounds(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL))
+			if (InBounds(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), nullptr))
 			{
 				playerp->accs[2] = 3*mvy-3*mvx;
 				playerp->accs[3] = -3*mvx-3*mvy;
@@ -312,7 +312,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		}
 		else
 		{
-			if (InBounds(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL))
+			if (InBounds(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), nullptr))
 			{
 				playerp->accs[6] = 3*mvy-3*mvx;
 				playerp->accs[7] = -3*mvx-3*mvy;
@@ -378,8 +378,8 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 				}
 			}
 		}
-		else if ((InBounds(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL)) ||
-				 (InBounds(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL)))
+		else if ((InBounds(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), nullptr)) ||
+				 (InBounds(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), nullptr)))
 		{
 			parts[i].vx -= 4*mvx;
 			parts[i].vy -= 4*mvy;
@@ -551,27 +551,27 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 	playerp->legs[8] += (playerp->legs[8]-parts[i].x)*d;
 	playerp->legs[9] += (playerp->legs[9]-parts[i].y)*d;
 
-	if (InBounds(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL))
+	if (InBounds(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), nullptr))
 	{
 		playerp->legs[4] = playerp->legs[6];
 		playerp->legs[5] = playerp->legs[7];
 	}
 
-	if (InBounds(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL))
+	if (InBounds(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), nullptr))
 	{
 		playerp->legs[12] = playerp->legs[14];
 		playerp->legs[13] = playerp->legs[15];
 	}
 
 	//This makes stick man "pop" from obstacles
-	if (InBounds(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), NULL))
+	if (InBounds(int(playerp->legs[4]), int(playerp->legs[5])) && !sim->eval_move(t, int(playerp->legs[4]), int(playerp->legs[5]), nullptr))
 	{
 		float t;
 		t = playerp->legs[4]; playerp->legs[4] = playerp->legs[6]; playerp->legs[6] = t;
 		t = playerp->legs[5]; playerp->legs[5] = playerp->legs[7]; playerp->legs[7] = t;
 	}
 
-	if (InBounds(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), NULL))
+	if (InBounds(int(playerp->legs[12]), int(playerp->legs[13])) && !sim->eval_move(t, int(playerp->legs[12]), int(playerp->legs[13]), nullptr))
 	{
 		float t;
 		t = playerp->legs[12]; playerp->legs[12] = playerp->legs[14]; playerp->legs[14] = t;
@@ -639,7 +639,7 @@ void Element_STKM_interact(Simulation *sim, playerst *playerp, int i, int x, int
 			damage += sim->rng.between(32, 51);
 		}
 
-		if (elements[TYP(r)].HeatConduct && (TYP(r)!=PT_HSWC||sim->parts[ID(r)].life==10) && ((playerp->elem!=PT_LIGH && sim->parts[ID(r)].temp>=323) || sim->parts[ID(r)].temp<=243) && (!playerp->rocketBoots || TYP(r)!=PT_PLSM))
+		if (!sim->IsHeatInsulator(sim->parts[ID(r)]) && ((playerp->elem!=PT_LIGH && sim->parts[ID(r)].temp>=323) || sim->parts[ID(r)].temp<=243) && (!playerp->rocketBoots || TYP(r)!=PT_PLSM))
 		{
 			damage += 2;
 			playerp->accs[3] -= 1;

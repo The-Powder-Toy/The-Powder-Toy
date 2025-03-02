@@ -8,7 +8,8 @@ protected:
 	Gravity() = default;
 
 public:
-	void Exchange(GravityOutput &gravOut, const GravityInput &gravIn);
+	// potentially clobbers gravIn
+	void Exchange(GravityOutput &gravOut, GravityInput &gravIn, bool forceRecalc);
 
 	static GravityPtr Create();
 };

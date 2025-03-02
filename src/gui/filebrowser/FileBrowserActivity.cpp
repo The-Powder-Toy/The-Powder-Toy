@@ -212,7 +212,7 @@ void FileBrowserActivity::NotifyDone(Task * task)
 	createButtons = true;
 	totalFiles = files.size();
 	delete loadFiles;
-	loadFiles = NULL;
+	loadFiles = nullptr;
 	if (!files.size())
 	{
 		progressBar->Visible = false;
@@ -259,7 +259,7 @@ void FileBrowserActivity::NotifyStatus(Task * task)
 
 }
 
-void FileBrowserActivity::OnTick(float dt)
+void FileBrowserActivity::OnTick()
 {
 	if(loadFiles)
 		loadFiles->Poll();
@@ -283,7 +283,7 @@ void FileBrowserActivity::OnTick(float dt)
 							ui::Point(buttonWidth, buttonHeight),
 							saveFile.get());
 			saveButton->AddContextMenu(1);
-			saveButton->Tick(dt);
+			saveButton->Tick();
 			saveButton->SetActionCallback({
 				[this, i] { SelectSave(i); },
 				[this, i] { RenameSave(i); },

@@ -12,7 +12,7 @@
 
 ConsoleView::ConsoleView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, 150)),
-	commandField(NULL)
+	commandField(nullptr)
 {
 	commandField = new ui::Textbox(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "");
 	commandField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -116,7 +116,7 @@ void ConsoleView::OnDraw()
 	g->BlendLine(Position + Vec2{ 0, Size.Y }, Position + Size, 0xFFFFFF_rgb .WithAlpha(200));
 }
 
-void ConsoleView::OnTick(float dt)
+void ConsoleView::OnTick()
 {
 	if (doClose)
 	{

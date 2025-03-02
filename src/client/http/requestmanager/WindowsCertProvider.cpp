@@ -58,7 +58,7 @@ namespace http
 					}
 					DWORD pemLength;
 					// get required buffer size first
-					if (!CryptBinaryToStringA(context->pbCertEncoded, context->cbCertEncoded, CRYPT_STRING_BASE64HEADER, NULL, &pemLength))
+					if (!CryptBinaryToStringA(context->pbCertEncoded, context->cbCertEncoded, CRYPT_STRING_BASE64HEADER, nullptr, &pemLength))
 					{
 						return die("CryptBinaryToStringA failed");
 					}

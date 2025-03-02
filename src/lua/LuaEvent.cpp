@@ -59,10 +59,10 @@ void LuaEvent::Open(lua_State *L)
 		LFUNC(getModifiers),
 #undef LFUNC
 		{ "register", fregister },
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 #define LVICONST(id, v) lua_pushinteger(L, VariantIndex<GameControllerEvent, id>()); lua_setfield(L, -2, v)
 	LVICONST(TextInputEvent    , "TEXTINPUT"    );
 	LVICONST(TextEditingEvent  , "TEXTEDITING"  );

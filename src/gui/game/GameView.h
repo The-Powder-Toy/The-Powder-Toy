@@ -1,6 +1,7 @@
 #pragma once
 #include "common/String.h"
 #include "gui/interface/Window.h"
+#include "gui/interface/Fade.h"
 #include "simulation/Sample.h"
 #include "graphics/FindingElement.h"
 #include "graphics/RendererFrame.h"
@@ -65,16 +66,16 @@ private:
 	int currentSaveType;
 	int lastMenu;
 
-	int toolTipPresence;
+	ui::Fade toolTipPresence{ ui::Fade::LinearProfile{ 120.f, 60.f }, 0, 0 };
 	String toolTip;
 	bool isToolTipFadingIn;
 	ui::Point toolTipPosition;
-	int infoTipPresence;
+	ui::Fade infoTipPresence{ ui::Fade::LinearProfile{ 60.f, 60.f }, 0, 0 };
 	String infoTip;
-	int buttonTipShow;
+	ui::Fade buttonTipShow{ ui::Fade::LinearProfile{ 120.f, 60.f }, 0, 0 };
 	String buttonTip;
 	bool isButtonTipFadingIn;
-	int introText;
+	ui::Fade introText{ ui::Fade::LinearProfile{ 60.f, 60.f }, 0, 2048 };
 	String introTextMessage;
 
 	bool doScreenshot;
@@ -88,6 +89,7 @@ private:
 	GameController * c;
 	Renderer *ren = nullptr;
 	RendererSettings *rendererSettings = nullptr;
+	bool wantFrame = false;
 	Simulation *sim = nullptr;
 	Brush const *activeBrush;
 	//UI Elements
@@ -106,6 +108,7 @@ private:
 	bool saveReuploadAllowed;
 	ui::Button * downVoteButton;
 	ui::Button * upVoteButton;
+	void ResetVoteButtons();
 	ui::Button * tagSimulationButton;
 	ui::Button * clearSimButton;
 	SplitButton * loginButton;
@@ -174,6 +177,9 @@ private:
 	int foundParticles = 0;
 	const RendererFrame *rendererFrame = nullptr;
 
+	SimFpsLimit simFpsLimit = FpsLimitExplicit{ 60.f };
+	void ApplySimFpsLimit();
+
 public:
 	GameView();
 	~GameView();
@@ -241,7 +247,8 @@ public:
 	void OnMouseWheel(int x, int y, int d) override;
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
-	void OnTick(float dt) override;
+	void OnTick() override;
+	void OnSimTick() override;
 	void OnDraw() override;
 	void OnBlur() override;
 	void OnFileDrop(ByteString filename) override;
@@ -275,4 +282,11 @@ public:
 	void PauseRendererThread();
 
 	void RenderSimulation(const RenderableSimulation &sim, bool handleEvents);
+	void AfterSimDraw(const RenderableSimulation &sim);
+
+	void SetSimFpsLimit(SimFpsLimit newSimFpsLimit);
+	SimFpsLimit GetSimFpsLimit() const
+	{
+		return simFpsLimit;
+	}
 };

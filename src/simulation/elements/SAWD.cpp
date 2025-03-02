@@ -43,7 +43,7 @@ void Element::Element_SAWD()
 	HighTemperatureTransition = NT;
 
 	Update = &update;
-	Graphics = NULL; // is this needed?
+	Graphics = nullptr; // is this needed?
 }
 
 static int update(UPDATE_FUNC_ARGS)

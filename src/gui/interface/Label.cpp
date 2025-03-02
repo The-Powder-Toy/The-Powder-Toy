@@ -166,7 +166,7 @@ void Label::OnMouseMoved(int localx, int localy)
 	}
 }
 
-void Label::Tick(float dt)
+void Label::Tick()
 {
 	if (multiline)
 	{

@@ -5,14 +5,14 @@ void MainLoop()
 {
 	while (ui::Engine::Ref().Running())
 	{
-		EngineProcess();
+		auto delay = EngineProcess();
+		if (delay.has_value())
+		{
+			SDL_Delay(std::max(*delay, UINT64_C(1)));
+		}
 	}
 }
 
-void SetFpsLimit(FpsLimit newFpsLimit)
-{
-}
-
-void UpdateFpsLimit()
+void ApplyFpsLimit()
 {
 }

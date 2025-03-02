@@ -16,6 +16,7 @@ namespace http
 		ByteString name;
 		ByteString value;
 		std::optional<ByteString> filename;
+		std::optional<ByteString> contentType;
 	};
 	using StringData = ByteString;
 	using FormData = std::vector<FormItem>;

@@ -12,7 +12,7 @@ Luna<LuaSlider>::RegType LuaSlider::methods[] = {
 	method(LuaSlider, visible),
 	method(LuaSlider, value),
 	method(LuaSlider, steps),
-	{0, 0}
+	{nullptr, nullptr}
 };
 
 LuaSlider::LuaSlider(lua_State *L) :

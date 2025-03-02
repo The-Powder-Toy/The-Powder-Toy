@@ -12,7 +12,7 @@ Luna<LuaTextbox>::RegType LuaTextbox::methods[] = {
 	method(LuaTextbox, position),
 	method(LuaTextbox, size),
 	method(LuaTextbox, visible),
-	{0, 0}
+	{nullptr, nullptr}
 };
 
 LuaTextbox::LuaTextbox(lua_State *L) :

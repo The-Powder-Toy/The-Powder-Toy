@@ -39,7 +39,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 	};
 	std::vector<ExistingParticle> existingParticles;
 	auto pasteArea = RES.OriginRect() & RectSized(partP, save->blockSize * CELL);
-	for (int i = 0; i <= parts_lastActiveIndex; i++)
+	for (int i = 0; i <= parts.lastActiveIndex; i++)
 	{
 		if (parts[i].type)
 		{
@@ -127,14 +127,16 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 		removeExistingParticles({ x, y });
 
 		// Allocate particle (this location is guaranteed to be empty due to "full scan" logic above)
-		if (pfree == -1)
-			break;
-		auto i = pfree;
-		pfree = parts[i].life;
-		if (i > parts_lastActiveIndex)
-			parts_lastActiveIndex = i;
+		auto i = create_part(-3, x, y, tempPart.type);
+		if (i == -1)
+		{
+			continue;
+		}
+		if (i > parts.lastActiveIndex)
+		{
+			parts.lastActiveIndex = i;
+		}
 		parts[i] = tempPart;
-		elementCount[tempPart.type]++;
 
 
 		switch (parts[i].type)
@@ -218,7 +220,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 			parts[i].tmp3 = 0;
 		}
 	}
-	parts_lastActiveIndex = NPART-1;
+	parts.lastActiveIndex = NPART-1;
 	force_stacking_check = true;
 	Element_PPIP_ppip_changed = 1;
 
@@ -296,6 +298,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 			gravIn.mask   [bpos] = save->gravMask  [spos];
 			gravOut.forceX[bpos] = save->gravForceX[spos];
 			gravOut.forceY[bpos] = save->gravForceY[spos];
+			gravForceRecalc = true; // gravOut changed outside DispatchNewtonianGravity
 		}
 	}
 	if (useGravityMaps)
@@ -973,8 +976,21 @@ int Simulation::parts_avg(int ci, int ni,int t)
 	return PT_NONE;
 }
 
+void Parts::Reset()
+{
+	memset(data.data(), 0, sizeof(Particle)*NPART);
+	lastActiveIndex = 0;
+}
+
 void Simulation::clear_sim(void)
 {
+	for (auto i = 0; i <= parts.lastActiveIndex; i++)
+	{
+		if (parts[i].type)
+		{
+			kill_part(i);
+		}
+	}
 	ensureDeterminism = false;
 	frameCount = 0;
 	debug_nextToUpdate = 0;
@@ -984,12 +1000,12 @@ void Simulation::clear_sim(void)
 	signs.clear();
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
-	memset(parts, 0, sizeof(Particle)*NPART);
+	parts.Reset();
 	for (int i = 0; i < NPART-1; i++)
 		parts[i].life = i+1;
 	parts[NPART-1].life = -1;
 	pfree = 0;
-	parts_lastActiveIndex = 0;
+	NUM_PARTS = 0;
 	memset(pmap, 0, sizeof(pmap));
 	memset(fvx, 0, sizeof(fvx));
 	memset(fvy, 0, sizeof(fvy));
@@ -1183,8 +1199,8 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		{
 			if (rt == PT_COAL || rt == PT_BCOL)
 				parts[ID(r)].temp = parts[i].temp;
-
-			if (rt < PT_NUM && elements[rt].HeatConduct && (rt!=PT_HSWC||parts[ID(r)].life==10) && rt!=PT_FILT && rt!=PT_PAPR)
+      
+			if (rt < PT_NUM && !IsHeatInsulator(parts[ID(r)]) && rt != PT_FILT && rt != PT_PAPR)
 				parts[i].temp = parts[ID(r)].temp = restrict_flt((parts[ID(r)].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
 		}
 		else if ((parts[i].type==PT_NEUT || parts[i].type==PT_ELEC) && (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN || rt==PT_PBCN))
@@ -1446,14 +1462,11 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 
 		if (pmap[ny][nx] && ID(pmap[ny][nx]) == ri)
 			pmap[ny][nx] = 0;
-		parts[ri].x += float(x - nx);
-		parts[ri].y += float(y - ny);
+		parts[ri].x = parts[i].x;
+		parts[ri].y = parts[i].y;
 		int rx = int(parts[ri].x + 0.5f);
 		int ry = int(parts[ri].y + 0.5f);
-		// This check will never fail unless the pmap array has already been corrupted via another bug
-		// In that case, r's position is inaccurate (not actually at nx/ny) and rx/ry may be out of bounds
-		if (InBounds(rx, ry))
-			pmap[ry][rx] = PMAP(ri, parts[ri].type);
+		pmap[ry][rx] = PMAP(ri, parts[ri].type);
 	}
 	return 1;
 }
@@ -1576,7 +1589,7 @@ int Simulation::is_blocking(int t, int x, int y) const
 		return 0;
 	}
 
-	return !eval_move(t, x, y, NULL);
+	return !eval_move(t, x, y, nullptr);
 }
 
 int Simulation::is_boundary(int pt, int x, int y) const
@@ -1753,6 +1766,7 @@ void Simulation::kill_part(int i)//kills particle number i
 	parts[i].type = PT_NONE;
 	parts[i].life = pfree;
 	pfree = i;
+	NUM_PARTS -= 1;
 }
 
 // Changes the type of particle number i, to t.  This also changes pmap at the same time
@@ -1811,7 +1825,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	if (x<0 || y<0 || x>=XRES || y>=YRES || t<=0 || t>=PT_NUM || !elements[t].Enabled)
 		return -1;
 
-	if (t == PT_SPRK && !(p == -2 && elements[TYP(pmap[y][x])].CtypeDraw))
+	if (t == PT_SPRK && p != -3 && !(p == -2 && elements[TYP(pmap[y][x])].CtypeDraw))
 	{
 		int type = TYP(pmap[y][x]);
 		int index = ID(pmap[y][x]);
@@ -1857,34 +1871,26 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 			return -1;
 	}
 
-	if (p == -1)//creating from anything but brush
+	if (p == -1 || //creating from anything but brush
+	    p == -2 || //creating from brush
+	    p == -3) //skip pmap checks, e.g. for sing explosion
 	{
-		// If there is a particle, only allow creation if the new particle can occupy the same space as the existing particle
-		// If there isn't a particle but there is a wall, check whether the new particle is allowed to be in it
-		//   (not "!=2" for wall check because eval_move returns 1 for moving into empty space)
-		// If there's no particle and no wall, assume creation is allowed
-		if (pmap[y][x] ? (eval_move(t, x, y, NULL) != 2) : (bmap[y/CELL][x/CELL] && eval_move(t, x, y, NULL) == 0))
+		if (p == -1)
 		{
-			return -1;
+			// If there is a particle, only allow creation if the new particle can occupy the same space as the existing particle
+			// If there isn't a particle but there is a wall, check whether the new particle is allowed to be in it
+			//   (not "!=2" for wall check because eval_move returns 1 for moving into empty space)
+			// If there's no particle and no wall, assume creation is allowed
+			if (pmap[y][x] ? (eval_move(t, x, y, nullptr) != 2) : (bmap[y/CELL][x/CELL] && eval_move(t, x, y, nullptr) == 0))
+			{
+				return -1;
+			}
 		}
 		if (pfree == -1)
 			return -1;
 		i = pfree;
 		pfree = parts[i].life;
-	}
-	else if (p == -2)//creating from brush
-	{
-		if (pfree == -1)
-			return -1;
-		i = pfree;
-		pfree = parts[i].life;
-	}
-	else if (p == -3)//skip pmap checks, e.g. for sing explosion
-	{
-		if (pfree == -1)
-			return -1;
-		i = pfree;
-		pfree = parts[i].life;
+		NUM_PARTS += 1;
 	}
 	else
 	{
@@ -1905,7 +1911,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 		i = p;
 	}
 
-	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
+	if (i>parts.lastActiveIndex) parts.lastActiveIndex = i;
 
 	parts[i] = elements[t].DefaultProperties;
 	parts[i].type = t;
@@ -1923,7 +1929,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	{
 		int colr, colg, colb;
 		int sandcolourToUse = p == -2 ? sandcolour_interface : sandcolour;
-		RGB<uint8_t> colour = elements[t].Colour;
+		RGB colour = elements[t].Colour;
 		colr = colour.Red   + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
 		colg = colour.Green + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
 		colb = colour.Blue  + int(sandcolourToUse * 1.3) + rng.between(-20, 20) + rng.between(-15, 15);
@@ -1942,6 +1948,79 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 
 	elementCount[t]++;
 	return i;
+}
+
+void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLOW
+{
+	if (MaxPartsReached())
+	{
+		return;
+	}
+	auto lr = 2 * rng.between(0, 1) - 1; // -1 or 1
+	auto xx = parts[pp].x - lr * 0.3f * parts[pp].vy;
+	auto yy = parts[pp].y + lr * 0.3f * parts[pp].vx;
+	auto nx = int(xx + 0.5f);
+	auto ny = int(yy + 0.5f);
+	if (nx < 0 || ny < 0 || nx >= XRES || ny >= YRES)
+	{
+		return;
+	}
+	auto g = pmap[ny][nx];
+	if (TYP(g) != PT_GLOW)
+	{
+		return;
+	}
+	auto oldTemp = parts[ID(g)].temp;
+	auto i = create_part(-3, nx, ny, PT_PHOT);
+	if (i == -1)
+	{
+		return;
+	}
+	parts[i].x = xx;
+	parts[i].y = yy;
+	parts[i].vx = parts[pp].vx;
+	parts[i].vy = parts[pp].vy;
+	parts[i].temp = oldTemp;
+	auto temp_bin = int((parts[i].temp - 273.0f) * 0.25f);
+	if (temp_bin < 0) temp_bin = 0;
+	if (temp_bin > 25) temp_bin = 25;
+	parts[i].ctype = 0x1F << temp_bin;
+}
+
+void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going through GLAS
+{
+	if (MaxPartsReached())
+	{
+		return;
+	}
+	auto nx = int(parts[pp].x + 0.5f);
+	auto ny = int(parts[pp].y + 0.5f);
+	auto g = pmap[ny][nx];
+	if (TYP(g) != PT_GLAS && TYP(g) != PT_BGLA)
+	{
+		return;
+	}
+	if (std::hypot(parts[pp].vx, parts[pp].vy) < 1.44f)
+	{
+		return;
+	}
+	auto oldTemp = parts[ID(g)].temp;
+	auto i = create_part(-3, nx, ny, PT_PHOT);
+	if (i == -1)
+	{
+		return;
+	}
+	auto lr = 2 * rng.between(0, 1) - 1; // -1 or 1
+	parts[i].ctype = 0x00000F80;
+	parts[i].x = parts[pp].x;
+	parts[i].y = parts[pp].y;
+	parts[i].temp = oldTemp;
+	parts[i].vx = parts[pp].vx - lr * 2.5f * parts[pp].vy;
+	parts[i].vy = parts[pp].vy + lr * 2.5f * parts[pp].vx;
+	/* photons have speed of light. no discussion. */
+	auto r = 1.269f / std::hypot(parts[i].vx, parts[i].vy);
+	parts[i].vx *= r;
+	parts[i].vy *= r;
 }
 
 void Simulation::GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY)
@@ -1981,97 +2060,6 @@ void Simulation::GetGravityField(int x, int y, float particleGrav, float newtonG
 		pGravX += newtonGrav * gravOut.forceX[Vec2{ x, y } / CELL];
 		pGravY += newtonGrav * gravOut.forceY[Vec2{ x, y } / CELL];
 	}
-}
-
-void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLOW
-{
-	float xx, yy;
-	int i, lr, temp_bin, nx, ny;
-
-	if (pfree == -1)
-		return;
-	i = pfree;
-
-	lr = 2*rng.between(0, 1) - 1; // -1 or 1
-
-	xx = parts[pp].x - lr*0.3*parts[pp].vy;
-	yy = parts[pp].y + lr*0.3*parts[pp].vx;
-
-	nx = (int)(xx + 0.5f);
-	ny = (int)(yy + 0.5f);
-
-	if (nx<0 || ny<0 || nx>=XRES || ny>=YRES)
-		return;
-
-	if (TYP(pmap[ny][nx]) != PT_GLOW)
-		return;
-
-	pfree = parts[i].life;
-	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
-
-	parts[i].type = PT_PHOT;
-	parts[i].life = 680;
-	parts[i].x = xx;
-	parts[i].y = yy;
-	parts[i].vx = parts[pp].vx;
-	parts[i].vy = parts[pp].vy;
-	parts[i].temp = parts[ID(pmap[ny][nx])].temp;
-	parts[i].tmp = 0;
-	parts[i].tmp3 = 0;
-	parts[i].tmp4 = 0;
-	photons[ny][nx] = PMAP(i, PT_PHOT);
-
-	temp_bin = (int)((parts[i].temp-273.0f)*0.25f);
-	if (temp_bin < 0) temp_bin = 0;
-	if (temp_bin > 25) temp_bin = 25;
-	parts[i].ctype = 0x1F << temp_bin;
-}
-
-void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going through GLAS
-{
-	int i, lr, nx, ny;
-	float r;
-
-	if (pfree == -1)
-		return;
-	i = pfree;
-
-	nx = (int)(parts[pp].x + 0.5f);
-	ny = (int)(parts[pp].y + 0.5f);
-	if (TYP(pmap[ny][nx]) != PT_GLAS && TYP(pmap[ny][nx]) != PT_BGLA)
-		return;
-
-	if (hypotf(parts[pp].vx, parts[pp].vy) < 1.44f)
-		return;
-
-	pfree = parts[i].life;
-	if (i>parts_lastActiveIndex) parts_lastActiveIndex = i;
-
-	lr = rng.between(0, 1);
-
-	parts[i].type = PT_PHOT;
-	parts[i].ctype = 0x00000F80;
-	parts[i].life = 680;
-	parts[i].x = parts[pp].x;
-	parts[i].y = parts[pp].y;
-	parts[i].temp = parts[ID(pmap[ny][nx])].temp;
-	parts[i].tmp = 0;
-	parts[i].tmp3 = 0;
-	parts[i].tmp4 = 0;
-	photons[ny][nx] = PMAP(i, PT_PHOT);
-
-	if (lr) {
-		parts[i].vx = parts[pp].vx - 2.5f*parts[pp].vy;
-		parts[i].vy = parts[pp].vy + 2.5f*parts[pp].vx;
-	} else {
-		parts[i].vx = parts[pp].vx + 2.5f*parts[pp].vy;
-		parts[i].vy = parts[pp].vy - 2.5f*parts[pp].vx;
-	}
-
-	/* photons have speed of light. no discussion. */
-	r = 1.269 / hypotf(parts[i].vx, parts[i].vy);
-	parts[i].vx *= r;
-	parts[i].vy *= r;
 }
 
 void Simulation::delete_part(int x, int y)//calls kill_part with the particle located at x,y
@@ -2188,7 +2176,7 @@ Simulation::PlanMoveResult Simulation::PlanMove(Sim &sim, int i, int x, int y)
 			}
 			//block if particle can't move (0), or some special cases where it returns 1 (can_move = 3 but returns 1 meaning particle will be eaten)
 			//also photons are still blocked (slowed down) by any particle (even ones it can move through), and absorb wall also blocks particles
-			int eval = sim.eval_move(t, fin_x, fin_y, NULL);
+			int eval = sim.eval_move(t, fin_x, fin_y, nullptr);
 			if (!eval || (can_move[t][TYP(pmap[fin_y][fin_x])] == 3 && eval == 1) || (t == PT_PHOT && pmap[fin_y][fin_x]) || bmap[fin_y/CELL][fin_x/CELL]==WL_DESTROYALL || closedEholeStart!=(bmap[fin_y/CELL][fin_x/CELL] == WL_EHOLE && !emap[fin_y/CELL][fin_x/CELL]))
 			{
 				// found an obstacle
@@ -2218,12 +2206,17 @@ Simulation::PlanMoveResult Simulation::PlanMove(Sim &sim, int i, int x, int y)
 template
 Simulation::PlanMoveResult Simulation::PlanMove<false, const Simulation>(const Simulation &sim, int i, int x, int y);
 
+bool Simulation::IsHeatInsulator(Particle p) const
+{
+	return SimulationData::CRef().elements[p.type].HeatConduct == 0 || (p.type == PT_HSWC && p.life != 10) || ((p.type == PT_PIPE || p.type == PT_PPIP) && (p.tmp & PFLAG_CAN_CONDUCT) == 0);
+}
+
 void Simulation::UpdateParticles(int start, int end)
 {
 	//the main particle loop function, goes over all particles.
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
-	for (auto i = start; i < end && i <= parts_lastActiveIndex; i++)
+	for (auto i = start; i < end && i <= parts.lastActiveIndex; i++)
 	{
 		if (parts[i].type)
 		{
@@ -2317,17 +2310,8 @@ void Simulation::UpdateParticles(int start, int end)
 
 			if (elements[t].Diffusion)//the random diffusion that gasses have
 			{
-				if constexpr (LATENTHEAT)
-				{
-					//The magic number controls diffusion speed
-					parts[i].vx += 0.05*sqrtf(parts[i].temp)*elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
-					parts[i].vy += 0.05*sqrtf(parts[i].temp)*elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
-				}
-				else
-				{
-					parts[i].vx += elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
-					parts[i].vy += elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
-				}
+				parts[i].vx += elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
+				parts[i].vy += elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
 			}
 
 			auto transitionOccurred = false;
@@ -2363,12 +2347,16 @@ void Simulation::UpdateParticles(int start, int end)
 				{
 					float convGravX, convGravY;
 					GetGravityField(x, y, -2.0f, -2.0f, convGravX, convGravY);
-					auto offsetX = int(std::round(convGravX + x));
-					auto offsetY = int(std::round(convGravY + y));
-					if ((offsetX != x || offsetY != y) && offsetX >= 0 && offsetX < XRES && offsetY >= 0 && offsetY < YRES) {//some heat convection for liquids
+					auto offsetX = std::clamp(int(std::round(convGravX + x)), x-1, x+1);
+					auto offsetY = std::clamp(int(std::round(convGravY + y)), y-1, y+1);
+					// Some heat convection for liquids
+					if (offsetX != x || offsetY != y)
+					{
 						auto r = pmap[offsetY][offsetX];
-						if (!(!r || parts[i].type != TYP(r))) {
-							if (parts[i].temp>parts[ID(r)].temp) {
+						if (r && parts[i].type == TYP(r))
+						{
+							if (parts[i].temp>parts[ID(r)].temp)
+							{
 								auto swappage = parts[i].temp;
 								parts[i].temp = parts[ID(r)].temp;
 								parts[ID(r)].temp = swappage;
@@ -2380,97 +2368,65 @@ void Simulation::UpdateParticles(int start, int end)
 				//heat transfer code
 				auto h_count = 0;
 				bool cond;
-				if constexpr (LATENTHEAT)
-				{
-					cond = t && (t!=PT_HSWC||parts[i].life==10) && elements[t].HeatConduct*gel_scale > 0;
-				}
-				else
-				{
-					cond = t && (t!=PT_HSWC||parts[i].life==10) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250);
-				}
+				cond = t && !IsHeatInsulator(parts[i]) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250);
+
 				if (cond)
 				{
 					if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
 					{
-						if constexpr (LATENTHEAT)
-						{
-							auto c_heat = parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*std::fabs(elements[t].Weight) + hv[y/CELL][x/CELL]*100*(pv[y/CELL][x/CELL]-MIN_PRESSURE)/(MAX_PRESSURE-MIN_PRESSURE)*2;
-							float c_Cm = 96.645/elements[t].HeatConduct*gel_scale*std::fabs(elements[t].Weight) + 100*(pv[y/CELL][x/CELL]-MIN_PRESSURE)/(MAX_PRESSURE-MIN_PRESSURE)*2;
-							auto pt = c_heat/c_Cm;
-							pt = restrict_flt(pt, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
-							parts[i].temp = pt;
-							//Pressure increase from heat (temporary)
-							pv[y/CELL][x/CELL] += (pt-hv[y/CELL][x/CELL])*0.004;
-							hv[y/CELL][x/CELL] = pt;
-						}
-						else
-						{
-							auto c_heat = (hv[y/CELL][x/CELL]-parts[i].temp)*0.04;
-							c_heat = restrict_flt(c_heat, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
-							parts[i].temp += c_heat;
-							hv[y/CELL][x/CELL] -= c_heat;
-						}
+						auto c_heat = (hv[y/CELL][x/CELL]-parts[i].temp)*0.04;
+						c_heat = restrict_flt(c_heat, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
+						parts[i].temp += c_heat;
+						hv[y/CELL][x/CELL] -= c_heat;
 					}
 					auto c_heat = 0.0f;
-					float c_Cm = 0.0f;
 					int surround_hconduct[8];
 					for (auto j=0; j<8; j++)
 					{
 						surround_hconduct[j] = i;
 						auto r = surround[j];
+
 						if (!r)
 							continue;
-						auto rt = TYP(r);
-						if (rt && elements[rt].HeatConduct && (rt!=PT_HSWC||parts[ID(r)].life==10)
-						        && (t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
-						        && (rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG))
-						        && (t!=PT_ELEC||rt!=PT_DEUT)
-						        && (t!=PT_DEUT||rt!=PT_ELEC)
-						        && (t!=PT_HSWC || rt!=PT_FILT || parts[i].tmp != 1)
-						        && (t!=PT_FILT || rt!=PT_HSWC || parts[ID(r)].tmp != 1)
-						        && (t!=PT_PHOT || rt!=PT_PAPR))
-						{
-							surround_hconduct[j] = ID(r);
-							if constexpr (LATENTHEAT)
-							{
-								if (rt==PT_GEL)
-									gel_scale = parts[ID(r)].tmp*2.55f;
-								else gel_scale = 1.0f;
 
-								c_heat += parts[ID(r)].temp*96.645/elements[rt].HeatConduct*gel_scale*std::fabs(elements[rt].Weight);
-								c_Cm += 96.645/elements[rt].HeatConduct*gel_scale*std::fabs(elements[rt].Weight);
-							}
-							else
-							{
-								c_heat += parts[ID(r)].temp;
-							}
-							h_count++;
+						auto rt = TYP(r);
+
+						if (!rt || IsHeatInsulator(parts[ID(r)])
+						        || (t == PT_FILT && (rt == PT_BRAY || rt == PT_BIZR || rt == PT_BIZRG))
+						        || (rt == PT_FILT && (t == PT_BRAY || t == PT_PHOT || t == PT_BIZR || t == PT_BIZRG))
+						        || (t == PT_ELEC && rt == PT_DEUT)
+						        || (t == PT_DEUT && rt == PT_ELEC)
+						        || (t == PT_HSWC && rt == PT_FILT && parts[i].tmp == 1)
+						        || (t == PT_FILT && rt == PT_HSWC && parts[ID(r)].tmp == 1))
+						        || (t == PT_PHOT && rt == PT_PAPR))
+							continue;
+
+						surround_hconduct[j] = ID(r);
+						c_heat += parts[ID(r)].temp;
+
+						if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
+						{
+							c_heat += parts[ID(r)].temp; // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
+						}
+
+						h_count++;
+
+						if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
+						{
+							h_count++; // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
 						}
 					}
 					float pt = R_TEMP;
-					if constexpr (LATENTHEAT)
-					{
-						if (t==PT_GEL)
-							gel_scale = parts[i].tmp*2.55f;
-						else gel_scale = 1.0f;
 
-						if (t == PT_PHOT)
-							pt = (c_heat+parts[i].temp*96.645)/(c_Cm+96.645);
-						else
-							pt = (c_heat+parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*std::fabs(elements[t].Weight))/(c_Cm+96.645/elements[t].HeatConduct*gel_scale*std::fabs(elements[t].Weight));
-
-						c_heat += parts[i].temp*96.645/elements[t].HeatConduct*gel_scale*std::fabs(elements[t].Weight);
-						c_Cm += 96.645/elements[t].HeatConduct*gel_scale*std::fabs(elements[t].Weight);
-						parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
-					}
+					if ((t == PT_PIPE || t == PT_PPIP) && parts[i].ctype != 0)
+						pt = (c_heat+parts[i].temp*2.0f)/(h_count+2); // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
 					else
-					{
 						pt = (c_heat+parts[i].temp)/(h_count+1);
-						pt = parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
-						for (auto j=0; j<8; j++)
-						{
-							parts[surround_hconduct[j]].temp = pt;
-						}
+
+					pt = parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
+					for (auto j=0; j<8; j++)
+					{
+						parts[surround_hconduct[j]].temp = pt;
 					}
 
 					auto ctemph = pt;
@@ -2491,26 +2447,9 @@ void Simulation::UpdateParticles(int start, int end)
 					if (elements[t].HighTemperatureTransition != NT && ctemph>=elements[t].HighTemperature)
 					{
 						// particle type change due to high temperature
-						float dbt = ctempl - pt;
 						if (elements[t].HighTemperatureTransition != ST)
 						{
-							if constexpr (LATENTHEAT)
-							{
-								if (elements[t].LatentHeat <= (c_heat - (elements[t].HighTemperature - dbt)*c_Cm))
-								{
-									pt = (c_heat - elements[t].LatentHeat)/c_Cm;
-									t = elements[t].HighTemperatureTransition;
-								}
-								else
-								{
-									parts[i].temp = restrict_flt(elements[t].HighTemperature - dbt, MIN_TEMP, MAX_TEMP);
-									s = 0;
-								}
-							}
-							else
-							{
-								t = elements[t].HighTemperatureTransition;
-							}
+							t = elements[t].HighTemperatureTransition;
 						}
 						else if (t == PT_ICEI || t == PT_SNOW)
 						{
@@ -2526,28 +2465,9 @@ void Simulation::UpdateParticles(int start, int end)
 
 								if (s)
 								{
-									if constexpr (LATENTHEAT)
-									{
-										//One ice table value for all it's kinds
-										if (elements[t].LatentHeat <= (c_heat - (elements[parts[i].ctype].LowTemperature - dbt)*c_Cm))
-										{
-											pt = (c_heat - elements[t].LatentHeat)/c_Cm;
-											t = parts[i].ctype;
-											parts[i].ctype = PT_NONE;
-											parts[i].life = 0;
-										}
-										else
-										{
-											parts[i].temp = restrict_flt(elements[parts[i].ctype].LowTemperature - dbt, MIN_TEMP, MAX_TEMP);
-											s = 0;
-										}
-									}
-									else
-									{
-										t = parts[i].ctype;
-										parts[i].ctype = PT_NONE;
-										parts[i].life = 0;
-									}
+									t = parts[i].ctype;
+									parts[i].ctype = PT_NONE;
+									parts[i].life = 0;
 								}
 							}
 							else
@@ -2555,24 +2475,7 @@ void Simulation::UpdateParticles(int start, int end)
 						}
 						else if (t == PT_SLTW)
 						{
-							if constexpr (LATENTHEAT)
-							{
-								if (elements[t].LatentHeat <= (c_heat - (elements[t].HighTemperature - dbt)*c_Cm))
-								{
-									pt = (c_heat - elements[t].LatentHeat)/c_Cm;
-
-									t = rng.chance(1, 4) ? PT_SALT : PT_WTRV;
-								}
-								else
-								{
-									parts[i].temp = restrict_flt(elements[t].HighTemperature - dbt, MIN_TEMP, MAX_TEMP);
-									s = 0;
-								}
-							}
-							else
-							{
-								t = rng.chance(1, 4) ? PT_SALT : PT_WTRV;
-							}
+							t = rng.chance(1, 4) ? PT_SALT : PT_WTRV;
 						}
 						else if (t == PT_BRMT)
 						{
@@ -2605,26 +2508,9 @@ void Simulation::UpdateParticles(int start, int end)
 					else if (elements[t].LowTemperatureTransition != NT && ctempl<elements[t].LowTemperature)
 					{
 						// particle type change due to low temperature
-						float dbt = ctempl - pt;
 						if (elements[t].LowTemperatureTransition != ST)
 						{
-							if constexpr (LATENTHEAT)
-							{
-								if (elements[elements[t].LowTemperatureTransition].LatentHeat >= (c_heat - (elements[t].LowTemperature - dbt)*c_Cm))
-								{
-									pt = (c_heat + elements[elements[t].LowTemperatureTransition].LatentHeat)/c_Cm;
-									t = elements[t].LowTemperatureTransition;
-								}
-								else
-								{
-									parts[i].temp = restrict_flt(elements[t].LowTemperature - dbt, MIN_TEMP, MAX_TEMP);
-									s = 0;
-								}
-							}
-							else
-							{
-								t = elements[t].LowTemperatureTransition;
-							}
+							t = elements[t].LowTemperatureTransition;
 						}
 						else if (t == PT_WTRV)
 						{
@@ -2684,14 +2570,7 @@ void Simulation::UpdateParticles(int start, int end)
 					}
 					else
 						s = 0;
-					if constexpr (LATENTHEAT)
-					{
-						pt = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
-						for (auto j=0; j<8; j++)
-						{
-							parts[surround_hconduct[j]].temp = pt;
-						}
-					}
+
 					if (s) // particle type change occurred
 					{
 						if (t==PT_ICEI || t==PT_LAVA || t==PT_SNOW)
@@ -2931,7 +2810,7 @@ killed:
 					if (!x_ok || !y_ok) //when moving from left to right stickmen might be able to fall through solid things, fix with "eval_move(t, nx+diffx, ny+diffy, NULL)" but then they die instead
 					{
 						//adjust stickmen legs
-						playerst* stickman = NULL;
+						playerst* stickman = nullptr;
 						int t = parts[i].type;
 						if (t == PT_STKM)
 							stickman = &player;
@@ -2978,7 +2857,7 @@ killed:
 						continue;
 					}
 
-					if (eval_move(PT_PHOT, fin_x, fin_y, NULL))
+					if (eval_move(PT_PHOT, fin_x, fin_y, nullptr))
 					{
 						int rt = TYP(pmap[fin_y][fin_x]);
 						int lt = TYP(pmap[y][x]);
@@ -3377,7 +3256,7 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
 	//the particle loop that resets the pmap/photon maps every frame, to update them.
-	for (int i = 0; i <= parts_lastActiveIndex; i++)
+	for (int i = 0; i <= parts.lastActiveIndex; i++)
 	{
 		if (parts[i].type)
 		{
@@ -3445,13 +3324,13 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 	}
 	if (lastPartUnused == -1)
 	{
-		pfree = (parts_lastActiveIndex>=(NPART-1)) ? -1 : parts_lastActiveIndex+1;
+		pfree = (parts.lastActiveIndex>=(NPART-1)) ? -1 : parts.lastActiveIndex+1;
 	}
 	else
 	{
-		parts[lastPartUnused].life = (parts_lastActiveIndex>=(NPART-1)) ? -1 : parts_lastActiveIndex+1;
+		parts[lastPartUnused].life = (parts.lastActiveIndex>=(NPART-1)) ? -1 : parts.lastActiveIndex+1;
 	}
-	parts_lastActiveIndex = lastPartUsed;
+	parts.lastActiveIndex = lastPartUsed;
 	if (elementRecount)
 		elementRecount = false;
 }
@@ -3460,7 +3339,7 @@ void Simulation::SimulateGoL()
 {
 	auto &builtinGol = SimulationData::builtinGol;
 	CGOL = 0;
-	for (int i = 0; i <= parts_lastActiveIndex; ++i)
+	for (int i = 0; i <= parts.lastActiveIndex; ++i)
 	{
 		auto &part = parts[i];
 		if (part.type != PT_LIFE)
@@ -3666,7 +3545,7 @@ void Simulation::CheckStacking()
 	}
 	if (excessive_stacking_found)
 	{
-		for (int i = 0; i <= parts_lastActiveIndex; i++)
+		for (int i = 0; i <= parts.lastActiveIndex; i++)
 		{
 			if (parts[i].type)
 			{
@@ -3749,6 +3628,7 @@ void Simulation::BeforeSim()
 			air->update_airh();
 
 		DispatchNewtonianGravity();
+		// gravIn::mass is now potentially garbage, which is ok, we were going to clear it for the frame anyway
 		for (auto p : gravIn.mass.Size().OriginRect())
 		{
 			gravIn.mass[p] = 0.f;
@@ -3783,15 +3663,14 @@ void Simulation::BeforeSim()
 	if (!sys_pause || framerender)
 	{
 		// decrease wall conduction, make walls block air and ambient heat
-		int x, y;
-		for (y = 0; y < YCELLS; y++)
+		for (int y = 0; y < YCELLS; y++)
 		{
-			for (x = 0; x < XCELLS; x++)
+			for (int x = 0; x < XCELLS; x++)
 			{
 				if (emap[y][x])
 					emap[y][x] --;
 				air->bmap_blockair[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_BLOCKAIR || (bmap[y][x]==WL_EWALL && !emap[y][x]));
-				air->bmap_blockairh[y][x] = (bmap[y][x]==WL_WALL || bmap[y][x]==WL_WALLELEC || bmap[y][x]==WL_BLOCKAIR || bmap[y][x]==WL_GRAV || (bmap[y][x]==WL_EWALL && !emap[y][x])) ? 0x8:0;
+				air->bmap_blockairh[y][x] = (air->bmap_blockair[y][x] || bmap[y][x]==WL_GRAV) ? 0x8 : 0;
 			}
 		}
 
@@ -3890,7 +3769,7 @@ void Simulation::BeforeSim()
 		// update PPIP tmp?
 		if (Element_PPIP_ppip_changed)
 		{
-			for (int i = 0; i <= parts_lastActiveIndex; i++)
+			for (int i = 0; i <= parts.lastActiveIndex; i++)
 			{
 				if (parts[i].type==PT_PPIP)
 				{
@@ -3965,7 +3844,8 @@ void Simulation::DispatchNewtonianGravity()
 {
 	if (grav)
 	{
-		grav->Exchange(gravOut, gravIn);
+		grav->Exchange(gravOut, gravIn, gravForceRecalc);
+		gravForceRecalc = false;
 	}
 }
 
@@ -3973,9 +3853,12 @@ void Simulation::ResetNewtonianGravity(GravityInput newGravIn, GravityOutput new
 {
 	gravIn = newGravIn;
 	DispatchNewtonianGravity();
+	// gravIn is now potentially garbage, set it again
+	gravIn = newGravIn;
 	if (grav)
 	{
 		gravOut = newGravOut;
+		gravForceRecalc = true; // gravOut changed outside DispatchNewtonianGravity
 		gravWallChanged = true;
 	}
 }
@@ -3986,11 +3869,15 @@ void Simulation::EnableNewtonianGravity(bool enable)
 	{
 		grav.reset();
 		gravOut = {}; // reset as per the invariant
+		gravForceRecalc = true; // gravOut changed outside DispatchNewtonianGravity
 	}
 	if (!grav && enable)
 	{
 		grav = Gravity::Create();
+		auto oldGravIn = gravIn;
 		DispatchNewtonianGravity();
+		// gravIn is now potentially garbage, set it again
+		gravIn = std::move(oldGravIn);
 	}
 }
 

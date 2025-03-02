@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <memory>
+#include <span>
 #include <vector>
 #include "common/Plane.h"
 #include "common/String.h"
@@ -53,7 +54,7 @@ public:
 	// Automatically choose a size to fit within the given box, keeping aspect ratio
 	void ResizeToFit(Vec2<int> bound, bool resample = false);
 
-	static std::unique_ptr<VideoBuffer> FromPNG(std::vector<char> const &);
+	static std::unique_ptr<VideoBuffer> FromPNG(std::span<const char> data);
 	std::unique_ptr<std::vector<char>> ToPNG() const;
 	std::vector<char> ToPPM() const;
 };

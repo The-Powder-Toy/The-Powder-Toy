@@ -6,19 +6,18 @@
 #include "graphics/Graphics.h"
 #include "common/platform/Platform.h"
 #include "common/clipboard/Clipboard.h"
+#include "FrameSchedule.h"
 #include <iostream>
 
 int desktopWidth = 1280;
 int desktopHeight = 1024;
-SDL_Window *sdl_window = NULL;
-SDL_Renderer *sdl_renderer = NULL;
-SDL_Texture *sdl_texture = NULL;
+SDL_Window *sdl_window = nullptr;
+SDL_Renderer *sdl_renderer = nullptr;
+SDL_Texture *sdl_texture = nullptr;
 bool vsyncHint = false;
 WindowFrameOps currentFrameOps;
 bool momentumScroll = true;
 bool showAvatars = true;
-uint64_t lastTick = 0;
-uint64_t lastFpsUpdate = 0;
 bool showLargeScreenDialog = false;
 int mousex = 0;
 int mousey = 0;
@@ -27,9 +26,12 @@ bool mouseDown = false;
 bool calculatedInitialMouse = false;
 bool hasMouseMoved = false;
 double correctedFrameTimeAvg = 0;
-uint64_t drawingTimer = 0;
-uint64_t frameStart = 0;
-uint64_t oldFrameStart = 0;
+static bool prevContributesToFps = false;
+
+static FrameSchedule tickSchedule;
+static FrameSchedule drawSchedule;
+static FrameSchedule clientTickSchedule;
+static FrameSchedule fpsUpdateSchedule;
 
 void StartTextInput()
 {
@@ -84,6 +86,11 @@ unsigned int GetTicks()
 	return SDL_GetTicks();
 }
 
+uint64_t GetNowNs()
+{
+	return uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
+}
+
 static void CalculateMousePosition(int *x, int *y)
 {
 	int globalMx, globalMy;
@@ -99,12 +106,27 @@ static void CalculateMousePosition(int *x, int *y)
 
 void blit(pixel *vid)
 {
-	SDL_UpdateTexture(sdl_texture, NULL, vid, WINDOWW * sizeof (Uint32));
+	SDL_UpdateTexture(sdl_texture, nullptr, vid, WINDOWW * sizeof (Uint32));
 	// need to clear the renderer if there are black edges (fullscreen, or resizable window)
 	if (currentFrameOps.fullscreen || currentFrameOps.resizable)
 		SDL_RenderClear(sdl_renderer);
-	SDL_RenderCopy(sdl_renderer, sdl_texture, NULL, NULL);
+	SDL_RenderCopy(sdl_renderer, sdl_texture, nullptr, nullptr);
 	SDL_RenderPresent(sdl_renderer);
+}
+
+void UpdateRefreshRate()
+{
+	RefreshRate refreshRate;
+	int displayIndex = SDL_GetWindowDisplayIndex(sdl_window);
+	if (displayIndex >= 0)
+	{
+		SDL_DisplayMode displayMode;
+		if (!SDL_GetCurrentDisplayMode(displayIndex, &displayMode) && displayMode.refresh_rate)
+		{
+			refreshRate = RefreshRateQueried{ displayMode.refresh_rate };
+		}
+	}
+	ui::Engine::Ref().SetRefreshRate(refreshRate);
 }
 
 void SDLOpen()
@@ -128,6 +150,7 @@ void SDLOpen()
 			desktopHeight = rect.h;
 		}
 	}
+	UpdateRefreshRate();
 
 	StopTextInput();
 }
@@ -141,7 +164,7 @@ void SDLClose()
 		//   sdl closes the display. this is an nvidia driver weirdness but
 		//   technically an sdl bug. glfw has this fixed:
 		//   https://github.com/glfw/glfw/commit/9e6c0c747be838d1f3dc38c2924a47a42416c081
-		SDL_GL_LoadLibrary(NULL);
+		SDL_GL_LoadLibrary(nullptr);
 		SDL_QuitSubSystem(SDL_INIT_VIDEO);
 		SDL_GL_UnloadLibrary();
 	}
@@ -151,7 +174,7 @@ void SDLClose()
 void SDLSetScreen()
 {
 	auto newFrameOps = ui::Engine::Ref().windowFrameOps;
-	auto newVsyncHint = std::holds_alternative<FpsLimitVsync>(ui::Engine::Ref().GetFpsLimit());
+	auto newVsyncHint = false; // TODO: DrawLimitVsync
 	if (FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsEmbedded)
 	{
 		newFrameOps.resizable = false;
@@ -197,18 +220,18 @@ void SDLSetScreen()
 		if (sdl_texture)
 		{
 			SDL_DestroyTexture(sdl_texture);
-			sdl_texture = NULL;
+			sdl_texture = nullptr;
 		}
 		if (sdl_renderer)
 		{
 			SDL_DestroyRenderer(sdl_renderer);
-			sdl_renderer = NULL;
+			sdl_renderer = nullptr;
 		}
 		if (sdl_window)
 		{
 			SaveWindowPosition();
 			SDL_DestroyWindow(sdl_window);
-			sdl_window = NULL;
+			sdl_window = nullptr;
 		}
 
 		unsigned int flags = 0;
@@ -266,7 +289,7 @@ void SDLSetScreen()
 		SDL_SetWindowSize(sdl_window, size.X, size.Y);
 		LoadWindowPosition();
 	}
-	UpdateFpsLimit();
+	ApplyFpsLimit();
 	if (newFrameOpsNorm.fullscreen)
 	{
 		SDL_RaiseWindow(sdl_window);
@@ -387,28 +410,36 @@ static void EventProcess(const SDL_Event &event)
 				calculatedInitialMouse = true;
 			}
 			break;
+
+		case SDL_WINDOWEVENT_DISPLAY_CHANGED:
+			UpdateRefreshRate();
+			break;
 		}
 		break;
 	}
 	}
 }
 
-void EngineProcess()
+std::optional<uint64_t> EngineProcess()
 {
 	auto &engine = ui::Engine::Ref();
-	auto correctedFrameTime = frameStart - oldFrameStart;
-	drawingTimer += correctedFrameTime;
-	correctedFrameTimeAvg = correctedFrameTimeAvg + (correctedFrameTime - correctedFrameTimeAvg) * 0.05;
-	if (correctedFrameTime && frameStart - lastFpsUpdate > UINT64_C(200'000'000))
+
 	{
-		engine.SetFps(1e9f / correctedFrameTimeAvg);
-		lastFpsUpdate = frameStart;
+		auto nowNs = GetNowNs();
+		if (clientTickSchedule.HasElapsed(nowNs))
+		{
+			TickClient();
+			clientTickSchedule.SetNow(nowNs);
+		}
+		clientTickSchedule.Arm(10);
+		if (fpsUpdateSchedule.HasElapsed(nowNs))
+		{
+			engine.SetFps(1e9f / correctedFrameTimeAvg);
+			fpsUpdateSchedule.SetNow(nowNs);
+		}
+		fpsUpdateSchedule.Arm(5);
 	}
-	if (frameStart - lastTick > UINT64_C(100'000'000))
-	{
-		lastTick = frameStart;
-		TickClient();
-	}
+
 	if (showLargeScreenDialog)
 	{
 		showLargeScreenDialog = false;
@@ -421,26 +452,58 @@ void EngineProcess()
 		EventProcess(event);
 	}
 
-	engine.Tick();
-
+	std::optional<uint64_t> delay;
+	auto nowNs = GetNowNs();
+	auto effectiveDrawLimit = engine.GetEffectiveDrawCap();
+	auto doDraw = !effectiveDrawLimit || drawSchedule.HasElapsed(nowNs);
 	auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
-	int drawcap = ui::Engine::Ref().GetDrawingFrequencyLimit();
-	if (!drawcap || drawingTimer > 1e9f / drawcap)
+	auto doSimTick = true;
+	if (std::holds_alternative<FpsLimitExplicit>(fpsLimit))
+	{
+		doSimTick = tickSchedule.HasElapsed(nowNs);
+	}
+	else if (std::holds_alternative<FpsLimitFollowDraw>(fpsLimit))
+	{
+		doSimTick = doDraw;
+	}
+	if (doDraw)
+	{
+		engine.Tick();
+	}
+	if (doSimTick)
+	{
+		auto thisContributesToFps = engine.GetContributesToFps();
+		if (prevContributesToFps && thisContributesToFps)
+		{
+			auto correctedFrameTime = tickSchedule.GetFrameTime();
+			correctedFrameTimeAvg = correctedFrameTimeAvg + (correctedFrameTime - correctedFrameTimeAvg) * 0.05;
+		}
+		prevContributesToFps = thisContributesToFps;
+		engine.SimTick();
+		tickSchedule.SetNow(nowNs);
+	}
+	if (doDraw)
 	{
 		engine.Draw();
-		drawingTimer = 0;
+		drawSchedule.SetNow(nowNs);
 		SDLSetScreen();
 		blit(engine.g->Data());
 	}
-	auto now = uint64_t(SDL_GetTicks()) * UINT64_C(1'000'000);
-	oldFrameStart = frameStart;
-	frameStart = now;
+	if (effectiveDrawLimit)
+	{
+		delay = drawSchedule.Arm(float(*effectiveDrawLimit)) / UINT64_C(1'000'000);
+	}
 	if (auto *fpsLimitExplicit = std::get_if<FpsLimitExplicit>(&fpsLimit))
 	{
-		auto timeBlockDuration = uint64_t(UINT64_C(1'000'000'000) / fpsLimitExplicit->value);
-		auto oldFrameStartTimeBlock = oldFrameStart / timeBlockDuration;
-		auto frameStartTimeBlock = oldFrameStartTimeBlock + 1U;
-		frameStart = std::max(frameStart, frameStartTimeBlock * timeBlockDuration);
-		SDL_Delay((frameStart - now) / UINT64_C(1'000'000));
+		auto simDelay = tickSchedule.Arm(fpsLimitExplicit->value) / UINT64_C(1'000'000);
+		if (delay.has_value() && simDelay < *delay)
+		{
+			delay = simDelay;
+		}
 	}
+	else if (std::holds_alternative<FpsLimitNone>(fpsLimit))
+	{
+		delay.reset();
+	}
+	return delay;
 }

@@ -1,5 +1,6 @@
 #include "simulation/ElementCommon.h"
 #include "Probability.h"
+#include "EMP.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
 
@@ -105,7 +106,7 @@ void Element_EMP_Trigger(Simulation *sim, int triggerCount)
 
 	float prob_randDLAY = Probability::binomial_gte1(triggerCount, 1.0f/70);
 
-	for (int r = 0; r <=sim->parts_lastActiveIndex; r++)
+	for (int r = 0; r <=sim->parts.lastActiveIndex; r++)
 	{
 		int t = parts[r].type;
 		auto rx = int(parts[r].x);

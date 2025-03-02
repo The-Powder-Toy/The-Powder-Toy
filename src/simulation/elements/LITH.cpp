@@ -233,12 +233,12 @@ static int update(UPDATE_FUNC_ARGS)
 		sim->part_change_type(i, x, y, PT_LAVA);
 		if (carbonationFactor < 3)
 		{
-			self.temp = 500.f + storedEnergy * 10;
+			self.temp = restrict_flt(500.f + storedEnergy * 10, MIN_TEMP, MAX_TEMP);
 			self.ctype = PT_LITH;
 		}
 		else
 		{
-			self.temp = 2000.f + storedEnergy * 10;
+			self.temp = restrict_flt(2000.f + storedEnergy * 10, MIN_TEMP, MAX_TEMP);
 			self.ctype = PT_GLAS;
 		}
 	}

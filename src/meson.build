@@ -116,6 +116,8 @@ powder_files = files(
 	'lua/CommandInterface.cpp',
 	'lua/TPTSTypes.cpp',
 )
+powder_external_files = []
+
 if host_platform == 'emscripten'
 	powder_files += files(
 		'PowderToySDLEmscripten.cpp',

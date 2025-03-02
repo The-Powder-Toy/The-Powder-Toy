@@ -208,6 +208,7 @@ std::unique_ptr<SnapshotDelta> SnapshotDelta::FromSnapshots(const Snapshot &oldS
 	FillHunkVector(oldSnap.AirVelocityY   , newSnap.AirVelocityY   , delta.AirVelocityY   );
 	FillHunkVector(oldSnap.AmbientHeat    , newSnap.AmbientHeat    , delta.AmbientHeat    );
 	FillHunkVector(oldSnap.GravMass       , newSnap.GravMass       , delta.GravMass       );
+	FillHunkVector(oldSnap.GravMask       , newSnap.GravMask       , delta.GravMask       );
 	FillHunkVector(oldSnap.GravForceX     , newSnap.GravForceX     , delta.GravForceX     );
 	FillHunkVector(oldSnap.GravForceY     , newSnap.GravForceY     , delta.GravForceY     );
 	FillHunkVector(oldSnap.BlockMap       , newSnap.BlockMap       , delta.BlockMap       );
@@ -244,6 +245,7 @@ std::unique_ptr<Snapshot> SnapshotDelta::Forward(const Snapshot &oldSnap)
 	ApplyHunkVector<false>(AirVelocityY   , newSnap.AirVelocityY   );
 	ApplyHunkVector<false>(AmbientHeat    , newSnap.AmbientHeat    );
 	ApplyHunkVector<false>(GravMass       , newSnap.GravMass       );
+	ApplyHunkVector<false>(GravMask       , newSnap.GravMask       );
 	ApplyHunkVector<false>(GravForceX     , newSnap.GravForceX     );
 	ApplyHunkVector<false>(GravForceY     , newSnap.GravForceY     );
 	ApplyHunkVector<false>(BlockMap       , newSnap.BlockMap       );
@@ -278,6 +280,7 @@ std::unique_ptr<Snapshot> SnapshotDelta::Restore(const Snapshot &newSnap)
 	ApplyHunkVector<true>(AirVelocityY   , oldSnap.AirVelocityY   );
 	ApplyHunkVector<true>(AmbientHeat    , oldSnap.AmbientHeat    );
 	ApplyHunkVector<true>(GravMass       , oldSnap.GravMass       );
+	ApplyHunkVector<true>(GravMask       , oldSnap.GravMask       );
 	ApplyHunkVector<true>(GravForceX     , oldSnap.GravForceX     );
 	ApplyHunkVector<true>(GravForceY     , oldSnap.GravForceY     );
 	ApplyHunkVector<true>(BlockMap       , oldSnap.BlockMap       );

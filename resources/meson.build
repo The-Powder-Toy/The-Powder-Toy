@@ -83,7 +83,7 @@ if host_platform == 'windows'
 	rc_conf_data.set('WINUTF8_XML', winutf8_xml_path)
 	rc_conf_data.set('ICON_EXE_ICO', icon_exe_ico_path)
 	rc_conf_data.set('ICON_CPS_ICO', icon_cps_ico_path)
-	powder_files += windows_mod.compile_resources(
+	powder_external_files += windows_mod.compile_resources(
 		configure_file(
 			input: 'powder-res.template.rc',
 			output: 'powder-res.rc',
@@ -99,14 +99,16 @@ elif host_platform == 'darwin'
 		configuration: conf_data,
 	)
 elif host_platform == 'linux'
-	data_files += to_array.process(rendered_icons['icon_exe'], extra_args: 'icon_exe_png')
-	data_files += to_array.process(rendered_icons['icon_cps'], extra_args: 'icon_cps_png')
-	data_files += to_array.process('save.xml', extra_args: 'save_xml')
-	data_files += to_array.process(configure_file(
-		input: 'powder.template.desktop',
-		output: 'powder.desktop',
-		configuration: conf_data,
-	), extra_args: 'powder_desktop')
+	embedded_files += [
+		[ 'icon_exe_png', rendered_icons['icon_exe'] ],
+		[ 'icon_cps_png', rendered_icons['icon_cps'] ],
+		[ 'save_xml', files('save.xml') ],
+		[ 'powder_desktop', configure_file(
+			input: 'powder.template.desktop',
+			output: 'powder.desktop',
+			configuration: conf_data,
+		) ],
+	]
 
 	configure_file(
 		input: 'appdata.template.xml',
@@ -115,6 +117,9 @@ elif host_platform == 'linux'
 	)
 endif
 
-data_files += to_array.process('save_local.png', extra_args: 'save_local_png')
-data_files += to_array.process('save_online.png', extra_args: 'save_online_png')
-data_files += to_array.process('font.bz2', extra_args: 'compressed_font_data')
+embedded_files += [
+	[ 'save_local_png', files('save_local.png') ],
+	[ 'save_online_png', files('save_online.png') ],
+	[ 'font_bz2', files('font.bz2') ],
+	[ 'credits_json', files('credits.json') ],
+]

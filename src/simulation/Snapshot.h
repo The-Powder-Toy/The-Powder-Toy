@@ -5,6 +5,7 @@
 #include "common/tpt-rand.h"
 #include <vector>
 #include <array>
+#include <cstdint>
 #include <json/json.h>
 
 class Snapshot
@@ -20,6 +21,7 @@ public:
 	std::vector<float> GravForceX;
 	std::vector<float> GravForceY;
 	std::vector<float> GravMass;
+	std::vector<uint32_t> GravMask;
 
 	std::vector<unsigned char> BlockMap;
 	std::vector<unsigned char> ElecMap;

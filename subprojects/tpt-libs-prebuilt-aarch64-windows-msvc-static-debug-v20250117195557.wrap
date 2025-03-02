@@ -1,0 +1,6 @@
+[wrap-file]
+directory = tpt-libs-prebuilt-aarch64-windows-msvc-static-debug-v20250117195557
+
+source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20250117195557/tpt-libs-prebuilt-aarch64-windows-msvc-static-debug-v20250117195557.zip
+source_filename = tpt-libs-prebuilt-aarch64-windows-msvc-static-debug-v20250117195557.zip
+source_hash = 5c0aa3d056cf6bdbaac530a323cc1548c1d82d57edf8cd9bbd3b38d86ae35fbd

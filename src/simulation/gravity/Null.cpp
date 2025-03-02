@@ -1,6 +1,6 @@
 #include "Gravity.h"
 
-void Gravity::Exchange(GravityOutput &gravOut, const GravityInput &gravIn)
+void Gravity::Exchange(GravityOutput &gravOut, GravityInput &gravIn, bool forceRecalc)
 {
 }
 

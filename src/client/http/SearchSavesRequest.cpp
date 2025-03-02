@@ -19,7 +19,7 @@ namespace http
 			query += str;
 		};
 
-		time_t currentTime = time(NULL);
+		time_t currentTime = time(nullptr);
 
 		if(period)
 		{

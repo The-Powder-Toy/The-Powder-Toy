@@ -51,7 +51,7 @@ public:
 	bool CharacterValid(int character);
 	bool StringValid(String text);
 
-	void Tick(float dt) override;
+	void Tick() override;
 	void OnContextMenuAction(int item) override;
 	void OnMouseDown(int x, int y, unsigned button) override;
 	void OnMouseUp(int x, int y, unsigned button) override;

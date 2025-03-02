@@ -34,10 +34,44 @@ class Renderer;
 class Air;
 class GameSave;
 
+struct Parts
+{
+	std::array<Particle, NPART> data;
+	// initialized in clear_sim
+	int lastActiveIndex;
+
+	operator const Particle *() const
+	{
+		return data.data();
+	}
+
+	operator Particle *()
+	{
+		return data.data();
+	}
+
+	Parts()
+	{
+		Reset();
+	}
+
+	Parts(const Parts &other) = default;
+
+	Parts &operator =(const Parts &other)
+	{
+		std::copy(other.data.begin(), other.data.begin() + other.lastActiveIndex + 1, data.begin());
+		lastActiveIndex = other.lastActiveIndex;
+		return *this;
+	}
+
+	void Reset();
+};
+
 struct RenderableSimulation
 {
 	GravityInput gravIn;
 	GravityOutput gravOut; // invariant: when grav is empty, this is in its default-constructed state
+	bool gravForceRecalc = true;
 	std::vector<sign> signs;
 
 	int currentTick = 0;
@@ -55,14 +89,11 @@ struct RenderableSimulation
 	unsigned char bmap[YCELLS][XCELLS];
 	unsigned char emap[YCELLS][XCELLS];
 
-	Particle parts[NPART];
+	Parts parts;
 	int pmap[YRES][XRES];
 	int photons[YRES][XRES];
 
 	int aheat_enable = 0;
-
-	// initialized in clear_sim
-	int parts_lastActiveIndex;
 
 	bool useLuaCallbacks = false;
 };
@@ -113,7 +144,6 @@ public:
 	int deco_space = DECOSPACE_SRGB;
 
 	// initialized in clear_sim
-	int pfree;
 	bool elementRecount;
 	unsigned char fighcount; //Contains the number of fighters
 	uint64_t frameCount;
@@ -169,6 +199,7 @@ public:
 	int is_wire_off(int x, int y);
 	void set_emap(int x, int y);
 	int parts_avg(int ci, int ni, int t);
+	bool IsHeatInsulator(Particle) const;
 	void UpdateParticles(int start, int end); // Dispatches an update to the range [start, end).
 	void SimulateGoL();
 	void RecalcFreeParticles(bool do_life_dec);
@@ -220,10 +251,18 @@ public:
 	~Simulation();
 
 	void EnableNewtonianGravity(bool enable);
+
+	bool MaxPartsReached() const
+	{
+		return pfree == -1;
+	}
+
+private:
+	CoordStack& getCoordStackSingleton();
+
 	void ResetNewtonianGravity(GravityInput newGravIn, GravityOutput newGravOut);
 	void DispatchNewtonianGravity();
 	void UpdateGravityMask();
 
-private:
-	CoordStack& getCoordStackSingleton();
+	int pfree;
 };

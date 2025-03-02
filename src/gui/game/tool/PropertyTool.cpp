@@ -3,6 +3,7 @@
 #include "gui/Style.h"
 #include "gui/game/Brush.h"
 #include "gui/game/GameModel.h"
+#include "gui/game/GameController.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Textbox.h"
@@ -10,6 +11,7 @@
 #include "simulation/Simulation.h"
 #include "simulation/SimulationData.h"
 #include "graphics/Graphics.h"
+#include "Format.h"
 #include <SDL.h>
 
 class PropertyWindow: public ui::Window
@@ -102,7 +104,18 @@ std::optional<std::pair<int, String>> PropertyWindow::TakePropertyFrom(const Sim
 	}
 	auto value = toolConfiguration->changeProperty.Get(sim, *i);
 	auto &prop = Particle::GetProperties()[toolConfiguration->changeProperty.propertyIndex];
-	return std::pair{ toolConfiguration->changeProperty.propertyIndex, prop.ToString(value) };
+	String valueString;
+	if (prop.Name == "temp")
+	{
+		StringBuilder sb;
+		format::RenderTemperature(sb, std::get<float>(value), GameController::Ref().GetTemperatureScale());
+		valueString = sb.Build();
+	}
+	else
+	{
+		valueString = prop.ToString(value);
+	}
+	return std::pair{ toolConfiguration->changeProperty.propertyIndex, valueString };
 }
 
 void PropertyWindow::HandlePropertyChange()

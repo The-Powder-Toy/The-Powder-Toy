@@ -28,7 +28,7 @@ void DoRestart()
 ByteString ExecutableName()
 {
 	auto firstApproximation = ExecutableNameFirstApprox();
-	auto rp = std::unique_ptr<char, decltype(std::free) *>(realpath(firstApproximation.data(), NULL), std::free);
+	auto rp = std::unique_ptr<char, decltype(std::free) *>(realpath(firstApproximation.data(), nullptr), std::free);
 	if (!rp)
 	{
 		std::cerr << "realpath: " << errno << std::endl;
@@ -37,7 +37,7 @@ ByteString ExecutableName()
 	return rp.get();
 }
 
-bool UpdateStart(const std::vector<char> &data)
+bool UpdateStart(std::span<const char> data)
 {
 	ByteString exeName = Platform::ExecutableName();
 

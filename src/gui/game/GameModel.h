@@ -51,7 +51,6 @@ struct HistoryEntry
 
 class GameModel
 {
-	std::unique_ptr<http::ExecVoteRequest> execVoteRequest;
 
 private:
 	std::vector<Notification*> notifications;
@@ -74,7 +73,13 @@ private:
 	int activeMenu;
 	int currentBrush;
 	std::vector<std::unique_ptr<Brush>> brushList;
-	std::unique_ptr<SaveInfo> currentSave;
+	struct SaveInfoWrapper
+	{
+		std::unique_ptr<SaveInfo> saveInfo;
+		std::optional<int> queuedVote;
+		std::unique_ptr<http::ExecVoteRequest> execVoteRequest;
+	};
+	SaveInfoWrapper currentSave;
 	std::unique_ptr<SaveFile> currentFile;
 	Tool *lastTool = nullptr;
 	Tool **activeTools = nullptr;
@@ -130,7 +135,6 @@ private:
 
 	void SaveToSimParameters(const GameSave &saveData);
 
-	std::optional<int> queuedVote;
 	bool threadedRendering = false;
 
 	GameView *view;
@@ -233,7 +237,7 @@ public:
 	void AddObserver(GameView * observer);
 
 	void SetPaused(bool pauseState);
-	bool GetPaused();
+	bool GetPaused() const;
 	void SetDecoration(bool decorationState);
 	bool GetDecoration();
 	void SetAHeatEnable(bool aHeat);
@@ -291,11 +295,11 @@ public:
 	void AddNotification(Notification * notification);
 	void RemoveNotification(Notification * notification);
 
-	bool AddCustomGol(String ruleString, String nameString, RGB<uint8_t> color1, RGB<uint8_t> color2);
+	bool AddCustomGol(String ruleString, String nameString, RGB color1, RGB color2);
 	bool RemoveCustomGol(const ByteString &identifier);
 	void LoadCustomGol();
 	void SaveCustomGol();
-	std::optional<CustomGOLData> CheckCustomGol(String ruleString, String nameString, RGB<uint8_t> color1, RGB<uint8_t> color2);
+	std::optional<CustomGOLData> CheckCustomGol(String ruleString, String nameString, RGB color1, RGB color2);
 
 	ByteString SelectNextIdentifier;
 	int SelectNextTool;

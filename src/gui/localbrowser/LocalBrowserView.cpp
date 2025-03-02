@@ -68,7 +68,7 @@ void LocalBrowserView::textChanged()
 	lastChanged = GetTicks()+600;
 }
 
-void LocalBrowserView::OnTick(float dt)
+void LocalBrowserView::OnTick()
 {
 	c->Update();
 	if (changed && lastChanged < GetTicks())

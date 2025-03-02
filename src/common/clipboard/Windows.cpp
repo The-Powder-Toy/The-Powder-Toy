@@ -13,7 +13,7 @@ namespace Clipboard
 	class WindowsClipboardImpl : public ClipboardImpl
 	{
 		UINT saveClipboardFormat = 0;
-		HWND ourHwnd = NULL;
+		HWND ourHwnd = nullptr;
 		DWORD seqNumber = 0; // 0 is invalid
 
 		class ClipboardSession
@@ -170,7 +170,7 @@ namespace Clipboard
 				std::cerr << "cannot announce save on clipboard: EmptyClipboard failed: " << ::GetLastError() << std::endl;
 				return;
 			}
-			::SetClipboardData(saveClipboardFormat, NULL);
+			::SetClipboardData(saveClipboardFormat, nullptr);
 			std::cerr << "announced save on clipboard" << std::endl;
 		}
 

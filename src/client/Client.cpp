@@ -27,7 +27,7 @@
 #include <set>
 
 Client::Client():
-	messageOfTheDay("Fetching the message of the day..."),
+	messageOfTheDay("The message of the day and notifications have not yet been fetched, you can enable this in Settings"),
 	usingAltUpdateServer(false),
 	updateAvailable(false),
 	authUser(0, "")
@@ -71,15 +71,9 @@ void Client::Initialize()
 		RescanStamps();
 	}
 
-	//Begin version check
-	versionCheckRequest = std::make_unique<http::StartupRequest>(false);
-	versionCheckRequest->Start();
-	if constexpr (USE_UPDATESERVER)
+	if (autoStartupRequest)
 	{
-		// use an alternate update server
-		alternateVersionCheckRequest = std::make_unique<http::StartupRequest>(true);
-		alternateVersionCheckRequest->Start();
-		usingAltUpdateServer = true;
+		BeginStartupRequest();
 	}
 }
 
@@ -108,6 +102,27 @@ void Client::AddServerNotification(ServerNotification notification)
 std::vector<ServerNotification> Client::GetServerNotifications()
 {
 	return serverNotifications;
+}
+
+void Client::BeginStartupRequest()
+{
+	if (versionCheckRequest)
+	{
+		return;
+	}
+	serverNotifications.clear();
+	startupRequestError.reset();
+	startupRequestStatus = StartupRequestStatus::inProgress;
+	messageOfTheDay = "Fetching the message of the day...";
+	versionCheckRequest = std::make_unique<http::StartupRequest>(false);
+	versionCheckRequest->Start();
+	if constexpr (USE_UPDATESERVER)
+	{
+		// use an alternate update server
+		alternateVersionCheckRequest = std::make_unique<http::StartupRequest>(true);
+		alternateVersionCheckRequest->Start();
+		usingAltUpdateServer = true;
+	}
 }
 
 void Client::Tick()
@@ -141,6 +156,7 @@ void Client::Tick()
 		{
 			if (!usingAltUpdateServer)
 			{
+				startupRequestError = ex.what();
 				SetMessageOfTheDay(ByteString::Build("Error while fetching MotD: ", ex.what()).FromUtf8());
 			}
 		}
@@ -161,6 +177,7 @@ void Client::Tick()
 		}
 		catch (const http::RequestError &ex)
 		{
+			startupRequestError = ex.what();
 			SetMessageOfTheDay(ByteString::Build("Error while checking for updates: ", ex.what()).FromUtf8());
 		}
 		alternateVersionCheckRequest.reset();
@@ -170,6 +187,17 @@ void Client::Tick()
 		if (updateInfo)
 		{
 			notifyUpdateAvailable();
+		}
+	}
+	if (startupRequestStatus != StartupRequestStatus::notYetDone)
+	{
+		if (versionCheckRequest || alternateVersionCheckRequest)
+		{
+			startupRequestStatus = StartupRequestStatus::inProgress;
+		}
+		else
+		{
+			startupRequestStatus = startupRequestError ? StartupRequestStatus::failed : StartupRequestStatus::succeeded;
 		}
 	}
 }
@@ -310,7 +338,7 @@ void Client::RenameStamp(ByteString stampID, ByteString newName)
 
 ByteString Client::AddStamp(std::unique_ptr<GameSave> saveData)
 {
-	auto now = (uint64_t)time(NULL);
+	auto now = (uint64_t)time(nullptr);
 	if (lastStampTime != now)
 	{
 		lastStampTime = now;

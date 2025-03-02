@@ -82,7 +82,11 @@ int main(int argc, char * argv[])
 
 	while (engine.Running())
 	{
-		EngineProcess();
+		auto delay = EngineProcess();
+		if (delay.has_value())
+		{
+			SDL_Delay(std::max(*delay, UINT64_C(1)));
+		}
 	}
 	Platform::Exit(0);
 	return 0;

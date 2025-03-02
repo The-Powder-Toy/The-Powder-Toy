@@ -24,7 +24,7 @@ void SampleTool::Draw(Simulation * sim, Brush const &brush, ui::Point position)
 	if(gameModel.GetColourSelectorVisibility())
 	{
 		pixel colour = gameModel.GetView()->GetPixelUnderMouse();
-		gameModel.SetColourSelectorColour(RGB<uint8_t>::Unpack(colour).WithAlpha(0xFF));
+		gameModel.SetColourSelectorColour(RGB::Unpack(colour).WithAlpha(0xFF));
 	}
 	else
 	{
@@ -60,7 +60,7 @@ void SampleTool::Draw(Simulation * sim, Brush const &brush, ui::Point position)
 				}
 				if (!found)
 				{
-					static_cast<GOLTool *>(gameModel.GetToolFromIdentifier("DEFAULT_UI_ADDLIFE"))->OpenWindow(gameModel.GetSimulation(), 0, part->ctype, RGB<uint8_t>::Unpack(part->dcolour & 0xFFFFFF), RGB<uint8_t>::Unpack(part->tmp & 0xFFFFFF));
+					static_cast<GOLTool *>(gameModel.GetToolFromIdentifier("DEFAULT_UI_ADDLIFE"))->OpenWindow(gameModel.GetSimulation(), 0, part->ctype, RGB::Unpack(part->dcolour & 0xFFFFFF), RGB::Unpack(part->tmp & 0xFFFFFF));
 				}
 			}
 			else

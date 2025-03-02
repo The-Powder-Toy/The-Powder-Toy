@@ -77,11 +77,9 @@ void TaskWindow::NotifyProgress(Task * task)
 	progressBar->SetStatus(progressStatus);
 }
 
-void TaskWindow::OnTick(float dt)
+void TaskWindow::OnTick()
 {
-	intermediatePos += 1.0f*dt;
-	if(intermediatePos>100.0f)
-		intermediatePos = 0.0f;
+	intermediatePos = float(std::fmod(ui::Engine::Ref().LastTick() * 0.06, 100.0));
 	task->Poll();
 	if (done)
 		Exit();

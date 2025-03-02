@@ -17,15 +17,16 @@ Window::Window(Point _position, Point _size):
 	Size(_size),
 	AllowExclusiveDrawing(true),
 	DoesTextInput(false),
-	okayButton(NULL),
-	cancelButton(NULL),
-	focusedComponent_(NULL),
-	hoverComponent(NULL),
+	okayButton(nullptr),
+	cancelButton(nullptr),
+	focusedComponent_(nullptr),
+	hoverComponent(nullptr),
 	debugMode(false),
 	halt(false),
 	destruct(false),
 	stop(false)
 {
+	SetFps(1);
 }
 
 Window::~Window()
@@ -40,7 +41,7 @@ Window::~Window()
 
 void Window::AddComponent(Component* c)
 {
-	if (c->GetParentWindow() == NULL)
+	if (c->GetParentWindow() == nullptr)
 	{
 		c->SetParentWindow(this);
 		c->MouseInside = false;
@@ -81,14 +82,14 @@ void Window::RemoveComponent(Component* c)
 			//Make sure any events don't continue
 			halt = true;
 			if (Components[i] == focusedComponent_)
-				focusedComponent_ = NULL;
+				focusedComponent_ = nullptr;
 			if (Components[i] == hoverComponent)
-				hoverComponent = NULL;
+				hoverComponent = nullptr;
 
 			Components.erase(Components.begin() + i);
 
 			// we're done
-			c->SetParentWindow(NULL);
+			c->SetParentWindow(nullptr);
 			return;
 		}
 	}
@@ -111,9 +112,9 @@ void Window::RemoveComponent(unsigned idx)
 	halt = true;
 	// free component and remove it.
 	if (Components[idx] == focusedComponent_)
-		focusedComponent_ = NULL;
+		focusedComponent_ = nullptr;
 	if (Components[idx] == hoverComponent)
-		hoverComponent = NULL;
+		hoverComponent = nullptr;
 	delete Components[idx];
 	Components.erase(Components.begin() + idx);
 }
@@ -197,9 +198,9 @@ void Window::DoDraw()
 					(focusedComponent_ == child ? 0x00FF00_rgb : 0xFF0000_rgb).WithAlpha(0x5A));
 		}
 	// the component the mouse is hovering over and the focused component are always drawn last
-	if (hoverComponent && hoverComponent->GetParent() == NULL)
+	if (hoverComponent && hoverComponent->GetParent() == nullptr)
 		drawChild(hoverComponent);
-	if (focusedComponent_ && focusedComponent_ != hoverComponent && focusedComponent_->GetParent() == NULL)
+	if (focusedComponent_ && focusedComponent_ != hoverComponent && focusedComponent_->GetParent() == nullptr)
 		drawChild(focusedComponent_);
 	if (debugMode && focusedComponent_)
 	{
@@ -228,7 +229,7 @@ void Window::DoDraw()
 	}
 }
 
-void Window::DoTick(float dt)
+void Window::DoTick()
 {
 	if (debugMode)
 		return;
@@ -259,16 +260,21 @@ void Window::DoTick(float dt)
 	//tick
 	for (int i = 0, sz = Components.size(); i < sz && !halt; ++i)
 	{
-		Components[i]->Tick(dt);
+		Components[i]->Tick();
 	}
 
 	halt = false;
 	stop = false;
 
-	OnTick(dt);
+	OnTick();
 
 	if (destruct)
 		finalise();
+}
+
+void Window::DoSimTick()
+{
+	OnSimTick();
 }
 
 void Window::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
@@ -277,7 +283,7 @@ void Window::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, b
 		debugMode = !debugMode;
 	if (debugMode)
 	{
-		if (focusedComponent_!=NULL)
+		if (focusedComponent_!=nullptr)
 		{
 			if (shift)
 			{
@@ -357,7 +363,7 @@ void Window::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, b
 		return;
 	}
 	//on key press
-	if (focusedComponent_ != NULL)
+	if (focusedComponent_ != nullptr)
 	{
 		if (focusedComponent_->Enabled && focusedComponent_->Visible)
 			focusedComponent_->OnKeyPress(key, scan, repeat, shift, ctrl, alt);
@@ -381,7 +387,7 @@ void Window::DoKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl,
 	if(debugMode)
 		return;
 	//on key unpress
-	if (focusedComponent_ != NULL)
+	if (focusedComponent_ != nullptr)
 	{
 		if (focusedComponent_->Enabled && focusedComponent_->Visible)
 			focusedComponent_->OnKeyRelease(key, scan, repeat, shift, ctrl, alt);
@@ -398,7 +404,7 @@ void Window::DoTextInput(String text)
 	if (debugMode)
 		return;
 	//on key unpress
-	if (focusedComponent_ != NULL)
+	if (focusedComponent_ != nullptr)
 	{
 		if (focusedComponent_->Enabled && focusedComponent_->Visible)
 			focusedComponent_->OnTextInput(text);
@@ -412,7 +418,7 @@ void Window::DoTextInput(String text)
 
 void Window::DoTextEditing(String text)
 {
-	if (focusedComponent_ != NULL)
+	if (focusedComponent_ != nullptr)
 	{
 		if (focusedComponent_->Enabled && focusedComponent_->Visible)
 			focusedComponent_->OnTextEditing(text);
@@ -449,7 +455,7 @@ void Window::DoMouseDown(int x_, int y_, unsigned button)
 	}
 
 	if (!clickState)
-		FocusComponent(NULL);
+		FocusComponent(nullptr);
 
 	if (debugMode)
 		return;
@@ -605,3 +611,12 @@ void Window::Halt()
 	halt = true;
 }
 
+void Window::SetFps(float newFps)
+{
+	fps = newFps;
+}
+
+void Window::SetFpsLimit(FpsLimit newFpsLimit)
+{
+	fpsLimit = newFpsLimit;
+}

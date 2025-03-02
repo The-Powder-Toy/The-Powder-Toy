@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <list>
 #include <memory>
+#include <optional>
 #include <json/json.h>
 
 class SaveInfo;
@@ -22,7 +23,17 @@ namespace http
 	class StartupRequest;
 }
 class Client: public ExplicitSingleton<Client> {
+public:
+	enum class StartupRequestStatus
+	{
+		notYetDone,
+		inProgress,
+		succeeded,
+		failed,
+	};
+
 private:
+	bool autoStartupRequest = true;
 	String messageOfTheDay;
 	std::vector<ServerNotification> serverNotifications;
 
@@ -33,6 +44,7 @@ private:
 	std::optional<UpdateInfo> updateInfo;
 
 	bool firstRun;
+	bool redirectStd = false;
 
 	std::vector<ByteString> stampIDs;
 	uint64_t lastStampTime = 0;
@@ -55,6 +67,9 @@ private:
 
 	void LoadAuthUser();
 	void SaveAuthUser();
+
+	StartupRequestStatus startupRequestStatus = StartupRequestStatus::notYetDone;
+	std::optional<ByteString> startupRequestError;
 
 public:
 
@@ -104,4 +119,34 @@ public:
 	void Tick();
 	
 	String DoMigration(ByteString fromDir, ByteString toDir);
+
+	bool GetRedirectStd()
+	{
+		return redirectStd;
+	}
+
+	void SetRedirectStd(bool newRedirectStd)
+	{
+		redirectStd = newRedirectStd;
+	}
+
+	bool GetAutoStartupRequest()
+	{
+		return autoStartupRequest;
+	}
+
+	void SetAutoStartupRequest(bool newAutoStartupRequest)
+	{
+		autoStartupRequest = newAutoStartupRequest;
+	}
+
+	void BeginStartupRequest();
+	StartupRequestStatus GetStartupRequestStatus() const
+	{
+		return startupRequestStatus;
+	}
+	std::optional<ByteString> GetStartupRequestError() const
+	{
+		return startupRequestError;
+	}
 };

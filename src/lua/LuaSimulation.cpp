@@ -206,6 +206,14 @@ static int gravityMass(lua_State *L)
 	});
 }
 
+static int gravityMask(lua_State *L)
+{
+	auto *lsi = GetLSI();
+	return LuaBlockMap(L, [lsi](Vec2<int> p) -> uint32_t & {
+		return lsi->sim->gravIn.mask[p];
+	});
+}
+
 static int gravityField(lua_State *L)
 {
 	auto *lsi = GetLSI();
@@ -568,7 +576,7 @@ static int createWalls(lua_State *L)
 		return luaL_error(L, "Unrecognised wall id '%d'", c);
 
 	auto *lsi = GetLSI();
-	int ret = lsi->sim->CreateWalls(x, y, rx, ry, c, NULL);
+	int ret = lsi->sim->CreateWalls(x, y, rx, ry, c, nullptr);
 	lua_pushinteger(L, ret);
 	return 1;
 }
@@ -589,7 +597,7 @@ static int createWallLine(lua_State *L)
 		return luaL_error(L, "Unrecognised wall id '%d'", c);
 
 	auto *lsi = GetLSI();
-	lsi->sim->CreateWallLine(x1, y1, x2, y2, rx, ry, c, NULL);
+	lsi->sim->CreateWallLine(x1, y1, x2, y2, rx, ry, c, nullptr);
 	return 0;
 }
 
@@ -701,8 +709,8 @@ static int toolBox(lua_State *L)
 	int tool = luaL_optint(L,5,0);
 	float strength = luaL_optnumber(L,6,1.0f);
 	int brushID = luaL_optint(L,7,BRUSH_CIRCLE);
-	int rx = luaL_optint(L,5,0);
-	int ry = luaL_optint(L,6,0);
+	int rx = luaL_optint(L,8,0);
+	int ry = luaL_optint(L,9,0);
 	auto *lsi = GetLSI();
 	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
 	if (!brush)
@@ -798,14 +806,14 @@ static int decoColor(lua_State *L)
 {
 	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
-	RGBA<uint8_t> color(0, 0, 0, 0);
+	RGBA color(0, 0, 0, 0);
 	if (acount == 0)
 	{
 		lua_pushnumber(L, lsi->gameModel->GetColourSelectorColour().Pack());
 		return 1;
 	}
 	else if (acount == 1)
-		color = RGBA<uint8_t>::Unpack(pixel_rgba(luaL_optnumber(L, 1, 0xFFFF0000)));
+		color = RGBA::Unpack(pixel_rgba(luaL_optnumber(L, 1, 0xFFFF0000)));
 	else
 	{
 		color.Red   = std::clamp(luaL_optint(L, 1, 255), 0, 255);
@@ -832,7 +840,7 @@ static int floodDeco(lua_State *L)
 	auto *lsi = GetLSI();
 	// hilariously broken, intersects with console and all Lua graphics
 	auto &rendererFrame = lsi->gameModel->GetView()->GetRendererFrame();
-	auto loc = RGB<uint8_t>::Unpack(rendererFrame[{ x, y }]);
+	auto loc = RGB::Unpack(rendererFrame[{ x, y }]);
 	lsi->sim->ApplyDecorationFill(rendererFrame, x, y, r, g, b, a, loc.Red, loc.Green, loc.Blue);
 	return 0;
 }
@@ -862,9 +870,9 @@ static int resetTemp(lua_State *L)
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
 	bool onlyConductors = luaL_optint(L, 1, 0);
-	for (int i = 0; i < sim->parts_lastActiveIndex; i++)
+	for (int i = 0; i < sim->parts.lastActiveIndex; i++)
 	{
-		if (sim->parts[i].type && (elements[sim->parts[i].type].HeatConduct || !onlyConductors))
+		if (sim->parts[i].type && (!onlyConductors || !sim->IsHeatInsulator(sim->parts[i])))
 		{
 			sim->parts[i].temp = elements[sim->parts[i].type].DefaultProperties.temp;
 		}
@@ -1286,7 +1294,7 @@ static int brush(lua_State *L)
 static int partsClosure(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	for (int i = lua_tointeger(L, lua_upvalueindex(1)); i <= lsi->sim->parts_lastActiveIndex; ++i)
+	for (int i = lua_tointeger(L, lua_upvalueindex(1)); i <= lsi->sim->parts.lastActiveIndex; ++i)
 	{
 		if (lsi->sim->parts[i].type)
 		{
@@ -1552,7 +1560,7 @@ static int addCustomGol(lua_State *L)
 		return luaL_error(L, "This Custom GoL rule already exists");
 
 	auto *lsi = GetLSI();
-	if (!lsi->gameModel->AddCustomGol(ruleString, nameString, RGB<uint8_t>::Unpack(color1), RGB<uint8_t>::Unpack(color2)))
+	if (!lsi->gameModel->AddCustomGol(ruleString, nameString, RGB::Unpack(color1), RGB::Unpack(color2)))
 		return luaL_error(L, "Duplicate name, cannot add");
 	return 0;
 }
@@ -1931,6 +1939,7 @@ void LuaSimulation::Open(lua_State *L)
 		LFUNC(ensureDeterminism),
 		LFUNC(paused),
 		LFUNC(gravityMass),
+		LFUNC(gravityMask),
 		LFUNC(gravityField),
 		LFUNC(resetSpark),
 		LFUNC(resetVelocity),
@@ -1942,10 +1951,10 @@ void LuaSimulation::Open(lua_State *L)
 		LFUNC(fanVelocityY),
 		LFUNC(listDefaultGol),
 #undef LFUNC
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 
 #define LCONST(v) lua_pushinteger(L, int(v)); lua_setfield(L, -2, #v)
 #define LCONSTF(v) lua_pushnumber(L, float(v)); lua_setfield(L, -2, #v)

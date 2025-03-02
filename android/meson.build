@@ -11,7 +11,6 @@ powder_jar_sources = configure_file(
 
 subdir('res')
 
-python3 = find_program('python3')
 android_platform_jar = meson.get_external_property('android_platform_jar')
 java_runtime_jar = meson.get_external_property('java_runtime_jar')
 android_keystore = get_option('android_keystore')
@@ -20,7 +19,7 @@ powder_jar = custom_target(
 	'powder-jar',
 	output: app_exe + '.jar',
 	command: [
-		python3,
+		python3_prog,
 		files('powder-jar.py'),
 		find_program('javac'),
 		find_program('jar'),
@@ -40,7 +39,7 @@ unaligned_apk = custom_target(
 	output: app_exe + '.unaligned.apk',
 	input: powder_sha,
 	command: [
-		python3,
+		python3_prog,
 		files('build-apk.py'),
 		find_program('d8'),
 		find_program('aapt'),
@@ -64,7 +63,7 @@ unsigned_apk = custom_target(
 	output: app_exe + '.unsigned.apk',
 	input: unaligned_apk,
 	command: [
-		python3,
+		python3_prog,
 		files('align-apk.py'),
 		find_program('zipalign'),
 		meson.project_build_root(),
@@ -77,7 +76,7 @@ signed_apk = custom_target(
 	output: app_exe + '.apk',
 	input: unsigned_apk,
 	command: [
-		python3,
+		python3_prog,
 		files('sign-apk.py'),
 		find_program('apksigner'),
 		meson.project_build_root(),
@@ -93,13 +92,13 @@ if adb.found()
 		'install-apk',
 		input: signed_apk,
 		output: 'install-apk',
-		command: [ python3, files('install-apk.py'), adb, meson.project_build_root(), '@OUTPUT@', '@INPUT@' ],
+		command: [ python3_prog, files('install-apk.py'), adb, meson.project_build_root(), '@OUTPUT@', '@INPUT@' ],
 	)
 	custom_target(
 		'run-apk',
 		input: [ signed_apk, install_apk ],
 		build_always_stale: true,
 		output: 'run-apk',
-		command: [ python3, files('run-apk.py'), adb, meson.project_build_root(), '@OUTPUT@', '@INPUT0@', app_id ],
+		command: [ python3_prog, files('run-apk.py'), adb, meson.project_build_root(), '@OUTPUT@', '@INPUT0@', app_id ],
 	)
 endif

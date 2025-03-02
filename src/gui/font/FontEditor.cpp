@@ -34,7 +34,7 @@ void FontEditor::ReadDataFile(ByteString dataFile)
 	std::vector<char> fontDataBuf;
 	std::vector<int> fontPtrsBuf;
 	std::vector< std::array<int, 2> > fontRangesBuf;
-	if (BZ2WDecompress(fontDataBuf, fileData.data(), fileData.size()) != BZ2WDecompressOk)
+	if (BZ2WDecompress(fontDataBuf, fileData) != BZ2WDecompressOk)
 	{
 		throw std::runtime_error("Could not decompress font data");
 	}
@@ -131,7 +131,7 @@ void FontEditor::WriteDataFile(ByteString dataFile, std::vector<unsigned char> c
 	}
 
 	std::vector<char> compressed;
-	if (BZ2WCompress(compressed, uncompressed.data(), uncompressed.size()) != BZ2WCompressOk)
+	if (BZ2WCompress(compressed, uncompressed) != BZ2WCompressOk)
 	{
 		throw std::runtime_error("Could not compress font data");
 	}
@@ -479,14 +479,14 @@ void FontEditor::OnDraw()
 		std::array<std::array<char, MAX_WIDTH>, FONT_H> const &pixels = fontPixels[currentChar];
 
 		int areaWidth = 8 + width * FONT_SCALE + 8;
-		g->DrawFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ areaWidth, 8 + FONT_H * FONT_SCALE + 4 + FONT_H + 4 }), RGB<uint8_t>(bgR, bgG, bgB));
+		g->DrawFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ areaWidth, 8 + FONT_H * FONT_SCALE + 4 + FONT_H + 4 }), RGB(bgR, bgG, bgB));
 		for(int j = 0; j < FONT_H; j++)
 			for(int i = 0; i < width; i++)
-				g->BlendFilledRect(RectSized(Vec2{ 8 + i * FONT_SCALE, 8 + j * FONT_SCALE }, Vec2{ FONT_SCALE - grid, FONT_SCALE - grid }), RGBA<uint8_t>(fgR, fgG, fgB, pixels[j][i] * 255 / 3));
+				g->BlendFilledRect(RectSized(Vec2{ 8 + i * FONT_SCALE, 8 + j * FONT_SCALE }, Vec2{ FONT_SCALE - grid, FONT_SCALE - grid }), RGBA(fgR, fgG, fgB, pixels[j][i] * 255 / 3));
 
 		for(int j = 0; j < FONT_H; j++)
 			for(int i = 0; i < width; i++)
-				g->BlendPixel({ 8 + i, 8 + FONT_H * FONT_SCALE + 4 + j }, RGBA<uint8_t>(fgR, fgG, fgB, pixels[j][i] * 255 / 3));
+				g->BlendPixel({ 8 + i, 8 + FONT_H * FONT_SCALE + 4 + j }, RGBA(fgR, fgG, fgB, pixels[j][i] * 255 / 3));
 
 
 		if(rulers)
@@ -538,7 +538,7 @@ void FontEditor::Translate(std::array<std::array<char, MAX_WIDTH>, FONT_H> &pixe
 
 void FontEditor::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	if (IsFocused(NULL))
+	if (IsFocused(nullptr))
 	{
 		switch(scan)
 		{

@@ -49,7 +49,7 @@ void Element::Element_SLCN()
 	Create = &create;
 }
 
-static const RGB<uint8_t> SLCN_COLOUR[16] = {
+static const RGB SLCN_COLOUR[16] = {
 	0x5A6679_rgb, 0x6878A1_rgb, 0xABBFDD_rgb, 0x838490_rgb,
 	0xBCCDDF_rgb, 0x82A0D2_rgb, 0x5B6680_rgb, 0x232C3B_rgb,
 	0x485067_rgb, 0x8B9AB6_rgb, 0xADB1C1_rgb, 0xC3C6D1_rgb,
@@ -108,11 +108,11 @@ static int update(UPDATE_FUNC_ARGS)
 
 static int graphics(GRAPHICS_FUNC_ARGS)
 {
-	RGB<uint8_t> curr_colour = SLCN_COLOUR[(cpart->tmp >> 12) & 15];
+	RGB curr_colour = SLCN_COLOUR[(cpart->tmp >> 12) & 15];
 	if (cpart->tmp & 0x800) // mix with next colour if phase is at least halfway there
 	{
-		RGB<uint8_t> next_colour = SLCN_COLOUR[(cpart->tmp >> 16) & 15];
-		curr_colour = RGB<uint8_t>(
+		RGB next_colour = SLCN_COLOUR[(cpart->tmp >> 16) & 15];
+		curr_colour = RGB(
 			(curr_colour.Red   + next_colour.Red) / 2,
 			(curr_colour.Green + next_colour.Green) / 2,
 			(curr_colour.Blue  + next_colour.Blue) / 2

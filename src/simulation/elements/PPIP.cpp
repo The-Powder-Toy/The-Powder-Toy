@@ -27,11 +27,11 @@ void Element::Element_PPIP()
 
 	Weight = 100;
 
-	DefaultProperties.temp = 273.15f;
-	HeatConduct = 0;
+	DefaultProperties.temp = 295.15f;
+	HeatConduct = 251;
 	Description = "Powered version of PIPE, use PSCN/NSCN to Activate/Deactivate.";
 
-	Properties = TYPE_SOLID|PROP_LIFE_DEC;
+	Properties = TYPE_SOLID | PROP_LIFE_DEC;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
@@ -72,6 +72,9 @@ void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 
 	Particle * parts = sim->parts;
 	int (*pmap)[XRES] = sim->pmap;
+	int t = TYP(pmap[y][x]);
+	if (t != PT_PIPE && t != PT_PPIP)
+		return;
 
 	// Separate flags for on and off in case PPIP is sparked by PSCN and NSCN on the same frame
 	// - then PSCN can override NSCN and behaviour is not dependent on particle order
@@ -79,8 +82,9 @@ void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 	if (sparkedBy==PT_PSCN) prop = PPIP_TMPFLAG_TRIGGER_ON << 3;
 	else if (sparkedBy==PT_NSCN) prop = PPIP_TMPFLAG_TRIGGER_OFF << 3;
 	else if (sparkedBy==PT_INST) prop = PPIP_TMPFLAG_TRIGGER_REVERSE << 3;
+	else if (sparkedBy == PT_HEAC) prop = PFLAG_CAN_CONDUCT; // Special case for HEAC near pipe
 
-	if (prop==0 || TYP(pmap[y][x])!=PT_PPIP || (parts[ID(pmap[y][x])].tmp & prop))
+	if (prop == 0 || (t != PT_PPIP && sparkedBy != PT_HEAC) || (parts[ID(pmap[y][x])].tmp & prop))
 		return;
 
 	coord_stack = new unsigned short[coord_stack_limit][2];
@@ -97,7 +101,7 @@ void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 		// go left as far as possible
 		while (x1>=CELL)
 		{
-			if (TYP(pmap[y][x1-1]) != PT_PPIP)
+			if (TYP(pmap[y][x1-1]) != t)
 			{
 				break;
 			}
@@ -106,7 +110,7 @@ void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 		// go right as far as possible
 		while (x2<XRES-CELL)
 		{
-			if (TYP(pmap[y][x2+1]) != PT_PPIP)
+			if (TYP(pmap[y][x2+1]) != t)
 			{
 				break;
 			}
@@ -115,8 +119,8 @@ void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 		// fill span
 		for (x=x1; x<=x2; x++)
 		{
-			if (!(parts[ID(pmap[y][x])].tmp & prop))
-			Element_PPIP_ppip_changed = 1;
+			if (!(parts[ID(pmap[y][x])].tmp & prop) && sparkedBy != PT_HEAC)
+				Element_PPIP_ppip_changed = 1;
 			parts[ID(pmap[y][x])].tmp |= prop;
 		}
 
@@ -125,7 +129,7 @@ void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 		// Don't need to check x bounds here, because already limited to [CELL, XRES-CELL]
 		if (y>=CELL+1)
 			for (x=x1-1; x<=x2+1; x++)
-			if (TYP(pmap[y-1][x]) == PT_PPIP && !(parts[ID(pmap[y-1][x])].tmp & prop))
+			if (TYP(pmap[y-1][x]) == t && !(parts[ID(pmap[y-1][x])].tmp & prop))
 			{
 				coord_stack[coord_stack_size][0] = x;
 				coord_stack[coord_stack_size][1] = y-1;
@@ -138,7 +142,7 @@ void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 			}
 		if (y<YRES-CELL-1)
 			for (x=x1-1; x<=x2+1; x++)
-				if (TYP(pmap[y+1][x]) == PT_PPIP && !(parts[ID(pmap[y+1][x])].tmp & prop))
+				if (TYP(pmap[y+1][x]) == t && !(parts[ID(pmap[y+1][x])].tmp & prop))
 				{
 					coord_stack[coord_stack_size][0] = x;
 					coord_stack[coord_stack_size][1] = y+1;

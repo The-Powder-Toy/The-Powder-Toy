@@ -12,7 +12,7 @@ Luna<LuaButton>::RegType LuaButton::methods[] = {
 	method(LuaButton, size),
 	method(LuaButton, visible),
 	method(LuaButton, enabled),
-	{0, 0}
+	{nullptr, nullptr}
 };
 
 LuaButton::LuaButton(lua_State *L) :

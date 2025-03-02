@@ -247,9 +247,9 @@ bool Textbox::StringValid(String text)
 	return true;
 }
 
-void Textbox::Tick(float dt)
+void Textbox::Tick()
 {
-	Label::Tick(dt);
+	Label::Tick();
 	auto tp = textPosition - Vec2{ scrollX, 0 };
 	if (GetParentWindow() && Visible && Enabled && IsFocused())
 	{

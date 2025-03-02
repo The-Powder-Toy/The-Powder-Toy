@@ -1,4 +1,4 @@
-The Powder Toy - April 2024
+The Powder Toy - February 2025
 ==========================
 
 Get the latest version [from the Powder Toy website](https://powdertoy.co.uk/Download.html).
@@ -17,13 +17,13 @@ Build instructions
 
 See the _Powder Toy Development Help_ section [on the main page of the wiki](https://powdertoy.co.uk/Wiki/W/Main_Page.html).
 
-Thanks
+Special Thanks
 ===========================================================================
 
-* Stanislaw K Skowronek - Designed the original
-* Simon Robertshaw
+* Stanislaw K Skowronek - Designed the original Powder Toy
+* Simon Robertshaw - Wrote the website, current server owner
 * Skresanov Savely
-* cracker64
+* Pilihp64
 * Catelite
 * Victoria Hoyle
 * Nathan Cousins

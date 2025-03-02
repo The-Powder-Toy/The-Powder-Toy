@@ -25,13 +25,14 @@ std::unique_ptr<Snapshot> Simulation::CreateSnapshot() const
 	snap->BlockAirH      .insert   (snap->BlockAirH      .begin(), &air->bmap_blockairh[0][0], &air->bmap_blockairh[0][0] + NCELL);
 	snap->FanVelocityX   .insert   (snap->FanVelocityX   .begin(), &fvx [0][0]      , &fvx [0][0] + NCELL);
 	snap->FanVelocityY   .insert   (snap->FanVelocityY   .begin(), &fvy [0][0]      , &fvy [0][0] + NCELL);
-	snap->Particles      .insert   (snap->Particles      .begin(), &parts  [0]      , &parts  [0] + parts_lastActiveIndex + 1);
+	snap->Particles      .insert   (snap->Particles      .begin(), &parts  [0]      , &parts  [0] + parts.lastActiveIndex + 1);
 	snap->PortalParticles.insert   (snap->PortalParticles.begin(), &portalp[0][0][0], &portalp[0][0][0] + CHANNELS * 8 * 80);
 	snap->WirelessData   .insert   (snap->WirelessData   .begin(), &wireless[0][0]  , &wireless[0][0] + CHANNELS * 2);
 	snap->stickmen       .insert   (snap->stickmen       .begin(), &fighters[0]     , &fighters[0] + MAX_FIGHTERS);
 	snap->stickmen       .push_back(player2);
 	snap->stickmen       .push_back(player);
 	snap->GravMass  .insert(snap->GravMass  .begin(), &gravIn.mass[{ 0, 0 }]   , &gravIn.mass[{ 0, 0 }]    + NCELL);
+	snap->GravMask  .insert(snap->GravMask  .begin(), &gravIn.mask[{ 0, 0 }]   , &gravIn.mask[{ 0, 0 }]    + NCELL);
 	snap->GravForceX.insert(snap->GravForceX.begin(), &gravOut.forceX[{ 0, 0 }], &gravOut.forceX[{ 0, 0 }] + NCELL);
 	snap->GravForceY.insert(snap->GravForceY.begin(), &gravOut.forceY[{ 0, 0 }], &gravOut.forceY[{ 0, 0 }] + NCELL);
 	snap->signs = signs;
@@ -45,7 +46,7 @@ void Simulation::Restore(const Snapshot &snap)
 	std::fill(elementCount, elementCount + PT_NUM, 0);
 	elementRecount = true;
 	force_stacking_check = true;
-	for (auto &part : parts)
+	for (auto &part : parts.data)
 	{
 		part.type = 0;
 	}
@@ -69,6 +70,7 @@ void Simulation::Restore(const Snapshot &snap)
 		GravityInput newGravIn;
 		GravityOutput newGravOut;
 		std::copy(snap.GravMass  .begin(), snap.GravMass  .end(), &newGravIn.mass[{ 0, 0 }]   );
+		std::copy(snap.GravMask  .begin(), snap.GravMask  .end(), &newGravIn.mask[{ 0, 0 }]   );
 		std::copy(snap.GravForceX.begin(), snap.GravForceX.end(), &newGravOut.forceX[{ 0, 0 }]);
 		std::copy(snap.GravForceY.begin(), snap.GravForceY.end(), &newGravOut.forceY[{ 0, 0 }]);
 		// we apply the old grav values but Newtonian gravity enable state is not part of the snapshot so this may be pointless
@@ -78,7 +80,7 @@ void Simulation::Restore(const Snapshot &snap)
 	signs = snap.signs;
 	frameCount = snap.FrameCount;
 	rng.state(snap.RngState);
-	parts_lastActiveIndex = NPART - 1;
+	parts.lastActiveIndex = NPART - 1;
 	RecalcFreeParticles(false);
 }
 
@@ -90,7 +92,7 @@ void Simulation::clear_area(int area_x, int area_y, int area_w, int area_h)
 	area_w = intersection.size.X;
 	area_h = intersection.size.Y;
 	float fx = area_x-.5f, fy = area_y-.5f;
-	for (int i = 0; i <= parts_lastActiveIndex; i++)
+	for (int i = 0; i <= parts.lastActiveIndex; i++)
 	{
 		if (parts[i].type)
 			if (parts[i].x >= fx && parts[i].x <= fx+area_w+1 && parts[i].y >= fy && parts[i].y <= fy+area_h+1)
@@ -292,7 +294,7 @@ void Simulation::CreateWallBox(int x1, int y1, int x2, int y2, int wall)
 	}
 	for (j=y1; j<=y2; j++)
 		for (i=x1; i<=x2; i++)
-			CreateWalls(i, j, 0, 0, wall, NULL);
+			CreateWalls(i, j, 0, 0, wall, nullptr);
 }
 
 int Simulation::FloodWalls(int x, int y, int wall, int bm)
@@ -335,7 +337,7 @@ int Simulation::FloodWalls(int x, int y, int wall, int bm)
 	// fill span
 	for (x=x1; x<=x2; x++)
 	{
-		if (!CreateWalls(x, y, 0, 0, wall, NULL))
+		if (!CreateWalls(x, y, 0, 0, wall, nullptr))
 			return 0;
 	}
 	// fill children
@@ -660,7 +662,7 @@ void Simulation::ApplyDecorationBox(int x1, int y1, int x2, int y2, int colR, in
 
 bool Simulation::ColorCompare(const RendererFrame &frame, int x, int y, int replaceR, int replaceG, int replaceB)
 {
-	auto pix = RGB<uint8_t>::Unpack(frame[{ x, y }]);
+	auto pix = RGB::Unpack(frame[{ x, y }]);
 	int r = pix.Red;
 	int g = pix.Green;
 	int b = pix.Blue;

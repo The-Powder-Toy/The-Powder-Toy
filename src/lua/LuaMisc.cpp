@@ -1,7 +1,7 @@
 #include "LuaScriptInterface.h"
 #include "client/http/Request.h"
 #include "common/platform/Platform.h"
-#include "compat.lua.h"
+#include "compat_lua.h"
 #include "Config.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
@@ -96,7 +96,7 @@ void LuaMisc::Tick(lua_State *L)
 				return;
 			}
 			ByteString filename = "autorun.lua";
-			if (!Platform::WriteFile(std::vector<char>(scriptData.begin(), scriptData.end()), filename))
+			if (!Platform::WriteFile(scriptData, filename))
 			{
 				complete({ Status::GetFailed{ String::Build("Unable to write to ", filename.FromUtf8()) } });
 				return;
@@ -177,7 +177,8 @@ static int record(lua_State *L)
 
 static int compatChunk(lua_State *L)
 {
-	lua_pushlstring(L, reinterpret_cast<const char *>(compat_lua), compat_lua_size);
+	auto data = compat_lua.AsCharSpan();
+	lua_pushlstring(L, data.data(), data.size());
 	return 1;
 }
 static int debug(lua_State *L)
@@ -196,15 +197,12 @@ static int debug(lua_State *L)
 
 static int fpsCap(lua_State *L)
 {
+	auto *lsi = GetLSI();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
-		auto fpsLimit = ui::Engine::Ref().GetFpsLimit();
-		if (std::holds_alternative<FpsLimitVsync>(fpsLimit))
-		{
-			lua_pushliteral(L, "vsync");
-		}
-		else if (std::holds_alternative<FpsLimitNone>(fpsLimit))
+		auto fpsLimit = lsi->window->GetSimFpsLimit();
+		if (std::holds_alternative<FpsLimitNone>(fpsLimit))
 		{
 			lua_pushnumber(L, 2);
 		}
@@ -214,11 +212,6 @@ static int fpsCap(lua_State *L)
 		}
 		return 1;
 	}
-	if (lua_isstring(L, 1) && byteStringEqualsLiteral(tpt_lua_toByteString(L, 1), "vsync"))
-	{
-		ui::Engine::Ref().SetFpsLimit(FpsLimitVsync{});
-		return 0;
-	}
 	float fpscap = luaL_checknumber(L, 1);
 	if (fpscap < 2)
 	{
@@ -226,10 +219,10 @@ static int fpsCap(lua_State *L)
 	}
 	if (fpscap == 2)
 	{
-		ui::Engine::Ref().SetFpsLimit(FpsLimitNone{});
+		lsi->window->SetSimFpsLimit(FpsLimitNone{});
 		return 0;
 	}
-	ui::Engine::Ref().SetFpsLimit(FpsLimitExplicit{ fpscap });
+	lsi->window->SetSimFpsLimit(FpsLimitExplicit{ fpscap });
 	return 0;
 }
 
@@ -238,13 +231,36 @@ static int drawCap(lua_State *L)
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
-		lua_pushinteger(L, ui::Engine::Ref().GetDrawingFrequencyLimit());
+		auto drawLimit = ui::Engine::Ref().GetDrawingFrequencyLimit();
+		if (std::holds_alternative<DrawLimitDisplay>(drawLimit))
+		{
+			lua_pushliteral(L, "display");
+		}
+		else if (std::holds_alternative<DrawLimitNone>(drawLimit))
+		{
+			lua_pushinteger(L, 0);
+		}
+		else
+		{
+			lua_pushinteger(L, std::get<DrawLimitExplicit>(drawLimit).value);
+		}
 		return 1;
 	}
-	int drawcap = luaL_checkint(L, 1);
+	// if (lua_isstring(L, 1) && byteStringEqualsLiteral(tpt_lua_toByteString(L, 1), "vsync")) // TODO: DrawLimitVsync
+	if (lua_isstring(L, 1) && byteStringEqualsLiteral(tpt_lua_toByteString(L, 1), "display"))
+	{
+		ui::Engine::Ref().SetDrawingFrequencyLimit(DrawLimitDisplay{});
+		return 0;
+	}
+	int drawcap = luaL_checkinteger(L, 1);
 	if(drawcap < 0)
 		return luaL_error(L, "draw cap too small");
-	ui::Engine::Ref().SetDrawingFrequencyLimit(drawcap);
+	if (drawcap == 0)
+	{
+		ui::Engine::Ref().SetDrawingFrequencyLimit(DrawLimitNone{});
+		return 0;
+	}
+	ui::Engine::Ref().SetDrawingFrequencyLimit(DrawLimitExplicit{ drawcap });
 	return 0;
 }
 
@@ -262,16 +278,19 @@ void LuaMisc::Open(lua_State *L)
 		LFUNC(compatChunk),
 #undef LFUNC
 		{ "log", flog },
-		{ NULL, NULL }
+		{ nullptr, nullptr }
 	};
 	lua_newtable(L);
-	luaL_register(L, NULL, reg);
+	luaL_register(L, nullptr, reg);
 #define LCONST(v) lua_pushinteger(L, int(v)); lua_setfield(L, -2, #v)
 	LCONST(DEBUG_PARTS);
 	LCONST(DEBUG_ELEMENTPOP);
 	LCONST(DEBUG_LINES);
 	LCONST(DEBUG_PARTICLE);
 	LCONST(DEBUG_SURFNORM);
+	LCONST(DEBUG_SIMHUD);
+	LCONST(DEBUG_RENHUD);
+	LCONST(DEBUG_AIRVEL);
 #undef LCONST
 	{
 		lua_newtable(L);

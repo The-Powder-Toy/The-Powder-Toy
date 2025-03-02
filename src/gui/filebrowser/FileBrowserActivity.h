@@ -48,7 +48,7 @@ public:
 	virtual ~FileBrowserActivity();
 	
 	void OnDraw() override;
-	void OnTick(float dt) override;
+	void OnTick() override;
 	void OnTryExit(ExitMethod method) override;
 	void OnMouseDown(int x, int y, unsigned button) override;
 	void loadDirectory(ByteString directory, ByteString search);

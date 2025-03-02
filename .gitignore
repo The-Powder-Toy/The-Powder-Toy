@@ -74,6 +74,7 @@ screenshot_*
 /.kdev4
 
 # Other IDEs / misc
+/.idea
 .vscode/
 .vs/
 *.sublime-*

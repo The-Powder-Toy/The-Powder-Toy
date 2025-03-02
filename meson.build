@@ -14,12 +14,6 @@ python = import('python')
 python3_prog = python.find_installation('python3')
 
 fs = import('fs')
-to_array = generator(
-	python3_prog,
-	output: [ '@PLAINNAME@.cpp', '@PLAINNAME@.h' ],
-	depfile: '@PLAINNAME@.dep',
-	arguments: [ join_paths(meson.current_source_dir(), 'resources/to-array.py'), '@OUTPUT0@', '@OUTPUT1@', '@DEPFILE@', '@INPUT@', '@EXTRA_ARGS@' ]
-)
 
 render_icons_with_inkscape = get_option('render_icons_with_inkscape')
 inkscape = find_program('inkscape', required: render_icons_with_inkscape)
@@ -81,11 +75,12 @@ tpt_libs_debug = is_debug ? 'debug' : 'release'
 tpt_libs_variant = '@0@-@1@-@2@-@3@'.format(host_arch, host_platform, host_libc, tpt_libs_static)
 tpt_libs_vtag = get_option('tpt_libs_vtag')
 if tpt_libs_vtag == ''
-	tpt_libs_vtag = 'v20241107133630'
+	tpt_libs_vtag = 'v20250117195557'
 endif
 if tpt_libs_static != 'none'
 	if tpt_libs_variant not in [
 		'x86_64-linux-gnu-static',
+		'aarch64-linux-gnu-static',
 		'x86_64-windows-mingw-static',
 		'x86_64-windows-msvc-static',
 		'x86_64-windows-msvc-dynamic',
@@ -225,10 +220,8 @@ if host_platform == 'emscripten'
 		'-s', 'USE_ZLIB=1',
 		'-s', 'DISABLE_EXCEPTION_CATCHING=0',
 	]
-	if is_debug
-		project_link_args += [ '--source-map-base=./' ]
-		emcc_args += [ '-gsource-map' ]
-	endif
+	project_link_args += [ '--source-map-base=./' ]
+	emcc_args += [ '-gsource-map' ]
 	project_link_args += emcc_args
 	project_cpp_args += emcc_args
 else
@@ -261,25 +254,41 @@ if not is_debug
 	project_cpp_args += args_ccomp_opt
 endif
 
-if not is_debug
-	args_ccomp_lto = []
-	if cpp_compiler.get_id() in [ 'clang', 'clang-cl' ]
-		# use ThinLTO for Clang/LLVM
-		args_ccomp_lto += [ '-flto=thin' ]
-	elif cpp_compiler.get_argument_syntax() == 'msvc'
-		args_ccomp_lto += [ '/GL' ]
+lto = get_option('lto')
+if cpp_compiler.get_argument_syntax() == 'msvc'
+	if lto
+		# apparently meson doesn't know how to tell msvc to use lto: b_lto doesn't even exist when using msvc
+		# https://github.com/mesonbuild/meson/blob/1.4.2/mesonbuild/compilers/mixins/visualstudio.py#L113
+		# so we do it ourselves
+		project_cpp_args += [ '/GL' ]
 		project_link_args += [ '/LTCG' ]
 	endif
-	project_cpp_args += args_ccomp_lto
+else
+	target_options += [ 'b_lto=@0@'.format(lto) ]
+	if lto
+		if cpp_compiler.get_id() in [ 'clang', 'clang-cl' ]
+			# use ThinLTO for Clang/LLVM
+			project_cpp_args += [ '-flto=thin' ]
+		endif
+	endif
 endif
 
+cpp_eh = 'default'
 if cpp_compiler.get_argument_syntax() == 'msvc'
-	args_msvc = [
+	project_cpp_args += [
 		'/GS',
 		'/D_SCL_SECURE_NO_WARNINGS',
 	]
-	project_cpp_args += args_msvc
+	# https://learn.microsoft.com/en-us/cpp/build/reference/eh-exception-handling-model?view=msvc-170&redirectedfrom=MSDN
+	# the default exception handling mode is 'sc', which guarantees to the compiler that functions with C linkage never throw
+	# exceptions. C++-aware Lua throws exceptions, but its functions are designed have C++ linkage, so this is normally not an issue.
+	# LuaJIT also throws exceptions, but its functions are designed to have C linkage, which is sad >_> not much we can do there.
+	# further, the functions in our builds of C++-aware Lua actually have C linkage for the sake of simplicity (since the codebase works
+	# with both kinds of Lua and LuaJIT uses C linkage). the fact that functions with C linkage may throw exceptions means that the
+	# correct exception handling mode to use is 's'
+	cpp_eh = 's'
 endif
+target_options += [ 'cpp_eh=@0@'.format(cpp_eh) ]
 
 # clang-cl supports both syntaxes. use the GCC one.
 if cpp_compiler.get_argument_syntax() == 'msvc' and cpp_compiler.get_id() not in [ 'clang-cl' ]
@@ -358,10 +367,12 @@ if host_platform == 'windows'
 			endif
 		endforeach
 	endif
-	if tpt_libs_static == 'static' and host_libc == 'msvc'
-		target_options += [
-			'b_vscrt=static_from_buildtype',
-		]
+	if host_libc == 'msvc'
+		if tpt_libs_static == 'static'
+			target_options += [ 'b_vscrt=static_from_buildtype' ]
+		else
+			target_options += [ 'b_vscrt=from_buildtype' ]
+		endif
 	endif
 	foreach def : defs_ccomp_win
 		if cpp_compiler.get_argument_syntax() == 'msvc'
@@ -424,9 +435,24 @@ powder_deps = []
 
 project_export_dynamic = false
 
+embedded_files = []
+
 subdir('src')
 subdir('resources')
 
+foreach embedded_file : embedded_files
+	name = embedded_file[0]
+	file = embedded_file[1]
+	data_files += [ custom_target(
+		'embedded-file-@0@'.format(name),
+		input: file,
+		output: [ '@0@.cpp'.format(name), '@0@.h'.format(name) ],
+		depfile: '@0@.dep'.format(name),
+		command: [ python3_prog, files('resources/to-array.py'), '@OUTPUT0@', '@OUTPUT1@', '@DEPFILE@', '@INPUT@', name ]
+	) ]
+endforeach
+
+powder_files += powder_external_files
 powder_files += data_files
 render_files += data_files
 font_files += data_files
@@ -452,6 +478,8 @@ if get_option('export_lua_symbols')
 		endif
 	endif
 endif
+
+clang_tidy_sources = []
 
 if get_option('build_powder')
 	powder_deps += project_deps + [
@@ -492,6 +520,7 @@ if get_option('build_powder')
 			override_options: target_options,
 		)
 	endif
+	clang_tidy_sources += powder_files
 endif
 
 if get_option('build_render')
@@ -520,6 +549,7 @@ if get_option('build_render')
 		link_depends: copied_dlls,
 		override_options: target_options,
 	)
+	clang_tidy_sources += render_files
 endif
 
 if get_option('build_font')
@@ -544,5 +574,21 @@ if get_option('build_font')
 		export_dynamic: project_export_dynamic,
 		link_depends: copied_dlls,
 		override_options: target_options,
+	)
+	clang_tidy_sources += font_files
+endif
+
+if get_option('clang_tidy')
+	clang_tidy = find_program('run-clang-tidy')
+	run_target(
+		'clang-tidy',
+		command: [
+			clang_tidy,
+			'-p', meson.project_build_root(),
+			'-config-file', files('.clang-tidy'),
+			'-quiet',
+			'-warnings-as-errors=*',
+			clang_tidy_sources,
+		],
 	)
 endif

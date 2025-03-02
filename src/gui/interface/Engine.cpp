@@ -11,20 +11,19 @@
 using namespace ui;
 
 Engine::Engine():
-	drawingFrequencyLimit(0),
+	drawingFrequencyLimit(DrawLimitDisplay{}),
 	FrameIndex(0),
-	state_(NULL),
+	state_(nullptr),
 	windowTargetPosition(0, 0),
 	FastQuit(1),
 	GlobalQuit(true),
-	lastTick(0),
+	lastTick(Platform::GetTime()),
 	mouseb_(0),
 	mousex_(0),
 	mousey_(0),
 	mousexp_(0),
 	mouseyp_(0)
 {
-	SetFpsLimit(FpsLimitExplicit{ 60.0f });
 }
 
 Engine::~Engine()
@@ -38,19 +37,9 @@ Engine::~Engine()
 	}
 }
 
-void Engine::SetFpsLimit(FpsLimit newFpsLimit)
+void Engine::ApplyFpsLimit()
 {
-	fpsLimit = newFpsLimit;
-	::SetFpsLimit(fpsLimit);
-	// Populate dt with whatever that makes any sort of sense.
-	if (auto *explicitFpsLimit = std::get_if<FpsLimitExplicit>(&fpsLimit))
-	{
-		SetFps(explicitFpsLimit->value);
-	}
-	else
-	{
-		SetFps(1);
-	}
+	::ApplyFpsLimit();
 }
 
 void Engine::Begin()
@@ -110,7 +99,7 @@ void Engine::ShowWindow(Window * window)
 		state_->DoBlur();
 
 	state_ = window;
-
+	ApplyFpsLimit();
 }
 
 void Engine::CloseWindowAndEverythingAbove(Window *window)
@@ -153,11 +142,13 @@ int Engine::CloseWindow()
 			mouseyp_ = mousey_;
 		}
 		ignoreEvents = true;
+		ApplyFpsLimit();
 		return 0;
 	}
 	else
 	{
-		state_ = NULL;
+		state_ = nullptr;
+		ApplyFpsLimit();
 		return 1;
 	}
 }
@@ -177,8 +168,10 @@ int Engine::CloseWindow()
 
 void Engine::Tick()
 {
-	if(state_ != NULL)
-		state_->DoTick(dt);
+	if(state_ != nullptr)
+	{
+		state_->DoTick();
+	}
 
 
 	lastTick = Platform::GetTime();
@@ -198,6 +191,14 @@ void Engine::Tick()
 		if(state_ != NULL)
 			state_->DoInitialized();
 	}*/
+}
+
+void Engine::SimTick()
+{
+	if (state_)
+	{
+		state_->DoSimTick();
+	}
 }
 
 void Engine::Draw()
@@ -228,19 +229,6 @@ void Engine::Draw()
 	g->Finalise();
 	FrameIndex++;
 	FrameIndex %= 7200;
-}
-
-void Engine::SetFps(float fps)
-{
-	this->fps = fps;
-	if (std::holds_alternative<FpsLimitExplicit>(fpsLimit))
-	{
-		this->dt = 60/fps;
-	}
-	else
-	{
-		this->dt = 1.0f;
-	}
 }
 
 void Engine::onKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
@@ -369,4 +357,56 @@ void Engine::StopTextInput()
 void Engine::TextInputRect(Point position, Point size)
 {
 	::SetTextInputRect(position.X, position.Y, size.X, size.Y);
+}
+
+std::optional<int> Engine::GetEffectiveDrawCap() const
+{
+	auto drawLimit = GetDrawingFrequencyLimit();
+	std::optional<int> effectiveDrawCap;
+	if (auto *drawLimitExplicit = std::get_if<DrawLimitExplicit>(&drawLimit))
+	{
+		effectiveDrawCap = drawLimitExplicit->value;
+	}
+	if (std::get_if<DrawLimitDisplay>(&drawLimit))
+	{
+		effectiveDrawCap = std::visit([](auto &&refreshRate) {
+			return refreshRate.value;
+		}, GetRefreshRate());
+	}
+	return effectiveDrawCap;
+}
+
+void Engine::SetFps(float newFps)
+{
+	if (state_)
+	{
+		return state_->SetFps(newFps);
+	}
+}
+
+float Engine::GetFps() const
+{
+	if (state_)
+	{
+		return state_->GetFps();
+	}
+	return 1;
+}
+
+FpsLimit Engine::GetFpsLimit() const
+{
+	if (state_)
+	{
+		return state_->GetFpsLimit();
+	}
+	return FpsLimitNone{};
+}
+
+bool Engine::GetContributesToFps() const
+{
+	if (state_)
+	{
+		return state_->contributesToFps;
+	}
+	return false;
 }

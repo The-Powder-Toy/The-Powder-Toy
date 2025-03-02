@@ -56,7 +56,7 @@ void VideoBuffer::Resize(Vec2<int> size, bool resample)
 	if (resample)
 	{
 		std::array<std::unique_ptr<Resampler>, PIXELCHANNELS> resamplers;
-		Resampler::Contrib_List *clist_x = NULL, *clist_y = NULL;
+		Resampler::Contrib_List *clist_x = nullptr, *clist_y = nullptr;
 		for (auto &ptr : resamplers)
 		{
 			ptr = std::make_unique<Resampler>(
@@ -142,7 +142,7 @@ void VideoBuffer::ResizeToFit(Vec2<int> bound, bool resample)
 	Resize(size, resample);
 }
 
-std::unique_ptr<VideoBuffer> VideoBuffer::FromPNG(std::vector<char> const &data)
+std::unique_ptr<VideoBuffer> VideoBuffer::FromPNG(std::span<const char> data)
 {
 	auto video = format::PixelsFromPNG(data, 0x000000_rgb);
 	if (video)

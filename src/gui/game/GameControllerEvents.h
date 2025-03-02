@@ -8,7 +8,12 @@ enum EventTraits : uint32_t
 	eventTraitNone        = UINT32_C(0x00000000),
 	eventTraitSimRng      = UINT32_C(0x00000001),
 	eventTraitSimGraphics = UINT32_C(0x00000002),
+	eventTraitHindersSrt  = UINT32_C(0x00000004),
 };
+constexpr EventTraits operator |(EventTraits lhs, EventTraits rhs)
+{
+    return static_cast<EventTraits>(static_cast<uint32_t>(lhs) | static_cast<uint32_t>(rhs));
+}
 
 struct TextInputEvent
 {
@@ -104,7 +109,7 @@ struct AfterSimEvent
 
 struct BeforeSimDrawEvent
 {
-	static constexpr EventTraits traits = eventTraitSimGraphics;
+	static constexpr EventTraits traits = eventTraitSimGraphics | eventTraitHindersSrt;
 };
 
 struct AfterSimDrawEvent

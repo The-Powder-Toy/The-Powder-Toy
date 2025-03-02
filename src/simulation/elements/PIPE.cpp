@@ -33,11 +33,11 @@ void Element::Element_PIPE()
 
 	Weight = 100;
 
-	DefaultProperties.temp = 273.15f;
-	HeatConduct = 0;
+	DefaultProperties.temp = 295.15f;
+	HeatConduct = 251;
 	Description = "PIPE, moves particles around. Once the BRCK generates, erase some for the exit. Then the PIPE generates and is usable.";
 
-	Properties = TYPE_SOLID|PROP_LIFE_DEC;
+	Properties = TYPE_SOLID | PROP_LIFE_DEC;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
@@ -54,21 +54,6 @@ void Element::Element_PIPE()
 	Update = &Element_PIPE_update;
 	Graphics = &Element_PIPE_graphics;
 }
-
-// 0x000000FF element
-// 0x00000100 is single pixel pipe
-// 0x00000200 will transfer like a single pixel pipe when in forward mode
-// 0x00001C00 forward single pixel pipe direction
-// 0x00002000 will transfer like a single pixel pipe when in reverse mode
-// 0x0001C000 reverse single pixel pipe direction
-// 0x000E0000 PIPE color data stored here
-
-constexpr int PFLAG_NORMALSPEED            = 0x00010000;
-constexpr int PFLAG_INITIALIZING           = 0x00020000; // colors haven't been set yet
-constexpr int PFLAG_COLOR_RED              = 0x00040000;
-constexpr int PFLAG_COLOR_GREEN            = 0x00080000;
-constexpr int PFLAG_COLOR_BLUE             = 0x000C0000;
-constexpr int PFLAG_COLORS                 = 0x000C0000;
 
 constexpr int PPIP_TMPFLAG_REVERSED        = 0x01000000;
 constexpr int PPIP_TMPFLAG_PAUSED          = 0x02000000;
@@ -185,6 +170,7 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 			int lastneighbor = -1;
 			int neighborcount = 0;
 			int count = 0;
+			bool heatPipe = false;
 			// make automatic pipe pattern
 			for (auto rx = -1; rx <= 1; rx++)
 			{
@@ -196,6 +182,11 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 						auto r = pmap[y+ry][x+rx];
 						if (!r)
 							continue;
+						if (TYP(r) == PT_HEAC)
+						{
+							heatPipe = true;
+							continue;
+						}
 						if (TYP(r) != PT_PIPE && TYP(r) != PT_PPIP)
 							continue;
 						unsigned int next = nextColor(parts[i].tmp);
@@ -228,6 +219,8 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 			}
 			if (neighborcount == 1)
 				parts[lastneighbor].tmp |= 0x100;
+			if (heatPipe)
+				Element_PPIP_flood_trigger(sim, x, y, PT_HEAC);
 		}
 		else
 		{
@@ -374,14 +367,14 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 			// native graphics function. Lua graphics functions are more complicated to appease: they access particle data through the
 			// particle ID, so not only do we have to give them a correctly populated Particle, it also has to be somewhere in Simulation.
 			// luaGraphicsWrapper takes care of this.
-			RGB<uint8_t> colour = elements[t].Colour;
+			RGB colour = elements[t].Colour;
 			*colr = colour.Red;
 			*colg = colour.Green;
 			*colb = colour.Blue;
 			auto *graphics = elements[t].Graphics;
 			if (graphics)
 			{
-				Particle tpart;
+				Particle tpart{};
 				props_pipe_to_part(cpart, &tpart, false);
 				auto *prevPipeSubcallCpart = gfctx.pipeSubcallCpart;
 				auto *prevPipeSubcallTpart = gfctx.pipeSubcallTpart;
@@ -464,16 +457,34 @@ void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Partic
 	else
 	{
 		pipe->ctype = 0;
+
+		// If deco originated from particle, and not PIPE, then copy it
+		if (pipe->tmp & PFLAG_PARTICLE_DECO)
+		{
+			part->dcolour = pipe->dcolour;
+			pipe->dcolour = 0;
+		}
 	}
 }
 
 static void transfer_part_to_pipe(Particle *part, Particle *pipe)
 {
 	pipe->ctype = part->type;
-	pipe->temp = part->temp;
+
+	if ((pipe->tmp & PFLAG_CAN_CONDUCT) == 0)
+		pipe->temp = part->temp;
+	else
+		pipe->temp = (part->temp + pipe->temp) / 2.0f;
+
 	pipe->tmp2 = part->life;
 	pipe->tmp3 = part->tmp;
 	pipe->tmp4 = part->ctype;
+
+	if (part->dcolour && !pipe->dcolour)
+	{
+		pipe->dcolour = part->dcolour;
+		pipe->tmp |= PFLAG_PARTICLE_DECO;
+	}
 }
 
 static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR)
@@ -488,8 +499,25 @@ static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR)
 	{
 		dest->ctype = src->ctype;
 		src->ctype = 0;
+
+		if (src->tmp & PFLAG_PARTICLE_DECO)
+		{
+			// Even if source pipe has particle deco, don't override existing pipe deco. Just delete source deco only.
+			if (!dest->dcolour)
+			{
+				dest->dcolour = src->dcolour;
+				dest->tmp |= PFLAG_PARTICLE_DECO;
+			}
+			src->dcolour = 0;
+			src->tmp &= ~PFLAG_PARTICLE_DECO;
+		}
 	}
-	dest->temp = src->temp;
+
+	if ((dest->tmp & PFLAG_CAN_CONDUCT) == 0)
+		dest->temp = src->temp;
+	else
+		dest->temp = (src->temp + dest->temp) / 2.0f;
+
 	dest->tmp2 = src->tmp2;
 	dest->tmp3 = src->tmp3;
 	dest->tmp4 = src->tmp4;
@@ -518,7 +546,7 @@ static void pushParticle(Simulation * sim, int i, int count, int original)
 			auto r = sim->pmap[y+ry][x+rx];
 			if (!r)
 				continue;
-			else if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP) && (sim->parts[ID(r)].tmp&PFLAG_COLORS) != notctype && !TYP(sim->parts[ID(r)].ctype))
+			else if ((TYP(r) == PT_PIPE || TYP(r) == PT_PPIP) && (sim->parts[ID(r)].tmp&PFLAG_COLORS) != notctype && !TYP(sim->parts[ID(r)].ctype))
 			{
 				transfer_pipe_to_pipe(sim->parts+i, sim->parts+(ID(r)), false);
 				if (ID(r) > original)
@@ -547,7 +575,7 @@ static void pushParticle(Simulation * sim, int i, int count, int original)
 	{
 		int coords = 7 - ((sim->parts[i].tmp>>10)&7);
 		auto r = sim->pmap[y+ Element_PIPE_offsets[coords].Y][x+ Element_PIPE_offsets[coords].X];
-		if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP) && (sim->parts[ID(r)].tmp&PFLAG_COLORS) != notctype && !TYP(sim->parts[ID(r)].ctype))
+		if ((TYP(r) == PT_PIPE || TYP(r) == PT_PPIP) && (sim->parts[ID(r)].tmp&PFLAG_COLORS) != notctype && !TYP(sim->parts[ID(r)].ctype))
 		{
 			transfer_pipe_to_pipe(sim->parts+i, sim->parts+(ID(r)), false);
 			if (ID(r) > original)
