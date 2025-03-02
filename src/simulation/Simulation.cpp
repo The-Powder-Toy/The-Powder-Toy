@@ -2397,7 +2397,7 @@ void Simulation::UpdateParticles(int start, int end)
 						        || (t == PT_ELEC && rt == PT_DEUT)
 						        || (t == PT_DEUT && rt == PT_ELEC)
 						        || (t == PT_HSWC && rt == PT_FILT && parts[i].tmp == 1)
-						        || (t == PT_FILT && rt == PT_HSWC && parts[ID(r)].tmp == 1))
+						        || (t == PT_FILT && rt == PT_HSWC && parts[ID(r)].tmp == 1)
 						        || (t == PT_PHOT && rt == PT_PAPR))
 							continue;
 
