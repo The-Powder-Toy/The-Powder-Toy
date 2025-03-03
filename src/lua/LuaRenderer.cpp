@@ -8,6 +8,7 @@
 static int renderMode(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	if (lua_gettop(L))
 	{
 		lsi->gameModel->GetRendererSettings().renderMode = luaL_checkinteger(L, 1);
@@ -20,6 +21,7 @@ static int renderMode(lua_State *L)
 static int hud(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -34,6 +36,7 @@ static int hud(lua_State *L)
 static int debugHud(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -48,6 +51,7 @@ static int debugHud(lua_State *L)
 static int useDisplayPreset(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int cmode = luaL_optint(L, 1, 3)+1;
 	if (cmode == 11)
 		cmode = 0;
@@ -61,6 +65,7 @@ static int useDisplayPreset(lua_State *L)
 static int fireSize(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	if (lua_gettop(L) < 1)
 	{
 		lua_pushnumber(L, lsi->gameModel->GetRendererSettings().fireIntensity);
@@ -73,6 +78,7 @@ static int fireSize(lua_State *L)
 static int displayMode(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	if (lua_gettop(L))
 	{
 		lsi->gameModel->GetRendererSettings().displayMode = luaL_checkinteger(L, 1);
@@ -86,6 +92,7 @@ static int displayMode(lua_State *L)
 static int colorMode(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	if (lua_gettop(L))
 	{
 		lsi->gameModel->GetRendererSettings().colorMode = luaL_checkinteger(L, 1);
@@ -98,6 +105,7 @@ static int colorMode(lua_State *L)
 static int decorations(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -113,6 +121,7 @@ static int decorations(lua_State *L)
 static int grid(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -127,6 +136,7 @@ static int grid(lua_State *L)
 static int showBrush(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -140,12 +150,14 @@ static int showBrush(lua_State *L)
 
 static int depth3d(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	return luaL_error(L, "This feature is no longer supported");
 }
 
 static int zoomEnabled(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	if (lua_gettop(L) == 0)
 	{
 		lua_pushboolean(L, lsi->g->zoomEnabled);
@@ -162,6 +174,7 @@ static int zoomEnabled(lua_State *L)
 static int zoomWindow(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	if (lua_gettop(L) == 0)
 	{
 		ui::Point location = lsi->g->zoomWindowPosition;
@@ -189,6 +202,7 @@ static int zoomWindow(lua_State *L)
 static int zoomScope(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	if (lua_gettop(L) == 0)
 	{
 		ui::Point location = lsi->g->zoomScopePosition;
@@ -219,6 +233,7 @@ static int zoomScope(lua_State *L)
 static int separateThread(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	if (lua_gettop(L))
 	{
 		lsi->gameModel->SetThreadedRendering(lua_toboolean(L, 1));

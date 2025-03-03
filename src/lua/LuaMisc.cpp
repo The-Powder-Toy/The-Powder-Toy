@@ -13,6 +13,7 @@
 static int getUserName(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	if (lsi->gameModel->GetUser().UserID)
 	{
 		tpt_lua_pushByteString(L, lsi->gameModel->GetUser().Username);
@@ -25,6 +26,7 @@ static int getUserName(lua_State *L)
 static int installScriptManager(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	if (lsi->scriptManagerDownload)
 	{
 		new ErrorMessage("Script download", "A script download is already pending");
@@ -101,9 +103,10 @@ void LuaMisc::Tick(lua_State *L)
 				complete({ Status::GetFailed{ String::Build("Unable to write to ", filename.FromUtf8()) } });
 				return;
 			}
-			if (tpt_lua_dostring(L, ByteString::Build("dofile('", filename, "')")))
+			if (lsi->Autorun())
 			{
 				complete({ Status::RunFailed{ LuaGetError() } });
+				lua_pop(lsi->L, 1);
 				return;
 			}
 			complete({ Status::Ok{} });
@@ -151,10 +154,11 @@ static int flog(lua_State *L)
 
 static int screenshot(lua_State *L)
 {
+	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int captureUI = luaL_optint(L, 1, 0);
 	int fileType = luaL_optint(L, 2, 0);
 
-	auto *lsi = GetLSI();
 	ByteString filename = lsi->gameController->TakeScreenshot(captureUI, fileType);
 	if (filename.size())
 	{
@@ -166,10 +170,11 @@ static int screenshot(lua_State *L)
 
 static int record(lua_State *L)
 {
+	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	if (!lua_isboolean(L, -1))
 		return luaL_typerror(L, 1, lua_typename(L, LUA_TBOOLEAN));
 	bool record = lua_toboolean(L, -1);
-	auto *lsi = GetLSI();
 	int recordingFolder = lsi->gameController->Record(record);
 	lua_pushinteger(L, recordingFolder);
 	return 1;
@@ -184,6 +189,7 @@ static int compatChunk(lua_State *L)
 static int debug(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -198,6 +204,7 @@ static int debug(lua_State *L)
 static int fpsCap(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -228,6 +235,7 @@ static int fpsCap(lua_State *L)
 
 static int drawCap(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{

@@ -3,6 +3,7 @@
 
 static int list(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto directoryName = tpt_lua_checkByteString(L, 1);
 	lua_newtable(L);
 	int index = 0;
@@ -20,6 +21,7 @@ static int list(lua_State *L)
 
 static int exists(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto filename = tpt_lua_checkByteString(L, 1);
 	bool ret = Platform::Stat(filename);
 	lua_pushboolean(L, ret);
@@ -28,6 +30,7 @@ static int exists(lua_State *L)
 
 static int isFile(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto filename = tpt_lua_checkByteString(L, 1);
 	bool ret = Platform::FileExists(filename);
 	lua_pushboolean(L, ret);
@@ -36,6 +39,7 @@ static int isFile(lua_State *L)
 
 static int isDirectory(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto dirname = tpt_lua_checkByteString(L, 1);
 	bool ret = Platform::DirectoryExists(dirname);
 	lua_pushboolean(L, ret);
@@ -44,6 +48,7 @@ static int isDirectory(lua_State *L)
 
 static int isLink(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto dirname = tpt_lua_checkByteString(L, 1);
 	bool ret = Platform::IsLink(dirname);
 	lua_pushboolean(L, ret);
@@ -52,6 +57,7 @@ static int isLink(lua_State *L)
 
 static int makeDirectory(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto dirname = tpt_lua_checkByteString(L, 1);
 
 	int ret = 0;
@@ -62,6 +68,7 @@ static int makeDirectory(lua_State *L)
 
 static int removeDirectory(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto directory = tpt_lua_checkByteString(L, 1);
 
 	bool ret = Platform::DeleteDirectory(directory);
@@ -71,6 +78,7 @@ static int removeDirectory(lua_State *L)
 
 static int removeFile(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto filename = tpt_lua_checkByteString(L, 1);
 	lua_pushboolean(L, Platform::RemoveFile(filename));
 	return 1;
@@ -78,6 +86,7 @@ static int removeFile(lua_State *L)
 
 static int move(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto filename = tpt_lua_checkByteString(L, 1);
 	auto newFilename = tpt_lua_checkByteString(L, 2);
 	bool replace = lua_toboolean(L, 3);
@@ -87,6 +96,7 @@ static int move(lua_State *L)
 
 static int copy(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto filename = tpt_lua_checkByteString(L, 1);
 	auto newFilename = tpt_lua_checkByteString(L, 2);
 	std::vector<char> fileData;

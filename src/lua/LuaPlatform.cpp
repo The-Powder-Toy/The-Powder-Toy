@@ -33,12 +33,14 @@ static int exeName(lua_State *L)
 
 static int restart(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	Platform::DoRestart();
 	return 0;
 }
 
 static int openLink(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto uri = tpt_lua_checkByteString(L, 1);
 	Platform::OpenURI(uri);
 	return 0;
@@ -46,12 +48,14 @@ static int openLink(lua_State *L)
 
 static int clipboardCopy(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	tpt_lua_pushByteString(L, ClipboardPull());
 	return 1;
 }
 
 static int clipboardPaste(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	luaL_checktype(L, 1, LUA_TSTRING);
 	ClipboardPush(tpt_lua_optByteString(L, 1, ""));
 	return 0;

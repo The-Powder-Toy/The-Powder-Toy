@@ -1,6 +1,7 @@
 #pragma once
 //http://lua-users.org/wiki/SimplerCppBinding
 #include "LuaCompat.h"
+#include "LuaScriptInterface.h"
 
 template <typename T> class Luna
 {
@@ -100,6 +101,7 @@ private:
 	// member function dispatcher
 	static int thunk(lua_State *L)
 	{
+		GetLSI()->AssertInterfaceEvent();
 		// stack has userdata, followed by method args
 		T *obj = check(L, 1);  // get 'self', or if you prefer, 'this'
 		lua_remove(L, 1);  // remove self so member function args start at index 1
@@ -111,7 +113,8 @@ private:
 	// create a new T object and
 	// push onto the Lua stack a userdata containing a pointer to T object
 	static int new_T(lua_State *L)
-	{
+	{	
+		GetLSI()->AssertInterfaceEvent();
 		if (!lua_gettop(L))
 			return 0;
 
@@ -127,6 +130,9 @@ private:
 	// garbage collection metamethod
 	static int gc_T(lua_State *L)
 	{
+		// not subject to the check in new_T; that would be disastrous, but
+		// in theory, if the component is ready to be garbage-collected, there are no references
+		// being held to it anywhere and so it can't cause trouble during its destruction...
 		userdataType *ud = static_cast<userdataType*>(lua_touserdata(L, 1));
 		T *obj = ud->pT;
 		delete obj;  // call destructor for T objects

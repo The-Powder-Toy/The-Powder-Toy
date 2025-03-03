@@ -71,7 +71,7 @@ void LuaCheckbox::triggerAction()
 		lua_rawgeti(L, LUA_REGISTRYINDEX, actionFunction);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, owner_ref);
 		lua_pushboolean(L, checkbox->GetChecked());
-		if (tpt_lua_pcall(L, 2, 0, 0, eventTraitNone))
+		if (tpt_lua_pcall(L, 2, 0, 0, eventTraitInterface))
 		{
 			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}

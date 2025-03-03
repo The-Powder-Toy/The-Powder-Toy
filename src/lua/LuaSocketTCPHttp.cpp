@@ -79,6 +79,10 @@ namespace LuaSocket
 
 	static int New(lua_State *L)
 	{
+		// there's no actual architectural reason to require socket handles to be managed from interface events
+		// because the HTTP thread doesn't care what thread they are managed from, but requiring this
+		// makes access patterns cleaner, so we do it anyway
+		GetLSI()->AssertInterfaceEvent();
 		using http::HandleCURLMcode;
 		if (http::RequestManager::Ref().DisableNetwork())
 		{
@@ -113,6 +117,8 @@ namespace LuaSocket
 
 	static int GC(lua_State *L)
 	{
+		// not subject to the check in TCPSocket::New; that would be disastrous, and thankfully,
+		// as explained there, we're not missing out on any functionality either
 		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		Reset(tcps);
 		tcps->~TCPSocket();
@@ -121,6 +127,7 @@ namespace LuaSocket
 
 	static int Close(lua_State *L)
 	{
+		GetLSI()->AssertInterfaceEvent(); // see the check in TCPSocket::New
 		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		Reset(tcps);
 		return 0;
@@ -128,6 +135,7 @@ namespace LuaSocket
 
 	static int Send(lua_State *L)
 	{
+		GetLSI()->AssertInterfaceEvent(); // see the check in TCPSocket::New
 		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		if (tcps->status != StatusConnected)
 		{
@@ -370,6 +378,7 @@ namespace LuaSocket
 
 	static int Receive(lua_State *L)
 	{
+		GetLSI()->AssertInterfaceEvent(); // see the check in TCPSocket::New
 		bool prefix = false;
 		if (lua_gettop(L) >= 3)
 		{
@@ -388,6 +397,7 @@ namespace LuaSocket
 
 	static int Connect(lua_State *L)
 	{
+		GetLSI()->AssertInterfaceEvent(); // see the check in TCPSocket::New
 		using http::HandleCURLcode;
 		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		if (tcps->status == StatusDead)
@@ -479,6 +489,7 @@ namespace LuaSocket
 
 	static int LastError(lua_State *L)
 	{
+		GetLSI()->AssertInterfaceEvent(); // see the check in TCPSocket::New
 		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		lua_pushstring(L, tcps->errorBuf);
 		return 1;
@@ -486,6 +497,7 @@ namespace LuaSocket
 
 	static int GetStatus(lua_State *L)
 	{
+		GetLSI()->AssertInterfaceEvent(); // see the check in TCPSocket::New
 		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		switch (tcps->status)
 		{
@@ -499,6 +511,7 @@ namespace LuaSocket
 
 	static int GetPeerName(lua_State *L)
 	{
+		GetLSI()->AssertInterfaceEvent(); // see the check in TCPSocket::New
 		using http::HandleCURLcode;
 		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		if (tcps->status != StatusConnected)
@@ -516,6 +529,7 @@ namespace LuaSocket
 
 	static int SetTimeout(lua_State *L)
 	{
+		GetLSI()->AssertInterfaceEvent(); // see the check in TCPSocket::New
 		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		tcps->blocking = true;
 		if (lua_isnoneornil(L, 2))
@@ -536,6 +550,7 @@ namespace LuaSocket
 
 	static int GetSockName(lua_State *L)
 	{
+		GetLSI()->AssertInterfaceEvent(); // see the check in TCPSocket::New
 		using http::HandleCURLcode;
 		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		if (tcps->status != StatusConnected)
@@ -553,6 +568,7 @@ namespace LuaSocket
 
 	static int SetOption(lua_State *L)
 	{
+		GetLSI()->AssertInterfaceEvent(); // see the check in TCPSocket::New
 		using http::HandleCURLcode;
 		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		auto option = tpt_lua_checkByteString(L, 2);
@@ -583,6 +599,7 @@ namespace LuaSocket
 
 	static int Shutdown(lua_State *L)
 	{
+		GetLSI()->AssertInterfaceEvent(); // see the check in TCPSocket::New
 		auto *tcps = (TCPSocket *)luaL_checkudata(L, 1, "TCPSocket");
 		auto direction = tpt_lua_optByteString(L, 2, "both");
 		if (byteStringEqualsLiteral(direction, "receive"))
@@ -622,7 +639,7 @@ namespace LuaSocket
 			{  "settimeout", LuaSocket::SetTimeout  },
 			{   "setoption", LuaSocket::SetOption   },
 			{    "shutdown", LuaSocket::Shutdown    },
-			{          nullptr, nullptr                      },
+			{       nullptr, nullptr                },
 		};
 		luaL_register(L, nullptr, tcpSocketIndexMethods);
 		lua_setfield(L, -2, "__index");

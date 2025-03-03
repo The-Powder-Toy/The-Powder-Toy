@@ -117,6 +117,11 @@ public:
 
 	char customCanMove[PT_NUM][PT_NUM];
 	void InitCustomCanMove();
+
+	// luaL_dostring semantics: 0: success; 1: failure, string on top of stack describes the failure
+	int Autorun();
+
+	void AssertInterfaceEvent();
 };
 
 void tpt_lua_pushByteString(lua_State *L, const ByteString &str);
@@ -135,7 +140,6 @@ ByteString tpt_lua_optByteString(lua_State *L, int index, ByteString defaultValu
 String tpt_lua_optString(lua_State *L, int index, String defaultValue = {}, bool ignoreError = true);
 
 int tpt_lua_loadstring(lua_State *L, const ByteString &str);
-int tpt_lua_dostring(lua_State *L, const ByteString &str);
 
 bool tpt_lua_equalsString(lua_State *L, int index, const char *data, size_t size);
 

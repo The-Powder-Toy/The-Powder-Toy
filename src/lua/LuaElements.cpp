@@ -324,6 +324,7 @@ static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 static int allocate(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	luaL_checktype(L, 1, LUA_TSTRING);
 	luaL_checktype(L, 2, LUA_TSTRING);
 	auto group = tpt_lua_toByteString(L, 1).ToUpper();
@@ -421,6 +422,7 @@ static int element(lua_State *L)
 
 	if (lua_gettop(L) > 1)
 	{
+		lsi->AssertInterfaceEvent();
 		{
 			auto &sd = SimulationData::Ref();
 			std::unique_lock lk(sd.elementGraphicsMx);
@@ -531,28 +533,25 @@ static int element(lua_State *L)
 
 		return 0;
 	}
-	else
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	//Write values from native data to a table
+	lua_newtable(L);
+	for (auto &prop : Element::GetProperties())
 	{
-		auto &sd = SimulationData::CRef();
-		auto &elements = sd.elements;
-		//Write values from native data to a table
-		lua_newtable(L);
-		for (auto &prop : Element::GetProperties())
-		{
-			tpt_lua_pushByteString(L, prop.Name);
-			intptr_t propertyAddress = (intptr_t)(((unsigned char*)&elements[id]) + prop.Offset);
-			LuaGetProperty(L, prop, propertyAddress);
-			lua_settable(L, -3);
-		}
-
-		tpt_lua_pushByteString(L, elements[id].Identifier);
-		lua_setfield(L, -2, "Identifier");
-
-		getDefaultProperties(L, id);
-		lua_setfield(L, -2, "DefaultProperties");
-
-		return 1;
+		tpt_lua_pushByteString(L, prop.Name);
+		intptr_t propertyAddress = (intptr_t)(((unsigned char*)&elements[id]) + prop.Offset);
+		LuaGetProperty(L, prop, propertyAddress);
+		lua_settable(L, -3);
 	}
+
+	tpt_lua_pushByteString(L, elements[id].Identifier);
+	lua_setfield(L, -2, "Identifier");
+
+	getDefaultProperties(L, id);
+	lua_setfield(L, -2, "DefaultProperties");
+
+	return 1;
 }
 
 static int property(lua_State *L)
@@ -574,6 +573,7 @@ static int property(lua_State *L)
 
 	if (lua_gettop(L) > 2)
 	{
+		lsi->AssertInterfaceEvent();
 		auto &sd = SimulationData::Ref();
 		std::unique_lock lk(sd.elementGraphicsMx);
 		auto &elements = sd.elements;
@@ -703,35 +703,32 @@ static int property(lua_State *L)
 		}
 		return 0;
 	}
-	else
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	if (prop != properties.end())
 	{
-		auto &sd = SimulationData::CRef();
-		auto &elements = sd.elements;
-		if (prop != properties.end())
-		{
-			intptr_t propertyAddress = (intptr_t)(((const unsigned char*)&elements[id]) + prop->Offset);
-			LuaGetProperty(L, *prop, propertyAddress);
-			return 1;
-		}
-		else if (propertyName == "Identifier")
-		{
-			tpt_lua_pushByteString(L, elements[id].Identifier);
-			return 1;
-		}
-		else if (propertyName == "DefaultProperties")
-		{
-			getDefaultProperties(L, id);
-			return 1;
-		}
-		else
-		{
-			return luaL_error(L, "Invalid element property");
-		}
+		intptr_t propertyAddress = (intptr_t)(((const unsigned char*)&elements[id]) + prop->Offset);
+		LuaGetProperty(L, *prop, propertyAddress);
+		return 1;
 	}
+	else if (propertyName == "Identifier")
+	{
+		tpt_lua_pushByteString(L, elements[id].Identifier);
+		return 1;
+	}
+	else if (propertyName == "DefaultProperties")
+	{
+		getDefaultProperties(L, id);
+		return 1;
+	}
+	return luaL_error(L, "Invalid element property");
 }
 
 static int ffree(lua_State *L)
 {
+	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
+
 	int id = luaL_checkinteger(L, 1);
 	ByteString identifier;
 	{
@@ -748,7 +745,6 @@ static int ffree(lua_State *L)
 		}
 	}
 
-	auto *lsi = GetLSI();
 	{
 		auto &sd = SimulationData::Ref();
 		std::unique_lock lk(sd.elementGraphicsMx);
@@ -776,11 +772,12 @@ static int exists(lua_State *L)
 
 static int loadDefault(lua_State *L)
 {
+	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	auto &sd = SimulationData::Ref();
 	std::unique_lock lk(sd.elementGraphicsMx);
 	auto &elements = sd.elements;
 	auto &builtinElements = GetElements();
-	auto *lsi = GetLSI();
 	{
 		auto loadDefaultOne = [lsi, L, &elements, &builtinElements](int id) {
 			lua_getglobal(L, "elements");

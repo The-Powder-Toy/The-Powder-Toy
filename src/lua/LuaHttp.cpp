@@ -48,6 +48,10 @@ private:
 public:
 	static int Make(lua_State *L, const ByteString &uri, bool isPost, const ByteString &verb, RequestType type, const http::PostData &postData, const std::vector<http::Header> &headers)
 	{
+		// there's no actual architectural reason to require HTTP handles to be managed from interface events
+		// because the HTTP thread doesn't care what thread the requests are managed from, but requiring this
+		// makes access patterns cleaner, so we do it anyway
+		GetLSI()->AssertInterfaceEvent();
 		auto authUser = Client::Ref().GetAuthUser();
 		if (type == getAuthToken && !authUser.UserID)
 		{
@@ -160,6 +164,8 @@ public:
 
 static int HTTPRequest_gc(lua_State *L)
 {
+	// not subject to the check in RequestHandle::Make; that would be disastrous, and thankfully,
+	// as explained there, we're not missing out on any functionality either
 	auto *rh = (RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
 	rh->~RequestHandle();
 	return 0;
@@ -167,6 +173,7 @@ static int HTTPRequest_gc(lua_State *L)
 
 static int HTTPRequest_status(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent(); // see the check in RequestHandle::Make
 	auto *rh = (RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
 	if (rh->Dead())
 	{
@@ -185,6 +192,7 @@ static int HTTPRequest_status(lua_State *L)
 
 static int HTTPRequest_progress(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent(); // see the check in RequestHandle::Make
 	auto *rh = (RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
 	if (!rh->Dead())
 	{
@@ -199,6 +207,7 @@ static int HTTPRequest_progress(lua_State *L)
 
 static int HTTPRequest_cancel(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent(); // see the check in RequestHandle::Make
 	auto *rh = (RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
 	if (!rh->Dead())
 	{
@@ -209,6 +218,7 @@ static int HTTPRequest_cancel(lua_State *L)
 
 static int HTTPRequest_finish(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent(); // see the check in RequestHandle::Make
 	auto *rh = (RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
 	if (!rh->Dead())
 	{

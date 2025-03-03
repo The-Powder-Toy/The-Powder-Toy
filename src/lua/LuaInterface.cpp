@@ -46,6 +46,7 @@ static Type PickIfType(lua_State *L, int index, Type defaultValue)
 
 static int beginMessageBox(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto title = PickIfType(L, 1, String("Title"));
 	auto message = PickIfType(L, 2, String("Message"));
 	auto large = PickIfType(L, 3, false);
@@ -60,7 +61,7 @@ static int beginMessageBox(lua_State *L)
 		cb->Push(L);
 		if (lua_isfunction(L, -1))
 		{
-			if (tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
+			if (tpt_lua_pcall(L, 0, 0, 0, eventTraitInterface))
 			{
 				lsi->Log(CommandInterface::LogError, LuaGetError());
 			}
@@ -75,6 +76,7 @@ static int beginMessageBox(lua_State *L)
 
 static int beginThrowError(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto errorMessage = PickIfType(L, 1, String("Error text"));
 	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from L).
 	if (lua_gettop(L))
@@ -87,7 +89,7 @@ static int beginThrowError(lua_State *L)
 		cb->Push(L);
 		if (lua_isfunction(L, -1))
 		{
-			if (tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
+			if (tpt_lua_pcall(L, 0, 0, 0, eventTraitInterface))
 			{
 				lsi->Log(CommandInterface::LogError, LuaGetError());
 			}
@@ -102,6 +104,7 @@ static int beginThrowError(lua_State *L)
 
 static int beginInput(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto title = PickIfType(L, 1, String("Title"));
 	auto prompt = PickIfType(L, 2, String("Enter some text:"));
 	auto text = PickIfType(L, 3, String(""));
@@ -125,7 +128,7 @@ static int beginInput(lua_State *L)
 			{
 				lua_pushnil(L);
 			}
-			if (tpt_lua_pcall(L, 1, 0, 0, eventTraitNone))
+			if (tpt_lua_pcall(L, 1, 0, 0, eventTraitInterface))
 			{
 				lsi->Log(CommandInterface::LogError, LuaGetError());
 			}
@@ -145,6 +148,7 @@ static int beginInput(lua_State *L)
 
 static int beginConfirm(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto title = PickIfType(L, 1, String("Title"));
 	auto message = PickIfType(L, 2, String("Message"));
 	auto buttonText = PickIfType(L, 3, String("Confirm"));
@@ -160,7 +164,7 @@ static int beginConfirm(lua_State *L)
 		if (lua_isfunction(L, -1))
 		{
 			lua_pushboolean(L, result);
-			if (tpt_lua_pcall(L, 1, 0, 0, eventTraitNone))
+			if (tpt_lua_pcall(L, 1, 0, 0, eventTraitInterface))
 			{
 				lsi->Log(CommandInterface::LogError, LuaGetError());
 			}
@@ -181,6 +185,7 @@ static int beginConfirm(lua_State *L)
 static int console(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -197,6 +202,7 @@ static int console(lua_State *L)
 static int brushID(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	if (lua_gettop(L) < 1)
 	{
 		lua_pushnumber(L, lsi->gameModel->GetBrushID());
@@ -214,6 +220,7 @@ static int brushID(lua_State *L)
 static int brushRadius(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	if (lua_gettop(L) < 1)
 	{
 		auto radius = lsi->gameModel->GetBrush().GetRadius();
@@ -228,6 +235,7 @@ static int brushRadius(lua_State *L)
 static int mousePosition(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	auto pos = lsi->gameController->GetView()->GetMousePosition();
 	lua_pushnumber(L, pos.X);
 	lua_pushnumber(L, pos.Y);
@@ -235,7 +243,9 @@ static int mousePosition(lua_State *L)
 }
 
 static int activeTool(lua_State *L)
-{	auto *lsi = GetLSI();
+{
+	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	auto index = luaL_checkint(L, 1);
 	if (index < 0 || index >= NUM_TOOLINDICES)
 	{
@@ -259,6 +269,7 @@ static int activeTool(lua_State *L)
 static int addComponent(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	void *opaque = nullptr;
 	LuaComponent *luaComponent = nullptr;
 	if ((opaque = Luna<LuaButton>::tryGet(L, 1)))
@@ -292,6 +303,7 @@ static int addComponent(lua_State *L)
 static int removeComponent(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	void *opaque = nullptr;
 	LuaComponent *luaComponent = nullptr;
 	if ((opaque = Luna<LuaButton>::tryGet(L, 1)))
@@ -326,6 +338,7 @@ static int removeComponent(lua_State *L)
 static int grabTextInput(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	lsi->textInputRefcount += 1;
 	lsi->gameController->GetView()->DoesTextInput = lsi->textInputRefcount > 0;
 	return 0;
@@ -334,6 +347,7 @@ static int grabTextInput(lua_State *L)
 static int dropTextInput(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	lsi->textInputRefcount -= 1;
 	lsi->gameController->GetView()->DoesTextInput = lsi->textInputRefcount > 0;
 	return 0;
@@ -341,6 +355,7 @@ static int dropTextInput(lua_State *L)
 
 static int textInputRect(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	int x = luaL_checkint(L, 1);
 	int y = luaL_checkint(L, 2);
 	int w = luaL_checkint(L, 3);
@@ -351,6 +366,7 @@ static int textInputRect(lua_State *L)
 
 static int showWindow(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	LuaWindow * window = Luna<LuaWindow>::check(L, 1);
 
 	if(window && ui::Engine::Ref().GetWindow()!=window->GetWindow())
@@ -360,6 +376,7 @@ static int showWindow(lua_State *L)
 
 static int closeWindow(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	LuaWindow * window = Luna<LuaWindow>::check(L, 1);
 	if (window)
 		window->GetWindow()->CloseActiveWindow();
@@ -369,6 +386,7 @@ static int closeWindow(lua_State *L)
 static int perfectCircleBrush(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	if (!lua_gettop(L))
 	{
 		lua_pushboolean(L, lsi->gameModel->GetPerfectCircle());
@@ -382,6 +400,7 @@ static int perfectCircleBrush(lua_State *L)
 static int activeMenu(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int acount = lua_gettop(L);
 	if (acount == 0)
 	{
@@ -399,6 +418,8 @@ static int activeMenu(lua_State *L)
 
 static int menuEnabled(lua_State *L)
 {
+	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int menusection = luaL_checkint(L, 1);
 	{
 		auto &sd = SimulationData::CRef();
@@ -417,13 +438,14 @@ static int menuEnabled(lua_State *L)
 		auto &sd = SimulationData::Ref();
 		sd.msections[menusection].doshow = enabled;
 	}
-	auto *lsi = GetLSI();
 	lsi->gameModel->BuildMenus();
 	return 0;
 }
 
 static int numMenus(lua_State *L)
 {
+	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int acount = lua_gettop(L);
 	bool onlyEnabled = true;
 	if (acount > 0)
@@ -431,13 +453,13 @@ static int numMenus(lua_State *L)
 		luaL_checktype(L, 1, LUA_TBOOLEAN);
 		onlyEnabled = lua_toboolean(L, 1);
 	}
-	auto *lsi = GetLSI();
 	lua_pushinteger(L, lsi->gameController->GetNumMenus(onlyEnabled));
 	return 1;
 }
 
 static int windowSize(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	auto &g = ui::Engine::Ref();
 	if (lua_gettop(L) < 1)
 	{

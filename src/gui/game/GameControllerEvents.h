@@ -9,6 +9,7 @@ enum EventTraits : uint32_t
 	eventTraitSimRng      = UINT32_C(0x00000001),
 	eventTraitSimGraphics = UINT32_C(0x00000002),
 	eventTraitHindersSrt  = UINT32_C(0x00000004),
+	eventTraitInterface   = UINT32_C(0x00000008),
 };
 constexpr EventTraits operator |(EventTraits lhs, EventTraits rhs)
 {
@@ -17,19 +18,19 @@ constexpr EventTraits operator |(EventTraits lhs, EventTraits rhs)
 
 struct TextInputEvent
 {
-	static constexpr EventTraits traits = eventTraitNone;
+	static constexpr EventTraits traits = eventTraitInterface;
 	String text;
 };
 
 struct TextEditingEvent
 {
-	static constexpr EventTraits traits = eventTraitNone;
+	static constexpr EventTraits traits = eventTraitInterface;
 	String text;
 };
 
 struct KeyEvent
 {
-	static constexpr EventTraits traits = eventTraitNone;
+	static constexpr EventTraits traits = eventTraitInterface;
 	int key;
 	int scan;
 	bool repeat;
@@ -40,17 +41,17 @@ struct KeyEvent
 
 struct KeyPressEvent : public KeyEvent
 {
-	static constexpr EventTraits traits = eventTraitNone;
+	static constexpr EventTraits traits = eventTraitInterface;
 };
 
 struct KeyReleaseEvent : public KeyEvent
 {
-	static constexpr EventTraits traits = eventTraitNone;
+	static constexpr EventTraits traits = eventTraitInterface;
 };
 
 struct MouseDownEvent
 {
-	static constexpr EventTraits traits = eventTraitNone;
+	static constexpr EventTraits traits = eventTraitInterface;
 	int x;
 	int y;
 	unsigned int button;
@@ -58,7 +59,7 @@ struct MouseDownEvent
 
 struct MouseUpEvent
 {
-	static constexpr EventTraits traits = eventTraitNone;
+	static constexpr EventTraits traits = eventTraitInterface;
 	int x;
 	int y;
 	unsigned int button;
@@ -67,7 +68,7 @@ struct MouseUpEvent
 
 struct MouseMoveEvent
 {
-	static constexpr EventTraits traits = eventTraitNone;
+	static constexpr EventTraits traits = eventTraitInterface;
 	int x;
 	int y;
 	int dx;
@@ -76,7 +77,7 @@ struct MouseMoveEvent
 
 struct MouseWheelEvent
 {
-	static constexpr EventTraits traits = eventTraitNone;
+	static constexpr EventTraits traits = eventTraitInterface;
 	int x;
 	int y;
 	int d;
@@ -84,17 +85,17 @@ struct MouseWheelEvent
 
 struct TickEvent
 {
-	static constexpr EventTraits traits = eventTraitNone;
+	static constexpr EventTraits traits = eventTraitInterface;
 };
 
 struct BlurEvent
 {
-	static constexpr EventTraits traits = eventTraitNone;
+	static constexpr EventTraits traits = eventTraitInterface;
 };
 
 struct CloseEvent
 {
-	static constexpr EventTraits traits = eventTraitNone;
+	static constexpr EventTraits traits = eventTraitInterface;
 };
 
 struct BeforeSimEvent
@@ -109,12 +110,12 @@ struct AfterSimEvent
 
 struct BeforeSimDrawEvent
 {
-	static constexpr EventTraits traits = eventTraitSimGraphics | eventTraitHindersSrt;
+	static constexpr EventTraits traits = eventTraitSimGraphics | eventTraitHindersSrt | eventTraitInterface;
 };
 
 struct AfterSimDrawEvent
 {
-	static constexpr EventTraits traits = eventTraitSimGraphics;
+	static constexpr EventTraits traits = eventTraitSimGraphics | eventTraitInterface;
 };
 
 using GameControllerEvent = std::variant<
