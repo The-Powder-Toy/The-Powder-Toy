@@ -1997,7 +1997,12 @@ void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going throug
 		return;
 	}
 	auto oldTemp = parts[ID(g)].temp;
-	auto i = create_part(-3, nx, ny, PT_PHOT);
+
+	int createType = PT_PHOT;
+	if (oldTemp > 1600.0f) //Hot GLAS/BGLA creates UVLT instead of PHOT
+		createType = PT_UVLT;
+	auto i = create_part(-3, nx, ny, createType);
+
 	if (i == -1)
 	{
 		return;
@@ -2011,6 +2016,8 @@ void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going throug
 	parts[i].vy = parts[pp].vy + lr * 2.5f * parts[pp].vx;
 	/* photons have speed of light. no discussion. */
 	auto r = 1.269f / std::hypot(parts[i].vx, parts[i].vy);
+	if (createType == PT_UVLT)
+		r *= 1.333f;
 	parts[i].vx *= r;
 	parts[i].vy *= r;
 }
