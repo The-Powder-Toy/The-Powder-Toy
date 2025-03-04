@@ -105,7 +105,7 @@ int Element_VIBR_update(UPDATE_FUNC_ARGS)
 			auto rx = rndstore%7-3;
 			auto ry = (rndstore>>3)%7-3;
 			auto r = pmap[y+ry][x+rx];
-			if (TYP(r) && TYP(r) != PT_VIBR && TYP(r) != PT_BVBR && (!sim->IsHeatInsulator(parts[r])))
+			if (TYP(r) && TYP(r) != PT_VIBR && TYP(r) != PT_BVBR && (!sim->IsHeatInsulator(parts[ID(r)])))
 			{
 				parts[ID(r)].temp = restrict_flt(parts[ID(r)].temp + parts[i].tmp * 3, MIN_TEMP, MAX_TEMP);
 				parts[i].tmp = 0;
