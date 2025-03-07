@@ -2012,12 +2012,17 @@ void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going throug
 	parts[i].x = parts[pp].x;
 	parts[i].y = parts[pp].y;
 	parts[i].temp = oldTemp;
-	parts[i].vx = parts[pp].vx - lr * 2.5f * parts[pp].vy;
-	parts[i].vy = parts[pp].vy + lr * 2.5f * parts[pp].vx;
+	if (createType == PT_PHOT) {
+		parts[i].vx = parts[pp].vx - lr * 2.5f * parts[pp].vy;
+		parts[i].vy = parts[pp].vy + lr * 2.5f * parts[pp].vx;
+	} else {
+		parts[i].vx = parts[pp].vx;
+		parts[i].vy = parts[pp].vy;
+	}
 	/* photons have speed of light. no discussion. */
 	auto r = 1.269f / std::hypot(parts[i].vx, parts[i].vy);
 	if (createType == PT_UVLT)
-		r *= 1.333f;
+		r *= 3.152f;
 	parts[i].vx *= r;
 	parts[i].vy *= r;
 }

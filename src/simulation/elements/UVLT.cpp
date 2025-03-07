@@ -157,7 +157,7 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 
 	//UVLT will generate heat while inside other elements.
-	if (utype != PT_WIFI)
+	if (utype != PT_WIFI && utype != PT_GLAS && utype != PT_BGLA)
 		parts[uID].temp = restrict_flt(parts[uID].temp + 200.0f, MIN_TEMP, MAX_TEMP);
 
 	//Absorption
