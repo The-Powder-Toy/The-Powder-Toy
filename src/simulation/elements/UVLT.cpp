@@ -71,7 +71,7 @@ static int update(UPDATE_FUNC_ARGS)
 				return 1;
 			}
 			break;
-		case PT_DEUT: //UVLT + DEUT -> WATR + GLOW
+		case PT_DEUT: //UVLT + DEUT -> DSTW + GLOW
 			parts[uID].life = 0;
 			if (sim->rng.chance(1, 2))
 				sim->part_change_type(uID, x, y, PT_DSTW);
@@ -81,24 +81,30 @@ static int update(UPDATE_FUNC_ARGS)
 			sim->kill_part(i);
 			return 1;
 		case PT_RSST:
-		case PT_RSSS: //UVLT + RSST -> GLOW + GEL
-			if (sim->rng.chance(1, 2))
-				sim->part_change_type(uID, x, y, PT_GLOW);
-			else
-				sim->part_change_type(uID, x, y, PT_GEL);
+		case PT_RSSS: //UVLT + RSST -> GLOW + GOO (GOO will be convertible into GEL with BASE)
+			if (sim->rng.chance(1, 20)) {
+				if (sim->rng.chance(1, 2))
+					sim->create_part(uID, x, y, PT_GLOW);
+				else
+					sim->create_part(uID, x, y, PT_GOO);
 			
-			sim->kill_part(i);
-			return 1;
+				sim->kill_part(i);
+				return 1;
+			}
+			break;
 		case PT_BIZR:
 		case PT_BIZRS:
 		case PT_BIZRG: //UVLT + BIZR -> RSST
-			sim->part_change_type(uID, x, y, PT_RSST);
+			if (sim->rng.chance(1, 20)) {
+				sim->create_part(uID, x, y, PT_RSST);
 			
-			sim->kill_part(i);
-			return 1;
+				sim->kill_part(i);
+				return 1;
+			}
+			break;
 		case PT_GLOW: //UVLT + GLOW -> BIZR (did this to add GEL production)
-			if (sim->rng.chance(1, 100)) {
-				sim->part_change_type(uID, x, y, PT_BIZR);
+			if (sim->rng.chance(1, 20)) {
+				sim->create_part(uID, x, y, PT_BIZR);
 				auto c = sim->create_part(-3, x, y, PT_NEUT);
 				parts[c].temp = 0.0f;
 				parts[uID].temp = restrict_flt(parts[uID].temp - 100.0f, MIN_TEMP, MAX_TEMP);
@@ -107,6 +113,7 @@ static int update(UPDATE_FUNC_ARGS)
 				return 1;
 			}
 			break;
+		case PT_ISZS:
 		case PT_ISOZ: //UVLT + ISOZ/ISZS -> ACID + NEUT + EXPLOSIONS
 			if (sim->rng.chance(1, 2)) {
 				sim->create_part(uID, x, y, PT_ACID);
@@ -117,7 +124,6 @@ static int update(UPDATE_FUNC_ARGS)
 				sim->pv[y/CELL][x/CELL] -= 15.0f;
 				break;
 			}
-		case PT_ISZS:
 			if (sim->rng.chance(1, 10)) {
 				sim->create_part(uID, x, y, PT_UVLT);
 				parts[uID].temp = restrict_flt(parts[uID].temp + 2000.0f, MIN_TEMP, MAX_TEMP);
