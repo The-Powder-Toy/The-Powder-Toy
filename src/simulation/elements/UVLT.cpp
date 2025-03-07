@@ -124,7 +124,7 @@ static int update(UPDATE_FUNC_ARGS)
 				sim->pv[y/CELL][x/CELL] -= 15.0f;
 				break;
 			}
-			if (sim->rng.chance(1, 10)) {
+			if (sim->rng.chance(1, 5)) {
 				sim->create_part(uID, x, y, PT_UVLT);
 				parts[uID].temp = restrict_flt(parts[uID].temp + 2000.0f, MIN_TEMP, MAX_TEMP);
 				sim->pv[y/CELL][x/CELL] -= 15.0f;
