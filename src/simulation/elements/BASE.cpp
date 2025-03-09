@@ -68,12 +68,23 @@ static int update(UPDATE_FUNC_ARGS)
 	//Base evaporates into BOYL or increases concentration
 	if (parts[i].life < 100 && pres < 10.0f && parts[i].temp > (120.0f + 273.15f))
 	{
-		if (sim->rng.chance(parts[i].life+900, 1000))
-			parts[i].life++;
-		else
+		//Slow down boiling
+		if (sim->rng.chance(1, 20))
 		{
-			sim->create_part(i, x, y, PT_BOYL);
-			return 1;
+			//This way we preserve the total amount of concentrated BASE in the solution
+			if (sim->rng.chance(1, parts[i].life+1))
+			{
+				auto temp = parts[i].temp;
+				sim->create_part(i, x, y, PT_BOYL);
+				parts[i].temp = temp;
+				return 1;
+			}
+			else
+			{
+				parts[i].life++;
+				//Enthalpy of vaporization
+				parts[i].temp -= 20.0f / ((float)parts[i].life);
+			}
 		}
 	}
 
@@ -100,7 +111,8 @@ static int update(UPDATE_FUNC_ARGS)
 				int rt = TYP(r);
 
 				if (rt != PT_BASE && rt != PT_SALT && rt != PT_SLTW && rt != PT_BOYL && rt != PT_MERC &&
-					       	rt != PT_BMTL && rt != PT_BRMT && rt != PT_SOAP && rt != PT_CLNE && rt != PT_PCLN)
+					       	rt != PT_BMTL && rt != PT_BRMT && rt != PT_SOAP && rt != PT_CLNE && rt != PT_PCLN &&
+						!(rt == PT_ICEI && parts[ID(r)].ctype == PT_BASE) && !(rt == PT_SNOW && parts[ID(r)].ctype == PT_BASE))
 				{
 					//Base is diluted by water
 					if (parts[i].life > 1 && (rt == PT_WATR || rt == PT_DSTW || rt == PT_CBNW))
