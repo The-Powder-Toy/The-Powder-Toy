@@ -183,8 +183,8 @@ void SimulationData::init_can_move()
 		if (elements[movingType].Properties & TYPE_PART)
 			can_move[movingType][PT_SAWD] = 0;
 
-		// Let most non-solids pass through unmarked PAPR
-        if (elements[movingType].Properties & (TYPE_GAS | TYPE_PART | TYPE_LIQUID) && (movingType != PT_FIRE && movingType != PT_SAWD))
+		// Let most elements pass through unmarked PAPR
+        if (movingType != PT_FIRE && movingType != PT_SAWD)
             can_move[movingType][PT_PAPR] = 3;
 	}
 
