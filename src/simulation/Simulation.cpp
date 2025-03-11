@@ -2493,6 +2493,17 @@ void Simulation::UpdateParticles(int start, int end)
 							else
 								t = PT_LAVA;
 						}
+						else if (t == PT_FOG || t == PT_RIME)
+						{
+							if (parts[i].tmp > 0)
+							{
+								t = PT_ACID;
+							}
+							else if (t == PT_FOG)
+								t = PT_WTRV;
+							else
+								t = PT_WATR;
+						}
 						else
 							s = 0;
 					}
@@ -2599,6 +2610,11 @@ void Simulation::UpdateParticles(int start, int end)
 							else if (parts[i].ctype == PT_PQRT) parts[i].ctype = PT_QRTZ;
 							else if (parts[i].ctype == PT_LITH && parts[i].tmp2 > 3) parts[i].ctype = PT_GLAS;
 							parts[i].life = rng.between(240, 359);
+						}
+						if (t == PT_ACID)
+						{
+							parts[i].life = 50 + 5 * parts[i].tmp;
+							parts[i].tmp = 0;
 						}
 						transitionOccurred = true;
 					}
