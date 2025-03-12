@@ -2496,9 +2496,7 @@ void Simulation::UpdateParticles(int start, int end)
 						else if (t == PT_RIME)
 						{
 							if (parts[i].tmp > 5)
-							{
 								t = PT_ACID;
-							}
 							else
 								t = PT_WATR;
 						}
