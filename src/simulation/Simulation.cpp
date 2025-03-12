@@ -2493,14 +2493,12 @@ void Simulation::UpdateParticles(int start, int end)
 							else
 								t = PT_LAVA;
 						}
-						else if (t == PT_FOG || t == PT_RIME)
+						else if (t == PT_RIME)
 						{
-							if (parts[i].tmp > 0)
+							if (parts[i].tmp > 5)
 							{
 								t = PT_ACID;
 							}
-							else if (t == PT_FOG)
-								t = PT_WTRV;
 							else
 								t = PT_WATR;
 						}
@@ -2613,7 +2611,7 @@ void Simulation::UpdateParticles(int start, int end)
 						}
 						if (t == PT_ACID)
 						{
-							parts[i].life = 50 + 5 * parts[i].tmp;
+							parts[i].life = 25 + 5 * parts[i].tmp;
 							parts[i].tmp = 0;
 						}
 						transitionOccurred = true;
