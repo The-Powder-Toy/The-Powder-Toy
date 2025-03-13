@@ -81,7 +81,7 @@ Credits::Credits():
 	};
 
 
-	addHeader("TPT is an open source project, developed by members of the community.\n"
+	addHeader("The Powder Toy is an open source project, developed by members of the community.\n"
 			"We'd like to thank everyone who contributed to our \bt{a:https://github.com/The-Powder-Toy/The-Powder-Toy|GitHub repo}\x0E:", false);
 
 	auto GitHub = root["GitHub"];
@@ -128,7 +128,7 @@ Credits::Credits():
 
 
 	addHeader("The following users have been credited in the intro text from the start.\n"
-			"Their contributions to the early beginnings of TPT were invaluable in shaping TPT into what it is today.");
+			"Their contributions to the early beginnings of The Powder Toy were invaluable in shaping it into what it is today.");
 
 	auto OrigCredits = root["OrigCredits"];
 	for (auto &item : OrigCredits)
