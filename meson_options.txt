@@ -115,7 +115,7 @@ option(
 	'workaround_elusive_bzip2',
 	type: 'boolean',
 	value: true,
-	description: 'acquire bzip2 dependency with find_library'
+	description: 'Find bzip2 via the compiler and its built-in library directories, rather than via pkg-config or similar'
 )
 option(
 	'workaround_elusive_bzip2_lib_name',
