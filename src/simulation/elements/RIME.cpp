@@ -41,7 +41,7 @@ void Element::Element_RIME()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 273.15f;
-	HighTemperatureTransition = PT_WATR;
+	HighTemperatureTransition = ST;
 
 	Update = &update;
 }
@@ -61,6 +61,11 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					sim->part_change_type(i,x,y,PT_FOG);
 					parts[i].life = sim->rng.between(60, 119);
+				}
+				else if (TYP(r) == PT_GAS && parts[i].tmp < 10)
+				{
+					sim->kill_part(ID(r));
+					parts[i].tmp++;
 				}
 				else if (TYP(r)==PT_FOG&&parts[ID(r)].life>0)
 				{

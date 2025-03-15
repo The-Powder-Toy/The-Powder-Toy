@@ -67,6 +67,11 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					parts[i].life += sim->rng.between(0, 19);
 				}
+				if (TYP(r) == PT_GAS && parts[i].tmp < 10)
+				{
+					sim->kill_part(ID(r));
+					parts[i].tmp++;
+				}
 			}
 		}
 	}
