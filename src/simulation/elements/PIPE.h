@@ -3,6 +3,7 @@
 
 int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS);
 void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Particle *part, bool STOR);
+void Element_PIPE_transfer_part_to_pipe(Particle *part, Particle *pipe);
 void Element_PIPE_transformPatchOffsets(Particle &part, const std::array<int, 8> &offsetMap);
 int Element_PIPE_update(UPDATE_FUNC_ARGS);
 void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy);

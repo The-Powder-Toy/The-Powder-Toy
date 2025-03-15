@@ -3,7 +3,6 @@
 #include "SOAP.h"
 
 static void props_pipe_to_part(const Particle *pipe, Particle *part, bool STOR);
-static void transfer_part_to_pipe(Particle *part, Particle *pipe);
 static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR);
 static void pushParticle(Simulation * sim, int i, int count, int original);
 
@@ -255,7 +254,7 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 				{
 					if (TYP(r)==PT_SOAP)
 						Element_SOAP_detach(sim, ID(r));
-					transfer_part_to_pipe(parts+(ID(r)), parts+i);
+					Element_PIPE_transfer_part_to_pipe(parts+(ID(r)), parts+i);
 					sim->kill_part(ID(r));
 				}
 				else if (!TYP(parts[i].ctype) && TYP(r)==PT_STOR && sd.IsElement(parts[ID(r)].tmp) && (elements[parts[ID(r)].tmp].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY)))
@@ -467,7 +466,7 @@ void Element_PIPE_transfer_pipe_to_part(Simulation * sim, Particle *pipe, Partic
 	}
 }
 
-static void transfer_part_to_pipe(Particle *part, Particle *pipe)
+void Element_PIPE_transfer_part_to_pipe(Particle *part, Particle *pipe)
 {
 	pipe->ctype = part->type;
 
