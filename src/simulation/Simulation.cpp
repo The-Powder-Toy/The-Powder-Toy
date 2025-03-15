@@ -2502,7 +2502,9 @@ void Simulation::UpdateParticles(int start, int end)
 								parts[i].tmp = 0;
 							}
 							else
+							{
 								t = PT_WATR;
+							}
 						}
 						else
 							s = 0;
