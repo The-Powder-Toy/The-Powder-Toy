@@ -3,6 +3,7 @@
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
+#include "common/RasterGeometry.h"
 #include "Format.h"
 #include "gui/game/GameController.h"
 #include "gui/game/GameModel.h"
@@ -494,22 +495,37 @@ static int partExists(lua_State *L)
 static int createParts(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
 	int x = luaL_optint(L,1,-1);
 	int y = luaL_optint(L,2,-1);
 	int rx = luaL_optint(L,3,5);
 	int ry = luaL_optint(L,4,5);
-	int c = luaL_optint(L,5,lsi->gameModel->GetActiveTool(0)->ToolID);
 	int brushID = luaL_optint(L,6,BRUSH_CIRCLE);
-	int flags = luaL_optint(L,7,lsi->sim->replaceModeFlags);
+	int flags = luaL_optint(L, 7, 0); // note: weird: the default is 0 in a sim context but lsi->sim->replaceModeFlags in a ui context
+	                                  // note: weird: has to be 0 in a sim context
+	if (!(lsi->eventTraits & eventTraitInterface) && !lua_isnoneornil(L, 5) && brushID == BRUSH_CIRCLE && flags == 0)
+	{
+		int c = luaL_checkint(L, 5); // note: weird: has to be specified in a sim context but not in a ui context
+		auto center = Vec2(x, y);
+		RasterizeEllipseRows(Vec2<float>(rx * rx, ry * ry), [lsi, c, center](int xLim, int dy) {
+			for (auto pos : RectBetween(center + Vec2(-xLim, dy), center + Vec2(xLim, dy)))
+			{
+				lsi->sim->CreateParts(pos.X, pos.Y, 0, 0, c, 0);
+			}
+		});
+		lua_pushinteger(L, 0); // return value doesn't make sense anyway
+		return 1;
+	}
 
+	lsi->AssertInterfaceEvent();
+	int uiFlags = luaL_optint(L,7,lsi->sim->replaceModeFlags);
 	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
 	if (!brush)
 		return luaL_error(L, "Invalid brush id '%d'", brushID);
 	auto newBrush = brush->Clone();
 	newBrush->SetRadius(ui::Point(rx, ry));
 
-	int ret = lsi->sim->CreateParts(x, y, c, *newBrush, flags);
+	int c = luaL_optint(L,5,lsi->gameModel->GetActiveTool(0)->ToolID);
+	int ret = lsi->sim->CreateParts(x, y, c, *newBrush, uiFlags);
 	lua_pushinteger(L, ret);
 	return 1;
 }
@@ -517,39 +533,56 @@ static int createParts(lua_State *L)
 static int createLine(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
 	int x1 = luaL_optint(L,1,-1);
 	int y1 = luaL_optint(L,2,-1);
 	int x2 = luaL_optint(L,3,-1);
 	int y2 = luaL_optint(L,4,-1);
 	int rx = luaL_optint(L,5,5);
 	int ry = luaL_optint(L,6,5);
-	int c = luaL_optint(L,7,lsi->gameModel->GetActiveTool(0)->ToolID);
 	int brushID = luaL_optint(L,8,BRUSH_CIRCLE);
-	int flags = luaL_optint(L,9,lsi->sim->replaceModeFlags);
+	int flags = luaL_optint(L, 9, 0); // note: weird: the default is 0 in a sim context but lsi->sim->replaceModeFlags in a ui context
+	                                  // note: weird: has to be 0 in a sim context
+	if (!(lsi->eventTraits & eventTraitInterface) && rx == 0 && ry == 0 && !lua_isnoneornil(L, 7) && brushID == BRUSH_CIRCLE && flags == 0)
+	{
+		int c = luaL_checkint(L, 7); // note: weird: has to be specified in a sim context but not in a ui context
+		lsi->sim->CreateLine(x1, y1, x2, y2, c);
+		return 0;
+	}
 
+	lsi->AssertInterfaceEvent();
+	int c = luaL_optint(L,7,lsi->gameModel->GetActiveTool(0)->ToolID);
+	int uiFlags = luaL_optint(L,9,lsi->sim->replaceModeFlags);
 	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
 	if (!brush)
 		return luaL_error(L, "Invalid brush id '%d'", brushID);
 	auto newBrush = brush->Clone();
 	newBrush->SetRadius(ui::Point(rx, ry));
 
-	lsi->sim->CreateLine(x1, y1, x2, y2, c, *newBrush, flags);
+	lsi->sim->CreateLine(x1, y1, x2, y2, c, *newBrush, uiFlags);
 	return 0;
 }
 
 static int createBox(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
 	int x1 = luaL_optint(L,1,-1);
 	int y1 = luaL_optint(L,2,-1);
 	int x2 = luaL_optint(L,3,-1);
 	int y2 = luaL_optint(L,4,-1);
-	int c = luaL_optint(L,5,lsi->gameModel->GetActiveTool(0)->ToolID);
-	int flags = luaL_optint(L,6,lsi->sim->replaceModeFlags);
+	int flags = luaL_optint(L, 6, 0); // note: weird: the default is 0 in a sim context but lsi->sim->replaceModeFlags in a ui context
+	                                  // note: weird: has to be 0 in a sim context
+	if (!(lsi->eventTraits & eventTraitInterface) && !lua_isnoneornil(L, 5) && flags == 0)
+	{
+		int c = luaL_checkint(L, 5); // note: weird: has to be specified in a sim context but not in a ui context
+		lsi->sim->CreateBox(x1, y1, x2, y2, c, 0);
+		return 0;
+	}
 
-	lsi->sim->CreateBox(x1, y1, x2, y2, c, flags);
+	lsi->AssertInterfaceEvent();
+	int c = luaL_optint(L,5,lsi->gameModel->GetActiveTool(0)->ToolID);
+	int uiFlags = luaL_optint(L,6,lsi->sim->replaceModeFlags);
+
+	lsi->sim->CreateBox(x1, y1, x2, y2, c, uiFlags);
 	return 0;
 }
 
