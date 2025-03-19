@@ -787,13 +787,22 @@ static int loadDefault(lua_State *L)
 			lua_settable(L, -3);
 
 			manageElementIdentifier(L, id, false);
-			if (id < (int)builtinElements.size())
+			auto oldEnabled = elements[id].Enabled;
+			if (id < (int)builtinElements.size() && builtinElements[id].Enabled)
 			{
 				elements[id] = builtinElements[id];
 			}
 			else
 			{
 				elements[id] = Element();
+			}
+			// TODO: somehow unify element and corresponding element tool management in a way that makes it hard to mess up
+			if (oldEnabled && elements[id].Enabled)
+			{
+				lsi->gameModel->UpdateElementTool(id);
+			}
+			else if (oldEnabled && !elements[id].Enabled)
+			{
 				lsi->gameModel->FreeTool(lsi->gameModel->GetToolFromIdentifier(identifier));
 			}
 			manageElementIdentifier(L, id, true);
