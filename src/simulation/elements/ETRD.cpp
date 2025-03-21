@@ -2,7 +2,6 @@
 #include "ETRD.h"
 #include <algorithm>
 
-static void initDeltaPos();
 static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
 
 void Element::Element_ETRD()
@@ -46,8 +45,6 @@ void Element::Element_ETRD()
 	HighTemperatureTransition = NT;
 
 	ChangeType = &changeType;
-
-	initDeltaPos();
 }
 
 static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
@@ -75,12 +72,10 @@ public:
 	int length;
 };
 
-const int maxLength = 12;
-std::vector<ETRD_deltaWithLength> deltaPos;
-
-static void initDeltaPos()
+static const std::vector<ETRD_deltaWithLength> InitDeltaPos()
 {
-	deltaPos.clear();
+	const int maxLength = 12;
+	std::vector<ETRD_deltaWithLength> deltaPos;
 	for (int ry = -maxLength; ry <= maxLength; ry++)
 		for (int rx = -maxLength; rx <= maxLength; rx++)
 		{
@@ -91,7 +86,9 @@ static void initDeltaPos()
 	std::stable_sort(deltaPos.begin(), deltaPos.end(), [](const ETRD_deltaWithLength &a, const ETRD_deltaWithLength &b) {
 		return a.length < b.length;
 	});
+	return deltaPos;
 }
+static const auto deltaPos = InitDeltaPos();
 
 int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 {
@@ -118,9 +115,8 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 		// TODO: probably not optimal if excessive stacking is used
 		if (sim->parts.lastActiveIndex > (int)deltaPos.size()*2)
 		{
-			for (std::vector<ETRD_deltaWithLength>::iterator iter = deltaPos.begin(), end = deltaPos.end(); iter != end; ++iter)
+			for (auto &delta : deltaPos)
 			{
-				ETRD_deltaWithLength delta = (*iter);
 				ui::Point checkPos = targetPos + delta.d;
 				int checkDistance = delta.length;
 				if (parts[targetId].tmp >= checkDistance) // tmp sets min distance
