@@ -231,9 +231,9 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		break;
 	case IconSimulationSettings:
 		if(invert)
-			BlendChar({ x, y + 1 }, 0xE04F, 0x000000_rgb .WithAlpha(alpha));
+			BlendChar({ x, y + 1 }, 0xD7A4, 0x000000_rgb .WithAlpha(alpha));
 		else
-			BlendChar({ x, y + 1 }, 0xE04F, 0xFFFFFF_rgb .WithAlpha(alpha));
+			BlendChar({ x, y + 1 }, 0xD7A4, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconRenderSettings:
 		if(invert)
