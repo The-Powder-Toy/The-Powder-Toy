@@ -88,19 +88,16 @@ class FontTool:
 
 class RawReader:
     def __init__(self, path):
-        self.code_points = [False for _ in range(CP_MAX + 2)]
+        self.packed = []
         with open(path) as raw:
-            items = [int(v) for v in re.findall(r'[0-9]+', raw.read())]
-        ptr = 0
-        while ptr <= len(items) - 2:
-            cp = items[ptr]
-            width = items[ptr + 1]
-            ptr += 2
-            matrix = []
-            for i in range(ptr, ptr + width * FONT_HEIGHT, width):
-                matrix.append(items[i: (i + width)])
-            ptr += width * FONT_HEIGHT
-            self.code_points[cp] = FontTool.pack(matrix)
+            lines = raw.read().split('\n')
+            items = []
+
+            for line in lines:
+                items.append(list(map(int, line.split(' '))))
+
+            self.packed = FontTool.pack(items)
+            
 
 
 class BDFReader:
@@ -203,10 +200,9 @@ if __name__ == "__main__":
     addbdf.add_argument("xoffs", metavar="XOFFS", nargs="?", default=0, type=int, help="Defaults to 0")
     addbdf.add_argument("yoffs", metavar="YOFFS", nargs="?", default=0, type=int, help="Defaults to 0")
 
-    addraw = command.add_parser("addraw", help="Adds a Raw Formated Font")
-    addraw.add_argument("first", metavar="FIRST", type=int)
-    addraw.add_argument("last", metavar="LAST", type=int)
-    addraw.add_argument("rawfile", metavar="RAWFILE", help=""""Raw" files are simply ASCII-encoded white-space delimited \
+    setraw = command.add_parser("setraw", help="Adds a Raw Formated Font")
+    setraw.add_argument("last", metavar="LAST", type=int)
+    setraw.add_argument("rawfile", metavar="RAWFILE", help=""""Raw" files are simply ASCII-encoded white-space delimited \
 lists
 of decimal integer constants. These lists of integers encode
 characters as any number of consecutive character description
@@ -214,6 +210,7 @@ structures laid out as follows:
   * the code point corresponding to the character being described;
   * the width in pixels of the character being described;
   * width times %i brightness levels between 0 and 3, a row-major matrix.""")
+    setraw.add_argument("first", nargs="?", default=0, metavar="FIRST", type=int)
 
     remove = command.add_parser("remove", help="Remove a range of characters")
     remove.add_argument("first", metavar="FIRST", type=int)
@@ -253,11 +250,11 @@ structures laid out as follows:
             if bdfr.code_points[i] and not ft.code_points[i]:
                 ft.code_points[i] = bdfr.code_points[i]
         ft.commit()
-    elif args.command == 'addraw':
+    elif args.command == 'setraw':
         rr = RawReader(args.rawfile)
-        for i in range(cp_first, cp_last + 1):
-            if rr.code_points[i] and not ft.code_points[i]:
-                ft.code_points[i] = rr.code_points[i]
+        
+        ft.code_points[cp_last] = rr.packed
+        
         ft.commit()
     elif args.command == 'remove':
         for i in range(cp_first, cp_last + 1):
