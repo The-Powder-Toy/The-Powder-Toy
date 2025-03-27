@@ -2099,7 +2099,7 @@ Simulation::PlanMoveResult Simulation::PlanMove(Sim &sim, int i, int x, int y)
 	auto vx = parts[i].vx;
 	auto vy = parts[i].vy;
 	auto mv = fmaxf(fabsf(vx), fabsf(vy));
-	if (mv < ISTP)
+	if (mv < ISTP || std::isnan(mv))
 	{
 		clear_x = x;
 		clear_y = y;
