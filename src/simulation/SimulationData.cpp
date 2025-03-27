@@ -182,6 +182,10 @@ void SimulationData::init_can_move()
 		//SAWD cannot be displaced by other powders
 		if (elements[movingType].Properties & TYPE_PART)
 			can_move[movingType][PT_SAWD] = 0;
+
+		// Let most elements pass through unmarked PAPR
+        if (movingType != PT_FIRE && movingType != PT_SAWD)
+            can_move[movingType][PT_PAPR] = 3;
 	}
 
 	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
@@ -211,6 +215,7 @@ void SimulationData::init_can_move()
 	can_move[PT_ELEC][PT_EXOT] = 2;
 	can_move[PT_ELEC][PT_GLOW] = 2;
 	can_move[PT_PHOT][PT_LCRY] = 3; //varies according to LCRY life
+	can_move[PT_PHOT][PT_PAPR] = 3; //varies according to PAPR life
 	can_move[PT_PHOT][PT_GPMP] = 3;
 
 	can_move[PT_PHOT][PT_BIZR] = 2;
@@ -230,6 +235,9 @@ void SimulationData::init_can_move()
 	can_move[PT_TRON][PT_SWCH] = 3;
 	can_move[PT_ELEC][PT_RSST] = 2;
 	can_move[PT_ELEC][PT_RSSS] = 2;
+	
+	can_move[PT_MWAX][PT_SAWD] = 0;
+	can_move[PT_SAWD][PT_MWAX] = 0;
 }
 
 const CustomGOLData *SimulationData::GetCustomGOLByRule(int rule) const
