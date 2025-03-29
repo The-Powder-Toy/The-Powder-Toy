@@ -24,7 +24,7 @@ void Element::Element_IRON()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 1;
-	Hardness = 50;
+	Hardness = 49;
 
 	Weight = 100;
 
