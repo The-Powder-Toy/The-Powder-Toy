@@ -354,7 +354,7 @@ int Simulation::FloodWalls(int x, int y, int wall, int bm)
 	return 1;
 }
 
-int Simulation::CreatePartFlags(int x, int y, int c, int flags)
+int Simulation::CreatePartFlags(int p, int x, int y, int c, int flags)
 {
 	if (x < 0 || y < 0 || x >= XRES || y >= YRES)
 	{
@@ -397,7 +397,7 @@ int Simulation::CreatePartFlags(int x, int y, int c, int flags)
 	}
 	else
 	{
-		return (create_part(-2, x, y, TYP(c), ID(c)) == -1);
+		return (create_part(p, x, y, TYP(c), ID(c)) == -1);
 	}
 
 	// I'm sure at least one compiler exists that would complain if this wasn't here
@@ -738,7 +738,7 @@ void Simulation::ApplyDecorationFill(const RendererFrame &frame, int x, int y, i
 	free(bitmap);
 }
 
-int Simulation::CreateParts(int positionX, int positionY, int c, Brush const &cBrush, int flags)
+int Simulation::CreateParts(int p, int positionX, int positionY, int c, Brush const &cBrush, int flags)
 {
 	if (flags == -1)
 		flags = replaceModeFlags;
@@ -754,7 +754,7 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush const &cB
 			newlife = 55;
 		c = PMAP(newlife, c);
 		lightningRecreate = currentTick + std::max(newlife / 4, 1);
-		return CreatePartFlags(positionX, positionY, c, flags);
+		return CreatePartFlags(p, positionX, positionY, c, flags);
 	}
 	else if (c == PT_TESC)
 	{
@@ -768,12 +768,12 @@ int Simulation::CreateParts(int positionX, int positionY, int c, Brush const &cB
 	{
 		ui::Point coords = ui::Point(positionX, positionY) + off;
 		if (coords.X >= 0 && coords.Y >= 0 && coords.X < XRES && coords.Y < YRES)
-			CreatePartFlags(coords.X, coords.Y, c, flags);
+			CreatePartFlags(p, coords.X, coords.Y, c, flags);
 	}
 	return 0;
 }
 
-int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags)
+int Simulation::CreateParts(int p, int x, int y, int rx, int ry, int c, int flags)
 {
 	bool created = false;
 
@@ -802,7 +802,7 @@ int Simulation::CreateParts(int x, int y, int rx, int ry, int c, int flags)
 
 	for (int j = -ry; j <= ry; j++)
 		for (int i = -rx; i <= rx; i++)
-			if (CreatePartFlags(x+i, y+j, c, flags))
+			if (CreatePartFlags(p, x+i, y+j, c, flags))
 				created = true;
 	return !created;
 }
@@ -838,9 +838,9 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush const &
 	for (x=x1; x<=x2; x++)
 	{
 		if (reverseXY)
-			CreateParts(y, x, c, cBrush, flags);
+			CreateParts(-2, y, x, c, cBrush, flags);
 		else
-			CreateParts(x, y, c, cBrush, flags);
+			CreateParts(-2, x, y, c, cBrush, flags);
 		e += de;
 		if (e >= 0.5f)
 		{
@@ -848,16 +848,16 @@ void Simulation::CreateLine(int x1, int y1, int x2, int y2, int c, Brush const &
 			if (!(rx+ry) && ((y1<y2) ? (y<=y2) : (y>=y2)))
 			{
 				if (reverseXY)
-					CreateParts(y, x, c, cBrush, flags);
+					CreateParts(-2, y, x, c, cBrush, flags);
 				else
-					CreateParts(x, y, c, cBrush, flags);
+					CreateParts(-2, x, y, c, cBrush, flags);
 			}
 			e -= 1.0f;
 		}
 	}
 }
 
-void Simulation::CreateBox(int x1, int y1, int x2, int y2, int c, int flags)
+void Simulation::CreateBox(int p, int x1, int y1, int x2, int y2, int c, int flags)
 {
 	int i, j;
 	if (x1>x2)
@@ -874,7 +874,7 @@ void Simulation::CreateBox(int x1, int y1, int x2, int y2, int c, int flags)
 	}
 	for (j=y2; j>=y1; j--)
 		for (i=x1; i<=x2; i++)
-			CreateParts(i, j, 0, 0, c, flags);
+			CreateParts(p, i, j, 0, 0, c, flags);
 }
 
 int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
@@ -974,7 +974,7 @@ int Simulation::FloodParts(int x, int y, int fullc, int cm, int flags)
 					created_something = 1;
 				}
 			}
-			else if (CreateParts(x, y, 0, 0, fullc, flags))
+			else if (CreateParts(-2, x, y, 0, 0, fullc, flags))
 				created_something = 1;
 			bitmap[(y * XRES) + x] = 1;
 		}

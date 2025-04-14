@@ -220,19 +220,19 @@ public:
 	void ApplyDecorationFill(const RendererFrame &frame, int x, int y, int colR, int colG, int colB, int colA, int replaceR, int replaceG, int replaceB);
 
 	//Drawing Walls
-	int CreateWalls(int x, int y, int rx, int ry, int wall, Brush const *cBrush = nullptr);
-	void CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int wall, Brush const *cBrush = nullptr);
+	int CreateWalls(int x, int y, int rx, int ry, int wall, Brush const *cBrush);
+	void CreateWallLine(int x1, int y1, int x2, int y2, int rx, int ry, int wall, Brush const *cBrush);
 	void CreateWallBox(int x1, int y1, int x2, int y2, int wall);
 	int FloodWalls(int x, int y, int wall, int bm);
 
 	//Drawing Particles
-	int CreateParts(int positionX, int positionY, int c, Brush const &cBrush, int flags = -1);
-	int CreateParts(int x, int y, int rx, int ry, int c, int flags = -1);
-	int CreatePartFlags(int x, int y, int c, int flags);
-	void CreateLine(int x1, int y1, int x2, int y2, int c, Brush const &cBrush, int flags = -1);
+	int CreateParts(int p, int positionX, int positionY, int c, Brush const &cBrush, int flags);
+	int CreateParts(int p, int x, int y, int rx, int ry, int c, int flags);
+	int CreatePartFlags(int p, int x, int y, int c, int flags);
+	void CreateLine(int x1, int y1, int x2, int y2, int c, Brush const &cBrush, int flags);
 	void CreateLine(int x1, int y1, int x2, int y2, int c);
-	void CreateBox(int x1, int y1, int x2, int y2, int c, int flags = -1);
-	int FloodParts(int x, int y, int c, int cm, int flags = -1);
+	void CreateBox(int p, int x1, int y1, int x2, int y2, int c, int flags);
+	int FloodParts(int x, int y, int c, int cm, int flags);
 
 	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY);
 

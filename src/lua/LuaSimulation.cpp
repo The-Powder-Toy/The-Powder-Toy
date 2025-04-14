@@ -332,6 +332,10 @@ static int partCreate(lua_State *L)
 		lua_pushinteger(L, -1);
 		return 1;
 	}
+	if (newID == -2)
+	{
+		lsi->AssertInterfaceEvent();
+	}
 	int type = lua_tointeger(L, 4);
 	int v = -1;
 	if (lua_gettop(L) >= 5)
@@ -509,7 +513,7 @@ static int createParts(lua_State *L)
 		RasterizeEllipseRows(Vec2<float>(rx * rx, ry * ry), [lsi, c, center](int xLim, int dy) {
 			for (auto pos : RectBetween(center + Vec2(-xLim, dy), center + Vec2(xLim, dy)))
 			{
-				lsi->sim->CreateParts(pos.X, pos.Y, 0, 0, c, 0);
+				lsi->sim->CreateParts(-1, pos.X, pos.Y, 0, 0, c, 0);
 			}
 		});
 		lua_pushinteger(L, 0); // return value doesn't make sense anyway
@@ -525,7 +529,7 @@ static int createParts(lua_State *L)
 	newBrush->SetRadius(ui::Point(rx, ry));
 
 	int c = luaL_optint(L,5,lsi->gameModel->GetActiveTool(0)->ToolID);
-	int ret = lsi->sim->CreateParts(x, y, c, *newBrush, uiFlags);
+	int ret = lsi->sim->CreateParts(-2, x, y, c, *newBrush, uiFlags);
 	lua_pushinteger(L, ret);
 	return 1;
 }
@@ -574,7 +578,7 @@ static int createBox(lua_State *L)
 	if (!(lsi->eventTraits & eventTraitInterface) && !lua_isnoneornil(L, 5) && flags == 0)
 	{
 		int c = luaL_checkint(L, 5); // note: weird: has to be specified in a sim context but not in a ui context
-		lsi->sim->CreateBox(x1, y1, x2, y2, c, 0);
+		lsi->sim->CreateBox(-1, x1, y1, x2, y2, c, 0);
 		return 0;
 	}
 
@@ -582,7 +586,7 @@ static int createBox(lua_State *L)
 	int c = luaL_optint(L,5,lsi->gameModel->GetActiveTool(0)->ToolID);
 	int uiFlags = luaL_optint(L,6,lsi->sim->replaceModeFlags);
 
-	lsi->sim->CreateBox(x1, y1, x2, y2, c, uiFlags);
+	lsi->sim->CreateBox(-2, x1, y1, x2, y2, c, uiFlags);
 	return 0;
 }
 
