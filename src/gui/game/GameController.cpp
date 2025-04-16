@@ -868,6 +868,8 @@ void GameController::LoadRenderPreset(int presetNum)
 	settings.renderMode = preset.renderMode;
 	settings.displayMode = preset.displayMode;
 	settings.colorMode = preset.colorMode;
+	settings.wantHdispLimitMin = preset.wantHdispLimitMin;
+	settings.wantHdispLimitMax = preset.wantHdispLimitMax;
 }
 
 void GameController::Update()

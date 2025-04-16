@@ -53,6 +53,8 @@ void RenderModel::LoadRenderPreset(int presetNum)
 	SetRenderMode(preset.renderMode);
 	SetDisplayMode(preset.displayMode);
 	SetColorMode(preset.colorMode);
+	rendererSettings->wantHdispLimitMin = preset.wantHdispLimitMin;
+	rendererSettings->wantHdispLimitMax = preset.wantHdispLimitMax;
 }
 
 void RenderModel::SetRenderer(Renderer * ren, RendererSettings *newRendererSettings)

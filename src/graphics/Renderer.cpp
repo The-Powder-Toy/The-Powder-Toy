@@ -1371,6 +1371,14 @@ const std::vector<RenderPreset> Renderer::renderModePresets = {
 		0,
 		COLOUR_LIFE,
 	},
+	{
+		"Dynamic Heat Display",
+		RENDER_BASC,
+		DISPLAY_AIRH,
+		COLOUR_HEAT,
+		HdispLimitAuto{},
+		HdispLimitAuto{},
+	},
 };
 
 void Renderer::AdjustHdispLimit()
