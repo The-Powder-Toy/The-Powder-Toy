@@ -1389,19 +1389,22 @@ void Renderer::AdjustHdispLimit()
 	if (std::holds_alternative<HdispLimitAuto>(wantHdispLimitMin) ||
 	    std::holds_alternative<HdispLimitAuto>(wantHdispLimitMax))
 	{
-		auto &sd = SimulationData::CRef();
-		for (int i = 0; i <= sim->parts.lastActiveIndex; ++i)
+		if (colorMode & COLOUR_HEAT)
 		{
-			auto t = sim->parts[i].type;
-			if (t > 0 && t < PT_NUM)
+			auto &sd = SimulationData::CRef();
+			for (int i = 0; i <= sim->parts.lastActiveIndex; ++i)
 			{
-				if (!sd.elements[t].HeatConduct)
+				auto t = sim->parts[i].type;
+				if (t > 0 && t < PT_NUM)
 				{
-					continue;
+					if (!sd.elements[t].HeatConduct)
+					{
+						continue;
+					}
+					auto nx = int(sim->parts[i].x + 0.5f);
+					auto ny = int(sim->parts[i].y + 0.5f);
+					visit({ nx, ny }, sim->parts[i].temp);
 				}
-				auto nx = int(sim->parts[i].x + 0.5f);
-				auto ny = int(sim->parts[i].y + 0.5f);
-				visit({ nx, ny }, sim->parts[i].temp);
 			}
 		}
 		if (sim->aheat_enable && (displayMode & DISPLAY_AIR) && (displayMode & DISPLAY_AIRH))
