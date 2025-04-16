@@ -80,14 +80,6 @@ public:
 
 	const RenderableSimulation *sim = nullptr;
 
-	struct GradientStop
-	{
-		RGB color;
-		float point;
-
-		bool operator <(const GradientStop &other) const;
-	};
-	static std::vector<RGB> Gradient(std::vector<GradientStop> stops, int resolution);
 	static std::unique_ptr<VideoBuffer> WallIcon(int wallID, Vec2<int> size);
 	static const std::vector<RenderPreset> renderModePresets;
 

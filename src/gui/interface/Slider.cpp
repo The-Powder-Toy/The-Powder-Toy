@@ -1,6 +1,6 @@
 #include "Slider.h"
 #include "graphics/Graphics.h"
-#include "graphics/Renderer.h"
+#include "graphics/Gradient.h"
 
 namespace ui {
 
@@ -70,7 +70,7 @@ void Slider::SetColour(Colour col1, Colour col2)
 {
 	this->col1 = col1;
 	this->col2 = col2;
-	bgGradient = Renderer::Gradient({
+	bgGradient = Gradient({
 		{ col1.NoAlpha(), 0.f },
 		{ col2.NoAlpha(), 1.f },
 	}, Size.X-7);

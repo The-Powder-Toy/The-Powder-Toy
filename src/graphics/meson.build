@@ -1,8 +1,8 @@
 graphics_files = files(
+	'Gradient.cpp',
 	'Graphics.cpp',
 	'RasterGraphics.cpp',
 	'FontReader.cpp',
-	'RendererBasic.cpp',
 )
 powder_graphics_files = files(
 	'Renderer.cpp',
