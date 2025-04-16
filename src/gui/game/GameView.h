@@ -174,7 +174,7 @@ private:
 	void DispatchRendererThread();
 	std::unique_ptr<RenderableSimulation> rendererThreadSim;
 	std::unique_ptr<RendererFrame> rendererThreadResult;
-	int foundParticles = 0;
+	RendererStats rendererStats;
 	const RendererFrame *rendererFrame = nullptr;
 
 	SimFpsLimit simFpsLimit = FpsLimitExplicit{ 60.f };

@@ -243,6 +243,62 @@ static int separateThread(lua_State *L)
 	return 1;
 }
 
+static int heatDisplayLimits(lua_State *L)
+{
+	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
+	auto &rendererSettings = lsi->gameModel->GetRendererSettings();
+	if (lua_gettop(L))
+	{
+		auto write = [L](auto &setting, int index) {
+			if (lua_isstring(L, index) && byteStringEqualsLiteral(tpt_lua_toByteString(L, index), "auto"))
+			{
+				setting = HdispLimitAuto{};
+			}
+			else
+			{
+				setting = HdispLimitExplicit{ float(luaL_checknumber(L, index)) };
+			}
+		};
+		write(rendererSettings.wantHdispLimitMin, 1);
+		write(rendererSettings.wantHdispLimitMax, 2);
+		return 0;
+	}
+	auto read = [L](auto &setting) {
+		if (auto *hdispLimitExplicit = std::get_if<HdispLimitExplicit>(&setting))
+		{
+			lua_pushnumber(L, hdispLimitExplicit->value);
+		}
+		else
+		{
+			lua_pushliteral(L, "auto");
+		}
+	};
+	read(rendererSettings.wantHdispLimitMin);
+	read(rendererSettings.wantHdispLimitMax);
+	return 2;
+}
+
+static int heatDisplayAutoArea(lua_State *L)
+{
+	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
+	auto &rendererSettings = lsi->gameModel->GetRendererSettings();
+	if (lua_gettop(L))
+	{
+		rendererSettings.autoHdispLimitArea.pos .X = luaL_checkinteger(L, 1);
+		rendererSettings.autoHdispLimitArea.pos .Y = luaL_checkinteger(L, 2);
+		rendererSettings.autoHdispLimitArea.size.X = luaL_checkinteger(L, 3);
+		rendererSettings.autoHdispLimitArea.size.Y = luaL_checkinteger(L, 4);
+		return 0;
+	}
+	lua_pushinteger(L, rendererSettings.autoHdispLimitArea.pos .X);
+	lua_pushinteger(L, rendererSettings.autoHdispLimitArea.pos .Y);
+	lua_pushinteger(L, rendererSettings.autoHdispLimitArea.size.X);
+	lua_pushinteger(L, rendererSettings.autoHdispLimitArea.size.Y);
+	return 4;
+}
+
 void LuaRenderer::Open(lua_State *L)
 {
 	static const luaL_Reg reg[] = {
@@ -262,6 +318,8 @@ void LuaRenderer::Open(lua_State *L)
 		LFUNC(fireSize),
 		LFUNC(useDisplayPreset),
 		LFUNC(separateThread),
+		LFUNC(heatDisplayLimits),
+		LFUNC(heatDisplayAutoArea),
 #undef LFUNC
 		{ nullptr, nullptr }
 	};

@@ -1,9 +1,23 @@
 #pragma once
 #include "gui/interface/Point.h"
 #include "simulation/ElementGraphics.h"
+#include "simulation/ElementDefs.h"
 #include "FindingElement.h"
 #include <cstdint>
 #include <optional>
+#include <variant>
+
+struct HdispLimitExplicit
+{
+	float value;
+};
+struct HdispLimitAuto
+{
+};
+using HdispLimit = std::variant<
+	HdispLimitExplicit,
+	HdispLimitAuto
+>;
 
 struct RendererSettings
 {
@@ -24,4 +38,7 @@ struct RendererSettings
 	ui::Point mousePos = { 0, 0 };
 	int gridSize = 0;
 	float fireIntensity = 1;
+	HdispLimit wantHdispLimitMin = HdispLimitExplicit{ MIN_TEMP };
+	HdispLimit wantHdispLimitMax = HdispLimitExplicit{ MAX_TEMP };
+	Rect<int> autoHdispLimitArea = RES.OriginRect();
 };

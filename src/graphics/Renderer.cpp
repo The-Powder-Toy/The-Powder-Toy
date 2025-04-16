@@ -13,6 +13,7 @@
 #include "simulation/gravity/Gravity.h"
 #include "simulation/orbitalparts.h"
 #include <cmath>
+#include <algorithm>
 
 void Renderer::RenderBackground()
 {
@@ -264,7 +265,7 @@ void Renderer::render_parts()
 					BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
 			}
 	}
-	foundParticles = 0;
+	stats.foundParticles = 0;
 	for(i = 0; i<=sim->parts.lastActiveIndex; i++) {
 		if (sim->parts[i].type && sim->parts[i].type >= 0 && sim->parts[i].type < PT_NUM) {
 			t = sim->parts[i].type;
@@ -360,10 +361,8 @@ void Renderer::render_parts()
 				//Alter colour based on display mode
 				if(colorMode & COLOUR_HEAT)
 				{
-					constexpr float min_temp = MIN_TEMP;
-					constexpr float max_temp = MAX_TEMP;
 					firea = 255;
-					RGB color = heatTableAt(int((sim->parts[i].temp - min_temp) / (max_temp - min_temp) * 1024));
+					RGB color = heatTableAt(int((sim->parts[i].temp - stats.hdispLimitMin) / (stats.hdispLimitMax - stats.hdispLimitMin) * 1024));
 					firer = colr = color.Red;
 					fireg = colg = color.Green;
 					fireb = colb = color.Blue;
@@ -485,7 +484,7 @@ void Renderer::render_parts()
 					{
 						colr = firer = 255;
 						colg = fireg = colb = fireb = 0;
-						foundParticles++;
+						stats.foundParticles++;
 					}
 					else
 					{
@@ -952,7 +951,7 @@ void Renderer::draw_air()
 			}
 			else if (displayMode & DISPLAY_AIRH)
 			{
-				c = RGB::Unpack(HeatToColour(hv[y][x]));
+				c = RGB::Unpack(HeatToColour(hv[y][x], stats.hdispLimitMin, stats.hdispLimitMax));
 				//c = RGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 				//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
 				//	clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f)).Pack();//vy adds blue
@@ -1296,11 +1295,9 @@ void Renderer::render_fire()
 		}
 }
 
-int HeatToColour(float temp)
+int HeatToColour(float temp, float hdispLimitMin, float hdispLimitMax)
 {
-	constexpr float min_temp = MIN_TEMP;
-	constexpr float max_temp = MAX_TEMP;
-	RGB color = Renderer::heatTableAt(int((temp - min_temp) / (max_temp - min_temp) * 1024));
+	RGB color = Renderer::heatTableAt(int((temp - hdispLimitMin) / (hdispLimitMax - hdispLimitMin) * 1024));
 	color.Red   = uint8_t(color.Red   * 0.7f);
 	color.Green = uint8_t(color.Green * 0.7f);
 	color.Blue  = uint8_t(color.Blue  * 0.7f);
@@ -1376,6 +1373,62 @@ const std::vector<RenderPreset> Renderer::renderModePresets = {
 	},
 };
 
+void Renderer::AdjustHdispLimit()
+{
+	stats.hdispLimitValid = false;
+	float autoHdispLimitMin = MAX_TEMP;
+	float autoHdispLimitMax = MIN_TEMP;
+	auto visit = [this, &autoHdispLimitMin, &autoHdispLimitMax](Vec2<int> point, float value) {
+		if (autoHdispLimitArea.Contains(point))
+		{
+			autoHdispLimitMin = std::min(autoHdispLimitMin, value);
+			autoHdispLimitMax = std::max(autoHdispLimitMax, value);
+			stats.hdispLimitValid = true;
+		}
+	};
+	if (std::holds_alternative<HdispLimitAuto>(wantHdispLimitMin) ||
+	    std::holds_alternative<HdispLimitAuto>(wantHdispLimitMax))
+	{
+		auto &sd = SimulationData::CRef();
+		for (int i = 0; i <= sim->parts.lastActiveIndex; ++i)
+		{
+			auto t = sim->parts[i].type;
+			if (t > 0 && t < PT_NUM)
+			{
+				if (!sd.elements[t].HeatConduct)
+				{
+					continue;
+				}
+				auto nx = int(sim->parts[i].x + 0.5f);
+				auto ny = int(sim->parts[i].y + 0.5f);
+				visit({ nx, ny }, sim->parts[i].temp);
+			}
+		}
+		if (sim->aheat_enable && (displayMode & DISPLAY_AIR) && (displayMode & DISPLAY_AIRH))
+		{
+			auto *hv = sim->hv;
+			for (auto p : CELLS.OriginRect())
+			{
+				visit(p * CELL, hv[p.Y][p.X]);
+			}
+		}
+	}
+	stats.hdispLimitMin = autoHdispLimitMin;
+	stats.hdispLimitMax = autoHdispLimitMax;
+	if (auto *hdispLimitExplicit = std::get_if<HdispLimitExplicit>(&wantHdispLimitMin))
+	{
+		stats.hdispLimitMin = hdispLimitExplicit->value;
+	}
+	if (auto *hdispLimitExplicit = std::get_if<HdispLimitExplicit>(&wantHdispLimitMax))
+	{
+		stats.hdispLimitMax = hdispLimitExplicit->value;
+	}
+	if (std::isnan(stats.hdispLimitMin)) stats.hdispLimitMin = MIN_TEMP;
+	if (std::isnan(stats.hdispLimitMax)) stats.hdispLimitMax = MAX_TEMP;
+	stats.hdispLimitMax = std::clamp(stats.hdispLimitMax, MIN_TEMP, MAX_TEMP);
+	stats.hdispLimitMin = std::clamp(stats.hdispLimitMin, MIN_TEMP, stats.hdispLimitMax);
+}
+
 void Renderer::Clear()
 {
 	if(displayMode & DISPLAY_PERS)
@@ -1386,6 +1439,7 @@ void Renderer::Clear()
 	{
 		std::fill_n(video.data(), WINDOWW * YRES, 0);
 	}
+	AdjustHdispLimit();
 }
 
 void Renderer::DrawBlob(Vec2<int> pos, RGB colour)

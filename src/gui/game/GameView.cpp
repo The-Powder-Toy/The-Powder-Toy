@@ -2166,7 +2166,7 @@ void GameView::OnDraw()
 			StartRendererThread();
 			WaitForRendererThread();
 			AfterSimDraw(*sim);
-			foundParticles = ren->GetFoundParticles();
+			rendererStats = ren->GetStats();
 			*rendererThreadResult = ren->GetVideo();
 			rendererFrame = rendererThreadResult.get();
 			DispatchRendererThread();
@@ -2177,7 +2177,7 @@ void GameView::OnDraw()
 			ren->ApplySettings(*rendererSettings);
 			RenderSimulation(*sim, true);
 			AfterSimDraw(*sim);
-			foundParticles = ren->GetFoundParticles();
+			rendererStats = ren->GetStats();
 			rendererFrame = &ren->GetVideo();
 		}
 	}
@@ -2525,9 +2525,18 @@ void GameView::OnDraw()
 		if (showDebug)
 		{
 			if (rendererSettings->findingElement)
-				fpsInfo << " Parts: " << foundParticles << "/" << sample.NumParts;
+				fpsInfo << " Parts: " << rendererStats.foundParticles << "/" << sample.NumParts;
 			else
 				fpsInfo << " Parts: " << sample.NumParts;
+		}
+		if ((std::holds_alternative<HdispLimitAuto>(rendererSettings->wantHdispLimitMin) ||
+		     std::holds_alternative<HdispLimitAuto>(rendererSettings->wantHdispLimitMax)) && rendererStats.hdispLimitValid)
+		{
+			fpsInfo << " [TEMP L:";
+			format::RenderTemperature(fpsInfo, rendererStats.hdispLimitMin, c->GetTemperatureScale());
+			fpsInfo << " H:";
+			format::RenderTemperature(fpsInfo, rendererStats.hdispLimitMax, c->GetTemperatureScale());
+			fpsInfo << "]";
 		}
 		if (c->GetReplaceModeFlags()&REPLACE_MODE)
 			fpsInfo << " [REPLACE MODE]";
