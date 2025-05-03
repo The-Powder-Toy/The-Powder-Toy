@@ -102,7 +102,6 @@ public:
 	bool luacon_hasLastError = false;
 	String lastCode;
 
-	bool currentCommand = false;
 	int textInputRefcount = 0;
 	long unsigned int luaExecutionStart = 0;
 

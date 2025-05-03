@@ -507,7 +507,15 @@ int CommandInterface::Command(String command)
 	else
 	{
 		int level = lua_gettop(L), ret = -1;
-		lsi->currentCommand = true;
+		lsi->gameModel->logSink = [this](String text) {
+			auto *lsi = static_cast<LuaScriptInterface *>(this);
+			auto lastError = GetLastError();
+			if (lsi->luacon_hasLastError)
+				lastError += "; ";
+			lastError += text;
+			SetLastError(lastError);
+			lsi->luacon_hasLastError = true;
+		};
 		if (lsi->lastCode.length())
 			lsi->lastCode += "\n";
 		lsi->lastCode += command;
@@ -564,7 +572,7 @@ int CommandInterface::Command(String command)
 
 			}
 		}
-		lsi->currentCommand = false;
+		lsi->gameModel->logSink = nullptr;
 		return ret;
 	}
 }

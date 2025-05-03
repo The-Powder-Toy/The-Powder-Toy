@@ -8,6 +8,7 @@
 #include <deque>
 #include <memory>
 #include <optional>
+#include <functional>
 #include <array>
 
 constexpr auto NUM_TOOLINDICES = 4;
@@ -276,7 +277,10 @@ public:
 	void SetClipboard(std::unique_ptr<GameSave> save);
 	void SetPlaceSave(std::unique_ptr<GameSave> save);
 	void TransformPlaceSave(Mat2<int> transform, Vec2<int> nudge);
+
+	std::function<void (String)> logSink;
 	void Log(String message, bool printToFile);
+
 	std::deque<String> GetLog();
 	const GameSave *GetClipboard() const;
 	const GameSave *GetPlaceSave() const;

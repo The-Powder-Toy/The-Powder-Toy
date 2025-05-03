@@ -138,17 +138,7 @@ static int flog(lua_State *L)
 		}
 		lua_pop(L, 2);
 	}
-	if (lsi->currentCommand)
-	{
-		auto lastError = lsi->GetLastError();
-		if (lsi->luacon_hasLastError)
-			lastError += "; ";
-		lastError += text;
-		lsi->SetLastError(lastError);
-		lsi->luacon_hasLastError = true;
-	}
-	else
-		lsi->Log(CommandInterface::LogNotice, text);
+	lsi->Log(CommandInterface::LogNotice, text);
 	return 0;
 }
 

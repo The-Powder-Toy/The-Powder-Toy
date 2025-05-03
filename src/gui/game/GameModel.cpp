@@ -1159,10 +1159,17 @@ const GameSave *GameModel::GetTransformedPlaceSave() const
 
 void GameModel::Log(String message, bool printToFile)
 {
-	consoleLog.push_front(message);
-	if(consoleLog.size()>100)
-		consoleLog.pop_back();
-	notifyLogChanged(message);
+	if (logSink)
+	{
+		logSink(message);
+	}
+	else
+	{
+		consoleLog.push_front(message);
+		if(consoleLog.size()>100)
+			consoleLog.pop_back();
+		notifyLogChanged(message);
+	}
 	if (printToFile)
 		std::cout << format::CleanString(message, false, true, false).ToUtf8() << std::endl;
 }
