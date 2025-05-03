@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <list>
 
 namespace http
 {
@@ -105,7 +106,13 @@ public:
 	int textInputRefcount = 0;
 	long unsigned int luaExecutionStart = 0;
 
-	std::vector<LuaSmartRef> gameControllerEventHandlers; // must come after luaState
+private:
+	std::vector<std::list<LuaSmartRef>> gameControllerEventHandlers; // must come after luaState
+	std::list<LuaSmartRef>::iterator *currentEventHandlerIt = nullptr;
+
+public:
+	void AddEventHandler(int eventType, int stackIndex);
+	void RemoveEventHandler(int eventType, int stackIndex);
 	std::unique_ptr<http::Request> scriptManagerDownload;
 	int luaHookTimeout;
 
@@ -121,6 +128,8 @@ public:
 	int Autorun();
 
 	void AssertInterfaceEvent();
+
+	friend class CommandInterface;
 };
 
 void tpt_lua_pushByteString(lua_State *L, const ByteString &str);

@@ -170,12 +170,6 @@ LuaScriptInterface::LuaScriptInterface(GameController *newGameController, GameMo
 		lua_setfield(L, -2, "randomseed");
 		lua_pop(L, 1);
 	}
-	for (auto &ref : gameControllerEventHandlers)
-	{
-		lua_newtable(L);
-		ref.Assign(L, -1);
-		lua_pop(L, 1);
-	}
 	auto compatSpan = compat_lua.AsCharSpan();
 	if (luaL_loadbuffer(L, compatSpan.data(), compatSpan.size(), "@[built-in compat.lua]") || tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
 	{
@@ -411,62 +405,91 @@ bool CommandInterface::HandleEvent(const GameControllerEvent &event)
 {
 	auto *lsi = static_cast<LuaScriptInterface *>(this);
 	auto *L = lsi->L;
+	assert(!lsi->currentEventHandlerIt);
+	auto eventType = int(event.index());
+	auto &list = lsi->gameControllerEventHandlers[eventType];
+	auto it = list.begin();
+	auto end = list.end();
+	lsi->currentEventHandlerIt = &it;
 	bool cont = true;
-	lsi->gameControllerEventHandlers[event.index()].Push(L);
-	int len = lua_objlen(L, -1);
-	for (int i = 1; i <= len && cont; i++)
+	while (it != end)
 	{
-		lua_rawgeti(L, -1, i);
+		it->Push(L);
+		++it;
+		lua_pushvalue(L, 1);
 		int numArgs = pushGameControllerEvent(L, event);
 		int callret = tpt_lua_pcall(L, numArgs, 1, 0, std::visit([](auto &event) {
 			return event.traits;
 		}, event));
 		if (callret)
 		{
-			if (LuaGetError() == "Error: Script not responding")
-			{
-				for (int j = i; j <= len - 1; j++)
-				{
-					lua_rawgeti(L, -2, j + 1);
-					lua_rawseti(L, -3, j);
-				}
-				lua_pushnil(L);
-				lua_rawseti(L, -3, len);
-				i--;
-			}
-			Log(CommandInterface::LogError, LuaGetError());
+			auto err = LuaGetError();
 			lua_pop(L, 1);
+			Log(CommandInterface::LogError, err);
+			if (err == "Error: Script not responding")
+			{
+				lsi->RemoveEventHandler(eventType, -1);
+			}
 		}
 		else
 		{
 			if (!lua_isnoneornil(L, -1))
+			{
 				cont = lua_toboolean(L, -1);
+			}
 			lua_pop(L, 1);
 		}
-		len = lua_objlen(L, -1);
+		lua_pop(L, 1);
 	}
-	lua_pop(L, 1);
+	lsi->currentEventHandlerIt = nullptr;
 	return cont;
 }
 
+void LuaScriptInterface::AddEventHandler(int eventType, int stackIndex)
+{
+	gameControllerEventHandlers[eventType].emplace_back().Assign(L, stackIndex);
+}
+
+void LuaScriptInterface::RemoveEventHandler(int eventType, int stackIndex)
+{
+	auto &list = gameControllerEventHandlers[eventType];
+	auto it = list.begin();
+	auto end = list.end();
+	lua_pushvalue(L, stackIndex);
+	while (it != end)
+	{
+		it->Push(L);
+		auto equal = lua_equal(L, -1, -2);
+		lua_pop(L, 1);
+		if (equal)
+		{
+			if (currentEventHandlerIt && *currentEventHandlerIt == it)
+			{
+				++*currentEventHandlerIt;
+			}
+			list.erase(it);
+			break;
+		}
+		++it;
+	}
+	lua_pop(L, 1);
+}
+
 template<size_t Index>
-std::enable_if_t<Index != std::variant_size_v<GameControllerEvent>, bool> HaveSimGraphicsEventHandlersHelper(lua_State *L, std::vector<LuaSmartRef> &gameControllerEventHandlers)
+std::enable_if_t<Index != std::variant_size_v<GameControllerEvent>, bool> HaveSimGraphicsEventHandlersHelper(const auto &gameControllerEventHandlers)
 {
 	if (std::variant_alternative_t<Index, GameControllerEvent>::traits & eventTraitHindersSrt)
 	{
-		gameControllerEventHandlers[Index].Push(L);
-		auto have = lua_objlen(L, -1) > 0;
-		lua_pop(L, 1);
-		if (have)
+		if (!gameControllerEventHandlers[Index].empty())
 		{
 			return true;
 		}
 	}
-	return HaveSimGraphicsEventHandlersHelper<Index + 1>(L, gameControllerEventHandlers);
+	return HaveSimGraphicsEventHandlersHelper<Index + 1>(gameControllerEventHandlers);
 }
 
 template<size_t Index>
-std::enable_if_t<Index == std::variant_size_v<GameControllerEvent>, bool> HaveSimGraphicsEventHandlersHelper(lua_State *L, std::vector<LuaSmartRef> &gameControllerEventHandlers)
+std::enable_if_t<Index == std::variant_size_v<GameControllerEvent>, bool> HaveSimGraphicsEventHandlersHelper(const auto &gameControllerEventHandlers)
 {
 	return false;
 }
@@ -482,7 +505,7 @@ bool CommandInterface::HaveSimGraphicsEventHandlers()
 			return true;
 		}
 	}
-	return HaveSimGraphicsEventHandlersHelper<0>(lsi->L, lsi->gameControllerEventHandlers);
+	return HaveSimGraphicsEventHandlersHelper<0>(lsi->gameControllerEventHandlers);
 }
 
 void CommandInterface::OnTick()
