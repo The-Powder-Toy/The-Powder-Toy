@@ -380,7 +380,11 @@ int Main(int argc, char *argv[])
 	}
 
 	auto redirectStd = prefs.Get("RedirectStd", false);
-	if (true_arg(arguments["redirect"]) || redirectStd)
+	if (true_arg(arguments["console"]))
+	{
+		Platform::AllocConsole();
+	}
+	else if (true_arg(arguments["redirect"]) || redirectStd)
 	{
 		FILE *new_stdout = freopen("stdout.log", "w", stdout);
 		FILE *new_stderr = freopen("stderr.log", "w", stderr);

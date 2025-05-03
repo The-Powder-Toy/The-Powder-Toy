@@ -74,6 +74,7 @@ namespace Platform
 	std::optional<std::vector<String>> StackTrace();
 
 	void MarkPresentable();
+	void AllocConsole();
 }
 
 extern "C" int Main(int argc, char *argv[]);

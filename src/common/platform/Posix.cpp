@@ -150,4 +150,8 @@ std::vector<ByteString> DirectoryList(ByteString directory)
 	closedir(directoryHandle);
 	return directoryList;
 }
+
+void AllocConsole()
+{
+}
 }

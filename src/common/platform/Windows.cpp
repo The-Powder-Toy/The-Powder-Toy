@@ -10,6 +10,7 @@
 #include <windows.h>
 #include <crtdbg.h>
 #include <memory>
+#include <cstdlib>
 
 namespace Platform
 {
@@ -408,5 +409,15 @@ void SetupCrt()
 	{
 		std::cerr << "failed to set codepage to utf-8, expect breakage" << std::endl;
 	}
+}
+
+void AllocConsole()
+{
+	if (!::AllocConsole())
+	{
+		return;
+	}
+	freopen("CONOUT$", "w", stdout);
+	freopen("CONOUT$", "w", stderr);
 }
 }

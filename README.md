@@ -124,5 +124,6 @@ Command Line
 | `disable-network`     | Disables internet connections                    |                                             |
 | `disable-bluescreen`  | Disable bluescreen handler                       |                                             |
 | `redirect`            | Redirects output to stdout.txt / stderr.txt      |                                             |
+| `console`             | Redirects output to a new console on Windows     |                                             |
 | `cafile:CAFILE`       | Set certificate bundle path                      | `cafile:/etc/ssl/certs/ca-certificates.crt` |
 | `capath:CAPATH`       | Set certificate directory path                   | `capath:/etc/ssl/certs`                     |
