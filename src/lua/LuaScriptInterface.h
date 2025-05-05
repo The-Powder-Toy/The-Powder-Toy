@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <list>
+#include <deque>
 
 namespace http
 {
@@ -108,7 +109,7 @@ public:
 
 private:
 	std::vector<std::list<LuaSmartRef>> gameControllerEventHandlers; // must come after luaState
-	std::list<LuaSmartRef>::iterator *currentEventHandlerIt = nullptr;
+	std::deque<std::list<LuaSmartRef>::iterator *> currentEventHandlerIts;
 
 public:
 	void AddEventHandler(int eventType, int stackIndex);

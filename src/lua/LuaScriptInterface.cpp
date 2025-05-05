@@ -405,12 +405,11 @@ bool CommandInterface::HandleEvent(const GameControllerEvent &event)
 {
 	auto *lsi = static_cast<LuaScriptInterface *>(this);
 	auto *L = lsi->L;
-	assert(!lsi->currentEventHandlerIt);
 	auto eventType = int(event.index());
 	auto &list = lsi->gameControllerEventHandlers[eventType];
 	auto it = list.begin();
 	auto end = list.end();
-	lsi->currentEventHandlerIt = &it;
+	lsi->currentEventHandlerIts.push_back(&it);
 	bool cont = true;
 	while (it != end)
 	{
@@ -441,7 +440,8 @@ bool CommandInterface::HandleEvent(const GameControllerEvent &event)
 		}
 		lua_pop(L, 1);
 	}
-	lsi->currentEventHandlerIt = nullptr;
+	assert(lsi->currentEventHandlerIts.back() == &it);
+	lsi->currentEventHandlerIts.pop_back();
 	return cont;
 }
 
@@ -463,9 +463,12 @@ void LuaScriptInterface::RemoveEventHandler(int eventType, int stackIndex)
 		lua_pop(L, 1);
 		if (equal)
 		{
-			if (currentEventHandlerIt && *currentEventHandlerIt == it)
+			for (auto currentEventHandlerIt : currentEventHandlerIts)
 			{
-				++*currentEventHandlerIt;
+				if (*currentEventHandlerIt == it)
+				{
+					++*currentEventHandlerIt;
+				}
 			}
 			list.erase(it);
 			break;
