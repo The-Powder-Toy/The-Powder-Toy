@@ -416,7 +416,7 @@ bool CommandInterface::HandleEvent(const GameControllerEvent &event)
 	{
 		it->Push(L);
 		++it;
-		lua_pushvalue(L, 1);
+		lua_pushvalue(L, -1);
 		int numArgs = pushGameControllerEvent(L, event);
 		int callret = tpt_lua_pcall(L, numArgs, 1, 0, std::visit([](auto &event) {
 			return event.traits;
