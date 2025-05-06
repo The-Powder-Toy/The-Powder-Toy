@@ -2,6 +2,62 @@
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
 
+void NonGraphicsContext::Die()
+{
+	luaL_error(GetLSI()->L, "this functionality is restricted to graphics events");
+}
+
+void NonGraphicsContext::BlendPixel(Vec2<int>, RGBA)
+{
+	Die();
+}
+
+Vec2<int> NonGraphicsContext::BlendText(Vec2<int>, const String &, RGBA)
+{
+	Die();
+	return { 0, 0 };
+}
+
+void NonGraphicsContext::DrawLine(Vec2<int>, Vec2<int>, RGB)
+{
+	Die();
+}
+
+void NonGraphicsContext::BlendLine(Vec2<int>, Vec2<int>, RGBA)
+{
+	Die();
+}
+
+void NonGraphicsContext::DrawRect(Rect<int>, RGB)
+{
+	Die();
+}
+
+void NonGraphicsContext::BlendRect(Rect<int>, RGBA)
+{
+	Die();
+}
+
+void NonGraphicsContext::DrawFilledRect(Rect<int>, RGB)
+{
+	Die();
+}
+
+void NonGraphicsContext::BlendFilledRect(Rect<int>, RGBA)
+{
+	Die();
+}
+
+void NonGraphicsContext::BlendEllipse(Vec2<int>, Vec2<int>, RGBA)
+{
+	Die();
+}
+
+void NonGraphicsContext::BlendFilledEllipse(Vec2<int>, Vec2<int>, RGBA)
+{
+	Die();
+}
+
 static int32_t int32Truncate(double n)
 {
 	if (n >= 0x1p31)
@@ -254,6 +310,10 @@ static int setClipRect(lua_State *L)
 	if (lsi->eventTraits & eventTraitSimGraphics)
 	{
 		return luaL_error(L, "simulation graphics do not support clip rects");
+	}
+	if (!(lsi->eventTraits & eventTraitInterfaceGraphics))
+	{
+		NonGraphicsContext::Die();
 	}
 	int x = luaL_optinteger(L, 1, 0);
 	int y = luaL_optinteger(L, 2, 0);

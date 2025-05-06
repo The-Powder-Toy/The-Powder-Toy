@@ -3,6 +3,7 @@
 #include "LuaSmartRef.h"
 #include "CommandInterface.h"
 #include "gui/game/GameControllerEvents.h"
+#include "graphics/Pixel.h"
 #include "simulation/StructProperty.h"
 #include "simulation/ElementDefs.h"
 #include <cstdint>
@@ -69,6 +70,22 @@ struct CustomTool
 	LuaSmartRef select;
 };
 
+struct NonGraphicsContext
+{
+	static void Die();
+
+	void BlendPixel(Vec2<int>, RGBA);
+	Vec2<int> BlendText(Vec2<int>, const String &, RGBA);
+	void DrawLine(Vec2<int>, Vec2<int>, RGB);
+	void BlendLine(Vec2<int>, Vec2<int>, RGBA);
+	void DrawRect(Rect<int>, RGB);
+	void BlendRect(Rect<int>, RGBA);
+	void DrawFilledRect(Rect<int>, RGB);
+	void BlendFilledRect(Rect<int>, RGBA);
+	void BlendEllipse(Vec2<int>, Vec2<int>, RGBA);
+	void BlendFilledEllipse(Vec2<int>, Vec2<int>, RGBA);
+};
+
 class LuaScriptInterface : public CommandInterface
 {
 	LuaStatePtr luaState;
@@ -84,7 +101,9 @@ public:
 	Simulation *sim;
 	Graphics *g;
 
-	std::variant<Graphics *, Renderer *> GetGraphics()
+	NonGraphicsContext ngc;
+
+	std::variant<Graphics *, Renderer *, NonGraphicsContext *> GetGraphics()
 	{
 		if (eventTraits & eventTraitSimGraphics)
 		{
@@ -93,7 +112,11 @@ public:
 			// installed for eventTraitSimGraphics and *SimDraw events.
 			return ren;
 		}
-		return g;
+		if (eventTraits & eventTraitInterfaceGraphics)
+		{
+			return g;
+		}
+		return &ngc;
 	}
 
 	std::vector<CustomElement> customElements; // must come after luaState

@@ -232,7 +232,7 @@ void LuaWindow::triggerOnTick()
 	{
 		lua_rawgeti(L, LUA_REGISTRYINDEX, onTickFunction);
 		lua_pushnumber(L, 1); // this used to be dt, which was measured in 60ths of a second; this hardcodes 60fps
-		if(tpt_lua_pcall(L, 1, 0, 0, eventTraitInterface))
+		if(tpt_lua_pcall(L, 1, 0, 0, eventTraitInterface | eventTraitInterfaceGraphics))
 		{
 			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}
@@ -244,7 +244,7 @@ void LuaWindow::triggerOnDraw()
 	if(onDrawFunction)
 	{
 		lua_rawgeti(L, LUA_REGISTRYINDEX, onDrawFunction);
-		if(tpt_lua_pcall(L, 0, 0, 0, eventTraitInterface))
+		if(tpt_lua_pcall(L, 0, 0, 0, eventTraitInterface | eventTraitInterfaceGraphics))
 		{
 			ci->Log(CommandInterface::LogError, tpt_lua_toString(L, -1));
 		}

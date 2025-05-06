@@ -5,11 +5,12 @@
 
 enum EventTraits : uint32_t
 {
-	eventTraitNone        = UINT32_C(0x00000000),
-	eventTraitSimRng      = UINT32_C(0x00000001),
-	eventTraitSimGraphics = UINT32_C(0x00000002),
-	eventTraitHindersSrt  = UINT32_C(0x00000004),
-	eventTraitInterface   = UINT32_C(0x00000008),
+	eventTraitNone              = UINT32_C(0x00000000),
+	eventTraitSimRng            = UINT32_C(0x00000001),
+	eventTraitSimGraphics       = UINT32_C(0x00000002),
+	eventTraitHindersSrt        = UINT32_C(0x00000004),
+	eventTraitInterface         = UINT32_C(0x00000008),
+	eventTraitInterfaceGraphics = UINT32_C(0x00000010),
 };
 constexpr EventTraits operator |(EventTraits lhs, EventTraits rhs)
 {
@@ -85,7 +86,7 @@ struct MouseWheelEvent
 
 struct TickEvent
 {
-	static constexpr EventTraits traits = eventTraitInterface;
+	static constexpr EventTraits traits = eventTraitInterface | eventTraitInterfaceGraphics;
 };
 
 struct BlurEvent
