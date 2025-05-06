@@ -132,6 +132,7 @@ static int LuaBlockMapImpl(lua_State *L, ItemType minValue, ItemType maxValue, A
 		}
 		return 1;
 	}
+	GetLSI()->AssertMutableSimEvent();
 	auto size = Vec2{ 1, 1 };
 	auto valuePos = 3;
 	if (argc > 3)
@@ -311,6 +312,7 @@ static int partNeighbors(lua_State *L)
 static int partChangeType(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertMutableSimEvent();
 	int partIndex = lua_tointeger(L, 1);
 	if(partIndex < 0 || partIndex >= NPART || !lsi->sim->parts[partIndex].type)
 		return 0;
@@ -321,6 +323,7 @@ static int partChangeType(lua_State *L)
 static int partCreate(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertMutableSimEvent();
 	int newID = lua_tointeger(L, 1);
 	if (newID >= NPART || newID < -3)
 	{
@@ -393,6 +396,7 @@ static int partPosition(lua_State *L)
 
 	if (argCount == 3)
 	{
+		lsi->AssertMutableSimEvent();
 		float x = sim->parts[particleID].x;
 		float y = sim->parts[particleID].y;
 		sim->move(particleID, (int)(x + 0.5f), (int)(y + 0.5f), lua_tonumber(L, 2), lua_tonumber(L, 3));
@@ -418,13 +422,11 @@ static int partProperty(lua_State *L)
 	{
 		if (argCount == 3)
 		{
-			lua_pushnil(L);
-			return 1;
-		}
-		else
-		{
+			lsi->AssertMutableSimEvent();
 			return 0;
 		}
+		lua_pushnil(L);
+		return 1;
 	}
 
 	auto &properties = Particle::GetProperties();
@@ -464,19 +466,18 @@ static int partProperty(lua_State *L)
 
 	if (argCount == 3)
 	{
+		lsi->AssertMutableSimEvent();
 		LuaSetParticleProperty(L, particleID, *prop, propertyAddress, 3);
 		return 0;
 	}
-	else
-	{
-		LuaGetProperty(L, *prop, propertyAddress);
-		return 1;
-	}
+	LuaGetProperty(L, *prop, propertyAddress);
+	return 1;
 }
 
 static int partKill(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertMutableSimEvent();
 	if(lua_gettop(L)==2)
 		lsi->sim->delete_part(lua_tointeger(L, 1), lua_tointeger(L, 2));
 	else

@@ -152,6 +152,7 @@ public:
 	int Autorun();
 
 	void AssertInterfaceEvent();
+	void AssertMutableSimEvent();
 
 	friend class CommandInterface;
 };

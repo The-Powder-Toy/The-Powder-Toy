@@ -170,7 +170,7 @@ static int luaGraphicsWrapper(GRAPHICS_FUNC_ARGS)
 		lua_pushinteger(lsi->L, *colr);
 		lua_pushinteger(lsi->L, *colg);
 		lua_pushinteger(lsi->L, *colb);
-		callret = tpt_lua_pcall(lsi->L, 4, 10, 0, eventTraitSimGraphics);
+		callret = tpt_lua_pcall(lsi->L, 4, 10, 0, eventTraitSimGraphics | eventTraitConstSim);
 		if (callret)
 		{
 			lsi->Log(CommandInterface::LogError, LuaGetError());
@@ -252,7 +252,7 @@ static bool luaCreateAllowedWrapper(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
 		lua_pushinteger(lsi->L, x);
 		lua_pushinteger(lsi->L, y);
 		lua_pushinteger(lsi->L, t);
-		if (tpt_lua_pcall(lsi->L, 4, 1, 0, eventTraitSimRng))
+		if (tpt_lua_pcall(lsi->L, 4, 1, 0, eventTraitSimRng | eventTraitConstSim))
 		{
 			lsi->Log(CommandInterface::LogError, "In create allowed: " + LuaGetError());
 			lua_pop(lsi->L, 1);

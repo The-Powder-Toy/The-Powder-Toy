@@ -11,6 +11,7 @@ enum EventTraits : uint32_t
 	eventTraitHindersSrt        = UINT32_C(0x00000004),
 	eventTraitInterface         = UINT32_C(0x00000008),
 	eventTraitInterfaceGraphics = UINT32_C(0x00000010),
+	eventTraitConstSim          = UINT32_C(0x00000020),
 };
 constexpr EventTraits operator |(EventTraits lhs, EventTraits rhs)
 {
@@ -111,12 +112,12 @@ struct AfterSimEvent
 
 struct BeforeSimDrawEvent
 {
-	static constexpr EventTraits traits = eventTraitSimGraphics | eventTraitHindersSrt | eventTraitInterface;
+	static constexpr EventTraits traits = eventTraitSimGraphics | eventTraitHindersSrt | eventTraitInterface | eventTraitConstSim;
 };
 
 struct AfterSimDrawEvent
 {
-	static constexpr EventTraits traits = eventTraitSimGraphics | eventTraitInterface;
+	static constexpr EventTraits traits = eventTraitSimGraphics | eventTraitInterface | eventTraitConstSim;
 };
 
 using GameControllerEvent = std::variant<
