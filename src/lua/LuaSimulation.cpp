@@ -312,7 +312,7 @@ static int partNeighbors(lua_State *L)
 static int partChangeType(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertMutableSimEvent();
+	lsi->AssertMonopartAccessEvent(-1);
 	int partIndex = lua_tointeger(L, 1);
 	if(partIndex < 0 || partIndex >= NPART || !lsi->sim->parts[partIndex].type)
 		return 0;
@@ -323,7 +323,7 @@ static int partChangeType(lua_State *L)
 static int partCreate(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertMutableSimEvent();
+	lsi->AssertMonopartAccessEvent(-1);
 	int newID = lua_tointeger(L, 1);
 	if (newID >= NPART || newID < -3)
 	{
@@ -386,6 +386,7 @@ static int partPosition(lua_State *L)
 	{
 		if(argCount == 1)
 		{
+			lsi->AssertMonopartAccessEvent(-1);
 			lua_pushnil(L);
 			lua_pushnil(L);
 			return 2;
@@ -396,7 +397,7 @@ static int partPosition(lua_State *L)
 
 	if (argCount == 3)
 	{
-		lsi->AssertMutableSimEvent();
+		lsi->AssertMonopartAccessEvent(-1);
 		float x = sim->parts[particleID].x;
 		float y = sim->parts[particleID].y;
 		sim->move(particleID, (int)(x + 0.5f), (int)(y + 0.5f), lua_tonumber(L, 2), lua_tonumber(L, 3));
@@ -422,7 +423,7 @@ static int partProperty(lua_State *L)
 	{
 		if (argCount == 3)
 		{
-			lsi->AssertMutableSimEvent();
+			lsi->AssertMonopartAccessEvent(-1);
 			return 0;
 		}
 		lua_pushnil(L);
@@ -466,7 +467,6 @@ static int partProperty(lua_State *L)
 
 	if (argCount == 3)
 	{
-		lsi->AssertMutableSimEvent();
 		LuaSetParticleProperty(L, particleID, *prop, propertyAddress, 3);
 		return 0;
 	}
@@ -477,7 +477,7 @@ static int partProperty(lua_State *L)
 static int partKill(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertMutableSimEvent();
+	lsi->AssertMonopartAccessEvent(-1);
 	if(lua_gettop(L)==2)
 		lsi->sim->delete_part(lua_tointeger(L, 1), lua_tointeger(L, 2));
 	else

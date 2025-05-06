@@ -129,6 +129,7 @@ public:
 
 	int textInputRefcount = 0;
 	long unsigned int luaExecutionStart = 0;
+	int monopartAccessPartID = -1;
 
 private:
 	std::vector<std::list<LuaSmartRef>> gameControllerEventHandlers; // must come after luaState
@@ -154,6 +155,7 @@ public:
 	void AssertInterfaceEvent();
 	void AssertMutableSimEvent();
 	void AssertMutableToolsEvent();
+	void AssertMonopartAccessEvent(int partID);
 
 	friend class CommandInterface;
 };

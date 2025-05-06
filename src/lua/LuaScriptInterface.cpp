@@ -319,10 +319,12 @@ void LuaSetParticleProperty(lua_State *L, int particleID, StructProperty propert
 	auto *sim = lsi->sim;
 	if (property.Name == "type")
 	{
+		lsi->AssertMonopartAccessEvent(-1);
 		sim->part_change_type(particleID, int(sim->parts[particleID].x+0.5f), int(sim->parts[particleID].y+0.5f), luaL_checkinteger(L, 3));
 	}
 	else if (property.Name == "x" || property.Name == "y")
 	{
+		lsi->AssertMonopartAccessEvent(-1);
 		float val = luaL_checknumber(L, 3);
 		float x = sim->parts[particleID].x;
 		float y = sim->parts[particleID].y;
@@ -332,6 +334,7 @@ void LuaSetParticleProperty(lua_State *L, int particleID, StructProperty propert
 	}
 	else
 	{
+		lsi->AssertMonopartAccessEvent(particleID);
 		LuaSetProperty(L, property, propertyAddress, 3);
 	}
 }
@@ -915,5 +918,14 @@ void LuaScriptInterface::AssertMutableToolsEvent()
 	if (eventTraits & eventTraitConstTools)
 	{
 		luaL_error(L, "this functionality is restricted to mutable tool events");
+	}
+}
+
+void LuaScriptInterface::AssertMonopartAccessEvent(int partID)
+{
+	AssertMutableSimEvent();
+	if ((eventTraits & eventTraitMonopartAccess) && monopartAccessPartID != partID)
+	{
+		luaL_error(L, "particle management is restricted to ID %i", monopartAccessPartID);
 	}
 }

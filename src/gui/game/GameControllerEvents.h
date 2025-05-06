@@ -13,6 +13,7 @@ enum EventTraits : uint32_t
 	eventTraitInterfaceGraphics = UINT32_C(0x00000010),
 	eventTraitConstSim          = UINT32_C(0x00000020),
 	eventTraitConstTools        = UINT32_C(0x00000040),
+	eventTraitMonopartAccess    = UINT32_C(0x00000080),
 };
 constexpr EventTraits operator |(EventTraits lhs, EventTraits rhs)
 {

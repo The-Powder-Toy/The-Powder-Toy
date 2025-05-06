@@ -225,11 +225,13 @@ static void luaCreateWrapper(ELEMENT_CREATE_FUNC_ARGS)
 		lua_pushinteger(lsi->L, y);
 		lua_pushinteger(lsi->L, t);
 		lua_pushinteger(lsi->L, v);
-		if (tpt_lua_pcall(lsi->L, 5, 0, 0, eventTraitSimRng))
+		lsi->monopartAccessPartID = i;
+		if (tpt_lua_pcall(lsi->L, 5, 0, 0, eventTraitSimRng | eventTraitMonopartAccess))
 		{
 			lsi->Log(CommandInterface::LogError, "In create func: " + LuaGetError());
 			lua_pop(lsi->L, 1);
 		}
+		lsi->monopartAccessPartID = -1;
 	}
 }
 
@@ -283,11 +285,13 @@ static void luaChangeTypeWrapper(ELEMENT_CHANGETYPE_FUNC_ARGS)
 		lua_pushinteger(lsi->L, y);
 		lua_pushinteger(lsi->L, from);
 		lua_pushinteger(lsi->L, to);
-		if (tpt_lua_pcall(lsi->L, 5, 0, 0, eventTraitSimRng))
+		lsi->monopartAccessPartID = i;
+		if (tpt_lua_pcall(lsi->L, 5, 0, 0, eventTraitSimRng | eventTraitMonopartAccess))
 		{
 			lsi->Log(CommandInterface::LogError, "In change type: " + LuaGetError());
 			lua_pop(lsi->L, 1);
 		}
+		lsi->monopartAccessPartID = -1;
 	}
 }
 
