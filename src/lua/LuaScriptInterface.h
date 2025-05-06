@@ -153,6 +153,7 @@ public:
 
 	void AssertInterfaceEvent();
 	void AssertMutableSimEvent();
+	void AssertMutableToolsEvent();
 
 	friend class CommandInterface;
 };

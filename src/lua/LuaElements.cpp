@@ -324,7 +324,7 @@ static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 static int allocate(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertMutableToolsEvent();
 	luaL_checktype(L, 1, LUA_TSTRING);
 	luaL_checktype(L, 2, LUA_TSTRING);
 	auto group = tpt_lua_toByteString(L, 1).ToUpper();
@@ -422,7 +422,7 @@ static int element(lua_State *L)
 
 	if (lua_gettop(L) > 1)
 	{
-		lsi->AssertInterfaceEvent();
+		lsi->AssertMutableToolsEvent();
 		{
 			auto &sd = SimulationData::Ref();
 			std::unique_lock lk(sd.elementGraphicsMx);
@@ -573,7 +573,7 @@ static int property(lua_State *L)
 
 	if (lua_gettop(L) > 2)
 	{
-		lsi->AssertInterfaceEvent();
+		lsi->AssertMutableToolsEvent();
 		auto &sd = SimulationData::Ref();
 		std::unique_lock lk(sd.elementGraphicsMx);
 		auto &elements = sd.elements;
@@ -727,7 +727,7 @@ static int property(lua_State *L)
 static int ffree(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertMutableToolsEvent();
 
 	int id = luaL_checkinteger(L, 1);
 	ByteString identifier;
@@ -773,7 +773,7 @@ static int exists(lua_State *L)
 static int loadDefault(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertMutableToolsEvent();
 	auto &sd = SimulationData::Ref();
 	std::unique_lock lk(sd.elementGraphicsMx);
 	auto &elements = sd.elements;

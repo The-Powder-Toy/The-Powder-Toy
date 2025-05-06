@@ -256,6 +256,7 @@ static int activeTool(lua_State *L)
 		tpt_lua_pushByteString(L, lsi->gameModel->GetActiveTool(index)->Identifier);
 		return 1;
 	}
+	lsi->AssertMutableToolsEvent();
 	auto identifier = tpt_lua_checkByteString(L, 2);
 	auto *tool = lsi->gameModel->GetToolFromIdentifier(identifier);
 	if (!tool)

@@ -900,10 +900,20 @@ void LuaScriptInterface::AssertInterfaceEvent()
 		luaL_error(L, "this functionality is restricted to interface events");
 	}
 }
+
 void LuaScriptInterface::AssertMutableSimEvent()
 {
 	if (eventTraits & eventTraitConstSim)
 	{
 		luaL_error(L, "this functionality is restricted to mutable simulation events");
+	}
+}
+
+void LuaScriptInterface::AssertMutableToolsEvent()
+{
+	AssertInterfaceEvent();
+	if (eventTraits & eventTraitConstTools)
+	{
+		luaL_error(L, "this functionality is restricted to mutable tool events");
 	}
 }
