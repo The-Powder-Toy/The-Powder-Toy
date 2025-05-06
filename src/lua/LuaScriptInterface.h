@@ -152,10 +152,39 @@ public:
 	// luaL_dostring semantics: 0: success; 1: failure, string on top of stack describes the failure
 	int Autorun();
 
-	void AssertInterfaceEvent();
-	void AssertMutableSimEvent();
-	void AssertMutableToolsEvent();
-	void AssertMonopartAccessEvent(int partID);
+	void AssertInterfaceEvent()
+	{
+		if (!(eventTraits & eventTraitInterface))
+		{
+			luaL_error(L, "this functionality is restricted to interface events");
+		}
+	}
+
+	void AssertMutableSimEvent()
+	{
+		if (eventTraits & eventTraitConstSim)
+		{
+			luaL_error(L, "this functionality is restricted to mutable simulation events");
+		}
+	}
+
+	void AssertMutableToolsEvent()
+	{
+		AssertInterfaceEvent();
+		if (eventTraits & eventTraitConstTools)
+		{
+			luaL_error(L, "this functionality is restricted to mutable tool events");
+		}
+	}
+
+	void AssertMonopartAccessEvent(int partID)
+	{
+		AssertMutableSimEvent();
+		if ((eventTraits & eventTraitMonopartAccess) && monopartAccessPartID != partID)
+		{
+			luaL_error(L, "particle management is restricted to ID %i", monopartAccessPartID);
+		}
+	}
 
 	friend class CommandInterface;
 };

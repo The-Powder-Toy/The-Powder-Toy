@@ -895,37 +895,3 @@ void CommandInterfaceDeleter::operator ()(CommandInterface *ptr) const
 {
 	delete static_cast<LuaScriptInterface *>(ptr);
 }
-
-void LuaScriptInterface::AssertInterfaceEvent()
-{
-	if (!(eventTraits & eventTraitInterface))
-	{
-		luaL_error(L, "this functionality is restricted to interface events");
-	}
-}
-
-void LuaScriptInterface::AssertMutableSimEvent()
-{
-	if (eventTraits & eventTraitConstSim)
-	{
-		luaL_error(L, "this functionality is restricted to mutable simulation events");
-	}
-}
-
-void LuaScriptInterface::AssertMutableToolsEvent()
-{
-	AssertInterfaceEvent();
-	if (eventTraits & eventTraitConstTools)
-	{
-		luaL_error(L, "this functionality is restricted to mutable tool events");
-	}
-}
-
-void LuaScriptInterface::AssertMonopartAccessEvent(int partID)
-{
-	AssertMutableSimEvent();
-	if ((eventTraits & eventTraitMonopartAccess) && monopartAccessPartID != partID)
-	{
-		luaL_error(L, "particle management is restricted to ID %i", monopartAccessPartID);
-	}
-}
