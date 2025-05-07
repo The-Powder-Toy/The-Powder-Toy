@@ -20,26 +20,37 @@ match_tptlibsdev = re.fullmatch(r'refs/heads/tptlibsdev-(.*)', ref)
 match_alljobs    = re.fullmatch(r'refs/heads/(.*)-alljobs', ref)
 do_release       = False
 do_priority      = 10
+display_version_major = None
+display_version_minor = None
+build_num             = None
 if event_name == 'pull_request':
 	do_priority = 0
 if match_stable:
+	display_version_major = match_stable.group(1)
+	display_version_minor = match_stable.group(2)
+	build_num = match_stable.group(3)
 	release_type = 'stable'
-	release_name = 'v%s.%s.%s' % (match_stable.group(1), match_stable.group(2), match_stable.group(3))
+	release_name = f'v{display_version_major}.{display_version_minor}.{build_num}'
 	do_release = True
 	do_priority = -5
 elif match_beta:
+	display_version_major = match_beta.group(1)
+	display_version_minor = match_beta.group(2)
+	build_num = match_beta.group(3)
 	release_type = 'beta'
-	release_name = 'v%s.%s.%sb' % (match_beta.group(1), match_beta.group(2), match_beta.group(3))
+	release_name = f'v{display_version_major}.{display_version_minor}.{build_num}b'
 	do_release = True
 	do_priority = -5
 elif match_snapshot:
+	build_num = match_snapshot.group(1)
 	release_type = 'snapshot'
-	release_name = 'snapshot-%s' % match_snapshot.group(1)
+	release_name = f'snapshot-{build_num}'
 	do_release = True
 	do_priority = -5
 elif match_tptlibsdev:
+	branch = match_tptlibsdev.group(1)
 	release_type = 'tptlibsdev'
-	release_name = 'tptlibsdev-%s' % match_tptlibsdev.group(1)
+	release_name = f'tptlibsdev-{branch}'
 	do_priority = 0
 else:
 	release_type = 'dev'
@@ -56,13 +67,28 @@ build_options = {}
 with open('build-prepare/meson-info/intro-buildoptions.json') as f:
 	for option in json.loads(f.read()):
 		build_options[option['name']] = option['value']
+with open('build-prepare/meson-info/intro-projectinfo.json') as f:
+	display_version = json.loads(f.read())['version']
+	display_version_split = display_version.split('-')
+	if len(display_version_split) == 3:
+		display_version = display_version_split[0]
+display_version = display_version.split('.')
 
 if int(build_options['mod_id']) == 0 and os.path.exists('.github/mod_id.txt'):
 	with open('.github/mod_id.txt') as f:
 		build_options['mod_id'] = f.read()
+mod_id = int(build_options['mod_id'])
+
+if mod_id == 0:
+	if display_version_major:
+		assert(display_version_major == display_version[0])
+	if display_version_minor:
+		assert(display_version_minor == display_version[1])
+	if build_num:
+		assert(build_num == display_version[2])
 
 steam_builds = False
-if int(build_options['mod_id']) == 0:
+if mod_id == 0:
 	if release_type == 'stable':
 		steam_builds = True
 	elif release_type == 'beta':
@@ -83,7 +109,7 @@ if int(build_options['mod_id']) == 0:
 		build_options['app_exe'    ] += 'dev'
 		build_options['app_id'     ] += 'dev'
 
-set_output('mod_id'     , build_options['mod_id'     ])
+set_output('mod_id'     , str(mod_id))
 set_output('app_name'   , build_options['app_name'   ])
 set_output('app_comment', build_options['app_comment'])
 set_output('app_exe'    , build_options['app_exe'    ])
