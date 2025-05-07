@@ -203,10 +203,6 @@ subdir('resampler')
 subdir('simulation')
 subdir('tasks')
 
-powder_files += common_files
-render_files += common_files
-font_files += common_files
-
 simulation_elem_defs = []
 foreach elem_name_id : simulation_elem_ids
 	simulation_elem_defs += 'ELEMENT_DEFINE(' + elem_name_id[0] + ', ' + elem_name_id[1].to_string() + ');'

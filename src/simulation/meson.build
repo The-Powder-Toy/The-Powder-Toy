@@ -16,9 +16,6 @@ subdir('elements')
 subdir('simtools')
 subdir('gravity')
 
-powder_files += simulation_files
-render_files += simulation_files
-
 powder_files += files(
 	'AccessPropertyParse.cpp',
 	'Editing.cpp',

@@ -459,9 +459,7 @@ foreach embedded_file : embedded_files
 endforeach
 
 powder_files += powder_external_files
-powder_files += data_files
-render_files += data_files
-font_files += data_files
+common_files += data_files
 
 if host_platform == 'emscripten'
 	project_link_args += [
@@ -487,17 +485,49 @@ endif
 
 clang_tidy_sources = []
 
+sta_libs = {}
+foreach sta_info : [
+	[ 'common', common_files, [
+		host_platform == 'android' ? sdl2_dep : [],
+		png_dep,
+		zlib_dep,
+		bzip2_dep,
+	] ],
+	[ 'gui', gui_files, [
+		sdl2_dep,
+	] ],
+	[ 'simulation', simulation_files, [
+		json_dep,
+	] ],
+]
+	sta_name = sta_info[0]
+	sta_srcs = sta_info[1]
+	sta_deps = sta_info[2]
+	sta_libs += { sta_name: declare_dependency(
+		include_directories: project_inc,
+		link_with: static_library(
+			sta_name,
+			sources: sta_srcs,
+			include_directories: project_inc,
+			cpp_args: project_cpp_args,
+			override_options: target_options,
+			pic: host_platform == 'android',
+			dependencies: sta_deps,
+		),
+		dependencies: sta_deps,
+	) }
+	clang_tidy_sources += sta_srcs
+endforeach
+
 if get_option('build_powder')
 	powder_deps += project_deps + [
 		threads_dep,
-		zlib_dep,
-		png_dep,
-		sdl2_dep,
 		lua_dep,
 		curl_dep,
 		fftw_dep,
-		bzip2_dep,
-		json_dep,
+		sta_libs['common'],
+		sta_libs['gui'],
+		sta_libs['simulation'],
 	]
 	if host_platform == 'android'
 		powder_sha = shared_library(
@@ -530,15 +560,13 @@ if get_option('build_powder')
 endif
 
 if get_option('build_render')
-	if host_platform == 'emscripten'
-		error('render does not target emscripten')
+	if host_platform in [ 'android', 'emscripten' ]
+		error('render does not target @0@'.format(host_platform))
 	endif
 	render_deps = project_deps + [
 		threads_dep,
-		zlib_dep,
-		bzip2_dep,
-		json_dep,
-		png_dep,
+		sta_libs['common'],
+		sta_libs['simulation'],
 	]
 	render_link_args = project_link_args
 	if host_platform == 'linux' and is_static
@@ -559,16 +587,13 @@ if get_option('build_render')
 endif
 
 if get_option('build_font')
-	if host_platform == 'emscripten'
-		error('font does not target emscripten')
+	if host_platform in [ 'android', 'emscripten' ]
+		error('font does not target @0@'.format(host_platform))
 	endif
 	font_deps = project_deps + [
 		threads_dep,
-		zlib_dep,
-		png_dep,
-		sdl2_dep,
-		bzip2_dep,
-		json_dep,
+		sta_libs['common'],
+		sta_libs['gui'],
 	]
 	executable(
 		'font',

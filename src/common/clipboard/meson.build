@@ -33,7 +33,7 @@ if platform_clipboard
 	endif
 	powder_files += files('Dynamic.cpp')
 else
-	powder_files += files('Null.cpp')
+	powder_files += files('Local.cpp')
 endif
 render_files += files('Null.cpp')
 font_files += files('Null.cpp')
