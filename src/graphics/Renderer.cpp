@@ -578,7 +578,7 @@ void Renderer::render_parts()
 						legb = 255;
 					}
 
-					if (matchesFindingElement)
+					if (findingElement && !matchesFindingElement)
 					{
 						colr /= 10;
 						colg /= 10;
