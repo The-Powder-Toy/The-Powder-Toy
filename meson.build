@@ -202,6 +202,7 @@ project_cpp_args = []
 fftw_dep = dependency('fftw3f', static: is_static)
 threads_dep = dependency('threads')
 if host_platform == 'emscripten'
+	app_exe_jssafe = app_exe.underscorify()
 	zlib_dep = []
 	png_dep = []
 	sdl2_dep = []
@@ -215,19 +216,20 @@ if host_platform == 'emscripten'
 		'-s', 'EXPORTED_RUNTIME_METHODS=ccall,cwrap',
 		'-s', 'FS_DEBUG',
 		'-s', 'MODULARIZE',
-		'-s', 'EXPORT_NAME=create_' + app_exe,
+		'-s', 'EXPORT_NAME=create_' + app_exe_jssafe,
 		'-Wl,-u,_emscripten_run_callback_on_thread',
 		'-lidbfs.js',
+		'--source-map-base=./',
 	]
 	emcc_args = [
 		'-s', 'USE_SDL=2',
 		'-s', 'USE_BZIP2=1',
 		'-s', 'USE_LIBPNG',
+		'-s', 'USE_PTHREADS',
 		'-s', 'USE_ZLIB=1',
 		'-s', 'DISABLE_EXCEPTION_CATCHING=0',
+		'-gsource-map',
 	]
-	project_link_args += [ '--source-map-base=./' ]
-	emcc_args += [ '-gsource-map' ]
 	project_link_args += emcc_args
 	project_cpp_args += emcc_args
 else
@@ -542,7 +544,7 @@ if get_option('build_powder')
 		)
 		subdir('android')
 	else
-		executable(
+		powder_exe = executable(
 			app_exe,
 			sources: powder_files,
 			include_directories: project_inc,
@@ -621,5 +623,16 @@ if get_option('clang_tidy')
 			'-warnings-as-errors=*',
 			clang_tidy_sources,
 		],
+	)
+endif
+
+if host_platform == 'emscripten'
+	run_target(
+		'serve-locally',
+		command: [
+			python3_prog,
+			serve_wasm_py,
+		],
+		depends: powder_exe,
 	)
 endif

@@ -115,6 +115,16 @@ elif host_platform == 'linux'
 		output: 'appdata.xml',
 		configuration: conf_data,
 	)
+elif host_platform == 'emscripten'
+	servewasm_conf_data = configuration_data()
+	servewasm_conf_data.set('SERVER', server)
+	servewasm_conf_data.set('APP_EXE', app_exe)
+	servewasm_conf_data.set('APP_EXE_JSSAFE', app_exe_jssafe)
+	serve_wasm_py = configure_file(
+		input: 'serve-wasm.template.py',
+		output: 'serve-wasm.py',
+		configuration: servewasm_conf_data,
+	)
 endif
 
 embedded_files += [
