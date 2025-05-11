@@ -27,6 +27,8 @@ public:
 	void SetAirMode(int airMode);
 	float GetAmbientAirTemperature();
 	void SetAmbientAirTemperature(float ambientAirTemp);
+	float GetVorticityCoeff();
+	void SetVorticityCoeff(float vorticityCoeff);
 	int GetEdgeMode();
 	void SetEdgeMode(int edgeMode);
 	int GetTemperatureScale();

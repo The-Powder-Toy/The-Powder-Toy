@@ -26,6 +26,21 @@ void Air::make_kernel(void) //used for velocity
 	}
 }
 
+
+float Air::vorticity(int y, int x)
+{
+	auto &vx = sim.vx;
+	auto &vy = sim.vy;
+
+	if (x > 1 && x < XCELLS-2 && y > 1 && y < YCELLS-2)
+	{
+		// dvy/dx - dvx/dy
+		return (vy[y][x+1] - vy[y][x-1] - (vx[y+1][x] - vx[y-1][x]))*0.5f;
+	}
+	else
+		return 0.0f;
+}
+
 void Air::Clear()
 {
 	std::fill(&sim.pv[0][0], &sim.pv[0][0]+NCELL, 0.0f);
@@ -373,6 +388,18 @@ void Air::update_air(void)
 					dy += AIR_VADV*tx*ty*vy[j+1][i+1];
 				}
 
+				//Vorticity confinement
+				if (vorticityCoeff > 0.0f && x > 1 && x < XCELLS-2 && y > 1 && y < YCELLS-2)
+				{
+					auto dwx = (vorticity(y, x+1) - vorticity(y, x-1))*0.5f;
+					auto dwy = (vorticity(y+1, x) - vorticity(y-1, x))*0.5f;
+					auto norm = std::sqrt(dwx*dwx + dwy*dwy);
+					auto w = vorticity(y, x);
+
+					dx += vorticityCoeff * dwx / (norm + 0.001f) * w;
+					dy += vorticityCoeff * dwy / (norm + 0.001f) * w;
+				}
+
 				if (bmap[y][x] == WL_FAN)
 				{
 					dx += fvx[y][x];
@@ -470,7 +497,8 @@ void Air::ApproximateBlockAirMaps()
 Air::Air(Simulation & simulation):
 	sim(simulation),
 	airMode(AIR_ON),
-	ambientAirTemp(R_TEMP + 273.15f)
+	ambientAirTemp(R_TEMP + 273.15f),
+	vorticityCoeff(0.0f)
 {
 	//Simulation should do this.
 	make_kernel();

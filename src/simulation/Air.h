@@ -9,6 +9,7 @@ public:
 	Simulation & sim;
 	int airMode;
 	float ambientAirTemp;
+	float vorticityCoeff;
 	float ovx[YCELLS][XCELLS];
 	float ovy[YCELLS][XCELLS];
 	float opv[YCELLS][XCELLS];
@@ -17,6 +18,7 @@ public:
 	unsigned char bmap_blockairh[YCELLS][XCELLS];
 	float kernel[9];
 	void make_kernel(void);
+	float vorticity(int y, int x);
 	void update_airh(void);
 	void update_air(void);
 	void Clear();
