@@ -2,7 +2,7 @@
 #include "SimulationConfig.h"
 
 class Simulation;
-class RenderableSimulation;
+struct RenderableSimulation;
 
 class Air
 {
