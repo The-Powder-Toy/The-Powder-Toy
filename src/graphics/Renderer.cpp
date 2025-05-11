@@ -988,6 +988,14 @@ void Renderer::draw_air()
 					c = RGB(r, g, b);
 				}
 			}
+			else if (displayMode & DISPLAY_AIRW)
+			{
+				auto w = 4*Air::vorticity(*sim, y, x);
+				if (w > 0.0f)
+					c = RGB(clamp_flt(w, 0.0f, 8.0f), 0, 0); //positive vorticity is red
+				else
+					c = RGB(0, 0, clamp_flt(-w, 0.0f, 8.0f)); //negative vorticity is blue
+			}
 			if (findingElement)
 			{
 				c.Red   /= 10;

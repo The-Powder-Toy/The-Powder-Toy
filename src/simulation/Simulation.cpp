@@ -467,6 +467,7 @@ void Simulation::SaveSimOptions(GameSave &gameSave)
 	gameSave.customGravityY = customGravityY;
 	gameSave.airMode = air->airMode;
 	gameSave.ambientAirTemp = air->ambientAirTemp;
+	gameSave.vorticityCoeff = air->vorticityCoeff;
 	gameSave.edgeMode = edgeMode;
 	gameSave.legacyEnable = legacy_enable;
 	gameSave.waterEEnabled = water_equal_test;

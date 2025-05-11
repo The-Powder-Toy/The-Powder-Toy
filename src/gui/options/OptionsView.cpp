@@ -138,6 +138,22 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		scrollPanel->AddChild(label);
 		currentY += 20;
 	}
+	{ // Vorticity coefficient setting
+		vorticityCoeff = new ui::Textbox(ui::Point(Size.X-95, currentY), ui::Point(80, 16));
+		vorticityCoeff->SetActionCallback({ [this] {
+			UpdateVorticityCoeff(vorticityCoeff->GetText(), false);
+		} });
+		vorticityCoeff->SetDefocusCallback({ [this] {
+			UpdateVorticityCoeff(vorticityCoeff->GetText(), true);
+		}});
+		vorticityCoeff->SetLimit(9);
+		scrollPanel->AddChild(vorticityCoeff);
+		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-105, 16), "Vorticity confinement");
+		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+		scrollPanel->AddChild(label);
+		currentY += 20;
+	}
 	class GravityWindow : public ui::Window
 	{
 		void OnTryExit(ExitMethod method) override
@@ -430,6 +446,13 @@ void OptionsView::AmbientAirTempToTextBox(float airTemp)
 	ambientAirTemp->SetText(sb.Build());
 }
 
+void OptionsView::VorticityCoeffToTextBox(float vorticity)
+{
+	StringBuilder sb;
+	sb << Format::Precision(2) << vorticity;
+	vorticityCoeff->SetText(sb.Build());
+}
+
 void OptionsView::UpdateStartupRequestStatus()
 {
 	switch (Client::Ref().GetStartupRequestStatus())
@@ -502,6 +525,47 @@ void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
 	UpdateAmbientAirTempPreview(airTemp, isValid);
 }
 
+void OptionsView::UpdateVorticityCoeff(String vort, bool isDefocus)
+{
+	// Parse vorticity and determine validity
+	float vorticity = 0;
+	bool isValid;
+	try
+	{
+		vorticity = vort.ToNumber<float>();
+		isValid = true;
+	}
+	catch (const std::exception &ex)
+	{
+		isValid = false;
+	}
+
+	// While defocusing, correct out of range vorticity and empty textboxes
+	if (isDefocus)
+	{
+		if (vort.empty())
+		{
+			isValid = true;
+			vorticity = 0.0f;
+		}
+		else if (!isValid)
+			return;
+		else if (vorticity < 0.0f)
+			vorticity = 0.0f;
+		else if (vorticity > 1.0f)
+			vorticity = 1.0f;
+
+		VorticityCoeffToTextBox(vorticity);
+	}
+	// Out of range vorticities are invalid, preview should go away
+	else if (isValid && (vorticity < 0.0f || vorticity > 1.0f))
+		isValid = false;
+
+	// If valid, set vorticity
+	if (isValid)
+		c->SetVorticityCoeff(vorticity);
+}
+
 void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 {
 	temperatureScale->SetOption(sender->GetTemperatureScale()); // has to happen before AmbientAirTempToTextBox is called
@@ -516,6 +580,11 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 		float airTemp = sender->GetAmbientAirTemperature();
 		UpdateAmbientAirTempPreview(airTemp, true);
 		AmbientAirTempToTextBox(airTemp);
+	}
+	// Same for vorticity
+	if (!vorticityCoeff->IsFocused())
+	{
+		VorticityCoeffToTextBox(sender->GetVorticityCoeff());
 	}
 	gravityMode->SetOption(sender->GetGravityMode());
 	customGravityX = sender->GetCustomGravityX();

@@ -119,6 +119,17 @@ void OptionsModel::SetAmbientAirTemperature(float ambientAirTemp)
 	notifySettingsChanged();
 }
 
+float OptionsModel::GetVorticityCoeff()
+{
+	return gModel->GetSimulation()->air->vorticityCoeff;
+}
+void OptionsModel::SetVorticityCoeff(float vorticityCoeff)
+{
+	GlobalPrefs::Ref().Set("Simulation.VorticityCoeff", vorticityCoeff);
+	gModel->SetVorticityCoeff(vorticityCoeff);
+	notifySettingsChanged();
+}
+
 int OptionsModel::GetGravityMode()
 {
 	return sim->gravityMode;

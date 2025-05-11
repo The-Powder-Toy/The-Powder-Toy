@@ -61,6 +61,7 @@ GameModel::GameModel(GameView *newView):
 	colour(255, 0, 0, 255),
 	edgeMode(EDGE_VOID),
 	ambientAirTemp(R_TEMP + 273.15f),
+	vorticityCoeff(0.0f),
 	decoSpace(DECOSPACE_SRGB),
 	view(newView)
 {
@@ -121,6 +122,17 @@ GameModel::GameModel(GameView *newView):
 		}
 	}
 	sim->air->ambientAirTemp = ambientAirTemp;
+
+	vorticityCoeff = 0.1f; // The default for old saves is 0, but use 0.1 for old configs
+	{
+		auto vort = prefs.Get("Simulation.VorticityCoeff", vorticityCoeff);
+		if (0.0f <= vort && vort <= 1.0f)
+		{
+			vorticityCoeff = vort;
+		}
+	}
+	sim->air->vorticityCoeff = vorticityCoeff;
+
 	decoSpace = prefs.Get("Simulation.DecoSpace", NUM_DECOSPACES, DECOSPACE_SRGB);
 	sim->SetDecoSpace(decoSpace);
 	if (prefs.Get("Simulation.NewtonianGravity", false))
@@ -306,6 +318,17 @@ void GameModel::SetAmbientAirTemperature(float ambientAirTemp)
 float GameModel::GetAmbientAirTemperature()
 {
 	return this->ambientAirTemp;
+}
+
+void GameModel::SetVorticityCoeff(float vorticityCoeff)
+{
+	this->vorticityCoeff = vorticityCoeff;
+	sim->air->vorticityCoeff = vorticityCoeff;
+}
+
+float GameModel::GetVorticityCoeff()
+{
+	return this->vorticityCoeff;
 }
 
 void GameModel::SetDecoSpace(int decoSpace)
@@ -736,6 +759,7 @@ void GameModel::SaveToSimParameters(const GameSave &saveData)
 	sim->customGravityY = saveData.customGravityY;
 	sim->air->airMode = saveData.airMode;
 	sim->air->ambientAirTemp = saveData.ambientAirTemp;
+	sim->air->vorticityCoeff = saveData.vorticityCoeff;
 	sim->edgeMode = saveData.edgeMode;
 	sim->legacy_enable = saveData.legacyEnable;
 	sim->water_equal_test = saveData.waterEEnabled;
@@ -1112,6 +1136,7 @@ void GameModel::ClearSimulation()
 	sim->water_equal_test = false;
 	sim->SetEdgeMode(edgeMode);
 	sim->air->ambientAirTemp = ambientAirTemp;
+	sim->air->vorticityCoeff = vorticityCoeff;
 
 	sim->clear_sim();
 	ren->ClearAccumulation();

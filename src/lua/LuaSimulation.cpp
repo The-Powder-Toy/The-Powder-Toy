@@ -1275,6 +1275,21 @@ static int ambientAirTemp(lua_State *L)
 	return 0;
 }
 
+static int vorticityCoeff(lua_State *L)
+{
+	auto *lsi = GetLSI();
+	int acount = lua_gettop(L);
+	if (acount == 0)
+	{
+		lua_pushnumber(L, lsi->sim->air->vorticityCoeff);
+		return 1;
+	}
+	lsi->AssertInterfaceEvent();
+	float vorticityCoeff = restrict_flt(luaL_optnumber(L, 1, 0.0f), 0.0f, 1.0f);
+	lsi->gameModel->SetVorticityCoeff(vorticityCoeff);
+	return 0;
+}
+
 static int elementCount(lua_State *L)
 {
 	int element = luaL_optint(L, 1, 0);
@@ -2013,6 +2028,7 @@ void LuaSimulation::Open(lua_State *L)
 		LFUNC(airMode),
 		LFUNC(waterEqualization),
 		LFUNC(ambientAirTemp),
+		LFUNC(vorticityCoeff),
 		LFUNC(elementCount),
 		LFUNC(canMove),
 		LFUNC(brush),

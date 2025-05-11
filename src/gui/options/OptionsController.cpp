@@ -62,6 +62,11 @@ void OptionsController::SetAmbientAirTemperature(float ambientAirTemp)
 	model->SetAmbientAirTemperature(ambientAirTemp);
 }
 
+void OptionsController::SetVorticityCoeff(float vorticityCoeff)
+{
+	model->SetVorticityCoeff(vorticityCoeff);
+}
+
 void OptionsController::SetEdgeMode(int edgeMode)
 {
 	model->SetEdgeMode(edgeMode);

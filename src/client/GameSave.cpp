@@ -17,7 +17,7 @@
 #include <algorithm>
 
 constexpr auto currentVersion = UPSTREAM_VERSION.displayVersion;
-constexpr auto nextVersion = Version(99, 3);
+constexpr auto nextVersion = Version(100, 0);
 static_assert(!ALLOW_FAKE_NEWER_VERSION || nextVersion >= currentVersion);
 
 constexpr auto effectiveVersion = ALLOW_FAKE_NEWER_VERSION ? nextVersion : currentVersion;
@@ -630,6 +630,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 		CheckBsonFieldFloat(iter, "customGravityY", &customGravityY);
 		CheckBsonFieldInt(iter, "airMode", &airMode);
 		CheckBsonFieldFloat(iter, "ambientAirTemp", &ambientAirTemp);
+		CheckBsonFieldFloat(iter, "vorticityCoeff", &vorticityCoeff);
 		CheckBsonFieldInt(iter, "edgeMode", &edgeMode);
 		CheckBsonFieldInt(iter, "pmapbits", &pmapbits);
 		CheckBsonFieldBool(iter, "ensureDeterminism", &ensureDeterminism);
@@ -2582,6 +2583,11 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	{
 		bson_append_double(&b, "ambientAirTemp", double(ambientAirTemp));
 		RESTRICTVERSION(96, 0);
+	}
+	if (vorticityCoeff > 0.0001f && vorticityCoeff < 1.0f)
+	{
+		bson_append_double(&b, "vorticityCoeff", double(vorticityCoeff));
+		RESTRICTVERSION(100, 0);
 	}
 	bson_append_int(&b, "edgeMode", edgeMode);
 

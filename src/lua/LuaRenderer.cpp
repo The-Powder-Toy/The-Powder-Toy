@@ -370,6 +370,7 @@ void LuaRenderer::Open(lua_State *L)
 	LCONST(DISPLAY_WARP);
 	LCONST(DISPLAY_PERS);
 	LCONST(DISPLAY_EFFE);
+	LCONST(DISPLAY_AIRW);
 #undef LCONST
 	lua_pushvalue(L, -1);
 	lua_setglobal(L, "renderer");

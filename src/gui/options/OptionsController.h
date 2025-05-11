@@ -23,6 +23,7 @@ public:
 	void SetCustomGravityY(float y);
 	void SetAirMode(int airMode);
 	void SetAmbientAirTemperature(float ambientAirTemp);
+	void SetVorticityCoeff(float vorticityCoeff);
 	void SetEdgeMode(int edgeMode);
 	void SetTemperatureScale(TempScale temperatureScale);
 	void SetThreadedRendering(bool newThreadedRendering);
