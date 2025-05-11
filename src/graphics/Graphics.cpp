@@ -435,6 +435,12 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 			BlendChar({ x + 1, y + 1 }, 0xE055, 0x37FF37_rgb .WithAlpha(alpha));
 		}
 		break;
+	case IconVort:
+		if(invert)
+			BlendChar({ x + 1, y + 1 }, 0xE054, 0xA64D79_rgb .WithAlpha(alpha));
+		else
+			BlendChar({ x + 1, y + 1 }, 0xE054, 0xC27BA0_rgb .WithAlpha(alpha));
+		break;
 	default:
 		if(invert)
 			BlendChar({ x, y }, 't', 0x000000_rgb .WithAlpha(alpha));

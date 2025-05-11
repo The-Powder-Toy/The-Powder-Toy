@@ -27,10 +27,10 @@ void Air::make_kernel(void) //used for velocity
 }
 
 
-float Air::vorticity(int y, int x)
+float Air::vorticity(const RenderableSimulation & sm, int y, int x)
 {
-	auto &vx = sim.vx;
-	auto &vy = sim.vy;
+	auto &vx = sm.vx;
+	auto &vy = sm.vy;
 
 	if (x > 1 && x < XCELLS-2 && y > 1 && y < YCELLS-2)
 	{
@@ -391,10 +391,10 @@ void Air::update_air(void)
 				//Vorticity confinement
 				if (vorticityCoeff > 0.0f && x > 1 && x < XCELLS-2 && y > 1 && y < YCELLS-2)
 				{
-					auto dwx = (vorticity(y, x+1) - vorticity(y, x-1))*0.5f;
-					auto dwy = (vorticity(y+1, x) - vorticity(y-1, x))*0.5f;
+					auto dwx = (vorticity(sim, y, x+1) - vorticity(sim, y, x-1))*0.5f;
+					auto dwy = (vorticity(sim, y+1, x) - vorticity(sim, y-1, x))*0.5f;
 					auto norm = std::sqrt(dwx*dwx + dwy*dwy);
-					auto w = vorticity(y, x);
+					auto w = vorticity(sim, y, x);
 
 					dx += vorticityCoeff * dwx / (norm + 0.001f) * w;
 					dy += vorticityCoeff * dwy / (norm + 0.001f) * w;

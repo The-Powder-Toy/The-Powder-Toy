@@ -2,6 +2,7 @@
 #include "SimulationConfig.h"
 
 class Simulation;
+class RenderableSimulation;
 
 class Air
 {
@@ -18,7 +19,7 @@ public:
 	unsigned char bmap_blockairh[YCELLS][XCELLS];
 	float kernel[9];
 	void make_kernel(void);
-	float vorticity(int y, int x);
+	static float vorticity(const RenderableSimulation & sm, int y, int x);
 	void update_airh(void);
 	void update_air(void);
 	void Clear();
