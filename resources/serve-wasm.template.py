@@ -7,6 +7,13 @@ import ssl
 import sys
 import time
 
+(
+	script,
+	build_root,
+) = sys.argv
+
+os.chdir(build_root)
+
 HTTP_HOST  = '127.0.0.1'
 HTTP_PORT  = 8000
 HTTP_INDEX = 'serve-wasm.index.html'

@@ -632,6 +632,7 @@ if host_platform == 'emscripten'
 		command: [
 			python3_prog,
 			serve_wasm_py,
+			'@BUILD_ROOT@',
 		],
 		depends: powder_exe,
 	)
