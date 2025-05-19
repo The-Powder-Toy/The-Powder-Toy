@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "PAPR.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -86,7 +87,7 @@ static int update(UPDATE_FUNC_ARGS)
 		// Get marked by BCOL
 		case PT_BCOL:
 			parts[i].life = 1;
-			parts[i].dcolour = 0xFF22222A;
+			parts[i].dcolour = MARK_COLOR_COAL;
 			break;
 
 		// Acts as a smoke filter
@@ -205,7 +206,7 @@ static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 	if (t == PT_BCOL || t == PT_COAL)
 	{
 		sim->parts[i].life = 1;
-		sim->parts[i].dcolour = 0xFF22222A;
+		sim->parts[i].dcolour = MARK_COLOR_COAL;
 	}
 	// Similarly, erase with SOAP
 	if (t == PT_SOAP)
