@@ -518,6 +518,7 @@ void CommandInterface::OnTick()
 {
 	auto *lsi = static_cast<LuaScriptInterface *>(this);
 	LuaMisc::Tick(lsi->L);
+	LuaHttp::Tick(lsi->L);
 	HandleEvent(TickEvent{});
 }
 

@@ -17,6 +17,11 @@ namespace http
 	class Request;
 }
 
+namespace LuaHttp
+{
+	class RequestHandle;
+}
+
 class GameView;
 class Graphics;
 class Renderer;
@@ -88,6 +93,10 @@ struct NonGraphicsContext
 
 class LuaScriptInterface : public CommandInterface
 {
+public:
+	std::list<LuaHttp::RequestHandle *> requestHandles; // must come before luaState
+
+private:
 	LuaStatePtr luaState;
 
 	Renderer *ren;
@@ -220,6 +229,7 @@ int tpt_lua_pcall(lua_State *L, int numArgs, int numResults, int errorFunc, Even
 namespace LuaHttp
 {
 	void Open(lua_State *L);
+	void Tick(lua_State *L);
 }
 
 namespace LuaBz2

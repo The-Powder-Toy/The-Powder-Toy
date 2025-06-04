@@ -8,6 +8,8 @@
 #include <memory>
 #include <iostream>
 
+namespace LuaHttp
+{
 class RequestHandle
 {
 public:
@@ -18,8 +20,10 @@ public:
 	};
 
 private:
+	decltype(LuaScriptInterface::requestHandles)::iterator requestHandlesIt;
 	std::unique_ptr<http::Request> request;
 	bool dead = false;
+	bool seenRunningThisTick = true;
 	RequestType type;
 
 	RequestHandle() = default;
@@ -51,7 +55,8 @@ public:
 		// there's no actual architectural reason to require HTTP handles to be managed from interface events
 		// because the HTTP thread doesn't care what thread the requests are managed from, but requiring this
 		// makes access patterns cleaner, so we do it anyway
-		GetLSI()->AssertInterfaceEvent();
+		auto *lsi = GetLSI();
+		lsi->AssertInterfaceEvent();
 		auto authUser = Client::Ref().GetAuthUser();
 		if (type == getAuthToken && !authUser.UserID)
 		{
@@ -86,25 +91,47 @@ public:
 		rh->request->Start();
 		luaL_newmetatable(L, "HTTPRequest");
 		lua_setmetatable(L, -2);
+		lsi->requestHandles.push_back(rh);
+		rh->requestHandlesIt = --lsi->requestHandles.end();
 		return 1;
 	}
 
 	~RequestHandle()
 	{
-		if (!Dead())
+		if (!dead)
 		{
 			Cancel();
 		}
+		auto *lsi = GetLSI();
+		lsi->requestHandles.erase(requestHandlesIt);
 	}
 
-	bool Dead() const
+	enum class Status
 	{
-		return dead;
+		running,
+		done,
+		dead,
+	};
+	Status GetStatus()
+	{
+		if (!seenRunningThisTick)
+		{
+			if (dead)
+			{
+				return Status::dead;
+			}
+			if (request->CheckDone())
+			{
+				return Status::done;
+			}
+			seenRunningThisTick = true;
+		}
+		return Status::running;
 	}
 
-	bool Done() const
+	void ClearSeenRunningThisTick()
 	{
-		return request->CheckDone();
+		seenRunningThisTick = false;
 	}
 
 	void Progress(int64_t *total, int64_t *done)
@@ -126,47 +153,42 @@ public:
 
 	std::pair<int, ByteString> Finish(std::vector<http::Header> &headers)
 	{
-		int status = 0;
-		ByteString data;
-		if (!dead)
+		assert(GetStatus() == Status::done);
+		if (type != getAuthToken)
 		{
-			if (request->CheckDone())
+			headers = request->ResponseHeaders();
+		}
+		// Get this separately so it's always present.
+		auto status = request->StatusCode();
+		ByteString data;
+		try
+		{
+			data = request->Finish().second;
+		}
+		catch (const http::RequestError &ex)
+		{
+			// Nothing, the only way to fail here is to fail in RequestManager, and
+			// that means the problem has already been printed to std::cerr.
+		}
+		request.reset();
+		if (type == getAuthToken)
+		{
+			if (status == 200)
 			{
-				if (type != getAuthToken)
-				{
-					headers = request->ResponseHeaders();
-				}
-				// Get this separately so it's always present.
-				status = request->StatusCode();
-				try
-				{
-					data = request->Finish().second;
-				}
-				catch (const http::RequestError &ex)
-				{
-					// Nothing, the only way to fail here is to fail in RequestManager, and
-					// that means the problem has already been printed to std::cerr.
-				}
-				request.reset();
-				if (type == getAuthToken)
-				{
-					if (status == 200)
-					{
-						std::tie(status, data) = FinishGetAuthToken(data);
-					}
-				}
-				dead = true;
+				std::tie(status, data) = FinishGetAuthToken(data);
 			}
 		}
+		dead = true;
 		return { status, data };
 	}
 };
+}
 
 static int HTTPRequest_gc(lua_State *L)
 {
 	// not subject to the check in RequestHandle::Make; that would be disastrous, and thankfully,
 	// as explained there, we're not missing out on any functionality either
-	auto *rh = (RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
+	auto *rh = (LuaHttp::RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
 	rh->~RequestHandle();
 	return 0;
 }
@@ -174,27 +196,29 @@ static int HTTPRequest_gc(lua_State *L)
 static int HTTPRequest_status(lua_State *L)
 {
 	GetLSI()->AssertInterfaceEvent(); // see the check in RequestHandle::Make
-	auto *rh = (RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
-	if (rh->Dead())
+	auto *rh = (LuaHttp::RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
+	switch (rh->GetStatus())
 	{
-		lua_pushliteral(L, "dead");
-	}
-	else if (rh->Done())
-	{
-		lua_pushliteral(L, "done");
-	}
-	else
-	{
-		lua_pushliteral(L, "running");
+	case LuaHttp::RequestHandle::Status::running: lua_pushliteral(L, "running"); break;
+	case LuaHttp::RequestHandle::Status::done   : lua_pushliteral(L, "done")   ; break;
+	case LuaHttp::RequestHandle::Status::dead   : lua_pushliteral(L, "dead")   ; break;
 	}
 	return 1;
+}
+
+void LuaHttp::Tick(lua_State *)
+{
+	for (auto ptr : GetLSI()->requestHandles)
+	{
+		ptr->ClearSeenRunningThisTick();
+	}
 }
 
 static int HTTPRequest_progress(lua_State *L)
 {
 	GetLSI()->AssertInterfaceEvent(); // see the check in RequestHandle::Make
-	auto *rh = (RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
-	if (!rh->Dead())
+	auto *rh = (LuaHttp::RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
+	if (rh->GetStatus() != LuaHttp::RequestHandle::Status::dead)
 	{
 		int64_t total, done;
 		rh->Progress(&total, &done);
@@ -208,8 +232,8 @@ static int HTTPRequest_progress(lua_State *L)
 static int HTTPRequest_cancel(lua_State *L)
 {
 	GetLSI()->AssertInterfaceEvent(); // see the check in RequestHandle::Make
-	auto *rh = (RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
-	if (!rh->Dead())
+	auto *rh = (LuaHttp::RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
+	if (rh->GetStatus() != LuaHttp::RequestHandle::Status::dead)
 	{
 		rh->Cancel();
 	}
@@ -219,8 +243,8 @@ static int HTTPRequest_cancel(lua_State *L)
 static int HTTPRequest_finish(lua_State *L)
 {
 	GetLSI()->AssertInterfaceEvent(); // see the check in RequestHandle::Make
-	auto *rh = (RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
-	if (!rh->Dead())
+	auto *rh = (LuaHttp::RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
+	if (rh->GetStatus() == LuaHttp::RequestHandle::Status::done)
 	{
 		std::vector<http::Header> headers;
 		auto [ status, data ] = rh->Finish(headers);
@@ -376,12 +400,12 @@ static int request(lua_State *L, bool isPost)
 	}
 
 	auto verb = tpt_lua_optByteString(L, verbIndex, "");
-	return RequestHandle::Make(L, uri, isPost, verb, RequestHandle::normal, postData, headers);
+	return LuaHttp::RequestHandle::Make(L, uri, isPost, verb, LuaHttp::RequestHandle::normal, postData, headers);
 }
 
 static int getAuthToken(lua_State *L)
 {
-	return RequestHandle::Make(L, ByteString::Build(SERVER, "/ExternalAuth.api?Action=Get&Audience=", format::URLEncode(tpt_lua_checkByteString(L, 1))), false, {}, RequestHandle::getAuthToken, {}, {});
+	return LuaHttp::RequestHandle::Make(L, ByteString::Build(SERVER, "/ExternalAuth.api?Action=Get&Audience=", format::URLEncode(tpt_lua_checkByteString(L, 1))), false, {}, LuaHttp::RequestHandle::getAuthToken, {}, {});
 }
 
 static int get(lua_State *L)
