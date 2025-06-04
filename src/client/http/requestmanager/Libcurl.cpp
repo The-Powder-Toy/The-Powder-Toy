@@ -63,6 +63,7 @@ namespace http
 		char curlErrorBuffer[CURL_ERROR_SIZE];
 		bool curlAddedToMulti = false;
 		bool gotStatusLine = false;
+		bool gotAllHeaders = false;
 
 		RequestHandleHttp() : RequestHandle(CtorTag{})
 		{
@@ -74,28 +75,47 @@ namespace http
 			auto bytes = size * count;
 			if (bytes >= 2 && ptr[bytes - 2] == '\r' && ptr[bytes - 1] == '\n')
 			{
-				if (bytes > 2 && handle->gotStatusLine) // Don't include header list terminator or the status line.
+				if (handle->gotAllHeaders)
 				{
-					auto line = ByteString(ptr, ptr + bytes - 2);
-					if (auto split = line.SplitBy(':'))
+					// Reset response headers if we see a new header arrive after seeing a header that we thought was the last.
+					// This happens when a Request takes multiple HTTP requests to complete; think redirects.
+					// We are interested only in the response headers of the last response.
+					handle->responseHeaders.clear();
+					handle->gotStatusLine = false;
+					handle->gotAllHeaders = false;
+				}
+				if (bytes > 2) // Don't include header list terminator
+				{
+					if (handle->gotStatusLine) // ... or the status line.
 					{
-						auto value = split.After();
-						while (value.size() && (value.front() == ' ' || value.front() == '\t'))
+						auto line = ByteString(ptr, ptr + bytes - 2);
+						if (auto split = line.SplitBy(':'))
 						{
-							value = value.Substr(1);
+							auto value = split.After();
+							while (value.size() && (value.front() == ' ' || value.front() == '\t'))
+							{
+								value = value.Substr(1);
+							}
+							while (value.size() && (value.back() == ' ' || value.back() == '\t'))
+							{
+								value = value.Substr(0, value.size() - 1);
+							}
+							handle->responseHeaders.push_back({ split.Before().ToLower(), value });
 						}
-						while (value.size() && (value.back() == ' ' || value.back() == '\t'))
+						else
 						{
-							value = value.Substr(0, value.size() - 1);
+							std::cerr << "skipping weird header: " << line << std::endl;
 						}
-						handle->responseHeaders.push_back({ split.Before().ToLower(), value });
 					}
 					else
 					{
-						std::cerr << "skipping weird header: " << line << std::endl;
+						handle->gotStatusLine = true;
 					}
 				}
-				handle->gotStatusLine = true;
+				else
+				{
+					handle->gotAllHeaders = true;
+				}
 				return bytes;
 			}
 			return 0;
