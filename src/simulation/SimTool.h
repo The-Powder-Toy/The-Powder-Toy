@@ -2,6 +2,7 @@
 #include "gui/game/tool/Tool.h"
 #include "common/String.h"
 #include "graphics/Pixel.h"
+#include "ToolNumbers.h"
 
 class Simulation;
 struct Particle;
@@ -17,9 +18,8 @@ public:
 	void (*PerformDrawFill)(SimTool *tool, Simulation *sim, const Brush &brush, ui::Point position);
 	void (*PerformSelect  )(SimTool *tool, int toolSelection);
 
-
-#define TOOL_NUMBERS_DECLARE
-#include "ToolNumbers.h"
+#define TOOL_NUMBERS_DECLARE(name, id) void Tool_ ## name ();
+TOOL_NUMBERS(TOOL_NUMBERS_DECLARE)
 #undef TOOL_NUMBERS_DECLARE
 
 	SimTool();

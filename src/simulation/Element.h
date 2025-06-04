@@ -1,10 +1,11 @@
 #pragma once
-#include <memory>
 #include "common/Vec2.h"
 #include "graphics/Pixel.h"
 #include "ElementDefs.h"
 #include "Particle.h"
 #include "StructProperty.h"
+#include "ElementNumbers.h"
+#include <memory>
 
 class Simulation;
 class Renderer;
@@ -77,7 +78,7 @@ public:
 	 by higher-level processes referring to them by name such as Lua or the property tool **/
 	static std::vector<StructProperty> const &GetProperties();
 
-#define ELEMENT_NUMBERS_DECLARE
-#include "ElementNumbers.h"
+#define ELEMENT_NUMBERS_DECLARE(name, id) void Element_ ## name ();
+	ELEMENT_NUMBERS(ELEMENT_NUMBERS_DECLARE)
 #undef ELEMENT_NUMBERS_DECLARE
 };

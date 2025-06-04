@@ -203,42 +203,42 @@ subdir('resampler')
 subdir('simulation')
 subdir('tasks')
 
-simulation_elem_defs = []
+element_numbers_x = []
 foreach elem_name_id : simulation_elem_ids
-	simulation_elem_defs += 'ELEMENT_DEFINE(' + elem_name_id[0] + ', ' + elem_name_id[1].to_string() + ');'
+	element_numbers_x += 'X(@0@, @1@) \\'.format(elem_name_id[0], elem_name_id[1])
 endforeach
-elements_conf_data = configuration_data()
-elements_conf_data.set('element_defs', '\n'.join(simulation_elem_defs))
 configure_file(
 	input: 'simulation/ElementNumbers.template.h',
 	output: 'ElementNumbers.h',
-	configuration: elements_conf_data
+	configuration: configuration_data({
+		'element_numbers': '\n\t'.join(element_numbers_x),
+	}),
 )
 
 if platform_clipboard
-	clipboard_impl_defs = []
+	clipboard_impls_x = []
 	foreach impl_subsys_factory : clipboard_impl_factories
-		clipboard_impl_defs += 'IMPL_DEFINE(' + impl_subsys_factory[0] + ', ' + impl_subsys_factory[1] + ')'
+		clipboard_impls_x += 'X(@0@, @1@) \\'.format(impl_subsys_factory[0], impl_subsys_factory[1])
 	endforeach
-	clipboard_impls_data = configuration_data()
-	clipboard_impls_data.set('impl_defs', '\n'.join(clipboard_impl_defs))
 	configure_file(
 		input: 'common/clipboard/ClipboardImpls.template.h',
 		output: 'ClipboardImpls.h',
-		configuration: clipboard_impls_data
+		configuration: configuration_data({
+			'clipboard_impls': '\n\t'.join(clipboard_impls_x),
+		}),
 	)
 endif
 
-simulation_tool_defs = []
+tool_numbers_x = []
 foreach tool_name_id : simulation_tool_ids
-	simulation_tool_defs += 'TOOL_DEFINE(' + tool_name_id[0] + ', ' + tool_name_id[1].to_string() + ');'
+	tool_numbers_x += 'X(@0@, @1@) \\'.format(tool_name_id[0], tool_name_id[1])
 endforeach
-tools_conf_data = configuration_data()
-tools_conf_data.set('tool_defs', '\n'.join(simulation_tool_defs))
 configure_file(
 	input: 'simulation/ToolNumbers.template.h',
 	output: 'ToolNumbers.h',
-	configuration: tools_conf_data
+	configuration: configuration_data({
+		'tool_numbers': '\n\t'.join(tool_numbers_x),
+	}),
 )
 
 configure_file(

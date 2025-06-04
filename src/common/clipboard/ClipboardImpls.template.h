@@ -1,10 +1,5 @@
-#ifdef CLIPBOARD_IMPLS_DECLARE
-# define IMPL_DEFINE(subsystem, factory) std::unique_ptr<ClipboardImpl> factory();
-#endif
-#ifdef CLIPBOARD_IMPLS_DEFINE
-# define IMPL_DEFINE(subsystem, factory) { subsystem, factory },
-#endif
+#pragma once
 
-@impl_defs@
-
-#undef IMPL_DEFINE
+#define CLIPBOARD_IMPLS(X) \
+	@clipboard_impls@
+	// last line of the macro, do not remove

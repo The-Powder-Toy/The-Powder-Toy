@@ -3,13 +3,14 @@
 #include "client/GameSave.h"
 #include "prefs/GlobalPrefs.h"
 #include "PowderToySDL.h"
+#include "ClipboardImpls.h"
 #include <SDL_syswm.h>
 #include <iostream>
 
 namespace Clipboard
 {
-#define CLIPBOARD_IMPLS_DECLARE
-#include "ClipboardImpls.h"
+#define CLIPBOARD_IMPLS_DECLARE(subsystem, factory) std::unique_ptr<ClipboardImpl> factory();
+		CLIPBOARD_IMPLS(CLIPBOARD_IMPLS_DECLARE)
 #undef CLIPBOARD_IMPLS_DECLARE
 
 	struct ClipboardImplEntry
@@ -17,8 +18,8 @@ namespace Clipboard
 		SDL_SYSWM_TYPE subsystem;
 		std::unique_ptr<ClipboardImpl> (*factory)();
 	} clipboardImpls[] = {
-#define CLIPBOARD_IMPLS_DEFINE
-#include "ClipboardImpls.h"
+#define CLIPBOARD_IMPLS_DEFINE(subsystem, factory) { subsystem, factory },
+		CLIPBOARD_IMPLS(CLIPBOARD_IMPLS_DEFINE)
 #undef CLIPBOARD_IMPLS_DEFINE
 		{ SDL_SYSWM_UNKNOWN, nullptr },
 	};

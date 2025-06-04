@@ -1,4 +1,5 @@
 #include "ToolClasses.h"
+#include "ToolNumbers.h"
 
 std::vector<SimTool> const &GetTools()
 {
@@ -8,8 +9,8 @@ std::vector<SimTool> const &GetTools()
 
 		DoOnce()
 		{
-#define TOOL_NUMBERS_CALL
-#include "ToolNumbers.h"
+#define TOOL_NUMBERS_CALL(name, id) tools.push_back(SimTool()), tools.back().Tool_ ## name ();
+TOOL_NUMBERS(TOOL_NUMBERS_CALL)
 #undef TOOL_NUMBERS_CALL
 		}
 	};
