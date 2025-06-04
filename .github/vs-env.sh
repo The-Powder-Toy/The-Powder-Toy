@@ -22,6 +22,10 @@ if [[ -z "${DevEnvDir-}" ]]; then
 	done
 	IFS=$'\t\n'
 
+	echo "=== begin VC\\Tools\\MSVC dump ==="
+	ls -la "$vs_install_dir\\VC\\Tools\\MSVC"
+	echo "=== end VC\\Tools\\MSVC dump ==="
+
 	for i in $(MSYS_NO_PATHCONV=1 cmd /c "$vs_install_dir\\VC\\Auxiliary\\Build\\vcvarsall.bat" $VS_ENV_PARAMS \& env \& exit /b); do
 		set +e
 		export "$i" 2>/dev/null
