@@ -511,7 +511,7 @@ static int createParts(lua_State *L)
 	{
 		int c = luaL_checkint(L, 5); // note: weird: has to be specified in a sim context but not in a ui context
 		auto center = Vec2(x, y);
-		RasterizeEllipseRows(Vec2<float>(rx * rx, ry * ry), [lsi, c, center](int xLim, int dy) {
+		RasterizeEllipseRows(Vec2<float>(float(rx * rx), float(ry * ry)), [lsi, c, center](int xLim, int dy) {
 			for (auto pos : RectBetween(center + Vec2(-xLim, dy), center + Vec2(xLim, dy)))
 			{
 				lsi->sim->CreateParts(-1, pos.X, pos.Y, 0, 0, c, 0);

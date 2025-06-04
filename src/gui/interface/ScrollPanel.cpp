@@ -187,10 +187,10 @@ void ScrollPanel::XTick()
 		}
 	}
 
-	if (xScrollVel > 7.0f) xScrollVel = 7.0f;
-	if (xScrollVel < -7.0f) xScrollVel = -7.0f;
-	if (xScrollVel > -0.5f && xScrollVel < 0.5)
-		xScrollVel = 0;
+	if (xScrollVel.GetValue() > 7.0f) xScrollVel.SetValue(7.0f);
+	if (xScrollVel.GetValue() < -7.0f) xScrollVel.SetValue(-7.0f);
+	if (xScrollVel.GetValue() > -0.5f && xScrollVel.GetValue() < 0.5f)
+		xScrollVel.SetValue(0);
 
 	maxOffset = InnerSize-Size;
 	maxOffset.Y = std::max(0, maxOffset.Y);
@@ -210,8 +210,8 @@ void ScrollPanel::XTick()
 
 	if (!ui::Engine::Ref().MomentumScroll)
 	{
-		yScrollVel = 0.0f;
-		xScrollVel = 0.0f;
+		yScrollVel.SetValue(0.0f);
+		xScrollVel.SetValue(0.0f);
 	}
 
 

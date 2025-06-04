@@ -134,12 +134,15 @@ public:
 		seenRunningThisTick = false;
 	}
 
-	void Progress(int64_t *total, int64_t *done)
+	std::pair<int64_t, int64_t> Progress()
 	{
+		int64_t total = 0;
+		int64_t done = 0;
 		if (!dead)
 		{
-			std::tie(*total, *done) = request->CheckProgress();
+			std::tie(total, done) = request->CheckProgress();
 		}
+		return { total, done };
 	}
 
 	void Cancel()
@@ -220,8 +223,7 @@ static int HTTPRequest_progress(lua_State *L)
 	auto *rh = (LuaHttp::RequestHandle *)luaL_checkudata(L, 1, "HTTPRequest");
 	if (rh->GetStatus() != LuaHttp::RequestHandle::Status::dead)
 	{
-		int64_t total, done;
-		rh->Progress(&total, &done);
+		auto [ total, done ] = rh->Progress();
 		lua_pushinteger(L, total);
 		lua_pushinteger(L, done);
 		return 2;

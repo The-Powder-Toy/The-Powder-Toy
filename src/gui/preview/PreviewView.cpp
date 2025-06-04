@@ -636,14 +636,14 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	if(sender->GetCommentBoxEnabled())
 	{
 		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", "Add Comment");
-		commentBoxPositionX.SetTarget(addCommentBox->Position.X);
-		commentBoxPositionX.SetValue(addCommentBox->Position.X);
-		commentBoxPositionY.SetTarget(addCommentBox->Position.Y);
-		commentBoxPositionY.SetValue(addCommentBox->Position.Y);
-		commentBoxSizeX.SetTarget(addCommentBox->Size.X);
-		commentBoxSizeX.SetValue(addCommentBox->Size.X);
-		commentBoxSizeY.SetTarget(addCommentBox->Size.Y);
-		commentBoxSizeY.SetValue(addCommentBox->Size.Y);
+		commentBoxPositionX.SetTarget(float(addCommentBox->Position.X));
+		commentBoxPositionX.SetValue(float(addCommentBox->Position.X));
+		commentBoxPositionY.SetTarget(float(addCommentBox->Position.Y));
+		commentBoxPositionY.SetValue(float(addCommentBox->Position.Y));
+		commentBoxSizeX.SetTarget(float(addCommentBox->Size.X));
+		commentBoxSizeX.SetValue(float(addCommentBox->Size.X));
+		commentBoxSizeY.SetTarget(float(addCommentBox->Size.Y));
+		commentBoxSizeY.SetValue(float(addCommentBox->Size.Y));
 		addCommentBox->SetActionCallback({ [this] {
 			CheckComment();
 			commentBoxAutoHeight();

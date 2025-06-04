@@ -23,8 +23,8 @@ LoginView::LoginView():
 	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), Client::Ref().GetAuthUser().Username.FromUtf8(), "[username]")),
 	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", "[password]"))
 {
-	targetSize.SetTarget(Size.Y);
-	targetSize.SetValue(Size.Y);
+	targetSize.SetTarget(float(Size.Y));
+	targetSize.SetValue(float(Size.Y));
 	FocusComponent(usernameField);
 
 	infoLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -100,11 +100,11 @@ void LoginView::NotifyStatusChanged(LoginModel * sender)
 	passwordField->Enabled = notWorking;
 	if (infoLabel->Visible)
 	{
-		targetSize.SetTarget(defaultSize.Y + infoLabel->Size.Y);
+		targetSize.SetTarget(float(defaultSize.Y + infoLabel->Size.Y));
 	}
 	else
 	{
-		targetSize.SetTarget(defaultSize.Y);
+		targetSize.SetTarget(float(defaultSize.Y));
 	}
 	if (sender->GetStatus() == loginSucceeded)
 	{
@@ -115,7 +115,7 @@ void LoginView::NotifyStatusChanged(LoginModel * sender)
 void LoginView::OnTick()
 {
 	c->Tick();
-	Size.Y = targetSize.GetValue();
+	Size.Y = int(targetSize.GetValue());
 	loginButton->Position.Y = Size.Y-17;
 	cancelButton->Position.Y = Size.Y-17;
 }
