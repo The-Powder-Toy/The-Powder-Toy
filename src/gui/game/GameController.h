@@ -8,6 +8,7 @@
 #include "gui/SavePreviewType.h"
 #include "simulation/Sign.h"
 #include "simulation/Particle.h"
+#include "simulation/SimulationSettings.h"
 #include "Misc.h"
 #include <vector>
 #include <utility>
@@ -129,8 +130,8 @@ public:
 	bool GetBrushEnable();
 	void SetDebugHUD(bool hudState);
 	bool GetDebugHUD();
-	void SetTemperatureScale(int temperatureScale);
-	int GetTemperatureScale();
+	void SetTemperatureScale(TempScale temperatureScale);
+	TempScale GetTemperatureScale();
 	int GetEdgeMode();
 	void SetEdgeMode(int edgeMode);
 	void SetDebugFlags(unsigned int flags) { debugFlags = flags; }

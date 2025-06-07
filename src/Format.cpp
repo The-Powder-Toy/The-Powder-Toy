@@ -339,14 +339,14 @@ ByteString format::URLDecode(ByteString source)
 	return result;
 }
 
-void format::RenderTemperature(StringBuilder &sb, float temp, int scale)
+void format::RenderTemperature(StringBuilder &sb, float temp, TempScale scale)
 {
 	switch (scale)
 	{
-	case 1:
+	case TEMPSCALE_CELSIUS:
 		sb << (temp - 273.15f) << "C";
 		break;
-	case 2:
+	case TEMPSCALE_FAHRENHEIT:
 		sb << (temp - 273.15f) * 1.8f + 32.0f << "F";
 		break;
 	default:
@@ -355,24 +355,24 @@ void format::RenderTemperature(StringBuilder &sb, float temp, int scale)
 	}
 }
 
-float format::StringToTemperature(String str, int defaultScale)
+float format::StringToTemperature(String str, TempScale defaultScale)
 {
 	auto scale = defaultScale;
 	if (str.size())
 	{
 		if (str.EndsWith("K"))
 		{
-			scale = 0;
+			scale = TEMPSCALE_KELVIN;
 			str = str.SubstrFromEnd(1);
 		}
 		else if (str.EndsWith("C"))
 		{
-			scale = 1;
+			scale = TEMPSCALE_CELSIUS;
 			str = str.SubstrFromEnd(1);
 		}
 		else if (str.EndsWith("F"))
 		{
-			scale = 2;
+			scale = TEMPSCALE_FAHRENHEIT;
 			str = str.SubstrFromEnd(1);
 		}
 	}
@@ -383,11 +383,13 @@ float format::StringToTemperature(String str, int defaultScale)
 	auto out = str.ToNumber<float>();
 	switch (scale)
 	{
-	case 1:
+	case TEMPSCALE_CELSIUS:
 		out = out + 273.15;
 		break;
-	case 2:
+	case TEMPSCALE_FAHRENHEIT:
 		out = (out - 32.0f) / 1.8f + 273.15f;
+		break;
+	default:
 		break;
 	}
 	return out;

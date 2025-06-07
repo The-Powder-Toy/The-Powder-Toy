@@ -222,11 +222,11 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		c->SetEdgeMode(edgeMode->GetOption().second);
 	});
 	temperatureScale = addDropDown("Temperature scale", {
-		{ "Kelvin", 0 },
-		{ "Celsius", 1 },
-		{ "Fahrenheit", 2 },
+		{ "Kelvin", TEMPSCALE_KELVIN },
+		{ "Celsius", TEMPSCALE_CELSIUS },
+		{ "Fahrenheit", TEMPSCALE_FAHRENHEIT },
 	}, [this] {
-		c->SetTemperatureScale(temperatureScale->GetOption().second);
+		c->SetTemperatureScale(TempScale(temperatureScale->GetOption().second));
 	});
 	if (FORCE_WINDOW_FRAME_OPS != forceWindowFrameOpsHandheld)
 	{
@@ -426,7 +426,7 @@ void OptionsView::AmbientAirTempToTextBox(float airTemp)
 {
 	StringBuilder sb;
 	sb << Format::Precision(2);
-	format::RenderTemperature(sb, airTemp, temperatureScale->GetOption().second);
+	format::RenderTemperature(sb, airTemp, TempScale(temperatureScale->GetOption().second));
 	ambientAirTemp->SetText(sb.Build());
 }
 
@@ -466,7 +466,7 @@ void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
 	bool isValid;
 	try
 	{
-		airTemp = format::StringToTemperature(temp, temperatureScale->GetOption().second);
+		airTemp = format::StringToTemperature(temp, TempScale(temperatureScale->GetOption().second));
 		isValid = true;
 	}
 	catch (const std::exception &ex)

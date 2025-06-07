@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include "simulation/SimulationSettings.h"
 
 class GameModel;
 class OptionsModel;
@@ -23,7 +24,7 @@ public:
 	void SetAirMode(int airMode);
 	void SetAmbientAirTemperature(float ambientAirTemp);
 	void SetEdgeMode(int edgeMode);
-	void SetTemperatureScale(int temperatureScale);
+	void SetTemperatureScale(TempScale temperatureScale);
 	void SetThreadedRendering(bool newThreadedRendering);
 	void SetFullscreen(bool fullscreen);
 	void SetChangeResolution(bool newChangeResolution);

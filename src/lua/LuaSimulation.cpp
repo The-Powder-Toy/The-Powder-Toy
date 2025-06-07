@@ -1701,13 +1701,13 @@ static int temperatureScale(lua_State *L)
 	lsi->AssertInterfaceEvent();
 	if (lua_gettop(L) == 0)
 	{
-		lua_pushinteger(L, lsi->gameModel->GetTemperatureScale());
+		lua_pushinteger(L, int(lsi->gameModel->GetTemperatureScale()));
 		return 1;
 	}
 	int temperatureScale = luaL_checkinteger(L, 1);
-	if (temperatureScale < 0 || temperatureScale > 2)
+	if (temperatureScale < 0 || temperatureScale >= NUM_TEMPSCALES)
 		return luaL_error(L, "Invalid temperature scale");
-	lsi->gameModel->SetTemperatureScale(temperatureScale);
+	lsi->gameModel->SetTemperatureScale(TempScale(temperatureScale));
 	return 0;
 }
 
@@ -2128,6 +2128,11 @@ void LuaSimulation::Open(lua_State *L)
 	LCONST(DECOSPACE_GAMMA22);
 	LCONST(DECOSPACE_GAMMA18);
 	LCONST(NUM_DECOSPACES);
+
+	LCONST(TEMPSCALE_KELVIN);
+	LCONST(TEMPSCALE_CELSIUS);
+	LCONST(TEMPSCALE_FAHRENHEIT);
+	LCONST(NUM_TEMPSCALES);
 
 	LCONSTAS("CANMOVE_BOUNCE", 0);
 	LCONSTAS("CANMOVE_SWAP", 1);

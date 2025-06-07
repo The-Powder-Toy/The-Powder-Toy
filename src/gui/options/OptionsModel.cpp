@@ -85,13 +85,13 @@ void OptionsModel::SetEdgeMode(int edgeMode)
 	notifySettingsChanged();
 }
 
-int OptionsModel::GetTemperatureScale()
+TempScale OptionsModel::GetTemperatureScale()
 {
 	return gModel->GetTemperatureScale();
 }
-void OptionsModel::SetTemperatureScale(int temperatureScale)
+void OptionsModel::SetTemperatureScale(TempScale temperatureScale)
 {
-	GlobalPrefs::Ref().Set("Renderer.TemperatureScale", temperatureScale);
+	GlobalPrefs::Ref().Set("Renderer.TemperatureScale", int(temperatureScale));
 	gModel->SetTemperatureScale(temperatureScale);
 	notifySettingsChanged();
 }

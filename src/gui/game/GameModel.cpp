@@ -167,7 +167,7 @@ GameModel::GameModel(GameView *newView):
 
 	mouseClickRequired = prefs.Get("MouseClickRequired", false);
 	includePressure = prefs.Get("Simulation.IncludePressure", true);
-	temperatureScale = prefs.Get("Renderer.TemperatureScale", 1); // TODO: TemperatureScale enum
+	temperatureScale = prefs.Get("Renderer.TemperatureScale", NUM_TEMPSCALES, TEMPSCALE_CELSIUS);
 
 	ClearSimulation();
 }
@@ -287,7 +287,7 @@ int GameModel::GetEdgeMode()
 	return this->edgeMode;
 }
 
-void GameModel::SetTemperatureScale(int temperatureScale)
+void GameModel::SetTemperatureScale(TempScale temperatureScale)
 {
 	this->temperatureScale = temperatureScale;
 }
