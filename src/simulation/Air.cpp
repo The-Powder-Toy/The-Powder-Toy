@@ -391,13 +391,13 @@ void Air::update_air(void)
 				//Vorticity confinement
 				if (vorticityCoeff > 0.0f && x > 1 && x < XCELLS-2 && y > 1 && y < YCELLS-2)
 				{
-					auto dwx = (vorticity(sim, y, x+1) - vorticity(sim, y, x-1))*0.5f;
-					auto dwy = (vorticity(sim, y+1, x) - vorticity(sim, y-1, x))*0.5f;
+					auto dwx = (std::abs(vorticity(sim, y, x+1)) - std::abs(vorticity(sim, y, x-1)))*0.5f;
+					auto dwy = (std::abs(vorticity(sim, y+1, x)) - std::abs(vorticity(sim, y-1, x)))*0.5f;
 					auto norm = std::sqrt(dwx*dwx + dwy*dwy);
 					auto w = vorticity(sim, y, x);
 
-					dx += vorticityCoeff * dwx / (norm + 0.001f) * w;
-					dy += vorticityCoeff * dwy / (norm + 0.001f) * w;
+					dx += vorticityCoeff/5.0f * dwy / (norm + 0.001f) * w;
+					dy += vorticityCoeff/5.0f * (-dwx) / (norm + 0.001f) * w;
 				}
 
 				if (bmap[y][x] == WL_FAN)
