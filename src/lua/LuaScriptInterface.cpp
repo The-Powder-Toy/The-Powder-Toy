@@ -414,7 +414,7 @@ bool CommandInterface::HandleEvent(const GameControllerEvent &event)
 	auto end = list.end();
 	lsi->currentEventHandlerIts.push_back(&it);
 	bool cont = true;
-	while (it != end)
+	while (it != end && cont)
 	{
 		it->Push(L);
 		++it;
