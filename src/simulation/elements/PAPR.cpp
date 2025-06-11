@@ -81,6 +81,47 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 	}
 
+	// Electronic marking
+	if (parts[i].tmp3 == 10)
+	{
+		parts[i].tmp3 = 11;
+		parts[i].life = 1;
+		parts[i].dcolour = MARK_COLOR_COAL;
+	}
+	else if (parts[i].tmp3 != 0 && parts[i].tmp3 != 11)
+	{
+		parts[i].life = 0;
+		parts[i].dcolour = 0x00000000;
+		parts[i].tmp3--;
+	}
+	for (auto rx = -1; rx <= 1; rx++)
+	{
+		for (auto ry = -1; ry <= 1; ry++)
+		{
+			if (rx || ry)
+			{
+				auto r = pmap[y+ry][x+rx];
+				if (!r)
+					continue;
+				if (TYP(r)==PT_SPRK)
+				{
+					if (parts[ID(r)].ctype == PT_PSCN)
+						parts[i].tmp3 = 10;
+					else if (parts[ID(r)].ctype == PT_NSCN)
+						parts[i].tmp3 = 9;
+				}
+				else if (TYP(r) == PT_PAPR)
+				{
+					if (parts[i].tmp3 >= 10 && parts[ID(r)].tmp3 > 0 && parts[ID(r)].tmp3 < 10)
+						parts[i].tmp3 = 9;
+					else if (parts[i].tmp3 == 0 && parts[ID(r)].tmp3 >= 10)
+						parts[i].tmp3 = 10;
+				}
+			}
+		}
+	}
+	
+
 	auto r = pmap[y][x];
 	switch (TYP(r))
 	{
