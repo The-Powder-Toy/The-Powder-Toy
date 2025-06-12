@@ -8,6 +8,7 @@
 #include "client/GameSave.h"
 #include "common/tpt-compat.h"
 #include "common/tpt-rand.h"
+#include "common/Defer.h"
 #include "gui/game/Brush.h"
 #include "elements/EMP.h"
 #include "elements/LOLZ.h"
@@ -78,6 +79,11 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 		}
 	};
 
+	auto oldPrettyPowders = pretty_powder;
+	pretty_powder = false;
+	Defer restorePrettyPowders([this, oldPrettyPowders]() {
+		pretty_powder = oldPrettyPowders;
+	});
 	std::map<unsigned int, unsigned int> soapList;
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
