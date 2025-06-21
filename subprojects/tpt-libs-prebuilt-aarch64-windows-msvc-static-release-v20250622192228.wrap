@@ -1,0 +1,6 @@
+[wrap-file]
+directory = tpt-libs-prebuilt-aarch64-windows-msvc-static-release-v20250622192228
+
+source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20250622192228/tpt-libs-prebuilt-aarch64-windows-msvc-static-release-v20250622192228.zip
+source_filename = tpt-libs-prebuilt-aarch64-windows-msvc-static-release-v20250622192228.zip
+source_hash = 1276da21d8643f2299a316634a015a718446e05ac8d1109fdae18b7392821caf

@@ -1,6 +1,0 @@
-[wrap-file]
-directory = tpt-libs-prebuilt-wasm32-emscripten-emscripten-static-debug-v20250117195557
-
-source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20250117195557/tpt-libs-prebuilt-wasm32-emscripten-emscripten-static-debug-v20250117195557.zip
-source_filename = tpt-libs-prebuilt-wasm32-emscripten-emscripten-static-debug-v20250117195557.zip
-source_hash = e947ff57d272c6bde8b1a70a0f9a4790b77be55fb5278dcdb21932b143720b46

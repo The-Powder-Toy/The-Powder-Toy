@@ -80,7 +80,7 @@ tpt_libs_debug = is_debug ? 'debug' : 'release'
 tpt_libs_variant = '@0@-@1@-@2@-@3@'.format(host_arch, host_platform, host_libc, tpt_libs_static)
 tpt_libs_vtag = get_option('tpt_libs_vtag')
 if tpt_libs_vtag == ''
-	tpt_libs_vtag = 'v20250117195557'
+	tpt_libs_vtag = 'v20250622192228'
 endif
 if tpt_libs_static != 'none'
 	if tpt_libs_variant not in [
@@ -203,7 +203,6 @@ fftw_dep = dependency('fftw3f', static: is_static)
 threads_dep = dependency('threads')
 if host_platform == 'emscripten'
 	app_exe_jssafe = app_exe.underscorify()
-	zlib_dep = []
 	png_dep = []
 	sdl2_dep = []
 	bzip2_dep = []
@@ -226,14 +225,13 @@ if host_platform == 'emscripten'
 		'-s', 'USE_BZIP2=1',
 		'-s', 'USE_LIBPNG',
 		'-s', 'USE_PTHREADS',
-		'-s', 'USE_ZLIB=1',
+#		'-s', 'USE_ZLIB=1',
 		'-s', 'DISABLE_EXCEPTION_CATCHING=0',
 		'-gsource-map',
 	]
 	project_link_args += emcc_args
 	project_cpp_args += emcc_args
 else
-	zlib_dep = dependency('zlib', static: is_static)
 	png_dep = dependency('libpng16', static: is_static)
 	sdl2_dep = dependency('sdl2', static: is_static)
 	bzip2_dep = dependency('bzip2', static: is_static)
@@ -345,20 +343,13 @@ endif
 copied_dlls = []
 if host_platform == 'windows'
 	args_ccomp_win = []
-	defs_ccomp_win = []
-	defs_ccomp_win += [
+	defs_ccomp_win = [
 		'_WIN32_WINNT=0x0501',
 		'NOMINMAX',
 		'UNICODE',
 		'_UNICODE',
 	]
 	windows_mod = import('windows')
-	if is_static
-		defs_ccomp_win += [ 'CURL_STATICLIB' ]
-		if host_arch == 'x86_64'
-			defs_ccomp_win += [ 'ZLIB_WINAPI' ]
-		endif
-	endif
 	if tpt_libs_static == 'dynamic'
 		foreach input_output_condition : tpt_libs.get_variable('config_dlls')
 			dll_input = input_output_condition[0]
@@ -492,7 +483,6 @@ foreach sta_info : [
 	[ 'common', common_files, [
 		host_platform == 'android' ? sdl2_dep : [],
 		png_dep,
-		zlib_dep,
 		bzip2_dep,
 	] ],
 	[ 'gui', gui_files, [
