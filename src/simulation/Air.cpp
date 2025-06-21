@@ -148,7 +148,7 @@ void Air::update_airh(void)
 			auto j = (int)ty;
 			tx -= i;
 			ty -= j;
-			if (!(bmap_blockairh[y][x]&0x8) && i>=2 && i<XCELLS-3 && j>=2 && j<YCELLS-3)
+			if (!(bmap_blockairh[y][x]&0x8) && i>=0 && i<XCELLS-1 && j>=0 && j<YCELLS-1)
 			{
 				auto odh = dh;
 				dh *= 1.0f - AIR_VADV;
