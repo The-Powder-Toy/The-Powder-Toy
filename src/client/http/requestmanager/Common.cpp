@@ -4,11 +4,7 @@
 
 namespace http
 {
-	RequestManager::RequestManager(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork) :
-		proxy(newProxy),
-		cafile(newCafile),
-		capath(newCapath),
-		disableNetwork(newDisableNetwork)
+	RequestManager::RequestManager(Config newConfig) : config(newConfig)
 	{
 		auto apiVersion = Version(97, 0);
 		userAgent = ByteString::Build(
@@ -31,7 +27,7 @@ namespace http
 			request.handle->MarkDone();
 			return;
 		}
-		if (disableNetwork)
+		if (config.disableNetwork)
 		{
 			request.handle->statusCode = 604;
 			request.handle->error = "network disabled upon request";

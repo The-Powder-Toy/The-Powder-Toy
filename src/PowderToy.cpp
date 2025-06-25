@@ -358,7 +358,7 @@ int Main(int argc, char *argv[])
 	momentumScroll = prefs.Get("MomentumScroll", true);
 	showAvatars = prefs.Get("ShowAvatars", true);
 
-	auto true_string = [](ByteString str) {
+	auto trueString = [](ByteString str) {
 		str = str.ToLower();
 		return str == "true" ||
 		       str == "t" ||
@@ -368,23 +368,23 @@ int Main(int argc, char *argv[])
 		       str == "1" ||
 		       str == ""; // standalone "redirect" or "disable-bluescreen" or similar arguments
 	};
-	auto true_arg = [&true_string](Argument arg) {
-		return arg.has_value() && true_string(arg.value());
+	auto trueArg = [&trueString](Argument arg) {
+		return arg.has_value() && trueString(arg.value());
 	};
 
 	auto kioskArg = arguments["kiosk"];
 	if (kioskArg.has_value())
 	{
-		windowFrameOps.fullscreen = true_string(kioskArg.value());
+		windowFrameOps.fullscreen = trueString(kioskArg.value());
 		prefs.Set("Fullscreen", windowFrameOps.fullscreen);
 	}
 
 	auto redirectStd = prefs.Get("RedirectStd", false);
-	if (true_arg(arguments["console"]))
+	if (trueArg(arguments["console"]))
 	{
 		Platform::AllocConsole();
 	}
-	else if (true_arg(arguments["redirect"]) || redirectStd)
+	else if (trueArg(arguments["redirect"]) || redirectStd)
 	{
 		FILE *new_stdout = freopen("stdout.log", "w", stdout);
 		FILE *new_stderr = freopen("stderr.log", "w", stderr);
@@ -408,28 +408,23 @@ int Main(int argc, char *argv[])
 		}
 	}
 
-	auto clientConfig = [&prefs](Argument arg, ByteString name, ByteString defaultValue) {
-		ByteString value;
-		if (arg.has_value())
+	auto clientConfig = [&prefs](Argument arg, ByteString name) {
+		if (!arg)
 		{
-			value = arg.value();
-			if (value == "")
-			{
-				value = defaultValue;
-			}
-			prefs.Set(name, value);
+			return prefs.Get<ByteString>(name);
 		}
-		else
+		if (arg->empty())
 		{
-			value = prefs.Get(name, defaultValue);
+			arg.reset();
 		}
-		return value;
+		prefs.Set(name, arg);
+		return arg;
 	};
-	ByteString proxyString = clientConfig(arguments["proxy"], "Proxy", "");
-	ByteString cafileString = clientConfig(arguments["cafile"], "CAFile", "");
-	ByteString capathString = clientConfig(arguments["capath"], "CAPath", "");
-	bool disableNetwork = true_arg(arguments["disable-network"]);
-	explicitSingletons->requestManager = http::RequestManager::Create(proxyString, cafileString, capathString, disableNetwork);
+	auto proxyString = clientConfig(arguments["proxy"], "Proxy");
+	auto cafileString = clientConfig(arguments["cafile"], "CAFile");
+	auto capathString = clientConfig(arguments["capath"], "CAPath");
+	bool disableNetwork = trueArg(arguments["disable-network"]);
+	explicitSingletons->requestManager = http::RequestManager::Create({ proxyString, cafileString, capathString, disableNetwork });
 
 	explicitSingletons->client = std::make_unique<Client>();
 	Client::Ref().SetAutoStartupRequest(prefs.Get("AutoStartupRequest", true));
@@ -468,7 +463,7 @@ int Main(int argc, char *argv[])
 		}
 	}
 
-	bool enableBluescreen = USE_BLUESCREEN && !true_arg(arguments["disable-bluescreen"]);
+	bool enableBluescreen = USE_BLUESCREEN && !trueArg(arguments["disable-bluescreen"]);
 	if (enableBluescreen)
 	{
 		//Get ready to catch any dodgy errors

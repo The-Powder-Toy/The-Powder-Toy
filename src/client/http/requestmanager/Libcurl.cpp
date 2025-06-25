@@ -139,7 +139,7 @@ namespace http
 	{
 		using RequestManager::RequestManager;
 
-		RequestManagerImpl(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork);
+		RequestManagerImpl(Config newConfig);
 		~RequestManagerImpl();
 
 		std::thread worker;
@@ -188,8 +188,7 @@ namespace http
 		}
 	};
 
-	RequestManagerImpl::RequestManagerImpl(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork) :
-		RequestManager(newProxy, newCafile, newCapath, newDisableNetwork)
+	RequestManagerImpl::RequestManagerImpl(Config newConfig) : RequestManager(newConfig)
 	{
 		worker = std::thread([this]() {
 			Worker();
@@ -552,9 +551,9 @@ namespace http
 		curl_slist_free_all(handle->curlHeaders);
 	}
 
-	RequestManagerPtr RequestManager::Create(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork)
+	RequestManagerPtr RequestManager::Create(Config newConfig)
 	{
-		return RequestManagerPtr(new RequestManagerImpl(newProxy, newCafile, newCapath, newDisableNetwork));
+		return RequestManagerPtr(new RequestManagerImpl(newConfig));
 	}
 
 	void RequestManagerDeleter::operator ()(RequestManager *ptr) const
@@ -615,21 +614,21 @@ namespace http
 		auto &capath = rm.Capath();
 		auto &cafile = rm.Cafile();
 		auto &proxy = rm.Proxy();
-		if (capath.size())
+		if (capath)
 		{
-			HandleCURLcode(curl_easy_setopt(easy, CURLOPT_CAPATH, capath.c_str()));
+			HandleCURLcode(curl_easy_setopt(easy, CURLOPT_CAPATH, capath->c_str()));
 		}
-		else if (cafile.size())
+		else if (cafile)
 		{
-			HandleCURLcode(curl_easy_setopt(easy, CURLOPT_CAINFO, cafile.c_str()));
+			HandleCURLcode(curl_easy_setopt(easy, CURLOPT_CAINFO, cafile->c_str()));
 		}
 		else if constexpr (USE_SYSTEM_CERT_PROVIDER)
 		{
 			UseSystemCertProvider(easy);
 		}
-		if (proxy.size())
+		if (proxy)
 		{
-			HandleCURLcode(curl_easy_setopt(easy, CURLOPT_PROXY, proxy.c_str()));
+			HandleCURLcode(curl_easy_setopt(easy, CURLOPT_PROXY, proxy->c_str()));
 		}
 	}
 }

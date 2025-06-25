@@ -68,14 +68,20 @@ namespace http
 	using RequestManagerPtr = std::unique_ptr<RequestManager, RequestManagerDeleter>;
 	class RequestManager : public ExplicitSingleton<RequestManager>
 	{
-	protected:
-		ByteString proxy;
-		ByteString cafile;
-		ByteString capath;
-		ByteString userAgent;
-		bool disableNetwork;
+	public:
+		struct Config
+		{
+			std::optional<ByteString> proxy;
+			std::optional<ByteString> cafile;
+			std::optional<ByteString> capath;
+			bool disableNetwork = false;
+		};
 
-		RequestManager(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork);
+	protected:
+		Config config;
+		ByteString userAgent;
+
+		RequestManager(Config newConfig);
 
 		void RegisterRequestImpl(Request &request);
 		void UnregisterRequestImpl(Request &request);
@@ -86,24 +92,24 @@ namespace http
 
 		bool DisableNetwork() const
 		{
-			return disableNetwork;
+			return config.disableNetwork;
 		}
 
-		const ByteString &Cafile() const
+		const std::optional<ByteString> &Cafile() const
 		{
-			return cafile;
+			return config.cafile;
 		}
 
-		const ByteString &Capath() const
+		const std::optional<ByteString> &Capath() const
 		{
-			return capath;
+			return config.capath;
 		}
 
-		const ByteString &Proxy() const
+		const std::optional<ByteString> &Proxy() const
 		{
-			return proxy;
+			return config.proxy;
 		}
 
-		static RequestManagerPtr Create(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork);
+		static RequestManagerPtr Create(Config newConfig);
 	};
 }

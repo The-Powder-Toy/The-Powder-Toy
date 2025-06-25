@@ -19,9 +19,9 @@ namespace http
 	{
 	}
 
-	RequestManagerPtr RequestManager::Create(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork)
+	RequestManagerPtr RequestManager::Create(Config newConfig)
 	{
-		return RequestManagerPtr(new RequestManager(newProxy, newCafile, newCapath, newDisableNetwork));
+		return RequestManagerPtr(new RequestManager(newConfig));
 	}
 
 	void RequestManagerDeleter::operator ()(RequestManager *ptr) const

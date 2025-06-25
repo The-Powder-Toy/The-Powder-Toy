@@ -81,6 +81,19 @@ public:
 		ShouldWrite();
 	}
 
+	template<class Type>
+	void Set(ByteString path, std::optional<Type> value)
+	{
+		if (value)
+		{
+			Set(path, *value);
+		}
+		else
+		{
+			Clear(path);
+		}
+	}
+
 	void Clear(ByteString path)
 	{
 		SetJson(root, path, Json::nullValue);

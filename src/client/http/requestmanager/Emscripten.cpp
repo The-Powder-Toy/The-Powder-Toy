@@ -30,7 +30,7 @@ namespace http
 	{
 		using RequestManager::RequestManager;
 
-		RequestManagerImpl(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork);
+		RequestManagerImpl(Config newConfig);
 		~RequestManagerImpl();
 
 		// State shared between Request threads and the worker thread.
@@ -48,8 +48,7 @@ namespace http
 		void UpdateRequestStatus(RequestHandleHttp *handle);
 	};
 
-	RequestManagerImpl::RequestManagerImpl(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork) :
-		RequestManager(newProxy, newCafile, newCapath, newDisableNetwork)
+	RequestManagerImpl::RequestManagerImpl(Config newConfig) : RequestManager(newConfig)
 	{
 		EM_ASM({
 			Module.emscriptenRequestManager = {};
@@ -365,9 +364,9 @@ namespace http
 		handle->id = -1;
 	}
 
-	RequestManagerPtr RequestManager::Create(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork)
+	RequestManagerPtr RequestManager::Create(Config newConfig)
 	{
-		return RequestManagerPtr(new RequestManagerImpl(newProxy, newCafile, newCapath, newDisableNetwork));
+		return RequestManagerPtr(new RequestManagerImpl(newConfig));
 	}
 
 	void RequestManagerDeleter::operator ()(RequestManager *ptr) const
