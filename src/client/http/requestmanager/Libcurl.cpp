@@ -518,10 +518,6 @@ namespace http
 				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_CONNECTTIMEOUT, curlConnectTimeoutS));
 				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_HTTPHEADER, handle->curlHeaders));
 				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_URL, handle->uri.c_str()));
-				if (proxy.size())
-				{
-					HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_PROXY, proxy.c_str()));
-				}
 				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_PRIVATE, (void *)handle));
 				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_USERAGENT, userAgent.c_str()));
 				HandleCURLcode(curl_easy_setopt(handle->curlEasy, CURLOPT_HEADERDATA, (void *)handle));
@@ -615,8 +611,10 @@ namespace http
 		HandleCURLcode(curl_easy_setopt(easy, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE));
 #endif
 
-		auto &capath = http::RequestManager::Ref().Capath();
-		auto &cafile = http::RequestManager::Ref().Cafile();
+		auto &rm = http::RequestManager::Ref();
+		auto &capath = rm.Capath();
+		auto &cafile = rm.Cafile();
+		auto &proxy = rm.Proxy();
 		if (capath.size())
 		{
 			HandleCURLcode(curl_easy_setopt(easy, CURLOPT_CAPATH, capath.c_str()));
@@ -628,6 +626,10 @@ namespace http
 		else if constexpr (USE_SYSTEM_CERT_PROVIDER)
 		{
 			UseSystemCertProvider(easy);
+		}
+		if (proxy.size())
+		{
+			HandleCURLcode(curl_easy_setopt(easy, CURLOPT_PROXY, proxy.c_str()));
 		}
 	}
 }

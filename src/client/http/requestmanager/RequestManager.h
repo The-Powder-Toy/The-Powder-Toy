@@ -99,6 +99,11 @@ namespace http
 			return capath;
 		}
 
+		const ByteString &Proxy() const
+		{
+			return proxy;
+		}
+
 		static RequestManagerPtr Create(ByteString newProxy, ByteString newCafile, ByteString newCapath, bool newDisableNetwork);
 	};
 }
