@@ -158,6 +158,7 @@ public:
 	String ElementResolve(int type, int ctype) const;
 	String BasicParticleInfo(Particle const &sample_part) const;
 	int GetParticleType(ByteString type) const;
+	bool IsHeatInsulator(const Particle &p) const;
 
 	bool IsElement(int type) const
 	{

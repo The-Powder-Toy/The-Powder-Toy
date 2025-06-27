@@ -49,6 +49,7 @@ void Element::Element_C5()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
 	for (auto rx = -2; rx <= 2; rx++)
 	{
 		for (auto ry = -2; ry <= 2; ry++)
@@ -58,7 +59,7 @@ static int update(UPDATE_FUNC_ARGS)
 				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if ((TYP(r)!=PT_C5 && parts[ID(r)].temp<100 && !sim->IsHeatInsulator(parts[ID(r)])) || TYP(r)==PT_CFLM)
+				if ((TYP(r)!=PT_C5 && parts[ID(r)].temp<100 && !sd.IsHeatInsulator(parts[ID(r)])) || TYP(r)==PT_CFLM)
 				{
 					if (sim->rng.chance(1, 6))
 					{

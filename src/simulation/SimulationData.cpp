@@ -8,6 +8,7 @@
 #include "MenuSection.h"
 #include "Misc.h"
 #include "graphics/Renderer.h"
+#include "simulation/elements/PIPE.h"
 
 const std::array<BuiltinGOL, NGOL> SimulationData::builtinGol = {{
 	// * Ruleset:
@@ -332,4 +333,9 @@ SimulationData::SimulationData()
 	wtypes = LoadWalls();
 	elements = GetElements();
 	init_can_move();
+}
+
+bool SimulationData::IsHeatInsulator(const Particle &p) const
+{
+	return elements[p.type].HeatConduct == 0 || (p.type == PT_HSWC && p.life != 10) || ((p.type == PT_PIPE || p.type == PT_PPIP) && (p.tmp & PFLAG_CAN_CONDUCT) == 0);
 }

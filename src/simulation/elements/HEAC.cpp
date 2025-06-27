@@ -47,10 +47,6 @@ void Element::Element_HEAC()
 	Update = &update;
 }
 
-static const auto isInsulator = [](Simulation* sim, int p) -> bool {
-	return p && sim->IsHeatInsulator(sim->parts[ID(p)]);
-};
-
 // If this is used elsewhere (GOLD), it should be moved into Simulation.h
 template<class BinaryPredicate>
 bool CheckLine(Simulation* sim, int x1, int y1, int x2, int y2, BinaryPredicate func)
@@ -118,6 +114,7 @@ bool CheckLine(Simulation* sim, int x1, int y1, int x2, int y2, BinaryPredicate 
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
 	const int rad = 4;
 	int rry, rrx, r, count = 0;
 	float tempAgg = 0;
@@ -127,16 +124,18 @@ static int update(UPDATE_FUNC_ARGS)
 		{
 			rry = ry * rad;
 			rrx = rx * rad;
-			if (x+rrx >= 0 && x+rrx < XRES && y+rry >= 0 && y+rry < YRES && !CheckLine(sim, x, y, x+rrx, y+rry, isInsulator))
+			if (x+rrx >= 0 && x+rrx < XRES && y+rry >= 0 && y+rry < YRES && !CheckLine(sim, x, y, x+rrx, y+rry, [&sd](Simulation* sim, int p) {
+				return p && sd.IsHeatInsulator(sim->parts[ID(p)]);
+			}))
 			{
 				r = pmap[y+rry][x+rrx];
-				if (r && !sim->IsHeatInsulator(parts[ID(r)]))
+				if (r && !sd.IsHeatInsulator(parts[ID(r)]))
 				{
 					count++;
 					tempAgg += parts[ID(r)].temp;
 				}
 				r = sim->photons[y+rry][x+rrx];
-				if (r && !sim->IsHeatInsulator(parts[ID(r)]))
+				if (r && !sd.IsHeatInsulator(parts[ID(r)]))
 				{
 					count++;
 					tempAgg += parts[ID(r)].temp;
@@ -155,15 +154,17 @@ static int update(UPDATE_FUNC_ARGS)
 			{
 				rry = ry * rad;
 				rrx = rx * rad;
-				if (x+rrx >= 0 && x+rrx < XRES && y+rry >= 0 && y+rry < YRES && !CheckLine(sim, x, y, x+rrx, y+rry, isInsulator))
+				if (x+rrx >= 0 && x+rrx < XRES && y+rry >= 0 && y+rry < YRES && !CheckLine(sim, x, y, x+rrx, y+rry, [&sd](Simulation* sim, int p) {
+					return p && sd.IsHeatInsulator(sim->parts[ID(p)]);
+				}))
 				{
 					r = pmap[y+rry][x+rrx];
-					if (r && !sim->IsHeatInsulator(parts[ID(r)]))
+					if (r && !sd.IsHeatInsulator(parts[ID(r)]))
 					{
 						parts[ID(r)].temp = parts[i].temp;
 					}
 					r = sim->photons[y+rry][x+rrx];
-					if (r && !sim->IsHeatInsulator(parts[ID(r)]))
+					if (r && !sd.IsHeatInsulator(parts[ID(r)]))
 					{
 						parts[ID(r)].temp = parts[i].temp;
 					}

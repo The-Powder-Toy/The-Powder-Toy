@@ -934,7 +934,7 @@ static int resetTemp(lua_State *L)
 	bool onlyConductors = luaL_optint(L, 1, 0);
 	for (int i = 0; i < sim->parts.lastActiveIndex; i++)
 	{
-		if (sim->parts[i].type && (!onlyConductors || !sim->IsHeatInsulator(sim->parts[i])))
+		if (sim->parts[i].type && (!onlyConductors || !sd.IsHeatInsulator(sim->parts[i])))
 		{
 			sim->parts[i].temp = elements[sim->parts[i].type].DefaultProperties.temp;
 		}

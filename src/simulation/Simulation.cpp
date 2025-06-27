@@ -1199,7 +1199,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			if (rt == PT_COAL || rt == PT_BCOL)
 				parts[ID(r)].temp = parts[i].temp;
 
-			if (rt < PT_NUM && !IsHeatInsulator(parts[ID(r)]) && rt != PT_FILT)
+			if (rt < PT_NUM && !sd.IsHeatInsulator(parts[ID(r)]) && rt != PT_FILT)
 				parts[i].temp = parts[ID(r)].temp = restrict_flt((parts[ID(r)].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
 		}
 		else if ((parts[i].type==PT_NEUT || parts[i].type==PT_ELEC) && (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN || rt==PT_PBCN))
@@ -2205,11 +2205,6 @@ Simulation::PlanMoveResult Simulation::PlanMove(Sim &sim, int i, int x, int y)
 template
 Simulation::PlanMoveResult Simulation::PlanMove<false, const Simulation>(const Simulation &sim, int i, int x, int y);
 
-bool Simulation::IsHeatInsulator(Particle p) const
-{
-	return SimulationData::CRef().elements[p.type].HeatConduct == 0 || (p.type == PT_HSWC && p.life != 10) || ((p.type == PT_PIPE || p.type == PT_PPIP) && (p.tmp & PFLAG_CAN_CONDUCT) == 0);
-}
-
 void Simulation::UpdateParticles(int start, int end)
 {
 	//the main particle loop function, goes over all particles.
@@ -2367,7 +2362,7 @@ void Simulation::UpdateParticles(int start, int end)
 				//heat transfer code
 				auto h_count = 0;
 				bool cond;
-				cond = t && !IsHeatInsulator(parts[i]) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250);
+				cond = t && !sd.IsHeatInsulator(parts[i]) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250);
 
 				if (cond)
 				{
@@ -2390,7 +2385,7 @@ void Simulation::UpdateParticles(int start, int end)
 
 						auto rt = TYP(r);
 
-						if (!rt || IsHeatInsulator(parts[ID(r)])
+						if (!rt || sd.IsHeatInsulator(parts[ID(r)])
 						        || (t == PT_FILT && (rt == PT_BRAY || rt == PT_BIZR || rt == PT_BIZRG))
 						        || (rt == PT_FILT && (t == PT_BRAY || t == PT_PHOT || t == PT_BIZR || t == PT_BIZRG))
 						        || (t == PT_ELEC && rt == PT_DEUT)
