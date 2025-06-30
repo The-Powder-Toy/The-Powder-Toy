@@ -940,11 +940,11 @@ ByteString GameView::TakeScreenshot(int captureUI, int fileType)
 	std::unique_ptr<VideoBuffer> screenshot;
 	if (captureUI)
 	{
-		screenshot = std::make_unique<VideoBuffer>(*rendererFrame);
+		screenshot = std::make_unique<VideoBuffer>(ui::Engine::Ref().g->DumpFrame());
 	}
 	else
 	{
-		screenshot = std::make_unique<VideoBuffer>(ui::Engine::Ref().g->DumpFrame());
+		screenshot = std::make_unique<VideoBuffer>(*rendererFrame);
 	}
 
 	ByteString filename;
