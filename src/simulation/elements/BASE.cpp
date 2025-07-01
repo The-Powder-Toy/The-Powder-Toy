@@ -214,19 +214,19 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 {
 	int s = cpart->life;
 
-	if (s < 25)
+	if (s <= 25)
 	{
 		*colr = 0x33;
 		*colg = 0x4C;
 		*colb = 0xD8;
 	}
-	else if (s < 50)
+	else if (s <= 50)
 	{
 		*colr = 0x58;
 		*colg = 0x83;
 		*colb = 0xE8;
 	}
-	else if (s < 75)
+	else if (s <= 75)
 	{
 		*colr = 0x7D;
 		*colg = 0xBA;
