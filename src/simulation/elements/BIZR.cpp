@@ -47,8 +47,6 @@ void Element::Element_BIZR()
 	Graphics = &Element_BIZR_graphics;
 }
 
-constexpr float BLEND = 0.95f;
-
 int Element_BIZR_update(UPDATE_FUNC_ARGS)
 {
 	if(parts[i].dcolour)
@@ -74,10 +72,10 @@ int Element_BIZR_update(UPDATE_FUNC_ARGS)
 						auto mb = float((parts[i].dcolour)&0xFF);
 						auto ma = float((parts[i].dcolour>>24)&0xFF);
 
-						auto nr = int((tr*BLEND) + (mr*(1 - BLEND)));
-						auto ng = int((tg*BLEND) + (mg*(1 - BLEND)));
-						auto nb = int((tb*BLEND) + (mb*(1 - BLEND)));
-						auto na = int((ta*BLEND) + (ma*(1 - BLEND)));
+						auto nr = int(tr + ((mr > tr) - (mr < tr)) + static_cast<int>(std::round((mr - tr) / 21.0)));
+						auto ng = int(tg + ((mg > tg) - (mg < tg)) + static_cast<int>(std::round((mg - tg) / 21.0)));
+						auto nb = int(tb + ((mb > tb) - (mb < tb)) + static_cast<int>(std::round((mb - tb) / 21.0)));
+						auto na = int(ta + ((ma > ta) - (ma < ta)) + static_cast<int>(std::round((ma - ta) / 21.0)));
 
 						parts[ID(r)].dcolour = nr<<16 | ng<<8 | nb | na<<24;
 					}
