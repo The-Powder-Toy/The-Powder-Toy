@@ -47,6 +47,8 @@ void Element::Element_BIZR()
 	Graphics = &Element_BIZR_graphics;
 }
 
+constexpr float BLEND = 21.0f;
+
 int Element_BIZR_update(UPDATE_FUNC_ARGS)
 {
 	if(parts[i].dcolour)
@@ -62,20 +64,20 @@ int Element_BIZR_update(UPDATE_FUNC_ARGS)
 						continue;
 					if (TYP(r)!=PT_BIZR && TYP(r)!=PT_BIZRG  && TYP(r)!=PT_BIZRS)
 					{
-						auto tr = float((parts[ID(r)].dcolour>>16)&0xFF);
-						auto tg = float((parts[ID(r)].dcolour>>8)&0xFF);
-						auto tb = float((parts[ID(r)].dcolour)&0xFF);
-						auto ta = float((parts[ID(r)].dcolour>>24)&0xFF);
+						int tr = (parts[ID(r)].dcolour>>16)&0xFF;
+						int tg = (parts[ID(r)].dcolour>>8)&0xFF;
+						int tb = (parts[ID(r)].dcolour)&0xFF;
+						int ta = (parts[ID(r)].dcolour>>24)&0xFF;
 
-						auto mr = float((parts[i].dcolour>>16)&0xFF);
-						auto mg = float((parts[i].dcolour>>8)&0xFF);
-						auto mb = float((parts[i].dcolour)&0xFF);
-						auto ma = float((parts[i].dcolour>>24)&0xFF);
+						int mr = (parts[i].dcolour>>16)&0xFF;
+						int mg = (parts[i].dcolour>>8)&0xFF;
+						int mb = (parts[i].dcolour)&0xFF;
+						int ma = (parts[i].dcolour>>24)&0xFF;
 
-						auto nr = int(tr + ((mr > tr) - (mr < tr)) + static_cast<int>(std::round((mr - tr) / 21.0)));
-						auto ng = int(tg + ((mg > tg) - (mg < tg)) + static_cast<int>(std::round((mg - tg) / 21.0)));
-						auto nb = int(tb + ((mb > tb) - (mb < tb)) + static_cast<int>(std::round((mb - tb) / 21.0)));
-						auto na = int(ta + ((ma > ta) - (ma < ta)) + static_cast<int>(std::round((ma - ta) / 21.0)));
+						int nr = tr + ((mr > tr) - (mr < tr)) + int(std::round((mr - tr) / BLEND));
+						int ng = tg + ((mg > tg) - (mg < tg)) + int(std::round((mg - tg) / BLEND));
+						int nb = tb + ((mb > tb) - (mb < tb)) + int(std::round((mb - tb) / BLEND));
+						int na = ta + ((ma > ta) - (ma < ta)) + int(std::round((ma - ta) / BLEND));
 
 						parts[ID(r)].dcolour = nr<<16 | ng<<8 | nb | na<<24;
 					}
