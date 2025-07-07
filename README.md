@@ -51,7 +51,6 @@ Libraries and other assets used
 * [Mallangche](https://github.com/JammPark/Mallangche)
 * [mbedtls](https://www.trustedfirmware.org/projects/mbed-tls/)
 * [SDL](https://libsdl.org/)
-* [zlib](https://www.zlib.net/)
 
 Instructions
 ===========================================================================
