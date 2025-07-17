@@ -37,7 +37,7 @@ void Element::Element_PAPR()
 	Weight = 100;
 
 	HeatConduct = 80;
-	Description = "Paper. Flammable, can be marked by BCOL or erased by SOAP. Lets non-solids through when unmarked.";
+	Description = "Paper. Flammable, can be marked by BCOL or erased by SOAP. Lets particles through when unmarked.";
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS;
 
