@@ -1,10 +1,6 @@
 #include "simulation/ElementCommon.h"
 #include "PAPR.h"
 
-static int update(UPDATE_FUNC_ARGS);
-static int graphics(GRAPHICS_FUNC_ARGS);
-static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);
-
 // Element overview:
 // PAPR (Paper) is a flammable solid element that can be colored by certain other elements.
 // Additionally, it can be read and written to by ARAY and LDTC.
@@ -54,12 +50,12 @@ void Element::Element_PAPR()
 	HighTemperature = 700.0f;
 	HighTemperatureTransition = PT_NONE;
 
-	Update = &update;
-	Graphics = &graphics;
-	CtypeDraw = &ctypeDraw;
+	Update = &Element_PAPR_update;
+	Graphics = &Element_PAPR_graphics;
+	CtypeDraw = &Element_PAPR_cTypeDraw;
 }
 
-static int update(UPDATE_FUNC_ARGS)
+int Element_PAPR_update(UPDATE_FUNC_ARGS)
 {
 	// Char when above burning temperature
 	if (parts[i].temp > 450 && parts[i].temp >= parts[i].tmp2)
@@ -82,40 +78,42 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 
 	// Electronic marking
-	if (parts[i].tmp3 == 10)
-	{
-		parts[i].tmp3 = 11;
-		parts[i].life = 1;
-		parts[i].dcolour = MARK_COLOR_COAL;
-	}
-	else if (parts[i].tmp3 != 0 && parts[i].tmp3 != 11)
-	{
-		parts[i].life = 0;
-		parts[i].dcolour = 0x00000000;
-		parts[i].tmp3--;
-	}
-	for (auto rx = -1; rx <= 1; rx++)
-	{
-		for (auto ry = -1; ry <= 1; ry++)
+	if (parts[i].type == PT_EPPR) {
+		if (parts[i].tmp3 == 10)
 		{
-			if (rx || ry)
+			parts[i].tmp3 = 11;
+			parts[i].life = 1;
+			parts[i].dcolour = MARK_COLOR_COAL;
+		}
+		else if (parts[i].tmp3 != 0 && parts[i].tmp3 != 11)
+		{
+			parts[i].life = 0;
+			parts[i].dcolour = 0x00000000;
+			parts[i].tmp3--;
+		}
+		for (auto rx = -1; rx <= 1; rx++)
+		{
+			for (auto ry = -1; ry <= 1; ry++)
 			{
-				auto r = pmap[y+ry][x+rx];
-				if (!r)
-					continue;
-				if (TYP(r)==PT_SPRK)
+				if (rx || ry)
 				{
-					if (parts[ID(r)].ctype == PT_PSCN)
-						parts[i].tmp3 = 10;
-					else if (parts[ID(r)].ctype == PT_NSCN)
-						parts[i].tmp3 = 9;
-				}
-				else if (TYP(r) == PT_PAPR)
-				{
-					if (parts[i].tmp3 >= 10 && parts[ID(r)].tmp3 > 0 && parts[ID(r)].tmp3 < 10)
-						parts[i].tmp3 = 9;
-					else if (parts[i].tmp3 == 0 && parts[ID(r)].tmp3 >= 10)
-						parts[i].tmp3 = 10;
+					auto r = pmap[y+ry][x+rx];
+					if (!r)
+						continue;
+					if (TYP(r)==PT_SPRK)
+					{
+						if (parts[ID(r)].ctype == PT_PSCN)
+							parts[i].tmp3 = 10;
+						else if (parts[ID(r)].ctype == PT_NSCN)
+							parts[i].tmp3 = 9;
+					}
+					else if (TYP(r) == PT_EPPR)
+					{
+						if (parts[i].tmp3 >= 10 && parts[ID(r)].tmp3 > 0 && parts[ID(r)].tmp3 < 10)
+							parts[i].tmp3 = 9;
+						else if (parts[i].tmp3 == 0 && parts[ID(r)].tmp3 >= 10)
+							parts[i].tmp3 = 10;
+					}
 				}
 			}
 		}
@@ -133,23 +131,27 @@ static int update(UPDATE_FUNC_ARGS)
 
 		// Acts as a smoke filter
 		case PT_SMKE:
-			if (sim->rng.chance(1, 5))
-			{
-				sim->kill_part(ID(r));
-				// On average, each pixel of PAPR absorbs 10 SMKE particles before becoming impermeable
-				if (sim->rng.chance(1, 10))
+			if (parts[i].type == PT_PAPR) {
+				if (sim->rng.chance(1, 5))
 				{
-					parts[i].life = 1;
-					parts[i].dcolour = 0xFF322222;
+					sim->kill_part(ID(r));
+					// On average, each pixel of PAPR absorbs 10 SMKE particles before becoming impermeable
+					if (sim->rng.chance(1, 10))
+					{
+						parts[i].life = 1;
+						parts[i].dcolour = 0xFF322222;
+					}
 				}
 			}
 			break;
 
 		// Can also filter out CAUS from the air, but much less effectively (partly because of corrosion)
 		case PT_CAUS:
-			sim->kill_part(ID(r));
-			parts[i].life = 1;
-			parts[i].dcolour = 0xFF223C22;
+			if (parts[i].type == PT_PAPR) {
+				sim->kill_part(ID(r));
+				parts[i].life = 1;
+				parts[i].dcolour = 0xFF223C22;
+			}
 			break;
 
 		// Doesn't guarantee layering won't happen, but makes it far less likely
@@ -158,15 +160,23 @@ static int update(UPDATE_FUNC_ARGS)
 			break;
 
 		case PT_GUNP:
-			if (sim->pv[y / CELL][x / CELL] > 0.75f && sim->rng.chance(1, 5))
-			{
-				sim->create_part(i, x, y, PT_IGNT);
-				parts[i].life = 3;
-				sim->kill_part(ID(r));
-				return 1;
+			if (parts[i].type == PT_PAPR) {
+				if (sim->pv[y / CELL][x / CELL] > 0.75f && sim->rng.chance(1, 5))
+				{
+					sim->create_part(i, x, y, PT_IGNT);
+					parts[i].life = 3;
+					sim->kill_part(ID(r));
+					return 1;
+				}
 			}
 			break;
 
+		case PT_MERC:
+			if (parts[i].type == PT_PAPR && parts[ID(r)].tmp > 0) {
+				sim->part_change_type(i, x, y, PT_EPPR);
+				parts[ID(r)].tmp--;
+			}
+			
 		default:
 			break;
 	}
@@ -183,7 +193,7 @@ static int update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-static int graphics(GRAPHICS_FUNC_ARGS)
+int Element_PAPR_graphics(GRAPHICS_FUNC_ARGS)
 {
 	// Don't render if there's a particle above you
 	int onTopOfMe = gfctx.sim->pmap[ny][nx];
@@ -241,7 +251,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
+bool Element_PAPR_cTypeDraw(CTYPEDRAW_FUNC_ARGS)
 {
 	// Allow "drawing" directly on PAPR like a pencil
 	if (t == PT_BCOL || t == PT_COAL)

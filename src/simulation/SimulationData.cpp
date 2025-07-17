@@ -184,8 +184,10 @@ void SimulationData::init_can_move()
 			can_move[movingType][PT_SAWD] = 0;
 
 		// Let most elements pass through unmarked PAPR
-        if (movingType != PT_FIRE && movingType != PT_SAWD)
+        if (movingType != PT_FIRE && movingType != PT_SAWD) {
             can_move[movingType][PT_PAPR] = 3;
+            can_move[movingType][PT_EPPR] = 3;
+		}
 	}
 
 	for (destinationType = 0; destinationType < PT_NUM; destinationType++)

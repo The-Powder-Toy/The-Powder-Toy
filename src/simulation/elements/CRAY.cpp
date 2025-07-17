@@ -123,7 +123,7 @@ static int update(UPDATE_FUNC_ARGS)
 								else if (colored==0xFF000000)
 									colored = 0;
 								parts[ID(r)].life = 4;
-							} else if (TYP(r) == PT_PAPR) {
+							} else if (TYP(r) == PT_PAPR || TYP(r) == PT_EPPR) {
 								if (TYP(parts[i].ctype == PT_COAL) || TYP(parts[i].ctype) == PT_BCOL) {
 									sim->parts[ID(r)].life = 1;
 									if (colored)

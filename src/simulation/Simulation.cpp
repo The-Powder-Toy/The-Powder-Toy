@@ -1143,6 +1143,7 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr) const
 					return 0;
 			}
 			break;
+		case PT_EPPR:
 		case PT_PAPR:
 			// BCOL can always pass through PAPR in order to color it
 			// Most elements are blocked by marked PAPR, except for certified "weird" elements where it's inverse
@@ -1200,7 +1201,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			if (rt == PT_COAL || rt == PT_BCOL)
 				parts[ID(r)].temp = parts[i].temp;
       
-			if (rt < PT_NUM && !IsHeatInsulator(parts[ID(r)]) && rt != PT_FILT && rt != PT_PAPR)
+			if (rt < PT_NUM && !IsHeatInsulator(parts[ID(r)]) && rt != PT_FILT && rt != PT_PAPR && rt != PT_EPPR)
 				parts[i].temp = parts[ID(r)].temp = restrict_flt((parts[ID(r)].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
 		}
 		else if ((parts[i].type==PT_NEUT || parts[i].type==PT_ELEC) && (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN || rt==PT_PBCN))
@@ -2398,7 +2399,8 @@ void Simulation::UpdateParticles(int start, int end)
 						        || (t == PT_DEUT && rt == PT_ELEC)
 						        || (t == PT_HSWC && rt == PT_FILT && parts[i].tmp == 1)
 						        || (t == PT_FILT && rt == PT_HSWC && parts[ID(r)].tmp == 1)
-						        || (t == PT_PHOT && rt == PT_PAPR))
+						        || (t == PT_PHOT && rt == PT_PAPR)
+						        || (t == PT_PHOT && rt == PT_EPPR))
 							continue;
 
 						surround_hconduct[j] = ID(r);
@@ -3270,9 +3272,9 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 					photons[y][x] = PMAP(i, t);
 				else
 				{
-					// Particles are sometimes allowed to go inside INVS, FILT, and PAPR
+					// Particles are sometimes allowed to go inside INVS, FILT, and PAPR/EPPR
 					// To make particles collide correctly when inside these elements, these elements must not overwrite an existing pmap entry from particles inside them
-					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT && t != PT_PAPR))
+					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT && t != PT_PAPR && t != PT_EPPR))
 						pmap[y][x] = PMAP(i, t);
 					// (there are a few exceptions, including energy particles - currently no limit on stacking those)
 					if (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH && t!=PT_PLSM)

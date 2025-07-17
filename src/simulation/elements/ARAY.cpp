@@ -166,7 +166,7 @@ static int update(UPDATE_FUNC_ARGS)
 									parts[r].life = 10;
 								}
 							}
-							else if (rt == PT_PAPR)
+							else if (rt == PT_EPPR)
 							{
 								// In reading/writing state?
 								if (parts[r].tmp)
