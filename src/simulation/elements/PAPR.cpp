@@ -32,7 +32,7 @@ void Element::Element_PAPR()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 60;
+	Hardness = 5;
 
 	Weight = 100;
 
