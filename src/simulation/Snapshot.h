@@ -3,10 +3,10 @@
 #include "Sign.h"
 #include "Stickman.h"
 #include "common/tpt-rand.h"
+#include "common/Bson.h"
 #include <vector>
 #include <array>
 #include <cstdint>
-#include <json/json.h>
 
 class Snapshot
 {
@@ -42,7 +42,7 @@ public:
 
 	uint32_t Hash() const;
 
-	Json::Value Authors;
+	Bson Authors;
 
 	virtual ~Snapshot() = default;
 };

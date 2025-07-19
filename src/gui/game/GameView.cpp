@@ -1448,16 +1448,6 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 	case SDL_SCANCODE_F5:
 		c->ReloadSim();
 		break;
-	case SDL_SCANCODE_A:
-		{
-			auto user = Client::Ref().GetAuthUser();
-			if (user && user->UserElevation != User::ElevationNone && ctrl)
-			{
-				ByteString authorString = Client::Ref().GetAuthorInfo().toStyledString();
-				new InformationMessage("Save authorship info", authorString.FromUtf8(), true);
-			}
-		}
-		break;
 	case SDL_SCANCODE_R:
 		if (ctrl)
 			c->ReloadSim();

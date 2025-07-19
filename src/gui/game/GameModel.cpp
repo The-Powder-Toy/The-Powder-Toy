@@ -788,7 +788,7 @@ void GameModel::SetSave(std::unique_ptr<SaveInfo> newSave, bool invertIncludePre
 		sim->Load(saveData, !invertIncludePressure, { 0, 0 });
 		// This save was created before logging existed
 		// Add in the correct info
-		if (saveData->authors.size() == 0)
+		if (saveData->authors.GetSize() == 0)
 		{
 			auto gameSave = currentSave.saveInfo->TakeGameSave();
 			gameSave->authors["type"] = "save";
@@ -797,12 +797,12 @@ void GameModel::SetSave(std::unique_ptr<SaveInfo> newSave, bool invertIncludePre
 			gameSave->authors["title"] = currentSave.saveInfo->name.ToUtf8();
 			gameSave->authors["description"] = currentSave.saveInfo->Description.ToUtf8();
 			gameSave->authors["published"] = (int)currentSave.saveInfo->Published;
-			gameSave->authors["date"] = (Json::Value::UInt64)currentSave.saveInfo->updatedDate;
+			gameSave->authors["date"] = int64_t(currentSave.saveInfo->updatedDate);
 			currentSave.saveInfo->SetGameSave(std::move(gameSave));
 		}
 		// This save was probably just created, and we didn't know the ID when creating it
 		// Update with the proper ID
-		else if (saveData->authors.get("id", -1) == 0 || saveData->authors.get("id", -1) == -1)
+		else if (saveData->authors.Get("id", -1) == 0 || saveData->authors.Get("id", -1) == -1)
 		{
 			auto gameSave = currentSave.saveInfo->TakeGameSave();
 			gameSave->authors["id"] = currentSave.saveInfo->id;

@@ -482,12 +482,12 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 	auto newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), SaneSaveRect(point1, point2));
 	if(newSave)
 	{
-		Json::Value clipboardInfo;
+		Bson clipboardInfo;
 		clipboardInfo["type"] = "clipboard";
 		auto user = Client::Ref().GetAuthUser();
 		clipboardInfo["username"] = user ? user->Username : ByteString("");
-		clipboardInfo["date"] = (Json::Value::UInt64)time(nullptr);
-		Client::Ref().SaveAuthorInfo(&clipboardInfo);
+		clipboardInfo["date"] = int64_t(time(nullptr));
+		Client::Ref().SaveAuthorInfo(clipboardInfo);
 		newSave->authors = clipboardInfo;
 
 		newSave->paused = gameModel->GetPaused();
@@ -1234,13 +1234,13 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 		}
 		else if (gameModel->GetSaveFile())
 		{
-			Json::Value localSaveInfo;
+			Bson localSaveInfo;
 			localSaveInfo["type"] = "localsave";
 			auto user = Client::Ref().GetAuthUser();
 			localSaveInfo["username"] = user ? user->Username : ByteString("");
 			localSaveInfo["title"] = gameModel->GetSaveFile()->GetName();
-			localSaveInfo["date"] = (Json::Value::UInt64)time(nullptr);
-			Client::Ref().SaveAuthorInfo(&localSaveInfo);
+			localSaveInfo["date"] = int64_t(time(nullptr));
+			Client::Ref().SaveAuthorInfo(localSaveInfo);
 			gameSave->authors = localSaveInfo;
 
 			Platform::MakeDirectory(LOCAL_SAVE_DIR);

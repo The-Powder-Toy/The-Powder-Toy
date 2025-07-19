@@ -18,6 +18,7 @@
 #include "elements/PRTI.h"
 #include <iostream>
 #include <set>
+#include <stack>
 
 static float remainder_p(float x, float y)
 {

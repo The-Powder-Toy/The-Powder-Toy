@@ -4,6 +4,7 @@
 #include "client/GameSave.h"
 #include "Format.h"
 #include "Config.h"
+#include <json/json.h>
 
 namespace http
 {

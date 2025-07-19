@@ -1039,7 +1039,7 @@ static int loadStamp(lua_State *L)
 		lsi->sim->Load(gameSave.get(), includePressure, { quoX, quoY });
 		lua_pushinteger(L, 1);
 
-		if (gameSave->authors.size())
+		if (gameSave->authors.GetSize())
 		{
 			gameSave->authors["type"] = "luastamp";
 			client.MergeStampAuthorInfo(gameSave->authors);
