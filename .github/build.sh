@@ -521,7 +521,8 @@ if [[ $BSH_HOST_PLATFORM == darwin ]]; then
 		exit 1
 	fi
 elif [[ $PACKAGE_MODE == emscripten ]]; then
-	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.wasm
+	cp resources/serve-wasm.py .
+	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.wasm serve-wasm.py
 elif [[ $PACKAGE_MODE == appimage ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
 	case $BSH_HOST_ARCH in
