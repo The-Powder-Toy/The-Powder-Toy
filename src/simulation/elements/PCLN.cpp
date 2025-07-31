@@ -112,18 +112,21 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	if (parts[i].ctype>0 && parts[i].ctype<PT_NUM && elements[parts[i].ctype].Enabled && parts[i].life==10)
 	{
-		if (parts[i].ctype==PT_PHOT) {//create photons a different way
+		if (parts[i].ctype==PT_PHOT || parts[i].ctype==PT_UVLT) {//create photons/ultraviolet rays a different way
 			for (auto rx = -1; rx <= 1; rx++)
 			{
 				for (auto ry = -1; ry <= 1; ry++)
 				{
 					if (rx || ry)
 					{
-						int r = sim->create_part(-1, x + rx, y + ry, PT_PHOT);
+						int r = sim->create_part(-1, x + rx, y + ry, parts[i].ctype);
 						if (r != -1)
 						{
-							parts[r].vx = float(rx * 3);
-							parts[r].vy = float(ry * 3);
+							int speed = 3;
+							if (parts[i].ctype == PT_UVLT)
+								speed = 4;
+							parts[r].vx = float(rx * speed);
+							parts[r].vy = float(ry * speed);
 							if (r>i)
 							{
 								// Make sure movement doesn't happen until next frame, to avoid gaps in the beams of photons produced

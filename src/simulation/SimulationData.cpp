@@ -196,6 +196,7 @@ void SimulationData::init_can_move()
 		{
 			can_move[PT_PROT][destinationType] = 2;
 			can_move[PT_GRVT][destinationType] = 2;
+			can_move[PT_UVLT][destinationType] = 2;
 		}
 	}
 
@@ -231,6 +232,8 @@ void SimulationData::init_can_move()
 	can_move[PT_TRON][PT_SWCH] = 3;
 	can_move[PT_ELEC][PT_RSST] = 2;
 	can_move[PT_ELEC][PT_RSSS] = 2;
+
+	can_move[PT_UVLT][PT_GOLD] = 0; //GOLD reflects UVLT
 }
 
 const CustomGOLData *SimulationData::GetCustomGOLByRule(int rule) const
