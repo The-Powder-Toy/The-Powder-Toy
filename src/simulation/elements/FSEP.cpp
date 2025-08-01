@@ -24,7 +24,7 @@ void Element::Element_FSEP()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 30;
+	Hardness = 27;
 
 	Weight = 70;
 

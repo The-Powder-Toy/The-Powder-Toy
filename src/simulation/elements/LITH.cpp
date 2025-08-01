@@ -25,7 +25,7 @@ void Element::Element_LITH()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 15;
+	Hardness = 14;
 
 	Weight = 17;
 

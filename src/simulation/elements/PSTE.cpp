@@ -22,7 +22,7 @@ void Element::Element_PSTE()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 20;
+	Hardness = 18;
 
 	Weight = 31;
 

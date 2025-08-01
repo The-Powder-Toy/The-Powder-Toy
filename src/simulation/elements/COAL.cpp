@@ -23,7 +23,7 @@ void Element::Element_COAL()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 20;
+	Hardness = 18;
 	PhotonReflectWavelengths = 0x00000000;
 
 	Weight = 100;

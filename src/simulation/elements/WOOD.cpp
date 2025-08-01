@@ -26,7 +26,7 @@ void Element::Element_WOOD()
 	Flammable = 20;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 15;
+	Hardness = 16;
 
 	Weight = 100;
 

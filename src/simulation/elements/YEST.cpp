@@ -24,7 +24,7 @@ void Element::Element_YEST()
 	Flammable = 15;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 30;
+	Hardness = 31;
 
 	Weight = 80;
 
