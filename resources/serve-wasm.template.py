@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from OpenSSL import crypto
 import http.server
 import json
@@ -7,12 +9,13 @@ import ssl
 import sys
 import time
 
-(
-	script,
-	build_root,
-) = sys.argv
-
-os.chdir(build_root)
+if len(sys.argv) >= 2:
+	# chdir if invoked through meson; assume that we're in the correct dir already otherwise
+	(
+		script,
+		build_root,
+	) = sys.argv
+	os.chdir(build_root)
 
 HTTP_HOST  = '127.0.0.1'
 HTTP_PORT  = 8000

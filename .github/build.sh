@@ -95,7 +95,7 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 		if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 			sudo apt install libc6-dev
 		else
-			sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev libbz2-dev libjsoncpp-dev libpng-dev
+			sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev libsdl2-dev libbz2-dev libjsoncpp-dev libpng-dev
 		fi
 		if [[ $PACKAGE_MODE == appimage ]]; then
 			sudo apt install libfuse2
@@ -107,7 +107,7 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 	darwin)
 		brew install binutils # pkg-config
 		if [[ $BSH_STATIC_DYNAMIC != static ]]; then
-			brew install luajit fftw zlib sdl2 bzip2 jsoncpp # curl
+			brew install luajit fftw sdl2 bzip2 jsoncpp # curl
 		fi
 		if [[ $BSH_LINT == yes ]]; then
 			# gg brew :(
@@ -521,7 +521,8 @@ if [[ $BSH_HOST_PLATFORM == darwin ]]; then
 		exit 1
 	fi
 elif [[ $PACKAGE_MODE == emscripten ]]; then
-	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.wasm
+	cp resources/serve-wasm.py .
+	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.wasm serve-wasm.py
 elif [[ $PACKAGE_MODE == appimage ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
 	case $BSH_HOST_ARCH in

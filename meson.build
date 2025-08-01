@@ -225,7 +225,6 @@ if host_platform == 'emscripten'
 		'-s', 'USE_BZIP2=1',
 		'-s', 'USE_LIBPNG',
 		'-s', 'USE_PTHREADS',
-#		'-s', 'USE_ZLIB=1',
 		'-s', 'DISABLE_EXCEPTION_CATCHING=0',
 		'-gsource-map',
 	]

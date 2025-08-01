@@ -1023,6 +1023,10 @@ void Simulation::clear_sim(void)
 	memset(fighters, 0, sizeof(fighters));
 	memset(&player, 0, sizeof(player));
 	memset(&player2, 0, sizeof(player2));
+	memset(&Element_LOLZ_lolz, 0, sizeof(Element_LOLZ_lolz));
+	memset(&Element_LOVE_love, 0, sizeof(Element_LOVE_love));
+	memset(&Element_PSTN_tempParts, 0, sizeof(Element_PSTN_tempParts));
+	Element_PPIP_ppip_changed = 0;
 	std::fill(elementCount, elementCount+PT_NUM, 0);
 	elementRecount = true;
 	fighcount = 0;

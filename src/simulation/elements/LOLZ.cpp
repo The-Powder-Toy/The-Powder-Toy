@@ -43,7 +43,7 @@ void Element::Element_LOLZ()
 	HighTemperatureTransition = NT;
 }
 
-int Element_LOLZ_RuleTable[9][9] =
+extern const int Element_LOLZ_RuleTable[9][9] =
 {
 	{0,0,0,0,0,0,0,0,0},
 	{1,0,0,0,0,0,1,0,0},
@@ -55,5 +55,3 @@ int Element_LOLZ_RuleTable[9][9] =
 	{0,1,0,0,0,0,0,1,0},
 	{0,1,0,0,0,0,0,1,0},
 };
-
-int Element_LOLZ_lolz[XRES/9][YRES/9];

@@ -61,8 +61,6 @@ constexpr int PPIP_TMPFLAG_TRIGGER_REVERSE = 0x04000000;
 // 0x00002000 will transfer like a single pixel pipe when in reverse mode
 // 0x0001C000 reverse single pixel pipe direction
 
-int Element_PPIP_ppip_changed = 0;
-
 void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 {
 	int coord_stack_limit = XRES*YRES;
@@ -120,7 +118,7 @@ void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy)
 		for (x=x1; x<=x2; x++)
 		{
 			if (!(parts[ID(pmap[y][x])].tmp & prop) && sparkedBy != PT_HEAC)
-				Element_PPIP_ppip_changed = 1;
+				sim->Element_PPIP_ppip_changed = 1;
 			parts[ID(pmap[y][x])].tmp |= prop;
 		}
 
