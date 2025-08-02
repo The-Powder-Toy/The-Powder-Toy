@@ -73,6 +73,32 @@ static void wtrv_reactions(int wtrv1_id, UPDATE_FUNC_ARGS)
 	}
 }
 
+static void oil_reactions(int oil1_id, UPDATE_FUNC_ARGS)
+{
+	for (int rx = -1; rx <= 1; rx++)
+	{
+		for (int ry = -1; ry <= 1; ry++)
+		{
+			if (rx || ry)
+			{
+				int r = pmap[y + ry][x + rx];
+				if (!r || ID(r) == oil1_id)
+					continue;
+				int rt = TYP(r);
+
+				// OIL + RIME -> DESL + WAX
+				if (rt == PT_RIME && parts[ID(r)].temp < 273.15f && parts[oil1_id].temp < 273.15f)
+				{
+					sim->part_change_type(ID(r), x + rx, y + ry, PT_WAX);
+					sim->part_change_type(oil1_id, (int)(parts[oil1_id].x + 0.5f), (int)(parts[oil1_id].y + 0.5f), PT_DESL);
+					sim->pv[((int)(parts[oil1_id].y + 0.5f)) / CELL][((int)(parts[oil1_id].x + 0.5f)) / CELL] += 0.25f;
+					return;
+				}
+			}
+		}
+	}
+}
+
 static void hygn_reactions(int hygn1_id, UPDATE_FUNC_ARGS)
 {
 	for (int rx = -1; rx <= 1; rx++)
@@ -142,6 +168,7 @@ static int update(UPDATE_FUNC_ARGS)
 {
 	int hygn1_id = -1; // Id of a hydrogen particle for hydrogen multi-particle reactions
 	int wtrv1_id = -1; // same but wtrv
+	int oil1_id = -1; // same but oil
 
 	// Fast conduction (like GOLD)
 	if (!parts[i].life)
@@ -179,6 +206,9 @@ static int update(UPDATE_FUNC_ARGS)
 
 				if (rt == PT_WTRV && wtrv1_id < 0)
 					wtrv1_id = ID(r);
+				
+				if (rt == PT_OIL && oil1_id < 0)
+					oil1_id = ID(r);
 
 				// These reactions will occur instantly in contact with PTNM
 				// --------------------------------------------------------
@@ -256,6 +286,12 @@ static int update(UPDATE_FUNC_ARGS)
 	if (wtrv1_id >= 0)
 	{
 		wtrv_reactions(wtrv1_id, UPDATE_FUNC_SUBCALL_ARGS);
+	}
+	
+	// Oil reactions
+	if (oil1_id >= 0)
+	{
+		oil_reactions(oil1_id, UPDATE_FUNC_SUBCALL_ARGS);
 	}
 
 	return 0;
