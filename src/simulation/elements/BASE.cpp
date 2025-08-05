@@ -134,6 +134,12 @@ static int update(UPDATE_FUNC_ARGS)
 						sim->part_change_type(i, x, y, PT_SLTW);
 						sim->part_change_type(ID(r), x+rx, y+ry, PT_SLTW);
 						return 1;
+					} //Base neutralizes CAUS
+					else if (rt == PT_CAUS && parts[i].life >= parts[ID(r)].life)
+					{
+						sim->part_change_type(i, x, y, PT_SLTW);
+						sim->kill_part(ID(r));
+						return 1;
 					} //BASE + OIL = SOAP
 					else if (parts[i].life >= 70 && rt == PT_OIL)
 					{
