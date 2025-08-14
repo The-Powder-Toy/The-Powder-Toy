@@ -83,6 +83,7 @@ namespace http
 
 	SearchSavesRequest::SearchSavesRequest(int start, int count, ByteString query, Period period, Sort sort, Category category) : APIRequest(Url(start, count, query, period, sort, category), authUse, false)
 	{
+		includesFp = category == categoryNone && period == http::allSaves && sort == http::sortByVotes && query == "";
 	}
 
 	std::pair<int, std::vector<std::unique_ptr<SaveInfo>>> SearchSavesRequest::Finish()

@@ -36,6 +36,7 @@ private:
 	std::vector<std::pair<ByteString, int> > tagList;
 	int currentPage;
 	int resultCount;
+	bool includesFp;
 	bool showOwn;
 	bool showFavourite;
 	bool showTags;

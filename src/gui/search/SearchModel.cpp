@@ -15,6 +15,7 @@ SearchModel::SearchModel():
 	currentSort(http::sortByVotes),
 	currentPage(1),
 	resultCount(0),
+	includesFp(false),
 	showOwn(false),
 	showFavourite(false),
 	showTags(true)
@@ -37,6 +38,7 @@ void SearchModel::BeginSearchSaves(int start, int count, String query, http::Per
 	resultCount = 0;
 	searchSaves = std::make_unique<http::SearchSavesRequest>(start, count, query.ToUtf8(), period, sort, category);
 	searchSaves->Start();
+	includesFp = searchSaves->GetIncludesFp();
 }
 
 std::vector<std::unique_ptr<SaveInfo>> SearchModel::EndSearchSaves()
@@ -96,10 +98,18 @@ bool SearchModel::UpdateSaveList(int pageNumber, String query)
 		//resultCount = 0;
 		currentPage = pageNumber;
 
-		if(pageNumber == 1 && !showOwn && !showFavourite && currentPeriod == http::allSaves && currentSort == http::sortByVotes && query == "")
-			SetShowTags(true);
-		else
-			SetShowTags(false);
+		auto category = http::categoryNone;
+		if (showFavourite)
+		{
+			category = http::categoryFavourites;
+		}
+		if (showOwn && Client::Ref().GetAuthUser().UserID)
+		{
+			category = http::categoryMyOwn;
+		}
+		BeginSearchSaves((currentPage-1)*20, 20, lastQuery, currentPeriod, currentSort, category);
+
+		SetShowTags(includesFp && pageNumber == 1);
 
 		notifySaveListChanged();
 		notifyTagListChanged();
@@ -112,16 +122,6 @@ bool SearchModel::UpdateSaveList(int pageNumber, String query)
 			BeginGetTags(0, 24, "");
 		}
 
-		auto category = http::categoryNone;
-		if (showFavourite)
-		{
-			category = http::categoryFavourites;
-		}
-		if (showOwn && Client::Ref().GetAuthUser().UserID)
-		{
-			category = http::categoryMyOwn;
-		}
-		BeginSearchSaves((currentPage-1)*20, 20, lastQuery, currentPeriod, currentSort, category);
 		return true;
 	}
 	return false;
@@ -307,8 +307,5 @@ void SearchModel::notifySelectedChanged()
 
 int SearchModel::GetPageCount()
 {
-	if (!showOwn && !showFavourite && currentPeriod == http::allSaves && currentSort == http::sortByVotes && lastQuery == "")
-		return std::max(1, (int)(ceil(resultCount/20.0f))+1); //add one for front page (front page saves are repeated twice)
-	else
-		return std::max(1, (int)(ceil(resultCount/20.0f)));
+	return std::max(1, (int)(ceil(resultCount/20.0f)) + (includesFp ? 1 : 0)); //add one for front page (front page saves are repeated twice)
 }
