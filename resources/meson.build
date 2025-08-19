@@ -102,7 +102,11 @@ elif host_platform == 'linux'
 	embedded_files += [
 		[ 'icon_exe_png', rendered_icons['icon_exe'] ],
 		[ 'icon_cps_png', rendered_icons['icon_cps'] ],
-		[ 'save_xml', files('save.xml') ],
+		[ 'save_xml', configure_file(
+			input: 'save.template.xml',
+			output: 'save.xml',
+			configuration: conf_data,
+		) ],
 		[ 'powder_desktop', configure_file(
 			input: 'powder.template.desktop',
 			output: 'powder.desktop',
