@@ -12,6 +12,7 @@
 .DS_Store
 
 # Build files
+target*/*
 build*/*
 *.o
 *.exe

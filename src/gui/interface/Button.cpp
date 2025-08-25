@@ -4,6 +4,7 @@
 #include "graphics/Graphics.h"
 #include "Misc.h"
 #include "Colour.h"
+#include <SDL_mouse.h>
 #include <cmath>
 #include <numbers>
 
@@ -200,6 +201,7 @@ void Button::OnMouseEnter(int x, int y)
 		return;
 	if (actionCallback.mouseEnter)
 		actionCallback.mouseEnter();
+	SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND));
 }
 
 void Button::OnMouseHover(int x, int y)
@@ -212,6 +214,7 @@ void Button::OnMouseHover(int x, int y)
 
 void Button::OnMouseLeave(int x, int y)
 {
+	SDL_SetCursor(SDL_GetDefaultCursor());
 	isMouseInside = false;
 	isButtonDown = false;
 }
