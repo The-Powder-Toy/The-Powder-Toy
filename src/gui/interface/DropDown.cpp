@@ -4,6 +4,7 @@
 #include "gui/Style.h"
 #include "Button.h"
 #include "gui/interface/Window.h"
+#include <SDL_mouse.h>
 
 namespace ui {
 
@@ -108,11 +109,13 @@ void DropDown::Draw(const Point& screenPos)
 void DropDown::OnMouseEnter(int x, int y)
 {
 	isMouseInside = true;
+	SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND));
 }
 
 void DropDown::OnMouseLeave(int x, int y)
 {
 	isMouseInside = false;
+	SDL_SetCursor(SDL_GetDefaultCursor());
 }
 
 std::pair<String, int> DropDown::GetOption()

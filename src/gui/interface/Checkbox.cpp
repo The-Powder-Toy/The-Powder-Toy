@@ -3,6 +3,7 @@
 #include "graphics/Graphics.h"
 
 #include "gui/interface/Window.h"
+#include <SDL_mouse.h>
 
 using namespace ui;
 
@@ -56,6 +57,7 @@ void Checkbox::OnMouseUp(int x, int y, unsigned int button)
 void Checkbox::OnMouseEnter(int x, int y)
 {
 	isMouseOver = true;
+	SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND));
 }
 
 void Checkbox::OnMouseHover(int x, int y)
@@ -69,6 +71,7 @@ void Checkbox::OnMouseHover(int x, int y)
 void Checkbox::OnMouseLeave(int x, int y)
 {
 	isMouseOver = false;
+	SDL_SetCursor(SDL_GetDefaultCursor());
 }
 
 void Checkbox::Draw(const Point& screenPos)
