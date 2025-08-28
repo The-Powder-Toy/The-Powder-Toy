@@ -1,5 +1,6 @@
 #pragma once
 #include "common/String.h"
+#include "User.h"
 #include <list>
 #include <memory>
 #include <ctime>
@@ -19,6 +20,8 @@ public:
 	int Comments;
 	int Views;
 	int Version;
+	User::Elevation authorElevation;
+	bool authorIsBanned;
 
 	ByteString userName;
 

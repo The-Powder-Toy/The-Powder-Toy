@@ -59,6 +59,8 @@ namespace http
 			saveInfo->Favourite = document["Favourite"].asBool();
 			saveInfo->Views = document["Views"].asInt();
 			saveInfo->Version = document["Version"].asInt();
+			saveInfo->authorElevation = User::ElevationFromString(document["Elevation"].asString());
+			saveInfo->authorIsBanned = document["IsBanned"].asBool();
 		}
 		catch (const std::exception &ex)
 		{
