@@ -20,10 +20,10 @@ namespace http
 	GetSaveRequest::GetSaveRequest(int saveID, int saveDate) : Request(Url(saveID, saveDate))
 	{
 		auto user = Client::Ref().GetAuthUser();
-		if (user.UserID)
+		if (user)
 		{
 			// This is needed so we know how we rated this save.
-			AuthHeaders(ByteString::Build(user.UserID), user.SessionID);
+			AuthHeaders(ByteString::Build(user->UserID), user->SessionID);
 		}
 	}
 

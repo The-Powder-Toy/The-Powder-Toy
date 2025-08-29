@@ -53,7 +53,6 @@ HistoryEntry::~HistoryEntry()
 GameModel::GameModel(GameView *newView):
 	activeMenu(SC_POWDERS),
 	currentBrush(0),
-	currentUser(0, ""),
 	toolStrength(1.0f),
 	historyPosition(0),
 	activeColourPreset(0),
@@ -145,10 +144,7 @@ GameModel::GameModel(GameView *newView):
 	Favorite::Ref().LoadFavoritesFromPrefs();
 
 	//Load last user
-	if(Client::Ref().GetAuthUser().UserID)
-	{
-		currentUser = Client::Ref().GetAuthUser();
-	}
+	currentUser = Client::Ref().GetAuthUser();
 
 	perfectCircle = prefs.Get("PerfectCircleBrush", true);
 	BuildBrushList();
@@ -859,7 +855,7 @@ Renderer * GameModel::GetRenderer()
 	return ren;
 }
 
-User GameModel::GetUser()
+const std::optional<User> &GameModel::GetUser() const
 {
 	return currentUser;
 }
@@ -1022,7 +1018,7 @@ ui::Colour GameModel::GetColourSelectorColour()
 	return colour;
 }
 
-void GameModel::SetUser(User user)
+void GameModel::SetUser(std::optional<User> user)
 {
 	currentUser = user;
 	//Client::Ref().SetAuthUser(user);

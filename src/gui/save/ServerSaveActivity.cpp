@@ -92,7 +92,8 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	AddComponent(descriptionField);
 
 	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X/2)-80, 16), "Publish", "");
-	if(Client::Ref().GetAuthUser().Username != save->GetUserName())
+	auto user = Client::Ref().GetAuthUser();
+	if (!(user && user->Username == save->GetUserName()))
 	{
 		//Save is not owned by the user, disable by default
 		publishedCheckbox->SetChecked(false);
@@ -197,7 +198,8 @@ void ServerSaveActivity::Save()
 		new ErrorMessage("Error", "You must specify a save name.");
 		return;
 	}
-	if(Client::Ref().GetAuthUser().Username != save->GetUserName() && publishedCheckbox->GetChecked())
+	auto user = Client::Ref().GetAuthUser();
+	if (!(user && user->Username == save->GetUserName()) && publishedCheckbox->GetChecked())
 	{
 		new ConfirmPrompt("Publish", "This save was created by " + save->GetUserName().FromUtf8() + ", you're about to publish this under your own name; If you haven't been given permission by the author to do so, please uncheck the publish box, otherwise continue", { [this] {
 			saveUpload();
@@ -214,7 +216,8 @@ void ServerSaveActivity::AddAuthorInfo()
 	Json::Value serverSaveInfo;
 	serverSaveInfo["type"] = "save";
 	serverSaveInfo["id"] = save->GetID();
-	serverSaveInfo["username"] = Client::Ref().GetAuthUser().Username;
+	auto user = Client::Ref().GetAuthUser();
+	serverSaveInfo["username"] = user ? user->Username : ByteString("");
 	serverSaveInfo["title"] = save->GetName().ToUtf8();
 	serverSaveInfo["description"] = save->GetDescription().ToUtf8();
 	serverSaveInfo["published"] = (int)save->GetPublished();
@@ -233,7 +236,8 @@ void ServerSaveActivity::saveUpload()
 	save->SetName(nameField->GetText());
 	save->SetDescription(descriptionField->GetText());
 	save->SetPublished(publishedCheckbox->GetChecked());
-	save->SetUserName(Client::Ref().GetAuthUser().Username);
+	auto user = Client::Ref().GetAuthUser();
+	save->SetUserName(user ? user->Username : ByteString(""));
 	save->SetID(0);
 	{
 		auto gameSave = save->TakeGameSave();
@@ -345,7 +349,8 @@ void ServerSaveActivity::ShowRules()
 
 void ServerSaveActivity::CheckName(String newname)
 {
-	if (newname.length() && newname == save->GetName() && save->GetUserName() == Client::Ref().GetAuthUser().Username)
+	auto user = Client::Ref().GetAuthUser();
+	if (newname.length() && newname == save->GetName() && user && save->GetUserName() == user->Username)
 		titleLabel->SetText("Modify simulation properties:");
 	else
 		titleLabel->SetText("Upload new simulation:");

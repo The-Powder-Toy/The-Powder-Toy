@@ -29,8 +29,7 @@
 Client::Client():
 	messageOfTheDay("The message of the day and notifications have not yet been fetched, you can enable this in Settings"),
 	usingAltUpdateServer(false),
-	updateAvailable(false),
-	authUser(0, "")
+	updateAvailable(false)
 {
 	LoadAuthUser();
 	auto &prefs = GlobalPrefs::Ref();
@@ -137,9 +136,9 @@ void Client::Tick()
 		try
 		{
 			auto info = versionCheckRequest->Finish();
-			if (!info.sessionGood && authUser.UserID)
+			if (!info.sessionGood && authUser)
 			{
-				SetAuthUser(User(0, ""));
+				SetAuthUser(std::nullopt);
 			}
 			if (!usingAltUpdateServer)
 			{
@@ -260,14 +259,14 @@ Client::~Client()
 {
 }
 
-void Client::SetAuthUser(User user)
+void Client::SetAuthUser(std::optional<User> user)
 {
 	authUser = user;
 	SaveAuthUser();
 	notifyAuthUserChanged();
 }
 
-User Client::GetAuthUser()
+const std::optional<User> &Client::GetAuthUser() const
 {
 	return authUser;
 }
@@ -364,7 +363,7 @@ ByteString Client::AddStamp(std::unique_ptr<GameSave> saveData)
 
 	Json::Value stampInfo;
 	stampInfo["type"] = "stamp";
-	stampInfo["username"] = authUser.Username;
+	stampInfo["username"] = authUser ? authUser->Username : ByteString("");
 	stampInfo["name"] = filename;
 	stampInfo["date"] = Json::Value::UInt64(now);
 	if (authors.size() != 0)

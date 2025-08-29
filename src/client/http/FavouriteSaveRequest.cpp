@@ -1,5 +1,4 @@
 #include "FavouriteSaveRequest.h"
-#include "client/Client.h"
 #include "Config.h"
 
 namespace http
@@ -7,7 +6,7 @@ namespace http
 	static ByteString Url(int saveID, bool favourite)
 	{
 		ByteStringBuilder builder;
-		builder << SERVER << "/Browse/Favourite.json?ID=" << saveID << "&Key=" << Client::Ref().GetAuthUser().SessionKey;
+		builder << SERVER << "/Browse/Favourite.json?ID=" << saveID;
 		if (!favourite)
 		{
 			builder << "&Mode=Remove";
@@ -16,7 +15,7 @@ namespace http
 	}
 
 	FavouriteSaveRequest::FavouriteSaveRequest(int saveID, bool newFavourite) :
-		APIRequest(Url(saveID, newFavourite), authRequire, true),
+		APIRequest(Url(saveID, newFavourite), authRequireAppendSession, true),
 		favourite(newFavourite)
 	{
 	}

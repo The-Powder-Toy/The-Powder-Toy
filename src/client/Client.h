@@ -51,7 +51,7 @@ private:
 	int lastStampName = 0;
 
 	//Auth session
-	User authUser;
+	std::optional<User> authUser;
 
 	void notifyUpdateAvailable();
 	void notifyAuthUserChanged();
@@ -114,8 +114,8 @@ public:
 
 	std::unique_ptr<SaveFile> LoadSaveFile(ByteString filename);
 
-	void SetAuthUser(User user);
-	User GetAuthUser();
+	void SetAuthUser(std::optional<User> user);
+	const std::optional<User> &GetAuthUser() const;
 	void Tick();
 	
 	String DoMigration(ByteString fromDir, ByteString toDir);

@@ -22,17 +22,13 @@ void Client::LoadAuthUser()
 	{
 		std::cerr << "required #PowderSessionInfo elements not found, can't authenticate" << std::endl;
 	}
+	authUser = std::nullopt;
 	if (newUsername.size() && newSessionKey.size())
 	{
-		authUser.UserID = -1; // Not quite valid but evaluates to true and that's all that matters for this codebase.
-		authUser.Username = newUsername;
-		authUser.SessionID = "(invalid)";
-		authUser.SessionKey = newSessionKey;
-		authUser.UserElevation = User::ElevationNone; // We don't deal with this in the browser.
-	}
-	else
-	{
-		authUser.UserID = 0;
+		authUser = User(-1, newUsername); // Not quite valid but evaluates to true and that's all that matters for this codebase.
+		authUser->SessionID = "(invalid)";
+		authUser->SessionKey = newSessionKey;
+		authUser->UserElevation = User::ElevationNone; // We don't deal with this in the browser.
 	}
 }
 

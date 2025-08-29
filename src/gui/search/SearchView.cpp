@@ -271,8 +271,9 @@ void SearchView::NotifySortChanged(SearchModel * sender)
 
 void SearchView::NotifyShowOwnChanged(SearchModel * sender)
 {
+	auto user = Client::Ref().GetAuthUser();
 	ownButton->SetToggleState(sender->GetShowOwn());
-	if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationMod)
+	if (user && (sender->GetShowOwn() || user->UserElevation == User::ElevationAdmin || user->UserElevation == User::ElevationMod))
 	{
 		unpublishSelected->Enabled = true;
 		removeSelected->Enabled = true;
@@ -286,13 +287,14 @@ void SearchView::NotifyShowOwnChanged(SearchModel * sender)
 
 void SearchView::NotifyShowFavouriteChanged(SearchModel * sender)
 {
+	auto user = Client::Ref().GetAuthUser();
 	favButton->SetToggleState(sender->GetShowFavourite());
 	if(sender->GetShowFavourite())
 	{
 		unpublishSelected->Enabled = false;
 		removeSelected->Enabled = false;
 	}
-	else if(sender->GetShowOwn() || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationMod)
+	else if (user && (sender->GetShowOwn() || user->UserElevation == User::ElevationAdmin || user->UserElevation == User::ElevationMod))
 	{
 		unpublishSelected->Enabled = true;
 		removeSelected->Enabled = true;
@@ -361,13 +363,14 @@ void SearchView::CheckAccess()
 			favButton->DoAction();
 	}
 
-	if (Client::Ref().GetAuthUser().UserID)
+	auto user = Client::Ref().GetAuthUser();
+	if (user)
 	{
 		ownButton->Enabled = true;
 		favButton->Enabled = true;
 		favouriteSelected->Enabled = true;
 
-		if (Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationMod)
+		if (user->UserElevation == User::ElevationAdmin || user->UserElevation == User::ElevationMod)
 		{
 			unpublishSelected->Enabled = true;
 			removeSelected->Enabled = true;
@@ -508,6 +511,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	else
 		favouriteSelected->SetText("Favourite");
 
+	auto user = Client::Ref().GetAuthUser();
 	for (size_t i = 0; i < saveButtons.size(); i++)
 	{
 		RemoveComponent(saveButtons[i]);
@@ -522,12 +526,12 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	{
 		nextButton->Enabled = true;
 		previousButton->Enabled = true;
-		if (Client::Ref().GetAuthUser().UserID)
+		if (user)
 			favButton->Enabled = true;
 	}
 	ownButton->Enabled = true;
 	sortButton->Enabled = true;
-	if (!Client::Ref().GetAuthUser().UserID || favButton->GetToggleState())
+	if (!user || favButton->GetToggleState())
 	{
 		ownButton->Enabled = false;
 	}
@@ -611,9 +615,9 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 				[this, saveButton] { Search(String::Build("user:", saveButton->GetSave()->GetUserName().FromUtf8())); },
 				[this, saveButton] { c->Selected(saveButton->GetSave()->GetID(), saveButton->GetSelected()); }
 			});
-			if(Client::Ref().GetAuthUser().UserID)
+			if(user)
 				saveButton->SetSelectable(true);
-			if (saves[i]->GetUserName() == Client::Ref().GetAuthUser().Username || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationMod)
+			if (user && (saves[i]->GetUserName() == user->Username || user->UserElevation == User::ElevationAdmin || user->UserElevation == User::ElevationMod))
 				saveButton->SetShowVotes(true);
 			saveButtons.push_back(saveButton);
 			AddComponent(saveButton);

@@ -58,7 +58,7 @@ public:
 		auto *lsi = GetLSI();
 		lsi->AssertInterfaceEvent();
 		auto authUser = Client::Ref().GetAuthUser();
-		if (type == getAuthToken && !authUser.UserID)
+		if (type == getAuthToken && !authUser)
 		{
 			lua_pushnil(L);
 			lua_pushliteral(L, "not authenticated");
@@ -86,7 +86,7 @@ public:
 		}
 		if (type == getAuthToken)
 		{
-			rh->request->AuthHeaders(ByteString::Build(authUser.UserID), authUser.SessionID);
+			rh->request->AuthHeaders(ByteString::Build(authUser->UserID), authUser->SessionID);
 		}
 		rh->request->Start();
 		luaL_newmetatable(L, "HTTPRequest");

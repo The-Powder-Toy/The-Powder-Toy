@@ -8,10 +8,11 @@ namespace http
 		APIRequest(ByteString::Build(SERVER, "/Vote.api"), authRequire, false),
 		direction(newDirection)
 	{
+		auto user = Client::Ref().GetAuthUser();
 		AddPostData(FormData{
 			{ "ID", ByteString::Build(saveID) },
 			{ "Action", direction ? (direction == 1 ? "Up" : "Down") : "Reset" },
-			{ "Key", Client::Ref().GetAuthUser().SessionKey },
+			{ "Key", user ? user->SessionKey : ByteString("") },
 		});
 	}
 

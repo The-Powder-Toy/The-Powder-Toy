@@ -10,16 +10,16 @@ namespace http
 		alternate(newAlternate)
 	{
 		auto user = Client::Ref().GetAuthUser();
-		if (user.UserID)
+		if (user)
 		{
 			if (alternate)
 			{
 				// Cursed
-				AuthHeaders(user.Username, "");
+				AuthHeaders(user->Username, "");
 			}
 			else
 			{
-				AuthHeaders(ByteString::Build(user.UserID), user.SessionID);
+				AuthHeaders(ByteString::Build(user->UserID), user->SessionID);
 			}
 		}
 	}

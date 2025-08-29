@@ -13,6 +13,7 @@ namespace http
 		enum AuthMode
 		{
 			authRequire,
+			authRequireAppendSession,
 			authUse,
 			authOmit,
 		};

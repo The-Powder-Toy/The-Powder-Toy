@@ -67,8 +67,8 @@ namespace http
 			break;
 
 		case categoryMyOwn:
-			assert(user.UserID);
-			appendToQuery("user:" + user.Username);
+			assert(user);
+			appendToQuery("user:" + user->Username);
 			break;
 
 		default:

@@ -41,7 +41,7 @@ TagsView::TagsView():
 	addButton->SetActionCallback({ [this] { addTag(); } });
 	AddComponent(addButton);
 
-	if (!Client::Ref().GetAuthUser().UserID)
+	if (!Client::Ref().GetAuthUser())
 		addButton->Enabled = false;
 
 	title = new ui::Label(ui::Point(5, 5), ui::Point(185, 28), "Manage tags:    \bgTags are only to \nbe used to improve search results");
@@ -83,7 +83,8 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 			tags.push_back(tempLabel);
 			AddComponent(tempLabel);
 
-			if(sender->GetSave()->GetUserName() == Client::Ref().GetAuthUser().Username || Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin || Client::Ref().GetAuthUser().UserElevation == User::ElevationMod)
+			auto user = Client::Ref().GetAuthUser();
+			if (user && (sender->GetSave()->GetUserName() == user->Username || user->UserElevation == User::ElevationAdmin || user->UserElevation == User::ElevationMod))
 			{
 				ui::Button * tempButton = new ui::Button(ui::Point(15, 37+(16*i)), ui::Point(11, 12));
 				tempButton->Appearance.icon = IconDelete;

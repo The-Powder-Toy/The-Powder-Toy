@@ -103,7 +103,7 @@ bool SearchModel::UpdateSaveList(int pageNumber, String query)
 		{
 			category = http::categoryFavourites;
 		}
-		if (showOwn && Client::Ref().GetAuthUser().UserID)
+		if (showOwn && Client::Ref().GetAuthUser())
 		{
 			category = http::categoryMyOwn;
 		}

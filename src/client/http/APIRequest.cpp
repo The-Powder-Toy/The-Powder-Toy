@@ -3,17 +3,36 @@
 
 namespace http
 {
-	APIRequest::APIRequest(ByteString url, AuthMode authMode, bool newCheckStatus) : Request(url), checkStatus(newCheckStatus)
+	namespace
+	{
+		ByteString MaybeAppendSession(APIRequest::AuthMode authMode, ByteString url)
+		{
+			if (auto user = Client::Ref().GetAuthUser(); user && authMode == APIRequest::authRequireAppendSession)
+			{
+				// TODO: proper url builder >_>
+				auto appendChar = '?';
+				if (url.find('?') != url.npos)
+				{
+					appendChar = '&';
+				}
+				url = ByteString::Build(url, appendChar, "Key=", user->SessionKey);;
+			}
+			return url;
+		}
+	}
+
+	APIRequest::APIRequest(ByteString url, AuthMode authMode, bool newCheckStatus) : Request(MaybeAppendSession(authMode, url)), checkStatus(newCheckStatus)
 	{
 		auto user = Client::Ref().GetAuthUser();
-		if (authMode == authRequire && !user.UserID)
+		if ((authMode == authRequire ||
+		     authMode == authRequireAppendSession) && !user)
 		{
 			FailEarly("Not authenticated");
 			return;
 		}
-		if (authMode != authOmit && user.UserID)
+		if (authMode != authOmit && user)
 		{
-			AuthHeaders(ByteString::Build(user.UserID), user.SessionID);
+			AuthHeaders(ByteString::Build(user->UserID), user->SessionID);
 		}
 	}
 

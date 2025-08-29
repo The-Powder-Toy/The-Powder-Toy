@@ -55,6 +55,8 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	}
 	showAvatars = ui::Engine::Ref().ShowAvatars;
 
+	auto user = Client::Ref().GetAuthUser();
+
 	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), "Fav");
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -65,7 +67,7 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 		favButton->Appearance.BackgroundPulse = true;
 		c->FavouriteSave();
 	} });
-	favButton->Enabled = Client::Ref().GetAuthUser().UserID?true:false;
+	favButton->Enabled = bool(user);
 	AddComponent(favButton);
 
 	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), "Report");
@@ -82,7 +84,7 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 			reportSaveRequest->Start();
 		} });
 	} });
-	reportButton->Enabled = Client::Ref().GetAuthUser().UserID?true:false;
+	reportButton->Enabled = bool(user);
 	AddComponent(reportButton);
 
 	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), "Open");
@@ -534,7 +536,8 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		{
 			authorDateLabel->SetText("\bgAuthor:\bw " + save->userName.FromUtf8() + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
 		}
-		if (Client::Ref().GetAuthUser().UserID && save->userName == Client::Ref().GetAuthUser().Username)
+		auto user = Client::Ref().GetAuthUser();
+		if (user && save->userName == user->Username)
 			userIsAuthor = true;
 		else
 			userIsAuthor = false;
@@ -545,7 +548,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 			favButton->Enabled = true;
 			favButton->SetToggleState(true);
 		}
-		else if(Client::Ref().GetAuthUser().UserID)
+		else if (user)
 		{
 			favButton->Enabled = true;
 			favButton->SetToggleState(false);
@@ -713,6 +716,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		ui::Label * tempUsername;
 		ui::Label * tempComment;
 		ui::AvatarButton * tempAvatar;
+		auto user = Client::Ref().GetAuthUser();
 		for (size_t i = 0; i < comments.size(); i++)
 		{
 			if (showAvatars)
@@ -737,7 +741,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			{
 				authorNameFormatted = "\bg" + authorNameFormatted;
 			}
-			else if (Client::Ref().GetAuthUser().UserID && Client::Ref().GetAuthUser().Username == comments[i].authorName)
+			else if (user && user->Username == comments[i].authorName)
 			{
 				authorNameFormatted = "\bo" + authorNameFormatted;
 			}

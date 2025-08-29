@@ -14,9 +14,10 @@ static int getUserName(lua_State *L)
 {
 	auto *lsi = GetLSI();
 	lsi->AssertInterfaceEvent();
-	if (lsi->gameModel->GetUser().UserID)
+	auto user = lsi->gameModel->GetUser();
+	if (user)
 	{
-		tpt_lua_pushByteString(L, lsi->gameModel->GetUser().Username);
+		tpt_lua_pushByteString(L, user->Username);
 		return 1;
 	}
 	lua_pushliteral(L, "");

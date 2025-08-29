@@ -37,6 +37,5 @@ public:
 		return loginStatus;
 	}
 	void Tick();
-	User GetUser();
 	~LoginModel();
 };

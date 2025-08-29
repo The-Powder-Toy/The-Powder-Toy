@@ -250,13 +250,13 @@ GameView::GameView():
 	currentX+=151;
 	saveSimulationButton->SetSplitActionCallback({
 		[this] {
-			if (CtrlBehaviour() || !Client::Ref().GetAuthUser().UserID)
+			if (CtrlBehaviour() || !Client::Ref().GetAuthUser())
 				c->OpenLocalSaveWindow(true);
 			else
 				c->SaveAsCurrent();
 		},
 		[this] {
-			if (CtrlBehaviour() || !Client::Ref().GetAuthUser().UserID)
+			if (CtrlBehaviour() || !Client::Ref().GetAuthUser())
 				c->OpenLocalSaveWindow(false);
 			else
 				c->OpenSaveWindow();
@@ -745,7 +745,8 @@ void GameView::NotifySimulationChanged(GameModel * sender)
 }
 void GameView::NotifyUserChanged(GameModel * sender)
 {
-	if(!sender->GetUser().UserID)
+	auto user = sender->GetUser();
+	if (!user)
 	{
 		loginButton->SetText("[sign in]");
 		loginButton->SetShowSplit(false);
@@ -753,7 +754,7 @@ void GameView::NotifyUserChanged(GameModel * sender)
 	}
 	else
 	{
-		loginButton->SetText(sender->GetUser().Username.FromUtf8());
+		loginButton->SetText(user->Username.FromUtf8());
 		loginButton->SetShowSplit(true);
 		loginButton->SetRightToolTip("Edit profile");
 	}
@@ -797,13 +798,14 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		if (introText > 50)
 			introText = 50;
 
+		auto user = sender->GetUser();
 		saveSimulationButton->SetText(sender->GetSave()->GetName());
-		if (sender->GetSave()->GetUserName() == sender->GetUser().Username)
+		if (user && sender->GetSave()->GetUserName() == user->Username)
 			saveSimulationButton->SetShowSplit(true);
 		else
 			saveSimulationButton->SetShowSplit(false);
 		reloadButton->Enabled = true;
-		upVoteButton->Enabled = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetUser().Username != sender->GetSave()->GetUserName();
+		upVoteButton->Enabled = sender->GetSave()->GetID() && user && user->Username != sender->GetSave()->GetUserName();
 
 		auto upVoteButtonColor = [this](bool active) {
 			if(active)
@@ -819,7 +821,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 				upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 			}
 		};
-		auto upvoted = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote() == 1;
+		auto upvoted = sender->GetSave()->GetID() && user && sender->GetSave()->GetVote() == 1;
 		upVoteButtonColor(upvoted);
 
 		downVoteButton->Enabled = upVoteButton->Enabled;
@@ -837,10 +839,10 @@ void GameView::NotifySaveChanged(GameModel * sender)
 				downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 			}
 		};
-		auto downvoted = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote() == -1;
+		auto downvoted = sender->GetSave()->GetID() && user && sender->GetSave()->GetVote() == -1;
 		downVoteButtonColor(downvoted);
 
-		if (sender->GetUser().UserID)
+		if (user)
 		{
 			upVoteButton->Appearance.BorderDisabled = upVoteButton->Appearance.BorderInactive;
 			downVoteButton->Appearance.BorderDisabled = downVoteButton->Appearance.BorderInactive;
@@ -1447,10 +1449,13 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		c->ReloadSim();
 		break;
 	case SDL_SCANCODE_A:
-		if (Client::Ref().GetAuthUser().UserElevation != User::ElevationNone && ctrl)
 		{
-			ByteString authorString = Client::Ref().GetAuthorInfo().toStyledString();
-			new InformationMessage("Save authorship info", authorString.FromUtf8(), true);
+			auto user = Client::Ref().GetAuthUser();
+			if (user && user->UserElevation != User::ElevationNone && ctrl)
+			{
+				ByteString authorString = Client::Ref().GetAuthorInfo().toStyledString();
+				new InformationMessage("Save authorship info", authorString.FromUtf8(), true);
+			}
 		}
 		break;
 	case SDL_SCANCODE_R:
@@ -2124,7 +2129,7 @@ void GameView::UpdateToolStrength()
 
 void GameView::SetSaveButtonTooltips()
 {
-	if (!Client::Ref().GetAuthUser().UserID)
+	if (!Client::Ref().GetAuthUser())
 		saveSimulationButton->SetToolTips("Overwrite the open simulation on your hard drive.", "Save the simulation to your hard drive. Login to save online.");
 	else if (ctrlBehaviour)
 		saveSimulationButton->SetToolTips("Overwrite the open simulation on your hard drive.", "Save the simulation to your hard drive.");

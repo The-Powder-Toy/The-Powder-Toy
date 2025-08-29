@@ -10,7 +10,7 @@ namespace http
 		auto user = Client::Ref().GetAuthUser();
 		AddPostData(FormData{
 			{ "Comment", comment.ToUtf8() },
-			{ "Key", user.SessionKey },
+			{ "Key", user ? user->SessionKey : ByteString("") },
 		});
 	}
 
