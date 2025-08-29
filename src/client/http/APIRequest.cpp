@@ -5,23 +5,17 @@ namespace http
 {
 	namespace
 	{
-		ByteString MaybeAppendSession(APIRequest::AuthMode authMode, ByteString url)
+		format::Url &MaybeAppendSession(APIRequest::AuthMode authMode, format::Url &url)
 		{
 			if (auto user = Client::Ref().GetAuthUser(); user && authMode == APIRequest::authRequireAppendSession)
 			{
-				// TODO: proper url builder >_>
-				auto appendChar = '?';
-				if (url.find('?') != url.npos)
-				{
-					appendChar = '&';
-				}
-				url = ByteString::Build(url, appendChar, "Key=", user->SessionKey);;
+				url.params["Key"] = user->SessionKey;
 			}
 			return url;
 		}
 	}
 
-	APIRequest::APIRequest(ByteString url, AuthMode authMode, bool newCheckStatus) : Request(MaybeAppendSession(authMode, url)), checkStatus(newCheckStatus)
+	APIRequest::APIRequest(format::Url url, AuthMode authMode, bool newCheckStatus) : Request(MaybeAppendSession(authMode, url).ToByteString()), checkStatus(newCheckStatus)
 	{
 		auto user = Client::Ref().GetAuthUser();
 		if ((authMode == authRequire ||

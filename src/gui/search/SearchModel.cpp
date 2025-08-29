@@ -59,14 +59,6 @@ std::vector<std::unique_ptr<SaveInfo>> SearchModel::EndSearchSaves()
 void SearchModel::BeginGetTags(int start, int count, String query)
 {
 	lastError = "";
-	ByteStringBuilder urlStream;
-	urlStream << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
-	if(query.length())
-	{
-		urlStream << "&Search_Query=";
-		if(query.length())
-			urlStream << format::URLEncode(query.ToUtf8());
-	}
 	getTags = std::make_unique<http::SearchTagsRequest>(start, count, query.ToUtf8());
 	getTags->Start();
 }

@@ -2,6 +2,7 @@
 #include <memory>
 #include <span>
 #include <vector>
+#include <map>
 #include "common/String.h"
 #include "common/Plane.h"
 #include "graphics/Pixel.h"
@@ -11,6 +12,14 @@ class VideoBuffer;
 
 namespace format
 {
+	struct Url
+	{
+		ByteString base;
+		std::map<ByteString, ByteString> params;
+
+		ByteString ToByteString() const;
+	};
+
 	ByteString URLEncode(ByteString value);
 	ByteString URLDecode(ByteString value);
 	ByteString UnixtimeToDate(time_t unixtime, ByteString dateFomat = ByteString("%d %b %Y"), bool local = true);

@@ -3,15 +3,15 @@
 
 namespace http
 {
-	static ByteString Url(int saveID, bool favourite)
+	static format::Url Url(int saveID, bool favourite)
 	{
-		ByteStringBuilder builder;
-		builder << SERVER << "/Browse/Favourite.json?ID=" << saveID;
+		format::Url url{ ByteString::Build(SERVER, "/Browse/Favourite.json") };
+		url.params["ID"] = ByteString::Build(saveID);
 		if (!favourite)
 		{
-			builder << "&Mode=Remove";
+			url.params["Mode"] = "Remove";
 		}
-		return builder.Build();
+		return url;
 	}
 
 	FavouriteSaveRequest::FavouriteSaveRequest(int saveID, bool newFavourite) :

@@ -4,7 +4,7 @@
 namespace http
 {
 	LogoutRequest::LogoutRequest() :
-		APIRequest(ByteString::Build(SERVER, "/Logout.json"), authRequireAppendSession, true)
+		APIRequest({ ByteString::Build(SERVER, "/Logout.json") }, authRequireAppendSession, true)
 	{
 	}
 

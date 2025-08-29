@@ -4,7 +4,11 @@
 namespace http
 {
 	AddTagRequest::AddTagRequest(int saveID, ByteString tag) :
-		APIRequest(ByteString::Build(SERVER, "/Browse/EditTag.json?Op=add&ID=", saveID, "&Tag=", tag), authRequireAppendSession, true)
+		APIRequest({ ByteString::Build(SERVER, "/Browse/EditTag.json"), {
+			{ "Op", "add" },
+			{ "ID", ByteString::Build(saveID) },
+			{ "Tag", tag }
+		} }, authRequireAppendSession, true)
 	{
 	}
 

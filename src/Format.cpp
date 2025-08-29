@@ -285,6 +285,19 @@ std::unique_ptr<std::vector<char>> format::PixelsToPNG(PlaneAdapter<std::vector<
 
 const static char hex[] = "0123456789ABCDEF";
 
+ByteString format::Url::ToByteString() const
+{
+	ByteStringBuilder sb;
+	sb << base;
+	bool first = true;
+	for (auto &[ key, value ] : params)
+	{
+		sb << (first ? '?' : '&') << key << "=" << format::URLEncode(value);
+		first = false;
+	}
+	return sb.Build();
+}
+
 ByteString format::URLEncode(ByteString source)
 {
 	ByteString result;

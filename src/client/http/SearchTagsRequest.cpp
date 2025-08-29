@@ -4,15 +4,16 @@
 
 namespace http
 {
-	static ByteString Url(int start, int count, ByteString query)
+	static format::Url Url(int start, int count, ByteString query)
 	{
-		ByteStringBuilder builder;
-		builder << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
+		format::Url url{ ByteString::Build(SERVER, "/Browse/Tags.json") };
+		url.params["Start"] = ByteString::Build(start);
+		url.params["Count"] = ByteString::Build(count);
 		if (query.size())
 		{
-			builder << "&Search_Query=" << format::URLEncode(query);
+			url.params["Search_Query"] = query;
 		}
-		return builder.Build();
+		return url;
 	}
 
 	SearchTagsRequest::SearchTagsRequest(int start, int count, ByteString query) : APIRequest(Url(start, count, query), authOmit, false)

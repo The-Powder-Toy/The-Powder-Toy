@@ -2,6 +2,7 @@
 #include "client/http/Request.h"
 #include "common/platform/Platform.h"
 #include "compat_lua.h"
+#include "Format.h"
 #include "Config.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
@@ -39,7 +40,7 @@ static int installScriptManager(lua_State *L)
 		new ErrorMessage("Script download", "You must run this function from the console");
 		return 0;
 	}
-	lsi->scriptManagerDownload = std::make_unique<http::Request>(ByteString::Build("https://starcatcher.us/scripts/main.lua?get=1"));
+	lsi->scriptManagerDownload = std::make_unique<http::Request>(format::Url{ "https://starcatcher.us/scripts/main.lua", {{ "get", "1" }} }.ToByteString());
 	lsi->scriptManagerDownload->Start();
 	return 0;
 }

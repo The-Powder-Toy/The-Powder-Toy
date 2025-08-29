@@ -5,7 +5,7 @@
 namespace http
 {
 	ExecVoteRequest::ExecVoteRequest(int saveID, int newDirection) :
-		APIRequest(ByteString::Build(SERVER, "/Vote.api"), authRequire, false),
+		APIRequest({ ByteString::Build(SERVER, "/Vote.api") }, authRequire, false),
 		direction(newDirection)
 	{
 		auto user = Client::Ref().GetAuthUser();

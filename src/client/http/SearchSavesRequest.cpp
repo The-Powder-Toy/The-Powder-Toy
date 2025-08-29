@@ -7,10 +7,11 @@
 
 namespace http
 {
-	static ByteString Url(int start, int count, ByteString query, Period period, Sort sort, Category category)
+	static format::Url Url(int start, int count, ByteString query, Period period, Sort sort, Category category)
 	{
-		ByteStringBuilder builder;
-		builder << SERVER << "/Browse.json?Start=" << start << "&Count=" << count;
+		format::Url url{ ByteString::Build(SERVER, "/Browse.json") };
+		url.params["Start"] = ByteString::Build(start);
+		url.params["Count"] = ByteString::Build(count);
 		auto appendToQuery = [&query](ByteString str) {
 			if (query.size())
 			{
@@ -63,7 +64,7 @@ namespace http
 		switch (category)
 		{
 		case categoryFavourites:
-			builder << "&Category=Favourites";
+			url.params["Category"] = "Favourites";
 			break;
 
 		case categoryMyOwn:
@@ -76,9 +77,9 @@ namespace http
 		}
 		if (query.size())
 		{
-			builder << "&Search_Query=" << format::URLEncode(query);
+			url.params["Search_Query"] = query;
 		}
-		return builder.Build();
+		return url;
 	}
 
 	SearchSavesRequest::SearchSavesRequest(int start, int count, ByteString query, Period period, Sort sort, Category category) : APIRequest(Url(start, count, query, period, sort, category), authUse, false)

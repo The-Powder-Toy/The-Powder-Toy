@@ -1,6 +1,7 @@
 #pragma once
 #include "Request.h"
 #include "common/String.h"
+#include "Format.h"
 #include <json/json.h>
 
 namespace http
@@ -17,7 +18,7 @@ namespace http
 			authUse,
 			authOmit,
 		};
-		APIRequest(ByteString url, AuthMode authMode, bool newCheckStatus);
+		APIRequest(format::Url url, AuthMode authMode, bool newCheckStatus);
 
 		Json::Value Finish();
 	};

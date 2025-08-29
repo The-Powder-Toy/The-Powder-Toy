@@ -4,7 +4,9 @@
 namespace http
 {
 	PublishSaveRequest::PublishSaveRequest(int saveID) :
-		APIRequest(ByteString::Build(SERVER, "/Browse/View.json?ID=", saveID), authRequireAppendSession, true)
+		APIRequest({ ByteString::Build(SERVER, "/Browse/View.json"), {
+			{ "ID", ByteString::Build(saveID) },
+		} }, authRequireAppendSession, true)
 	{
 		AddPostData(FormData{
 			{ "ActionPublish", "bagels" },

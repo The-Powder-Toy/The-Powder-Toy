@@ -4,7 +4,11 @@
 namespace http
 {
 	RemoveTagRequest::RemoveTagRequest(int saveID, ByteString tag) :
-		APIRequest(ByteString::Build(SERVER, "/Browse/EditTag.json?Op=delete&ID=", saveID, "&Tag=", tag), authRequireAppendSession, true)
+		APIRequest({ ByteString::Build(SERVER, "/Browse/EditTag.json"), {
+			{ "Op", "delete" },
+			{ "ID", ByteString::Build(saveID) },
+			{ "Tag", tag },
+		} }, authRequireAppendSession, true)
 	{
 	}
 
