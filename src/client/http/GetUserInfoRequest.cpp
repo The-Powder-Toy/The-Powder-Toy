@@ -18,7 +18,7 @@ namespace http
 		try
 		{
 			auto &user = result["User"];
-			userInfo = UserInfo(
+			userInfo = UserInfo{
 				user["ID"].asInt(),
 				user["Age"].asInt(),
 				user["Username"].asString(),
@@ -31,7 +31,11 @@ namespace http
 				user["Forum"]["Topics"].asInt(),
 				user["Forum"]["Replies"].asInt(),
 				user["Forum"]["Reputation"].asInt()
-			);
+			};
+			if (user.isMember("RegisterTime"))
+			{
+				userInfo.registeredAt = ByteString(user["RegisterTime"].asString()).ToNumber<time_t>();
+			}
 		}
 		catch (const std::exception &ex)
 		{
