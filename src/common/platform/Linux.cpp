@@ -136,7 +136,7 @@ bool Install()
 		auto data = powder_desktop.AsCharSpan();
 		ByteString desktopData(data.begin(), data.end());
 		auto exe = Platform::ExecutableName();
-		auto path = exe.SplitFromEndBy('/').Before();
+		auto path = Platform::GetCwd();
 		desktopData = desktopData.Substitute("Exec=" + ByteString(APPEXE), "Exec=" + desktopEscapeString(desktopEscapeExec(exe)));
 		desktopData += ByteString::Build("Path=", desktopEscapeString(path), "\n");
 		ByteString file = ByteString::Build(APPVENDOR, "-", APPID, ".desktop");
