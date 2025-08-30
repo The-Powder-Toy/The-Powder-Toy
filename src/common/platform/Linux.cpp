@@ -142,7 +142,7 @@ bool Install()
 		ByteString file = ByteString::Build(APPVENDOR, "-", APPID, ".desktop");
 		ok = ok && Platform::WriteFile(desktopData, file);
 		ok = ok && Run("installing desktop file", { "xdg-desktop-menu", "install", file }, true);
-		ok = ok && Run("associating save MIME type with desktop file", { "xdg-mime", "default", file, "application/vnd.", APPVENDOR, ".save" }, true);
+		ok = ok && Run("associating save MIME type with desktop file", { "xdg-mime", "default", file, ByteString::Build("application/vnd.", APPVENDOR, ".save") }, true);
 		ok = ok && Run("associating ptsave URL scheme with desktop file", { "xdg-mime", "default", file, "x-scheme-handler/ptsave" }, true);
 		Platform::RemoveFile(file);
 	}
@@ -157,7 +157,7 @@ bool Install()
 	{
 		ByteString file = ByteString(APPVENDOR) + "-cps.png";
 		ok = ok && Platform::WriteFile(icon_cps_png.AsCharSpan(), file);
-		ok = ok && Run("providing file icons for saves and stamps", { "xdg-icon-resource", "install", "--noupdate", "--context", "mimetypes", "--size", "64", file, "application-vnd.", APPVENDOR, ".save" }, true);
+		ok = ok && Run("providing file icons for saves and stamps", { "xdg-icon-resource", "install", "--noupdate", "--context", "mimetypes", "--size", "64", file, ByteString::Build("application-vnd.", APPVENDOR, ".save") }, true);
 		Platform::RemoveFile(file);
 	}
 	if (ok)
