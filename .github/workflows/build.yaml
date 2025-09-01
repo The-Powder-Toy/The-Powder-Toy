@@ -70,7 +70,7 @@ jobs:
       - if: matrix.force_msys2_bash == 'yes'
         uses: msys2/setup-msys2@v2
         with:
-          msystem: UCRT64
+          msystem: ${{ matrix.msys2_msystem }}
           update: true
           path-type: strict
           cache: true

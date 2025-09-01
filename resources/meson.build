@@ -42,32 +42,41 @@ if host_platform == 'windows'
 	icon_cps_ico_path = ''
 	winutf8_xml_path = ''
 	if windows_icons
-		generated_win_icos = {}
-		win_icos = {
-			'icon_exe': [ 'icon_exe', 'icon_exe_48', 'icon_exe_32', 'icon_exe_16' ],
-			'icon_cps': [ 'icon_cps', 'icon_cps_48', 'icon_cps_32', 'icon_cps_16' ],
-		}
-		foreach key, icons : win_icos
-			command = [
-				python3_prog,
-				join_paths(meson.current_source_dir(), 'make-ico.py'),
-				'@OUTPUT@',
+		if host_arch == 'x86' and host_libc == 'mingw'
+			icon_exe_ico_path = join_paths(meson.current_source_dir(), 'icon_exe_xp.ico')
+			icon_cps_ico_path = join_paths(meson.current_source_dir(), 'icon_cps_xp.ico')
+			rc_conf_depend_files += [
+				files('icon_exe_xp.ico'),
+				files('icon_cps_xp.ico'),
 			]
-			foreach ikey : icons
-				command += [ rendered_icons[ikey] ]
+		else
+			generated_win_icos = {}
+			win_icos = {
+				'icon_exe': [ 'icon_exe', 'icon_exe_48', 'icon_exe_32', 'icon_exe_16' ],
+				'icon_cps': [ 'icon_cps', 'icon_cps_48', 'icon_cps_32', 'icon_cps_16' ],
+			}
+			foreach key, icons : win_icos
+				command = [
+					python3_prog,
+					join_paths(meson.current_source_dir(), 'make-ico.py'),
+					'@OUTPUT@',
+				]
+				foreach ikey : icons
+					command += [ rendered_icons[ikey] ]
+				endforeach
+				generated_win_icos += { key: custom_target(
+					key + '-ico',
+					output: key + '.ico',
+					command: command,
+				) }
 			endforeach
-			generated_win_icos += { key: custom_target(
-				key + '-ico',
-				output: key + '.ico',
-				command: command,
-			) }
-		endforeach
-		rc_conf_depends += [
-			generated_win_icos['icon_exe'],
-			generated_win_icos['icon_cps'],
-		]
-		icon_exe_ico_path = join_paths(meson.current_build_dir(), 'icon_exe.ico')
-		icon_cps_ico_path = join_paths(meson.current_build_dir(), 'icon_cps.ico')
+			rc_conf_depends += [
+				generated_win_icos['icon_exe'],
+				generated_win_icos['icon_cps'],
+			]
+			icon_exe_ico_path = join_paths(meson.current_build_dir(), 'icon_exe.ico')
+			icon_cps_ico_path = join_paths(meson.current_build_dir(), 'icon_cps.ico')
+		endif
 	endif
 	if windows_utf8cp
 		rc_conf_depend_files += [
