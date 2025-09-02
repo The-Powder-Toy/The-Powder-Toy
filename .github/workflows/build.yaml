@@ -74,27 +74,7 @@ jobs:
           update: true
           path-type: strict
           cache: true
-          # this list doesn't have to mirror the one in build.sh perfectly
-          # but the packages listed here get cached properly and take less time to install
-          install: >-
-            git
-            curl
-            mingw-w64-ucrt-x86_64-gcc
-            mingw-w64-ucrt-x86_64-pkgconf
-            mingw-w64-ucrt-x86_64-bzip2
-            mingw-w64-ucrt-x86_64-luajit
-            mingw-w64-ucrt-x86_64-jsoncpp
-            mingw-w64-ucrt-x86_64-curl
-            mingw-w64-ucrt-x86_64-SDL2
-            mingw-w64-ucrt-x86_64-libpng
-            mingw-w64-ucrt-x86_64-meson
-            mingw-w64-ucrt-x86_64-python
-            mingw-w64-ucrt-x86_64-python-pip
-            mingw-w64-ucrt-x86_64-fftw
-            mingw-w64-ucrt-x86_64-cmake
-            mingw-w64-ucrt-x86_64-7zip
-            mingw-w64-ucrt-x86_64-jq
-            patch
+          install: ${{ matrix.msys2_cache_install }}
       - run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
       - if: matrix.force_msys2_bash != 'yes'

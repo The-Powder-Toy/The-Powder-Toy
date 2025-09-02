@@ -241,6 +241,9 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 		'runs_on': runson,
 		'force_msys2_bash': msys2_bash and 'yes' or 'no',
 		'msys2_msystem': arch == 'x86_64' and 'UCRT64' or 'MINGW32',
+		# this list doesn't have to mirror the one in build.sh perfectly
+		# but the packages listed here get cached properly and take less time to install
+		'msys2_cache_install': arch == 'x86_64' and 'git curl patch mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-pkgconf mingw-w64-ucrt-x86_64-bzip2 mingw-w64-ucrt-x86_64-luajit mingw-w64-ucrt-x86_64-jsoncpp mingw-w64-ucrt-x86_64-curl mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-meson mingw-w64-ucrt-x86_64-python mingw-w64-ucrt-x86_64-python-pip mingw-w64-ucrt-x86_64-fftw mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-7zip mingw-w64-ucrt-x86_64-jq' or 'git curl patch mingw-w64-i686-gcc mingw-w64-i686-meson mingw-w64-i686-python mingw-w64-i686-python-pip mingw-w64-i686-cmake mingw-w64-i686-7zip mingw-w64-i686-jq',
 		'package_suffix': suffix,
 		'package_mode': mode,
 		'publish': publish and 'yes' or 'no',
