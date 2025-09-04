@@ -365,6 +365,18 @@ static void EventProcess(const SDL_Event &event)
 		SDL_free(event.drop.file);
 		break;
 	case SDL_MOUSEBUTTONDOWN:
+		/* Side mouse button backward */
+		if (event.button.button == 4) {
+			engine.onKeyPress(SDLK_z, SDL_SCANCODE_Z, false,
+		 				      0, 1, 0);
+		}
+
+		/* Side mouse button forward */
+		if (event.button.button == 5) {
+			engine.onKeyPress(SDLK_y, SDL_SCANCODE_Y, false,
+						      0, 1, 0);
+		}
+
 		// if mouse hasn't moved yet, sdl will send 0,0. We don't want that
 		if (hasMouseMoved)
 		{
@@ -381,6 +393,17 @@ static void EventProcess(const SDL_Event &event)
 		}
 		break;
 	case SDL_MOUSEBUTTONUP:
+		/* Side mouse button backward */
+		if (event.button.button == 4) {
+			engine.onKeyRelease(SDLK_z, SDL_SCANCODE_Z, false,
+		 				        0, 0, 0);
+		}
+
+		/* Side mouse button forward */
+		if (event.button.button == 5) {
+			engine.onKeyRelease(SDLK_y, SDL_SCANCODE_Y, false,
+						        0, 0, 0);
+		}
 		// if mouse hasn't moved yet, sdl will send 0,0. We don't want that
 		if (hasMouseMoved)
 		{
