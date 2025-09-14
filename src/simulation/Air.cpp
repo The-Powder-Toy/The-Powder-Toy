@@ -467,7 +467,7 @@ void Air::ApproximateBlockAirMaps()
 {
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
-	for (int i = 0; i <= sim.parts.lastActiveIndex; i++)
+	for (int i = 0; i < sim.parts.active; i++)
 	{
 		int type = sim.parts[i].type;
 		if (!type)

@@ -266,7 +266,7 @@ void Renderer::render_parts()
 			}
 	}
 	stats.foundParticles = 0;
-	for(i = 0; i<=sim->parts.lastActiveIndex; i++) {
+	for(i = 0; i < sim->parts.active; i++) {
 		if (sim->parts[i].type && sim->parts[i].type >= 0 && sim->parts[i].type < PT_NUM) {
 			t = sim->parts[i].type;
 
@@ -803,7 +803,7 @@ void Renderer::render_parts()
 							type = PT_PRTO;
 						else if (type == PT_PRTO)
 							type = PT_PRTI;
-						for (int z = 0; z <= sim->parts.lastActiveIndex; z++)
+						for (int z = 0; z < sim->parts.active; z++)
 						{
 							if (parts[z].type == type)
 							{
@@ -1408,7 +1408,7 @@ void Renderer::AdjustHdispLimit()
 		if (colorMode & COLOUR_HEAT)
 		{
 			auto &sd = SimulationData::CRef();
-			for (int i = 0; i <= sim->parts.lastActiveIndex; ++i)
+			for (int i = 0; i < sim->parts.active; ++i)
 			{
 				auto t = sim->parts[i].type;
 				if (t > 0 && t < PT_NUM)

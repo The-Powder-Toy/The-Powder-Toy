@@ -38,7 +38,7 @@ struct Parts
 {
 	std::array<Particle, NPART> data;
 	// initialized in clear_sim
-	int lastActiveIndex;
+	int active;
 
 	operator const Particle *() const
 	{
@@ -59,8 +59,8 @@ struct Parts
 
 	Parts &operator =(const Parts &other)
 	{
-		std::copy(other.data.begin(), other.data.begin() + other.lastActiveIndex + 1, data.begin());
-		lastActiveIndex = other.lastActiveIndex;
+		std::copy(other.data.begin(), other.data.begin() + other.active, data.begin());
+		active = other.active;
 		return *this;
 	}
 
