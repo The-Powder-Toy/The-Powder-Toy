@@ -237,7 +237,7 @@ static int DeutExplosion(Simulation * sim, int n, int x, int y, float temp, int 
 		i = sim->create_part(-3, x, y, t);
 		if (i >= 0)
 			sim->parts[i].temp = temp;
-		else if (sim->MaxPartsReached())
+		else if (sim->parts.MaxPartsReached())
 			break;
 	}
 	sim->pv[y/CELL][x/CELL] += (6.0f * CFDS)*n;

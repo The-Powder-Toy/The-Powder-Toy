@@ -101,7 +101,7 @@ static int update(UPDATE_FUNC_ARGS)
 				parts[nb].vx = v*cosf(angle);
 				parts[nb].vy = v*sinf(angle);
 			}
-			else if (sim->MaxPartsReached())
+			else if (sim->parts.MaxPartsReached())
 				break;//if we've run out of particles, stop trying to create them - saves a lot of lag on "sing bomb" saves
 		}
 		sim->kill_part(i);

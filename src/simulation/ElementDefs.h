@@ -83,4 +83,4 @@ constexpr bool InBounds(int x, int y)
 }
 
 struct playerst;
-struct Parts;
+class Parts;

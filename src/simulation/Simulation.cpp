@@ -983,6 +983,7 @@ void Parts::Reset()
 {
 	memset(data.data(), 0, sizeof(Particle)*NPART);
 	active = 0;
+	pfree = -1;
 }
 
 void Simulation::clear_sim(void)
@@ -1004,7 +1005,6 @@ void Simulation::clear_sim(void)
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
 	parts.Reset();
-	pfree = -1;
 	NUM_PARTS = 0;
 	memset(pmap, 0, sizeof(pmap));
 	memset(fvx, 0, sizeof(fvx));
@@ -1759,10 +1759,15 @@ void Simulation::kill_part(int i)//kills particle number i
 
 	elementCount[t]--;
 
-	parts[i].type = PT_NONE;
-	parts[i].life = pfree;
-	pfree = i;
+	parts.Free(i);
 	NUM_PARTS -= 1;
+}
+
+void Parts::Free(int i)
+{
+	data[i].type = PT_NONE;
+	data[i].life = pfree;
+	pfree = i;
 }
 
 // Changes the type of particle number i, to t.  This also changes pmap at the same time
@@ -1882,17 +1887,8 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 				return -1;
 			}
 		}
-		if (pfree != -1)
-		{
-			i = pfree;
-			pfree = parts[i].life;
-		}
-		else if (parts.active < NPART)
-		{
-			i = parts.active;
-			parts.active += 1;
-		}
-		else
+		i = parts.Alloc();
+		if (i == -1)
 		{
 			return -1;
 		}
@@ -1954,9 +1950,26 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	return i;
 }
 
+int Parts::Alloc()
+{
+	if (pfree != -1)
+	{
+		auto i = pfree;
+		pfree = data[i].life;
+		return i;
+	}
+	if (active < NPART)
+	{
+		auto i = active;
+		active += 1;
+		return i;
+	}
+	return -1;
+}
+
 void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLOW
 {
-	if (MaxPartsReached())
+	if (parts.MaxPartsReached())
 	{
 		return;
 	}
@@ -1993,7 +2006,7 @@ void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLO
 
 void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going through GLAS
 {
-	if (MaxPartsReached())
+	if (parts.MaxPartsReached())
 	{
 		return;
 	}
@@ -3318,24 +3331,29 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 			}
 		}
 	}
+	parts.Flatten();
+	if (elementRecount)
+		elementRecount = false;
+}
+
+void Parts::Flatten()
+{
 	int newActive = 0;
 	auto *ppfree = &pfree;
-	for (int i = 0; i < parts.active; i++)
+	for (int i = 0; i < active; i++)
 	{
-		if (parts[i].type)
+		if (data[i].type)
 		{
 			for (auto j = newActive; j < i; ++j)
 			{
 				*ppfree = j;
-				ppfree = &parts[j].life;
+				ppfree = &data[j].life;
 			}
 			newActive = i + 1;
 		}
 	}
 	*ppfree = -1;
-	parts.active = newActive;
-	if (elementRecount)
-		elementRecount = false;
+	active = newActive;
 }
 
 void Simulation::SimulateGoL()

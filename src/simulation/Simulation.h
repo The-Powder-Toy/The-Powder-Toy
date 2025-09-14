@@ -34,8 +34,11 @@ class Renderer;
 class Air;
 class GameSave;
 
-struct Parts
+class Parts
 {
+	int pfree;
+
+public:
 	std::array<Particle, NPART> data;
 	// initialized in clear_sim
 	int active;
@@ -61,10 +64,22 @@ struct Parts
 	{
 		std::copy(other.data.begin(), other.data.begin() + other.active, data.begin());
 		active = other.active;
+		pfree = other.pfree;
 		return *this;
 	}
 
+	Parts(const Parts &&other) = delete;
+	Parts &operator =(const Parts &&other) = delete;
+
 	void Reset();
+	void Free(int i);
+	int Alloc();
+	void Flatten();
+
+	bool MaxPartsReached() const
+	{
+		return pfree == -1;
+	}
 };
 
 struct RenderableSimulation
@@ -255,17 +270,10 @@ public:
 
 	void EnableNewtonianGravity(bool enable);
 
-	bool MaxPartsReached() const
-	{
-		return pfree == -1;
-	}
-
 private:
 	CoordStack& getCoordStackSingleton();
 
 	void ResetNewtonianGravity(GravityInput newGravIn, GravityOutput newGravOut);
 	void DispatchNewtonianGravity();
 	void UpdateGravityMask();
-
-	int pfree;
 };
