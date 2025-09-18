@@ -2343,424 +2343,10 @@ void Simulation::UpdateParticles(int start, int end)
 			parts[i].vy += elements[t].Diffusion*(2.0f*rng.uniform01()-1.0f);
 		}
 
-		auto transitionOccurred = false;
-
-		float gel_scale = 1.0f;
-		if (t==PT_GEL)
-			gel_scale = parts[i].tmp*2.55f;
-
-		if (!legacy_enable)
+		auto transitionOccurred = TransitionPhase(i, neighbourhood);
+		if (!parts[i].type)
 		{
-			if ((elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale > (1 + rng.between(0, 254))))
-			{
-				float convGravX, convGravY;
-				GetGravityField(x, y, -2.0f, -2.0f, convGravX, convGravY);
-				auto offsetX = std::clamp(int(std::round(convGravX + x)), x-1, x+1);
-				auto offsetY = std::clamp(int(std::round(convGravY + y)), y-1, y+1);
-				// Some heat convection for liquids
-				if (offsetX != x || offsetY != y)
-				{
-					auto r = pmap[offsetY][offsetX];
-					if (r && parts[i].type == TYP(r))
-					{
-						if (parts[i].temp>parts[ID(r)].temp)
-						{
-							auto swappage = parts[i].temp;
-							parts[i].temp = parts[ID(r)].temp;
-							parts[ID(r)].temp = swappage;
-						}
-					}
-				}
-			}
-
-			//heat transfer code
-			auto h_count = 0;
-			bool cond;
-			cond = t && !sd.IsHeatInsulator(parts[i]) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250);
-
-			if (cond)
-			{
-				if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
-				{
-					auto c_heat = (hv[y/CELL][x/CELL]-parts[i].temp)*0.04;
-					c_heat = restrict_flt(c_heat, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
-					parts[i].temp += c_heat;
-					hv[y/CELL][x/CELL] -= c_heat;
-				}
-				auto c_heat = 0.0f;
-				int surround_hconduct[8];
-				for (auto j=0; j<8; j++)
-				{
-					surround_hconduct[j] = i;
-					auto r = neighbourhood.surround[j];
-
-					if (!r)
-						continue;
-
-					auto rt = TYP(r);
-
-					if (!rt || sd.IsHeatInsulator(parts[ID(r)])
-					        || (t == PT_FILT && (rt == PT_BRAY || rt == PT_BIZR || rt == PT_BIZRG))
-					        || (rt == PT_FILT && (t == PT_BRAY || t == PT_PHOT || t == PT_BIZR || t == PT_BIZRG))
-					        || (t == PT_ELEC && rt == PT_DEUT)
-					        || (t == PT_DEUT && rt == PT_ELEC)
-					        || (t == PT_HSWC && rt == PT_FILT && parts[i].tmp == 1)
-					        || (t == PT_FILT && rt == PT_HSWC && parts[ID(r)].tmp == 1))
-						continue;
-
-					surround_hconduct[j] = ID(r);
-					c_heat += parts[ID(r)].temp;
-
-					if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
-					{
-						c_heat += parts[ID(r)].temp; // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
-					}
-
-					h_count++;
-
-					if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
-					{
-						h_count++; // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
-					}
-				}
-				float pt = R_TEMP;
-
-				if ((t == PT_PIPE || t == PT_PPIP) && parts[i].ctype != 0)
-					pt = (c_heat+parts[i].temp*2.0f)/(h_count+2); // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
-				else
-					pt = (c_heat+parts[i].temp)/(h_count+1);
-
-				pt = parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
-				for (auto j=0; j<8; j++)
-				{
-					parts[surround_hconduct[j]].temp = pt;
-				}
-
-				auto ctemph = pt;
-				auto ctempl = pt;
-				// change boiling point with pressure
-				if (((elements[t].Properties&TYPE_LIQUID) && sd.IsElementOrNone(elements[t].HighTemperatureTransition) && (elements[elements[t].HighTemperatureTransition].Properties&TYPE_GAS))
-				        || t==PT_LNTG || t==PT_SLTW)
-					ctemph -= 2.0f*pv[y/CELL][x/CELL];
-				else if (((elements[t].Properties&TYPE_GAS) && sd.IsElementOrNone(elements[t].LowTemperatureTransition) && (elements[elements[t].LowTemperatureTransition].Properties&TYPE_LIQUID))
-				         || t==PT_WTRV)
-					ctempl -= 2.0f*pv[y/CELL][x/CELL];
-				auto s = 1;
-
-				//A fix for ice with ctype = 0
-				if ((t==PT_ICEI || t==PT_SNOW) && (!sd.IsElement(parts[i].ctype) || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW))
-					parts[i].ctype = PT_WATR;
-
-				if (elements[t].HighTemperatureTransition != NT && ctemph>=elements[t].HighTemperature)
-				{
-					// particle type change due to high temperature
-					if (elements[t].HighTemperatureTransition != ST)
-					{
-						t = elements[t].HighTemperatureTransition;
-					}
-					else if (t == PT_ICEI || t == PT_SNOW)
-					{
-						if (parts[i].ctype > 0 && parts[i].ctype < PT_NUM && parts[i].ctype != t)
-						{
-							if (elements[parts[i].ctype].LowTemperatureTransition==PT_ICEI || elements[parts[i].ctype].LowTemperatureTransition==PT_SNOW)
-							{
-								if (pt<elements[parts[i].ctype].LowTemperature)
-									s = 0;
-							}
-							else if (pt<273.15f)
-								s = 0;
-
-							if (s)
-							{
-								t = parts[i].ctype;
-								parts[i].ctype = PT_NONE;
-								parts[i].life = 0;
-							}
-						}
-						else
-							s = 0;
-					}
-					else if (t == PT_SLTW)
-					{
-						t = rng.chance(1, 4) ? PT_SALT : PT_WTRV;
-					}
-					else if (t == PT_BRMT)
-					{
-						if (parts[i].ctype == PT_TUNG)
-						{
-							if (ctemph < elements[parts[i].ctype].HighTemperature)
-								s = 0;
-							else
-							{
-								t = PT_LAVA;
-								parts[i].type = PT_TUNG;
-							}
-						}
-						else if (ctemph >= elements[t].HighTemperature)
-							t = PT_LAVA;
-						else
-							s = 0;
-					}
-					else if (t == PT_CRMC)
-					{
-						float pres = std::max((pv[y/CELL][x/CELL]+pv[(y-2)/CELL][x/CELL]+pv[(y+2)/CELL][x/CELL]+pv[y/CELL][(x-2)/CELL]+pv[y/CELL][(x+2)/CELL])*2.0f, 0.0f);
-						if (ctemph < pres+elements[PT_CRMC].HighTemperature)
-							s = 0;
-						else
-							t = PT_LAVA;
-					}
-					else if (t == PT_RIME)
-					{
-						if (parts[i].tmp > 5)
-						{
-							t = PT_ACID;
-							parts[i].life = 25 + 5 * parts[i].tmp;
-							parts[i].tmp = 0;
-						}
-						else
-						{
-							t = PT_WATR;
-						}
-					}
-					else
-						s = 0;
-				}
-				else if (elements[t].LowTemperatureTransition != NT && ctempl<elements[t].LowTemperature)
-				{
-					// particle type change due to low temperature
-					if (elements[t].LowTemperatureTransition != ST)
-					{
-						t = elements[t].LowTemperatureTransition;
-					}
-					else if (t == PT_WTRV)
-					{
-						t = (pt < 273.0f) ? PT_RIME : PT_DSTW;
-					}
-					else if (t == PT_LAVA)
-					{
-						if (parts[i].ctype > 0 && parts[i].ctype < PT_NUM && parts[i].ctype != PT_LAVA && elements[parts[i].ctype].Enabled)
-						{
-							if (parts[i].ctype == PT_THRM && pt >= elements[PT_BMTL].HighTemperature)
-								s = 0;
-							else if ((parts[i].ctype == PT_VIBR || parts[i].ctype == PT_BVBR) && pt >= 273.15f)
-								s = 0;
-							else if (parts[i].ctype == PT_TUNG)
-							{
-								// TUNG does its own melting in its update function, so HighTemperatureTransition is not LAVA so it won't be handled by the code for HighTemperatureTransition==PT_LAVA below
-								// However, the threshold is stored in HighTemperature to allow it to be changed from Lua
-								if (pt >= elements[parts[i].ctype].HighTemperature)
-									s = 0;
-							}
-							else if (parts[i].ctype == PT_CRMC)
-							{
-								float pres = std::max((pv[y/CELL][x/CELL]+pv[(y-2)/CELL][x/CELL]+pv[(y+2)/CELL][x/CELL]+pv[y/CELL][(x-2)/CELL]+pv[y/CELL][(x+2)/CELL])*2.0f, 0.0f);
-								if (ctemph >= pres+elements[PT_CRMC].HighTemperature)
-									s = 0;
-							}
-							else if (elements[parts[i].ctype].HighTemperatureTransition == PT_LAVA || parts[i].ctype == PT_HEAC)
-							{
-								if (pt >= elements[parts[i].ctype].HighTemperature)
-									s = 0;
-							}
-							else if (pt>=973.0f)
-								s = 0; // freezing point for lava with any other (not listed in ptransitions as turning into lava) ctype
-							if (s)
-							{
-								t = parts[i].ctype;
-								parts[i].ctype = PT_NONE;
-								if (t == PT_THRM)
-								{
-									parts[i].tmp = 0;
-									t = PT_BMTL;
-								}
-								if (t == PT_PLUT)
-								{
-									parts[i].tmp = 0;
-									t = PT_LAVA;
-								}
-							}
-						}
-						else if (pt<973.0f)
-							t = PT_STNE;
-						else
-							s = 0;
-					}
-					else
-						s = 0;
-				}
-				else
-					s = 0;
-
-				if (s) // particle type change occurred
-				{
-					if (t==PT_ICEI || t==PT_LAVA || t==PT_SNOW)
-						parts[i].ctype = parts[i].type;
-					if (!(t==PT_ICEI && parts[i].ctype==PT_FRZW) && t!=PT_ACID)
-						parts[i].life = 0;
-					if (t == PT_FIRE)
-					{
-						//hackish, if tmp isn't 0 the FIRE might turn into DSTW later
-						//idealy transitions should use create_part(i) but some elements rely on properties staying constant
-						//and I don't feel like checking each one right now
-						parts[i].tmp = 0;
-					}
-					if ((elements[t].Properties&TYPE_GAS) && !(elements[parts[i].type].Properties&TYPE_GAS))
-						pv[y/CELL][x/CELL] += 0.50f;
-
-					if (t == PT_NONE)
-					{
-						kill_part(i);
-						continue;
-					}
-					// part_change_type could refuse to change the type and kill the particle
-					// for example, changing type to STKM but one already exists
-					// we need to account for that to not cause simulation corruption issues
-					if (part_change_type(i,x,y,t))
-						continue;
-
-					if (t==PT_FIRE || t==PT_PLSM || t==PT_CFLM)
-						parts[i].life = rng.between(120, 169);
-					if (t == PT_LAVA)
-					{
-						if (parts[i].ctype == PT_BRMT) parts[i].ctype = PT_BMTL;
-						else if (parts[i].ctype == PT_SAND) parts[i].ctype = PT_GLAS;
-						else if (parts[i].ctype == PT_BGLA) parts[i].ctype = PT_GLAS;
-						else if (parts[i].ctype == PT_PQRT) parts[i].ctype = PT_QRTZ;
-						else if (parts[i].ctype == PT_LITH && parts[i].tmp2 > 3) parts[i].ctype = PT_GLAS;
-						parts[i].life = rng.between(240, 359);
-					}
-					transitionOccurred = true;
-				}
-
-				pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
-				if (t == PT_LAVA)
-				{
-					parts[i].life = int(restrict_flt((parts[i].temp-700)/7, 0, 400));
-					if (parts[i].ctype==PT_THRM&&parts[i].tmp>0)
-					{
-						parts[i].tmp--;
-						parts[i].temp = 3500;
-					}
-					if (parts[i].ctype==PT_PLUT&&parts[i].tmp>0)
-					{
-						parts[i].tmp--;
-						parts[i].temp = MAX_TEMP;
-					}
-				}
-			}
-			else
-			{
-				if (!(air->bmap_blockairh[y/CELL][x/CELL]&0x8))
-					air->bmap_blockairh[y/CELL][x/CELL]++;
-				parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
-			}
-		}
-
-		if (t==PT_LIFE)
-		{
-			parts[i].temp = restrict_flt(parts[i].temp-50.0f, MIN_TEMP, MAX_TEMP);
-		}
-		if (t==PT_WIRE)
-		{
-			//wire_placed = 1;
-		}
-		//spark updates from walls
-		if ((elements[t].Properties&PROP_CONDUCTS) || t==PT_SPRK)
-		{
-			auto nx = x % CELL;
-			if (nx == 0)
-				nx = x/CELL - 1;
-			else if (nx == CELL-1)
-				nx = x/CELL + 1;
-			else
-				nx = x/CELL;
-			auto ny = y % CELL;
-			if (ny == 0)
-				ny = y/CELL - 1;
-			else if (ny == CELL-1)
-				ny = y/CELL + 1;
-			else
-				ny = y/CELL;
-			if (nx>=0 && ny>=0 && nx<XCELLS && ny<YCELLS)
-			{
-				if (t!=PT_SPRK)
-				{
-					if (emap[ny][nx]==12 && !parts[i].life && bmap[ny][nx] != WL_STASIS)
-					{
-						part_change_type(i,x,y,PT_SPRK);
-						parts[i].life = 4;
-						parts[i].ctype = t;
-						t = PT_SPRK;
-					}
-				}
-				else if (bmap[ny][nx]==WL_DETECT || bmap[ny][nx]==WL_EWALL || bmap[ny][nx]==WL_ALLOWLIQUID || bmap[ny][nx]==WL_WALLELEC || bmap[ny][nx]==WL_ALLOWALLELEC || bmap[ny][nx]==WL_EHOLE)
-					set_emap(nx, ny);
-			}
-		}
-
-		//the basic explosion, from the .explosive variable
-		if ((elements[t].Explosive&2) && pv[y/CELL][x/CELL]>2.5f)
-		{
-			parts[i].life = rng.between(180, 259);
-			parts[i].temp = restrict_flt(elements[PT_FIRE].DefaultProperties.temp + (elements[t].Flammable/2), MIN_TEMP, MAX_TEMP);
-			t = PT_FIRE;
-			part_change_type(i,x,y,t);
-			pv[y/CELL][x/CELL] += 0.25f * CFDS;
-		}
-
-		{
-			auto s = 1;
-			auto gravtot = std::abs(gravOut.forceX[Vec2{ x, y } / CELL]) +
-			               std::abs(gravOut.forceY[Vec2{ x, y } / CELL]);
-			if (elements[t].HighPressureTransition != NT && pv[y/CELL][x/CELL]>elements[t].HighPressure) {
-				// particle type change due to high pressure
-				if (elements[t].HighPressureTransition != ST)
-					t = elements[t].HighPressureTransition;
-				else if (t==PT_BMTL) {
-					if (pv[y/CELL][x/CELL]>2.5f)
-						t = PT_BRMT;
-					else if (pv[y/CELL][x/CELL]>1.0f && parts[i].tmp==1)
-						t = PT_BRMT;
-					else s = 0;
-				}
-				else s = 0;
-			} else if (elements[t].LowPressureTransition != NT && pv[y/CELL][x/CELL]<elements[t].LowPressure && gravtot<=(elements[t].LowPressure/4.0f)) {
-				// particle type change due to low pressure
-				if (elements[t].LowPressureTransition != ST)
-					t = elements[t].LowPressureTransition;
-				else s = 0;
-			} else if (elements[t].HighPressureTransition != NT && gravtot>(elements[t].HighPressure/4.0f)) {
-				// particle type change due to high gravity
-				if (elements[t].HighPressureTransition != ST)
-					t = elements[t].HighPressureTransition;
-				else if (t==PT_BMTL) {
-					if (gravtot>0.625f)
-						t = PT_BRMT;
-					else if (gravtot>0.25f && parts[i].tmp==1)
-						t = PT_BRMT;
-					else s = 0;
-				}
-				else s = 0;
-			} else s = 0;
-
-			// particle type change occurred
-			if (s)
-			{
-				if (t == PT_NONE)
-				{
-					kill_part(i);
-					continue;
-				}
-				parts[i].life = 0;
-				// part_change_type could refuse to change the type and kill the particle
-				// for example, changing type to STKM but one already exists
-				// we need to account for that to not cause simulation corruption issues
-				if (part_change_type(i,x,y,t))
-					continue;
-				if (t == PT_FIRE)
-					parts[i].life = rng.between(120, 169);
-				transitionOccurred = true;
-			}
+			continue;
 		}
 
 		//call the particle update function, if there is one
@@ -2786,6 +2372,428 @@ void Simulation::UpdateParticles(int start, int end)
 
 		MovementPhase(i, neighbourhood);
 	}
+}
+
+bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
+{
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+
+	auto t = parts[i].type;
+	auto x = int(parts[i].x + 0.5f);
+	auto y = int(parts[i].y + 0.5f);
+	bool transitionOccurred = false;
+	if (!legacy_enable)
+	{
+		float gel_scale = 1.0f;
+		if (t==PT_GEL)
+			gel_scale = parts[i].tmp*2.55f;
+
+		if ((elements[t].Properties&TYPE_LIQUID) && (t!=PT_GEL || gel_scale > (1 + rng.between(0, 254))))
+		{
+			float convGravX, convGravY;
+			GetGravityField(x, y, -2.0f, -2.0f, convGravX, convGravY);
+			auto offsetX = std::clamp(int(std::round(convGravX + x)), x-1, x+1);
+			auto offsetY = std::clamp(int(std::round(convGravY + y)), y-1, y+1);
+			// Some heat convection for liquids
+			if (offsetX != x || offsetY != y)
+			{
+				auto r = pmap[offsetY][offsetX];
+				if (r && parts[i].type == TYP(r))
+				{
+					if (parts[i].temp>parts[ID(r)].temp)
+					{
+						auto swappage = parts[i].temp;
+						parts[i].temp = parts[ID(r)].temp;
+						parts[ID(r)].temp = swappage;
+					}
+				}
+			}
+		}
+
+		//heat transfer code
+		if (t && !sd.IsHeatInsulator(parts[i]) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250))
+		{
+			auto h_count = 0;
+			if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
+			{
+				auto c_heat = (hv[y/CELL][x/CELL]-parts[i].temp)*0.04;
+				c_heat = restrict_flt(c_heat, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
+				parts[i].temp += c_heat;
+				hv[y/CELL][x/CELL] -= c_heat;
+			}
+			auto c_heat = 0.0f;
+			int surround_hconduct[8];
+			for (auto j=0; j<8; j++)
+			{
+				surround_hconduct[j] = i;
+				auto r = neighbourhood.surround[j];
+
+				if (!r)
+					continue;
+
+				auto rt = TYP(r);
+
+				if (!rt || sd.IsHeatInsulator(parts[ID(r)])
+				        || (t == PT_FILT && (rt == PT_BRAY || rt == PT_BIZR || rt == PT_BIZRG))
+				        || (rt == PT_FILT && (t == PT_BRAY || t == PT_PHOT || t == PT_BIZR || t == PT_BIZRG))
+				        || (t == PT_ELEC && rt == PT_DEUT)
+				        || (t == PT_DEUT && rt == PT_ELEC)
+				        || (t == PT_HSWC && rt == PT_FILT && parts[i].tmp == 1)
+				        || (t == PT_FILT && rt == PT_HSWC && parts[ID(r)].tmp == 1))
+					continue;
+
+				surround_hconduct[j] = ID(r);
+				c_heat += parts[ID(r)].temp;
+
+				if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
+				{
+					c_heat += parts[ID(r)].temp; // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
+				}
+
+				h_count++;
+
+				if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
+				{
+					h_count++; // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
+				}
+			}
+			float pt = R_TEMP;
+
+			if ((t == PT_PIPE || t == PT_PPIP) && parts[i].ctype != 0)
+				pt = (c_heat+parts[i].temp*2.0f)/(h_count+2); // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
+			else
+				pt = (c_heat+parts[i].temp)/(h_count+1);
+
+			pt = parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
+			for (auto j=0; j<8; j++)
+			{
+				parts[surround_hconduct[j]].temp = pt;
+			}
+
+			auto ctemph = pt;
+			auto ctempl = pt;
+			// change boiling point with pressure
+			if (((elements[t].Properties&TYPE_LIQUID) && sd.IsElementOrNone(elements[t].HighTemperatureTransition) && (elements[elements[t].HighTemperatureTransition].Properties&TYPE_GAS))
+			        || t==PT_LNTG || t==PT_SLTW)
+				ctemph -= 2.0f*pv[y/CELL][x/CELL];
+			else if (((elements[t].Properties&TYPE_GAS) && sd.IsElementOrNone(elements[t].LowTemperatureTransition) && (elements[elements[t].LowTemperatureTransition].Properties&TYPE_LIQUID))
+			         || t==PT_WTRV)
+				ctempl -= 2.0f*pv[y/CELL][x/CELL];
+			auto s = 1;
+
+			//A fix for ice with ctype = 0
+			if ((t==PT_ICEI || t==PT_SNOW) && (!sd.IsElement(parts[i].ctype) || parts[i].ctype==PT_ICEI || parts[i].ctype==PT_SNOW))
+				parts[i].ctype = PT_WATR;
+
+			if (elements[t].HighTemperatureTransition != NT && ctemph>=elements[t].HighTemperature)
+			{
+				// particle type change due to high temperature
+				if (elements[t].HighTemperatureTransition != ST)
+				{
+					t = elements[t].HighTemperatureTransition;
+				}
+				else if (t == PT_ICEI || t == PT_SNOW)
+				{
+					if (parts[i].ctype > 0 && parts[i].ctype < PT_NUM && parts[i].ctype != t)
+					{
+						if (elements[parts[i].ctype].LowTemperatureTransition==PT_ICEI || elements[parts[i].ctype].LowTemperatureTransition==PT_SNOW)
+						{
+							if (pt<elements[parts[i].ctype].LowTemperature)
+								s = 0;
+						}
+						else if (pt<273.15f)
+							s = 0;
+
+						if (s)
+						{
+							t = parts[i].ctype;
+							parts[i].ctype = PT_NONE;
+							parts[i].life = 0;
+						}
+					}
+					else
+						s = 0;
+				}
+				else if (t == PT_SLTW)
+				{
+					t = rng.chance(1, 4) ? PT_SALT : PT_WTRV;
+				}
+				else if (t == PT_BRMT)
+				{
+					if (parts[i].ctype == PT_TUNG)
+					{
+						if (ctemph < elements[parts[i].ctype].HighTemperature)
+							s = 0;
+						else
+						{
+							t = PT_LAVA;
+							parts[i].type = PT_TUNG;
+						}
+					}
+					else if (ctemph >= elements[t].HighTemperature)
+						t = PT_LAVA;
+					else
+						s = 0;
+				}
+				else if (t == PT_CRMC)
+				{
+					float pres = std::max((pv[y/CELL][x/CELL]+pv[(y-2)/CELL][x/CELL]+pv[(y+2)/CELL][x/CELL]+pv[y/CELL][(x-2)/CELL]+pv[y/CELL][(x+2)/CELL])*2.0f, 0.0f);
+					if (ctemph < pres+elements[PT_CRMC].HighTemperature)
+						s = 0;
+					else
+						t = PT_LAVA;
+				}
+				else if (t == PT_RIME)
+				{
+					if (parts[i].tmp > 5)
+					{
+						t = PT_ACID;
+						parts[i].life = 25 + 5 * parts[i].tmp;
+						parts[i].tmp = 0;
+					}
+					else
+					{
+						t = PT_WATR;
+					}
+				}
+				else
+					s = 0;
+			}
+			else if (elements[t].LowTemperatureTransition != NT && ctempl<elements[t].LowTemperature)
+			{
+				// particle type change due to low temperature
+				if (elements[t].LowTemperatureTransition != ST)
+				{
+					t = elements[t].LowTemperatureTransition;
+				}
+				else if (t == PT_WTRV)
+				{
+					t = (pt < 273.0f) ? PT_RIME : PT_DSTW;
+				}
+				else if (t == PT_LAVA)
+				{
+					if (parts[i].ctype > 0 && parts[i].ctype < PT_NUM && parts[i].ctype != PT_LAVA && elements[parts[i].ctype].Enabled)
+					{
+						if (parts[i].ctype == PT_THRM && pt >= elements[PT_BMTL].HighTemperature)
+							s = 0;
+						else if ((parts[i].ctype == PT_VIBR || parts[i].ctype == PT_BVBR) && pt >= 273.15f)
+							s = 0;
+						else if (parts[i].ctype == PT_TUNG)
+						{
+							// TUNG does its own melting in its update function, so HighTemperatureTransition is not LAVA so it won't be handled by the code for HighTemperatureTransition==PT_LAVA below
+							// However, the threshold is stored in HighTemperature to allow it to be changed from Lua
+							if (pt >= elements[parts[i].ctype].HighTemperature)
+								s = 0;
+						}
+						else if (parts[i].ctype == PT_CRMC)
+						{
+							float pres = std::max((pv[y/CELL][x/CELL]+pv[(y-2)/CELL][x/CELL]+pv[(y+2)/CELL][x/CELL]+pv[y/CELL][(x-2)/CELL]+pv[y/CELL][(x+2)/CELL])*2.0f, 0.0f);
+							if (ctemph >= pres+elements[PT_CRMC].HighTemperature)
+								s = 0;
+						}
+						else if (elements[parts[i].ctype].HighTemperatureTransition == PT_LAVA || parts[i].ctype == PT_HEAC)
+						{
+							if (pt >= elements[parts[i].ctype].HighTemperature)
+								s = 0;
+						}
+						else if (pt>=973.0f)
+							s = 0; // freezing point for lava with any other (not listed in ptransitions as turning into lava) ctype
+						if (s)
+						{
+							t = parts[i].ctype;
+							parts[i].ctype = PT_NONE;
+							if (t == PT_THRM)
+							{
+								parts[i].tmp = 0;
+								t = PT_BMTL;
+							}
+							if (t == PT_PLUT)
+							{
+								parts[i].tmp = 0;
+								t = PT_LAVA;
+							}
+						}
+					}
+					else if (pt<973.0f)
+						t = PT_STNE;
+					else
+						s = 0;
+				}
+				else
+					s = 0;
+			}
+			else
+				s = 0;
+
+			if (s) // particle type change occurred
+			{
+				if (t==PT_ICEI || t==PT_LAVA || t==PT_SNOW)
+					parts[i].ctype = parts[i].type;
+				if (!(t==PT_ICEI && parts[i].ctype==PT_FRZW) && t!=PT_ACID)
+					parts[i].life = 0;
+				if (t == PT_FIRE)
+				{
+					//hackish, if tmp isn't 0 the FIRE might turn into DSTW later
+					//idealy transitions should use create_part(i) but some elements rely on properties staying constant
+					//and I don't feel like checking each one right now
+					parts[i].tmp = 0;
+				}
+				if ((elements[t].Properties&TYPE_GAS) && !(elements[parts[i].type].Properties&TYPE_GAS))
+					pv[y/CELL][x/CELL] += 0.50f;
+
+				if (t == PT_NONE)
+				{
+					kill_part(i);
+					return true;
+				}
+				// part_change_type could refuse to change the type and kill the particle
+				// for example, changing type to STKM but one already exists
+				// we need to account for that to not cause simulation corruption issues
+				if (part_change_type(i,x,y,t))
+					return true;
+
+				if (t==PT_FIRE || t==PT_PLSM || t==PT_CFLM)
+					parts[i].life = rng.between(120, 169);
+				if (t == PT_LAVA)
+				{
+					if (parts[i].ctype == PT_BRMT) parts[i].ctype = PT_BMTL;
+					else if (parts[i].ctype == PT_SAND) parts[i].ctype = PT_GLAS;
+					else if (parts[i].ctype == PT_BGLA) parts[i].ctype = PT_GLAS;
+					else if (parts[i].ctype == PT_PQRT) parts[i].ctype = PT_QRTZ;
+					else if (parts[i].ctype == PT_LITH && parts[i].tmp2 > 3) parts[i].ctype = PT_GLAS;
+					parts[i].life = rng.between(240, 359);
+				}
+				transitionOccurred = true;
+			}
+
+			pt = parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
+			if (t == PT_LAVA)
+			{
+				parts[i].life = int(restrict_flt((parts[i].temp-700)/7, 0, 400));
+				if (parts[i].ctype==PT_THRM&&parts[i].tmp>0)
+				{
+					parts[i].tmp--;
+					parts[i].temp = 3500;
+				}
+				if (parts[i].ctype==PT_PLUT&&parts[i].tmp>0)
+				{
+					parts[i].tmp--;
+					parts[i].temp = MAX_TEMP;
+				}
+			}
+		}
+		else
+		{
+			if (!(air->bmap_blockairh[y/CELL][x/CELL]&0x8))
+				air->bmap_blockairh[y/CELL][x/CELL]++;
+			parts[i].temp = restrict_flt(parts[i].temp, MIN_TEMP, MAX_TEMP);
+		}
+	}
+
+	if (t==PT_LIFE)
+	{
+		parts[i].temp = restrict_flt(parts[i].temp-50.0f, MIN_TEMP, MAX_TEMP);
+	}
+	//spark updates from walls
+	if ((elements[t].Properties&PROP_CONDUCTS) || t==PT_SPRK)
+	{
+		auto nx = x % CELL;
+		if (nx == 0)
+			nx = x/CELL - 1;
+		else if (nx == CELL-1)
+			nx = x/CELL + 1;
+		else
+			nx = x/CELL;
+		auto ny = y % CELL;
+		if (ny == 0)
+			ny = y/CELL - 1;
+		else if (ny == CELL-1)
+			ny = y/CELL + 1;
+		else
+			ny = y/CELL;
+		if (nx>=0 && ny>=0 && nx<XCELLS && ny<YCELLS)
+		{
+			if (t!=PT_SPRK)
+			{
+				if (emap[ny][nx]==12 && !parts[i].life && bmap[ny][nx] != WL_STASIS)
+				{
+					part_change_type(i,x,y,PT_SPRK);
+					parts[i].life = 4;
+					parts[i].ctype = t;
+					t = PT_SPRK;
+				}
+			}
+			else if (bmap[ny][nx]==WL_DETECT || bmap[ny][nx]==WL_EWALL || bmap[ny][nx]==WL_ALLOWLIQUID || bmap[ny][nx]==WL_WALLELEC || bmap[ny][nx]==WL_ALLOWALLELEC || bmap[ny][nx]==WL_EHOLE)
+				set_emap(nx, ny);
+		}
+	}
+
+	//the basic explosion, from the .explosive variable
+	if ((elements[t].Explosive&2) && pv[y/CELL][x/CELL]>2.5f)
+	{
+		parts[i].life = rng.between(180, 259);
+		parts[i].temp = restrict_flt(elements[PT_FIRE].DefaultProperties.temp + (elements[t].Flammable/2), MIN_TEMP, MAX_TEMP);
+		t = PT_FIRE;
+		part_change_type(i,x,y,t);
+		pv[y/CELL][x/CELL] += 0.25f * CFDS;
+	}
+
+	{
+		auto s = 1;
+		auto gravtot = std::abs(gravOut.forceX[Vec2{ x, y } / CELL]) +
+		               std::abs(gravOut.forceY[Vec2{ x, y } / CELL]);
+		if (elements[t].HighPressureTransition != NT && pv[y/CELL][x/CELL]>elements[t].HighPressure) {
+			// particle type change due to high pressure
+			if (elements[t].HighPressureTransition != ST)
+				t = elements[t].HighPressureTransition;
+			else if (t==PT_BMTL) {
+				if (pv[y/CELL][x/CELL]>2.5f)
+					t = PT_BRMT;
+				else if (pv[y/CELL][x/CELL]>1.0f && parts[i].tmp==1)
+					t = PT_BRMT;
+				else s = 0;
+			}
+			else s = 0;
+		} else if (elements[t].LowPressureTransition != NT && pv[y/CELL][x/CELL]<elements[t].LowPressure && gravtot<=(elements[t].LowPressure/4.0f)) {
+			// particle type change due to low pressure
+			if (elements[t].LowPressureTransition != ST)
+				t = elements[t].LowPressureTransition;
+			else s = 0;
+		} else if (elements[t].HighPressureTransition != NT && gravtot>(elements[t].HighPressure/4.0f)) {
+			// particle type change due to high gravity
+			if (elements[t].HighPressureTransition != ST)
+				t = elements[t].HighPressureTransition;
+			else if (t==PT_BMTL) {
+				if (gravtot>0.625f)
+					t = PT_BRMT;
+				else if (gravtot>0.25f && parts[i].tmp==1)
+					t = PT_BRMT;
+				else s = 0;
+			}
+			else s = 0;
+		} else s = 0;
+
+		// particle type change occurred
+		if (s)
+		{
+			if (t == PT_NONE)
+			{
+				kill_part(i);
+				return true;
+			}
+			parts[i].life = 0;
+			// part_change_type could refuse to change the type and kill the particle
+			// for example, changing type to STKM but one already exists
+			// we need to account for that to not cause simulation corruption issues
+			if (part_change_type(i,x,y,t))
+				return true;
+			if (t == PT_FIRE)
+				parts[i].life = rng.between(120, 169);
+			transitionOccurred = true;
+		}
+	}
+	return transitionOccurred;
 }
 
 void Simulation::MovementPhase(int i, Neighbourhood neighbourhood)

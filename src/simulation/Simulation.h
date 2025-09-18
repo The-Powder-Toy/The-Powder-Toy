@@ -285,4 +285,5 @@ private:
 	};
 	void MovementPhase(int i, Neighbourhood neighbourhood);
 	Neighbourhood GetNeighbourhood(int i) const;
+	bool TransitionPhase(int i, const Neighbourhood &neighbourhood);
 };
