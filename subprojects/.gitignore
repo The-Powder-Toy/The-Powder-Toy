@@ -1,2 +1,4 @@
-tpt-libs-prebuilt-*/
-packagecache/
+*
+!*.wrap
+!.gitignore
+!update-wraps.sh
