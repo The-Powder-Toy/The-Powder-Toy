@@ -250,7 +250,7 @@ public:
 	void CreateBox(int p, int x1, int y1, int x2, int y2, int c, int flags);
 	int FloodParts(int x, int y, int c, int cm, int flags);
 
-	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY);
+	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY) const;
 
 	int get_wavelength_bin(int *wm);
 	struct GetNormalResult
@@ -274,4 +274,15 @@ private:
 	void ResetNewtonianGravity(GravityInput newGravIn, GravityOutput newGravOut);
 	void DispatchNewtonianGravity();
 	void UpdateGravityMask();
+
+	struct Neighbourhood
+	{
+		std::array<int, 8> surround;
+		int surround_space = 0;
+		int nt = 0; //if nt is greater than 1 after this, then there is a particle around the current particle, that is NOT the current particle's type, for water movement.
+		float pGravX = 0;
+		float pGravY = 0;
+	};
+	void MovementPhase(int i, Neighbourhood neighbourhood);
+	Neighbourhood GetNeighbourhood(int i) const;
 };
