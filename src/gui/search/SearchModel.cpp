@@ -210,19 +210,12 @@ void SearchModel::SelectAllSaves()
 
 void SearchModel::DeselectSave(int saveID)
 {
-	bool changed = false;
-restart:
-	for (size_t i = 0; i < selected.size(); i++)
+	if (std::erase_if(selected, [saveID](auto &item) {
+		return item == saveID;
+	}))
 	{
-		if (selected[i] == saveID)
-		{
-			selected.erase(selected.begin()+i);
-			changed = true;
-			goto restart; //Just ensure all cases are removed.
-		}
-	}
-	if(changed)
 		notifySelectedChanged();
+	}
 }
 
 void SearchModel::notifySaveListChanged()

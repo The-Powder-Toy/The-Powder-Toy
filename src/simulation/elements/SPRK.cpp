@@ -285,73 +285,81 @@ static int update(UPDATE_FUNC_ARGS)
 				if ((pavg == PT_INSL) || (pavg == PT_RSSS)) continue; //Insulation blocks everything past here
 				if (!((elements[receiver].Properties&PROP_CONDUCTS)||receiver==PT_INST||receiver==PT_QRTZ)) continue; //Stop non-conducting receivers, allow INST and QRTZ as special cases
 				if (abs(rx)+abs(ry)>=4 &&sender!=PT_SWCH&&receiver!=PT_SWCH) continue; //Only switch conducts really far
-				if (receiver==sender && receiver!=PT_INST && receiver!=PT_QRTZ) goto conduct; //Everything conducts to itself, except INST.
 
-				//Sender cases, where elements can have specific outputs
-				switch (sender)
+				auto tryConduct = [&]() {
+					if (receiver==sender && receiver!=PT_INST && receiver!=PT_QRTZ) return true; //Everything conducts to itself, except INST.
+
+					//Sender cases, where elements can have specific outputs
+					switch (sender)
+					{
+					case PT_INST:
+						if (receiver==PT_NSCN)
+							return true;
+						return false;
+					case PT_SWCH:
+						if (receiver==PT_PSCN||receiver==PT_NSCN||receiver==PT_WATR||receiver==PT_SLTW||receiver==PT_NTCT||receiver==PT_PTCT||receiver==PT_INWR)
+							return false;
+						break;
+					case PT_ETRD:
+						if (receiver==PT_METL||receiver==PT_BMTL||receiver==PT_BRMT||receiver==PT_LRBD||receiver==PT_RBDM||receiver==PT_PSCN||receiver==PT_NSCN)
+							return true;
+						return false;
+					case PT_NTCT:
+						if (receiver==PT_PSCN || (receiver==PT_NSCN && parts[i].temp>373.0f))
+							return true;
+						return false;
+					case PT_PTCT:
+						if (receiver==PT_PSCN || (receiver==PT_NSCN && parts[i].temp<373.0f))
+							return true;
+						return false;
+					case PT_INWR:
+						if (receiver==PT_NSCN || receiver==PT_PSCN)
+							return true;
+						return false;
+					default:
+						break;
+					}
+					//Receiving cases, where elements can have specific inputs
+					switch (receiver)
+					{
+					case PT_QRTZ:
+						if ((sender==PT_NSCN||sender==PT_METL||sender==PT_PSCN||sender==PT_QRTZ) && (parts[ID(r)].temp<173.15||sim->pv[(y+ry)/CELL][(x+rx)/CELL]>8))
+							return true;
+						return false;
+					case PT_NTCT:
+						if (sender==PT_NSCN || (sender==PT_PSCN&&parts[ID(r)].temp>373.0f))
+							return true;
+						return false;
+					case PT_PTCT:
+						if (sender==PT_NSCN || (sender==PT_PSCN&&parts[ID(r)].temp<373.0f))
+							return true;
+						return false;
+					case PT_INWR:
+						if (sender==PT_NSCN || sender==PT_PSCN)
+							return true;
+						return false;
+					case PT_INST:
+						if (sender==PT_PSCN)
+							return true;
+						return false;
+					case PT_NBLE:
+						if (!(parts[i].tmp&0x1))
+							return true;
+						return false;
+					case PT_PSCN:
+						if (sender!=PT_NSCN)
+							return true;
+						return false;
+					default:
+						break;
+					}
+					return true;
+				};
+
+				if (!tryConduct())
 				{
-				case PT_INST:
-					if (receiver==PT_NSCN)
-						goto conduct;
 					continue;
-				case PT_SWCH:
-					if (receiver==PT_PSCN||receiver==PT_NSCN||receiver==PT_WATR||receiver==PT_SLTW||receiver==PT_NTCT||receiver==PT_PTCT||receiver==PT_INWR)
-						continue;
-					break;
-				case PT_ETRD:
-					if (receiver==PT_METL||receiver==PT_BMTL||receiver==PT_BRMT||receiver==PT_LRBD||receiver==PT_RBDM||receiver==PT_PSCN||receiver==PT_NSCN)
-						goto conduct;
-					continue;
-				case PT_NTCT:
-					if (receiver==PT_PSCN || (receiver==PT_NSCN && parts[i].temp>373.0f))
-						goto conduct;
-					continue;
-				case PT_PTCT:
-					if (receiver==PT_PSCN || (receiver==PT_NSCN && parts[i].temp<373.0f))
-						goto conduct;
-					continue;
-				case PT_INWR:
-					if (receiver==PT_NSCN || receiver==PT_PSCN)
-						goto conduct;
-					continue;
-				default:
-					break;
 				}
-				//Receiving cases, where elements can have specific inputs
-				switch (receiver)
-				{
-				case PT_QRTZ:
-					if ((sender==PT_NSCN||sender==PT_METL||sender==PT_PSCN||sender==PT_QRTZ) && (parts[ID(r)].temp<173.15||sim->pv[(y+ry)/CELL][(x+rx)/CELL]>8))
-						goto conduct;
-					continue;
-				case PT_NTCT:
-					if (sender==PT_NSCN || (sender==PT_PSCN&&parts[ID(r)].temp>373.0f))
-						goto conduct;
-					continue;
-				case PT_PTCT:
-					if (sender==PT_NSCN || (sender==PT_PSCN&&parts[ID(r)].temp<373.0f))
-						goto conduct;
-					continue;
-				case PT_INWR:
-					if (sender==PT_NSCN || sender==PT_PSCN)
-						goto conduct;
-					continue;
-				case PT_INST:
-					if (sender==PT_PSCN)
-						goto conduct;
-					continue;
-				case PT_NBLE:
-					if (!(parts[i].tmp&0x1))
-						goto conduct;
-					continue;
-				case PT_PSCN:
-					if (sender!=PT_NSCN)
-						goto conduct;
-					continue;
-				default:
-					break;
-				}
-			conduct:
 				//Yay, passed normal conduction rules, check a few last things and change receiver to spark
 				if (receiver==PT_WATR||receiver==PT_SLTW) {
 					if (parts[ID(r)].life==0 && parts[i].life<3)

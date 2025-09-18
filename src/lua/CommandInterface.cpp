@@ -123,46 +123,48 @@ ValueType CommandInterface::testType(String word)
 		if (!(rawWord[i] >= '0' && rawWord[i] <= '9') && !(rawWord[i] == '-' && !i))
 		{
 			if (rawWord[i] == '.' && rawWord[i+1])
-				goto parseFloat;
+			{
+				for (i++; i < word.length(); i++)
+				{
+					if (!((rawWord[i] >= '0' && rawWord[i] <= '9')))
+					{
+						return TypeString;
+					}
+				}
+				return TypeFloat;
+			}
 			else if (rawWord[i] == ',' && rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
-				goto parsePoint;
+			{
+				for (i++; i < word.length(); i++)
+				{
+					if (!(rawWord[i] >= '0' && rawWord[i] <= '9'))
+					{
+						return TypeString;
+					}
+				}
+				return TypePoint;
+			}
 			else if ((rawWord[i] == '#' || (i && rawWord[i-1] == '0' && rawWord[i] == 'x')) &&
 				((rawWord[i+1] >= '0' && rawWord[i+1] <= '9')
 				|| (rawWord[i+1] >= 'a' && rawWord[i+1] <= 'f')
 				|| (rawWord[i+1] >= 'A' && rawWord[i+1] <= 'F')))
-				goto parseNumberHex;
+			{
+				for (i++; i < word.length(); i++)
+				{
+					if (!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
+					{
+						return TypeString;
+					}
+				}
+				return TypeNumber;
+			}
 			else
-				goto parseString;
+			{
+				return TypeString;
+			}
 		}
 	}
 	return TypeNumber;
-
-parseFloat:
-	for (i++; i < word.length(); i++)
-		if (!((rawWord[i] >= '0' && rawWord[i] <= '9')))
-		{
-			goto parseString;
-		}
-	return TypeFloat;
-
-parseNumberHex:
-	for (i++; i < word.length(); i++)
-		if (!((rawWord[i] >= '0' && rawWord[i] <= '9') || (rawWord[i] >= 'a' && rawWord[i] <= 'f') || (rawWord[i] >= 'A' && rawWord[i] <= 'F')))
-		{
-			goto parseString;
-		}
-	return TypeNumber;
-
-parsePoint:
-	for (i++; i < word.length(); i++)
-		if (!(rawWord[i] >= '0' && rawWord[i] <= '9'))
-		{
-			goto parseString;
-		}
-	return TypePoint;
-
-parseString:
-	return TypeString;
 }
 
 int CommandInterface::parseNumber(String str)

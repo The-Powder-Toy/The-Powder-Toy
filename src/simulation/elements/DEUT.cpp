@@ -90,29 +90,33 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	else
 	{
-		for (auto rx = -1; rx <= 1; rx++)
-		{
-			for (auto ry = -1; ry <= 1; ry++)
+		auto tryExpand = [&]() {
+			for (auto rx = -1; rx <= 1; rx++)
 			{
-				if (rx || ry)
+				for (auto ry = -1; ry <= 1; ry++)
 				{
-					//Leave if there is nothing to do
-					if (parts[i].life <= maxlife)
-						goto trade;
-					auto r = pmap[y+ry][x+rx];
-					if ((!r)&&parts[i].life>=1)//if nothing then create deut
+					if (rx || ry)
 					{
-						auto np = sim->create_part(-1,x+rx,y+ry,PT_DEUT);
-						if (np<0) continue;
-						parts[i].life--;
-						parts[np].temp = parts[i].temp;
-						parts[np].life = 0;
+						//Leave if there is nothing to do
+						if (parts[i].life <= maxlife)
+						{
+							return;
+						}
+						auto r = pmap[y+ry][x+rx];
+						if ((!r)&&parts[i].life>=1)//if nothing then create deut
+						{
+							auto np = sim->create_part(-1,x+rx,y+ry,PT_DEUT);
+							if (np<0) continue;
+							parts[i].life--;
+							parts[np].temp = parts[i].temp;
+							parts[np].life = 0;
+						}
 					}
 				}
 			}
-		}
+		};
+		tryExpand();
 	}
-trade:
 	for (auto trade = 0; trade<4; trade ++)
 	{
 		auto rx = sim->rng.between(-2, 2);

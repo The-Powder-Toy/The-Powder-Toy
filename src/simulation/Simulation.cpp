@@ -2614,13 +2614,13 @@ void Simulation::UpdateParticles(int start, int end)
 						if (t == PT_NONE)
 						{
 							kill_part(i);
-							goto killed;
+							continue;
 						}
 						// part_change_type could refuse to change the type and kill the particle
 						// for example, changing type to STKM but one already exists
 						// we need to account for that to not cause simulation corruption issues
 						if (part_change_type(i,x,y,t))
-							goto killed;
+							continue;
 
 						if (t==PT_FIRE || t==PT_PLSM || t==PT_CFLM)
 							parts[i].life = rng.between(120, 169);
@@ -2753,14 +2753,14 @@ void Simulation::UpdateParticles(int start, int end)
 					if (t == PT_NONE)
 					{
 						kill_part(i);
-						goto killed;
+						continue;
 					}
 					parts[i].life = 0;
 					// part_change_type could refuse to change the type and kill the particle
 					// for example, changing type to STKM but one already exists
 					// we need to account for that to not cause simulation corruption issues
 					if (part_change_type(i,x,y,t))
-						goto killed;
+						continue;
 					if (t == PT_FIRE)
 						parts[i].life = rng.between(120, 169);
 					transitionOccurred = true;
@@ -2779,7 +2779,6 @@ void Simulation::UpdateParticles(int start, int end)
 			if(legacy_enable)//if heat sim is off
 				Element::legacyUpdate(this, i,x,y,surround_space,nt, parts, pmap);
 
-killed:
 			if (parts[i].type == PT_NONE)//if its dead, skip to next particle
 				continue;
 
@@ -3041,7 +3040,7 @@ killed:
 				if (water_equal_test && elements[t].Falldown == 2 && rng.chance(1, 200))
 				{
 					if (flood_water(x, y, i))
-						goto movedone;
+						continue;
 				}
 				// liquids and powders
 				if (!do_move(i, x, y, fin_xf, fin_yf))
@@ -3076,7 +3075,7 @@ killed:
 							{
 								parts[i].vx *= elements[t].Collision;
 								parts[i].vy *= elements[t].Collision;
-								goto movedone;
+								continue;
 							}
 							{
 								auto swappage = dx;
@@ -3087,7 +3086,7 @@ killed:
 							{
 								parts[i].vx *= elements[t].Collision;
 								parts[i].vy *= elements[t].Collision;
-								goto movedone;
+								continue;
 							}
 						}
 						if (elements[t].Falldown>1 && !grav && gravityMode==GRAV_VERTICAL && parts[i].vy>fabsf(parts[i].vx))
@@ -3249,8 +3248,6 @@ killed:
 					}
 				}
 			}
-movedone:
-			continue;
 		}
 	}
 
