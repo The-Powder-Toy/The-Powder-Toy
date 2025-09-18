@@ -3248,12 +3248,6 @@ void Simulation::UpdateParticles(int start, int end)
 			}
 		}
 	}
-
-	//'f' was pressed (single frame)
-	if (framerender)
-	{
-		framerender--;
-	}
 }
 
 void Simulation::RecalcFreeParticles(bool do_life_dec)
@@ -3298,7 +3292,7 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 			elementCount[t]++;
 
 		//decrease particle life
-		if (do_life_dec && (!sys_pause || framerender))
+		if (do_life_dec)
 		{
 			if (t<0 || t>=PT_NUM || !elements[t].Enabled)
 			{
@@ -3634,9 +3628,9 @@ void Simulation::UpdateGravityMask()
 }
 
 //updates pmap, gol, and some other simulation stuff (but not particles)
-void Simulation::BeforeSim()
+void Simulation::BeforeSim(bool willUpdate)
 {
-	if (!sys_pause||framerender)
+	if (willUpdate)
 	{
 		air->update_air();
 
@@ -3674,9 +3668,9 @@ void Simulation::BeforeSim()
 	}
 
 	if (debug_nextToUpdate == 0)
-		RecalcFreeParticles(true);
+		RecalcFreeParticles(willUpdate);
 
-	if (!sys_pause || framerender)
+	if (willUpdate)
 	{
 		// decrease wall conduction, make walls block air and ambient heat
 		for (int y = 0; y < YCELLS; y++)

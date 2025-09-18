@@ -1034,13 +1034,13 @@ void GameModel::SetPaused(bool pauseState)
 		Log(logmessage, false);
 	}
 
-	sim->sys_pause = pauseState?1:0;
+	paused = pauseState;
 	notifyPausedChanged();
 }
 
 bool GameModel::GetPaused() const
 {
-	return sim->sys_pause?true:false;
+	return paused;
 }
 
 void GameModel::SetDecoration(bool decorationState)
@@ -1118,7 +1118,7 @@ bool GameModel::GetGravityGrid()
 
 void GameModel::FrameStep(int frames)
 {
-	sim->framerender += frames;
+	queuedFrames += frames;
 }
 
 void GameModel::ClearSimulation()
@@ -1597,6 +1597,10 @@ void GameModel::UpdateUpTo(int upTo)
 		BeforeSim();
 	}
 	sim->UpdateParticles(sim->debug_nextToUpdate, upTo);
+	if (queuedFrames)
+	{
+		queuedFrames--;
+	}
 	if (upTo < NPART)
 	{
 		sim->debug_nextToUpdate = upTo;
@@ -1610,11 +1614,12 @@ void GameModel::UpdateUpTo(int upTo)
 
 void GameModel::BeforeSim()
 {
-	if (!sim->sys_pause || sim->framerender)
+	auto willUpdate = IsSimRunning();
+	if (willUpdate)
 	{
 		CommandInterface::Ref().HandleEvent(BeforeSimEvent{});
 	}
-	sim->BeforeSim();
+	sim->BeforeSim(willUpdate);
 }
 
 void GameModel::AfterSim()

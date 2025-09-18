@@ -1515,13 +1515,13 @@ static int frameRender(lua_State *L)
 	lsi->AssertInterfaceEvent();
 	if (lua_gettop(L) == 0)
 	{
-		lua_pushinteger(L, lsi->sim->framerender);
+		lua_pushinteger(L, lsi->gameModel->GetQueuedFrames());
 		return 1;
 	}
 	int frames = luaL_checkinteger(L, 1);
 	if (frames < 0)
 		return luaL_error(L, "Can't simulate a negative number of frames");
-	lsi->sim->framerender = frames;
+	lsi->gameModel->SetQueuedFrames(frames);
 	return 0;
 }
 
@@ -1705,7 +1705,7 @@ static int updateUpTo(lua_State *L)
 	{
 		return luaL_error(L, "ID not in valid range");
 	}
-	lsi->sim->framerender = 1;
+	lsi->gameModel->SetQueuedFrames(1);
 	lsi->gameModel->UpdateUpTo(upTo + 1);
 	return 0;
 }

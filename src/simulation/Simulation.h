@@ -156,8 +156,6 @@ public:
 	float customGravityY = 0;
 	int legacy_enable = 0;
 	int water_equal_test = 0;
-	int sys_pause = 0;
-	int framerender = 0;
 	int pretty_powder = 0;
 	int sandcolour_frame = 0;
 	int deco_space = DECOSPACE_SRGB;
@@ -222,7 +220,7 @@ public:
 	void SimulateGoL();
 	void RecalcFreeParticles(bool do_life_dec);
 	void CheckStacking();
-	void BeforeSim();
+	void BeforeSim(bool willUpdate);
 	void AfterSim();
 	void clear_area(int area_x, int area_y, int area_w, int area_h);
 

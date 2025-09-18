@@ -884,7 +884,7 @@ void GameController::Update()
 		gameView->SetSample(gameModel->GetSimulation()->GetSample(pos.X, pos.Y));
 
 	Simulation * sim = gameModel->GetSimulation();
-	if (!sim->sys_pause || sim->framerender)
+	if (gameModel->IsSimRunning())
 	{
 		gameModel->UpdateUpTo(NPART);
 	}

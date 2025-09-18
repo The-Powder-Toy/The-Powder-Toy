@@ -68,6 +68,8 @@ private:
 	void InitTools();
 
 	Simulation * sim;
+	bool paused = false;
+	int queuedFrames = 0;
 	Renderer * ren;
 	RendererSettings rendererSettings;
 	std::vector<std::unique_ptr<Menu>> menuList;
@@ -319,5 +321,18 @@ public:
 	GameView *GetView() const
 	{
 		return view;
+	}
+
+	int GetQueuedFrames() const
+	{
+		return queuedFrames;
+	}
+	void SetQueuedFrames(int newQueuedFrames)
+	{
+		queuedFrames = newQueuedFrames;
+	}
+	bool IsSimRunning() const
+	{
+		return !paused || queuedFrames;
 	}
 };
