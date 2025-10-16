@@ -24,6 +24,12 @@ if [[ -z             ${APP_ID-} ]]; then >&2 echo             "APP_ID not set"; 
 if [[ -z           ${APP_DATA-} ]]; then >&2 echo           "APP_DATA not set"; exit 1; fi
 if [[ -z         ${APP_VENDOR-} ]]; then >&2 echo         "APP_VENDOR not set"; exit 1; fi
 
+x86_old=no
+if [[ $BSH_HOST_ARCH == x86_old ]]; then
+	export BSH_HOST_ARCH=x86
+	x86_old=yes
+fi
+
 case $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC in
 x86_64-linux-gnu-static) ;;
 x86_64-linux-gnu-dynamic) ;;
@@ -50,6 +56,11 @@ aarch64-android-bionic-static) ;;
 wasm32-emscripten-emscripten-static) ;;
 *) >&2 echo "configuration $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC is not supported" && exit 1;;
 esac
+
+xp=no
+if [[ $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC == x86-windows-mingw ]]; then
+	xp=yes
+fi
 
 if [[ $BSH_HOST_PLATFORM == android ]]; then
 	android_platform=android-31
@@ -267,8 +278,14 @@ if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 		c_link_args+=\'-static\',
 		c_link_args+=\'-static-libgcc\',
 		c_link_args+=\'-static-libstdc++\',
-		if [[ $BSH_HOST_ARCH == x86 ]]; then
+		if [[ $xp == yes ]]; then
 			meson_configure+=$'\t'-Dwindows_utf8cp=false
+			if [[ $x86_old == yes ]]; then
+				c_args+=\'-march=pentium\',
+				meson_configure+=$'\t'-Dx86_sse=none
+			else
+				c_args+=\'-march=pentium4\',
+			fi
 		fi
 	elif [[ $BSH_HOST_PLATFORM == linux ]]; then
 		c_link_args+=\'-static-libgcc\',

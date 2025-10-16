@@ -474,7 +474,7 @@ int Main(int argc, char *argv[])
 		std::set_terminate(TerminateHandler);
 	}
 
-	if constexpr (X86)
+	if constexpr (X86_KILL_DENORMALS)
 	{
 		X86KillDenormals();
 	}

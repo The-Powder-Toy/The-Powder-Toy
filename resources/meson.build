@@ -42,7 +42,7 @@ if host_platform == 'windows'
 	icon_cps_ico_path = ''
 	winutf8_xml_path = ''
 	if windows_icons
-		if host_arch == 'x86' and host_libc == 'mingw'
+		if windows_xp
 			icon_exe_ico_path = join_paths(meson.current_source_dir(), 'icon_exe_xp.ico')
 			icon_cps_ico_path = join_paths(meson.current_source_dir(), 'icon_cps_xp.ico')
 			rc_conf_depend_files += [

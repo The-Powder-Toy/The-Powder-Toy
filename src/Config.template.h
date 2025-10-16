@@ -4,7 +4,7 @@
 
 constexpr bool SET_WINDOW_ICON          = @SET_WINDOW_ICON@;
 constexpr bool DEBUG                    = @DEBUG@;
-constexpr bool X86                      = @X86@;
+constexpr bool X86_KILL_DENORMALS       = @X86_KILL_DENORMALS@;
 constexpr bool BETA                     = @BETA@;
 constexpr bool SNAPSHOT                 = @SNAPSHOT@;
 constexpr bool MOD                      = @MOD@;

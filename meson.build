@@ -77,10 +77,17 @@ if static_variant == 'none' and host_platform == 'windows' and host_libc == 'msv
 	tpt_libs_static = 'dynamic'
 endif
 tpt_libs_debug = is_debug ? 'debug' : 'release'
-tpt_libs_variant = '@0@-@1@-@2@-@3@'.format(host_arch, host_platform, host_libc, tpt_libs_static)
+host_arch_tlv = host_arch
+x86_sse_level_str = get_option('x86_sse')
+windows_xp = host_platform == 'windows' and host_arch == 'x86' and host_libc == 'mingw'
+if windows_xp and x86_sse_level_str == 'none'
+	host_arch_tlv = 'x86_old'
+	message('using tpt-libs-prebuilt-x86_old-*, I hope you know what you are doing')
+endif
+tpt_libs_variant = '@0@-@1@-@2@-@3@'.format(host_arch_tlv, host_platform, host_libc, tpt_libs_static)
 tpt_libs_vtag = get_option('tpt_libs_vtag')
 if tpt_libs_vtag == ''
-	tpt_libs_vtag = 'v20250901181559'
+	tpt_libs_vtag = 'v20251019131007'
 endif
 if tpt_libs_static != 'none'
 	if tpt_libs_variant not in [
@@ -88,6 +95,7 @@ if tpt_libs_static != 'none'
 		'aarch64-linux-gnu-static',
 		'x86_64-windows-mingw-static',
 		'x86-windows-mingw-static',
+		'x86_old-windows-mingw-static',
 		'x86_64-windows-msvc-static',
 		'x86_64-windows-msvc-dynamic',
 		'x86-windows-msvc-static',
@@ -126,7 +134,6 @@ else
 	endif
 endif
 
-x86_sse_level_str = get_option('x86_sse')
 if x86_sse_level_str == 'auto'
 	if host_machine.cpu_family() == 'x86_64' and host_platform != 'darwin'
 		x86_sse_level = 20
@@ -342,6 +349,7 @@ endif
 
 copied_dlls = []
 if host_platform == 'windows'
+	windows_xp = host_arch == 'x86' and host_libc == 'mingw'
 	args_ccomp_win = []
 	defs_ccomp_win = [
 		'_WIN32_WINNT=0x0501',

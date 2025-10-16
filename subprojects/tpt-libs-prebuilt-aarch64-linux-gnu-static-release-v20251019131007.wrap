@@ -1,0 +1,6 @@
+[wrap-file]
+directory = tpt-libs-prebuilt-aarch64-linux-gnu-static-release-v20251019131007
+
+source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20251019131007/tpt-libs-prebuilt-aarch64-linux-gnu-static-release-v20251019131007.zip
+source_filename = tpt-libs-prebuilt-aarch64-linux-gnu-static-release-v20251019131007.zip
+source_hash = c1368715de113e3fb4a6945c5c5d309bdbdf2d9893068b3fbc8ee970e9c776eb
