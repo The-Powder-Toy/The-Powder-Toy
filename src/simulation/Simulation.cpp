@@ -3013,7 +3013,6 @@ void Simulation::UpdateParticles(int start, int end)
 					if (parts[i].type == PT_NONE)
 						continue;
 					// can't move there, so bounce off
-					// TODO: Update gas movement code
 					if (fin_x>x+ISTP) fin_x=x+ISTP;
 					if (fin_x<x-ISTP) fin_x=x-ISTP;
 					if (fin_y>y+ISTP) fin_y=y+ISTP;
