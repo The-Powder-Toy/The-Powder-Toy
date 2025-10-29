@@ -3013,17 +3013,15 @@ void Simulation::UpdateParticles(int start, int end)
 					if (parts[i].type == PT_NONE)
 						continue;
 					// can't move there, so bounce off
-					// TODO
-					// TODO: Work out what previous TODO was for
 					if (fin_x>x+ISTP) fin_x=x+ISTP;
 					if (fin_x<x-ISTP) fin_x=x-ISTP;
 					if (fin_y>y+ISTP) fin_y=y+ISTP;
 					if (fin_y<y-ISTP) fin_y=y-ISTP;
-					if (do_move(i, x, y, 0.25f+(float)(2*x-fin_x), 0.25f+fin_y))
+					if (do_move(i, x, y, (float)(2*x-fin_x), fin_y))
 					{
 						parts[i].vx *= elements[t].Collision;
 					}
-					else if (do_move(i, x, y, 0.25f+fin_x, 0.25f+(float)(2*y-fin_y)))
+					else if (do_move(i, x, y, fin_x, (float)(2*y-fin_y)))
 					{
 						parts[i].vy *= elements[t].Collision;
 					}
