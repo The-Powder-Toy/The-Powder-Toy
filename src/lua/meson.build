@@ -34,8 +34,10 @@ if host_platform == 'windows'
 else
 	luaconsole_files += files('LuaSocketDefault.cpp')
 endif
-if not enable_http or host_platform == 'emscripten'
-	luaconsole_files += files('LuaSocketTCPNoHttp.cpp')
+if not enable_http
+	luaconsole_files += files('LuaSocketTCPNone.cpp')
+elif host_platform == 'emscripten'
+	luaconsole_files += files('LuaSocketTCPWebsocket.cpp')
 else
 	luaconsole_files += files('LuaSocketTCPHttp.cpp')
 endif
