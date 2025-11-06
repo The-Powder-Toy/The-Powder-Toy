@@ -123,8 +123,11 @@ static int update(UPDATE_FUNC_ARGS)
 								else if (colored==0xFF000000)
 									colored = 0;
 								parts[ID(r)].life = 4;
-							} else if (TYP(r) == PT_PAPR || TYP(r) == PT_EPPR) {
-								if (TYP(parts[i].ctype == PT_COAL) || TYP(parts[i].ctype) == PT_BCOL) {
+							}
+							else if (TYP(r) == PT_PAPR || TYP(r) == PT_EPPR)
+							{
+								if (TYP(parts[i].ctype == PT_COAL) || TYP(parts[i].ctype) == PT_BCOL)
+								{
 									sim->parts[ID(r)].life = 1;
 									if (colored)
 										sim->parts[ID(r)].dcolour = colored;
@@ -132,7 +135,9 @@ static int update(UPDATE_FUNC_ARGS)
 										sim->parts[ID(r)].dcolour = MARK_COLOR_COAL;
 									if(!--partsRemaining)
 										docontinue = 0;
-								} else if (TYP(parts[i].ctype == PT_SOAP)) {
+								}
+								else if (TYP(parts[i].ctype == PT_SOAP))
+								{
 									sim->parts[ID(r)].life = 0;
 									sim->parts[ID(r)].dcolour = 0x00000000;
 									if(!--partsRemaining)

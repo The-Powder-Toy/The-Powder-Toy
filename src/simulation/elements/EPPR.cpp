@@ -52,5 +52,5 @@ void Element::Element_EPPR()
 
 	Update = &Element_PAPR_update;
 	Graphics = &Element_PAPR_graphics;
-	CtypeDraw = &Element_PAPR_cTypeDraw;
+	CtypeDraw = &Element_PAPR_ctypeDraw;
 }

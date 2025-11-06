@@ -1205,7 +1205,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		{
 			if (rt == PT_COAL || rt == PT_BCOL)
 				parts[ID(r)].temp = parts[i].temp;
-      
+
 			if (rt < PT_NUM && !sd.IsHeatInsulator(parts[ID(r)]) && rt != PT_FILT && rt != PT_PAPR && rt != PT_EPPR)
 				parts[i].temp = parts[ID(r)].temp = restrict_flt((parts[ID(r)].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
 		}
