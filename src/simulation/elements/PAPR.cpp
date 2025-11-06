@@ -52,7 +52,7 @@ void Element::Element_PAPR()
 
 	Update = &Element_PAPR_update;
 	Graphics = &Element_PAPR_graphics;
-	CtypeDraw = &Element_PAPR_cTypeDraw;
+	CtypeDraw = &Element_PAPR_ctypeDraw;
 }
 
 int Element_PAPR_update(UPDATE_FUNC_ARGS)
@@ -78,7 +78,8 @@ int Element_PAPR_update(UPDATE_FUNC_ARGS)
 	}
 
 	// Electronic marking
-	if (parts[i].type == PT_EPPR) {
+	if (parts[i].type == PT_EPPR)
+	{
 		if (parts[i].tmp3 == 10)
 		{
 			parts[i].tmp3 = 11;
@@ -118,7 +119,6 @@ int Element_PAPR_update(UPDATE_FUNC_ARGS)
 			}
 		}
 	}
-	
 
 	auto r = pmap[y][x];
 	switch (TYP(r))
@@ -131,7 +131,8 @@ int Element_PAPR_update(UPDATE_FUNC_ARGS)
 
 		// Acts as a smoke filter
 		case PT_SMKE:
-			if (parts[i].type == PT_PAPR) {
+			if (parts[i].type == PT_PAPR)
+			{
 				if (sim->rng.chance(1, 5))
 				{
 					sim->kill_part(ID(r));
@@ -147,7 +148,8 @@ int Element_PAPR_update(UPDATE_FUNC_ARGS)
 
 		// Can also filter out CAUS from the air, but much less effectively (partly because of corrosion)
 		case PT_CAUS:
-			if (parts[i].type == PT_PAPR) {
+			if (parts[i].type == PT_PAPR)
+			{
 				sim->kill_part(ID(r));
 				parts[i].life = 1;
 				parts[i].dcolour = 0xFF223C22;
@@ -160,7 +162,8 @@ int Element_PAPR_update(UPDATE_FUNC_ARGS)
 			break;
 
 		case PT_GUNP:
-			if (parts[i].type == PT_PAPR) {
+			if (parts[i].type == PT_PAPR)
+			{
 				if (sim->pv[y / CELL][x / CELL] > 0.75f && sim->rng.chance(1, 5))
 				{
 					sim->create_part(i, x, y, PT_IGNT);
@@ -172,11 +175,12 @@ int Element_PAPR_update(UPDATE_FUNC_ARGS)
 			break;
 
 		case PT_MERC:
-			if (parts[i].type == PT_PAPR && parts[ID(r)].tmp > 0) {
+			if (parts[i].type == PT_PAPR && parts[ID(r)].tmp > 0)
+			{
 				sim->part_change_type(i, x, y, PT_EPPR);
 				parts[ID(r)].tmp--;
 			}
-			
+
 		default:
 			break;
 	}
@@ -251,7 +255,7 @@ int Element_PAPR_graphics(GRAPHICS_FUNC_ARGS)
 	return 0;
 }
 
-bool Element_PAPR_cTypeDraw(CTYPEDRAW_FUNC_ARGS)
+bool Element_PAPR_ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 {
 	// Allow "drawing" directly on PAPR like a pencil
 	if (t == PT_BCOL || t == PT_COAL)
