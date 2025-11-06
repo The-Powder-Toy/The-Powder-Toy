@@ -40,7 +40,6 @@ Special Thanks
 Libraries and other assets used
 ===========================================================================
 
-* [BSON](https://github.com/interactive-matter/bson-c)
 * [bzip2](http://www.bzip.org/)
 * [FFTW](http://fftw.org/)
 * [JsonCpp](https://github.com/open-source-parsers/jsoncpp)
