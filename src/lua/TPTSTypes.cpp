@@ -33,11 +33,15 @@ AnyType::operator FloatType()
 
 AnyType::operator StringType()
 {
-	if(type == TypeNumber)
+	if (type == TypeNumber)
 	{
 		return StringType(String::Build(((NumberType *)this)->Value()));
 	}
-	else if(type == TypeString && std::holds_alternative<String>(value))
+	else if (type == TypeFloat)
+	{
+		return StringType(String::Build(((FloatType *)this)->Value()));
+	}
+	else if (type == TypeString && std::holds_alternative<String>(value))
 	{
 		return StringType(std::get<String>(value));
 	}
