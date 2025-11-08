@@ -127,6 +127,15 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 					gel = true;
 					break;
+				case PT_BASE:
+					// Base absorbs water from gel
+					if (parts[i].tmp > 0 && parts[ID(r)].life > 1)
+					{
+						// BASE <- GEL
+						parts[ID(r)].life--;
+						parts[i].tmp--;
+					}
+					break;
 				default:
 					break;
 				}
