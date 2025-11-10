@@ -66,8 +66,8 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 	}
 
-	parts[i].tmp += nearbyWax / 2;
-	if (parts[i].tmp > 100)
+	parts[i].tmp += nearbyWax;
+	if (parts[i].tmp > 200)
 	{
 		int rx = sim->rng.between(-2, 2);
 		int ry = sim->rng.between(-2, 2);

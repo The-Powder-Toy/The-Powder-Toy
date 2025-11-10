@@ -215,7 +215,7 @@ static int update(UPDATE_FUNC_ARGS)
 									parts[r].dcolour = 0xFF000000;
 							//this if prevents red BRAY from stopping on certain materials
 							}
-							else if (rt==PT_STOR || rt==PT_INWR || (rt==PT_SPRK && parts[r].ctype==PT_INWR) || rt==PT_ARAY || rt==PT_WIFI || rt==PT_FILT || (rt==PT_SWCH && parts[r].life>=10) || rt==PT_PAPR)
+							else if (rt==PT_STOR || rt==PT_INWR || (rt==PT_SPRK && parts[r].ctype==PT_INWR) || rt==PT_ARAY || rt==PT_WIFI || rt==PT_FILT || (rt==PT_SWCH && parts[r].life>=10) || rt==PT_EPPR)
 							{
 								if (rt == PT_STOR)
 								{
@@ -227,7 +227,7 @@ static int update(UPDATE_FUNC_ARGS)
 									isBlackDeco = (parts[r].dcolour==0xFF000000);
 									parts[r].life = 2;
 								}
-								else if (rt == PT_PAPR)
+								else if (rt == PT_EPPR)
 								{
 									// In reading/writing state?
 									if (parts[r].tmp)

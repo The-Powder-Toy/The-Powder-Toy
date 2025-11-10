@@ -1,15 +1,6 @@
 #include "simulation/ElementCommon.h"
 #include "PAPR.h"
 
-// Element overview:
-// PAPR (Paper) is a flammable solid element that can be colored by certain other elements.
-// Additionally, it can be read and written to by ARAY and LDTC.
-
-// Property usage:
-// life: Whether or not the particle is marked
-// tmp: Temporary read/write state for ARAY interaction
-// tmp2: Singe level
-
 void Element::Element_EPPR()
 {
 	Identifier = "DEFAULT_PT_EPPR";

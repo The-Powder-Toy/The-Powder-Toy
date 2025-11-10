@@ -1150,12 +1150,15 @@ int Simulation::eval_move(int pt, int nx, int ny, unsigned *rr) const
 			break;
 		case PT_EPPR:
 		case PT_PAPR:
-			// BCOL can always pass through PAPR in order to color it
-			// Most elements are blocked by marked PAPR, except for certified "weird" elements where it's inverse
-			if ((pt == PT_BCOL) || (!parts[ID(r)].life != !(pt != PT_H2 && pt != PT_ANAR && pt != PT_BIZR && pt != PT_BIZRG)))
-				result = 2;
-			else
-				result = 0;
+			{
+				// BCOL can always pass through PAPR in order to color it
+				// Most elements are blocked by marked PAPR, except for certified "weird" elements where it's inverse
+				auto weird = pt == PT_H2 || pt == PT_ANAR || pt == PT_BIZR || pt == PT_BIZRG;
+				if (pt == PT_BCOL || bool(parts[ID(r)].life) == weird)
+					result = 2;
+				else
+					result = 0;
+			}
 			break;
 		default:
 			// This should never happen
