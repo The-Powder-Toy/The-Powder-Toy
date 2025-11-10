@@ -7,7 +7,7 @@
 
 // Property usage:
 // life: Whether or not the particle is marked
-// tmp: Temporary read/write state for ARAY interaction
+// tmp (EPPR): Temporary read/write state for ARAY interaction
 // tmp2: Singe level
 
 void Element::Element_PAPR()
@@ -118,81 +118,78 @@ int Element_PAPR_update(UPDATE_FUNC_ARGS)
 				}
 			}
 		}
+
+		// Decrement tmp counter for laser reading/writing
+		if (parts[i].tmp & 0xF)
+		{
+			parts[i].tmp--;
+		}
+		else
+		{
+			parts[i].tmp = 0;
+		}
 	}
 
 	auto r = pmap[y][x];
 	switch (TYP(r))
 	{
-		// Get marked by BCOL
-		case PT_BCOL:
-			parts[i].life = 1;
-			parts[i].dcolour = MARK_COLOR_COAL;
-			break;
+	// Get marked by BCOL
+	case PT_BCOL:
+		parts[i].life = 1;
+		parts[i].dcolour = MARK_COLOR_COAL;
+		break;
 
-		// Acts as a smoke filter
-		case PT_SMKE:
-			if (parts[i].type == PT_PAPR)
-			{
-				if (sim->rng.chance(1, 5))
-				{
-					sim->kill_part(ID(r));
-					// On average, each pixel of PAPR absorbs 10 SMKE particles before becoming impermeable
-					if (sim->rng.chance(1, 10))
-					{
-						parts[i].life = 1;
-						parts[i].dcolour = 0xFF322222;
-					}
-				}
-			}
-			break;
-
-		// Can also filter out CAUS from the air, but much less effectively (partly because of corrosion)
-		case PT_CAUS:
-			if (parts[i].type == PT_PAPR)
+	// Acts as a smoke filter
+	case PT_SMKE:
+		if (parts[i].type == PT_PAPR)
+		{
+			if (sim->rng.chance(1, 5))
 			{
 				sim->kill_part(ID(r));
-				parts[i].life = 1;
-				parts[i].dcolour = 0xFF223C22;
-			}
-			break;
-
-		// Doesn't guarantee layering won't happen, but makes it far less likely
-		case PT_SAWD:
-			parts[ID(r)].tmp = 0;
-			break;
-
-		case PT_GUNP:
-			if (parts[i].type == PT_PAPR)
-			{
-				if (sim->pv[y / CELL][x / CELL] > 0.75f && sim->rng.chance(1, 5))
+				// On average, each pixel of PAPR absorbs 10 SMKE particles before becoming impermeable
+				if (sim->rng.chance(1, 10))
 				{
-					sim->create_part(i, x, y, PT_IGNT);
-					parts[i].life = 3;
-					sim->kill_part(ID(r));
-					return 1;
+					parts[i].life = 1;
+					parts[i].dcolour = 0xFF322222;
 				}
 			}
-			break;
+		}
+		break;
 
-		case PT_MERC:
-			if (parts[i].type == PT_PAPR && parts[ID(r)].tmp > 0)
+	// Can also filter out CAUS from the air, but much less effectively (partly because of corrosion)
+	case PT_CAUS:
+		if (parts[i].type == PT_PAPR)
+		{
+			sim->kill_part(ID(r));
+			parts[i].life = 1;
+			parts[i].dcolour = 0xFF223C22;
+		}
+		break;
+
+	// Doesn't guarantee layering won't happen, but makes it far less likely
+	case PT_SAWD:
+		parts[ID(r)].tmp = 0;
+		break;
+
+	case PT_GUNP:
+		if (parts[i].type == PT_PAPR)
+		{
+			if (sim->pv[y / CELL][x / CELL] > 0.75f && sim->rng.chance(1, 5))
 			{
-				sim->part_change_type(i, x, y, PT_EPPR);
-				parts[ID(r)].tmp--;
+				sim->create_part(i, x, y, PT_IGNT);
+				parts[i].life = 3;
+				sim->kill_part(ID(r));
+				return 1;
 			}
+		}
+		break;
 
-		default:
-			break;
-	}
-
-	// Decrement tmp counter for laser reading/writing
-	if (parts[i].tmp & 0xF)
-	{
-		parts[i].tmp--;
-	}
-	else
-	{
-		parts[i].tmp = 0;
+	case PT_MERC:
+		if (parts[i].type == PT_PAPR && parts[ID(r)].tmp > 0)
+		{
+			sim->part_change_type(i, x, y, PT_EPPR);
+			parts[ID(r)].tmp--;
+		}
 	}
 	return 0;
 }
