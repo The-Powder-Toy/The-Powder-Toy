@@ -2349,6 +2349,10 @@ void Simulation::UpdateParticles(int start, int end)
 		{
 			continue;
 		}
+		if (transitionOccurred)
+		{
+			t = parts[i].type;
+		}
 
 		//call the particle update function, if there is one
 		if (elements[t].Update)
