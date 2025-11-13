@@ -29,7 +29,6 @@ void Element::Element_SLTW()
 	Weight = 35;
 
 	HeatConduct = 75;
-	LatentHeat = 7500;
 	Description = "Saltwater, conducts electricity, difficult to freeze.";
 
 	Properties = TYPE_LIQUID | PROP_CONDUCTS | PROP_LIFE_DEC | PROP_NEUTPENETRATE | PROP_PHOTPASS;

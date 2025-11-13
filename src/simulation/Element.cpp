@@ -29,7 +29,7 @@ Element::Element():
 	Weight(50),
 
 	HeatConduct(128),
-	LatentHeat(0),
+	HeatCapacity(1.0f),
 	Description("No description"),
 
 	Properties(TYPE_SOLID),
@@ -87,6 +87,7 @@ std::vector<StructProperty> const &Element::GetProperties()
 				{ "Weight",                    StructProperty::Integer,  offsetof(Element, Weight                   ) },
 				{ "Temperature",               StructProperty::Float,    offsetof(Element, DefaultProperties.temp   ) },
 				{ "HeatConduct",               StructProperty::UChar,    offsetof(Element, HeatConduct              ) },
+				{ "HeatCapacity",              StructProperty::Float,    offsetof(Element, HeatCapacity             ) },
 				{ "Description",               StructProperty::String,   offsetof(Element, Description              ) },
 				{ "State",                     StructProperty::Removed,  0                                            },
 				{ "Properties",                StructProperty::Integer,  offsetof(Element, Properties               ) },
@@ -99,10 +100,6 @@ std::vector<StructProperty> const &Element::GetProperties()
 				{ "HighTemperature",           StructProperty::Float,    offsetof(Element, HighTemperature          ) },
 				{ "HighTemperatureTransition", StructProperty::TransitionType,  offsetof(Element, HighTemperatureTransition) }
 			};
-			if constexpr (LATENTHEAT)
-			{
-				properties.push_back({ "LatentHeat", StructProperty::UInteger, offsetof(Element, LatentHeat) });
-			}
 		}
 	};
 	static DoOnce doOnce;

@@ -31,7 +31,6 @@ void Element::Element_SNOW()
 
 	DefaultProperties.temp = R_TEMP - 30.0f + 273.15f;
 	HeatConduct = 46;
-	LatentHeat = 1095;
 	Description = "Light particles. Created when ICE breaks under pressure.";
 
 	Properties = TYPE_PART|PROP_NEUTPASS;

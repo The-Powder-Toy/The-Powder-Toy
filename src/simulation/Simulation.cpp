@@ -2416,19 +2416,25 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 			}
 		}
 
-		//heat transfer code
+		// Heat transfer code
 		if (t && !sd.IsHeatInsulator(parts[i]) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250))
 		{
-			auto h_count = 0;
+			// Heat transfer with air
 			if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
 			{
-				auto c_heat = (hv[y/CELL][x/CELL]-parts[i].temp)*0.04;
-				c_heat = restrict_flt(c_heat, -MAX_TEMP+MIN_TEMP, MAX_TEMP-MIN_TEMP);
-				parts[i].temp += c_heat;
-				hv[y/CELL][x/CELL] -= c_heat;
+				auto dtemp = hv[y/CELL][x/CELL] - parts[i].temp; // Temperature difference
+				auto alpha = 0.4f;
+
+				// Here we completely ignore that there are CELL^2 "air pixels" in a cell, and the heat capacity of air
+				parts[i].temp = restrict_flt(parts[i].temp + alpha*dtemp / elements[t].HeatCapacity, MIN_TEMP, MAX_TEMP);
+				hv[y/CELL][x/CELL] = restrict_flt(hv[y/CELL][x/CELL] - alpha*dtemp, MIN_TEMP, MAX_TEMP);
 			}
-			auto c_heat = 0.0f;
-			int surround_hconduct[8];
+
+			// Heat transfer with other elements
+			auto hc_total = 0.0f; // Total heat capacity of elements involved
+			auto c_heat = 0.0f; // Total heat distributed between elements
+			int surround_hconduct[8]; // IDs of elements which exchange heat
+
 			for (auto j=0; j<8; j++)
 			{
 				surround_hconduct[j] = i;
@@ -2439,6 +2445,7 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 
 				auto rt = TYP(r);
 
+				// Check if we can conduct heat
 				if (!rt || sd.IsHeatInsulator(parts[ID(r)])
 				        || (t == PT_FILT && (rt == PT_BRAY || rt == PT_BIZR || rt == PT_BIZRG))
 				        || (rt == PT_FILT && (t == PT_BRAY || t == PT_PHOT || t == PT_BIZR || t == PT_BIZRG))
@@ -2449,28 +2456,32 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 					continue;
 
 				surround_hconduct[j] = ID(r);
-				c_heat += parts[ID(r)].temp;
+				c_heat += parts[ID(r)].temp*elements[rt].HeatCapacity;
+				hc_total += elements[rt].HeatCapacity;
 
+				// Double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
 				if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
 				{
-					c_heat += parts[ID(r)].temp; // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
-				}
-
-				h_count++;
-
-				if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
-				{
-					h_count++; // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
+					c_heat += parts[ID(r)].temp*elements[rt].HeatCapacity;
+					hc_total += elements[rt].HeatCapacity;
 				}
 			}
-			float pt = R_TEMP;
 
+			// Add the current particle
+			c_heat += parts[i].temp*elements[t].HeatCapacity;
+			hc_total += elements[t].HeatCapacity;
+
+			// Double count the current particle to account for the heat capacity of both the PIPE/PPIP and its contents
 			if ((t == PT_PIPE || t == PT_PPIP) && parts[i].ctype != 0)
-				pt = (c_heat+parts[i].temp*2.0f)/(h_count+2); // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
-			else
-				pt = (c_heat+parts[i].temp)/(h_count+1);
+			{
+				c_heat += parts[i].temp*elements[t].HeatCapacity;
+				hc_total += elements[t].HeatCapacity;
+			}
 
-			pt = parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
+			// Equilibrium temperature
+			float pt = restrict_flt(c_heat / hc_total, MIN_TEMP, MAX_TEMP);
+
+			parts[i].temp = pt;
 			for (auto j=0; j<8; j++)
 			{
 				parts[surround_hconduct[j]].temp = pt;

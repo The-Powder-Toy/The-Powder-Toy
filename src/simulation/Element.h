@@ -40,7 +40,7 @@ public:
 	unsigned int PhotonReflectWavelengths;
 	int Weight;
 	unsigned char HeatConduct;
-	unsigned int LatentHeat;
+	float HeatCapacity; // Volumetric heat capacity per one pixel. The default value is 1.0f. Must be > 0.1f to avoid instability.
 	String Description;
 	unsigned int Properties;
 	unsigned int CarriesTypeIn;
