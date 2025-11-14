@@ -473,7 +473,14 @@ void Element_PIPE_transfer_part_to_pipe(Particle *part, Particle *pipe)
 	if ((pipe->tmp & PFLAG_CAN_CONDUCT) == 0)
 		pipe->temp = part->temp;
 	else
-		pipe->temp = (part->temp + pipe->temp) / 2.0f;
+	{
+		auto &sd = SimulationData::CRef();
+		auto &elements = sd.elements;
+		auto c_pipe = elements[pipe->type].HeatCapacity;
+		auto c_part = elements[part->type].HeatCapacity;
+
+		pipe->temp = (c_part*part->temp + c_pipe*pipe->temp) / (c_part + c_pipe);
+	}
 
 	pipe->tmp2 = part->life;
 	pipe->tmp3 = part->tmp;
@@ -515,7 +522,14 @@ static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR)
 	if ((dest->tmp & PFLAG_CAN_CONDUCT) == 0)
 		dest->temp = src->temp;
 	else
-		dest->temp = (src->temp + dest->temp) / 2.0f;
+	{
+		auto &sd = SimulationData::CRef();
+		auto &elements = sd.elements;
+		auto c_src = elements[src->type].HeatCapacity;
+		auto c_dest = elements[dest->type].HeatCapacity;
+
+		dest->temp = (c_src*src->temp + c_dest*dest->temp) / (c_src + c_dest);
+	}
 
 	dest->tmp2 = src->tmp2;
 	dest->tmp3 = src->tmp3;
