@@ -525,7 +525,8 @@ static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR)
 	{
 		auto &sd = SimulationData::CRef();
 		auto &elements = sd.elements;
-		auto c_src = elements[src->type].HeatCapacity;
+		auto src_ctype = src->ctype;
+		auto c_src = (0 < src_ctype && src_ctype < PT_NUM) ? elements[src_ctype].HeatCapacity : 1.0f;
 		auto c_dest = elements[dest->type].HeatCapacity;
 
 		dest->temp = (c_src*src->temp + c_dest*dest->temp) / (c_src + c_dest);

@@ -2423,7 +2423,7 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 			if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
 			{
 				auto dtemp = hv[y/CELL][x/CELL] - parts[i].temp; // Temperature difference
-				auto alpha = 0.4f;
+				auto alpha = std::min(0.04f, 0.4f * elements[t].HeatCapacity); // alpha / heat_capacity must be < 1
 
 				// Here we completely ignore that there are CELL^2 "air pixels" in a cell, and the heat capacity of air
 				parts[i].temp = restrict_flt(parts[i].temp + alpha*dtemp / elements[t].HeatCapacity, MIN_TEMP, MAX_TEMP);
