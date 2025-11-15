@@ -1,5 +1,6 @@
 #include "simulation/ElementCommon.h"
 #include "FILT.h"
+#include "PAPR.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);
@@ -122,6 +123,26 @@ static int update(UPDATE_FUNC_ARGS)
 								else if (colored==0xFF000000)
 									colored = 0;
 								parts[ID(r)].life = 4;
+							}
+							else if (TYP(r) == PT_PAPR || TYP(r) == PT_EPPR)
+							{
+								if (TYP(parts[i].ctype == PT_COAL) || TYP(parts[i].ctype) == PT_BCOL)
+								{
+									sim->parts[ID(r)].life = 1;
+									if (colored)
+										sim->parts[ID(r)].dcolour = colored;
+									else
+										sim->parts[ID(r)].dcolour = MARK_COLOR_COAL;
+									if(!--partsRemaining)
+										docontinue = 0;
+								}
+								else if (TYP(parts[i].ctype == PT_SOAP))
+								{
+									sim->parts[ID(r)].life = 0;
+									sim->parts[ID(r)].dcolour = 0x00000000;
+									if(!--partsRemaining)
+										docontinue = 0;
+								}
 							} else if (TYP(r) == PT_CRAY || nostop) {
 								docontinue = 1;
 							} else if(destroy && r && (TYP(r) != PT_DMND)) {
