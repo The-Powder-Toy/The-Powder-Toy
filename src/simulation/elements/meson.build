@@ -26,6 +26,7 @@ simulation_elem_names = [
 	'CNCT',
 	'DSTW',
 	'SALT',
+	'SUGA',
 	'SLTW',
 	'DMND',
 	'BMTL',
@@ -193,6 +194,9 @@ simulation_elem_names = [
 	'LITH',
 	'RSST',
 	'RSSS',
+	'LCAR',
+	'SCAR',
+	'SWTR',
         'BASE',
 ]
 

@@ -66,6 +66,20 @@ static int update(UPDATE_FUNC_ARGS)
 							sim->part_change_type(ID(r),x+rx,y+ry,PT_SLTW);
 					}
 					break;
+				case PT_SUGA:
+					if (sim->rng.chance(1, 50))
+					{
+						sim->part_change_type(i, x, y, PT_SWTR);
+						if (sim->rng.chance(1, 3))
+							sim->part_change_type(ID(r), x + rx, y + ry, PT_SWTR);
+					}
+					break;
+				case PT_SWTR:
+					if (sim->rng.chance(1, 2000))
+					{
+						sim->part_change_type(i, x, y, PT_SWTR);
+						break;
+					}
 				case PT_SLTW:
 					if (sim->rng.chance(1, 2000))
 					{

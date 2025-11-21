@@ -64,6 +64,12 @@ static int update(UPDATE_FUNC_ARGS)
 					if (sim->rng.chance(1, 3))
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_SLTW);
 				}
+				else if (TYP(r) == PT_SUGA && sim->rng.chance(1, 50))
+				{
+					sim->part_change_type(i, x, y, PT_SWTR);
+					if (sim->rng.chance(1, 3))
+						sim->part_change_type(ID(r), x + rx, y + ry, PT_SWTR);
+				}
 				else if ((TYP(r)==PT_RBDM||TYP(r)==PT_LRBD) && (sim->legacy_enable||parts[i].temp>(273.15f+12.0f)) && sim->rng.chance(1, 100))
 				{
 					sim->part_change_type(i,x,y,PT_FIRE);
@@ -82,6 +88,10 @@ static int update(UPDATE_FUNC_ARGS)
 				else if (TYP(r)==PT_SLTW && sim->rng.chance(1, 2000))
 				{
 					sim->part_change_type(i,x,y,PT_SLTW);
+				}
+				else if (TYP(r) == PT_SWTR && sim->rng.chance(1, 2000))
+				{
+					sim->part_change_type(i, x, y, PT_SWTR);
 				}
 				else if (TYP(r)==PT_ROCK && fabs(parts[i].vx)+fabs(parts[i].vy) >= 0.5 && sim->rng.chance(1, 1000)) // ROCK erosion
 				{
