@@ -82,11 +82,11 @@ void Air::update_airh(void)
 			auto dh = 0.0f;
 			auto dx = 0.0f;
 			auto dy = 0.0f;
-			for (auto j=-1; j<2; j++)
+			for (auto j = -1; j <= 1; j++)
 			{
-				for (auto i=-1; i<2; i++)
+				for (auto i = -1; i <= 1; i++)
 				{
-					if (y+j>0 && y+j<YCELLS-2 && x+i>0 && x+i<XCELLS-2 && !(bmap_blockairh[y+j][x+i]&0x8))
+					if (y+j > 0 && y+j < YCELLS-1 && x+i > 0 && x+i < XCELLS-1 && !(bmap_blockairh[y+j][x+i]&0x8))
 					{
 						auto f = kernel[i+1+(j+1)*3];
 						dh += hv[y+j][x+i]*f;
