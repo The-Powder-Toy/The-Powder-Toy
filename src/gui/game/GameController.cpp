@@ -783,6 +783,7 @@ void GameController::ResetSpark()
 	auto &sd = SimulationData::CRef();
 	Simulation * sim = gameModel->GetSimulation();
 	for (int i = 0; i < NPART; i++)
+	{
 		if (sim->parts[i].type == PT_SPRK)
 		{
 			if (sim->parts[i].ctype >= 0 && sim->parts[i].ctype < PT_NUM && sd.elements[sim->parts[i].ctype].Enabled)
@@ -791,8 +792,15 @@ void GameController::ResetSpark()
 				sim->parts[i].ctype = sim->parts[i].life = 0;
 			}
 			else
+			{
 				sim->kill_part(i);
+			}
 		}
+		else if (sim->parts[i].type == PT_WIRE)
+		{
+			sim->parts[i].ctype = sim->parts[i].tmp = 0;
+		}
+	}
 	memset(sim->wireless, 0, sizeof(sim->wireless));
 }
 
