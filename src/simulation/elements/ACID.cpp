@@ -98,6 +98,19 @@ static int update(UPDATE_FUNC_ARGS)
 								sim->part_change_type(ID(r), x + rx, y + ry, PT_H2);
 								break;
 
+							case PT_PAPR:
+								if (sim->rng.chance(1, 2))
+								{
+									sim->create_part(ID(r), x + rx, y + ry, PT_COAL);
+									parts[ID(r)].tmp = sim->rng.between(1, 39);
+								}
+								else
+								{
+									sim->create_part(ID(r), x + rx, y + ry, PT_WTRV);
+									parts[ID(r)].temp = parts[i].temp;
+								}
+								break;
+
 							default:
 								sim->kill_part(ID(r));
 								break;
