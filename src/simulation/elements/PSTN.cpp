@@ -73,6 +73,11 @@ constexpr int PISTON_EXTEND     = 0x02;
 constexpr int MAX_FRAME         = 0x0F;
 constexpr int DEFAULT_LIMIT     = 0x1F;
 constexpr int DEFAULT_ARM_LIMIT = 0xFF;
+// tmp3 as a bitfield
+constexpr int CONSTRAINT_A = 0x01; // xxx1 : Don't extend if blocked by obstacles
+constexpr int CONSTRAINT_B = 0x02; // xx1x : Don't extend if blocked by arm limit
+constexpr int CONSTRAINT_C = 0x04; // x1xx : Don't retract if frme hinders movement
+constexpr int CONSTRAINT_D = 0x08; // 1xxx : Don't retract if arm is shorter than retraction length
 
 static int update(UPDATE_FUNC_ARGS)
 {
@@ -164,8 +169,29 @@ static int update(UPDATE_FUNC_ARGS)
 						}
 						if(foundEnd) {
 							if(state == PISTON_EXTEND) {
-								if(armCount+pistonCount > armLimit)
-									pistonCount = armLimit-armCount;
+								if(parts[i].tmp3 & CONSTRAINT_A)
+								{
+									StackData testMove = CanMoveStack(sim, pistonEndX, pistonEndY,
+										directionX, directionY,
+										maxSize, pistonCount, false,
+										parts[i].ctype);
+
+									// If cannot move full pistonCount, skip extension entirely
+									if(testMove.spaces < pistonCount)
+										continue; // skip
+								}
+								if(parts[i].tmp3 & CONSTRAINT_B)
+								{
+									// If extending piston would exceed the armLimit, skip extension entirely
+									if(armCount + pistonCount > armLimit)
+										continue; // skip 
+								}
+								else
+								{
+									// existing behavior: clamp pistonCount to armLimit
+									if(armCount + pistonCount > armLimit)
+										pistonCount = armLimit - armCount;
+								}
 								if(pistonCount > 0) {
 									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, true);
 									if(newSpace) {
@@ -184,13 +210,54 @@ static int update(UPDATE_FUNC_ARGS)
 										movedPiston =  true;
 									}
 								}
-							} else if(state == PISTON_RETRACT) {
-								if(pistonCount > armCount)
-									pistonCount = armCount;
-								if(armCount && pistonCount > 0) {
-									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true, parts[i].ctype, true);
-									movedPiston = true;
+							} 
+							else if(state == PISTON_RETRACT) {
+								if(parts[i].tmp3 & CONSTRAINT_D) {
+									if(pistonCount > armCount) {
+										// Arm too short to retract according to constraint D
+										continue; // skip retraction entirely
+									}
+								} else {
+									// Default behavior if D is not active: clamp to arm length
+									if(pistonCount > armCount)
+										pistonCount = armCount;
 								}
+
+								if(armCount && pistonCount > 0 && (parts[i].tmp3 & CONSTRAINT_C)) {
+									bool blocked = false;
+
+									// check all FRME along perpendicular line
+									int newY = !!directionX, newX = !!directionY;
+									int realDirectionX = -directionX;
+									int realDirectionY = -directionY;
+
+									// scan outwards along perpendicular FRME
+									for(int c = 0; c < MAX_FRAME; c++) {
+										int px = pistonEndX + c*newX;
+										int py = pistonEndY + c*newY;
+										if(px < 0 || px >= XRES || py < 0 || py >= YRES)
+											break;
+										int r = sim->pmap[py][px];
+										if(TYP(r) == PT_FRME) {
+											StackData testMove = CanMoveStack(sim, px, py,
+												realDirectionX, realDirectionY,
+												maxSize, pistonCount, true, parts[i].ctype);
+											if(testMove.spaces < pistonCount) {
+												blocked = true;
+												break;
+											}
+										} else {
+											break; // no more perpendicular FRME
+										}
+									}
+
+									if(blocked)
+										continue; // skip retraction entirely
+								}
+
+								MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY,
+									maxSize, pistonCount, true, parts[i].ctype, true);
+								movedPiston = true;
 							}
 						}
 						if (movedPiston)
