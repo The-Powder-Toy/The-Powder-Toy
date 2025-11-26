@@ -193,8 +193,8 @@ simulation_elem_names = [
 	'LITH',
 	'RSST',
 	'RSSS',
-        'BASE',
-        'SEED',
+	'BASE',
+	'SEED',
 ]
 
 simulation_elem_src = []
