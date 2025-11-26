@@ -442,6 +442,11 @@ static void props_pipe_to_part(const Particle *pipe, Particle *part, bool STOR)
 		part->vy = 0.0f;
 	}
 	part->tmp2 = 0;
+	if (part->type == PT_SEED) // For seed, pipe erases tmp2-tmp4 to avoid getting random values
+	{
+		part->tmp3 = 0;
+		part->tmp4 = 0;
+	}
 	part->flags = 0;
 	part->dcolour = 0;
 }

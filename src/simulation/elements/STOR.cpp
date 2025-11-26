@@ -94,6 +94,12 @@ static int update(UPDATE_FUNC_ARGS)
 								parts[np].life = parts[i].tmp2;
 								parts[np].tmp = parts[i].tmp3;
 								parts[np].ctype = parts[i].tmp4;
+								if (TYP(parts[i].tmp) == PT_SEED) // Set tmp2 - tmp4 to 0 for SEED to avoid random values
+								{
+									parts[np].tmp2 = 0;
+									parts[np].tmp3 = 0;
+									parts[np].tmp4 = 0;
+								}
 								parts[i].tmp = 0;
 								parts[i].life = 10;
 								break;

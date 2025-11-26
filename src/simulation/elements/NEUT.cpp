@@ -1,5 +1,6 @@
 #include "simulation/ElementCommon.h"
 #include "FIRE.h"
+#include "PLNT.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -194,6 +195,32 @@ static int update(UPDATE_FUNC_ARGS)
 			case PT_BASE:
 				if (parts[ID(r)].temp > (50 + 273.15) && sim->rng.chance(1, 35))
 					sim->create_part(ID(r), x+rx, y+ry, PT_LRBD);
+				break;
+			case PT_SEED:
+				if(!rx && !ry)
+				{
+					// Flip a random gene with 1/2 chance
+					switch (sim->rng.between(0, 9))
+					{
+						case 0:
+							parts[ID(r)].ctype ^= 1 << sim->rng.between(PLNT_COLOUR, PLNT_LIFE-1);
+							break;
+						case 1:
+							parts[ID(r)].tmp ^= 1 << sim->rng.between(0, PLNT_LIFE-1);
+							break;
+						case 2:
+							parts[ID(r)].tmp2 ^= 1 << sim->rng.between(0, PLNT_LIFE-1);
+							break;
+						case 3:
+							parts[ID(r)].tmp3 ^= 1 << sim->rng.between(0, PLNT_LIFE-1);
+							break;
+						case 4:
+							parts[ID(r)].tmp4 ^= 1 << sim->rng.between(0, PLNT_LIFE-1);
+							break;
+						default:
+							break;
+					}
+				}
 				break;
 			default:
 				break;

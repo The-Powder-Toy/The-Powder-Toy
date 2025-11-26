@@ -16,6 +16,7 @@
 #include "elements/PIPE.h"
 #include "elements/FILT.h"
 #include "elements/PRTI.h"
+#include "elements/PLNT.h"
 #include <iostream>
 #include <set>
 #include <stack>
@@ -2996,6 +2997,16 @@ void Simulation::MovementPhase(int i, Neighbourhood neighbourhood)
 					if (wl_bin < 0) wl_bin = 0;
 					if (wl_bin > 25) wl_bin = 25;
 					mask = (0x1F << wl_bin);
+				}
+				else if (TYP(r) == PT_SEED)
+				{
+					// Reflect different wavelengths based on SEED's color genes
+					int colour = (parts[ID(r)].ctype >> PLNT_COLOUR) & 0x3f;
+
+					mask |= ((colour & 0b110000) != 0) ? 0 : (1 << 25); // Red
+					mask |= ((colour & 0b001100) != 0) ? 0 : (1 << 15); // Green
+					mask |= ((colour & 0b000011) != 0) ? 0 : (1 << 5); // Blue
+
 				}
 				parts[i].ctype &= mask;
 			}

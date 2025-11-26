@@ -30,6 +30,7 @@
 #include "simulation/SaveRenderer.h"
 #include "simulation/SimulationData.h"
 #include "simulation/Simulation.h"
+#include "simulation/elements/PLNT.h"
 
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
@@ -2383,6 +2384,25 @@ void GameView::OnDraw()
 						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
 					else
 						sampleInfo << " (unknown mode)";
+				}
+				else if (type == PT_SEED || (type == PT_PLNT && ctype))
+				{
+					sampleInfo << c->ElementResolve(type, ctype);
+
+					auto water = (ctype >> PLNT_LIFE) & 0xFF;
+					auto colour = (ctype >> PLNT_COLOUR) & 0x3F;
+					auto dir = (ctype >> PLNT_DIR) & 7;
+					auto active = ctype & 1;
+
+					static const std::array<String, 8> directions = {"N", "NW", "W", "SW", "S", "SE", "E", "NE"};
+					static const std::array<std::array<String, 4>, 3> colours = {{
+						{{"cc", "cC", "Cc", "CC"}}, {{"mm", "mM", "Mm", "MM"}}, {{"yy", "yY", "Yy", "YY"}} }};
+					auto cyan = (colour >> 4) & 3;
+					auto magenta = (colour >> 2) & 3;
+					auto yellow = colour & 3;
+
+					sampleInfo << " (" << water << " " <<
+						colours[0][cyan] << colours[1][magenta] << colours[2][yellow] << " " << directions[dir] << " " << active << ")";
 				}
 				else
 				{
