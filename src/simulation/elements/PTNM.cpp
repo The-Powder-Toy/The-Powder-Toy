@@ -138,10 +138,36 @@ static void hygn_reactions(int hygn1_id, UPDATE_FUNC_ARGS)
 	}
 }
 
+static void nitr_reactions(int nitr1_id, UPDATE_FUNC_ARGS)
+{
+	for (int rx = -1; rx <= 1; rx++)
+	{
+		for (int ry = -1; ry <= 1; ry++)
+		{
+			if (rx || ry)
+			{
+				int r = pmap[y + ry][x + rx];
+				if (!r || ID(r) == nitr1_id)
+					continue;
+				int rt = TYP(r);
+
+				// NITR + WAX/MWAX -> 2 C-4
+				if (rt == PT_WAX || rt == PT_MWAX)
+				{
+					sim->part_change_type(ID(r), x + rx, y + ry, PT_PLEX);
+					sim->part_change_type(nitr1_id, x, y, PT_PLEX);
+					return;
+				}
+			}
+		}
+	}
+}
+
 static int update(UPDATE_FUNC_ARGS)
 {
 	int hygn1_id = -1; // Id of a hydrogen particle for hydrogen multi-particle reactions
 	int wtrv1_id = -1; // same but wtrv
+	int nitr1_id = -1; // same but for nitr
 
 	// Fast conduction (like GOLD)
 	if (!parts[i].life)
@@ -179,6 +205,9 @@ static int update(UPDATE_FUNC_ARGS)
 
 				if (rt == PT_WTRV && wtrv1_id < 0)
 					wtrv1_id = ID(r);
+
+				if (rt == PT_NITR && nitr1_id < 0)
+					nitr1_id = ID(r);
 
 				// These reactions will occur instantly in contact with PTNM
 				// --------------------------------------------------------
@@ -257,7 +286,11 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		wtrv_reactions(wtrv1_id, UPDATE_FUNC_SUBCALL_ARGS);
 	}
-
+	// NITR reactions
+	if (nitr1_id >= 0)
+	{
+		nitr_reactions(nitr1_id, UPDATE_FUNC_SUBCALL_ARGS);
+	}
 	return 0;
 }
 
