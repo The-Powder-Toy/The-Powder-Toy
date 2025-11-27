@@ -226,28 +226,40 @@ static int update(UPDATE_FUNC_ARGS)
 								if(armCount && pistonCount > 0 && (parts[i].tmp3 & CONSTRAINT_C)) {
 									bool blocked = false;
 
-									// check all FRME along perpendicular line
 									int newY = !!directionX, newX = !!directionY;
 									int realDirectionX = -directionX;
 									int realDirectionY = -directionY;
 
-									// scan outwards along perpendicular FRME
-									for(int c = 0; c < MAX_FRAME; c++) {
-										int px = pistonEndX + c*newX;
-										int py = pistonEndY + c*newY;
-										if(px < 0 || px >= XRES || py < 0 || py >= YRES)
-											break;
-										int r = sim->pmap[py][px];
-										if(TYP(r) == PT_FRME) {
-											StackData testMove = CanMoveStack(sim, px, py,
-												realDirectionX, realDirectionY,
-												maxSize, pistonCount, true, parts[i].ctype);
-											if(testMove.spaces < pistonCount) {
-												blocked = true;
+									// --- Scan BOTH perpendicular directions ---
+									for (int side = -1; side <= 1 && !blocked; side += 2) {
+										for (int c = 0; c < MAX_FRAME; c++) {
+
+											// Skip the FRME directly touching the piston end (c == 0)
+											if (c == 0) continue;
+
+											int px = pistonEndX + side * c * newX;
+											int py = pistonEndY + side * c * newY;
+
+											if (px < 0 || px >= XRES || py < 0 || py >= YRES)
 												break;
+
+											int r = sim->pmap[py][px];
+
+											if (TYP(r) == PT_FRME) {
+												StackData testMove = CanMoveStack(
+													sim, px, py,
+													realDirectionX, realDirectionY,
+													maxSize, pistonCount, true,
+													parts[i].ctype
+												);
+
+												if (testMove.spaces < pistonCount) {
+													blocked = true;
+													break;
+												}
+											} else {
+												break; // stop scanning in this direction
 											}
-										} else {
-											break; // no more perpendicular FRME
 										}
 									}
 
