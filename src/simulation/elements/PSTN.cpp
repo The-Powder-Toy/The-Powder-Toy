@@ -169,17 +169,6 @@ static int update(UPDATE_FUNC_ARGS)
 						}
 						if(foundEnd) {
 							if(state == PISTON_EXTEND) {
-								if(parts[i].tmp3 & CONSTRAINT_A)
-								{
-									StackData testMove = CanMoveStack(sim, pistonEndX, pistonEndY,
-										directionX, directionY,
-										maxSize, pistonCount, false,
-										parts[i].ctype);
-
-									// If cannot move full pistonCount, skip extension entirely
-									if(testMove.spaces < pistonCount)
-										continue; // skip
-								}
 								if(parts[i].tmp3 & CONSTRAINT_B)
 								{
 									// If extending piston would exceed the armLimit, skip extension entirely
@@ -191,6 +180,17 @@ static int update(UPDATE_FUNC_ARGS)
 									// existing behavior: clamp pistonCount to armLimit
 									if(armCount + pistonCount > armLimit)
 										pistonCount = armLimit - armCount;
+								}
+								if(parts[i].tmp3 & CONSTRAINT_A)
+								{
+									StackData testMove = CanMoveStack(sim, pistonEndX, pistonEndY,
+										directionX, directionY,
+										maxSize, pistonCount, false,
+										parts[i].ctype);
+
+									// If cannot move full pistonCount, skip extension entirely
+									if(testMove.spaces < pistonCount)
+										continue; // skip
 								}
 								if(pistonCount > 0) {
 									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, true);
