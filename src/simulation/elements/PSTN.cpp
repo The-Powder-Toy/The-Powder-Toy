@@ -73,6 +73,11 @@ constexpr int PISTON_EXTEND     = 0x02;
 constexpr int MAX_FRAME         = 0x0F;
 constexpr int DEFAULT_LIMIT     = 0x1F;
 constexpr int DEFAULT_ARM_LIMIT = 0xFF;
+// tmp3 as a bitfield
+constexpr int CONSTRAINT_A = 0x01; // xxx1 : Don't extend if blocked by obstacles
+constexpr int CONSTRAINT_B = 0x02; // xx1x : Don't extend if blocked by arm limit
+constexpr int CONSTRAINT_C = 0x04; // x1xx : Don't retract if frme hinders movement
+constexpr int CONSTRAINT_D = 0x08; // 1xxx : Don't retract if arm is shorter than retraction length
 
 static int update(UPDATE_FUNC_ARGS)
 {
@@ -164,8 +169,29 @@ static int update(UPDATE_FUNC_ARGS)
 						}
 						if(foundEnd) {
 							if(state == PISTON_EXTEND) {
-								if(armCount+pistonCount > armLimit)
-									pistonCount = armLimit-armCount;
+								if(parts[i].tmp3 & CONSTRAINT_B)
+								{
+									// If extending piston would exceed the armLimit, skip extension entirely
+									if(armCount + pistonCount > armLimit)
+										continue; // skip 
+								}
+								else
+								{
+									// existing behavior: clamp pistonCount to armLimit
+									if(armCount + pistonCount > armLimit)
+										pistonCount = armLimit - armCount;
+								}
+								if(parts[i].tmp3 & CONSTRAINT_A)
+								{
+									StackData testMove = CanMoveStack(sim, pistonEndX, pistonEndY,
+										directionX, directionY,
+										maxSize, pistonCount, false,
+										parts[i].ctype);
+
+									// If cannot move full pistonCount, skip extension entirely
+									if(testMove.spaces < pistonCount)
+										continue; // skip
+								}
 								if(pistonCount > 0) {
 									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, true);
 									if(newSpace) {
@@ -184,11 +210,65 @@ static int update(UPDATE_FUNC_ARGS)
 										movedPiston =  true;
 									}
 								}
-							} else if(state == PISTON_RETRACT) {
-								if(pistonCount > armCount)
-									pistonCount = armCount;
+							} 
+							else if(state == PISTON_RETRACT) {
+								if(parts[i].tmp3 & CONSTRAINT_D) {
+									if(pistonCount > armCount) {
+										// Arm too short to retract according to constraint D
+										continue; // skip retraction entirely
+									}
+								}
+								else {
+									// Default behavior if D is not active: clamp to arm length
+									if(pistonCount > armCount)
+										pistonCount = armCount;
+								}
+
 								if(armCount && pistonCount > 0) {
-									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true, parts[i].ctype, true);
+
+									// Constraint C: check perpendicular frames
+									if(parts[i].tmp3 & CONSTRAINT_C) {
+										bool blocked = false;
+
+										// Compute explicit perpendicular vector to the piston direction
+										int perpX = -directionY;
+										int perpY = directionX;
+
+										// Scan both perpendicular sides for blocking frames
+										for(int side = -1; side <= 1 && !blocked; side += 2) {
+											for(int c = 1; c < MAX_FRAME; ++c) { // skip c=0 (frame touching piston end)
+												int px = pistonEndX + side * c * perpX;
+												int py = pistonEndY + side * c * perpY;
+
+												if(px < 0 || px >= XRES || py < 0 || py >= YRES)
+													break;
+
+												int r = sim->pmap[py][px];
+
+												if(TYP(r) == PT_FRME) {
+													StackData testMove = CanMoveStack(
+														sim, px, py,
+														-directionX, -directionY, // real retract direction
+														maxSize, pistonCount, true,
+														parts[i].ctype
+													);
+
+													if(testMove.spaces < pistonCount) {
+														blocked = true;
+														break;
+													}
+												}
+												else break; // stop scanning if not a frame
+											}
+										}
+
+										if(blocked)
+											continue; // skip retraction this tick
+									}
+
+									// Retract the piston safely
+									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY,
+										maxSize, pistonCount, true, parts[i].ctype, true);
 									movedPiston = true;
 								}
 							}
