@@ -217,59 +217,60 @@ static int update(UPDATE_FUNC_ARGS)
 										// Arm too short to retract according to constraint D
 										continue; // skip retraction entirely
 									}
-								} else {
+								}
+								else {
 									// Default behavior if D is not active: clamp to arm length
 									if(pistonCount > armCount)
 										pistonCount = armCount;
 								}
 
-								if(armCount && pistonCount > 0 && (parts[i].tmp3 & CONSTRAINT_C)) {
-									bool blocked = false;
+								if(armCount && pistonCount > 0) {
 
-									int newY = !!directionX, newX = !!directionY;
-									int realDirectionX = -directionX;
-									int realDirectionY = -directionY;
+									// Constraint C: check perpendicular frames
+									if(parts[i].tmp3 & CONSTRAINT_C) {
+										bool blocked = false;
 
-									// --- Scan BOTH perpendicular directions ---
-									for (int side = -1; side <= 1 && !blocked; side += 2) {
-										for (int c = 0; c < MAX_FRAME; c++) {
+										// Compute explicit perpendicular vector to the piston direction
+										int perpX = -directionY;
+										int perpY = directionX;
 
-											// Skip the FRME directly touching the piston end (c == 0)
-											if (c == 0) continue;
+										// Scan both perpendicular sides for blocking frames
+										for(int side = -1; side <= 1 && !blocked; side += 2) {
+											for(int c = 1; c < MAX_FRAME; ++c) { // skip c=0 (frame touching piston end)
+												int px = pistonEndX + side * c * perpX;
+												int py = pistonEndY + side * c * perpY;
 
-											int px = pistonEndX + side * c * newX;
-											int py = pistonEndY + side * c * newY;
-
-											if (px < 0 || px >= XRES || py < 0 || py >= YRES)
-												break;
-
-											int r = sim->pmap[py][px];
-
-											if (TYP(r) == PT_FRME) {
-												StackData testMove = CanMoveStack(
-													sim, px, py,
-													realDirectionX, realDirectionY,
-													maxSize, pistonCount, true,
-													parts[i].ctype
-												);
-
-												if (testMove.spaces < pistonCount) {
-													blocked = true;
+												if(px < 0 || px >= XRES || py < 0 || py >= YRES)
 													break;
+
+												int r = sim->pmap[py][px];
+
+												if(TYP(r) == PT_FRME) {
+													StackData testMove = CanMoveStack(
+														sim, px, py,
+														-directionX, -directionY, // real retract direction
+														maxSize, pistonCount, true,
+														parts[i].ctype
+													);
+
+													if(testMove.spaces < pistonCount) {
+														blocked = true;
+														break;
+													}
 												}
-											} else {
-												break; // stop scanning in this direction
+												else break; // stop scanning if not a frame
 											}
 										}
+
+										if(blocked)
+											continue; // skip retraction this tick
 									}
 
-									if(blocked)
-										continue; // skip retraction entirely
+									// Retract the piston safely
+									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY,
+										maxSize, pistonCount, true, parts[i].ctype, true);
+									movedPiston = true;
 								}
-
-								MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY,
-									maxSize, pistonCount, true, parts[i].ctype, true);
-								movedPiston = true;
 							}
 						}
 						if (movedPiston)
