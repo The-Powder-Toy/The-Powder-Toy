@@ -6,7 +6,7 @@ static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);
 static StackData CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block);
-static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth = 0);
+static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth, bool Restrict_C);
 
 void Element::Element_PSTN()
 {
@@ -193,7 +193,8 @@ static int update(UPDATE_FUNC_ARGS)
 										continue; // skip
 								}
 								if(pistonCount > 0) {
-									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, true);
+									bool Restrict_C = parts[i].tmp3 & CONSTRAINT_C;
+									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, true, 0, Restrict_C);
 									if(newSpace) {
 										//Create new piston section
 										for(int j = 0; j < newSpace; j++) {
@@ -225,50 +226,10 @@ static int update(UPDATE_FUNC_ARGS)
 								}
 
 								if(armCount && pistonCount > 0) {
-
-									// Constraint C: check perpendicular frames
-									if(parts[i].tmp3 & CONSTRAINT_C) {
-										bool blocked = false;
-
-										// Compute explicit perpendicular vector to the piston direction
-										int perpX = -directionY;
-										int perpY = directionX;
-
-										// Scan both perpendicular sides for blocking frames
-										for(int side = -1; side <= 1 && !blocked; side += 2) {
-											for(int c = 1; c < MAX_FRAME; ++c) { // skip c=0 (frame touching piston end)
-												int px = pistonEndX + side * c * perpX;
-												int py = pistonEndY + side * c * perpY;
-
-												if(px < 0 || px >= XRES || py < 0 || py >= YRES)
-													break;
-
-												int r = sim->pmap[py][px];
-
-												if(TYP(r) == PT_FRME) {
-													StackData testMove = CanMoveStack(
-														sim, px, py,
-														-directionX, -directionY, // real retract direction
-														maxSize, pistonCount, true,
-														parts[i].ctype
-													);
-
-													if(testMove.spaces < pistonCount) {
-														blocked = true;
-														break;
-													}
-												}
-												else break; // stop scanning if not a frame
-											}
-										}
-
-										if(blocked)
-											continue; // skip retraction this tick
-									}
-
 									// Retract the piston safely
+									bool Restrict_C = parts[i].tmp3 & CONSTRAINT_C;
 									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY,
-										maxSize, pistonCount, true, parts[i].ctype, true);
+										maxSize, pistonCount, true, parts[i].ctype, true, 0, Restrict_C);
 									movedPiston = true;
 								}
 							}
@@ -314,7 +275,7 @@ static StackData CanMoveStack(Simulation * sim, int stackX, int stackY, int dire
 	return StackData(currentPos - spaces, spaces);
 }
 
-static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth)
+static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth, bool Restrict_C)
 {
 	int posX, posY, r;
 	r = sim->pmap[stackY][stackX];
@@ -323,6 +284,7 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 		int realDirectionX = retract?-directionX:directionX;
 		int realDirectionY = retract?-directionY:directionY;
 		int maxRight = MAX_FRAME, maxLeft = MAX_FRAME;
+		int origAmount = amount;
 
 		//check if we can push all the FRME
 		for(int c = retract; c < MAX_FRAME; c++) {
@@ -349,24 +311,28 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 				break;
 			}
 		}
+		if(Restrict_C && retract && amount < origAmount) {
+			// Retraction is not allowed
+			return 0;   // abort before moving anything
+		}
 
 		//If the piston is pushing frame, iterate out from the centre to the edge and push everything resting on frame
 		for(int c = 1; c < maxRight; c++) {
 			posY = stackY + (c*newY);
 			posX = stackX + (c*newX);
-			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[posY][posX])].tmp, 1);
+			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[posY][posX])].tmp, 1, Restrict_C);
 		}
 		for(int c = 1; c < maxLeft; c++) {
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
-			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[posY][posX])].tmp, 1);
+			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[posY][posX])].tmp, 1, Restrict_C);
 		}
 
 		//Remove arm section if retracting with FRME
 		if (retract)
 			for(int j = 1; j <= amount; j++)
 				sim->kill_part(ID(sim->pmap[stackY+(directionY*-j)][stackX+(directionX*-j)]));
-		return MoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[stackY][stackX])].tmp, 1);
+		return MoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[stackY][stackX])].tmp, 1, Restrict_C);
 	}
 	if(retract){
 		bool foundParts = false;
