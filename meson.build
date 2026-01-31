@@ -232,7 +232,7 @@ if host_platform == 'emscripten'
 		'-s', 'USE_SDL=2',
 		'-s', 'USE_BZIP2=1',
 		'-s', 'USE_LIBPNG',
-		'-s', 'USE_PTHREADS',
+		'-s', 'USE_PTHREADS=0',
 		'-s', 'DISABLE_EXCEPTION_CATCHING=0',
 		'-gsource-map',
 	]
@@ -464,7 +464,7 @@ common_files += data_files
 
 if host_platform == 'emscripten'
 	project_link_args += [
-		'-o', app_exe + '.js', # so we get a .wasm, and a .js
+		'-o', app_exe + '.html', # generate a single HTML file with embedded js and wasm
 	]
 endif
 if get_option('export_lua_symbols')
