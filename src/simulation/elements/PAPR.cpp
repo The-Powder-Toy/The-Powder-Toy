@@ -7,7 +7,7 @@
 
 // Property usage:
 // life: Whether or not the particle is marked
-// tmp (EPPR): Temporary read/write state for ARAY interaction
+// tmp: Temporary read/write state for ARAY interaction
 // tmp2: Singe level
 
 void Element::Element_PAPR()
@@ -78,57 +78,52 @@ int Element_PAPR_update(UPDATE_FUNC_ARGS)
 	}
 
 	// Electronic marking
-	if (parts[i].type == PT_EPPR)
+	if (parts[i].tmp3 == 10)
 	{
-		if (parts[i].tmp3 == 10)
+		parts[i].tmp3 = 11;
+		parts[i].life = 1;
+		parts[i].dcolour = MARK_COLOR_COAL;
+	}
+	else if (parts[i].tmp3 > 0 && parts[i].tmp3 != 11)
+	{
+		parts[i].life = 0;
+		parts[i].dcolour = 0x00000000;
+		parts[i].tmp3--;
+	}
+
+	for (auto rx = -1; rx <= 1; rx++)
+	{
+		for (auto ry = -1; ry <= 1; ry++)
 		{
-			parts[i].tmp3 = 11;
-			parts[i].life = 1;
-			parts[i].dcolour = MARK_COLOR_COAL;
-		}
-		else if (parts[i].tmp3 != 0 && parts[i].tmp3 != 11)
-		{
-			parts[i].life = 0;
-			parts[i].dcolour = 0x00000000;
-			parts[i].tmp3--;
-		}
-		for (auto rx = -1; rx <= 1; rx++)
-		{
-			for (auto ry = -1; ry <= 1; ry++)
+			if (rx || ry)
 			{
-				if (rx || ry)
+				auto r = pmap[y+ry][x+rx];
+				if (!r)
+					continue;
+
+				if (TYP(r) == PT_SPRK)
 				{
-					auto r = pmap[y+ry][x+rx];
-					if (!r)
-						continue;
-					if (TYP(r)==PT_SPRK)
-					{
-						if (parts[ID(r)].ctype == PT_PSCN)
-							parts[i].tmp3 = 10;
-						else if (parts[ID(r)].ctype == PT_NSCN)
-							parts[i].tmp3 = 9;
-					}
-					else if (TYP(r) == PT_EPPR)
-					{
-						if (parts[i].tmp3 >= 10 && parts[ID(r)].tmp3 > 0 && parts[ID(r)].tmp3 < 10)
-							parts[i].tmp3 = 9;
-						else if (parts[i].tmp3 == 0 && parts[ID(r)].tmp3 >= 10)
-							parts[i].tmp3 = 10;
-					}
+					if (parts[ID(r)].ctype == PT_PSCN)
+						parts[i].tmp3 = 10;
+					else if (parts[ID(r)].ctype == PT_NSCN)
+						parts[i].tmp3 = 9;
+				}
+				else if (TYP(r) == PT_PAPR)
+				{
+					if (parts[i].tmp3 >= 10 && parts[ID(r)].tmp3 > 0 && parts[ID(r)].tmp3 < 10)
+						parts[i].tmp3 = 9;
+					else if (parts[i].tmp3 == 0 && parts[ID(r)].tmp3 >= 10)
+						parts[i].tmp3 = 10;
 				}
 			}
 		}
-
-		// Decrement tmp counter for laser reading/writing
-		if (parts[i].tmp & 0xF)
-		{
-			parts[i].tmp--;
-		}
-		else
-		{
-			parts[i].tmp = 0;
-		}
 	}
+
+	// Decrement tmp counter for laser reading/writing
+	if (parts[i].tmp & 0xF)
+		parts[i].tmp--;
+	else
+		parts[i].tmp = 0;
 
 	auto r = pmap[y][x];
 	switch (TYP(r))
@@ -183,13 +178,6 @@ int Element_PAPR_update(UPDATE_FUNC_ARGS)
 			}
 		}
 		break;
-
-	case PT_MERC:
-		if (parts[i].type == PT_PAPR && parts[ID(r)].tmp > 0)
-		{
-			sim->part_change_type(i, x, y, PT_EPPR);
-			parts[ID(r)].tmp--;
-		}
 	}
 	return 0;
 }

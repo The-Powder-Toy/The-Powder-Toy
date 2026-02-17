@@ -197,11 +197,10 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 						}
 					}
 				}
+
 				// Make paper burn more reliably
-				if ((rt == PT_PAPR || rt == PT_EPPR) && t != PT_PHOT)
-				{
+				if (rt == PT_PAPR && t != PT_PHOT)
 					parts[ID(r)].temp += 4;
-				}
 
 				if (t == PT_LAVA)
 				{

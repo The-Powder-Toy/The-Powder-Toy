@@ -196,7 +196,6 @@ simulation_elem_names = [
 	'BASE',
 	'SEED',
 	'PAPR',
-	'EPPR',
 ]
 
 simulation_elem_src = []

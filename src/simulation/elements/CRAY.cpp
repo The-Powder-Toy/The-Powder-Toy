@@ -124,7 +124,7 @@ static int update(UPDATE_FUNC_ARGS)
 									colored = 0;
 								parts[ID(r)].life = 4;
 							}
-							else if (TYP(r) == PT_PAPR || TYP(r) == PT_EPPR)
+							else if (TYP(r) == PT_PAPR)
 							{
 								if (TYP(parts[i].ctype == PT_COAL) || TYP(parts[i].ctype) == PT_BCOL)
 								{
