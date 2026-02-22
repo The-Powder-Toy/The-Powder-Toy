@@ -48,42 +48,26 @@ void Element::Element_SAWD()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	int nearbyWax = 0;
-	for (auto rx = -3; rx <= 3; rx++)
+	for (auto rx = -1; rx <= 1; rx++)
 	{
-		for (auto ry = -3; ry <= 3; ry++)
+		for (auto ry = -1; ry <= 1; ry++)
 		{
 			if (rx || ry)
 			{
 				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (TYP(r) == PT_MWAX)
+
+				if (TYP(r) == PT_MWAX && sim->rng.chance(1, 200))
 				{
-					nearbyWax++;
+					sim->create_part(i, x, y, PT_PAPR);
+					sim->kill_part(ID(r));
+
+					return 1;
 				}
 			}
 		}
 	}
 
-	parts[i].tmp += nearbyWax;
-	if (parts[i].tmp > 200)
-	{
-		int rx = sim->rng.between(-2, 2);
-		int ry = sim->rng.between(-2, 2);
-		int p = pmap[y+ry][x+rx];
-		if (p && TYP(p) == PT_MWAX)
-		{
-			sim->create_part(i, x, y, PT_PAPR);
-			sim->kill_part(ID(p));
-			return 1;
-		}
-	}
-	if (parts[i].tmp > 0)
-	{
-		parts[i].vx = 0;
-		parts[i].vy = 0;
-		parts[i].tmp--;
-	}
 	return 0;
 }

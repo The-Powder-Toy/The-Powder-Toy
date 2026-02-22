@@ -9,6 +9,7 @@
 // life: Whether or not the particle is marked
 // tmp: Temporary read/write state for ARAY interaction
 // tmp2: Singe level
+// tmp3: Used for marking/clearing PAPR with PSCN/NSCN
 
 void Element::Element_PAPR()
 {
@@ -77,18 +78,46 @@ int Element_PAPR_update(UPDATE_FUNC_ARGS)
 		}
 	}
 
-	// Electronic marking
-	if (parts[i].tmp3 == 10)
+	// Resolve some stacking issues
+	auto ontop = pmap[y][x];
+	if (ontop && ID(ontop) != i)
 	{
-		parts[i].tmp3 = 11;
+		auto top = TYP(ontop);
+
+		if (top == PT_PAPR) // PAPR on top of PAPR
+		{
+			if (parts[ID(ontop)].life)
+			{
+				parts[i].life = 1;
+				parts[i].dcolour = MARK_COLOR_COAL;
+			}
+			sim->kill_part(ID(ontop));
+		}
+		else if (top == PT_COAL) // COAL marks PAPR and deletes itself
+		{
+			parts[i].life = 1;
+			parts[i].dcolour = MARK_COLOR_COAL;
+			sim->kill_part(ID(ontop));
+		}
+		else if (top == PT_SAWD || top == PT_MWAX) // SAWD and MWAX are banned
+			sim->kill_part(ID(ontop));
+		else if (top != PT_BCOL && (bool(parts[i].life) != // "weird" elements
+			       	bool(top == PT_H2 || top == PT_ANAR || top == PT_BIZR || top == PT_BIZRG)))
+			sim->kill_part(ID(ontop));
+	}
+
+	// Electronic marking
+	if (parts[i].tmp3 > 0)
+	{
 		parts[i].life = 1;
 		parts[i].dcolour = MARK_COLOR_COAL;
+		parts[i].tmp3--;
 	}
-	else if (parts[i].tmp3 > 0 && parts[i].tmp3 != 11)
+	else if (parts[i].tmp3 < 0)
 	{
 		parts[i].life = 0;
 		parts[i].dcolour = 0x00000000;
-		parts[i].tmp3--;
+		parts[i].tmp3++;
 	}
 
 	for (auto rx = -1; rx <= 1; rx++)
@@ -103,17 +132,17 @@ int Element_PAPR_update(UPDATE_FUNC_ARGS)
 
 				if (TYP(r) == PT_SPRK)
 				{
-					if (parts[ID(r)].ctype == PT_PSCN)
+					if (parts[ID(r)].ctype == PT_PSCN) // Mark signal
 						parts[i].tmp3 = 10;
-					else if (parts[ID(r)].ctype == PT_NSCN)
-						parts[i].tmp3 = 9;
+					else if (parts[ID(r)].ctype == PT_NSCN) // Clear signal
+						parts[i].tmp3 = -10;
 				}
 				else if (TYP(r) == PT_PAPR)
 				{
-					if (parts[i].tmp3 >= 10 && parts[ID(r)].tmp3 > 0 && parts[ID(r)].tmp3 < 10)
-						parts[i].tmp3 = 9;
-					else if (parts[i].tmp3 == 0 && parts[ID(r)].tmp3 >= 10)
+					if (parts[i].tmp3 <= 0 && parts[ID(r)].tmp3 == 10) // Propagate mark
 						parts[i].tmp3 = 10;
+					else if (parts[i].tmp3 == 0 && parts[ID(r)].tmp3 == (-10)) // Propagate clear
+						parts[i].tmp3 = -10;
 				}
 			}
 		}
@@ -159,11 +188,6 @@ int Element_PAPR_update(UPDATE_FUNC_ARGS)
 			parts[i].life = 1;
 			parts[i].dcolour = 0xFF223C22;
 		}
-		break;
-
-	// Doesn't guarantee layering won't happen, but makes it far less likely
-	case PT_SAWD:
-		parts[ID(r)].tmp = 0;
 		break;
 
 	case PT_GUNP:
