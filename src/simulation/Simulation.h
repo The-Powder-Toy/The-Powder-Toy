@@ -108,9 +108,15 @@ struct RenderableSimulation
 	int pmap[YRES][XRES];
 	int photons[YRES][XRES];
 
+	int edgeMode = EDGE_VOID;
+
 	int aheat_enable = 0;
 
 	bool useLuaCallbacks = false;
+
+	//Spatial Evaluation
+	void AddPos(float x, float y, float dx, float dy, float& outx, float& outy) const;
+	void DiffPos(float fromX, float fromY, float toX, float toY, float& outx, float& outy) const;
 };
 
 class Simulation : public RenderableSimulation
@@ -150,7 +156,6 @@ public:
 
 	unsigned int pmap_count[YRES][XRES];
 
-	int edgeMode = EDGE_VOID;
 	int gravityMode = GRAV_VERTICAL;
 	float customGravityX = 0;
 	float customGravityY = 0;
@@ -249,10 +254,6 @@ public:
 	void CreateLine(int x1, int y1, int x2, int y2, int c);
 	void CreateBox(int p, int x1, int y1, int x2, int y2, int c, int flags);
 	int FloodParts(int x, int y, int c, int cm, int flags);
-
-	//Spatial Evaluation
-	void AddPos(Simulation& sim, float x, float y, float dx, float dy, float& outx, float& outy);
-	void DiffPos(Simulation& sim, float fromX, float fromY, float toX, float toY, float& outx, float& outy);
 
 	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float& pGravX, float& pGravY) const;
 

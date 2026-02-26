@@ -2042,9 +2042,9 @@ void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going throug
 	parts[i].vy *= r;
 }
 
-void Simulation::AddPos(Simulation& sim, float x, float y, float dx, float dy, float& outx, float& outy)
+void RenderableSimulation::AddPos(float x, float y, float dx, float dy, float & outx, float & outy) const
 {
-	switch (sim.edgeMode)
+	switch (this->edgeMode)
 	{
 	case EDGE_LOOP:
 		outx = x + dx;
@@ -2062,9 +2062,9 @@ void Simulation::AddPos(Simulation& sim, float x, float y, float dx, float dy, f
 	}
 }
 
-void Simulation::DiffPos(Simulation& sim, float fromX, float fromY, float toX, float toY, float& outx, float& outy)
+void RenderableSimulation::DiffPos(float fromX, float fromY, float toX, float toY, float& outx, float& outy) const
 {
-	switch (sim.edgeMode)
+	switch (this->edgeMode)
 	{
 	case EDGE_LOOP:
 		outx = toX - fromX;

@@ -225,7 +225,7 @@ static int update(UPDATE_FUNC_ARGS)
 		if (parts[i].ctype & 2 && validIndex(parts[i].tmp))
 		{
 			float d, dx, dy;
-			sim->DiffPos(*sim,
+			sim->DiffPos(
 				parts[parts[i].tmp].x, parts[parts[i].tmp].y,
 				parts[i].x, parts[i].y,
 				dx, dy
@@ -242,7 +242,7 @@ static int update(UPDATE_FUNC_ARGS)
 				int ii = parts[parts[parts[i].tmp].tmp].tmp;
 				if (validIndex(ii))
 				{
-					sim->DiffPos(*sim,
+					sim->DiffPos(
 						parts[parts[i].tmp].x, parts[parts[i].tmp].y,
 						parts[ii].x, parts[ii].y,
 						dx, dy

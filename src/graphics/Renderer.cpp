@@ -503,7 +503,19 @@ void Renderer::render_parts()
 					if (t==PT_SOAP)
 					{
 						if ((parts[i].ctype&3) == 3 && parts[i].tmp >= 0 && parts[i].tmp < NPART)
-							BlendLine({ nx, ny }, { int(parts[parts[i].tmp].x+0.5f), int(parts[parts[i].tmp].y+0.5f) }, RGBA(colr, colg, colb, cola));
+						{
+							for (int ox = -1; ox < 2; ++ox)
+							for (int oy = -1; oy < 2; ++oy)
+							{
+								float dx, dy;
+								sim->DiffPos(
+									nx, ny,
+									parts[parts[i].tmp].x, parts[parts[i].tmp].y,
+									dx, dy
+								);
+								BlendLine({ nx + ox * (XRES - CELL * 2), ny + oy * (YRES - CELL * 2) }, { int(nx + dx + 0.5) + ox * (XRES - CELL * 2), int(ny + dy + 0.5f) + oy * (YRES - CELL * 2) }, RGBA(colr, colg, colb, cola));
+							}
+						}
 					}
 				}
 				if(pixel_mode & PSPEC_STICKMAN)
