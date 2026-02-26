@@ -17,7 +17,7 @@ void Element::Element_PAPR()
 	Name = "PAPR";
 	Colour = 0xF3F3CA_rgb;
 	MenuVisible = 1;
-	MenuSection = SC_SOLIDS;
+	MenuSection = SC_POWERED;
 	Enabled = 1;
 
 	Advection = 0.0f;
@@ -33,11 +33,12 @@ void Element::Element_PAPR()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 5;
+	Hardness = 6;
 
 	Weight = 100;
 
 	HeatConduct = 80;
+	HeatCapacity = 0.2f;
 	Description = "Paper. Flammable, can be marked by BCOL or erased by SOAP. Lets particles through when unmarked.";
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS;
