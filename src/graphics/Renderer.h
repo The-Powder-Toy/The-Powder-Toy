@@ -63,6 +63,8 @@ class Renderer : private RendererSettings, public RasterDrawMethods<Renderer>
 
 public:
 	Renderer();
+	void DrawSpaceLine(const Vec2<int> pos, const Vec2<int> dpos, RGB color);
+	void BlendSpaceLine(const Vec2<int> pos, const Vec2<int> dpos, RGBA color);
 	void ApplySettings(const RendererSettings &newSettings);
 	void RenderSimulation();
 	void RenderBackground();

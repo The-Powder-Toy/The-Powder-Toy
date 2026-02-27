@@ -15,6 +15,28 @@
 #include <cmath>
 #include <algorithm>
 
+static int remainder_p(int x, int y)
+{
+	return (x % y) + (x >= 0 ? 0 : y);
+}
+
+void Renderer::BlendSpaceLine(const Vec2<int> pos, const Vec2<int> dpos, const RGBA color) //BlendLine which accounts for spatial effects like edge loop
+{
+	switch (this->sim->edgeMode)
+	{
+	case EDGE_LOOP:
+	{
+		RasterizeLine<false>(pos, pos + dpos, [this, color](Vec2<int> ppos) {
+			BlendPixel({ remainder_p(ppos.X - CELL, XRES - 2 * CELL) + CELL, remainder_p(ppos.Y - CELL, YRES - 2 * CELL) + CELL }, color);
+		});
+		return;
+	}
+	default:
+	case EDGE_VOID:
+		BlendLine(pos, pos + dpos, color);
+	}
+}
+
 void Renderer::RenderBackground()
 {
 	draw_air();
@@ -503,7 +525,29 @@ void Renderer::render_parts()
 					if (t==PT_SOAP)
 					{
 						if ((parts[i].ctype&3) == 3 && parts[i].tmp >= 0 && parts[i].tmp < NPART)
-							BlendLine({ nx, ny }, { int(parts[parts[i].tmp].x+0.5f), int(parts[parts[i].tmp].y+0.5f) }, RGBA(colr, colg, colb, cola));
+						{
+							float dx, dy;
+							sim->DiffPos(
+								nx, ny,
+								parts[parts[i].tmp].x, parts[parts[i].tmp].y,
+								dx, dy
+							);
+							BlendSpaceLine({ nx, ny }, { int(dx + 0.5), int(dy + 0.5) }, RGBA(colr, colg, colb, cola));
+							/*
+							for (int ox = -1; ox < 2; ++ox)
+							{
+								int x1 = nx + ox * (XRES - CELL * 2);
+								int x2 = x1 + int(dx + 0.5);
+								if ((x1 > CELL && x1 < XRES - CELL) || (x2 > CELL && x2 < XRES - CELL))
+									for (int oy = -1; oy < 2; ++oy)
+									{
+										int y1 = ny + oy * (YRES - CELL * 2);
+										int y2 = y1 + int(dy + 0.5f);
+										if ((y1 > CELL && y1 < YRES - CELL) || (y2 > CELL && y2 < YRES - CELL))
+											BlendLine({ x1, y1 }, { x2, y2 }, RGBA(colr, colg, colb, cola));
+									}
+							}*/
+						}
 					}
 				}
 				if(pixel_mode & PSPEC_STICKMAN)
