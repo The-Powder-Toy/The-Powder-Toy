@@ -99,7 +99,7 @@ static const std::vector<Function> functions = {
 	{ U"delete", &CommandInterface::tptS_delete },
 	{ U"kill"  , &CommandInterface::tptS_delete },
 	{ U"load"  , &CommandInterface::tptS_load   },
-	{ U"reset" , &CommandInterface::tptS_reset  },
+	{ U"reset" , &CommandInterface::tptS_reset  }, //TODO: undoability
 	{ U"bubble", &CommandInterface::tptS_bubble },
 	{ U"quit"  , &CommandInterface::tptS_quit   },
 };
@@ -431,6 +431,8 @@ AnyType CommandInterface::tptS_set(std::deque<String> * words)
 		throw GeneralException(ByteString(ex.what()).FromUtf8());
 	}
 
+	this->c->HistorySnapshot();
+
 	int returnValue = 0;
 	for (auto index : EvaluateSelector(sim, selector))
 	{
@@ -526,6 +528,7 @@ AnyType CommandInterface::tptS_delete(std::deque<String> * words)
 		ui::Point deletePoint = ((PointType)partRef).Value();
 		if(deletePoint.X<0 || deletePoint.Y<0 || deletePoint.Y >= YRES || deletePoint.X >= XRES)
 			throw GeneralException("Invalid position");
+		this->c->HistorySnapshot();
 		sim->delete_part(deletePoint.X, deletePoint.Y);
 	}
 	else if(partRef.GetType() == TypeNumber)
@@ -533,6 +536,7 @@ AnyType CommandInterface::tptS_delete(std::deque<String> * words)
 		int partIndex = ((NumberType)partRef).Value();
 		if(partIndex < 0 || partIndex >= NPART)
 			throw GeneralException("Invalid particle index");
+		this->c->HistorySnapshot();
 		sim->kill_part(partIndex);
 	}
 	else
