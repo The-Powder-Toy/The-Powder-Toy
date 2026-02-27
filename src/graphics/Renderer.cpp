@@ -15,6 +15,117 @@
 #include <cmath>
 #include <algorithm>
 
+/* forget this impl
+void Renderer::BlendSpaceLine(const Vec2<int> pos, const Vec2<int> dpos, const RGBA color) //BlendLine which accounts for spatial effects like edge loop
+{
+	switch (this->sim->edgeMode)
+	{
+	case EDGE_LOOP:
+	{
+		int curX = pos.X - CELL;
+		int curY = pos.Y - CELL;
+		int remaining = iabs(dpos.X * dpos.Y);
+		// slope = dpos.Y / dpos.X
+
+		//Distance to border
+		int freeX = dpos.X > 0 ? (XRES - 2 * CELL) - curX : -curX;
+		int freeY = dpos.Y > 0 ? (YRES - 2 * CELL) - curY : -curY;
+		while (remaining > 0)
+		{
+			if (iabs(dpos.Y * freeX) > iabs(freeY * dpos.X)) // iabs(dpos.Y/dpos.X) > iabs(freeY/freeX) // intercept with top/bottom
+			{
+				if (dpos.Y > 0)
+				{
+					int dy = (YRES - 2 * CELL) - curY;
+					remaining -= iabs(dy * dpos.X);
+					if (remaining < 0) dy -= iabs(remaining / dpos.X);
+					int dx = (dy * dpos.X) / dpos.Y;
+					int newX = curX + dx;
+					int newY = curY + dy;
+					BlendLine({ curX + CELL, curY + CELL }, { newX + CELL, newY + CELL }, color);
+					curX = newX;
+					curY = 0;
+					freeX = dpos.X > 0 ? (XRES - 2 * CELL) - curX : -curX;
+					freeY = (YRES - 2 * CELL);
+				}
+				else
+				{
+					int dy = -curY;
+					remaining -= iabs(dy * dpos.X);
+					if (remaining < 0) dy += iabs(remaining / dpos.X);
+					int dx = (dy * dpos.X) / dpos.Y;
+					int newX = curX + dx;
+					int newY = curY + dy;
+					BlendLine({ curX + CELL, curY + CELL }, { newX + CELL, newY + CELL }, color);
+					curX = newX;
+					curY = (YRES - 2 * CELL);
+					freeX = dpos.X > 0 ? (XRES - 2 * CELL) - curX : -curX;
+					freeY = -curY;
+				}
+			}
+			else // iabs(dpos.Y/dpos.X) <= iabs(freeY/freeX) // intercept with left/right
+			{
+				if (dpos.X > 0)
+				{
+					int dx = (XRES - 2 * CELL) - curX;
+					remaining -= iabs(dx * dpos.Y);
+					if (remaining < 0) dx -= iabs(remaining / dpos.Y);
+					int dy = (dx * dpos.Y) / dpos.X;
+					int newX = curX + dx;
+					int newY = curY + dy;
+					BlendLine({ curX + CELL, curY + CELL }, { newX + CELL, newY + CELL }, color);
+					curX = 0;
+					curY = newY;
+					freeX = (XRES - 2 * CELL) - curX;
+					freeY = dpos.Y > 0 ? (YRES - 2 * CELL) - curY : -curY;
+				}
+				else
+				{
+					int dx = -curX;
+					remaining -= iabs(dx * dpos.Y);
+					if (remaining < 0) dx += iabs(remaining / dpos.Y);
+					int dy = (dx * dpos.Y) / dpos.X;
+					int newX = curX + dx;
+					int newY = curY + dy;
+					BlendLine({ curX + CELL, curY + CELL }, { newX + CELL, newY + CELL }, color);
+					curX = (XRES - 2 * CELL);
+					curY = newY;
+					freeX = -curX;
+					freeY = dpos.Y > 0 ? (YRES - 2 * CELL) - curY : -curY;
+				}
+			}
+		}
+		return;
+	}
+	default:
+	case EDGE_VOID:
+		BlendLine(pos, pos + dpos, color);
+	}
+} forget this impl
+*/
+
+static int remainder_p(int x, int y)
+{
+	return (x % y) + (x >= 0 ? 0 : y);
+}
+
+void Renderer::BlendSpaceLine(const Vec2<int> pos, const Vec2<int> dpos, const RGBA color) //BlendLine which accounts for spatial effects like edge loop
+{
+	switch (this->sim->edgeMode)
+	{
+	case EDGE_LOOP:
+	{
+		RasterizeLine<false>(pos, pos + dpos, [this, color](Vec2<int> ppos) {
+			BlendPixel({ remainder_p(ppos.X - CELL, XRES - 2 * CELL) + CELL, remainder_p(ppos.Y - CELL, YRES - 2 * CELL) + CELL }, color);
+		});
+		return;
+	}
+	default:
+	case EDGE_VOID:
+		BlendLine(pos, pos + dpos, color);
+	}
+}
+
 void Renderer::RenderBackground()
 {
 	draw_air();
@@ -504,17 +615,27 @@ void Renderer::render_parts()
 					{
 						if ((parts[i].ctype&3) == 3 && parts[i].tmp >= 0 && parts[i].tmp < NPART)
 						{
+							float dx, dy;
+							sim->DiffPos(
+								nx, ny,
+								parts[parts[i].tmp].x, parts[parts[i].tmp].y,
+								dx, dy
+							);
+							BlendSpaceLine({ nx, ny }, { int(dx + 0.5), int(dy + 0.5) }, RGBA(colr, colg, colb, cola));
+							/*
 							for (int ox = -1; ox < 2; ++ox)
-							for (int oy = -1; oy < 2; ++oy)
 							{
-								float dx, dy;
-								sim->DiffPos(
-									nx, ny,
-									parts[parts[i].tmp].x, parts[parts[i].tmp].y,
-									dx, dy
-								);
-								BlendLine({ nx + ox * (XRES - CELL * 2), ny + oy * (YRES - CELL * 2) }, { int(nx + dx + 0.5) + ox * (XRES - CELL * 2), int(ny + dy + 0.5f) + oy * (YRES - CELL * 2) }, RGBA(colr, colg, colb, cola));
-							}
+								int x1 = nx + ox * (XRES - CELL * 2);
+								int x2 = x1 + int(dx + 0.5);
+								if ((x1 > CELL && x1 < XRES - CELL) || (x2 > CELL && x2 < XRES - CELL))
+									for (int oy = -1; oy < 2; ++oy)
+									{
+										int y1 = ny + oy * (YRES - CELL * 2);
+										int y2 = y1 + int(dy + 0.5f);
+										if ((y1 > CELL && y1 < YRES - CELL) || (y2 > CELL && y2 < YRES - CELL))
+											BlendLine({ x1, y1 }, { x2, y2 }, RGBA(colr, colg, colb, cola));
+									}
+							}*/
 						}
 					}
 				}
