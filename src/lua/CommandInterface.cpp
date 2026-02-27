@@ -561,20 +561,35 @@ AnyType CommandInterface::tptS_bubble(std::deque<String> * words)
 	PointType bubblePosA = eval(words);
 	ui::Point bubblePos = bubblePosA.Value();
 
-	if(bubblePos.X<0 || bubblePos.Y<0 || bubblePos.Y >= YRES || bubblePos.X >= XRES)
+	int bubbleSize;
+	if (words->size() > 0)
+	{
+		NumberType bubbleSizeA = eval(words);
+		bubbleSize = bubbleSizeA.Value();
+	}
+	else bubbleSize = 30;
+
+	if (bubblePos.X<0 || bubblePos.Y<0 || bubblePos.Y >= YRES || bubblePos.X >= XRES)
 			throw GeneralException("Invalid position");
+
+	if (bubbleSize<0)
+			throw GeneralException("Invalid size");
 
 	Simulation * sim = m->GetSimulation();
 
 	int first, rem1, rem2;
 
-	first = sim->create_part(-1, bubblePos.X+18, bubblePos.Y, PT_SOAP);
+	int radius = (bubbleSize * (65536 * 6 / 10)) >> 16; // bubbleSize * 0.6
+
+	this->c->HistorySnapshot();
+
+	first = sim->create_part(-1, bubblePos.X + radius, bubblePos.Y, PT_SOAP);
 	rem1 = first;
 
-	for (int i = 1; i<=30; i++)
+	for (int i = 1; i <= bubbleSize - 1; i++)
 	{
-		rem2 = sim->create_part(-1, int(bubblePos.X+18*cosf(i/5.0)+0.5f), int(bubblePos.Y+18*sinf(i/5.0)+0.5f), PT_SOAP);
-
+		rem2 = sim->create_part(-1, int(bubblePos.X + radius * cosf(i * TPT_PI_FLT * 2 / float(bubbleSize)) + 0.5f), int(bubblePos.Y + radius * sinf(i * TPT_PI_FLT * 2 / float(bubbleSize)) + 0.5f), PT_SOAP);
+		
 		sim->parts[rem1].ctype = 7;
 		sim->parts[rem1].tmp = rem2;
 		sim->parts[rem2].tmp2 = rem1;
