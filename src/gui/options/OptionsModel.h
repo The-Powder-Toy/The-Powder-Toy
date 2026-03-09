@@ -30,6 +30,8 @@ public:
 	void SetAmbientAirTemperature(float ambientAirTemp);
 	float GetVorticityCoeff();
 	void SetVorticityCoeff(float vorticityCoeff);
+	int GetConvectionMode();
+	void SetConvectionMode(int convMode);
 	int GetEdgeMode();
 	void SetEdgeMode(int edgeMode);
 	TempScale GetTemperatureScale();

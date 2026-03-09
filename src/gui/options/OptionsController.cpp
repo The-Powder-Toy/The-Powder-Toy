@@ -67,6 +67,11 @@ void OptionsController::SetVorticityCoeff(float vorticityCoeff)
 	model->SetVorticityCoeff(vorticityCoeff);
 }
 
+void OptionsController::SetConvectionMode(int convMode)
+{
+	model->SetConvectionMode(convMode);
+}
+
 void OptionsController::SetEdgeMode(int edgeMode)
 {
 	model->SetEdgeMode(edgeMode);

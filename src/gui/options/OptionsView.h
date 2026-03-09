@@ -25,6 +25,7 @@ class OptionsView: public ui::Window
 	ui::Textbox *ambientAirTemp{};
 	ui::Button *ambientAirTempPreview{};
 	ui::Textbox *vorticityCoeff{};
+	ui::DropDown *convectionMode{};
 	ui::DropDown *gravityMode{};
 	ui::DropDown *edgeMode{};
 	ui::DropDown *temperatureScale{};

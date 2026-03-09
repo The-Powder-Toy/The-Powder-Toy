@@ -169,9 +169,6 @@ void Air::update_airh(void)
 			ohv[y][x] = dh;
 
 			// Air convection.
-			// We use the Boussinesq approximation, i.e. we assume density to be nonconstant only
-			// near the gravity term of the fluid equation, and we suppose that it depends linearly on the
-			// difference between the current temperature (hv[y][x]) and some "stationary" temperature (ambientAirTemp).
 			float dvx, dvy;
 			dvx = vx[y][x];
 		       	dvy = vy[y][x];
@@ -181,21 +178,45 @@ void Air::update_airh(void)
 				float convGravX, convGravY;
 				sim.GetGravityField(x*CELL, y*CELL, -1.0f, -1.0f, convGravX, convGravY);
 
-				// Cap the gravity field
-				float gravMagn = std::sqrt(convGravX*convGravX + convGravY*convGravY);
-				if (gravMagn > 10.0f)
+				switch (convectionMode)
 				{
-					convGravX /= 0.1f*gravMagn;
-					convGravY /= 0.1f*gravMagn;
+					case AIRC_LEGACY:
+						{
+							// Air convection pre 99.0
+							auto weight = ((hv[y][x] - hv[y][x-1]) * convGravX + (hv[y][x] - hv[y-1][x]) * convGravY) / 5000.0f;
+							if (weight > 0 && !(bmap_blockairh[y-1][x]&0x8))
+							{
+								dvx += weight * convGravX;
+								dvy += weight * convGravY;
+							}
+						}
+						break;
+					case AIRC_BOUSSINESQ:
+						{
+							// Boussinesq approximation, i.e. we assume density to be nonconstant only
+							// near the gravity term of the fluid equation, and we suppose that it depends linearly on the
+							// difference between the current temperature (hv[y][x]) and some "stationary" temperature (ambientAirTemp).
+
+							// Cap the gravity field
+							float gravMagn = std::sqrt(convGravX*convGravX + convGravY*convGravY);
+							if (gravMagn > 10.0f)
+							{
+								convGravX /= 0.1f*gravMagn;
+								convGravY /= 0.1f*gravMagn;
+							}
+
+							auto weight = (hv[y][x] - ambientAirTemp) / 10000.0f;
+
+							// Our approximation works best when the temperature difference is small, so we cap it from above.
+							if (weight > 0.01f) weight = 0.01f;
+
+							dvx += weight * convGravX;
+							dvy += weight * convGravY;
+						}
+						break;
+					default:
+						break;
 				}
-
-				auto weight = (hv[y][x] - ambientAirTemp) / 10000.0f;
-
-				// Our approximation works best when the temperature difference is small, so we cap it from above.
-				if (weight > 0.01f) weight = 0.01f;
-
-				dvx += weight * convGravX;
-				dvy += weight * convGravY;
 			}
 
 			// Velocity cap
@@ -511,7 +532,8 @@ Air::Air(Simulation & simulation):
 	sim(simulation),
 	airMode(AIR_ON),
 	ambientAirTemp(R_TEMP + 273.15f),
-	vorticityCoeff(0.0f)
+	vorticityCoeff(0.0f),
+	convectionMode(AIRC_BOUSSINESQ)
 {
 	//Simulation should do this.
 	make_kernel();

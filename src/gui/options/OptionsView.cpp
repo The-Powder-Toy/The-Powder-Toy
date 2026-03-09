@@ -9,6 +9,7 @@
 #include "gui/Style.h"
 #include "simulation/ElementDefs.h"
 #include "simulation/SimulationSettings.h"
+#include "simulation/Air.h"
 #include "client/Client.h"
 #include "gui/credits/Credits.h"
 #include "gui/dialogues/ConfirmPrompt.h"
@@ -154,6 +155,13 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		scrollPanel->AddChild(label);
 		currentY += 20;
 	}
+	convectionMode = addDropDown("Air heat convection mode", {
+		{ "None", AIRC_NONE },
+		{ "Legacy", AIRC_LEGACY },
+		{ "Boussinesq", AIRC_BOUSSINESQ },
+	}, [this] {
+		c->SetConvectionMode(convectionMode->GetOption().second);
+	});
 	class GravityWindow : public ui::Window
 	{
 		void OnTryExit(ExitMethod method) override
@@ -586,6 +594,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	{
 		VorticityCoeffToTextBox(sender->GetVorticityCoeff());
 	}
+	convectionMode->SetOption(sender->GetConvectionMode());
 	gravityMode->SetOption(sender->GetGravityMode());
 	customGravityX = sender->GetCustomGravityX();
 	customGravityY = sender->GetCustomGravityY();

@@ -8,6 +8,7 @@
 #include "simulation/Particle.h"
 #include "simulation/MissingElements.h"
 #include "simulation/gravity/GravityData.h"
+#include "simulation/SimulationSettings.h"
 #include "Misc.h"
 #include "SimulationConfig.h"
 #include <vector>
@@ -108,6 +109,7 @@ public:
 	int airMode = 0;
 	float ambientAirTemp = R_TEMP + 273.15f;
 	float vorticityCoeff = 0.0f;
+	int convectionMode = AIRC_LEGACY;
 	int edgeMode = 0;
 	bool wantAuthors = true;
 

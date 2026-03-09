@@ -11,6 +11,7 @@ public:
 	int airMode;
 	float ambientAirTemp;
 	float vorticityCoeff;
+	int convectionMode;
 	float ovx[YCELLS][XCELLS];
 	float ovy[YCELLS][XCELLS];
 	float opv[YCELLS][XCELLS];

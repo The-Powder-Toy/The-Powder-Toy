@@ -108,6 +108,7 @@ private:
 	int edgeMode;
 	float ambientAirTemp;
 	float vorticityCoeff;
+	int convectionMode;
 	int decoSpace;
 
 	String infoTip;
@@ -168,6 +169,8 @@ public:
 	float GetAmbientAirTemperature();
 	void SetVorticityCoeff(float vorticityCoeff);
 	float GetVorticityCoeff();
+	void SetConvectionMode(int convMode);
+	int GetConvectionMode();
 	void SetDecoSpace(int decoSpace);
 	int GetDecoSpace();
 

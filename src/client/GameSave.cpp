@@ -619,6 +619,12 @@ void GameSave::readOPS(const std::vector<char> &data)
 	copyIfInt32(b, "airMode", airMode);
 	copyIfFloat(b, "ambientAirTemp", ambientAirTemp);
 	copyIfFloat(b, "vorticityCoeff", vorticityCoeff);
+
+	// Before 99.0 the default is "legacy", from 99.0 the default is "Boussinesq"
+	if (version >= Version(99, 0))
+		convectionMode = AIRC_BOUSSINESQ;
+	copyIfInt32(b, "convectionMode", convectionMode);
+
 	copyIfInt32(b, "edgeMode", edgeMode);
 	copyIfInt32(b, "pmapbits", pmapbits);
 	copyIfBool(b, "ensureDeterminism", ensureDeterminism);
@@ -2492,6 +2498,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 		b["vorticityCoeff"] = double(vorticityCoeff);
 		RESTRICTVERSION(100, 0);
 	}
+	b["convectionMode"] = convectionMode;
 	b["edgeMode"] = edgeMode;
 
 	if (stkm.hasData())

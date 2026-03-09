@@ -130,6 +130,17 @@ void OptionsModel::SetVorticityCoeff(float vorticityCoeff)
 	notifySettingsChanged();
 }
 
+int OptionsModel::GetConvectionMode()
+{
+	return gModel->GetSimulation()->air->convectionMode;
+}
+void OptionsModel::SetConvectionMode(int convMode)
+{
+	GlobalPrefs::Ref().Set("Simulation.ConvectionMode", convMode);
+	gModel->SetConvectionMode(convMode);
+	notifySettingsChanged();
+}
+
 int OptionsModel::GetGravityMode()
 {
 	return sim->gravityMode;

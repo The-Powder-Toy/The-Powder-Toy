@@ -24,6 +24,7 @@ public:
 	void SetAirMode(int airMode);
 	void SetAmbientAirTemperature(float ambientAirTemp);
 	void SetVorticityCoeff(float vorticityCoeff);
+	void SetConvectionMode(int convMode);
 	void SetEdgeMode(int edgeMode);
 	void SetTemperatureScale(TempScale temperatureScale);
 	void SetThreadedRendering(bool newThreadedRendering);

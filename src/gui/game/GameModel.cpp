@@ -61,6 +61,7 @@ GameModel::GameModel(GameView *newView):
 	edgeMode(EDGE_VOID),
 	ambientAirTemp(R_TEMP + 273.15f),
 	vorticityCoeff(0.0f),
+	convectionMode(AIRC_BOUSSINESQ),
 	decoSpace(DECOSPACE_SRGB),
 	view(newView)
 {
@@ -131,6 +132,9 @@ GameModel::GameModel(GameView *newView):
 		}
 	}
 	sim->air->vorticityCoeff = vorticityCoeff;
+
+	convectionMode = prefs.Get("Simulation.ConvectionMode", NUM_CONVMODES, AIRC_BOUSSINESQ);
+	sim->air->convectionMode = convectionMode;
 
 	decoSpace = prefs.Get("Simulation.DecoSpace", NUM_DECOSPACES, DECOSPACE_SRGB);
 	sim->SetDecoSpace(decoSpace);
@@ -325,6 +329,17 @@ void GameModel::SetVorticityCoeff(float vorticityCoeff)
 float GameModel::GetVorticityCoeff()
 {
 	return this->vorticityCoeff;
+}
+
+void GameModel::SetConvectionMode(int convMode)
+{
+	this->convectionMode = convMode;
+	sim->air->convectionMode = convMode;
+}
+
+int GameModel::GetConvectionMode()
+{
+	return this->convectionMode;
 }
 
 void GameModel::SetDecoSpace(int decoSpace)
@@ -756,6 +771,7 @@ void GameModel::SaveToSimParameters(const GameSave &saveData)
 	sim->air->airMode = saveData.airMode;
 	sim->air->ambientAirTemp = saveData.ambientAirTemp;
 	sim->air->vorticityCoeff = saveData.vorticityCoeff;
+	sim->air->convectionMode = saveData.convectionMode;
 	sim->edgeMode = saveData.edgeMode;
 	sim->legacy_enable = saveData.legacyEnable;
 	sim->water_equal_test = saveData.waterEEnabled;
@@ -1133,6 +1149,7 @@ void GameModel::ClearSimulation()
 	sim->SetEdgeMode(edgeMode);
 	sim->air->ambientAirTemp = ambientAirTemp;
 	sim->air->vorticityCoeff = vorticityCoeff;
+	sim->air->convectionMode = convectionMode;
 
 	sim->clear_sim();
 	ren->ClearAccumulation();

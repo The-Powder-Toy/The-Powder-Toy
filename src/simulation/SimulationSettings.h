@@ -18,6 +18,14 @@ enum AirMode
 	NUM_AIRMODES,
 };
 
+enum ConvectionMode
+{
+	AIRC_NONE,
+	AIRC_LEGACY,
+	AIRC_BOUSSINESQ,
+	NUM_CONVMODES,
+};
+
 enum GravityMode
 {
 	GRAV_VERTICAL,

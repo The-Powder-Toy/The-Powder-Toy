@@ -1290,6 +1290,25 @@ static int vorticityCoeff(lua_State *L)
 	return 0;
 }
 
+static int convectionMode(lua_State *L)
+{
+	auto *lsi = GetLSI();
+	int acount = lua_gettop(L);
+	if (acount == 0)
+	{
+		lua_pushnumber(L, lsi->gameModel->GetConvectionMode());
+		return 1;
+	}
+	lsi->AssertInterfaceEvent();
+	int convMode = luaL_checkint(L, 1);
+	if (convMode < 0 || convMode >= NUM_CONVMODES)
+	{
+		return luaL_error(L, "invalid convection mode");
+	}
+	lsi->gameModel->SetConvectionMode(convMode);
+	return 0;
+}
+
 static int elementCount(lua_State *L)
 {
 	int element = luaL_optint(L, 1, 0);
@@ -2029,6 +2048,7 @@ void LuaSimulation::Open(lua_State *L)
 		LFUNC(waterEqualization),
 		LFUNC(ambientAirTemp),
 		LFUNC(vorticityCoeff),
+		LFUNC(convectionMode),
 		LFUNC(elementCount),
 		LFUNC(canMove),
 		LFUNC(brush),
@@ -2132,6 +2152,11 @@ void LuaSimulation::Open(lua_State *L)
 	LCONST(AIR_OFF);
 	LCONST(AIR_NOUPDATE);
 	LCONST(NUM_AIRMODES);
+
+	LCONST(AIRC_NONE);
+	LCONST(AIRC_LEGACY);
+	LCONST(AIRC_BOUSSINESQ);
+	LCONST(NUM_CONVMODES);
 
 	LCONST(GRAV_VERTICAL);
 	LCONST(GRAV_OFF);

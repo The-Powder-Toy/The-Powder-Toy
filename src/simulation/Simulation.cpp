@@ -466,6 +466,7 @@ void Simulation::SaveSimOptions(GameSave &gameSave)
 	gameSave.airMode = air->airMode;
 	gameSave.ambientAirTemp = air->ambientAirTemp;
 	gameSave.vorticityCoeff = air->vorticityCoeff;
+	gameSave.convectionMode = air->convectionMode;
 	gameSave.edgeMode = edgeMode;
 	gameSave.legacyEnable = legacy_enable;
 	gameSave.waterEEnabled = water_equal_test;
