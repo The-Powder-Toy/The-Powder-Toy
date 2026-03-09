@@ -2425,10 +2425,11 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 			if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
 			{
 				auto dtemp = hv[y/CELL][x/CELL] - parts[i].temp; // Temperature difference
-				auto alpha = std::min(0.04f, 0.4f * elements[t].HeatCapacity); // alpha / heat_capacity must be < 1
+				auto hc = sd.HeatCapacityOf(parts[i]);
+				auto alpha = std::min(0.04f, 0.4f * hc); // alpha / heat_capacity must be < 1
 
 				// Here we completely ignore that there are CELL^2 "air pixels" in a cell, and the heat capacity of air
-				parts[i].temp = restrict_flt(parts[i].temp + alpha*dtemp / elements[t].HeatCapacity, MIN_TEMP, MAX_TEMP);
+				parts[i].temp = restrict_flt(parts[i].temp + alpha*dtemp / hc, MIN_TEMP, MAX_TEMP);
 				hv[y/CELL][x/CELL] = restrict_flt(hv[y/CELL][x/CELL] - alpha*dtemp, MIN_TEMP, MAX_TEMP);
 			}
 
@@ -2458,27 +2459,15 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 					continue;
 
 				surround_hconduct[j] = ID(r);
-				c_heat += parts[ID(r)].temp*elements[rt].HeatCapacity;
-				hc_total += elements[rt].HeatCapacity;
-
-				// Double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
-				if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
-				{
-					c_heat += parts[ID(r)].temp*elements[rt].HeatCapacity;
-					hc_total += elements[rt].HeatCapacity;
-				}
+				auto hc = sd.HeatCapacityOf(parts[ID(r)]);
+				c_heat += parts[ID(r)].temp*hc;
+				hc_total += hc;
 			}
 
 			// Add the current particle
-			c_heat += parts[i].temp*elements[t].HeatCapacity;
-			hc_total += elements[t].HeatCapacity;
-
-			// Double count the current particle to account for the heat capacity of both the PIPE/PPIP and its contents
-			if ((t == PT_PIPE || t == PT_PPIP) && parts[i].ctype != 0)
-			{
-				c_heat += parts[i].temp*elements[t].HeatCapacity;
-				hc_total += elements[t].HeatCapacity;
-			}
+			auto hc = sd.HeatCapacityOf(parts[i]);
+			c_heat += parts[i].temp*hc;
+			hc_total += hc;
 
 			// Equilibrium temperature
 			float pt = restrict_flt(c_heat / hc_total, MIN_TEMP, MAX_TEMP);

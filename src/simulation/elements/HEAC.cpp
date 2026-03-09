@@ -116,8 +116,10 @@ static int update(UPDATE_FUNC_ARGS)
 {
 	auto &sd = SimulationData::CRef();
 	const int rad = 4;
-	int rry, rrx, r, count = 0;
-	float tempAgg = 0;
+	int rry, rrx, r;
+	auto c_heat = 0.0f;
+	auto hc_total = 0.0f;
+
 	for (int rx = -1; rx <= 1; rx++)
 	{
 		for (int ry = -1; ry <= 1; ry++)
@@ -125,28 +127,30 @@ static int update(UPDATE_FUNC_ARGS)
 			rry = ry * rad;
 			rrx = rx * rad;
 			if (x+rrx >= 0 && x+rrx < XRES && y+rry >= 0 && y+rry < YRES && !CheckLine(sim, x, y, x+rrx, y+rry, [&sd](Simulation* sim, int p) {
-				return p && sd.IsHeatInsulator(sim->parts[ID(p)]);
-			}))
+						return p && sd.IsHeatInsulator(sim->parts[ID(p)]);
+						}))
 			{
 				r = pmap[y+rry][x+rrx];
 				if (r && !sd.IsHeatInsulator(parts[ID(r)]))
 				{
-					count++;
-					tempAgg += parts[ID(r)].temp;
+					c_heat += parts[ID(r)].temp;
+					hc_total += sd.HeatCapacityOf(parts[ID(r)]);
 				}
+
 				r = sim->photons[y+rry][x+rrx];
 				if (r && !sd.IsHeatInsulator(parts[ID(r)]))
 				{
-					count++;
-					tempAgg += parts[ID(r)].temp;
+					c_heat += parts[ID(r)].temp;
+					hc_total += sd.HeatCapacityOf(parts[ID(r)]);
 				}
 			}
 		}
 	}
 
-	if (count > 0)
+	if (hc_total > 0.0f)
 	{
-		parts[i].temp = tempAgg/count;
+		auto pt = restrict_flt(c_heat / hc_total, MIN_TEMP, MAX_TEMP);
+		parts[i].temp = pt;
 
 		for (int rx = -1; rx <= 1; rx++)
 		{
@@ -155,19 +159,16 @@ static int update(UPDATE_FUNC_ARGS)
 				rry = ry * rad;
 				rrx = rx * rad;
 				if (x+rrx >= 0 && x+rrx < XRES && y+rry >= 0 && y+rry < YRES && !CheckLine(sim, x, y, x+rrx, y+rry, [&sd](Simulation* sim, int p) {
-					return p && sd.IsHeatInsulator(sim->parts[ID(p)]);
-				}))
+							return p && sd.IsHeatInsulator(sim->parts[ID(p)]);
+							}))
 				{
 					r = pmap[y+rry][x+rrx];
 					if (r && !sd.IsHeatInsulator(parts[ID(r)]))
-					{
-						parts[ID(r)].temp = parts[i].temp;
-					}
+						parts[ID(r)].temp = pt;
+
 					r = sim->photons[y+rry][x+rrx];
 					if (r && !sd.IsHeatInsulator(parts[ID(r)]))
-					{
-						parts[ID(r)].temp = parts[i].temp;
-					}
+						parts[ID(r)].temp = pt;
 				}
 			}
 		}
