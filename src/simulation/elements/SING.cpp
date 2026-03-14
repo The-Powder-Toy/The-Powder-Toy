@@ -77,7 +77,7 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 		}
 		auto spawncount = std::abs(parts[i].tmp);
-		spawncount = (spawncount>255) ? 3019 : int(std::pow((double)(spawncount/8), 2)*TPT_PI_DBL);
+		spawncount = spawncount > 255 ? 3019 : int(std::pow((double)(spawncount/8), 2)*std::numbers::pi);
 		for (int j = 0;j < spawncount; j++)
 		{
 			auto nb = -1;
@@ -95,11 +95,11 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 			if (nb!=-1) {
 				parts[nb].life = sim->rng.between(0, 299);
-				parts[nb].temp = MAX_TEMP/2;
-				auto angle = sim->rng.uniform01()*2.0f*TPT_PI_FLT;
-				auto v = sim->rng.uniform01()*5.0f;
-				parts[nb].vx = v*cosf(angle);
-				parts[nb].vy = v*sinf(angle);
+				parts[nb].temp = MAX_TEMP / 2;
+				auto angle = sim->rng.uniform01() * 2.0f * std::numbers::pi_v<float>;
+				auto v = sim->rng.uniform01() * 5.0f;
+				parts[nb].vx = v * cosf(angle);
+				parts[nb].vy = v * sinf(angle);
 			}
 			else if (sim->parts.MaxPartsReached())
 				break;//if we've run out of particles, stop trying to create them - saves a lot of lag on "sing bomb" saves

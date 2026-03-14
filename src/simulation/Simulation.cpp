@@ -6,7 +6,6 @@
 #include "ToolClasses.h"
 #include "SimulationData.h"
 #include "client/GameSave.h"
-#include "common/tpt-compat.h"
 #include "common/tpt-rand.h"
 #include "common/Defer.h"
 #include "gui/game/Brush.h"
@@ -18,6 +17,7 @@
 #include "elements/PRTI.h"
 #include "elements/PLNT.h"
 #include <iostream>
+#include <numbers>
 #include <set>
 #include <stack>
 
@@ -3050,11 +3050,11 @@ void Simulation::MovementPhase(int i, Neighbourhood neighbourhood)
 			if (fin_x<x-ISTP) fin_x=x-ISTP;
 			if (fin_y>y+ISTP) fin_y=y+ISTP;
 			if (fin_y<y-ISTP) fin_y=y-ISTP;
-			if (do_move(i, x, y, (float)(2*x-fin_x), fin_y))
+			if (do_move(i, x, y, float(2*x-fin_x), float(fin_y)))
 			{
 				parts[i].vx *= elements[t].Collision;
 			}
-			else if (do_move(i, x, y, fin_x, (float)(2*y-fin_y)))
+			else if (do_move(i, x, y, float(fin_x), float(2*y-fin_y)))
 			{
 				parts[i].vy *= elements[t].Collision;
 			}
@@ -3690,9 +3690,9 @@ void Simulation::BeforeSim(bool willUpdate)
 		if (elementRecount)
 			std::fill(elementCount, elementCount+PT_NUM, 0);
 	}
-	sandcolour_interface = (int)(20.0f*sin((float)sandcolour_frame*(TPT_PI_FLT/180.0f)));
+	sandcolour_interface = int(20.0f*sin(float(sandcolour_frame)*std::numbers::pi_v<float>/180.0f));
 	sandcolour_frame = (sandcolour_frame+1)%360;
-	sandcolour = (int)(20.0f*sin((float)(frameCount)*(TPT_PI_FLT/180.0f)));
+	sandcolour = int(20.0f*sin(float(frameCount)*std::numbers::pi_v<float>/180.0f));
 
 	if (gravWallChanged)
 	{

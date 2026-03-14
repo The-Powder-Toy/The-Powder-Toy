@@ -500,7 +500,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 					int angle;
 					int power = 100;
 					if (gvx!=0 || gvy!=0)
-						angle = int(atan2(mvx, mvy)*180.0f/TPT_PI_FLT);
+						angle = int(atan2(mvx, mvy)*180.0f/std::numbers::pi_v<float>);
 					else
 						angle = sim->rng.between(0, 359);
 					if (((int)playerp->pcomm)&0x01)
