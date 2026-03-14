@@ -81,7 +81,7 @@ static int update(UPDATE_FUNC_ARGS)
 					parts[i].vx *= 0.90f;
 					parts[i].vy *= 0.90f;
 					sim->create_part(ID(r), x+rx, y+ry, PT_PHOT);
-					auto rrr = sim->rng.between(0, 359) * 3.14159f / 180.0f;
+					auto rrr = sim->rng.between(0, 359) * TPT_PI_FLT / 180.0f;
 					int rr;
 					if (TYP(r) == PT_ISOZ)
 						rr = int(sim->rng.between(128, 255) / 127.0f);
@@ -94,7 +94,7 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 			else if((TYP(r) == PT_QRTZ || TYP(r) == PT_PQRT) && !ry && !rx)//if on QRTZ
 			{
-				float a = sim->rng.between(0, 359) * 3.14159f / 180.0f;
+				float a = sim->rng.between(0, 359) * TPT_PI_FLT / 180.0f;
 				parts[i].vx = 3.0f*cosf(a);
 				parts[i].vy = 3.0f*sinf(a);
 				if(parts[i].ctype == 0x3FFFFFFF)

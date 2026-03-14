@@ -118,11 +118,11 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	auto &elements = sd.elements;
 	const float MELTING_POINT = elements[PT_TUNG].HighTemperature;
 	double startTemp = (MELTING_POINT - 1500.0);
-	double tempOver = (((cpart->temp - startTemp)/1500.0)*TPT_PI_FLT) - (TPT_PI_FLT/2.0);
-	if(tempOver > -(TPT_PI_FLT/2.0))
+	double tempOver = (((cpart->temp - startTemp)/1500.0)*TPT_PI_DBL) - (TPT_PI_DBL/2.0);
+	if(tempOver > -(TPT_PI_DBL/2.0))
 	{
-		if(tempOver > (TPT_PI_FLT/2.0))
-			tempOver = (TPT_PI_FLT/2.0);
+		if(tempOver > (TPT_PI_DBL/2.0))
+			tempOver = (TPT_PI_DBL/2.0);
 		double gradv = sin(tempOver) + 1.0;
 		*firer = (int)(gradv * 258.0);
 		*fireg = (int)(gradv * 156.0);

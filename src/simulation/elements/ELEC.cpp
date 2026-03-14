@@ -155,7 +155,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
-	float a = sim->rng.between(0, 359) * 3.14159f / 180.0f;
+	float a = sim->rng.between(0, 359) * TPT_PI_FLT / 180.0f;
 	sim->parts[i].life = 680;
 	sim->parts[i].vx = 2.0f * cosf(a);
 	sim->parts[i].vy = 2.0f * sinf(a);
