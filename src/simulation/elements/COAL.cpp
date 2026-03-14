@@ -74,10 +74,9 @@ int Element_COAL_update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-constexpr float FREQUENCY = TPT_PI_FLT/(2*300.0f-(300.0f-200.0f));
+constexpr float FREQUENCY = std::numbers::pi_v<float>/(2*300.0f-(300.0f-200.0f));
 
-int Element_COAL_graphics(GRAPHICS_FUNC_ARGS)
- //Both COAL and Broken Coal
+int Element_COAL_graphics(GRAPHICS_FUNC_ARGS) // Both COAL and Broken Coal
 {
 	*colr += int((cpart->tmp2-295.15f)/3);
 

@@ -233,8 +233,8 @@ static int update(UPDATE_FUNC_ARGS)
 				si = sim->create_part(-1, x+2*dir3x3[dir].X, y+2*dir3x3[dir].Y, PT_SEED);
 				if (si >= 0)
 				{
-					parts[si].vx = dir3x3[dir].X;
-					parts[si].vy = dir3x3[dir].Y;
+					parts[si].vx = float(dir3x3[dir].X);
+					parts[si].vy = float(dir3x3[dir].Y);
 
 					// Inherit genome
 					parts[si].ctype = parts[i].ctype & (0x3f << PLNT_COLOUR); // Preserve only the colour
