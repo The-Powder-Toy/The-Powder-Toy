@@ -14,18 +14,8 @@
  */
 
 #pragma once
-#include <cstddef>
-#include <memory>
-#include <type_traits>
-#include <utility>
+#include <numbers>
 
-#define _USE_MATH_DEFINES
-#include <cmath>
-
-#ifdef M_PI
-constexpr float  TPT_PI_FLT = float(M_PI);
-constexpr double TPT_PI_DBL = double(M_PI);
-#else
-constexpr float  TPT_PI_FLT = 3.14159265f;
-constexpr double TPT_PI_DBL = 3.14159265358979323846;
-#endif
+constexpr float  TPT_PI_FLT    = std::numbers::pi_v<float>;
+constexpr double TPT_PI_DBL    = std::numbers::pi_v<double>;
+constexpr float  TPT_SQRT2_FLT = std::numbers::sqrt2_v<float>;

@@ -244,7 +244,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
 	float r = sim->rng.between(128, 255) / 127.0f;
-	float a = sim->rng.between(0, 359) * 3.14159f / 180.0f;
+	float a = sim->rng.between(0, 359) * TPT_PI_FLT / 180.0f;
 	sim->parts[i].life = sim->rng.between(480, 959);
 	sim->parts[i].vx = r * cosf(a);
 	sim->parts[i].vy = r * sinf(a);

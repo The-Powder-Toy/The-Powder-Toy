@@ -77,7 +77,7 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 		}
 		auto spawncount = std::abs(parts[i].tmp);
-		spawncount = (spawncount>255) ? 3019 : int(std::pow((double)(spawncount/8), 2)*TPT_PI_FLT);
+		spawncount = (spawncount>255) ? 3019 : int(std::pow((double)(spawncount/8), 2)*TPT_PI_DBL);
 		for (int j = 0;j < spawncount; j++)
 		{
 			auto nb = -1;

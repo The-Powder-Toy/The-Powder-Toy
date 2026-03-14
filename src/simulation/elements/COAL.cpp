@@ -74,7 +74,7 @@ int Element_COAL_update(UPDATE_FUNC_ARGS)
 	return 0;
 }
 
-constexpr float FREQUENCY = 3.1415f/(2*300.0f-(300.0f-200.0f));
+constexpr float FREQUENCY = TPT_PI_FLT/(2*300.0f-(300.0f-200.0f));
 
 int Element_COAL_graphics(GRAPHICS_FUNC_ARGS)
  //Both COAL and Broken Coal
@@ -95,8 +95,8 @@ int Element_COAL_graphics(GRAPHICS_FUNC_ARGS)
 		auto q = int((cpart->temp > 595.15f) ? 200.0f : cpart->temp - 395.15f);
 
 		*colr += int(sin(FREQUENCY*q) * 226);
-		*colg += int(sin(FREQUENCY*q*4.55 + TPT_PI_DBL) * 34);
-		*colb += int(sin(FREQUENCY*q*2.22 + TPT_PI_DBL) * 64);
+		*colg += int(-sin(FREQUENCY*q*4.55) * 34);
+		*colb += int(-sin(FREQUENCY*q*2.22) * 64);
 	}
 	return 0;
 }
