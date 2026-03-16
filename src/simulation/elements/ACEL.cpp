@@ -75,8 +75,8 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if(elements[TYP(r)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS | TYPE_ENERGY))
 				{
-					parts[ID(r)].vx *= multiplier;
-					parts[ID(r)].vy *= multiplier;
+					parts[ID(r)].vx = restrict_flt(parts[ID(r)].vx*multiplier, -MAX_VELOCITY, MAX_VELOCITY);
+					parts[ID(r)].vy = restrict_flt(parts[ID(r)].vy*multiplier, -MAX_VELOCITY, MAX_VELOCITY);
 					parts[i].tmp = 1;
 				}
 			}
