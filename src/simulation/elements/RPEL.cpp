@@ -64,8 +64,8 @@ static int update(UPDATE_FUNC_ARGS)
 
 			if (r && !(elements[TYP(r)].Properties & TYPE_SOLID)) {
 				if (!parts[i].ctype || parts[i].ctype == parts[ID(r)].type) {
-					parts[ID(r)].vx += isign(rx)*((parts[i].temp-273.15)/10.0f);
-					parts[ID(r)].vy += isign(ry)*((parts[i].temp-273.15)/10.0f);
+					parts[ID(r)].vx = restrict_flt(parts[ID(r)].vx + isign(rx)*((parts[i].temp-273.15)/10.0f), -MAX_VELOCITY, MAX_VELOCITY);
+					parts[ID(r)].vy = restrict_flt(parts[ID(r)].vy + isign(ry)*((parts[i].temp-273.15)/10.0f), -MAX_VELOCITY, MAX_VELOCITY);
 				}
 			}
 		}
