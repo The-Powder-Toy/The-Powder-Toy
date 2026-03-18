@@ -212,9 +212,6 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	std::tie(ambientAirTemp, ambientAirTempPreview) = addTextboxWithPreview("Ambient air temperature", true, [this](String value, bool defocus) {
 		UpdateAirTemp(value, defocus);
 	});
-	std::tie(edgePressure, edgePressurePreview) = addTextboxWithPreview("Ambient air pressure", true, [this](String value, bool defocus) {
-		UpdateEdgePressure(value, defocus);
-	});
 	{
 		edgeVelocityChange = new ui::Button(ui::Point(Size.X-95, currentY), ui::Point(80, 16), "Change");
 		scrollPanel->AddChild(edgeVelocityChange);
@@ -471,28 +468,6 @@ void OptionsView::AmbientAirTempToTextBox(float airTemp)
 	ambientAirTemp->SetText(sb.Build());
 }
 
-void OptionsView::UpdateEdgePressurePreview(float edgePres, bool isValid)
-{
-	if (isValid)
-	{
-		edgePressurePreview->Appearance.BackgroundInactive = PressureToColour(edgePres).WithAlpha(0xFF);
-		edgePressurePreview->SetText("");
-	}
-	else
-	{
-		edgePressurePreview->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
-		edgePressurePreview->SetText("?");
-	}
-	edgePressurePreview->Appearance.BackgroundHover = edgePressurePreview->Appearance.BackgroundInactive;
-}
-
-void OptionsView::EdgePressureToTextBox(float edgePres)
-{
-	StringBuilder sb;
-	sb << Format::Precision(2) << edgePres;
-	edgePressure->SetText(sb.Build());
-}
-
 void OptionsView::VorticityCoeffToTextBox(float vorticity)
 {
 	StringBuilder sb;
@@ -584,21 +559,6 @@ void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
 	});
 }
 
-void OptionsView::UpdateEdgePressure(String pres, bool isDefocus)
-{
-	UpdateSettingFromString(pres, isDefocus, MIN_PRESSURE, MAX_PRESSURE, 0.f, [](const String &pres) {
-		return pres.ToNumber<float>();
-	}, [this](float edgePres) {
-		EdgePressureToTextBox(edgePres);
-	}, [this](float edgePres, bool isValid) {
-		if (isValid)
-		{
-			c->SetEdgePressure(edgePres);
-		}
-		UpdateEdgePressurePreview(edgePres, isValid);
-	});
-}
-
 void OptionsView::UpdateVorticityCoeff(String vort, bool isDefocus)
 {
 	UpdateSettingFromString(vort, isDefocus, 0.f, 1.f, 0.f, [](const String &vort) {
@@ -627,12 +587,6 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 		float airTemp = sender->GetAmbientAirTemperature();
 		UpdateAmbientAirTempPreview(airTemp, true);
 		AmbientAirTempToTextBox(airTemp);
-	}
-	if (!edgePressure->IsFocused())
-	{
-		float pres = sender->GetEdgePressure();
-		UpdateEdgePressurePreview(pres, true);
-		EdgePressureToTextBox(pres);
 	}
 	// Same for vorticity
 	if (!vorticityCoeff->IsFocused())

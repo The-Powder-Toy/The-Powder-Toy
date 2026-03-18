@@ -119,17 +119,6 @@ void OptionsModel::SetAmbientAirTemperature(float ambientAirTemp)
 	notifySettingsChanged();
 }
 
-float OptionsModel::GetEdgePressure()
-{
-	return gModel->GetSimulation()->air->edgePressure;
-}
-void OptionsModel::SetEdgePressure(float edgePressure)
-{
-	GlobalPrefs::Ref().Set("Simulation.EdgePressure", edgePressure);
-	gModel->SetEdgePressure(edgePressure);
-	notifySettingsChanged();
-}
-
 float OptionsModel::GetEdgeVelocityX()
 {
 	return gModel->GetSimulation()->air->edgeVelocityX;

@@ -107,7 +107,6 @@ private:
 
 	int edgeMode;
 	float ambientAirTemp;
-	float edgePressure;
 	float edgeVelocityX;
 	float edgeVelocityY;
 	float vorticityCoeff;
@@ -170,8 +169,6 @@ public:
 	}
 	void SetAmbientAirTemperature(float ambientAirTemp);
 	float GetAmbientAirTemperature();
-	void SetEdgePressure(float edgePressure);
-	float GetEdgePressure();
 	void SetEdgeVelocityX(float edgeVelocityX);
 	float GetEdgeVelocityX();
 	void SetEdgeVelocityY(float edgeVelocityY);

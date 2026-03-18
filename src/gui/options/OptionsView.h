@@ -24,8 +24,6 @@ class OptionsView: public ui::Window
 	ui::DropDown *airMode{};
 	ui::Textbox *ambientAirTemp{};
 	ui::Button *ambientAirTempPreview{};
-	ui::Textbox *edgePressure{};
-	ui::Button *edgePressurePreview{};
 	ui::Button *edgeVelocityChange{};
 	ui::Textbox *vorticityCoeff{};
 	ui::DropDown *convectionMode{};
@@ -58,9 +56,6 @@ class OptionsView: public ui::Window
 	void UpdateAmbientAirTempPreview(float airTemp, bool isValid);
 	void AmbientAirTempToTextBox(float airTemp);
 	void UpdateAirTemp(String temp, bool isDefocus);
-	void UpdateEdgePressurePreview(float pres, bool isValid);
-	void EdgePressureToTextBox(float pres);
-	void UpdateEdgePressure(String pres, bool isDefocus);
 	void VorticityCoeffToTextBox(float vorticity);
 	void UpdateVorticityCoeff(String cort, bool isDefocus);
 	void UpdateStartupRequestStatus();

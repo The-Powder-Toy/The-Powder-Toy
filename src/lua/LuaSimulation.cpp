@@ -1275,21 +1275,6 @@ static int ambientAirTemp(lua_State *L)
 	return 0;
 }
 
-static int edgePressure(lua_State *L)
-{
-	auto *lsi = GetLSI();
-	int acount = lua_gettop(L);
-	if (acount == 0)
-	{
-		lua_pushnumber(L, lsi->sim->air->edgePressure);
-		return 1;
-	}
-	lsi->AssertInterfaceEvent();
-	float edgePressure = restrict_flt(luaL_optnumber(L, 1, 0), MIN_PRESSURE, MAX_PRESSURE);
-	lsi->gameModel->SetEdgePressure(edgePressure);
-	return 0;
-}
-
 static int edgeVelocity(lua_State *L)
 {
 	auto *lsi = GetLSI();
@@ -2080,7 +2065,6 @@ void LuaSimulation::Open(lua_State *L)
 		LFUNC(airMode),
 		LFUNC(waterEqualization),
 		LFUNC(ambientAirTemp),
-		LFUNC(edgePressure),
 		LFUNC(edgeVelocity),
 		LFUNC(vorticityCoeff),
 		LFUNC(convectionMode),
