@@ -10,6 +10,9 @@ public:
 	Simulation & sim;
 	int airMode;
 	float ambientAirTemp;
+	float edgePressure;
+	float edgeVelocityX;
+	float edgeVelocityY;
 	float vorticityCoeff;
 	int convectionMode;
 	float ovx[YCELLS][XCELLS];

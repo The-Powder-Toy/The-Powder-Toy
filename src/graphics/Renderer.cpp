@@ -921,6 +921,16 @@ void Renderer::draw_grav()
 	}
 }
 
+RGB PressureToColour(float pres)
+{
+	RGB c;
+	if (pres > 0.0f)
+		c = RGB(clamp_flt(pres, 0.0f, 8.0f), 0, 0);//positive pressure is red!
+	else
+		c = RGB(0, 0, clamp_flt(-pres, 0.0f, 8.0f));//negative pressure is blue!
+	return c;
+}
+
 void Renderer::draw_air()
 {
 	if(!sim->aheat_enable && (displayMode & DISPLAY_AIRH))
@@ -938,10 +948,7 @@ void Renderer::draw_air()
 		{
 			if (displayMode & DISPLAY_AIRP)
 			{
-				if (pv[y][x] > 0.0f)
-					c = RGB(clamp_flt(pv[y][x], 0.0f, 8.0f), 0, 0);//positive pressure is red!
-				else
-					c = RGB(0, 0, clamp_flt(-pv[y][x], 0.0f, 8.0f));//negative pressure is blue!
+				c = PressureToColour(pv[y][x]);
 			}
 			else if (displayMode & DISPLAY_AIRV)
 			{
@@ -951,7 +958,7 @@ void Renderer::draw_air()
 			}
 			else if (displayMode & DISPLAY_AIRH)
 			{
-				c = RGB::Unpack(HeatToColour(hv[y][x], stats.hdispLimitMin, stats.hdispLimitMax));
+				c = HeatToColour(hv[y][x], stats.hdispLimitMin, stats.hdispLimitMax);
 				//c = RGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 				//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
 				//	clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f)).Pack();//vy adds blue
@@ -1303,13 +1310,13 @@ void Renderer::render_fire()
 		}
 }
 
-int HeatToColour(float temp, float hdispLimitMin, float hdispLimitMax)
+RGB HeatToColour(float temp, float hdispLimitMin, float hdispLimitMax)
 {
 	RGB color = Renderer::heatTableAt(int((temp - hdispLimitMin) / (hdispLimitMax - hdispLimitMin) * 1024));
 	color.Red   = uint8_t(color.Red   * 0.7f);
 	color.Green = uint8_t(color.Green * 0.7f);
 	color.Blue  = uint8_t(color.Blue  * 0.7f);
-	return color.Pack();
+	return color;
 }
 
 const std::vector<RenderPreset> Renderer::renderModePresets = {

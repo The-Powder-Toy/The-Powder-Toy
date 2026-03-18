@@ -119,6 +119,39 @@ void OptionsModel::SetAmbientAirTemperature(float ambientAirTemp)
 	notifySettingsChanged();
 }
 
+float OptionsModel::GetEdgePressure()
+{
+	return gModel->GetSimulation()->air->edgePressure;
+}
+void OptionsModel::SetEdgePressure(float edgePressure)
+{
+	GlobalPrefs::Ref().Set("Simulation.EdgePressure", edgePressure);
+	gModel->SetEdgePressure(edgePressure);
+	notifySettingsChanged();
+}
+
+float OptionsModel::GetEdgeVelocityX()
+{
+	return gModel->GetSimulation()->air->edgeVelocityX;
+}
+void OptionsModel::SetEdgeVelocityX(float edgeVelocityX)
+{
+	GlobalPrefs::Ref().Set("Simulation.EdgeVelocityX", edgeVelocityX);
+	gModel->SetEdgeVelocityX(edgeVelocityX);
+	notifySettingsChanged();
+}
+
+float OptionsModel::GetEdgeVelocityY()
+{
+	return gModel->GetSimulation()->air->edgeVelocityY;
+}
+void OptionsModel::SetEdgeVelocityY(float edgeVelocityY)
+{
+	GlobalPrefs::Ref().Set("Simulation.EdgeVelocityY", edgeVelocityY);
+	gModel->SetEdgeVelocityY(edgeVelocityY);
+	notifySettingsChanged();
+}
+
 float OptionsModel::GetVorticityCoeff()
 {
 	return gModel->GetSimulation()->air->vorticityCoeff;
