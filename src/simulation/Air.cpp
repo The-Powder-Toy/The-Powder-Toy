@@ -44,8 +44,8 @@ float Air::vorticity(const RenderableSimulation & sm, int y, int x)
 void Air::Clear()
 {
 	std::fill(&sim.pv[0][0], &sim.pv[0][0]+NCELL, edgePressure);
-	std::fill(&sim.vy[0][0], &sim.vy[0][0]+NCELL, edgeVelocityX);
-	std::fill(&sim.vx[0][0], &sim.vx[0][0]+NCELL, edgeVelocityY);
+	std::fill(&sim.vx[0][0], &sim.vx[0][0]+NCELL, edgeVelocityX);
+	std::fill(&sim.vy[0][0], &sim.vy[0][0]+NCELL, edgeVelocityY);
 }
 
 void Air::ClearAirH()
