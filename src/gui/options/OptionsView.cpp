@@ -163,6 +163,30 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		scrollPanel->AddChild(separator);
 		currentY += 11;
 	};
+	auto addTextboxWithPreview = [this, &currentY](String info, bool addPreview, std::function<void (String value, bool defocus)> updateFunc) {
+		auto *textbox = new ui::Textbox(ui::Point(Size.X-95, currentY), ui::Point(80, 16));
+		textbox->SetActionCallback({ [textbox, updateFunc] {
+			updateFunc(textbox->GetText(), false);
+		} });
+		textbox->SetDefocusCallback({ [textbox, updateFunc] {
+			updateFunc(textbox->GetText(), true);
+		} });
+		textbox->SetLimit(9);
+		scrollPanel->AddChild(textbox);
+		ui::Button *preview{};
+		if (addPreview)
+		{
+			textbox->Size.X -= 20;
+			preview = new ui::Button(ui::Point(Size.X-31, currentY), ui::Point(16, 16), "", "Preview");
+			scrollPanel->AddChild(preview);
+		}
+		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-105, 16), info);
+		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+		scrollPanel->AddChild(label);
+		currentY += 20;
+		return std::make_pair(textbox, preview);
+	};
 
 	heatSimulation = addCheckbox(0, "Heat simulation \bgIntroduced in version 34", "Can cause odd behaviour when disabled", [this] {
 		c->SetHeatSimulation(heatSimulation->GetChecked());
@@ -185,40 +209,12 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	}, [this] {
 		c->SetAirMode(airMode->GetOption().second);
 	});
-	{
-		ambientAirTemp = new ui::Textbox(ui::Point(Size.X-95, currentY), ui::Point(60, 16));
-		ambientAirTemp->SetActionCallback({ [this] {
-			UpdateAirTemp(ambientAirTemp->GetText(), false);
-		} });
-		ambientAirTemp->SetDefocusCallback({ [this] {
-			UpdateAirTemp(ambientAirTemp->GetText(), true);
-		}});
-		ambientAirTemp->SetLimit(9);
-		scrollPanel->AddChild(ambientAirTemp);
-		ambientAirTempPreview = new ui::Button(ui::Point(Size.X-31, currentY), ui::Point(16, 16), "", "Preview");
-		scrollPanel->AddChild(ambientAirTempPreview);
-		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-105, 16), "Ambient air temperature");
-		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-		scrollPanel->AddChild(label);
-		currentY += 20;
-	}
-	{ // Vorticity coefficient setting
-		vorticityCoeff = new ui::Textbox(ui::Point(Size.X-95, currentY), ui::Point(80, 16));
-		vorticityCoeff->SetActionCallback({ [this] {
-			UpdateVorticityCoeff(vorticityCoeff->GetText(), false);
-		} });
-		vorticityCoeff->SetDefocusCallback({ [this] {
-			UpdateVorticityCoeff(vorticityCoeff->GetText(), true);
-		}});
-		vorticityCoeff->SetLimit(9);
-		scrollPanel->AddChild(vorticityCoeff);
-		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-105, 16), "Vorticity confinement");
-		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-		scrollPanel->AddChild(label);
-		currentY += 20;
-	}
+	std::tie(ambientAirTemp, ambientAirTempPreview) = addTextboxWithPreview("Ambient air temperature", true, [this](String value, bool defocus) {
+		UpdateAirTemp(value, defocus);
+	});
+	vorticityCoeff = addTextboxWithPreview("Vorticity confinement", false, [this](String value, bool defocus) {
+		UpdateVorticityCoeff(value, defocus);
+	}).first;
 	convectionMode = addDropDown("Air heat convection mode", {
 		{ "None", AIRC_NONE },
 		{ "Legacy", AIRC_LEGACY },
@@ -493,14 +489,14 @@ void OptionsView::UpdateStartupRequestStatus()
 	}
 }
 
-void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
+static void UpdateSettingFromString(String pres, bool isDefocus, float minVale, float maxValue, float defaultValue, auto parse, auto toTextbox, auto apply)
 {
-	// Parse air temp and determine validity
-	float airTemp = 0;
+	// Parse value and determine validity
+	float value = 0;
 	bool isValid;
 	try
 	{
-		airTemp = format::StringToTemperature(temp, TempScale(temperatureScale->GetOption().second));
+		value = parse(pres);
 		isValid = true;
 	}
 	catch (const std::exception &ex)
@@ -508,73 +504,59 @@ void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
 		isValid = false;
 	}
 
-	// While defocusing, correct out of range temperatures and empty textboxes
+	// While defocusing, correct out of range values and empty textboxes
 	if (isDefocus)
 	{
-		if (temp.empty())
+		if (pres.empty())
 		{
 			isValid = true;
-			airTemp = float(R_TEMP) + 273.15f;
+			value = defaultValue;
 		}
 		else if (!isValid)
 			return;
-		else if (airTemp < MIN_TEMP)
-			airTemp = MIN_TEMP;
-		else if (airTemp > MAX_TEMP)
-			airTemp = MAX_TEMP;
+		else if (value < minVale)
+			value = minVale;
+		else if (value > maxValue)
+			value = maxValue;
 
-		AmbientAirTempToTextBox(airTemp);
+		toTextbox(value);
 	}
-	// Out of range temperatures are invalid, preview should go away
-	else if (isValid && (airTemp < MIN_TEMP || airTemp > MAX_TEMP))
+	// Out of range values are invalid, preview should go away
+	else if (isValid && (value < minVale || value > maxValue))
 		isValid = false;
 
-	// If valid, set temp
-	if (isValid)
-		c->SetAmbientAirTemperature(airTemp);
-
-	UpdateAmbientAirTempPreview(airTemp, isValid);
+	// If valid, apply
+	apply(value, isValid);
 }
+
+void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
+{
+	UpdateSettingFromString(temp, isDefocus, MIN_TEMP, MAX_TEMP, float(R_TEMP) + 273.15f, [this](const String &temp) {
+		return format::StringToTemperature(temp, TempScale(temperatureScale->GetOption().second));
+	}, [this](float airTemp) {
+		AmbientAirTempToTextBox(airTemp);
+	}, [this](float airTemp, bool isValid) {
+		if (isValid)
+		{
+			c->SetAmbientAirTemperature(airTemp);
+		}
+		UpdateAmbientAirTempPreview(airTemp, isValid);
+	});
+}
+
 
 void OptionsView::UpdateVorticityCoeff(String vort, bool isDefocus)
 {
-	// Parse vorticity and determine validity
-	float vorticity = 0;
-	bool isValid;
-	try
-	{
-		vorticity = vort.ToNumber<float>();
-		isValid = true;
-	}
-	catch (const std::exception &ex)
-	{
-		isValid = false;
-	}
-
-	// While defocusing, correct out of range vorticity and empty textboxes
-	if (isDefocus)
-	{
-		if (vort.empty())
-		{
-			isValid = true;
-			vorticity = 0.0f;
-		}
-		else if (!isValid)
-			return;
-		else if (vorticity < 0.0f)
-			vorticity = 0.0f;
-		else if (vorticity > 1.0f)
-			vorticity = 1.0f;
-
+	UpdateSettingFromString(vort, isDefocus, 0.f, 1.f, 0.f, [](const String &vort) {
+		return vort.ToNumber<float>();
+	}, [this](float vorticity) {
 		VorticityCoeffToTextBox(vorticity);
-	}
-	// Out of range vorticities are invalid, preview should go away
-	else if (isValid && (vorticity < 0.0f || vorticity > 1.0f))
-		isValid = false;
-
-	// If valid, set vorticity
-	if (isValid)
-		c->SetVorticityCoeff(vorticity);
+	}, [this](float vorticity, bool isValid) {
+		if (isValid)
+		{
+			c->SetVorticityCoeff(vorticity);
+		}
+	});
 }
 
 void OptionsView::NotifySettingsChanged(OptionsModel * sender)
