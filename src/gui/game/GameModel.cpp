@@ -60,6 +60,7 @@ GameModel::GameModel(GameView *newView):
 	colour(255, 0, 0, 255),
 	edgeMode(EDGE_VOID),
 	ambientAirTemp(R_TEMP + 273.15f),
+	edgePressure(0),
 	edgeVelocityX(0),
 	edgeVelocityY(0),
 	vorticityCoeff(0.0f),
@@ -123,6 +124,14 @@ GameModel::GameModel(GameView *newView):
 			ambientAirTemp = temp;
 		}
 	}
+	edgePressure = 0;
+	{
+		auto pres = prefs.Get("Simulation.EdgePressure", edgePressure);
+		if (MIN_PRESSURE <= pres && MAX_PRESSURE >= pres)
+		{
+			edgePressure = pres;
+		}
+	}
 	edgeVelocityX = 0;
 	{
 		auto vel = prefs.Get("Simulation.EdgeVelocityX", edgeVelocityX);
@@ -140,6 +149,7 @@ GameModel::GameModel(GameView *newView):
 		}
 	}
 	sim->air->ambientAirTemp = ambientAirTemp;
+	sim->air->edgePressure = edgePressure;
 	sim->air->edgeVelocityX = edgeVelocityX;
 	sim->air->edgeVelocityY = edgeVelocityY;
 
@@ -338,6 +348,17 @@ void GameModel::SetAmbientAirTemperature(float ambientAirTemp)
 float GameModel::GetAmbientAirTemperature()
 {
 	return this->ambientAirTemp;
+}
+
+void GameModel::SetEdgePressure(float edgePressure)
+{
+	this->edgePressure = edgePressure;
+	sim->air->edgePressure = edgePressure;
+}
+
+float GameModel::GetEdgePressure()
+{
+	return this->edgePressure;
 }
 
 void GameModel::SetEdgeVelocityX(float edgeVelocityX)
@@ -812,6 +833,7 @@ void GameModel::SaveToSimParameters(const GameSave &saveData)
 	sim->customGravityY = saveData.customGravityY;
 	sim->air->airMode = saveData.airMode;
 	sim->air->ambientAirTemp = saveData.ambientAirTemp;
+	sim->air->edgePressure = saveData.edgePressure;
 	sim->air->edgeVelocityX = saveData.edgeVelocityX;
 	sim->air->edgeVelocityY = saveData.edgeVelocityY;
 	sim->air->vorticityCoeff = saveData.vorticityCoeff;
@@ -1192,6 +1214,7 @@ void GameModel::ClearSimulation()
 	sim->water_equal_test = false;
 	sim->SetEdgeMode(edgeMode);
 	sim->air->ambientAirTemp = ambientAirTemp;
+	sim->air->edgePressure = edgePressure;
 	sim->air->edgeVelocityX = edgeVelocityX;
 	sim->air->edgeVelocityY = edgeVelocityY;
 	sim->air->vorticityCoeff = vorticityCoeff;

@@ -43,7 +43,7 @@ float Air::vorticity(const RenderableSimulation & sm, int y, int x)
 
 void Air::Clear()
 {
-	std::fill(&sim.pv[0][0], &sim.pv[0][0]+NCELL, 0.f);
+	std::fill(&sim.pv[0][0], &sim.pv[0][0]+NCELL, edgePressure);
 	std::fill(&sim.vx[0][0], &sim.vx[0][0]+NCELL, edgeVelocityX);
 	std::fill(&sim.vy[0][0], &sim.vy[0][0]+NCELL, edgeVelocityY);
 }
@@ -249,10 +249,10 @@ void Air::update_air(void)
 	{
 		for (auto i=0; i<YCELLS; i++) //reduces pressure/velocity on the edges every frame
 		{
-			pv[i][       0] = pv[i][       0] * 0.8f;
-			pv[i][       1] = pv[i][       1] * 0.8f;
-			pv[i][XCELLS-2] = pv[i][XCELLS-2] * 0.8f;
-			pv[i][XCELLS-1] = pv[i][XCELLS-1] * 0.8f;
+			pv[i][       0] = Mix(edgePressure , pv[i][       0], 0.8f);
+			pv[i][       1] = Mix(edgePressure , pv[i][       1], 0.8f);
+			pv[i][XCELLS-2] = Mix(edgePressure , pv[i][XCELLS-2], 0.8f);
+			pv[i][XCELLS-1] = Mix(edgePressure , pv[i][XCELLS-1], 0.8f);
 			vx[i][       0] = Mix(edgeVelocityX, vx[i][       0], 0.9f);
 			vx[i][       1] = Mix(edgeVelocityX, vx[i][       1], 0.9f);
 			vx[i][XCELLS-2] = Mix(edgeVelocityX, vx[i][XCELLS-2], 0.9f);
@@ -264,10 +264,10 @@ void Air::update_air(void)
 		}
 		for (auto i=0; i<XCELLS; i++) //reduces pressure/velocity on the edges every frame
 		{
-			pv[       0][i] = pv[       0][i] * 0.8f;
-			pv[       1][i] = pv[       1][i] * 0.8f;
-			pv[YCELLS-2][i] = pv[YCELLS-2][i] * 0.8f;
-			pv[YCELLS-1][i] = pv[YCELLS-1][i] * 0.8f;
+			pv[       0][i] = Mix(edgePressure , pv[       0][i], 0.8f);
+			pv[       1][i] = Mix(edgePressure , pv[       1][i], 0.8f);
+			pv[YCELLS-2][i] = Mix(edgePressure , pv[YCELLS-2][i], 0.8f);
+			pv[YCELLS-1][i] = Mix(edgePressure , pv[YCELLS-1][i], 0.8f);
 			vx[       0][i] = Mix(edgeVelocityX, vx[       0][i], 0.9f);
 			vx[       1][i] = Mix(edgeVelocityX, vx[       1][i], 0.9f);
 			vx[YCELLS-2][i] = Mix(edgeVelocityX, vx[YCELLS-2][i], 0.9f);
@@ -301,7 +301,7 @@ void Air::update_air(void)
 				auto dp = 0.0f;
 				dp += vx[y][x-1] - vx[y][x+1];
 				dp += vy[y-1][x] - vy[y+1][x];
-				pv[y][x] *= AIR_PLOSS;
+				pv[y][x] = Mix(edgePressure, pv[y][x], AIR_PLOSS);
 				pv[y][x] += dp*AIR_TSTEPP * 0.5f;;
 			}
 		}
@@ -314,8 +314,8 @@ void Air::update_air(void)
 				auto dy = 0.0f;
 				dx += pv[y][x-1] - pv[y][x+1];
 				dy += pv[y-1][x] - pv[y+1][x];
-				vx[y][x] *= AIR_VLOSS;
-				vy[y][x] *= AIR_VLOSS;
+				vx[y][x] = Mix(edgeVelocityX, vx[y][x], AIR_VLOSS);
+				vy[y][x] = Mix(edgeVelocityY, vy[y][x], AIR_VLOSS);
 				vx[y][x] += dx*AIR_TSTEPV * 0.5f;
 				vy[y][x] += dy*AIR_TSTEPV * 0.5f;
 				if (bmap_blockair[y][x-1] || bmap_blockair[y][x] || bmap_blockair[y][x+1])
@@ -537,6 +537,7 @@ Air::Air(Simulation & simulation):
 	sim(simulation),
 	airMode(AIR_ON),
 	ambientAirTemp(R_TEMP + 273.15f),
+	edgePressure(0),
 	edgeVelocityX(0),
 	edgeVelocityY(0),
 	vorticityCoeff(0.0f),

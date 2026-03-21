@@ -28,6 +28,8 @@ public:
 	void SetAirMode(int airMode);
 	float GetAmbientAirTemperature();
 	void SetAmbientAirTemperature(float ambientAirTemp);
+	float GetEdgePressure();
+	void SetEdgePressure(float edgePressure);
 	float GetEdgeVelocityX();
 	void SetEdgeVelocityX(float edgeVelocityX);
 	float GetEdgeVelocityY();
