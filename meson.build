@@ -13,6 +13,7 @@ endif
 target_options = [
 	'cpp_std=c++20',
 	'cpp_rtti=false',
+	'b_ndebug=true', # otherwise we get superfluous asserts in the stdlib, see also Assert.h
 ]
 
 python = import('python')

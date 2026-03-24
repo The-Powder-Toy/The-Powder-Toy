@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <array>
 #include <bit>
-#include <cassert>
+#include "common/Assert.h"
 #include <cstring>
 #include <stack>
 

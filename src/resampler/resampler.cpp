@@ -16,7 +16,7 @@
 
 #include <cmath>
 #include <cfloat>
-#include <cassert>
+#include "common/Assert.h"
 #include <cstring>
 
 #define resampler_assert assert

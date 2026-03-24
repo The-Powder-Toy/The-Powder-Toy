@@ -1,5 +1,5 @@
 #pragma once
-#include <cassert>
+#include "common/Assert.h"
 
 template<class Type>
 class ExplicitSingleton
