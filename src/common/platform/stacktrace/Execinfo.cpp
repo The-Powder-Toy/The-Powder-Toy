@@ -31,7 +31,7 @@ std::optional<std::vector<String>> StackTrace()
 					auto symbolName = endSymbolName.Before();
 					auto afterSymbolName = endSymbolName.After();
 					int status;
-					char *demangled = abi::__cxa_demangle(symbolName.c_str(), NULL, NULL, &status);
+					char *demangled = abi::__cxa_demangle(symbolName.c_str(), nullptr, nullptr, &status);
 					Defer freeDemangled([demangled]() {
 						free(demangled);
 					});
