@@ -13,55 +13,6 @@ def set_output(key, value):
 	with open(os.getenv('GITHUB_OUTPUT'), 'a') as f:
 		f.write(f"{key}={value}\n")
 
-match_stable     = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)', ref)
-match_beta       = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)b', ref)
-match_snapshot   = re.fullmatch(r'refs/tags/snapshot-([0-9]+)', ref)
-match_tptlibsdev = re.fullmatch(r'refs/heads/tptlibsdev-(.*)', ref)
-match_alljobs    = re.fullmatch(r'refs/heads/(.*)-alljobs', ref)
-do_release       = False
-do_priority      = 10
-display_version_major = None
-display_version_minor = None
-build_num             = None
-if event_name == 'pull_request':
-	do_priority = 0
-if match_stable:
-	display_version_major = match_stable.group(1)
-	display_version_minor = match_stable.group(2)
-	build_num = match_stable.group(3)
-	release_type = 'stable'
-	release_name = f'v{display_version_major}.{display_version_minor}.{build_num}'
-	do_release = True
-	do_priority = -5
-elif match_beta:
-	display_version_major = match_beta.group(1)
-	display_version_minor = match_beta.group(2)
-	build_num = match_beta.group(3)
-	release_type = 'beta'
-	release_name = f'v{display_version_major}.{display_version_minor}.{build_num}b'
-	do_release = True
-	do_priority = -5
-elif match_snapshot:
-	build_num = match_snapshot.group(1)
-	release_type = 'snapshot'
-	release_name = f'snapshot-{build_num}'
-	do_release = True
-	do_priority = -5
-elif match_tptlibsdev:
-	branch = match_tptlibsdev.group(1)
-	release_type = 'tptlibsdev'
-	release_name = f'tptlibsdev-{branch}'
-	do_priority = 0
-else:
-	release_type = 'dev'
-	release_name = 'dev'
-	if match_alljobs:
-		do_priority = -5
-do_publish = publish_hostport and do_release
-
-set_output('release_type', release_type)
-set_output('release_name', release_name)
-
 subprocess.run([ 'meson', 'setup', '-Dprepare=true', 'build-prepare' ], check = True)
 build_options = {}
 with open('build-prepare/meson-info/intro-buildoptions.json') as f:
@@ -79,7 +30,66 @@ if int(build_options['mod_id']) == 0 and os.path.exists('.github/mod_id.txt'):
 		build_options['mod_id'] = f.read()
 mod_id = int(build_options['mod_id'])
 
-if mod_id == 0:
+release_name = ''
+match_modx = re.fullmatch(r'refs/tags/mod([0-9]+)-(.*)', ref)
+if match_modx and mod_id and int(match_modx.group(1)) == mod_id:
+	release_name += f'mod{match_modx.group(1)}-'
+	ref = f'refs/tags/{match_modx.group(2)}'
+match_varx = re.fullmatch(r'refs/tags/var-([^-]+)-(.*)', ref)
+if match_varx:
+	release_name += f'var-{match_varx.group(1)}-'
+	ref = f'refs/tags/{match_varx.group(2)}'
+
+match_stable     = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)', ref)
+match_beta       = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)b', ref)
+match_snapshot   = re.fullmatch(r'refs/tags/snapshot-([0-9]+)', ref)
+match_tptlibsdev = re.fullmatch(r'refs/heads/tptlibsdev-(.*)', ref)
+match_alljobs    = re.fullmatch(r'refs/heads/(.*)-alljobs', ref)
+do_release       = False
+do_priority      = 10
+display_version_major = None
+display_version_minor = None
+build_num             = None
+if event_name == 'pull_request':
+	do_priority = 0
+if match_stable:
+	display_version_major = match_stable.group(1)
+	display_version_minor = match_stable.group(2)
+	build_num = match_stable.group(3)
+	release_type = 'stable'
+	release_name += f'v{display_version_major}.{display_version_minor}.{build_num}'
+	do_release = True
+	do_priority = -5
+elif match_beta:
+	display_version_major = match_beta.group(1)
+	display_version_minor = match_beta.group(2)
+	build_num = match_beta.group(3)
+	release_type = 'beta'
+	release_name += f'v{display_version_major}.{display_version_minor}.{build_num}b'
+	do_release = True
+	do_priority = -5
+elif match_snapshot:
+	build_num = match_snapshot.group(1)
+	release_type = 'snapshot'
+	release_name += f'snapshot-{build_num}'
+	do_release = True
+	do_priority = -5
+elif match_tptlibsdev:
+	branch = match_tptlibsdev.group(1)
+	release_type = 'tptlibsdev'
+	release_name += f'tptlibsdev-{branch}'
+	do_priority = 0
+else:
+	release_type = 'dev'
+	release_name += 'dev'
+	if match_alljobs:
+		do_priority = -5
+do_publish = publish_hostport and do_release
+
+set_output('release_type', release_type)
+set_output('release_name', release_name)
+
+if mod_id == 0 and not match_varx:
 	if display_version_major:
 		assert(display_version_major == display_version[0])
 	if display_version_minor:
