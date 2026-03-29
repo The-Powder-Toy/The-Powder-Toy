@@ -372,7 +372,8 @@ static int property(lua_State *L)
 	    handleProperty(&SimTool::Colour     , "Colour"     ,  true) ||
 	    handleProperty(&SimTool::Colour     , "Color"      ,  true) ||
 	    handleProperty(&SimTool::MenuSection, "MenuSection",  true) ||
-	    handleProperty(&SimTool::MenuVisible, "MenuVisible",  true))
+	    handleProperty(&SimTool::MenuVisible, "MenuVisible",  true) ||
+	    handleProperty(&SimTool::MenuSort,    "MenuSort",     true))
 	{
 		return returnValueCount;
 	}

@@ -20,6 +20,7 @@ public:
 	RGB Colour;
 	int MenuVisible;
 	int MenuSection;
+	int MenuSort;
 	int Enabled;
 
 	float Advection;

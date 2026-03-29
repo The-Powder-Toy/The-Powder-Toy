@@ -1830,6 +1830,7 @@ void GameModel::UpdateElementTool(int element)
 	tool->textureGen = elem.IconGenerator;
 	tool->MenuSection = elem.MenuSection;
 	tool->MenuVisible = elem.MenuVisible;
+	tool->MenuSort = elem.MenuSort;
 }
 
 void GameModel::AllocElementTool(int element)
