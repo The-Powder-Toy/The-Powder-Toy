@@ -392,7 +392,7 @@ if [[ $BSH_HOST_PLATFORM == android ]]; then
 	cat << ANDROID_INI > .github/android-ghactions.ini
 [constants]
 andriod_ndk_toolchain_bin = '$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin'
-andriod_sdk_build_tools = '$ANDROID_SDK_ROOT/build-tools/32.0.0'
+andriod_sdk_build_tools = '$ANDROID_SDK_ROOT/build-tools/35.0.0'
 
 [properties]
 # android_ndk_toolchain_prefix comes from the correct cross-file in ./android/cross
