@@ -7,6 +7,7 @@ Element::Element():
 	Colour(0xFF00FF_rgb),
 	MenuVisible(0),
 	MenuSection(0),
+	MenuSort(0),
 	Enabled(0),
 
 	Advection(0.0f),
@@ -66,6 +67,7 @@ std::vector<StructProperty> const &Element::GetProperties()
 				{ "Colour",                    StructProperty::Colour,   offsetof(Element, Colour                   ) },
 				{ "Color",                     StructProperty::Colour,   offsetof(Element, Colour                   ) },
 				{ "MenuVisible",               StructProperty::Integer,  offsetof(Element, MenuVisible              ) },
+				{ "MenuSort",                  StructProperty::Integer,  offsetof(Element, MenuSort                 ) },
 				{ "MenuSection",               StructProperty::Integer,  offsetof(Element, MenuSection              ) },
 				{ "Enabled",                   StructProperty::Integer,  offsetof(Element, Enabled                  ) },
 				{ "Advection",                 StructProperty::Float,    offsetof(Element, Advection                ) },

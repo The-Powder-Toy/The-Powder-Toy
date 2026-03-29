@@ -30,6 +30,7 @@ public:
 	bool altBehaviour = false;
 	int MenuSection = SC_TOOL;
 	bool MenuVisible = true;
+	int MenuSort = 0;
 
 	Tool() = default;
 
