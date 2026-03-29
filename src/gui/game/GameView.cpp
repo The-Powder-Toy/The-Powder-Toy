@@ -452,6 +452,8 @@ void GameView::SetSample(SimulationSample sample)
 void GameView::SetHudEnable(bool hudState)
 {
 	showHud = hudState;
+	if (!showHud)
+		introText = 0;
 }
 
 bool GameView::GetHudEnable()
