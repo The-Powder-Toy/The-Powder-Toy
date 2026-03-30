@@ -5,6 +5,8 @@ on:
     branches:
       - '*'
     tags:
+      - 'mod*'
+      - 'var*'
       - 'v*.*'
       - 'snapshot-*'
       - 'tptlibsdev-*'
@@ -21,6 +23,7 @@ jobs:
       publish_matrix: ${{ steps.prepare.outputs.publish_matrix }}
       release_type: ${{ steps.prepare.outputs.release_type }}
       release_name: ${{ steps.prepare.outputs.release_name }}
+      release_name_with_prefix: ${{ steps.prepare.outputs.release_name_with_prefix }}
       mod_id: ${{ steps.prepare.outputs.mod_id }}
       app_name: ${{ steps.prepare.outputs.app_name }}
       app_comment: ${{ steps.prepare.outputs.app_comment }}
@@ -52,7 +55,7 @@ jobs:
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_NAME: ${{ steps.prepare.outputs.release_name }}
+          RELEASE_NAME: ${{ steps.prepare.outputs.release_name_with_prefix }}
         run: bash -c './.github/create-release.sh'
   build:
     runs-on: ${{ matrix.runs_on }}

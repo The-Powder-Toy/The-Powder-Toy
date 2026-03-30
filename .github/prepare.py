@@ -30,14 +30,14 @@ if int(build_options['mod_id']) == 0 and os.path.exists('.github/mod_id.txt'):
 		build_options['mod_id'] = f.read()
 mod_id = int(build_options['mod_id'])
 
-release_name = ''
+release_name_prefix = ''
 match_modx = re.fullmatch(r'refs/tags/mod([0-9]+)-(.*)', ref)
 if match_modx and mod_id and int(match_modx.group(1)) == mod_id:
-	release_name += f'mod{match_modx.group(1)}-'
+	release_name_prefix = f'mod{match_modx.group(1)}-'
 	ref = f'refs/tags/{match_modx.group(2)}'
 match_varx = re.fullmatch(r'refs/tags/var-([^-]+)-(.*)', ref)
 if match_varx:
-	release_name += f'var-{match_varx.group(1)}-'
+	release_name_prefix = f'var-{match_varx.group(1)}-'
 	ref = f'refs/tags/{match_varx.group(2)}'
 
 match_stable     = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)', ref)
@@ -57,7 +57,7 @@ if match_stable:
 	display_version_minor = match_stable.group(2)
 	build_num = match_stable.group(3)
 	release_type = 'stable'
-	release_name += f'v{display_version_major}.{display_version_minor}.{build_num}'
+	release_name = f'v{display_version_major}.{display_version_minor}.{build_num}'
 	do_release = True
 	do_priority = -5
 elif match_beta:
@@ -65,29 +65,30 @@ elif match_beta:
 	display_version_minor = match_beta.group(2)
 	build_num = match_beta.group(3)
 	release_type = 'beta'
-	release_name += f'v{display_version_major}.{display_version_minor}.{build_num}b'
+	release_name = f'v{display_version_major}.{display_version_minor}.{build_num}b'
 	do_release = True
 	do_priority = -5
 elif match_snapshot:
 	build_num = match_snapshot.group(1)
 	release_type = 'snapshot'
-	release_name += f'snapshot-{build_num}'
+	release_name = f'snapshot-{build_num}'
 	do_release = True
 	do_priority = -5
 elif match_tptlibsdev:
 	branch = match_tptlibsdev.group(1)
 	release_type = 'tptlibsdev'
-	release_name += f'tptlibsdev-{branch}'
+	release_name = f'tptlibsdev-{branch}'
 	do_priority = 0
 else:
 	release_type = 'dev'
-	release_name += 'dev'
+	release_name = 'dev'
 	if match_alljobs:
 		do_priority = -5
 do_publish = publish_hostport and do_release
 
 set_output('release_type', release_type)
 set_output('release_name', release_name)
+set_output('release_name_with_prefix', release_name_prefix + release_name)
 
 if mod_id == 0 and not match_varx:
 	if display_version_major:
