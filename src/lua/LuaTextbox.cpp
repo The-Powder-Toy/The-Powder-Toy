@@ -1,6 +1,7 @@
 #include "LuaTextbox.h"
 #include "LuaScriptInterface.h"
 #include "gui/interface/Textbox.h"
+#include "gui/interface/Window.h"
 
 const char LuaTextbox::className[] = "textbox";
 
@@ -8,6 +9,7 @@ const char LuaTextbox::className[] = "textbox";
 Luna<LuaTextbox>::RegType LuaTextbox::methods[] = {
 	method(LuaTextbox, text),
 	method(LuaTextbox, readonly),
+	method(LuaTextbox, focus),
 	method(LuaTextbox, onTextChanged),
 	method(LuaTextbox, position),
 	method(LuaTextbox, size),
@@ -44,6 +46,25 @@ int LuaTextbox::readonly(lua_State *L)
 	else
 	{
 		lua_pushboolean(L, textbox->ReadOnly);
+		return 1;
+	}
+}
+
+int LuaTextbox::focus(lua_State *L)
+{
+	int args = lua_gettop(L);
+	if (args)
+	{
+		luaL_checktype(L, 1, LUA_TBOOLEAN);
+		if (lua_toboolean(L, 1))
+			textbox->TabFocus(); // focus and select all text
+		else if (textbox->GetParentWindow()->IsFocused(textbox))
+			textbox->GetParentWindow()->FocusComponent(nullptr);
+		return 0;
+	}
+	else
+	{
+		lua_pushboolean(L, textbox->GetParentWindow()->IsFocused(textbox));
 		return 1;
 	}
 }
