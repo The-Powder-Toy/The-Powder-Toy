@@ -458,6 +458,14 @@ local function showGuessWindow()
 	end)
 	guessWindow:addComponent(cancelButton)
 
+	local function removeGuess(t, tName)
+        local ciphertext = cipher(t)
+        guesses[t] = nil
+        elements.property(t, "Name", ciphertext)
+        decipher[ciphertext] = t
+        decipher[tName] = nil
+	end
+
 	-- Validate textbox input, and show error messages to the user
 	local function validate(oldName, newName, newDesc, t, validateCallback)
 		if #oldName  == 0 then
@@ -484,7 +492,16 @@ local function showGuessWindow()
 			end
 		end
 		if #newName == 0 then
-			interface.beginThrowError("Guess the original name to proceed, or update the description if unsure")
+			if t and guesses[t] and #newName == 0 then
+				interface.beginConfirm("Remove guess?", "Remove guess for " .. oldName .. "?", function(confirmed)
+					if confirmed then
+						removeGuess(t, oldName)
+						interface.closeWindow(guessWindow)
+					end
+				end)
+			else
+				interface.beginThrowError("Guess the original name to proceed, or update the description if unsure")
+			end
 			return
 		end
 		if not correctInfo[newName] then
@@ -495,12 +512,7 @@ local function showGuessWindow()
 			interface.beginConfirm("Replace guess", "You have already guessed " .. newName .. " for another element. Reset and replace your guess?", function(confirmed)
 				if confirmed then
 					local replacedType = decipher[newName]
-					print(replacedType, t)
-					local ciphertext = cipher(replacedType)
-					guesses[replacedType] = nil
-					elements.property(replacedType, "Name", ciphertext)
-					decipher[newName] = nil
-					decipher[ciphertext] = replacedType
+					removeGuess(replacedType, newName)
 
 					validateCallback()
 				end
