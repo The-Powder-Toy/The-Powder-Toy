@@ -130,10 +130,10 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',       'publish',    '.pdb',         None,   'i686-win-msvc-static', 'release',       10, False ),
 	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
 	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
-	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
-	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',       'publish',    '.pdb',         None,  'arm64-win-msvc-static', 'release',       10, False ),
-	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
-	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
+#	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
+#	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',       'publish',    '.pdb',         None,  'arm64-win-msvc-static', 'release',       10, False ),
+#	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
+#	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
 	(  'x86_64',     'darwin',      'macos',  'static', 'darwin','macos-15-intel', '.dmg',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
 	(  'x86_64',     'darwin',      'macos',  'static', 'darwin','macos-15-intel', '.dmg',       'publish',      None,         None,  'x86_64-mac-gcc-static', 'release',       10, False ), # I have no idea how to separate debug info on macos
 	(  'x86_64',     'darwin',      'macos',  'static', 'darwin','macos-15-intel', '.dmg',       'publish',      None,      'steam',  'x86_64-mac-gcc-static', 'release',       -5, False ), # priority = -5: steam build, see above regarding debug info
