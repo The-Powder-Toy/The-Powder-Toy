@@ -120,25 +120,11 @@ void ElementSearchActivity::searchTools(String query)
 		}
 	};
 
-	std::map<Tool *, String> menudescriptionLower;
-	for (auto *menu : gameController->GetMenuList())
-	{
-		for (auto *tool : menu->GetToolList())
-		{
-			menudescriptionLower.insert(std::make_pair(tool, menu->GetDescription().ToLower()));
-		}
-	}
-
 	for (int toolIndex = 0; toolIndex < (int)tools.size(); ++toolIndex)
 	{
 		int favouritePriority = favs.find(tools[toolIndex]->Identifier) != favs.end() ? 0 : 1;
 		pushIfMatches(tools[toolIndex]->Name.ToLower(), tools[toolIndex]->MenuSort, toolIndex, favouritePriority, 0);
 		pushIfMatches(tools[toolIndex]->Description.ToLower(), tools[toolIndex]->MenuSort, toolIndex, favouritePriority, 1);
-		auto it = menudescriptionLower.find(tools[toolIndex]);
-		if (it != menudescriptionLower.end())
-		{
-			pushIfMatches(it->second, tools[toolIndex]->MenuSort, toolIndex, favouritePriority, 2);
-		}
 	}
 
 	std::vector<Match> matches;
