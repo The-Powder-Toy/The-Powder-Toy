@@ -422,6 +422,10 @@ local function showGuessWindow()
 		local newDescTextbox = Textbox:new(pos(descLabel).x, positionFrom(descLabel, 0, 1).y, size(guessWindow).x * 2 / 3 - 10, 16, newDesc, "????")
 		guessWindow:addComponent(newDescTextbox)
 
+		if newNameTextbox.focus then
+            newNameTextbox:focus(true)
+        end
+
 		oldNameTextbox:onTextChanged(function(sender)
 			local t = decipher[sender:text()]
 			if t then
@@ -548,9 +552,10 @@ local function showGuessWindow()
 			elements.property(t, "Name", newName)
 			decipher[oldName] = nil
 			decipher[newName] = t
-			saveProgress() -- autosave
 
 			local answer = checkElements()
+
+			saveProgress() -- autosave
 
 			interface.closeWindow(guessWindow)
 
@@ -594,6 +599,19 @@ local function showGuessWindow()
 		if scan == ui.SDL_SCANCODE_RETURN or scan == ui.SDL_SCANCODE_KP_ENTER then
 			onOK()
 		end
+
+		-- Not being able to focus components bothered me enough that I added this api
+        if newNameTextbox.focus then
+            if scan == ui.SDL_SCANCODE_TAB and not ctrl and not shift and not alt then
+                if oldNameTextbox:focus() then
+                    newNameTextbox:focus(true)
+                elseif newNameTextbox:focus() then
+                    newDescTextbox:focus(true)
+                else
+                    oldNameTextbox:focus(true)
+                end
+            end
+        end
 	end)
 
 	interface.showWindow(guessWindow)
