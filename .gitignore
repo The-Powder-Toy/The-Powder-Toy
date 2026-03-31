@@ -34,7 +34,7 @@ config.log
 /recordings/
 *.def
 *.pref
-*.lua
+/*.lua
 screenshot_*
 
 # Visual studio

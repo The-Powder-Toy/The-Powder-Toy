@@ -2,6 +2,7 @@
 #include "client/http/Request.h"
 #include "common/platform/Platform.h"
 #include "compat_lua.h"
+#include "obra_lua.h"
 #include "Config.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
@@ -181,6 +182,14 @@ static int compatChunk(lua_State *L)
 	lua_pushlstring(L, data.data(), data.size());
 	return 1;
 }
+
+static int obraChunk(lua_State *L)
+{
+	auto data = obra_lua.AsCharSpan();
+	lua_pushlstring(L, data.data(), data.size());
+	return 1;
+}
+
 static int debug(lua_State *L)
 {
 	auto *lsi = GetLSI();
@@ -276,6 +285,7 @@ void LuaMisc::Open(lua_State *L)
 		LFUNC(fpsCap),
 		LFUNC(drawCap),
 		LFUNC(compatChunk),
+		LFUNC(obraChunk),
 #undef LFUNC
 		{ "log", flog },
 		{ nullptr, nullptr }
