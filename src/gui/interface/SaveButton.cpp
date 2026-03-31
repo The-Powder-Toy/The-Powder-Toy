@@ -200,7 +200,7 @@ void SaveButton::Draw(const Point& screenPos)
 		//thumbBoxSize = ui::Point(thumbnail->Width, thumbnail->Height);
 		auto *tex = thumbnail.get();
 		auto space = Size - Vec2{ 0, 21 };
-		g->BlendImage(tex->Data(), 255, RectSized(screenPos + ((save && save->id) ? ((space - thumbBoxSize) / 2 - Vec2{ 3, 0 }) : (space - thumbSize) / 2), tex->Size()));
+		g->BlendImageGray(tex->Data(), 255, RectSized(screenPos + ((save && save->id) ? ((space - thumbBoxSize) / 2 - Vec2{ 3, 0 }) : (space - thumbSize) / 2), tex->Size()));
 	}
 	else if (file && !file->LazyGetGameSave())
 		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize("Error loading save").X - 1))/2, (Size.Y-28)/2 }, "Error loading save", 0xB4B4B4_rgb .WithAlpha(255));

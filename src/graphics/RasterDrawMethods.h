@@ -35,6 +35,8 @@ struct RasterDrawMethods
 
 	void BlendImage(pixel const *, uint8_t alpha, Rect<int>);
 	void BlendImage(pixel const *, uint8_t alpha, Rect<int>, size_t rowStride);
+	void BlendImageGray(pixel const *data, uint8_t alpha, Rect<int> rect);
+	void BlendImageGray(pixel const *data, uint8_t alpha, Rect<int> rect, size_t rowStride);
 	void XorImage(unsigned char const *, Rect<int>);
 	void XorImage(unsigned char const *, Rect<int>, size_t rowStride);
 
