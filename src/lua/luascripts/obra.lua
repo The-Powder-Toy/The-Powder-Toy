@@ -449,7 +449,7 @@ local function showGuessWindow()
 		oldNameTextbox, newNameTextbox, newDescTextbox, nextY = addTextboxes(positionFrom(titleLabel, 0, 5).y, oldName, "", newDesc)
 	end
 
-	local ledgerButton = Button:new(size(guessWindow).x / 2 - 40, size(guessWindow).y - 36, 80, 16, "Progress report")
+	local ledgerButton = Button:new(size(guessWindow).x / 2 - 40, size(guessWindow).y - 46, 80, 16, "Progress report")
 	ledgerButton:action(function(sender)
 		showProgressWindow()
 	end)
@@ -672,7 +672,7 @@ local function addGuessButton()
 	registerEvent(mouseup, evt.MOUSEUP)
 end
 
-local function removeGuessButton()
+removeGuessButton = function()
 	for k, v in pairs(guessButtonEvents) do
 		evt.unregister(k, v)
 	end
