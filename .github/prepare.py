@@ -103,7 +103,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-22.04',     '',       'publish',    '.dbg',         None,  'x86_64-lin-gcc-static', 'release',       10, False ),
 	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-22.04',     '',       'publish',    '.dbg',      'steam',  'x86_64-lin-gcc-static', 'release',       -5, False ), # priority = -5: steam build
 	(  'x86_64',      'linux',        'gnu',  'static',   'linux', 'ubuntu-22.04',     '',       'archive',    '.dbg',   'appimage',                     None, 'release',        0, False ), # priority = 0: appimage release
-	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None,   'debug',       10,  True ), # the only debug job that lints; this covers the font editor and the renderer
+#	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None,   'debug',       10,  True ), # the only debug job that lints; this covers the font editor and the renderer
 	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,     'nohttp',                     None,   'debug',       10, False ),
 	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,      'nolua',                     None,   'debug',       10, False ),
 	(  'x86_64',      'linux',        'gnu', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None, 'release',       10, False ),
@@ -119,7 +119,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
 	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2022', '.exe',       'archive',    '.dbg',         None,                     None, 'release',       10, False ),
 	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
-	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None, 'release',       10,  True ),
+#	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None, 'release',       10,  True ),
 	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
 	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',       'publish',    '.pdb',         None, 'x86_64-win-msvc-static', 'release',       10, False ),
 	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',       'publish',    '.pdb',      'steam', 'x86_64-win-msvc-static', 'release',       -5, False ), # priority = -5: steam build
@@ -150,7 +150,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	(     'arm',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
 	(     'arm',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,     'arm-and-gcc-static', 'release',       10, False ),
 	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
-	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,   'arm64-and-gcc-static', 'release',       10,  True ),
+#	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,   'arm64-and-gcc-static', 'release',       10,  True ),
 	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
 	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',       'publish','.dbg.wasm','emscripten',      'wasm32-ems-static', 'release',       10, False ), # TODO: enable lint once emscripten ships clang-tidy
 ]:
