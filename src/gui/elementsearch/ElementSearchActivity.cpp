@@ -75,14 +75,13 @@ void ElementSearchActivity::searchTools(String query)
 	struct Match
 	{
 		int favouritePriority; // relevant by whether the tool is favourited
-		int MenuSort;
 		int toolIndex; // relevance by position of tool in tools vector
 		int haystackOrigin; // relevance by origin of haystack
 		int needlePosition; // relevance by position of needle in haystack
 
 		bool operator <(Match const &other) const
 		{
-			return std::tie(favouritePriority, haystackOrigin, needlePosition, MenuSort, toolIndex) < std::tie(other.favouritePriority, other.haystackOrigin, other.needlePosition, other.MenuSort, other.toolIndex);
+			return std::tie(favouritePriority, haystackOrigin, needlePosition, toolIndex) < std::tie(other.favouritePriority, other.haystackOrigin, other.needlePosition, other.toolIndex);
 		}
 	};
 
@@ -105,26 +104,40 @@ void ElementSearchActivity::searchTools(String query)
 		}
 	};
 
-	auto pushIfMatches = [ &queryLower, &push ](String infoLower, int MenuSort, int toolIndex, int favouritePriority, int haystackRelevance) {
+	auto pushIfMatches = [ &queryLower, &push ](String infoLower, int toolIndex, int favouritePriority, int haystackRelevance) {
 		if (infoLower == queryLower)
 		{
-			push(Match{ favouritePriority, MenuSort, toolIndex, haystackRelevance, 0 });
+			push(Match{ favouritePriority, toolIndex, haystackRelevance, 0 });
 		}
 		if (infoLower.BeginsWith(queryLower))
 		{
-			push(Match{ favouritePriority, MenuSort, toolIndex, haystackRelevance, 1 });
+			push(Match{ favouritePriority, toolIndex, haystackRelevance, 1 });
 		}
 		if (infoLower.Contains(queryLower))
 		{
-			push(Match{ favouritePriority, MenuSort, toolIndex, haystackRelevance, 2 });
+			push(Match{ favouritePriority, toolIndex, haystackRelevance, 2 });
 		}
 	};
+
+	std::map<Tool *, String> menudescriptionLower;
+	for (auto *menu : gameController->GetMenuList())
+	{
+		for (auto *tool : menu->GetToolList())
+		{
+			menudescriptionLower.insert(std::make_pair(tool, menu->GetDescription().ToLower()));
+		}
+	}
 
 	for (int toolIndex = 0; toolIndex < (int)tools.size(); ++toolIndex)
 	{
 		int favouritePriority = favs.find(tools[toolIndex]->Identifier) != favs.end() ? 0 : 1;
-		pushIfMatches(tools[toolIndex]->Name.ToLower(), tools[toolIndex]->MenuSort, toolIndex, favouritePriority, 0);
-		pushIfMatches(tools[toolIndex]->Description.ToLower(), tools[toolIndex]->MenuSort, toolIndex, favouritePriority, 1);
+		pushIfMatches(tools[toolIndex]->Name.ToLower(), toolIndex, favouritePriority, 0);
+		pushIfMatches(tools[toolIndex]->Description.ToLower(), toolIndex, favouritePriority, 1);
+		auto it = menudescriptionLower.find(tools[toolIndex]);
+		if (it != menudescriptionLower.end())
+		{
+			pushIfMatches(it->second, toolIndex, favouritePriority, 2);
+		}
 	}
 
 	std::vector<Match> matches;

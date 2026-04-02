@@ -195,25 +195,6 @@ void RasterDrawMethods<Derived>::BlendImage(pixel const *data, uint8_t alpha, Re
 }
 
 template<typename Derived>
-void RasterDrawMethods<Derived>::BlendImageGray(pixel const *data, uint8_t alpha, Rect<int> rect)
-{
-	BlendImageGray(data, alpha, rect, rect.size.X);
-}
-
-template<typename Derived>
-void RasterDrawMethods<Derived>::BlendImageGray(pixel const *data, uint8_t alpha, Rect<int> rect, size_t rowStride)
-{
-	auto origin = rect.pos;
-	rect &= clipRect();
-	for (auto pos : rect)
-	{
-		pixel const px = data[(pos.X - origin.X) + (pos.Y - origin.Y) * rowStride];
-		int average = (((px >> 16)&0xFF) + ((px >> 8)&0xFF) + (px&0xFF)) / 3;
-		blendPixelUnchecked(*this, &Derived::video, pos, RGBA(average, average, average, alpha));
-	}
-}
-
-template<typename Derived>
 void RasterDrawMethods<Derived>::XorImage(unsigned char const *data, Rect<int> rect)
 {
 	XorImage(data, rect, rect.size.X);
