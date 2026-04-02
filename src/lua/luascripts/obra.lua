@@ -12,6 +12,7 @@ for t = 1, sim.PT_NUM do
 	end
 end
 
+local cipherFactor = 113 -- a number used to scramble elements, should be coprime to ptMax+1
 local correctInfo = {}
 local decipher = {}
 local unlockedElements = {}
@@ -48,7 +49,7 @@ end
 unlockedElements[elements.DEFAULT_PT_LIFE] = true
 
 local function cipher(t)
-	return tostring((t*113) % (ptMax+1))
+	return tostring((t*cipherFactor) % (ptMax+1))
 end
 
 -- Scramble elements
@@ -59,15 +60,16 @@ local scramble = function ()
 			elements.SC_LIQUID, elements.SC_POWDERS, elements.SC_SOLIDS, elements.SC_NUCLEAR, elements.SC_SPECIAL }
 
 			-- Use existing guess, otherwise use cipher
-			local ciphertext = guesses[t] and guesses[t] or cipher(t)
+			local ciphernbr = cipher(t)
+			local ciphertext = guesses[t] and guesses[t] or ciphernbr
 			decipher[ciphertext] = t
 
 			-- Table used for hiding identifying information
-			local col = 20 + (t % 230)
+			local col = 20 + (ciphernbr % 230)
 			hiddenInfo = {
 				Name = ciphertext,
-				MenuSection = sections[1 + (t % 11)],
-				MenuSort = cipher(t),
+				MenuSection = sections[1 + (ciphernbr % 11)],
+				MenuSort = ciphernbr,
 				Description = savedNotes[t] and savedNotes[t] or "???",
 				Color = gfx.getHexColor(col, col, col),
 			}
@@ -134,6 +136,8 @@ local config = "powderDinn.txt"
 local saveProgress = function ()
 	local file = io.open(config, "w")
 
+	file:write("FACTOR " .. cipherFactor .. " 0\n")
+
 	if userUnlockedVisible then
 		file:write("ALMOST 0 0\n") -- Use useless 0s for the ease of parsing
 	end
@@ -171,7 +175,9 @@ if fs.exists(config) then
 		local t = tonumber(words())
 		local arg3 = words()
 
-		if configType == "ALMOST" then
+		if configType == "FACTOR" then
+			cipherFactor = t
+		elseif configType == "ALMOST" then
 			userUnlockedVisible = true
 		elseif configType == "GUESS" then
 			guesses[t] = arg3
@@ -206,6 +212,31 @@ else
 	Element names have been withered away by time, but you seem to remember them as if it was yesterday...\n\
 	Is it still possible to salvage what's left? Can you restore everything to its original form?\n\
 	The ledger awaits. Let the dead elements speak once more.")
+
+	-- Setup cipherFactor
+	local coprimeNumbers = {}
+	local coprimeAmount = 0
+
+	-- Greatest common divisor of two numbers
+	local gcd = function (a, b)
+		while b ~= 0 do
+			a, b = b, a % b
+		end
+		return a
+	end
+
+	-- Compute numbers coprime to ptMax+1
+	for t = 2, ptMax do
+		if gcd(t, ptMax+1) == 1 then
+			coprimeAmount = coprimeAmount + 1
+			coprimeNumbers[coprimeAmount] = t
+		end
+	end
+
+	-- Select a random cipherFactor
+	if coprimeAmount > 0 then
+		cipherFactor = coprimeNumbers[math.random(coprimeAmount)]
+	end
 end
 
 -- Save progress on startup no matter what
@@ -282,8 +313,14 @@ local function showProgressWindow()
 	local pageNum = 1
 
 	local function addProgress()
-		local hidden = amountMenuHidden == 0 and amountHidden or amountMenuHidden
-		local stillHidden = getLabel(4, 20, "There are still \bo" .. hidden .. "\bw elements unsettled in the ledger.")
+		local stillHidden
+
+		if amountMenuHidden == 0 then
+			stillHidden = getLabel(4, 20, "There are still \bo" .. amountHidden .. "\bw elements lurking in the margins.")
+		else
+			stillHidden = getLabel(4, 20, "There are still \bo" .. amountMenuHidden .. "\bw elements unsettled in the ledger.")
+		end
+
 		progWindow:addComponent(stillHidden)
 
 		local infoLabel = getLabel(4, 50, "Reinstate the original names of the elements.\nThe truth will be revealed only in groups of 3 correct guesses.\n\nPending guesses are recorded herein:")
