@@ -70,6 +70,34 @@ if socket then
 end
 print = tpt.log
 
+elem.DEFAULT_PT_GUN    = elem.DEFAULT_PT_GUNP
+elem["DEFAULT_PT_C-4"] = elem.DEFAULT_PT_PLEX
+elem.DEFAULT_PT_ICE    = elem.DEFAULT_PT_ICEI
+elem.DEFAULT_PT_LN2    = elem.DEFAULT_PT_LNTG
+elem.DEFAULT_PT_VACU   = elem.DEFAULT_PT_BHOL
+elem.DEFAULT_PT_VENT   = elem.DEFAULT_PT_WHOL
+elem.DEFAULT_PT_LOXY   = elem.DEFAULT_PT_LO2
+elem.DEFAULT_PT_OXYG   = elem.DEFAULT_PT_O2
+elem.DEFAULT_PT_CFLM   = elem.DEFAULT_PT_HFLM
+elem.DEFAULT_PT_BUBW   = elem.DEFAULT_PT_CBNW
+elem.DEFAULT_PT_BIZG   = elem.DEFAULT_PT_BIZRG
+elem.DEFAULT_PT_BIZS   = elem.DEFAULT_PT_BIZRS
+elem.DEFAULT_PT_INVS   = elem.DEFAULT_PT_INVIS
+elem.DEFAULT_PT_EQVE   = elem.DEFAULT_PT_116
+elem.DEFAULT_PT_SPWN2  = elem.DEFAULT_PT_SPAWN2
+elem.DEFAULT_PT_SPWN   = elem.DEFAULT_PT_SPAWN
+elem.DEFAULT_PT_SHLD   = elem.DEFAULT_PT_SHLD1
+elem.DEFAULT_PT_SHD2   = elem.DEFAULT_PT_SHLD2
+elem.DEFAULT_PT_SHD3   = elem.DEFAULT_PT_SHLD3
+elem.DEFAULT_PT_SHD4   = elem.DEFAULT_PT_SHLD4
+elem.DEFAULT_PT_STK2   = elem.DEFAULT_PT_STKM2
+elem["DEFAULT_PT_C-5"] = elem.DEFAULT_PT_C5
+elem.DEFAULT_PT_BREL   = elem.DEFAULT_PT_BREC
+elem.DEFAULT_PT_TNT    = elem.DEFAULT_PT_BANG
+elem.DEFAULT_PT_IGNC   = elem.DEFAULT_PT_IGNT
+elem.DEFAULT_PT_HYGN   = elem.DEFAULT_PT_H2
+elem.DEFAULT_PT_WWLD   = elem.DEFAULT_PT_WIRE
+
 local function fake_boolean_wrapper(func, true_is_1)
 	return function(param)
 		if not param then

@@ -75,23 +75,6 @@ static void manageElementIdentifier(lua_State *L, int id, bool add)
 			lua_pushnil(L);
 		}
 		lua_settable(L, -3);
-		if (elements[id].Identifier.BeginsWith("DEFAULT_PT_"))
-		{
-			ByteString realIdentifier = ByteString::Build("DEFAULT_PT_", elements[id].Name.ToUtf8());
-			if (id != 0 && id != PT_NBHL && id != PT_NWHL && elements[id].Identifier != realIdentifier)
-			{
-				tpt_lua_pushByteString(L, realIdentifier);
-				if (add)
-				{
-					lua_pushinteger(L, id);
-				}
-				else
-				{
-					lua_pushnil(L);
-				}
-				lua_settable(L, -3);
-			}
-		}
 		lua_pop(L, 1);
 	}
 }
