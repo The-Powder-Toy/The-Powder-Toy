@@ -191,7 +191,10 @@ public:
 		AssertMutableSimEvent();
 		if ((eventTraits & eventTraitMonopartAccess) && monopartAccessPartID != partID)
 		{
-			luaL_error(L, "particle management is restricted to ID %i", monopartAccessPartID);
+			if (partID == -1)
+				luaL_error(L, "particle lifecycle and position management is restricted in this event");
+			else
+				luaL_error(L, "particle management is restricted to ID %i", monopartAccessPartID);
 		}
 	}
 
