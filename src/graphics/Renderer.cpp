@@ -4,7 +4,6 @@
 #include "VideoBuffer.h"
 #include "RasterDrawMethodsImpl.h"
 #include "common/tpt-rand.h"
-#include "common/tpt-compat.h"
 #include "gui/game/RenderPreset.h"
 #include "simulation/Simulation.h"
 #include "simulation/ElementGraphics.h"
@@ -12,8 +11,9 @@
 #include "simulation/Air.h"
 #include "simulation/gravity/Gravity.h"
 #include "simulation/orbitalparts.h"
-#include <cmath>
 #include <algorithm>
+#include <cmath>
+#include <numbers>
 
 void Renderer::RenderBackground()
 {
@@ -338,7 +338,7 @@ void Renderer::render_parts()
 				}
 				if((elements[t].Properties & PROP_HOT_GLOW) && sim->parts[i].temp>(elements[t].HighTemperature-800.0f))
 				{
-					auto gradv = TPT_PI_DBL/(2*elements[t].HighTemperature-(elements[t].HighTemperature-800.0f));
+					auto gradv = std::numbers::pi/(2*elements[t].HighTemperature-(elements[t].HighTemperature-800.0f));
 					auto caddress = int((sim->parts[i].temp>elements[t].HighTemperature)?elements[t].HighTemperature-(elements[t].HighTemperature-800.0f):sim->parts[i].temp-(elements[t].HighTemperature-800.0f));
 					colr += int(sin(gradv*caddress) * 226);
 					colg += int(-sin(gradv*caddress*4.55) * 34);
@@ -767,11 +767,12 @@ void Renderer::render_parts()
 					float drad = 0.0f;
 					float ddist = 0.0f;
 					orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
-					for (r = 0; r < 4; r++) {
-						ddist = ((float)orbd[r])/16.0f;
-						drad = (TPT_PI_FLT * ((float)orbl[r]) / 180.0f) * TPT_SQRT2_FLT;
-						nxo = (int)(ddist*cos(drad));
-						nyo = (int)(ddist*sin(drad));
+					for (r = 0; r < 4; r++)
+					{
+						ddist = float(orbd[r]) / 16.0f;
+						drad = (float(orbl[r]) * std::numbers::pi_v<float> / 180.0f) * std::numbers::sqrt2_v<float>;
+						nxo = int(ddist * cos(drad));
+						nyo = int(ddist * sin(drad));
 						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES && TYP(sim->pmap[ny+nyo][nx+nxo]) != PT_PRTI)
 							AddPixel({ nx+nxo, ny+nyo }, RGBA(colr, colg, colb, 255-orbd[r]));
 					}
@@ -784,11 +785,12 @@ void Renderer::render_parts()
 					float drad = 0.0f;
 					float ddist = 0.0f;
 					orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
-					for (r = 0; r < 4; r++) {
-						ddist = ((float)orbd[r])/16.0f;
-						drad = (TPT_PI_FLT * ((float)orbl[r]) / 180.0f) * TPT_SQRT2_FLT;
-						nxo = (int)(ddist*cos(drad));
-						nyo = (int)(ddist*sin(drad));
+					for (r = 0; r < 4; r++)
+					{
+						ddist = float(orbd[r]) / 16.0f;
+						drad = (float(orbl[r]) * std::numbers::pi_v<float> / 180.0f) * std::numbers::sqrt2_v<float>;
+						nxo = int(ddist * cos(drad));
+						nyo = int(ddist * sin(drad));
 						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES && TYP(sim->pmap[ny+nyo][nx+nxo]) != PT_PRTO)
 							AddPixel({ nx+nxo, ny+nyo }, RGBA(colr, colg, colb, 255-orbd[r]));
 					}

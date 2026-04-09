@@ -86,8 +86,8 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 
 static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
-	float a = sim->rng.between(0, 359) * TPT_PI_FLT / 180.0f;
+	float a = sim->rng.between(0, 359) * std::numbers::pi_v<float> / 180.0f;
 	sim->parts[i].life = 250 + sim->rng.between(0, 199);
-	sim->parts[i].vx = 2.0f*cosf(a);
-	sim->parts[i].vy = 2.0f*sinf(a);
+	sim->parts[i].vx = 2.0f * cosf(a);
+	sim->parts[i].vy = 2.0f * sinf(a);
 }

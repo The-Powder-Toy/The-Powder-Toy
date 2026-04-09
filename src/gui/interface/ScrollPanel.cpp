@@ -144,7 +144,7 @@ void ScrollPanel::XOnMouseMoved(int x, int y)
 		else if (MouseDownInside)
 		{
 			Vec2<int> mouseAt{ x, y };
-			if (Engine::Ref().TouchUI && iabs(scrollbarInitialYClick - mouseAt.Y) > PanOffsetThreshold)
+			if (Engine::Ref().TouchUI && abs(scrollbarInitialYClick - mouseAt.Y) > PanOffsetThreshold)
 			{
 				panning = true;
 				for (auto *child : children)

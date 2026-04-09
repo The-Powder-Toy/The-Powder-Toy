@@ -24,6 +24,7 @@
 static inline int resampler_range_check(int v, int h) { (void)h; resampler_assert((v >= 0) && (v < h)); return v; }
 
 #include <algorithm>
+#include <numbers>
 
 #ifndef TRUE
    #define TRUE (1)
@@ -34,8 +35,6 @@ static inline int resampler_range_check(int v, int h) { (void)h; resampler_asser
 #endif
 
 #define RESAMPLER_DEBUG 0
-
-#include "common/tpt-compat.h"
 
 // Float to int cast with truncation.
 static inline int cast_to_int(Resample_Real i)
@@ -210,7 +209,7 @@ static Resample_Real catmull_rom_filter(Resample_Real t)
 
 static double sinc(double x)
 {
-   x = (x * TPT_PI_DBL);
+   x = x * std::numbers::pi;
 
    if ((x < 0.01f) && (x > -0.01f))
       return 1.0f + x*x*(-1.0f/6.0f + x*x*1.0f/120.0f);
@@ -228,12 +227,12 @@ static Resample_Real clean(double t)
 
 //static double blackman_window(double x)
 //{
-//	return .42f + .50f * cos(TPT_PI_DBL*x) + .08f * cos(2.0f*TPT_PI_DBL*x);
+//	return .42f + .50f * cos(std::numbers::pi*x) + .08f * cos(2.0f*std::numbers::pi*x);
 //}
 
 static double blackman_exact_window(double x)
 {
-   return 0.42659071f + 0.49656062f * cos(TPT_PI_DBL*x) + 0.07684867f * cos(2.0f*TPT_PI_DBL*x);
+   return 0.42659071f + 0.49656062f * cos(std::numbers::pi*x) + 0.07684867f * cos(2.0f*std::numbers::pi*x);
 }
 
 #define BLACKMAN_SUPPORT (3.0f)
@@ -255,7 +254,7 @@ static Resample_Real gaussian_filter(Resample_Real t) // with blackman window
    if (t < 0)
       t = -t;
    if (t < GAUSSIAN_SUPPORT)
-      return clean(exp(-2.0f * t * t) * sqrt(2.0f / TPT_PI_DBL) * blackman_exact_window(t / GAUSSIAN_SUPPORT));
+      return clean(exp(-2.0f * t * t) * sqrt(2.0f / std::numbers::pi) * blackman_exact_window(t / GAUSSIAN_SUPPORT));
    else
       return 0.0f;
 }

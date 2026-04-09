@@ -118,11 +118,11 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	auto &elements = sd.elements;
 	const float MELTING_POINT = elements[PT_TUNG].HighTemperature;
 	double startTemp = (MELTING_POINT - 1500.0);
-	double tempOver = (((cpart->temp - startTemp)/1500.0)*TPT_PI_DBL) - (TPT_PI_DBL/2.0);
-	if(tempOver > -(TPT_PI_DBL/2.0))
+	double tempOver = (((cpart->temp - startTemp)/1500.0)*std::numbers::pi) - (std::numbers::pi/2.0);
+	if (tempOver > -(std::numbers::pi / 2.0))
 	{
-		if(tempOver > (TPT_PI_DBL/2.0))
-			tempOver = (TPT_PI_DBL/2.0);
+		if (tempOver > std::numbers::pi / 2.0)
+			tempOver = std::numbers::pi / 2.0;
 		double gradv = sin(tempOver) + 1.0;
 		*firer = (int)(gradv * 258.0);
 		*fireg = (int)(gradv * 156.0);
