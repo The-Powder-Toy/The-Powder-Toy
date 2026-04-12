@@ -9,6 +9,7 @@
 #include "common/tpt-compat.h"
 #include "common/tpt-rand.h"
 #include "common/Defer.h"
+#include "FrameTime.h"
 #include "gui/game/Brush.h"
 #include "elements/EMP.h"
 #include "elements/LOLZ.h"
@@ -3288,6 +3289,7 @@ void Simulation::MovementPhase(int i, Neighbourhood neighbourhood)
 
 void Simulation::RecalcFreeParticles(bool do_life_dec)
 {
+	FrameTime::Span span(frameTime, "Simulation::RecalcFreeParticles");
 	memset(pmap, 0, sizeof(pmap));
 	memset(pmap_count, 0, sizeof(pmap_count));
 	memset(photons, 0, sizeof(photons));
@@ -3668,7 +3670,10 @@ void Simulation::BeforeSim(bool willUpdate)
 {
 	if (willUpdate)
 	{
-		air->update_air();
+		{
+			FrameTime::Span span(frameTime, "Air::update_air");
+			air->update_air();
+		}
 
 		if(aheat_enable)
 			air->update_airh();

@@ -1674,6 +1674,7 @@ std::optional<CustomGOLData> GameModel::CheckCustomGol(String ruleString, String
 
 void GameModel::UpdateUpTo(int upTo)
 {
+	FrameTime::Span span(frameTime.get(), "GameModel::UpdateUpTo");
 	if (upTo < sim->debug_nextToUpdate)
 	{
 		upTo = NPART;
@@ -1700,6 +1701,7 @@ void GameModel::UpdateUpTo(int upTo)
 
 void GameModel::BeforeSim()
 {
+	FrameTime::Span span(frameTime.get(), "GameModel::BeforeSim");
 	auto willUpdate = IsSimRunning();
 	if (willUpdate)
 	{
@@ -1710,6 +1712,7 @@ void GameModel::BeforeSim()
 
 void GameModel::AfterSim()
 {
+	FrameTime::Span span(frameTime.get(), "GameModel::AfterSim");
 	sim->AfterSim();
 	CommandInterface::Ref().HandleEvent(AfterSimEvent{});
 }

@@ -5,6 +5,7 @@
 #include "graphics/RendererSettings.h"
 #include "simulation/CustomGOLData.h"
 #include "simulation/SimulationSettings.h"
+#include "simulation/FrameTime.h"
 #include <vector>
 #include <deque>
 #include <memory>
@@ -347,4 +348,6 @@ public:
 	{
 		return !paused || queuedFrames;
 	}
+
+	std::unique_ptr<FrameTime> frameTime;
 };

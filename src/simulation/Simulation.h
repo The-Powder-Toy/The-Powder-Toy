@@ -23,6 +23,7 @@
 
 constexpr int CHANNELS = int(MAX_TEMP - 73) / 100 + 2;
 
+class FrameTime;
 class Snapshot;
 class Brush;
 struct SimulationSample;
@@ -267,6 +268,8 @@ public:
 	~Simulation();
 
 	void EnableNewtonianGravity(bool enable);
+
+	FrameTime *frameTime = nullptr;
 
 private:
 	CoordStack& getCoordStackSingleton();
