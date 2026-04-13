@@ -106,8 +106,8 @@ static int update(UPDATE_FUNC_ARGS)
 							rr = pmap[yCurrent][xCurrent];
 
 						// Checks for when to stop:
-						//  1: if .tmp isn't set, and the element in this spot is the ctype, then stop
-						//  2: if .tmp is set, stop when the length limit reaches 0
+						//	1: if .tmp isn't set, and the element in this spot is the ctype, then stop
+						//	2: if .tmp is set, stop when the length limit reaches 0
 						if ((!localCopyLength && TYP(rr) == ctype && (ctype != PT_LIFE || parts[ID(rr)].ctype == ctypeExtra))
 								|| !--partsRemaining)
 						{
@@ -145,8 +145,8 @@ static int update(UPDATE_FUNC_ARGS)
 						}
 						if (type == PT_SPRK) // spark hack
 							p = sim->create_part(-1, xCopyTo, yCopyTo, PT_METL);
-                        else if (type == PT_STKM || type == PT_STKM2)
-                            continue; // do not try to copy these non-copyable particles
+						else if (type == PT_STKM || type == PT_STKM2)
+							continue; // do not try to copy these non-copyable particles
 						else if (type)
 							p = sim->create_part(-1, xCopyTo, yCopyTo, type);
 						else
@@ -155,31 +155,31 @@ static int update(UPDATE_FUNC_ARGS)
 						// if new particle was created successfully
 						if (p >= 0)
 						{
-                            if (type == PT_SPRK)  // spark hack
-                                sim->part_change_type(p, xCopyTo, yCopyTo, PT_SPRK);
+							if (type == PT_SPRK) // spark hack
+								sim->part_change_type(p, xCopyTo, yCopyTo, PT_SPRK);
 
 							if (isEnergy)
 								parts[p] = parts[ID(sim->photons[yCurrent][xCurrent])];
-                            else if (type != PT_FIGH) 
-                                parts[p] = parts[ID(pmap[yCurrent][xCurrent])];
-                            else
-                            { 
-                                // FIGH needs special rules
-                                const auto& other = parts[ID(pmap[yCurrent][xCurrent])];
-                                const playerst& source_pst = sim->fighters[other.tmp];
-                                auto old_tmp = parts[p].tmp;
-                                parts[p] = other;
-                                parts[p].tmp = old_tmp; 
-                                // need to keep .tmp consistent, since this
-                                // is a pointer to fighter metadata
+							else if (type != PT_FIGH) 
+								parts[p] = parts[ID(pmap[yCurrent][xCurrent])];
+							else
+							{ 
+								// FIGH needs special rules
+								const auto& other = parts[ID(pmap[yCurrent][xCurrent])];
+								const playerst& source_pst = sim->fighters[other.tmp];
+								auto old_tmp = parts[p].tmp;
+								parts[p] = other;
+								parts[p].tmp = old_tmp; 
+								// need to keep .tmp consistent: it points to fighter metadata
 
-                                // also update the fighter metadata
-                                playerst& this_pst = sim->fighters[old_tmp];
-                                this_pst.rocketBoots = source_pst.rocketBoots;
-                                this_pst.fan = source_pst.fan;
-                                this_pst.elem = source_pst.elem;
+								// Update the new fighter's metadata
+								// Do not attempt to copy kinematics of legs - overwritten next frame anyway
+								playerst& this_pst = sim->fighters[old_tmp];
+								this_pst.rocketBoots = source_pst.rocketBoots;
+								this_pst.fan = source_pst.fan;
+								this_pst.elem = source_pst.elem;
 
-                            } 
+							} 
 
 							parts[p].x = float(xCopyTo);
 							parts[p].y = float(yCopyTo);
