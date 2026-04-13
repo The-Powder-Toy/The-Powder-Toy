@@ -171,7 +171,7 @@ static int update(UPDATE_FUNC_ARGS)
 				figh->comm = (int)figh->comm | 0x04;
 		}
 		break;
-	deafault:
+	default:
 		figh->comm = 0;
 		break;
 	}
