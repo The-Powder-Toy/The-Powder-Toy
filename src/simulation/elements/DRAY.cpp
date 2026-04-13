@@ -174,26 +174,6 @@ static int update(UPDATE_FUNC_ARGS)
                                     parts[p].tmp2 = other.tmp2;
                                 }
 
-//                                playerst& new_figh = sim->fighters[parts[p].tmp];
-//                                const playerst *cplayer = nullptr;
-//                                if(type==PT_STKM)
-//                                    cplayer = &sim->player;
-//                                else if(type==PT_STKM2)
-//                                    cplayer = &sim->player2;
-//                                else if (type==PT_FIGH && sim->parts[i].tmp >= 0 && other.tmp < MAX_FIGHTERS)
-//                                    cplayer = &sim->fighters[(unsigned char)other.tmp];
-//
-//                                int dx = xCopyTo - x;
-//                                int dy = yCopyTo - y;
-//
-//                                if (cplayer) {
-//                                    printf("legs\t old\t new\n");                                      
-//                                    for (int i=0; i<8; i++){
-//                                        new_figh.legs[i*2] = cplayer->legs[i*2] + dx;
-//                                        new_figh.legs[i*2+1] = cplayer->legs[i*2+1] + dy;
-//                                        new_figh.accs[i] = cplayer->accs[i];   
-//                                    }
-//                                }
                             } else 
                                 if (isEnergy)
 								parts[p] = parts[ID(sim->photons[yCurrent][xCurrent])];
