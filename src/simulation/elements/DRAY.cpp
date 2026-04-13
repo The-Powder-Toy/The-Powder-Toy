@@ -146,7 +146,7 @@ static int update(UPDATE_FUNC_ARGS)
 						if (type == PT_SPRK) // spark hack
 							p = sim->create_part(-1, xCopyTo, yCopyTo, PT_METL);
                         else if (type == PT_STKM || type == PT_STKM2)
-                            continue; // do not try to copy these non-copyably particles
+                            continue; // do not try to copy these non-copyable particles
 						else if (type)
 							p = sim->create_part(-1, xCopyTo, yCopyTo, type);
 						else
@@ -165,14 +165,14 @@ static int update(UPDATE_FUNC_ARGS)
                                 // FIGH needs special rules
                                 const auto& other = parts[ID(pmap[yCurrent][xCurrent])];
                                 const playerst& source_pst = sim->fighters[other.tmp];
-                                playerst& this_pst = sim->fighters[parts[p].tmp];
-                            
-                                parts[p].ctype = other.ctype;
-                                parts[p].life  = other.life;
-                                parts[p].tmp2  = other.tmp2;
-                                parts[p].tmp3  = other.tmp3;
-                                parts[p].tmp4  = other.tmp4;
+                                auto old_tmp = parts[p].tmp;
+                                parts[p] = other;
+                                parts[p].tmp = old_tmp; 
+                                // need to keep .tmp consistent, since this
+                                // is a pointer to fighter metadata
 
+                                // also update the fighter metadata
+                                playerst& this_pst = sim->fighters[old_tmp];
                                 this_pst.rocketBoots = source_pst.rocketBoots;
                                 this_pst.fan = source_pst.fan;
                                 this_pst.elem = source_pst.elem;
