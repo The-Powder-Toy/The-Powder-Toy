@@ -145,6 +145,8 @@ static int update(UPDATE_FUNC_ARGS)
 						}
 						if (type == PT_SPRK) // spark hack
 							p = sim->create_part(-1, xCopyTo, yCopyTo, PT_METL);
+                        else if (type == PT_STKM || type == PT_STKM2)
+                            continue; // do not try to copy these non-copyably particles
 						else if (type)
 							p = sim->create_part(-1, xCopyTo, yCopyTo, type);
 						else
@@ -153,12 +155,31 @@ static int update(UPDATE_FUNC_ARGS)
 						// if new particle was created successfully
 						if (p >= 0)
 						{
-							if (type == PT_SPRK) // spark hack
-								sim->part_change_type(p, xCopyTo, yCopyTo, PT_SPRK);
+                            if (type == PT_SPRK) { // spark hack
+                                sim->part_change_type(p, xCopyTo, yCopyTo, PT_SPRK);
+                            }
+
 							if (isEnergy)
 								parts[p] = parts[ID(sim->photons[yCurrent][xCurrent])];
-							else
-								parts[p] = parts[ID(pmap[yCurrent][xCurrent])];
+                            else if (type == PT_FIGH) { 
+                                // FIGH needs special rules
+                                const auto& other = parts[ID(pmap[yCurrent][xCurrent])];
+                                const playerst& source_pst = sim->fighters[other.tmp];
+                                playerst& this_pst = sim->fighters[parts[p].tmp];
+                            
+                                parts[p].ctype = other.ctype;
+                                parts[p].life  = other.life;
+                                parts[p].tmp2  = other.tmp2;
+                                parts[p].tmp3  = other.tmp3;
+                                parts[p].tmp4  = other.tmp4;
+
+                                this_pst.rocketBoots = source_pst.rocketBoots;
+                                this_pst.fan = source_pst.fan;
+                                this_pst.elem = source_pst.elem;
+
+                            } else 	
+                                parts[p] = parts[ID(pmap[yCurrent][xCurrent])];
+
 							parts[p].x = float(xCopyTo);
 							parts[p].y = float(yCopyTo);
 						}
