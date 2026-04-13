@@ -155,13 +155,15 @@ static int update(UPDATE_FUNC_ARGS)
 						// if new particle was created successfully
 						if (p >= 0)
 						{
-                            if (type == PT_SPRK) { // spark hack
+                            if (type == PT_SPRK)  // spark hack
                                 sim->part_change_type(p, xCopyTo, yCopyTo, PT_SPRK);
-                            }
 
 							if (isEnergy)
 								parts[p] = parts[ID(sim->photons[yCurrent][xCurrent])];
-                            else if (type == PT_FIGH) { 
+                            else if (type != PT_FIGH) 
+                                parts[p] = parts[ID(pmap[yCurrent][xCurrent])];
+                            else
+                            { 
                                 // FIGH needs special rules
                                 const auto& other = parts[ID(pmap[yCurrent][xCurrent])];
                                 const playerst& source_pst = sim->fighters[other.tmp];
@@ -177,8 +179,7 @@ static int update(UPDATE_FUNC_ARGS)
                                 this_pst.fan = source_pst.fan;
                                 this_pst.elem = source_pst.elem;
 
-                            } else 	
-                                parts[p] = parts[ID(pmap[yCurrent][xCurrent])];
+                            } 
 
 							parts[p].x = float(xCopyTo);
 							parts[p].y = float(yCopyTo);
