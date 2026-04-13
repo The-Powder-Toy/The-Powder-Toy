@@ -160,26 +160,27 @@ static int update(UPDATE_FUNC_ARGS)
 
 							if (isEnergy)
 								parts[p] = parts[ID(sim->photons[yCurrent][xCurrent])];
-							else if (type != PT_FIGH) 
+							else if (type != PT_FIGH)
 								parts[p] = parts[ID(pmap[yCurrent][xCurrent])];
 							else
-							{ 
+							{
 								// FIGH needs special rules
 								const auto& other = parts[ID(pmap[yCurrent][xCurrent])];
-								const playerst& source_pst = sim->fighters[other.tmp];
+
+								// need to keep .tmp consistent: it points to fighter metadata
 								auto old_tmp = parts[p].tmp;
 								parts[p] = other;
-								parts[p].tmp = old_tmp; 
-								// need to keep .tmp consistent: it points to fighter metadata
+								parts[p].tmp = old_tmp;
 
 								// Update the new fighter's metadata
 								// Do not attempt to copy kinematics of legs - overwritten next frame anyway
+								const playerst& source_pst = sim->fighters[other.tmp];
 								playerst& this_pst = sim->fighters[old_tmp];
 								this_pst.rocketBoots = source_pst.rocketBoots;
 								this_pst.fan = source_pst.fan;
 								this_pst.elem = source_pst.elem;
 
-							} 
+							}
 
 							parts[p].x = float(xCopyTo);
 							parts[p].y = float(yCopyTo);
