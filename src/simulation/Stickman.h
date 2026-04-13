@@ -14,3 +14,8 @@ struct playerst
 	bool fan;
 	int spawnID;         //id of the SPWN particle that spawns it
 };
+
+
+static const int Element_FIGH_moves_mask = 1; // 0 - unseen, 1 - seen
+static const int Element_FIGH_square_head_mask = 2; // 0x0 - default, 0x2 - STKM-aligned, square head
+static const int Element_FIGH_stk2_mask = 4; // 0x0 - default, 0x2 - STKM-aligned, square head

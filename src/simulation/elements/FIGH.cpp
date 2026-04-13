@@ -70,11 +70,39 @@ static int update(UPDATE_FUNC_ARGS)
 
 	int tarx = 0, tary = 0;
 
-	parts[i].tmp2 = 0; //0 - stay in place, 1 - seek a stick man
+	parts[i].tmp2 &= ~Element_FIGH_moves_mask; 
 
-	//Set target cords
-	if (sim->player2.spwn)
-	{
+	// Set target cords
+    // If we are a cloned STKM, attack other fighters.
+    // If no fighters remain, turn on your creator like Frakenstein's monster
+	if (parts[i].tmp2 & Element_FIGH_square_head_mask) 
+    {
+
+        auto dist2 = [figh](playerst* f){
+            double dx = f->legs[2] - figh->legs[2];
+            double dy = f->legs[3] - figh->legs[3];
+            return dx*dx + dy*dy;
+        };
+        // stkm clone
+        float best_dist2 = 2000*2000;
+        playerst* target_figh = nullptr;
+        for (unsigned char j=0; j<MAX_FIGHTERS; ++j){
+            playerst* f = &sim->fighters[j];
+            if (f->spwn != 0 && f != figh && dist2(f) < best_dist2) {
+                best_dist2 = dist2(f);
+                target_figh = f;
+            }
+        }
+
+        if (target_figh != nullptr){
+            // successfully found
+            tarx = (int)target_figh->legs[2];
+            tary = (int)target_figh->legs[3];
+            parts[i].tmp2 |= Element_FIGH_moves_mask;
+        }
+    } 
+    else if (sim->player2.spwn)
+    {
 		if (sim->player.spwn && (pow((float)sim->player.legs[2]-x, 2) + pow((float)sim->player.legs[3]-y, 2))<=
 		   (pow((float)sim->player2.legs[2]-x, 2) + pow((float)sim->player2.legs[3]-y, 2)))
 		{
@@ -86,16 +114,17 @@ static int update(UPDATE_FUNC_ARGS)
 			tarx = (int)sim->player2.legs[2];
 			tary = (int)sim->player2.legs[3];
 		}
-		parts[i].tmp2 = 1;
+		parts[i].tmp2 |= Element_FIGH_moves_mask;
 	}
 	else if (sim->player.spwn)
 	{
 		tarx = (int)sim->player.legs[2];
 		tary = (int)sim->player.legs[3];
-		parts[i].tmp2 = 1;
-	}
+		parts[i].tmp2 |= Element_FIGH_moves_mask;
 
-	switch (parts[i].tmp2)
+	} 
+
+	switch (parts[i].tmp2 & Element_FIGH_moves_mask)
 	{
 	case 1:
 		if ((pow(float(tarx-x), 2) + pow(float(tary-y), 2))<600)
@@ -142,7 +171,7 @@ static int update(UPDATE_FUNC_ARGS)
 				figh->comm = (int)figh->comm | 0x04;
 		}
 		break;
-	default:
+	deafault:
 		figh->comm = 0;
 		break;
 	}

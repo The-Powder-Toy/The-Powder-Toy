@@ -144,11 +144,11 @@ static int update(UPDATE_FUNC_ARGS)
 							}
 						}
                         
-                        // No cloning people 
-                        if (type == PT_STKM || type == PT_STKM2) type = PT_FIGH;
 
 						if (type == PT_SPRK) // spark hack
 							p = sim->create_part(-1, xCopyTo, yCopyTo, PT_METL);
+                        else if (type == PT_STKM || type == PT_STKM2) // cannot be cloned correctly
+							p = sim->create_part(-1, xCopyTo, yCopyTo, PT_FIGH);
 						else if (type)
 							p = sim->create_part(-1, xCopyTo, yCopyTo, type);
 						else
@@ -160,12 +160,40 @@ static int update(UPDATE_FUNC_ARGS)
 						{
 							if (type == PT_SPRK) // spark hack
 								sim->part_change_type(p, xCopyTo, yCopyTo, PT_SPRK);
-							if (type == PT_FIGH) { // does not like the easy appraoch
+							if (type == PT_FIGH || type == PT_STKM || type == PT_STKM2) { // does not like the easy appraoch
                                 const auto& other = parts[ID(pmap[yCurrent][xCurrent])];
                                 parts[p].ctype = other.ctype;
                                 parts[p].life = other.life;
-                                // do not copy tmp -- it dhould be unique
-                                parts[p].tmp2 = other.tmp2;
+                                // do not copy tmp -- it should be unique
+                                if(type==PT_STKM) {
+                                    parts[p].tmp2 = Element_FIGH_square_head_mask;
+                                } else if(type==PT_STKM2) {
+                                    parts[p].tmp2 = Element_FIGH_square_head_mask;
+                                    parts[p].tmp2 |= Element_FIGH_stk2_mask;
+                                } else {
+                                    parts[p].tmp2 = other.tmp2;
+                                }
+
+//                                playerst& new_figh = sim->fighters[parts[p].tmp];
+//                                const playerst *cplayer = nullptr;
+//                                if(type==PT_STKM)
+//                                    cplayer = &sim->player;
+//                                else if(type==PT_STKM2)
+//                                    cplayer = &sim->player2;
+//                                else if (type==PT_FIGH && sim->parts[i].tmp >= 0 && other.tmp < MAX_FIGHTERS)
+//                                    cplayer = &sim->fighters[(unsigned char)other.tmp];
+//
+//                                int dx = xCopyTo - x;
+//                                int dy = yCopyTo - y;
+//
+//                                if (cplayer) {
+//                                    printf("legs\t old\t new\n");                                      
+//                                    for (int i=0; i<8; i++){
+//                                        new_figh.legs[i*2] = cplayer->legs[i*2] + dx;
+//                                        new_figh.legs[i*2+1] = cplayer->legs[i*2+1] + dy;
+//                                        new_figh.accs[i] = cplayer->accs[i];   
+//                                    }
+//                                }
                             } else 
                                 if (isEnergy)
 								parts[p] = parts[ID(sim->photons[yCurrent][xCurrent])];

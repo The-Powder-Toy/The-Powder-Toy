@@ -565,7 +565,9 @@ void Renderer::render_parts()
 						legg = colg;
 						legb = colb;
 					}
-					else if (t==PT_STKM2)
+					else if (t==PT_STKM2 
+                            || (
+                                t==PT_FIGH && (sim->parts[i].tmp2&Element_FIGH_stk2_mask)))
 					{
 						legr = 100;
 						legg = 100;
@@ -589,7 +591,7 @@ void Renderer::render_parts()
 					}
 
 					//head
-					if(t==PT_FIGH)
+					if(t==PT_FIGH && !(sim->parts[i].tmp2&Element_FIGH_square_head_mask))
 					{
 						DrawLine({ nx, ny+2 }, { nx+2, ny }, RGB(colr, colg, colb));
 						DrawLine({ nx+2, ny }, { nx, ny-2 }, RGB(colr, colg, colb));
