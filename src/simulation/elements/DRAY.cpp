@@ -143,6 +143,10 @@ static int update(UPDATE_FUNC_ARGS)
 									sim->kill_part(ID(pmap[yCopyTo][xCopyTo]));
 							}
 						}
+                        
+                        // No cloning people 
+                        if (type == PT_STKM || type == PT_STKM2) type = PT_FIGH;
+
 						if (type == PT_SPRK) // spark hack
 							p = sim->create_part(-1, xCopyTo, yCopyTo, PT_METL);
 						else if (type)
@@ -150,12 +154,20 @@ static int update(UPDATE_FUNC_ARGS)
 						else
 							continue;
 
+
 						// if new particle was created successfully
 						if (p >= 0)
 						{
 							if (type == PT_SPRK) // spark hack
 								sim->part_change_type(p, xCopyTo, yCopyTo, PT_SPRK);
-							if (isEnergy)
+							if (type == PT_FIGH) { // does not like the easy appraoch
+                                const auto& other = parts[ID(pmap[yCurrent][xCurrent])];
+                                parts[p].ctype = other.ctype;
+                                parts[p].life = other.life;
+                                // do not copy tmp -- it dhould be unique
+                                parts[p].tmp2 = other.tmp2;
+                            } else 
+                                if (isEnergy)
 								parts[p] = parts[ID(sim->photons[yCurrent][xCurrent])];
 							else
 								parts[p] = parts[ID(pmap[yCurrent][xCurrent])];
