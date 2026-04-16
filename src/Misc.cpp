@@ -1,9 +1,8 @@
 #include "Misc.h"
 #include "common/String.h"
-#include <cstring>
 #include <sys/types.h>
-#include <cmath>
 #include <algorithm>
+#include <cstring>
 
 void HSV_to_RGB(int h,int s,int v,int *r,int *g,int *b)//convert 0-255(0-360 for H) HSV values to 0-255 RGB
 {
