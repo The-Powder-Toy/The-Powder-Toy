@@ -100,7 +100,7 @@ void die(Simulation *sim, playerst *playerp, int i)
 	{
 		int x = (int)(sim->parts[i].x + 0.5f) / CELL;
 		int y = (int)(sim->parts[i].y + 0.5f) / CELL;
-		sim->pv[y][x] += 256;
+		sim->pv[y][x] += 64;
 	}
 	else
 	{
