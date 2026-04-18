@@ -96,14 +96,23 @@ static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
 
 void die(Simulation *sim, playerst *playerp, int i)
 {
-	int x = (int)(sim->parts[i].x + 0.5f);
-	int y = (int)(sim->parts[i].y + 0.5f);
-	for (int r = -2; r <= 1; r++)
+	if (playerp->fan)
 	{
-		sim->create_part(-1, x + r, y - 2, playerp->elem);
-		sim->create_part(-1, x + r + 1, y + 2, playerp->elem);
-		sim->create_part(-1, x - 2, y + r + 1, playerp->elem);
-		sim->create_part(-1, x + 2, y + r, playerp->elem);
+		int x = (int)(sim->parts[i].x + 0.5f) / CELL;
+		int y = (int)(sim->parts[i].y + 0.5f) / CELL;
+		sim->pv[y][x] += 256;
+	}
+	else
+	{
+		int x = (int)(sim->parts[i].x + 0.5f);
+		int y = (int)(sim->parts[i].y + 0.5f);
+		for (int r = -2; r <= 1; r++)
+		{
+			sim->create_part(-1, x + r, y - 2, playerp->elem);
+			sim->create_part(-1, x + r + 1, y + 2, playerp->elem);
+			sim->create_part(-1, x - 2, y + r + 1, playerp->elem);
+			sim->create_part(-1, x + 2, y + r, playerp->elem);
+		}
 	}
 	sim->kill_part(i);  //Kill him
 }
