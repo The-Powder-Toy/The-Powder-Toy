@@ -43,7 +43,7 @@ void Element::Element_VRSS()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 305.0f;
-	HighTemperatureTransition = PT_VIRS;
+	HighTemperatureTransition = PT_VIRS; //@ VRSS -> VIRS
 
 	DefaultProperties.tmp4 = 250;
 

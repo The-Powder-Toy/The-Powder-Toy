@@ -35,9 +35,9 @@ void Element::Element_PSTE()
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = 0.5f;
-	HighPressureTransition = PT_PSTS;
+	HighPressureTransition = PT_PSTS; //@ PSTE -> PSTS
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 747.0f;
-	HighTemperatureTransition = PT_BRCK;
+	HighTemperatureTransition = PT_BRCK; //@ PSTE -> BRCK
 }

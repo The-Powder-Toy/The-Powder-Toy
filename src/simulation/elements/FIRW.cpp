@@ -96,6 +96,7 @@ static int update(UPDATE_FUNC_ARGS)
 		unsigned col = Renderer::firwTableAt(sim->rng.between(0, 199)).Pack();
 		for (int n=0; n<40; n++)
 		{
+			//@ FIRW -> EMBR
 			auto np = sim->create_part(-3, x, y, PT_EMBR);
 			if (np>-1)
 			{

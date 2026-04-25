@@ -38,5 +38,5 @@ void Element::Element_STNE()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 983.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ STNE -> LAVA
 }

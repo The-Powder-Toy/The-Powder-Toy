@@ -41,7 +41,7 @@ void Element::Element_VRSG()
 	HighPressure = IPH;
 	HighPressureTransition = NT;
 	LowTemperature = 673.0f;
-	LowTemperatureTransition = PT_VIRS;
+	LowTemperatureTransition = PT_VIRS; //@ VRSG -> VIRS
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 

@@ -72,11 +72,13 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if (TYP(r)==PT_WATR)
 				{
+					//@ BOYL + WATR -> BOYL + FOG
 					if (sim->rng.chance(1, 30))
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_FOG);
 				}
 				else if (TYP(r)==PT_O2)
 				{
+					//@ BOYL + O2 -> WATR
 					if (sim->rng.chance(1, 9))
 					{
 						sim->kill_part(ID(r));

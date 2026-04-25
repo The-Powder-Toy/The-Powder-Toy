@@ -40,7 +40,7 @@ void Element::Element_YEST()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 373.0f;
-	HighTemperatureTransition = PT_DYST;
+	HighTemperatureTransition = PT_DYST; //@ YEST -> DYST
 
 	Update = &update;
 }
@@ -58,6 +58,7 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if (TYP(r)==PT_DYST && sim->rng.chance(1, 6) && !sim->legacy_enable)
 				{
+					//@ YEST -> DYST
 					sim->part_change_type(i,x,y,PT_DYST);
 				}
 			}

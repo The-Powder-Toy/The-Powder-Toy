@@ -50,6 +50,7 @@ void Element::Element_FUSE()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	//@ FUSE -> FUSE + PLSM
 	if (parts[i].life<=0) {
 		auto r = sim->create_part(i, x, y, PT_PLSM);
 		if (r>-1)
@@ -67,6 +68,7 @@ static int update(UPDATE_FUNC_ARGS)
 	if ((sim->pv[y/CELL][x/CELL] > 2.7f) && parts[i].tmp>40)
 		parts[i].tmp=39;
 	else if (parts[i].tmp<=0) {
+		//@ FUSE -> FSEP
 		sim->create_part(i, x, y, PT_FSEP);
 		return 1;
 	}

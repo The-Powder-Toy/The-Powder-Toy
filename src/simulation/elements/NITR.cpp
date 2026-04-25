@@ -39,5 +39,5 @@ void Element::Element_NITR()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 673.0f;
-	HighTemperatureTransition = PT_FIRE;
+	HighTemperatureTransition = PT_FIRE; //@ NITR -> FIRE
 }

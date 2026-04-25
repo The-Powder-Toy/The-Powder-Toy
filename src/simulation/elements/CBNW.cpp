@@ -40,9 +40,9 @@ void Element::Element_CBNW()
 	HighPressure = IPH;
 	HighPressureTransition = NT;
 	LowTemperature = 273.15f;
-	LowTemperatureTransition = PT_ICEI;
+	LowTemperatureTransition = PT_ICEI; //@ CBNW -> ICEI(CBNW)
 	HighTemperature = 373.0f;
-	HighTemperatureTransition = PT_WTRV;
+	HighTemperatureTransition = PT_WTRV; //@ CBNW -> WTRV
 
 	Update = &update;
 	Graphics = &graphics;
@@ -56,6 +56,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		if (sim->pv[y/CELL][x/CELL] <= -0.5 || sim->rng.chance(1, 4000))
 		{
+			//@ CBNW -> CO2
 			sim->part_change_type(i,x,y,PT_CO2);
 			parts[i].ctype = 5;
 			sim->pv[y/CELL][x/CELL] += 0.5f;
@@ -74,6 +75,7 @@ static int update(UPDATE_FUNC_ARGS)
 		//Explode
 		if(parts[i].tmp==1 && sim->rng.chance(3, 4))
 		{
+			//@ CBNW -> CO2
 			sim->part_change_type(i,x,y,PT_CO2);
 			parts[i].ctype = 5;
 			sim->pv[y/CELL][x/CELL] += 0.2f;
@@ -96,6 +98,7 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 				else if((elements[TYP(r)].Properties&TYPE_SOLID) && TYP(r)!=PT_DMND && TYP(r)!=PT_GLAS && parts[i].tmp == 0 && sim->rng.chance(int(2 - sim->pv[y/CELL][x/CELL]), 6667))
 				{
+					//@ CBNW -> CO2
 					sim->part_change_type(i,x,y,PT_CO2);
 					parts[i].ctype = 5;
 					sim->pv[y/CELL][x/CELL] += 0.2f;
@@ -122,6 +125,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					if ((sim->legacy_enable||parts[i].temp>(273.15f+12.0f)) && sim->rng.chance(1, 166))
 					{
+						//@ CBNW + RBDM/LRBD -> CBNW + FIRE
 						sim->part_change_type(i,x,y,PT_FIRE);
 						parts[i].life = 4;
 						parts[i].ctype = PT_WATR;

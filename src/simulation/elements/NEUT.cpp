@@ -66,6 +66,7 @@ static int update(UPDATE_FUNC_ARGS)
 			switch (TYP(r))
 			{
 			case PT_WATR:
+				//@ NEUT + WATR -> NEUT + DSTW
 				if (sim->rng.chance(3, 20))
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_DSTW);
 			case PT_ICEI:
@@ -78,6 +79,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					if (sim->rng.chance(1, 3))
 					{
+						//@ NEUT + PLUT -> NEUT + URAN/LAVA(PLUT)
 						sim->create_part(ID(r), x+rx, y+ry, sim->rng.chance(2, 3) ? PT_LAVA : PT_URAN);
 						parts[ID(r)].temp = MAX_TEMP;
 						if (parts[ID(r)].type==PT_LAVA) {
@@ -87,6 +89,7 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 					else
 					{
+						//@ NEUT + PLUT -> 2xNEUT
 						sim->create_part(ID(r), x+rx, y+ry, PT_NEUT);
 						parts[ID(r)].vx = 0.25f*parts[ID(r)].vx + parts[i].vx;
 						parts[ID(r)].vy = 0.25f*parts[ID(r)].vy + parts[i].vy;
@@ -98,47 +101,58 @@ static int update(UPDATE_FUNC_ARGS)
 			case PT_DEUT:
 				if (sim->rng.chance(pressureFactor + 1 + (parts[ID(r)].life/100), 1000))
 				{
+					//@ NEUT + DEUT -> 2xNEUT
 					DeutExplosion(sim, parts[ID(r)].life, x+rx, y+ry, restrict_flt(parts[ID(r)].temp + parts[ID(r)].life*500.0f, MIN_TEMP, MAX_TEMP), PT_NEUT);
 					sim->kill_part(ID(r));
 				}
 				break;
 			case PT_GUNP:
+				//@ NEUT + GUNP -> NEUT + DUST
 				if (sim->rng.chance(3, 200))
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_DUST);
 				break;
 			case PT_DYST:
+				//@ NEUT + DYST -> NEUT + YEST
 				if (sim->rng.chance(3, 200))
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_YEST);
 				break;
 			case PT_YEST:
+				//@ NEUT + YEST -> NEUT + DYST
 				sim->part_change_type(ID(r),x+rx,y+ry,PT_DYST);
 				break;
 			case PT_PLEX:
+				//@ NEUT + PLEX -> NEUT + GOO
 				if (sim->rng.chance(3, 200))
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_GOO);
 				break;
 			case PT_NITR:
+				//@ NEUT + NITR -> NEUT + DESL
 				if (sim->rng.chance(3, 200))
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_DESL);
 				break;
 			case PT_PLNT:
+				//@ NEUT + PLNT -> NEUT + WOOD
 				if (sim->rng.chance(1, 20))
 					sim->create_part(ID(r), x+rx, y+ry, PT_WOOD);
 				break;
 			case PT_DESL:
 			case PT_OIL:
+				//@ NEUT + DESL/OIL -> NEUT + GAS
 				if (sim->rng.chance(3, 200))
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_GAS);
 				break;
 			case PT_COAL:
+				//@ NEUT + COAL -> NEUT + WOOD
 				if (sim->rng.chance(1, 20))
 					sim->create_part(ID(r), x+rx, y+ry, PT_WOOD);
 				break;
 			case PT_BCOL:
+				//@ NEUT + BCOL -> NEUT + SAWD
 				if (sim->rng.chance(1, 20))
 					sim->create_part(ID(r), x+rx, y+ry, PT_SAWD);
 				break;
 			case PT_DUST:
+				//@ NEUT + DUST -> NEUT + FWRK
 				if (sim->rng.chance(1, 20))
 					sim->part_change_type(ID(r), x+rx, y+ry, PT_FWRK);
 				break;
@@ -147,6 +161,7 @@ static int update(UPDATE_FUNC_ARGS)
 					parts[ID(r)].ctype = PT_DUST;
 				break;
 			case PT_ACID:
+				//@ NEUT + ACID -> NEUT + ISOZ
 				if (sim->rng.chance(1, 20))
 					sim->create_part(ID(r), x+rx, y+ry, PT_ISOZ);
 				break;
@@ -162,6 +177,7 @@ static int update(UPDATE_FUNC_ARGS)
 					parts[ID(r)].life = 1500;
 				break;
 			case PT_RFRG:
+				//@ NEUT + RFRG -> NEUT + GAS/CAUS
 				if (sim->rng.chance(1, 2))
 					sim->create_part(ID(r), x+rx, y+ry, PT_GAS);
 				else
@@ -178,13 +194,14 @@ static int update(UPDATE_FUNC_ARGS)
 					//If there's a correct ctype set, liquefy into it
 					if(ct_under > 0 && ct_under < PT_NUM)
 					{
+						//@ NEUT + RSSS(ctype) -> ctype
 						sim->create_part(ID(r), x, y, ct_under);
 
 						//If there's a correct tmp set, use it for ctype
 						if((tmp_under > 0) && (tmp_under < PT_NUM) && (elements[ct_under].CarriesTypeIn & (1U << FIELD_CTYPE)))
 							parts[ID(r)].ctype = tmp_under;
 					}
-					else
+					else //@ NEUT + RSSS -> RSST
 						sim->part_change_type(ID(r), x, y, PT_RSST); //Default to RSST if no ctype
 
 					sim->kill_part(i);
@@ -193,6 +210,7 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 				break;
 			case PT_BASE:
+				//@ NEUT + BASE -> NEUT + LRBD
 				if (parts[ID(r)].temp > (50 + 273.15) && sim->rng.chance(1, 35))
 					sim->create_part(ID(r), x+rx, y+ry, PT_LRBD);
 				break;

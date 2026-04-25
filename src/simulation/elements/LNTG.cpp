@@ -37,7 +37,7 @@ void Element::Element_LNTG()
 	HighPressure = IPH;
 	HighPressureTransition = NT;
 	LowTemperature = 63.0f;
-	LowTemperatureTransition = PT_NICE;
+	LowTemperatureTransition = PT_NICE; //@ LNTG -> NICE
 	HighTemperature = 77.0f;
 	HighTemperatureTransition = PT_NONE;
 }

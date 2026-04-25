@@ -53,7 +53,8 @@ static int update(UPDATE_FUNC_ARGS)
 		{
 			if (parts[i].temp>9000 && sim->pv[y/CELL][x/CELL]>30.0f && sim->rng.chance(1, 200))
 			{
-				sim->part_change_type(i, x ,y ,PT_EXOT);
+				//@ BREC -> EXOT
+				sim->part_change_type(i, x, y, PT_EXOT);
 				parts[i].life = 1000;
 			}
 			parts[i].temp += (sim->pv[y/CELL][x/CELL])/8;

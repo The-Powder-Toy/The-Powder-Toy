@@ -35,7 +35,7 @@ void Element::Element_RFRG()
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = 2;
-	HighPressureTransition = PT_RFGL;
+	HighPressureTransition = PT_RFGL; //@ RFRG -> RFGL
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;

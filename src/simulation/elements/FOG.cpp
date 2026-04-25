@@ -41,7 +41,7 @@ void Element::Element_FOG()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 373.15f;
-	HighTemperatureTransition = PT_WTRV;
+	HighTemperatureTransition = PT_WTRV; //@ FOG -> WTRV
 
 	Update = &update;
 }
@@ -61,6 +61,7 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if ((elements[TYP(r)].Properties&TYPE_SOLID) && sim->rng.chance(1, 10) && parts[i].life==0 && !(TYP(r)==PT_CLNE || TYP(r)==PT_PCLN)) // TODO: should this also exclude BCLN?
 				{
+					//@ FOG -> RIME
 					sim->part_change_type(i,x,y,PT_RIME);
 				}
 				if (TYP(r)==PT_SPRK)

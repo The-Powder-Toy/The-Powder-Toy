@@ -42,7 +42,7 @@ void Element::Element_CRMC()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 2887.15f;
-	HighTemperatureTransition = ST;
+	HighTemperatureTransition = ST; //@ CRMC -> LAVA(CRMC)
 
 	Update = &update;
 	Graphics = &graphics;
@@ -52,6 +52,7 @@ void Element::Element_CRMC()
 static int update(UPDATE_FUNC_ARGS)
 {
 	float origTemp = parts[i].temp;
+	//@ CRMC -> CLST
 	if (sim->pv[y/CELL][x/CELL] < -30.0f)
 		sim->create_part(i, x, y, PT_CLST);
 	parts[i].temp = origTemp;

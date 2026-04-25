@@ -41,7 +41,7 @@ void Element::Element_BRMT()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1273.0f;
-	HighTemperatureTransition = ST;
+	HighTemperatureTransition = ST; //@ BRMT -> LAVA(BMTL)
 
 	Update = &update;
 }
@@ -66,9 +66,10 @@ static int update(UPDATE_FUNC_ARGS)
 					{
 						if (sim->rng.chance(1, 2))
 						{
+							//@ BRMT + BREC -> BRMT + THRM
 							sim->create_part(ID(r), x+rx, y+ry, PT_THRM);
 						}
-						else
+						else //@ BRMT + BREC -> THRM + BREC
 							sim->create_part(i, x, y, PT_THRM);
 					}
 				}

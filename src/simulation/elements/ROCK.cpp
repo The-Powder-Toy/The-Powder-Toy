@@ -37,11 +37,11 @@ void Element::Element_ROCK()
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = 120;
-	HighPressureTransition = PT_STNE;
+	HighPressureTransition = PT_STNE; //@ ROCK -> STNE
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1943.15f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ ROCK -> LAVA(ROCK)
 
 	Graphics = &graphics;
 	Create = &create;

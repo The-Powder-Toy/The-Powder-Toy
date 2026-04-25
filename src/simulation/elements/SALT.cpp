@@ -38,5 +38,5 @@ void Element::Element_SALT()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1173.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ SALT -> LAVA(SALT)
 }

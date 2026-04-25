@@ -75,6 +75,7 @@ static int update(UPDATE_FUNC_ARGS)
 			//This way we preserve the total amount of concentrated BASE in the solution
 			if (sim->rng.chance(1, parts[i].life+1))
 			{
+				//@ BASE -> BOYL
 				auto temp = parts[i].temp;
 				sim->create_part(i, x, y, PT_BOYL);
 				parts[i].temp = temp;
@@ -92,6 +93,7 @@ static int update(UPDATE_FUNC_ARGS)
 	//Base's freezing point lowers with its concentration
 	if (parts[i].temp < (273.15f - ((float)parts[i].life)/4.0f))
 	{
+		//@ BASE -> ICE(BASE)
 		//We don't save base's concentration, so ICEI(BASE) will unfreeze into life = 0
 		sim->part_change_type(i, x, y, PT_ICEI);
 		parts[i].ctype = PT_BASE;
@@ -124,6 +126,7 @@ static int update(UPDATE_FUNC_ARGS)
 						{
 							int saturh = parts[i].life/2;
 
+							//@ BASE + WATR/DSTW/CBNW -> 2xBASE
 							sim->part_change_type(ID(r), x+rx, y+ry, PT_BASE);
 							parts[ID(r)].life = saturh;
 							parts[ID(r)].temp += ((float)saturh)/10.0f;
@@ -132,33 +135,35 @@ static int update(UPDATE_FUNC_ARGS)
 					} //Base neutralizes acid
 					else if (rt == PT_ACID && parts[i].life >= parts[ID(r)].life)
 					{
+						//@ BASE + ACID -> 2xSLTW
 						sim->part_change_type(i, x, y, PT_SLTW);
 						sim->part_change_type(ID(r), x+rx, y+ry, PT_SLTW);
 						return 1;
 					} //Base neutralizes CAUS
 					else if (rt == PT_CAUS && parts[i].life >= parts[ID(r)].life)
 					{
+						//@ BASE + CAUS -> SLTW
 						sim->part_change_type(i, x, y, PT_SLTW);
 						sim->kill_part(ID(r));
 						return 1;
-					} //BASE + OIL = SOAP
+					} //@ BASE + OIL -> SOAP
 					else if (parts[i].life >= 70 && rt == PT_OIL)
 					{
 						sim->part_change_type(i, x, y, PT_SOAP);
 						parts[i].tmp = parts[i].tmp2 = parts[i].ctype = 0;
 						sim->kill_part(ID(r));
 						return 1;
-					} //BASE + GOO = GEL
+					} //@ BASE + GOO -> GEL
 					else if (parts[i].life > 1 && rt == PT_GOO)
 					{
 						sim->create_part(ID(r), x+rx, y+ry, PT_GEL);
 						parts[i].life--;
-					} //BASE + BCOL = GUNP
+					} //@ BASE + BCOL -> GUNP
 					else if (parts[i].life > 1 && rt == PT_BCOL)
 					{
 						sim->create_part(ID(r), x+rx, y+ry, PT_GUNP);
 						parts[i].life--;
-					} //BASE + Molten ROCK = MERC
+					} //@ BASE + LAVA(ROCK) -> MERC
 				        else if (rt == PT_LAVA && parts[ID(r)].ctype == PT_ROCK && pres >= 10.0f && sim->rng.chance(1, 1000))
 					{
 						sim->part_change_type(i, x, y, PT_MERC);
@@ -171,6 +176,7 @@ static int update(UPDATE_FUNC_ARGS)
 					else if (parts[i].life >= 10 &&
 						       	(elements[rt].Properties & (TYPE_SOLID|PROP_CONDUCTS)) == (TYPE_SOLID|PROP_CONDUCTS) && sim->rng.chance(1, 10))
 					{
+						//@ BASE + conductive solid -> BASE + BMTL
 						sim->part_change_type(ID(r), x+rx, y+ry, PT_BMTL);
 						parts[ID(r)].tmp = sim->rng.between(20, 29);
 						parts[i].life--;

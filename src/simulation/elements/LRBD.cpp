@@ -37,7 +37,7 @@ void Element::Element_LRBD()
 	HighPressure = IPH;
 	HighPressureTransition = NT;
 	LowTemperature = 311.0f;
-	LowTemperatureTransition = PT_RBDM;
+	LowTemperatureTransition = PT_RBDM; //@ LRBD -> RBDM
 	HighTemperature = 961.0f;
-	HighTemperatureTransition = PT_FIRE;
+	HighTemperatureTransition = PT_FIRE; //@ LRBD -> FIRE
 }

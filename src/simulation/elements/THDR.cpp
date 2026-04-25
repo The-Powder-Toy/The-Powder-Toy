@@ -75,6 +75,7 @@ static int update(UPDATE_FUNC_ARGS)
 					sim->pv[y/CELL][x/CELL] = restrict_flt(sim->pv[y/CELL][x/CELL] + 100.0f, MIN_PRESSURE, MAX_PRESSURE);
 					if (sim->legacy_enable && sim->rng.chance(1, 200))
 					{
+						//@ THDR -> FIRE
 						parts[i].life = sim->rng.between(120, 169);
 						sim->part_change_type(i,x,y,PT_FIRE);
 					}

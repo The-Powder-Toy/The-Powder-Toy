@@ -41,7 +41,7 @@ void Element::Element_SMKE()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 625.0f;
-	HighTemperatureTransition = PT_FIRE;
+	HighTemperatureTransition = PT_FIRE; //@ SMKE -> FIRE
 
 	Graphics = &graphics;
 }

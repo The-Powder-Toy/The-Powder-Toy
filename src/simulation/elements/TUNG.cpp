@@ -82,12 +82,14 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 		else if (sim->rng.chance(1, 100))
 		{
+			//@ TUNG -> FIRE
 			sim->part_change_type(i, x, y, PT_FIRE);
 			parts[i].life = sim->rng.between(0, 499);
 			return 1;
 		}
 		else
 		{
+			//@ TUNG -> LAVA(TUNG)
 			sim->part_change_type(i, x, y, PT_LAVA);
 			parts[i].ctype = PT_TUNG;
 			return 1;
@@ -104,6 +106,7 @@ static int update(UPDATE_FUNC_ARGS)
 	auto diff = press - parts[i].tmp3;
 	if (diff > 32 || diff < -32)
 	{
+		//@ TUNG -> BRMT(TUNG)
 		sim->part_change_type(i,x,y,PT_BRMT);
 		parts[i].ctype = PT_TUNG;
 		return 1;

@@ -86,6 +86,7 @@ static int update(UPDATE_FUNC_ARGS)
 		//Powered LCRY reaction: PROT->PHOT
 		if (parts[uID].life > 5 && sim->rng.chance(1, 10))
 		{
+			//@ PROT + LCRY -> PHOT + LCRY
 			sim->part_change_type(i, x, y, PT_PHOT);
 			parts[i].life *= 2;
 			parts[i].ctype = 0x3FFFFFFF;
@@ -160,22 +161,22 @@ static int update(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp)
 	{
 		int newID, element;
-		if (parts[i].tmp > 500000)
+		if (parts[i].tmp > 500000) //@ PROT -> SING
 			element = PT_SING; //particle accelerators are known to create earth-destroying black holes
 		else if (parts[i].tmp > 700)
-			element = PT_PLUT;
+			element = PT_PLUT; //@ PROT -> PLUT
 		else if (parts[i].tmp > 420)
-			element = PT_URAN;
+			element = PT_URAN; //@ PROT -> URAN
 		else if (parts[i].tmp > 310)
-			element = PT_POLO;
+			element = PT_POLO; //@ PROT -> POLO
 		else if (parts[i].tmp > 250)
-			element = PT_PLSM;
+			element = PT_PLSM; //@ PROT -> PLSM
 		else if (parts[i].tmp > 100)
-			element = PT_O2;
+			element = PT_O2; //@ PROT -> O2
 		else if (parts[i].tmp > 50)
-			element = PT_CO2;
+			element = PT_CO2; //@ PROT -> CO2
 		else
-			element = PT_NBLE;
+			element = PT_NBLE; //@ PROT -> NBLE
 		newID = sim->create_part(-1, x + sim->rng.between(-1, 1), y + sim->rng.between(-1, 1), element);
 		if (newID >= 0)
 			parts[newID].temp = restrict_flt(100.0f*parts[i].tmp, MIN_TEMP, MAX_TEMP);

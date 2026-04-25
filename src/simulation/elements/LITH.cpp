@@ -41,7 +41,7 @@ void Element::Element_LITH()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 453.65f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ LITH -> LAVA(LITH/GLAS)
 
 	Update = &update;
 	Graphics = &graphics;
@@ -87,6 +87,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					if (burnTimer > 1012 && sim->rng.chance(1, 10))
 					{
+						//@ LITH -> LITH + FIRE
 						sim->create_part(-1, x + rx, y + ry, PT_FIRE);
 					}
 					continue;
@@ -104,6 +105,7 @@ static int update(UPDATE_FUNC_ARGS)
 				case PT_CBNW:
 					if (burnTimer > 1016)
 					{
+						//@ LITH + SLTW/WATR/DSTW/CBNW -> LITH + WTRV
 						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_WTRV);
 						neighbor.temp = 440.f;
 						continue;
@@ -112,6 +114,7 @@ static int update(UPDATE_FUNC_ARGS)
 					{
 						continue;
 					}
+					//@ LITH + SLTW/WTRV/WATR/DSTW/CBNW -> LITH + H2
 					if (self.temp > 440.f)
 					{
 						burnTimer = 1024 + (storedEnergy > 24 ? 96 : storedEnergy * 4);
@@ -175,6 +178,7 @@ static int update(UPDATE_FUNC_ARGS)
 				case PT_O2:
 					if (burnTimer > 1000 && sim->rng.chance(1, 10))
 					{
+						//@ LITH + O2 -> 2xPLSM
 						sim->part_change_type(i, x, y, PT_PLSM);
 						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_PLSM);
 						sim->pv[y / CELL][x / CELL] += 4.0;
@@ -234,11 +238,13 @@ static int update(UPDATE_FUNC_ARGS)
 		if (carbonationFactor < 3)
 		{
 			self.temp = restrict_flt(500.f + storedEnergy * 10, MIN_TEMP, MAX_TEMP);
+			//@ LITH -> LAVA(LITH)
 			self.ctype = PT_LITH;
 		}
 		else
 		{
 			self.temp = restrict_flt(2000.f + storedEnergy * 10, MIN_TEMP, MAX_TEMP);
+			//@ LITH -> LAVA(GLAS)
 			self.ctype = PT_GLAS;
 		}
 	}

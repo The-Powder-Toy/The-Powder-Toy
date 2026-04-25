@@ -81,6 +81,7 @@ static int update(UPDATE_FUNC_ARGS)
 									if (nt)
 										sim->kill_part(ID(pmap[ynxj][xnxi]));
 									sim->pv[(ynxj)/CELL][(xnxi)/CELL] += 0.1f;
+									//@ BOMB -> EMBR
 									auto nb = sim->create_part(-3, xnxi, ynxj, PT_EMBR);
 									if (nb!=-1)
 									{
@@ -98,6 +99,7 @@ static int update(UPDATE_FUNC_ARGS)
 						{
 							if ((pow((float)nxi,2))/(pow((float)(rad+1),2))+(pow((float)nxj,2))/(pow((float)(rad+1),2))<=1 && !TYP(pmap[y+nxj][x+nxi]))
 							{
+								//@ BOMB -> EMBR
 								auto nb = sim->create_part(-3, x+nxi, y+nxj, PT_EMBR);
 								if (nb!=-1)
 								{

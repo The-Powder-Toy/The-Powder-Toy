@@ -46,7 +46,7 @@ void Element::Element_FIRE()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 2773.0f;
-	HighTemperatureTransition = PT_PLSM;
+	HighTemperatureTransition = PT_PLSM; //@ FIRE -> PLSM
 
 	Update = &Element_FIRE_update;
 	Graphics = &graphics;
@@ -65,10 +65,13 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 		{
 			if (parts[i].ctype == PT_NBLE)
 			{
+				//@ PLSM(NBLE) -> NBLE
 				sim->part_change_type(i,x,y,PT_NBLE);
 				parts[i].life = 0;
 			}
-			else if ((parts[i].tmp&0x3) == 3){
+			else if ((parts[i].tmp&0x3) == 3)
+			{
+				//@ PLSM + O2 + H2 -> WTRV(FIRE)
 				sim->part_change_type(i,x,y,PT_WTRV);
 				parts[i].life = 0;
 				parts[i].ctype = PT_FIRE;
@@ -78,13 +81,16 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 	case PT_FIRE:
 		if (parts[i].life <=1)
 		{
-			if ((parts[i].tmp&0x3) == 3){
+			if ((parts[i].tmp&0x3) == 3)
+			{
+				//@ FIRE + O2 + H2 -> WTRV(FIRE)
 				sim->part_change_type(i,x,y,PT_WTRV);
 				parts[i].life = 0;
 				parts[i].ctype = PT_FIRE;
 			}
 			else if (parts[i].temp<625)
 			{
+				//@ FIRE -> SMKE
 				sim->part_change_type(i,x,y,PT_SMKE);
 				parts[i].life = sim->rng.between(250, 269);
 			}
@@ -96,6 +102,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 		{			
 			if (pres <= -9)
 			{
+				//@ LAVA(ROCK) -> LAVA(STNE)
 				parts[i].ctype = PT_STNE;
 				break;
 			}
@@ -104,6 +111,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 			{
 				if (pres <= 50)
 				{
+					//@ LAVA(ROCK) -> LAVA(BRMT/CNCT)
 					if (sim->rng.chance(1, 2))
 						parts[i].ctype = PT_BRMT;
 					else
@@ -111,6 +119,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 				}
 				else if (pres <= 75)
 				{
+					//@ LAVA(ROCK) -> LAVA(GOLD/QRTZ)
 					if (pres >= 73 || sim->rng.chance(1, 8))
 						parts[i].ctype = PT_GOLD;
 					else
@@ -118,6 +127,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 				}
 				else if (pres <= 100 && parts[i].temp >= 5000)
 				{
+					//@ LAVA(ROCK) -> LAVA(TTAN/IRON)
 					if (sim->rng.chance(1, 5)) // 1 in 5 chance IRON to TTAN
 						parts[i].ctype = PT_TTAN;
 					else
@@ -125,6 +135,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 				}
 				else if (parts[i].temp >= 5000 && sim->rng.chance(1, 5))
 				{
+					//@ LAVA(ROCK) -> LAVA(URAN/PLUT/TUNG)
 					if (sim->rng.chance(1, 5))
 						parts[i].ctype = PT_URAN;
 					else if (sim->rng.chance(1, 5))
@@ -136,6 +147,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 		}
 		else if ((parts[i].ctype == PT_STNE || !parts[i].ctype) && pres >= 30.0f && (parts[i].temp > elements[PT_ROCK].HighTemperature || pres < elements[PT_ROCK].HighPressure)) // Form ROCK with pressure, if it will stay molten or not immediately break
 		{
+			//@ LAVA -> LAVA(ROCK)
 			parts[i].tmp2 = sim->rng.between(0, 10); // Provide tmp2 for color noise
 			parts[i].ctype = PT_ROCK;
 		}
@@ -158,6 +170,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 				//THRM burning
 				if (rt==PT_THRM && (t==PT_FIRE || t==PT_PLSM || t==PT_LAVA))
 				{
+					//@ FIRE/PLSM/LAVA + THRM -> FIRE/PLSM/LAVA + LAVA(BMTL/THRM)
 					if (sim->rng.chance(1, 500)) {
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_LAVA);
 						parts[ID(r)].ctype = PT_BMTL;
@@ -184,12 +197,14 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 					}
 					else if (t==PT_LAVA)
 					{
+						//@ LAVA(IRON) + COAL/BCOL -> LAVA(METL)
 						if (parts[i].ctype == PT_IRON && sim->rng.chance(1, 500))
 						{
 							parts[i].ctype = PT_METL;
 							sim->kill_part(ID(r));
 							continue;
 						}
+						//@ LAVA + COAL/BCOL -> LAVA(SLCN)
 						if ((parts[i].ctype == PT_STNE || parts[i].ctype == PT_NONE) && sim->rng.chance(1, 60))
 						{
 							parts[i].ctype = PT_SLCN;
@@ -201,7 +216,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 
 				if (t == PT_LAVA)
 				{
-					// LAVA(CLST) + LAVA(PQRT) + high enough temp = LAVA(CRMC) + LAVA(CRMC)
+					//@ LAVA(QRTZ) + LAVA(CLST) -> 2xLAVA(CRMC)
 					if (parts[i].ctype == PT_QRTZ && rt == PT_LAVA && parts[ID(r)].ctype == PT_CLST)
 					{
 						float pres = std::max(sim->pv[y/CELL][x/CELL]*10.0f, 0.0f);
@@ -213,6 +228,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 					}
 					else if (rt == PT_O2 && parts[i].ctype == PT_SLCN)
 					{
+						//@ LAVA(SLCN) + O2 -> LAVA(SAND/CLST/PQRT/STNE)
 						switch (sim->rng.between(0, 2))
 						{
 						case 0:
@@ -238,6 +254,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 					}
 					else if (rt == PT_LAVA && (parts[ID(r)].ctype == PT_METL || parts[ID(r)].ctype == PT_BMTL) && parts[i].ctype == PT_SLCN)
 					{
+						//@ LAVA(SLCN) + LAVA(METL/BMTL) -> LAVA(NSCN) + LAVA(PSCN)
 						parts[i].tmp = 0;
 						parts[i].ctype = PT_NSCN;
 						parts[ID(r)].ctype = PT_PSCN;
@@ -253,6 +270,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 					else if (parts[i].ctype == PT_ROCK && rt == PT_LAVA && parts[ID(r)].ctype == PT_GOLD && parts[ID(r)].tmp == 0 &&
 						sim->pv[y / CELL][x / CELL] >= 50 && sim->rng.chance(1, 10000)) // Produce GOLD veins/clusters
 					{
+						//@ LAVA(ROCK) + LAVA(GOLD) -> 2xLAVA(GOLD)
 						parts[i].ctype = PT_GOLD;
 						if (rx > 1 || rx < -1) // Trend veins vertical
 							parts[i].tmp = 1;

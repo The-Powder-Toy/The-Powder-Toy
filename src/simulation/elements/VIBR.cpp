@@ -116,6 +116,7 @@ int Element_VIBR_update(UPDATE_FUNC_ARGS)
 		{
 			if (!parts[i].tmp2)
 			{
+				//@ VIBR/BVBR -> EXOT + ELEC + PHOT + BREC
 				rndstore = sim->rng.gen();
 				int index = sim->create_part(-3, x + (orbit_rx[rndstore & 7]), y + (orbit_ry[rndstore & 7]), PT_ELEC);
 				if (index != -1)
@@ -175,11 +176,12 @@ int Element_VIBR_update(UPDATE_FUNC_ARGS)
 					//Melts into EXOT
 					if (TYP(r) == PT_EXOT && sim->rng.chance(1, 25))
 					{
+						//@ VIBR/BVBR + EXOT -> 2xEXOT
 						sim->part_change_type(i, x, y, PT_EXOT);
 						return 1;
 					}
 				}
-				//VIBR+ANAR=BVBR
+				//@ VIBR + ANAR -> BVBR
 				if (parts[i].type != PT_BVBR && TYP(r) == PT_ANAR)
 				{
 					sim->part_change_type(i,x,y,PT_BVBR);

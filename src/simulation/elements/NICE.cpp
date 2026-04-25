@@ -39,5 +39,5 @@ void Element::Element_NICE()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 63.1f;
-	HighTemperatureTransition = PT_LNTG;
+	HighTemperatureTransition = PT_LNTG; //@ NICE -> LNTG
 }

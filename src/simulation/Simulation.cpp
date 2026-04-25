@@ -1192,6 +1192,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		int rt = TYP(r);
 		if (rt == PT_WOOD)
 		{
+			//@ WOOD -> SAWD
 			float vel = std::sqrt(std::pow(parts[i].vx, 2) + std::pow(parts[i].vy, 2));
 			if (vel > 5)
 				part_change_type(ID(r), nx, ny, PT_SAWD);
@@ -1296,6 +1297,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 
 				if (pv[ny/CELL][nx/CELL] >= -pressureResistance && pv[ny/CELL][nx/CELL] <= pressureResistance)
 				{
+					//@ PHOT + INVIS -> NEUT + INVIS
 					part_change_type(i,x,y,PT_NEUT);
 					parts[i].ctype = 0;
 				}
@@ -1304,12 +1306,14 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			case PT_BIZR:
 			case PT_BIZRG:
 			case PT_BIZRS:
+				//@ PHOT + BIZR/BIZRG/BIZRS -> ELEC + BIZR/BIZRG/BIZRS
 				part_change_type(i, x, y, PT_ELEC);
 				parts[i].ctype = 0;
 				break;
 			case PT_H2:
 				if (!(parts[i].tmp&0x1))
 				{
+					//@ PHOT + H2 -> PROT + ELEC
 					part_change_type(i, x, y, PT_PROT);
 					parts[i].ctype = 0;
 					parts[i].tmp2 = 0x1;
@@ -1321,6 +1325,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			case PT_GPMP:
 				if (parts[ID(r)].life == 0)
 				{
+					//@ PHOT + GPMP -> GRVT + GPMP
 					part_change_type(i, x, y, PT_GRVT);
 					parts[i].tmp = int(parts[ID(r)].temp - 273.15f);
 				}
@@ -1329,6 +1334,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			break;
 		}
 		case PT_NEUT:
+			//@ NEUT + GLAS/BGLA -> NEUT + GLAS/BGLA + PHOT
 			if (TYP(r) == PT_GLAS || TYP(r) == PT_BGLA)
 				if (rng.chance(1, 10))
 					create_cherenkov_photon(i);
@@ -1336,11 +1342,13 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		case PT_ELEC:
 			if (TYP(r) == PT_GLOW)
 			{
+				//@ ELEC + GLOW -> PHOT + GLOW
 				part_change_type(i, x, y, PT_PHOT);
 				parts[i].ctype = 0x3FFFFFFF;
 			}
 			break;
 		case PT_PROT:
+			//@ PROT + INVIS -> NEUT + INVIS
 			if (TYP(r) == PT_INVIS)
 				part_change_type(i, x, y, PT_NEUT);
 			break;
@@ -2528,10 +2536,12 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 				}
 				else if (t == PT_SLTW)
 				{
+					//@ SLTW -> SALT/WTRV
 					t = rng.chance(1, 4) ? PT_SALT : PT_WTRV;
 				}
 				else if (t == PT_BRMT)
 				{
+					//@ BRMT(TUNG) -> LAVA(TUNG)
 					if (parts[i].ctype == PT_TUNG)
 					{
 						if (ctemph < elements[parts[i].ctype].HighTemperature)
@@ -2559,12 +2569,14 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 				{
 					if (parts[i].tmp > 5)
 					{
+						//@ RIME -> ACID
 						t = PT_ACID;
 						parts[i].life = 25 + 5 * parts[i].tmp;
 						parts[i].tmp = 0;
 					}
 					else
 					{
+						//@ RIME -> WATR
 						t = PT_WATR;
 					}
 				}
@@ -2580,6 +2592,7 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 				}
 				else if (t == PT_WTRV)
 				{
+					//@ WTRV -> RIME/DSTW
 					t = (pt < 273.0f) ? PT_RIME : PT_DSTW;
 				}
 				else if (t == PT_LAVA)
@@ -2616,18 +2629,20 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 							parts[i].ctype = PT_NONE;
 							if (t == PT_THRM)
 							{
+								//@ LAVA(THRM) -> BMTL
 								parts[i].tmp = 0;
 								t = PT_BMTL;
 							}
 							if (t == PT_PLUT)
 							{
+								//@ LAVA(PLUT) -> LAVA
 								parts[i].tmp = 0;
 								t = PT_LAVA;
 							}
 						}
 					}
 					else if (pt<973.0f)
-						t = PT_STNE;
+						t = PT_STNE; //@ LAVA -> STNE
 					else
 						s = 0;
 				}
@@ -3625,6 +3640,7 @@ void Simulation::CheckStacking()
 					{
 						if (pmap_count[y][x]>NPART)
 						{
+							//@ stacking -> NBHL
 							create_part(i, x, y, PT_NBHL);
 							parts[i].temp = MAX_TEMP;
 							parts[i].tmp = pmap_count[y][x]-NPART;//strength of grav field

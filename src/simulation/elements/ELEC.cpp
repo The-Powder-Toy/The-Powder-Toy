@@ -72,6 +72,7 @@ static int update(UPDATE_FUNC_ARGS)
 					for (auto rry=-1; rry<=1; rry++)
 					{
 						if (x+rx+rrx>=0 && y+ry+rry>=0 && x+rx+rrx<XRES && y+ry+rry<YRES) {
+							//@ ELEC + GLAS -> EMBR + GLAS
 							auto nb = sim->create_part(-1, x+rx+rrx, y+ry+rry, PT_EMBR);
 							if (nb!=-1) {
 								parts[nb].tmp = 0;
@@ -92,6 +93,7 @@ static int update(UPDATE_FUNC_ARGS)
 			case PT_DSTW:
 			case PT_SLTW:
 			case PT_CBNW:
+				//@ ELEC + WATR/DSTW/SLTW/CBNW -> O2/H2
 				if (sim->rng.chance(1, 3))
 					sim->create_part(ID(r), x+rx, y+ry, PT_O2);
 				else
@@ -102,6 +104,7 @@ static int update(UPDATE_FUNC_ARGS)
 				if (parts[ID(r)].tmp2 & 0x1)
 					break;
 			case PT_NEUT:
+				//@ ELEC + PROT/NEUT -> H2
 				sim->part_change_type(ID(r), x+rx, y+ry, PT_H2);
 				parts[ID(r)].life = 0;
 				parts[ID(r)].ctype = 0;

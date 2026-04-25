@@ -47,7 +47,7 @@ void Element::Element_STKM2()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 620.0f;
-	HighTemperatureTransition = PT_FIRE;
+	HighTemperatureTransition = PT_FIRE; //@ STKM2 -> FIRE
 
 	DefaultProperties.life = 100;
 

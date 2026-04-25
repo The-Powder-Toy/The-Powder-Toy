@@ -58,7 +58,7 @@ int update(UPDATE_FUNC_ARGS)
 			if (!r)
 				continue;
 
-			// RSST + GUNP = FIRW
+			//@ RSST + GUNP -> FIRW
 			if(TYP(r) == PT_GUNP)
 			{
 				sim->create_part(i, x, y, PT_FIRW);
@@ -66,7 +66,7 @@ int update(UPDATE_FUNC_ARGS)
 				return 1;
 			}
 
-			// RSST + BCOL = FSEP
+			//@ RSST + BCOL -> FSEP
 			if(TYP(r) == PT_BCOL)
 			{
 				sim->create_part(i, x, y, PT_FSEP);

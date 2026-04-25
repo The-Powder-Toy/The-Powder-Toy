@@ -39,9 +39,9 @@ void Element::Element_DSTW()
 	HighPressure = IPH;
 	HighPressureTransition = NT;
 	LowTemperature = 273.15f;
-	LowTemperatureTransition = PT_ICEI;
+	LowTemperatureTransition = PT_ICEI; //@ DSTW -> ICEI(DSTW)
 	HighTemperature = 373.0f;
-	HighTemperatureTransition = PT_WTRV;
+	HighTemperatureTransition = PT_WTRV; //@ DSTW -> WTRV
 
 	Update = &update;
 }
@@ -60,6 +60,7 @@ static int update(UPDATE_FUNC_ARGS)
 				case PT_SALT:
 					if (sim->rng.chance(1, 50))
 					{
+						//@ DSTW + SALT -> 2xSLTW
 						sim->part_change_type(i,x,y,PT_SLTW);
 						// on average, convert 3 DSTW to SLTW before SALT turns into SLTW
 						if (sim->rng.chance(1, 3))
@@ -69,12 +70,14 @@ static int update(UPDATE_FUNC_ARGS)
 				case PT_SLTW:
 					if (sim->rng.chance(1, 2000))
 					{
+						//@ DSTW + SLTW -> 2xSLTW
 						sim->part_change_type(i,x,y,PT_SLTW);
 						break;
 					}
 				case PT_WATR:
 					if (sim->rng.chance(1, 100))
 					{
+						//@ DSTW + WATR -> 2xWATR
 						sim->part_change_type(i,x,y,PT_WATR);
 					}
 					break;
@@ -82,6 +85,7 @@ static int update(UPDATE_FUNC_ARGS)
 				case PT_LRBD:
 					if ((sim->legacy_enable||parts[i].temp>12.0f) && sim->rng.chance(1, 100))
 					{
+						//@ DSTW + RBDM/LRBD -> FIRE + RBDM/LRBD
 						sim->part_change_type(i,x,y,PT_FIRE);
 						parts[i].life = 4;
 					}
@@ -94,12 +98,13 @@ static int update(UPDATE_FUNC_ARGS)
 						return 1;
 					}
 					break;
-				case PT_SMKE: //DSTW + SMKE = BASE
+				case PT_SMKE:
 					if (parts[ID(r)].temp > (40 + 273.15f) && parts[ID(r)].temp < (60 + 273.15f) &&
 						parts[i].temp > (40 + 273.15f) && parts[i].temp < (60 + 273.15f))
 					{
 						if (sim->rng.chance(1, 100))
 						{
+							//@ DSTW + SMKE -> BASE
 							sim->part_change_type(i,x,y,PT_BASE);
 							parts[i].life = 1;
 							sim->kill_part(ID(r));

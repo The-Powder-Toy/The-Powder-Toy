@@ -37,9 +37,9 @@ void Element::Element_BIZR()
 	HighPressure = IPH;
 	HighPressureTransition = NT;
 	LowTemperature = 100.0f;
-	LowTemperatureTransition = PT_BIZRG;
+	LowTemperatureTransition = PT_BIZRG; //@ BIZR -> BIZRG
 	HighTemperature = 400.0f;
-	HighTemperatureTransition = PT_BIZRS;
+	HighTemperatureTransition = PT_BIZRS; //@ BIZR -> BIZRS
 
 	DefaultProperties.ctype = 0x47FFFF;
 

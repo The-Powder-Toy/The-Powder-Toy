@@ -65,6 +65,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					if (sim->pv[(y+ry)/CELL][(x+rx)/CELL] > 3)
 					{
+						//@ CAUS + GAS -> 2xRFRG
 						sim->part_change_type(ID(r), x+rx, y+ry, PT_RFRG);
 						sim->part_change_type(i, x, y, PT_RFRG);
 						converted = true;

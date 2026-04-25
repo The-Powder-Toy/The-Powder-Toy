@@ -39,5 +39,5 @@ void Element::Element_PLEX()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 673.0f;
-	HighTemperatureTransition = PT_FIRE;
+	HighTemperatureTransition = PT_FIRE; //@ PLEX -> FIRE
 }

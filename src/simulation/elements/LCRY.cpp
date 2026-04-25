@@ -41,7 +41,7 @@ void Element::Element_LCRY()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1273.0f;
-	HighTemperatureTransition = PT_BGLA;
+	HighTemperatureTransition = PT_BGLA; //@ LCRY -> BGLA
 
 	Update = &update;
 	Graphics = &graphics;
