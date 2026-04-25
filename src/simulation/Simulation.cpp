@@ -2649,6 +2649,14 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 					//idealy transitions should use create_part(i) but some elements rely on properties staying constant
 					//and I don't feel like checking each one right now
 					parts[i].tmp = 0;
+
+					if (parts[i].type == PT_SEED)
+					{
+						parts[i].ctype = 0;
+						parts[i].tmp2 = 0;
+						parts[i].tmp3 = 0;
+						parts[i].tmp4 = 0;
+					}
 				}
 				if ((elements[t].Properties&TYPE_GAS) && !(elements[parts[i].type].Properties&TYPE_GAS))
 					pv[y/CELL][x/CELL] += 0.50f;
@@ -2794,6 +2802,17 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 				return true;
 			}
 			parts[i].life = 0;
+
+			// To prevent PIPE -> BRMT setting BRMT's ctype
+			if (t == PT_BRMT)
+			{
+				parts[i].ctype = 0;
+				parts[i].tmp = 0;
+				parts[i].tmp2 = 0;
+				parts[i].tmp3 = 0;
+				parts[i].tmp4 = 0;
+			}
+
 			// part_change_type could refuse to change the type and kill the particle
 			// for example, changing type to STKM but one already exists
 			// we need to account for that to not cause simulation corruption issues
