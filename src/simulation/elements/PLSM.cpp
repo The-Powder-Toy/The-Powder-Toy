@@ -35,6 +35,7 @@ void Element::Element_PLSM()
 	Description = "Plasma, extremely hot.";
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

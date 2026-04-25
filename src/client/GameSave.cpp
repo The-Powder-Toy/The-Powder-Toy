@@ -77,6 +77,12 @@ void GameSave::MapPalette()
 		ignoreMissingErrors[PT_RSST] = true;
 		ignoreMissingErrors[PT_RSSS] = true;
 	}
+	if (version <= Version(99, 5))
+	{
+		ignoreMissingErrors[PT_PLSM] = true;
+		ignoreMissingErrors[PT_EXOT] = true;
+		ignoreMissingErrors[PT_FWRK] = true;
+	}
 
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;

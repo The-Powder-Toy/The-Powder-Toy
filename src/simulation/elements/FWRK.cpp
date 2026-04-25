@@ -33,6 +33,7 @@ void Element::Element_FWRK()
 	Description = "Original version of fireworks, activated by heat/neutrons.";
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
