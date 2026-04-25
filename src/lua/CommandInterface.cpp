@@ -98,7 +98,7 @@ static const std::vector<Function> functions = {
 	{ U"delete", &CommandInterface::tptS_delete },
 	{ U"kill"  , &CommandInterface::tptS_delete },
 	{ U"load"  , &CommandInterface::tptS_load   },
-	{ U"reset" , &CommandInterface::tptS_reset  },
+	{ U"reset" , &CommandInterface::tptS_reset  }, //TODO: undoability
 	{ U"bubble", &CommandInterface::tptS_bubble },
 	{ U"quit"  , &CommandInterface::tptS_quit   },
 };
@@ -430,6 +430,8 @@ AnyType CommandInterface::tptS_set(std::deque<String> * words)
 		throw GeneralException(ByteString(ex.what()).FromUtf8());
 	}
 
+	this->c->HistorySnapshot();
+
 	int returnValue = 0;
 	for (auto index : EvaluateSelector(sim, selector))
 	{
@@ -525,6 +527,7 @@ AnyType CommandInterface::tptS_delete(std::deque<String> * words)
 		ui::Point deletePoint = ((PointType)partRef).Value();
 		if(deletePoint.X<0 || deletePoint.Y<0 || deletePoint.Y >= YRES || deletePoint.X >= XRES)
 			throw GeneralException("Invalid position");
+		this->c->HistorySnapshot();
 		sim->delete_part(deletePoint.X, deletePoint.Y);
 	}
 	else if(partRef.GetType() == TypeNumber)
@@ -532,6 +535,7 @@ AnyType CommandInterface::tptS_delete(std::deque<String> * words)
 		int partIndex = ((NumberType)partRef).Value();
 		if(partIndex < 0 || partIndex >= NPART)
 			throw GeneralException("Invalid particle index");
+		this->c->HistorySnapshot();
 		sim->kill_part(partIndex);
 	}
 	else
@@ -560,20 +564,35 @@ AnyType CommandInterface::tptS_bubble(std::deque<String> * words)
 	PointType bubblePosA = eval(words);
 	ui::Point bubblePos = bubblePosA.Value();
 
-	if(bubblePos.X<0 || bubblePos.Y<0 || bubblePos.Y >= YRES || bubblePos.X >= XRES)
+	int bubbleSize;
+	if (words->size() > 0)
+	{
+		NumberType bubbleSizeA = eval(words);
+		bubbleSize = bubbleSizeA.Value();
+	}
+	else bubbleSize = 30;
+
+	if (bubblePos.X<0 || bubblePos.Y<0 || bubblePos.Y >= YRES || bubblePos.X >= XRES)
 			throw GeneralException("Invalid position");
+
+	if (bubbleSize<0)
+			throw GeneralException("Invalid size");
 
 	Simulation * sim = m->GetSimulation();
 
 	int first, rem1, rem2;
 
-	first = sim->create_part(-1, bubblePos.X+18, bubblePos.Y, PT_SOAP);
+	int radius = (bubbleSize * (65536 * 6 / 10)) >> 16; // bubbleSize * 0.6
+
+	this->c->HistorySnapshot();
+
+	first = sim->create_part(-1, bubblePos.X + radius, bubblePos.Y, PT_SOAP);
 	rem1 = first;
 
-	for (int i = 1; i<=30; i++)
+	for (int i = 1; i <= bubbleSize - 1; i++)
 	{
-		rem2 = sim->create_part(-1, int(bubblePos.X+18*cosf(i/5.0)+0.5f), int(bubblePos.Y+18*sinf(i/5.0)+0.5f), PT_SOAP);
-
+		rem2 = sim->create_part(-1, int(bubblePos.X + radius * cosf(i * TPT_PI_FLT * 2 / float(bubbleSize)) + 0.5f), int(bubblePos.Y + radius * sinf(i * TPT_PI_FLT * 2 / float(bubbleSize)) + 0.5f), PT_SOAP);
+		
 		sim->parts[rem1].ctype = 7;
 		sim->parts[rem1].tmp = rem2;
 		sim->parts[rem2].tmp2 = rem1;
