@@ -33,6 +33,7 @@ void Element::Element_WTRV()
 	Description = "Steam. Produced from hot water.";
 
 	Properties = TYPE_GAS;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

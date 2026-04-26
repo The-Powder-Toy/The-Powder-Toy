@@ -37,6 +37,7 @@ void Element::Element_FIRE()
 	Description = "Ignites flammable materials. Heats air.";
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
