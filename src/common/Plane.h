@@ -4,46 +4,11 @@
 #include <cstddef>
 #include <functional>
 #include <limits>
+#include <span>
 #include <type_traits>
 #include <utility>
 
 #include "common/Vec2.h"
-
-// TODO: std::span once we're C++20
-template<class Item>
-struct PlaneBase
-{
-	Item *base;
-
-	PlaneBase(Item *newBase) : base(newBase)
-	{
-	}
-
-	Item *begin()
-	{
-		return base;
-	}
-
-	const Item *begin() const
-	{
-		return base;
-	}
-
-	Item &operator [](size_t index)
-	{
-		return *(base + index);
-	}
-
-	const Item &operator [](size_t index) const
-	{
-		return *(base + index);
-	}
-
-	const Item *data() const
-	{
-		return base;
-	}
-};
 
 constexpr size_t DynamicExtent = std::numeric_limits<size_t>::max();
 
@@ -205,3 +170,10 @@ public:
 		return getBase()[p.X + p.Y * getWidth()];
 	}
 };
+
+template<size_t Width = DynamicExtent, size_t Height = DynamicExtent, typename Item>
+auto MakePlane(Vec2<int> size, Item *data)
+{
+	return PlaneAdapter<std::span<Item>, Width, Height>(size, std::in_place, data, size.X * size.Y);
+}
+
