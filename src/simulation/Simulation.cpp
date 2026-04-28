@@ -1965,6 +1965,25 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	return i;
 }
 
+// Change part type but preserve temperature and velocity.
+// May fail if i isn't an existing particle id.
+int Simulation::createPartTempVel(int i, int x, int y, int t)
+{
+	auto temp = parts[i].temp;
+	auto vx = parts[i].vx;
+	auto vy = parts[i].vy;
+
+	auto np = create_part(i, x, y, t);
+	if (np >= 0)
+	{
+		parts[np].temp = temp;
+		parts[np].vx = vx;
+		parts[np].vy = vy;
+	}
+
+	return np;
+}
+
 int Parts::Alloc()
 {
 	if (pfree != -1)

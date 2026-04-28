@@ -76,9 +76,7 @@ static int update(UPDATE_FUNC_ARGS)
 			if (sim->rng.chance(1, parts[i].life+1))
 			{
 				//@ BASE -> BOYL
-				auto temp = parts[i].temp;
-				sim->create_part(i, x, y, PT_BOYL);
-				parts[i].temp = temp;
+				sim->createPartTempVel(i, x, y, PT_BOYL);
 				return 1;
 			}
 			else
@@ -153,15 +151,15 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[i].tmp = parts[i].tmp2 = parts[i].ctype = 0;
 						sim->kill_part(ID(r));
 						return 1;
-					} //@ BASE + GOO -> GEL
+					} //@ BASE + GOO -> BASE + GEL
 					else if (parts[i].life > 1 && rt == PT_GOO)
 					{
-						sim->create_part(ID(r), x+rx, y+ry, PT_GEL);
+						sim->createPartTempVel(ID(r), x+rx, y+ry, PT_GEL);
 						parts[i].life--;
-					} //@ BASE + BCOL -> GUNP
+					} //@ BASE + BCOL -> BASE + GUNP
 					else if (parts[i].life > 1 && rt == PT_BCOL)
 					{
-						sim->create_part(ID(r), x+rx, y+ry, PT_GUNP);
+						sim->createPartTempVel(ID(r), x+rx, y+ry, PT_GUNP);
 						parts[i].life--;
 					} //@ BASE + LAVA(ROCK) -> MERC
 				        else if (rt == PT_LAVA && parts[ID(r)].ctype == PT_ROCK && pres >= 10.0f && sim->rng.chance(1, 1000))
