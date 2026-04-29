@@ -166,6 +166,20 @@ static int update(UPDATE_FUNC_ARGS)
 						discharged = true;
 					}
 					break;
+				
+				case PT_SWCH:
+					if (pavg == PT_INSL || pavg == PT_RSSS)
+					{
+						break;
+					}
+					if (neighbor.life == 10 && storedEnergy > 0 && !burnTimer)
+					{
+						sim->part_change_type(ID(neighborData), x + rx, y + ry, PT_SPRK);
+						neighbor.life = 4;
+						neighbor.ctype = PT_SWCH;
+						discharged = true;
+					}
+					break;
 
 				case PT_FIRE:
 					if (self.temp > 440.f && sim->rng.chance(1, 40) && hydrogenationFactor < 6)
