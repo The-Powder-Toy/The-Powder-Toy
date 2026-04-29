@@ -37,7 +37,7 @@ if cpp_compiler.get_id() in [ 'msvc', 'clang-cl' ]
 		error('this seems fishy')
 	endif
 	host_libc = 'msvc'
-elif cpp_compiler.get_id() in [ 'gcc' ] and host_platform == 'windows'
+elif cpp_compiler.get_id() in [ 'gcc', 'clang' ] and host_platform == 'windows'
 	host_libc = 'mingw'
 elif host_platform in [ 'darwin' ]
 	host_libc = 'macos'
