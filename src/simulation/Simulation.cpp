@@ -22,6 +22,26 @@
 #include <set>
 #include <stack>
 
+namespace
+{
+	struct SimulationImpl : public Simulation
+	{
+		struct Neighbourhood
+		{
+			std::array<int, 8> surround;
+			int surround_space = 0;
+			int nt = 0; //if nt is greater than 1 after this, then there is a particle around the current particle, that is NOT the current particle's type, for water movement.
+			float pGravX = 0;
+			float pGravY = 0;
+		};
+		void MovementPhase(int i, Neighbourhood neighbourhood);
+		Neighbourhood GetNeighbourhood(int i) const;
+		bool TransitionPhase(int i, const Neighbourhood &neighbourhood);
+
+		void UpdateParticles(int start, int end) final override;
+	};
+}
+
 static float remainder_p(float x, float y)
 {
 	return std::fmod(x, y) + (x>=0 ? 0 : y);
@@ -1696,22 +1716,6 @@ Simulation::GetNormalResult Simulation::get_normal(int pt, int x, int y, float d
 	return { true, nx, ny, lx, ly, rx, ry };
 }
 
-
-
-template<bool PhotoelectricEffect, class Sim>
-void PhotoelectricEffectHelper(Sim &sim, int x, int y);
-
-template<>
-void PhotoelectricEffectHelper<false, const Simulation>(const Simulation &sim, int x, int y)
-{
-}
-
-template<>
-void PhotoelectricEffectHelper<true, Simulation>(Simulation &sim, int x, int y)
-{
-	sim.photoelectric_effect(x, y);
-}
-
 template<bool PhotoelectricEffect, class Sim>
 Simulation::GetNormalResult Simulation::get_normal_interp(Sim &sim, int pt, float x0, float y0, float dx, float dy)
 {
@@ -1735,8 +1739,11 @@ Simulation::GetNormalResult Simulation::get_normal_interp(Sim &sim, int pt, floa
 	if (i >= NORMAL_INTERP)
 		return { false };
 
-	if (pt == PT_PHOT)
-		PhotoelectricEffectHelper<PhotoelectricEffect, Sim>(sim, x, y);
+	if constexpr (PhotoelectricEffect)
+	{
+		if (pt == PT_PHOT)
+			sim.photoelectric_effect(x, y);
+	}
 
 	return sim.get_normal(pt, x, y, dx, dy);
 }
@@ -2246,7 +2253,12 @@ Simulation::PlanMoveResult Simulation::PlanMove(Sim &sim, int i, int x, int y)
 template
 Simulation::PlanMoveResult Simulation::PlanMove<false, const Simulation>(const Simulation &sim, int i, int x, int y);
 
-Simulation::Neighbourhood Simulation::GetNeighbourhood(int i) const
+std::unique_ptr<Simulation> Simulation::Factory()
+{
+	return std::make_unique<SimulationImpl>();
+}
+
+SimulationImpl::Neighbourhood SimulationImpl::GetNeighbourhood(int i) const
 {
 	auto t = parts[i].type;
 	auto x = int(parts[i].x + 0.5f);
@@ -2276,7 +2288,7 @@ Simulation::Neighbourhood Simulation::GetNeighbourhood(int i) const
 	return n;
 }
 
-void Simulation::UpdateParticles(int start, int end)
+void SimulationImpl::UpdateParticles(int start, int end)
 {
 	//the main particle loop function, goes over all particles.
 	auto &sd = SimulationData::CRef();
@@ -2412,7 +2424,7 @@ void Simulation::UpdateParticles(int start, int end)
 	}
 }
 
-bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
+bool SimulationImpl::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 {
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
@@ -2860,7 +2872,7 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 	return transitionOccurred;
 }
 
-void Simulation::MovementPhase(int i, Neighbourhood neighbourhood)
+void SimulationImpl::MovementPhase(int i, Neighbourhood neighbourhood)
 {
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;

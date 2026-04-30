@@ -43,9 +43,9 @@ int main(int argc, char *argv[])
 			throw e;
 	}
 
-	Simulation * sim = new Simulation();
+	auto sim = Simulation::Factory();
 	Renderer * ren = new Renderer();
-	ren->sim = sim;
+	ren->sim = sim.get();
 
 	if (gameSave)
 	{

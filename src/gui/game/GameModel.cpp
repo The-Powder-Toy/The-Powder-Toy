@@ -68,7 +68,7 @@ GameModel::GameModel(GameView *newView):
 	decoSpace(DECOSPACE_SRGB),
 	view(newView)
 {
-	sim = new Simulation();
+	sim = Simulation::Factory();
 	sim->useLuaCallbacks = true;
 	ren = new Renderer();
 
@@ -235,7 +235,7 @@ GameModel::~GameModel()
 		prefs.Set("Decoration.Alpha", (int)colour.Alpha);
 	}
 
-	delete sim;
+	sim.reset();
 	delete ren;
 	//if(activeTools)
 	//	delete[] activeTools;
@@ -929,7 +929,7 @@ void GameModel::SetSaveFile(std::unique_ptr<SaveFile> newSave, bool invertInclud
 
 Simulation * GameModel::GetSimulation()
 {
-	return sim;
+	return sim.get();
 }
 
 Renderer * GameModel::GetRenderer()
