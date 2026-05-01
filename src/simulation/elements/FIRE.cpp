@@ -145,6 +145,12 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 				}
 			}
 		}
+		else if (parts[i].ctype == PT_GOLD && pres < -200.0f && parts[i].temp > elements[PT_PTNM].HighTemperature && sim->rng.chance(1, 20000))
+		{
+			//@ LAVA(GOLD) -> LAVA(PTNM)
+			parts[i].ctype = PT_PTNM;
+			sim->pv[y/CELL][x/CELL] += 2.0f;
+		}
 		else if ((parts[i].ctype == PT_STNE || !parts[i].ctype) && pres >= 30.0f && (parts[i].temp > elements[PT_ROCK].HighTemperature || pres < elements[PT_ROCK].HighPressure)) // Form ROCK with pressure, if it will stay molten or not immediately break
 		{
 			//@ LAVA -> LAVA(ROCK)
@@ -258,6 +264,20 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 						parts[i].tmp = 0;
 						parts[i].ctype = PT_NSCN;
 						parts[ID(r)].ctype = PT_PSCN;
+					}
+					else if (parts[i].ctype == PT_SLCN && rt == PT_LAVA && parts[ID(r)].ctype == PT_SALT)
+					{
+						//@ LAVA(SLCN) + LAVA(SALT) -> LAVA(LITH)
+						if (parts[i].temp > elements[PT_LITH].HighTemperature && sim->rng.chance(1, 1000))
+						{
+							parts[i].ctype = PT_LITH;
+							parts[i].tmp = 0;
+							parts[i].tmp2 = 0;
+							parts[i].life = 0;
+
+							sim->kill_part(ID(r));
+							continue;
+						}
 					}
 					else if (rt == PT_HEAC && parts[i].ctype == PT_HEAC)
 					{

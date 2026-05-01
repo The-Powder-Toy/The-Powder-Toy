@@ -161,8 +161,13 @@ static int update(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp)
 	{
 		int newID, element;
-		if (parts[i].tmp > 500000) //@ PROT -> SING
-			element = PT_SING; //particle accelerators are known to create earth-destroying black holes
+		if (parts[i].tmp > 500000)
+		{
+			if (utype == PT_TUNG)
+				element = PT_AMTR; //@ PROT + TUNG -> AMTR
+			else //@ PROT -> SING
+				element = PT_SING; //particle accelerators are known to create earth-destroying black holes
+		}
 		else if (parts[i].tmp > 700)
 			element = PT_PLUT; //@ PROT -> PLUT
 		else if (parts[i].tmp > 420)
