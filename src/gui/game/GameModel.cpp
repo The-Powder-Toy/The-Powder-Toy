@@ -63,7 +63,7 @@ GameModel::GameModel(GameView *newView):
 	edgePressure(0),
 	edgeVelocityX(0),
 	edgeVelocityY(0),
-	vorticityCoeff(0.0f),
+	vorticityCoeff(0.1f),
 	convectionMode(AIRC_BOUSSINESQ),
 	decoSpace(DECOSPACE_SRGB),
 	view(newView)

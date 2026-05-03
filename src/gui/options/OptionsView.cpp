@@ -601,7 +601,7 @@ void OptionsView::UpdateEdgePressure(String pres, bool isDefocus)
 
 void OptionsView::UpdateVorticityCoeff(String vort, bool isDefocus)
 {
-	UpdateSettingFromString(vort, isDefocus, 0.f, 1.f, 0.f, [](const String &vort) {
+	UpdateSettingFromString(vort, isDefocus, 0.f, 1.f, 0.1f, [](const String &vort) {
 		return vort.ToNumber<float>();
 	}, [this](float vorticity) {
 		VorticityCoeffToTextBox(vorticity);
