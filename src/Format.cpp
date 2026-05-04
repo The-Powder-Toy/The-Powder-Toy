@@ -2,8 +2,6 @@
 #include <cstdio>
 #include <cstring>
 #include <ctime>
-#include <iostream>
-#include <iterator>
 #include <optional>
 #include <stdexcept>
 #include <png.h>
@@ -12,19 +10,9 @@
 
 ByteString format::UnixtimeToDate(time_t unixtime, ByteString dateFormat, bool local)
 {
-	struct tm * timeData;
+	struct tm *timeData = local ? localtime(&unixtime) : gmtime(&unixtime);
 	char buffer[128];
-
-	if (local)
-	{
-		timeData = localtime(&unixtime);
-	}
-	else
-	{
-		timeData = gmtime(&unixtime);
-	}
-
-	strftime(buffer, 128, dateFormat.c_str(), timeData);
+	strftime(buffer, sizeof(buffer), dateFormat.c_str(), timeData);
 	return ByteString(buffer);
 }
 
@@ -105,9 +93,8 @@ String format::CleanString(String dirtyString, bool ascii, bool color, bool newl
 std::vector<char> format::PixelsToPPM(PlaneAdapter<std::vector<pixel>> const &input)
 {
 	std::vector<char> data;
-	char buffer[256];
-	sprintf(buffer, "P6\n%d %d\n255\n", input.Size().X, input.Size().Y);
-	data.insert(data.end(), buffer, buffer + strlen(buffer));
+	ByteString header = ByteString::Build("P6\n", input.Size().X, " ", input.Size().Y, "\n255\n");
+	data.insert(data.end(), header.begin(), header.end());
 
 	data.reserve(data.size() + input.Size().X * input.Size().Y * 3);
 
