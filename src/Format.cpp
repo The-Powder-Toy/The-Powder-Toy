@@ -2,8 +2,6 @@
 #include <cstdio>
 #include <cstring>
 #include <ctime>
-#include <iostream>
-#include <iterator>
 #include <optional>
 #include <stdexcept>
 #include <png.h>
@@ -12,19 +10,9 @@
 
 ByteString format::UnixtimeToDate(time_t unixtime, ByteString dateFormat, bool local)
 {
-	struct tm * timeData;
+	struct tm *timeData = local ? localtime(&unixtime) : gmtime(&unixtime);
 	char buffer[128];
-
-	if (local)
-	{
-		timeData = localtime(&unixtime);
-	}
-	else
-	{
-		timeData = gmtime(&unixtime);
-	}
-
-	strftime(buffer, 128, dateFormat.c_str(), timeData);
+	strftime(buffer, sizeof(buffer), dateFormat.c_str(), timeData);
 	return ByteString(buffer);
 }
 
@@ -105,9 +93,8 @@ String format::CleanString(String dirtyString, bool ascii, bool color, bool newl
 std::vector<char> format::PixelsToPPM(PlaneAdapter<std::vector<pixel>> const &input)
 {
 	std::vector<char> data;
-	char buffer[256];
-	sprintf(buffer, "P6\n%d %d\n255\n", input.Size().X, input.Size().Y);
-	data.insert(data.end(), buffer, buffer + strlen(buffer));
+	ByteString header = ByteString::Build("P6\n", input.Size().X, " ", input.Size().Y, "\n255\n");
+	data.insert(data.end(), header.begin(), header.end());
 
 	data.reserve(data.size() + input.Size().X * input.Size().Y * 3);
 
@@ -283,7 +270,7 @@ std::unique_ptr<std::vector<char>> format::PixelsToPNG(PlaneAdapter<std::vector<
 	return std::make_unique<std::vector<char>>(std::move(output));
 }
 
-const static char hex[] = "0123456789ABCDEF";
+static const char hex[] = "0123456789ABCDEF";
 
 ByteString format::Url::ToByteString() const
 {
@@ -322,34 +309,32 @@ ByteString format::URLEncode(ByteString source)
 
 ByteString format::URLDecode(ByteString source)
 {
-	ByteString result;
-	for (auto it = source.begin(); it < source.end(); ++it)
-	{
-		if (*it == '%' && it < source.end() + 2)
-		{
-			auto byte = uint8_t(0);
-			for (auto i = 0; i < 2; ++i)
-			{
-				it += 1;
-				auto *off = strchr(hex, tolower(*it));
-				if (!off)
-				{
-					return {};
-				}
-				byte = (byte << 4) | (off - hex);
-			}
-			result.append(1, byte);
-		}
-		else if (*it == '+')
-		{
-			result.append(1, ' ');
-		}
-		else
-		{
-			result.append(1, *it);
-		}
-	}
-	return result;
+    ByteString result;
+    for (auto it = source.begin(); it < source.end(); ++it)
+    {
+        if (*it == '%' && it + 2 < source.end())
+        {
+            uint8_t byte = 0;
+            for (int i = 0; i < 2; ++i)
+            {
+                ++it;
+                auto *off = strchr(hex, toupper(static_cast<unsigned char>(*it)));
+                if (!off)
+                    return {};
+                byte = (byte << 4) | (off - hex);
+            }
+            result.append(1, byte);
+        }
+        else if (*it == '+')
+        {
+            result.append(1, ' ');
+        }
+        else
+        {
+            result.append(1, *it);
+        }
+    }
+    return result;
 }
 
 void format::RenderTemperature(StringBuilder &sb, float temp, TempScale scale)
