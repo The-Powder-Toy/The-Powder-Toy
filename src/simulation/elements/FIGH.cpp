@@ -57,6 +57,8 @@ void Element::Element_FIGH()
 	ChangeType = &changeType;
 }
 
+// .tmp = id into fighters[] array
+
 static int update(UPDATE_FUNC_ARGS)
 {
 	auto &sd = SimulationData::CRef();
@@ -66,86 +68,159 @@ static int update(UPDATE_FUNC_ARGS)
 		sim->kill_part(i);
 		return 1;
 	}
-	playerst* figh = &sim->fighters[(unsigned char)parts[i].tmp];
+	fighterst* figh = &sim->fighters[(unsigned char)parts[i].tmp];
 
-	int tarx = 0, tary = 0;
+	// We will measure distance not between FIGH's and STKM's heads,
+	// but between their knees' midpoints, because STKM's ID isn't available.
+	Vec2<float> midLegs = (figh->legs[0] + figh->legs[2])*0.5f;
+	Vec2<float> target = midLegs;
 
-	parts[i].tmp2 = 0; //0 - stay in place, 1 - seek a stick man
+	float dist = XRES + YRES; // just an upper bound
+	Vec2<float> distVec{0, 0};
+	bool anyStkm = false;
 
-	//Set target cords
-	if (sim->player2.spwn)
+	// Determine our target STKM if it exists
+	if (sim->player.spwn && sim->player.elem != PT_INVIS)
 	{
-		if (sim->player.spwn && (pow((float)sim->player.legs[2]-x, 2) + pow((float)sim->player.legs[3]-y, 2))<=
-		   (pow((float)sim->player2.legs[2]-x, 2) + pow((float)sim->player2.legs[3]-y, 2)))
+		auto midLegsStkm = (sim->player.legs[0] + sim->player.legs[2])*0.5f;
+
+		dist = hypot(midLegs.X - midLegsStkm.X, midLegs.Y - midLegsStkm.Y);
+		distVec = midLegsStkm - midLegs;
+		target = midLegsStkm;
+		anyStkm = true;
+	}
+
+	if (sim->player2.spwn && sim->player2.elem != PT_INVIS)
+	{
+		auto midLegsStkm = (sim->player2.legs[0] + sim->player2.legs[2])*0.5f;
+		float dist2 = hypot(midLegs.X - midLegsStkm.X, midLegs.Y - midLegsStkm.Y);
+
+		if (!anyStkm || dist2 < dist)
 		{
-			tarx = (int)sim->player.legs[2];
-			tary = (int)sim->player.legs[3];
+			dist = dist2;
+			distVec = midLegsStkm - midLegs;
+			target = midLegsStkm;
+			anyStkm = true;
+		}
+	}
+
+	// Gravity is needed to correctly determine if STKM is to the left or to the right of FIGH
+	Vec2<float> grav{0, 1};
+	sim->GetGravityField(parts[i].x, parts[i].y, 1.0f, 1.0f, grav.X, grav.Y);
+	float gravLen = hypot(grav.X, grav.Y);
+	if (gravLen > 0.01f)
+		grav = grav * (1/gravLen);
+	else
+		grav = Vec2<float>{0, 1};
+
+	// Since grav is normalized, these are projections
+	float horizSign = grav.X*distVec.Y - grav.Y*distVec.X; // > 0 means "left", < 0 means "right"
+	float vertSign = grav.X*distVec.X + grav.Y*distVec.Y; // > 0 means "down", < 0 means "up"
+
+	// Check if we have a "dangerous" element.
+	// We don't allow energy particles since these shoot in a "laser beam" fashion
+	int elem = figh->elem;
+	bool dangerous = elem == PT_LIGH
+		|| ((elements[elem].Properties & (PROP_DEADLY | PROP_RADIOACTIVE)) && (elements[elem].Properties & (TYPE_GAS | TYPE_PART | TYPE_LIQUID)))
+		|| (elements[elem].DefaultProperties.temp >= 373.15f || elements[elem].DefaultProperties.temp <= 173.15);
+
+	float cutoff = 0;
+	if (dangerous)
+	{
+		float loss = elements[elem].Loss;
+		float g = elements[elem].Gravity;
+
+		if (loss > 0.99f) loss = 0.95f;
+		if (g < 0.01f) g = 1.0f;
+
+		// A completely bogus formula inspired by physics
+		cutoff = std::min(70.0f, std::min(4.0f/(1.0f-loss), sqrtf(400.0f/g)));
+
+		// Set a default cutoff for things other than powders and liquids
+		if (!(elements[elem].Properties & (TYPE_PART | TYPE_LIQUID)))
+			cutoff = 25;
+
+		// Shoot
+		float spread = float(sim->rng.between(-5, 5));
+		if (anyStkm && fabs(horizSign) < (spread + cutoff) && fabs(horizSign) > (spread + cutoff - 5.0f) &&
+			       fabs(vertSign) < 10.0f && figh->pdir == -isign(horizSign))
+			figh->comm = 8;
+	}
+
+	// This is minimal when dist = cutoff
+	float score = fabs(dist - cutoff) + cutoff;
+
+	// Do something if we got hurt.
+	// The chance() statement will be always true when life <= 20
+	if (parts[i].life < figh->prevLife && parts[i].life > 0 && sim->rng.chance(20, parts[i].life))
+	{
+		if (sim->rng.chance(1, 2))
+		{
+			figh->comm = 0;
+
+			// Change direction randomly
+			if (sim->rng.chance(4, 5))
+				figh->comm = sim->rng.between(1, 2); // Left/right
+			if (sim->rng.chance(1, 5))
+				figh->comm |= 4; // Add jump
 		}
 		else
 		{
-			tarx = (int)sim->player2.legs[2];
-			tary = (int)sim->player2.legs[3];
-		}
-		parts[i].tmp2 = 1;
-	}
-	else if (sim->player.spwn)
-	{
-		tarx = (int)sim->player.legs[2];
-		tary = (int)sim->player.legs[3];
-		parts[i].tmp2 = 1;
-	}
-
-	switch (parts[i].tmp2)
-	{
-	case 1:
-		if ((pow(float(tarx-x), 2) + pow(float(tary-y), 2))<600)
-		{
-			if (figh->elem == PT_LIGH || figh->elem == PT_NEUT
-			    || elements[figh->elem].Properties & (PROP_DEADLY | PROP_RADIOACTIVE)
-			    || elements[figh->elem].DefaultProperties.temp >= 323 || elements[figh->elem].DefaultProperties.temp <= 243)
-				figh->comm = (int)figh->comm | 0x08;
-		}
-		else if (tarx<x)
-		{
-			if(figh->rocketBoots || !(sim->eval_move(PT_FIGH, int(figh->legs[4])-10, int(figh->legs[5])+6, nullptr)
-			     && sim->eval_move(PT_FIGH, int(figh->legs[4])-10, int(figh->legs[5])+3, nullptr)))
-				figh->comm = 0x01;
+			// Flip direction
+			if (figh->pcomm & 1)
+				figh->comm = 2;
+			else if (figh->pcomm & 2)
+				figh->comm = 1;
 			else
-				figh->comm = 0x02;
+				figh->comm = 4 + sim->rng.between(1, 2);
+		}
+	}
+	else if (anyStkm) // Seek STKM
+	{
+		// Try to "hit" a stickman by jumping
+		if (!dangerous && elem != PT_DCEL && dist <= 2.0f)
+			figh->comm |= 4;
 
-			if (figh->rocketBoots)
+		// Compare rounded values to avoid jitter effects
+		if (int(score) >= int(figh->prevScore))
+		{
+			// Increase a "stuck" counter
+			figh->frustration++;
+
+			if (figh->frustration > 10)
 			{
-				if (tary<y)
-					figh->comm = (int)figh->comm | 0x04;
+				if (sim->rng.chance(2, 3))
+				{
+					// Move based on relative position
+					figh->comm = horizSign > 0 ? 1 : 2;
+					if (dist < 20.0f && vertSign < -10.0f)
+						figh->comm |= 4;
+				}
+				else if (sim->rng.chance(2, 3))
+					figh->comm |= 4; // Try jumping
+				else
+				{
+					figh->comm = 0;
+
+					// Change direction randomly
+					if (sim->rng.chance(4, 5))
+						figh->comm = sim->rng.between(0, 1); // Left/right
+					if (sim->rng.chance(1, 5))
+						figh->comm |= 4; // Add jump
+				}
+
+				figh->frustration = 0;
 			}
-			else if (!sim->eval_move(PT_FIGH, int(figh->legs[4])-4, int(figh->legs[5])-1, nullptr)
-			    || !sim->eval_move(PT_FIGH, int(figh->legs[12])-4, int(figh->legs[13])-1, nullptr)
-			    || sim->eval_move(PT_FIGH, 2*int(figh->legs[4])-int(figh->legs[6]), int(figh->legs[5])+5, nullptr))
-				figh->comm = (int)figh->comm | 0x04;
 		}
 		else
-		{
-			if (figh->rocketBoots || !(sim->eval_move(PT_FIGH, int(figh->legs[12])+10, int(figh->legs[13])+6, nullptr)
-			      && sim->eval_move(PT_FIGH, int(figh->legs[12])+10, int(figh->legs[13])+3, nullptr)))
-				figh->comm = 0x02;
-			else
-				figh->comm = 0x01;
-
-			if (figh->rocketBoots)
-			{
-				if (tary<y)
-					figh->comm = (int)figh->comm | 0x04;
-			}
-			else if (!sim->eval_move(PT_FIGH, int(figh->legs[4])+4, int(figh->legs[5])-1, nullptr)
-			    || !sim->eval_move(PT_FIGH, int(figh->legs[4])+4, int(figh->legs[5])-1, nullptr)
-			    || sim->eval_move(PT_FIGH, 2*int(figh->legs[12])-int(figh->legs[14]), int(figh->legs[13])+5, nullptr))
-				figh->comm = (int)figh->comm | 0x04;
-		}
-		break;
-	default:
+			figh->frustration = 0;
+	}
+	else if (sim->rng.chance(1, 5))
 		figh->comm = 0;
-		break;
-	}
+
+	// Save current score and life for future comparison
+	figh->prevScore = score;
+	figh->prevLife = parts[i].life;
 
 	figh->pcomm = figh->comm;
 
@@ -182,11 +257,11 @@ int Element_FIGH_Alloc(Simulation *sim)
 	if (sim->fighcount >= MAX_FIGHTERS)
 		return -1;
 	int i = 0;
-	while (i < MAX_FIGHTERS && sim->fighters[i].spwn==1)
+	while (i < MAX_FIGHTERS && sim->fighters[i].spwn)
 		i++;
 	if (i < MAX_FIGHTERS)
 	{
-		sim->fighters[i].spwn = 1;
+		sim->fighters[i].spwn = true;
 		sim->fighters[i].elem = PT_DUST;
 		sim->fighcount++;
 		return i;
@@ -198,7 +273,7 @@ static void Free(Simulation *sim, unsigned char i)
 {
 	if (sim->fighters[i].spwn)
 	{
-		sim->fighters[i].spwn = 0;
+		sim->fighters[i].spwn = false;
 		sim->fighcount--;
 	}
 }
@@ -208,5 +283,9 @@ void Element_FIGH_NewFighter(Simulation *sim, int fighterID, int i, int elem)
 	Element_STKM_init_legs(sim, &sim->fighters[fighterID], i);
 	if (elem > 0 && elem < PT_NUM)
 		sim->fighters[fighterID].elem = elem;
-	sim->fighters[fighterID].spwn = 1;
+	sim->fighters[fighterID].spwn = true;
+
+	sim->fighters[fighterID].frustration = 0;
+	sim->fighters[fighterID].prevLife = 100;
+	sim->fighters[fighterID].prevScore = 0;
 }

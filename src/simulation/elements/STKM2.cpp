@@ -2,7 +2,6 @@
 #include "STKM.h"
 
 static int update(UPDATE_FUNC_ARGS);
-static void create(ELEMENT_CREATE_FUNC_ARGS);
 static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS);
 static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
 
@@ -53,22 +52,13 @@ void Element::Element_STKM2()
 
 	Update = &update;
 	Graphics = &Element_STKM_graphics;
-	Create = &create;
 	CreateAllowed = &createAllowed;
 	ChangeType = &changeType;
 }
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	Element_STKM_run_stickman(&sim->player2, UPDATE_FUNC_SUBCALL_ARGS);
-	return 0;
-}
-
-static void create(ELEMENT_CREATE_FUNC_ARGS)
-{
-	int spawnID = sim->create_part(-3, x, y, PT_SPAWN2);
-	if (spawnID >= 0)
-		sim->player2.spawnID = spawnID;
+	return Element_STKM_run_stickman(&sim->player2, UPDATE_FUNC_SUBCALL_ARGS);
 }
 
 static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)

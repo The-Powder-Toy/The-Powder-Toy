@@ -34,7 +34,8 @@ uint32_t Snapshot::Hash() const
 	takeVector(FanVelocityY);
 	takeVector(PortalParticles);
 	takeVector(WirelessData);
-	takeVector(stickmen);
+	takeVector(players);
+	takeVector(fighters);
 	takeThing(FrameCount);
 	takeThing(RngState[0]);
 	takeThing(RngState[1]);

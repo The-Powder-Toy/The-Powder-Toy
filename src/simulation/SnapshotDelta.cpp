@@ -74,28 +74,8 @@ static_assert(sizeof(Particle) % sizeof(uint32_t) == 0, "fix me");
 constexpr size_t playerstUint32Count = sizeof(playerst) / sizeof(uint32_t);
 static_assert(sizeof(playerst) % sizeof(uint32_t) == 0, "fix me");
 
-// * Needed by FillHunkVector for handling Snapshot::stickmen.
-bool operator ==(const playerst &lhs, const playerst &rhs)
-{
-	auto match = true;
-	for (auto i = 0U; i < 16U; ++i)
-	{
-		match = match && lhs.legs[i] == rhs.legs[i];
-	}
-	for (auto i = 0U; i < 8U; ++i)
-	{
-		match = match && lhs.accs[i] == rhs.accs[i];
-	}
-	return match                              &&
-	       lhs.comm        == rhs.comm        &&
-	       lhs.pcomm       == rhs.pcomm       &&
-	       lhs.elem        == rhs.elem        &&
-	       lhs.spwn        == rhs.spwn        &&
-	       lhs.frames      == rhs.frames      &&
-	       lhs.rocketBoots == rhs.rocketBoots &&
-	       lhs.fan         == rhs.fan         &&
-	       lhs.spawnID     == rhs.spawnID;
-}
+constexpr size_t fighterstUint32Count = sizeof(fighterst) / sizeof(uint32_t);
+static_assert(sizeof(fighterst) % sizeof(uint32_t) == 0, "fix me");
 
 // * Needed by FillSingleDiff for handling Snapshot::signs.
 bool operator ==(const std::vector<sign> &lhs, const std::vector<sign> &rhs)
@@ -223,7 +203,8 @@ std::unique_ptr<SnapshotDelta> SnapshotDelta::FromSnapshots(const Snapshot &oldS
 	FillSingleDiff(oldSnap.FrameCount     , newSnap.FrameCount     , delta.FrameCount     );
 	FillSingleDiff(oldSnap.RngState       , newSnap.RngState       , delta.RngState       );
 	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(oldSnap.PortalParticles.data()), reinterpret_cast<const uint32_t *>(newSnap.PortalParticles.data()), delta.PortalParticles, newSnap.PortalParticles.size() * ParticleUint32Count);
-	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(oldSnap.stickmen.data())       , reinterpret_cast<const uint32_t *>(newSnap.stickmen.data()       ), delta.stickmen       , newSnap.stickmen       .size() * playerstUint32Count);
+	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(oldSnap.players.data())        , reinterpret_cast<const uint32_t *>(newSnap.players.data()        ), delta.players        , newSnap.players        .size() * playerstUint32Count);
+	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(oldSnap.fighters.data())       , reinterpret_cast<const uint32_t *>(newSnap.fighters.data()       ), delta.fighters       , newSnap.fighters       .size() * fighterstUint32Count);
 
 	// * Slightly more interesting; this will only diff the common parts, the rest is copied separately.
 	auto commonSize = std::min(oldSnap.Particles.size(), newSnap.Particles.size());
@@ -260,7 +241,8 @@ std::unique_ptr<Snapshot> SnapshotDelta::Forward(const Snapshot &oldSnap)
 	ApplySingleDiff<false>(FrameCount     , newSnap.FrameCount     );
 	ApplySingleDiff<false>(RngState       , newSnap.RngState       );
 	ApplyHunkVectorPtr<false>(PortalParticles, reinterpret_cast<uint32_t *>(newSnap.PortalParticles.data()));
-	ApplyHunkVectorPtr<false>(stickmen       , reinterpret_cast<uint32_t *>(newSnap.stickmen.data()       ));
+	ApplyHunkVectorPtr<false>(players        , reinterpret_cast<uint32_t *>(newSnap.players.data()        ));
+	ApplyHunkVectorPtr<false>(fighters       , reinterpret_cast<uint32_t *>(newSnap.fighters.data()       ));
 
 	// * Slightly more interesting; apply the common hunk vector, copy the extra portion separaterly.
 	ApplyHunkVectorPtr<false>(commonParticles, reinterpret_cast<uint32_t *>(newSnap.Particles.data()));
@@ -295,7 +277,8 @@ std::unique_ptr<Snapshot> SnapshotDelta::Restore(const Snapshot &newSnap)
 	ApplySingleDiff<true>(FrameCount     , oldSnap.FrameCount     );
 	ApplySingleDiff<true>(RngState       , oldSnap.RngState       );
 	ApplyHunkVectorPtr<true>(PortalParticles, reinterpret_cast<uint32_t *>(oldSnap.PortalParticles.data()));
-	ApplyHunkVectorPtr<true>(stickmen       , reinterpret_cast<uint32_t *>(oldSnap.stickmen.data()       ));
+	ApplyHunkVectorPtr<true>(players        , reinterpret_cast<uint32_t *>(oldSnap.players.data()        ));
+	ApplyHunkVectorPtr<true>(fighters       , reinterpret_cast<uint32_t *>(oldSnap.fighters.data()       ));
 
 	// * Slightly more interesting; apply the common hunk vector, copy the extra portion separaterly.
 	ApplyHunkVectorPtr<true>(commonParticles, reinterpret_cast<uint32_t *>(oldSnap.Particles.data()));

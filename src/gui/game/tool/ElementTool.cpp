@@ -36,5 +36,18 @@ void Element_TESC_Tool::DrawFill(Simulation * sim, Brush const &brush, ui::Point
 
 void PlopTool::Click(Simulation * sim, Brush const &brush, ui::Point position)
 {
-	sim->create_part(-2, position.X, position.Y, TYP(ToolID), ID(ToolID));
+	switch(TYP(ToolID))
+	{
+		case PT_STKM:
+			if (sim->elementCount[PT_SPAWN] <= 0)
+				sim->create_part(-3, position.X, position.Y, PT_SPAWN);
+			break;
+		case PT_STKM2:
+			if (sim->elementCount[PT_SPAWN2] <= 0)
+				sim->create_part(-3, position.X, position.Y, PT_SPAWN2);
+			break;
+		default:
+			sim->create_part(-2, position.X, position.Y, TYP(ToolID), ID(ToolID));
+			break;
+	}
 }

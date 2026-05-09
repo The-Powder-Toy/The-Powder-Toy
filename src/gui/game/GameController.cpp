@@ -699,32 +699,50 @@ bool GameController::KeyRelease(int key, int scan, bool repeat, bool shift, bool
 	if (ret)
 	{
 		Simulation * sim = gameModel->GetSimulation();
-		if (key == SDLK_RIGHT || key == SDLK_LEFT)
+
+		switch (key)
 		{
-			sim->player.pcomm = sim->player.comm;  //Saving last movement
-			sim->player.comm = (int)(sim->player.comm)&12;  //Stop command
-		}
-		else if (key == SDLK_UP)
-		{
-			sim->player.comm = (int)(sim->player.comm)&11;
-		}
-		else if (key == SDLK_DOWN)
-		{
-			sim->player.comm = (int)(sim->player.comm)&7;
+			case SDLK_LEFT:
+				{
+					sim->player.pcomm = sim->player.comm;  //Saving last movement
+					sim->player.comm = (int)(sim->player.comm)&14;  // Clear 0x1
+				}
+				break;
+			case SDLK_RIGHT:
+				{
+					sim->player.pcomm = sim->player.comm;  //Saving last movement
+					sim->player.comm = (int)(sim->player.comm)&13;  // Clear 0x2
+				}
+				break;
+			case SDLK_UP:
+				sim->player.comm = (int)(sim->player.comm)&11; // Clear 0x4
+				break;
+			case SDLK_DOWN:
+				sim->player.comm = (int)(sim->player.comm)&7; // Clear 0x8
+				break;
 		}
 
-		if (scan == SDL_SCANCODE_D || scan == SDL_SCANCODE_A)
+		// STKM2
+		switch (scan)
 		{
-			sim->player2.pcomm = sim->player2.comm;  //Saving last movement
-			sim->player2.comm = (int)(sim->player2.comm)&12;  //Stop command
-		}
-		else if (scan == SDL_SCANCODE_W)
-		{
-			sim->player2.comm = (int)(sim->player2.comm)&11;
-		}
-		else if (scan == SDL_SCANCODE_S)
-		{
-			sim->player2.comm = (int)(sim->player2.comm)&7;
+			case SDL_SCANCODE_A:
+				{
+					sim->player2.pcomm = sim->player2.comm;  //Saving last movement
+					sim->player2.comm = (int)(sim->player2.comm)&14;  // Clear 0x1
+				}
+				break;
+			case SDL_SCANCODE_D:
+				{
+					sim->player2.pcomm = sim->player2.comm;  //Saving last movement
+					sim->player2.comm = (int)(sim->player2.comm)&13;  // Clear 0x2
+				}
+				break;
+			case SDL_SCANCODE_W:
+				sim->player2.comm = (int)(sim->player2.comm)&11; // Clear 0x4
+				break;
+			case SDL_SCANCODE_S:
+				sim->player2.comm = (int)(sim->player2.comm)&7; // Clear 0x8
+				break;
 		}
 	}
 	return ret;

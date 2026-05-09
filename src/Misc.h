@@ -86,3 +86,8 @@ bool byteStringEqualsLiteral(const ByteString &str, const char (&lit)[N])
 {
 	return byteStringEqualsString(str, lit, N - 1U);
 }
+
+inline float remainder_p(float x, float y)
+{
+	return std::fmod(x, y) + (x>=0 ? 0 : y);
+}

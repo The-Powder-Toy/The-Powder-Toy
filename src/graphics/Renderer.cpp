@@ -279,17 +279,25 @@ void Renderer::render_parts()
 		}
 	}
 	stats.foundParticles = 0;
-	for(i = 0; i < sim->parts.active; i++) {
+	std::vector<int> stickmen; // Contains IDs of STKM, STKM2, FIGH
+
+	auto renderPart = [&](int i, bool deferStickmen) {
 		if (sim->parts[i].type && sim->parts[i].type >= 0 && sim->parts[i].type < PT_NUM) {
 			t = sim->parts[i].type;
+
+			if (deferStickmen && (t==PT_STKM || t==PT_STKM2 || t==PT_FIGH))
+			{
+				stickmen.push_back(i);
+				return;
+			}
 
 			nx = (int)(sim->parts[i].x+0.5f);
 			ny = (int)(sim->parts[i].y+0.5f);
 
 			if(nx >= XRES || nx < 0 || ny >= YRES || ny < 0)
-				continue;
+				return;
 			if(TYP(sim->photons[ny][nx]) && !(elements[t].Properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
-				continue;
+				return;
 
 			//Defaults
 			pixel_mode = 0 | PMODE_FLAT;
@@ -541,19 +549,22 @@ void Renderer::render_parts()
 				{
 					int legr, legg, legb;
 					const playerst *cplayer;
-					if(t==PT_STKM)
+
+					if (t==PT_STKM)
 						cplayer = &sim->player;
-					else if(t==PT_STKM2)
+					else if (t==PT_STKM2)
 						cplayer = &sim->player2;
 					else if (t==PT_FIGH && sim->parts[i].tmp >= 0 && sim->parts[i].tmp < MAX_FIGHTERS)
 						cplayer = &sim->fighters[(unsigned char)sim->parts[i].tmp];
 					else
-						continue;
+						return;
 
-					if (mousePos.X>(nx-3) && mousePos.X<(nx+3) && mousePos.Y<(ny+3) && mousePos.Y>(ny-3)) //If mouse is in the head
+					// If mouse is in the head (doesn't work exactly for rotated head)
+					if (mousePos.X>(nx-3) && mousePos.X<(nx+3) && mousePos.Y<(ny+3) && mousePos.Y>(ny-3))
 					{
-						String hp = String::Build(Format::Width(sim->parts[i].life, 3));
-						BlendText(mousePos + Vec2{ -8-2*(sim->parts[i].life<100)-2*(sim->parts[i].life<10), -12 }, hp, 0xFFFFFF_rgb .WithAlpha(255));
+						int life = std::max(0, std::min(100, sim->parts[i].life));
+						String hp = String::Build(life);
+						BlendText(mousePos + Vec2{ -8+3*(life<100)+3*(life<10), -12 }, hp, 0xFFFFFF_rgb .WithAlpha(255));
 					}
 
 					if (matchesFindingElement)
@@ -596,17 +607,18 @@ void Renderer::render_parts()
 						legg = colg;
 						legb = colb;
 					}
-					else if (t==PT_STKM2)
-					{
-						legr = 100;
-						legg = 100;
-						legb = 255;
-					}
 					else
 					{
 						legr = 255;
 						legg = 255;
 						legb = 255;
+
+						if (!(colorMode & ~COLOUR_GRAD) && decorationLevel != decorationDisabled && deca)
+						{
+							legr = (deca*decr + (256-deca)*legr) >> 8;
+							legg = (deca*decg + (256-deca)*legg) >> 8;
+							legb = (deca*decb + (256-deca)*legb) >> 8;
+						}
 					}
 
 					if (findingElement && !matchesFindingElement)
@@ -619,31 +631,65 @@ void Renderer::render_parts()
 						legb /= 10;
 					}
 
-					//head
-					if(t==PT_FIGH)
+					int transp = cplayer->elem == PT_INVIS ? 120 : 255;
+
+					Vec2<int> hv{nx, ny};
+					Vec2<float> dwn = cplayer->downVec;
+
+					// Makes head visible underwater
+					if (cplayer->isSwimming)
 					{
-						DrawLine({ nx, ny+2 }, { nx+2, ny }, RGB(colr, colg, colb));
-						DrawLine({ nx+2, ny }, { nx, ny-2 }, RGB(colr, colg, colb));
-						DrawLine({ nx, ny-2 }, { nx-2, ny }, RGB(colr, colg, colb));
-						DrawLine({ nx-2, ny }, { nx, ny+2 }, RGB(colr, colg, colb));
+						colr /= 2;
+						colb /= 2;
+						colg /= 2;
 					}
-					else
+
+					// Head
+					if (t == PT_FIGH)
 					{
-						DrawLine({ nx-2, ny+2 }, { nx+2, ny+2 }, RGB(colr, colg, colb));
-						DrawLine({ nx-2, ny-2 }, { nx+2, ny-2 }, RGB(colr, colg, colb));
-						DrawLine({ nx-2, ny-2 }, { nx-2, ny+2 }, RGB(colr, colg, colb));
-						DrawLine({ nx+2, ny-2 }, { nx+2, ny+2 }, RGB(colr, colg, colb));
+						Vec2<int> dv{int(round(dwn.X*2.0f)), int(round(dwn.Y*2.0f))};
+						Vec2<int> lv{dv.Y, -dv.X}; // dv rotated 90 degrees
+
+						for (int eps1 = -1; eps1 < 2; eps1 += 2)
+							for (int eps2 = -1; eps2 < 2; eps2 += 2)
+								DrawLine(hv + dv*eps1, hv + lv*eps2, RGB(colr, colg, colb));
 					}
-					//legs
-					DrawLine({                    nx,                  ny+3 }, { int(cplayer->legs[ 0]), int(cplayer->legs[ 1]) }, RGB(legr, legg, legb));
-					DrawLine({ int(cplayer->legs[0]), int(cplayer->legs[1]) }, { int(cplayer->legs[ 4]), int(cplayer->legs[ 5]) }, RGB(legr, legg, legb));
-					DrawLine({                    nx,                  ny+3 }, { int(cplayer->legs[ 8]), int(cplayer->legs[ 9]) }, RGB(legr, legg, legb));
-					DrawLine({ int(cplayer->legs[8]), int(cplayer->legs[9]) }, { int(cplayer->legs[12]), int(cplayer->legs[13]) }, RGB(legr, legg, legb));
+					else if (t == PT_STKM)
+					{
+						// We use 2.1 here instead of "correct" 2.0 because it looks better that way
+						Vec2<int> dv{int(round((dwn.X - dwn.Y)*2.1f)), int(round((dwn.X + dwn.Y)*2.1f))};
+						Vec2<int> lv{dv.Y, -dv.X}; // dv rotated 90 degrees
+
+						for (int eps1 = -1; eps1 < 2; eps1 += 2)
+							for (int eps2 = -1; eps2 < 2; eps2 += 2)
+								BlendLine(hv + dv*eps1, hv + lv*eps2, RGBA(colr, colg, colb, transp));
+					}
+					else if (t == PT_STKM2)
+					{
+						// A pixelated circle
+						auto colour = RGBA(colr, colg, colb, transp);
+						BlendLine(hv + Vec2<int>{-1, -2}, hv + Vec2<int>{1, -2}, colour);
+						BlendLine(hv + Vec2<int>{-1, 2}, hv + Vec2<int>{1, 2}, colour);
+						BlendLine(hv + Vec2<int>{-2, -1}, hv + Vec2<int>{-2, 1}, colour);
+						BlendLine(hv + Vec2<int>{2, -1}, hv + Vec2<int>{2, 1}, colour);
+					}
+
+					Vec2<int> neck{int(round(dwn.X*3.0f)), int(round(dwn.Y*3.0f))};
+
+					// Legs
+					for (int leg = 0; leg < 4; leg += 2)
+					{
+						auto colour = RGBA(legr, legg, legb, transp);
+						BlendLine(hv + neck, { int(cplayer->legs[leg].X), int(cplayer->legs[leg].Y) }, colour);
+						BlendLine({ int(cplayer->legs[leg].X), int(cplayer->legs[leg].Y) },
+								{ int(cplayer->legs[leg+1].X), int(cplayer->legs[leg+1].Y) }, colour);
+					}
+
 					if (cplayer->rocketBoots)
 					{
 						for (int leg=0; leg<2; leg++)
 						{
-							int nx = int(cplayer->legs[leg*8+4]), ny = int(cplayer->legs[leg*8+5]);
+							int nx = int(cplayer->legs[leg*2+1].X), ny = int(cplayer->legs[leg*2+1].Y);
 							int colr = 255, colg = 0, colb = 255;
 							if (((int)(cplayer->comm)&0x04) == 0x04 || (((int)(cplayer->comm)&0x01) == 0x01 && leg==0) || (((int)(cplayer->comm)&0x02) == 0x02 && leg==1))
 								DrawPixel({ nx, ny }, 0x00FF00_rgb);
@@ -659,6 +705,22 @@ void Renderer::render_parts()
 							BlendPixel({ nx+1, ny+1 }, RGBA(colr, colg, colb, 112));
 							BlendPixel({ nx-1, ny+1 }, RGBA(colr, colg, colb, 112));
 						}
+					}
+
+					// Draw protective shield
+					if (cplayer->elem == PT_SHLD1)
+					{
+						Vec2<int> midpoint{int((float(nx) + cplayer->legs[1].X + cplayer->legs[3].X) / 3.0f),
+								   int((float(ny) + cplayer->legs[1].Y + cplayer->legs[3].Y) / 3.0f)};
+						Vec2<int> center = midpoint - neck;
+
+						int power = std::clamp(int(cplayer->frames), 0, 10);
+
+						// This gives a "flickering" effect when shield consumes damage
+						if (power >= 10)
+							BlendFilledEllipse(center, {9, 9}, RGBA(200, 200, 200, 30));
+
+						BlendFilledEllipse(center, {8, 8}, RGBA(200, 200, 200, power*7));
 					}
 				}
 				if(pixel_mode & PMODE_FLAT)
@@ -882,6 +944,18 @@ void Renderer::render_parts()
 				}
 			}
 		}
+	};
+
+	// Render particles
+	for(i = 0; i < sim->parts.active; i++)
+	{
+		renderPart(i, true);
+	}
+
+	// Render stickmen
+	for (auto i : stickmen)
+	{
+		renderPart(i, false);
 	}
 }
 

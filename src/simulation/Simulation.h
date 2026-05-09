@@ -95,7 +95,7 @@ struct RenderableSimulation
 
 	playerst player;
 	playerst player2;
-	playerst fighters[MAX_FIGHTERS]; //Defined in Stickman.h
+	fighterst fighters[MAX_FIGHTERS]; //Defined in Stickman.h
 
 	float vx[YCELLS][XCELLS];
 	float vy[YCELLS][XCELLS];
