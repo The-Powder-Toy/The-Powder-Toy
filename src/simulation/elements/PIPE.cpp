@@ -42,7 +42,7 @@ void Element::Element_PIPE()
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = 10.0f;
-	HighPressureTransition = PT_BRMT;
+	HighPressureTransition = PT_BRMT; //@ PIPE -> BRMT
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
@@ -278,6 +278,7 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 					if (!r)
 					{
 						// BRCK border
+						//@ PIPE -> PIPE + BRCK
 						int index = sim->create_part(-1,x+rx,y+ry,PT_BRCK);
 						if (parts[i].type == PT_PPIP && index != -1)
 							parts[index].tmp = 1;

@@ -40,7 +40,7 @@ void Element::Element_BTRY()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 2273.0f;
-	HighTemperatureTransition = PT_PLSM;
+	HighTemperatureTransition = PT_PLSM; //@ BTRY -> PLSM
 
 	Update = &update;
 }

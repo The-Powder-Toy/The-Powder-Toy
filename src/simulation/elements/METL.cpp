@@ -38,5 +38,5 @@ void Element::Element_METL()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1273.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ METL -> LAVA(METL)
 }

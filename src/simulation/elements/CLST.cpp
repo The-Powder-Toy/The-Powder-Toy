@@ -42,7 +42,7 @@ void Element::Element_CLST()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1256.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ CLST -> LAVA(CLST)
 
 	Update = &update;
 	Graphics = &graphics;
@@ -64,12 +64,14 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					if (sim->rng.chance(1, 1500))
 					{
+						//@ CLST + WATR -> PSTS
 						sim->create_part(i, x, y, PT_PSTS);
 						sim->kill_part(ID(r));
 					}
 				}
 				else if (TYP(r)==PT_NITR)
 				{
+					//@ CLST + NITR -> 2xBANG
 					sim->create_part(i, x, y, PT_BANG);
 					sim->create_part(ID(r), x+rx, y+ry, PT_BANG);
 				}

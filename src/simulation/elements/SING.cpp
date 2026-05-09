@@ -84,12 +84,15 @@ static int update(UPDATE_FUNC_ARGS)
 			switch (sim->rng.gen() % 3)
 			{
 				case 0:
+					//@ SING -> PHOT
 					nb = sim->create_part(-3, x, y, PT_PHOT);
 					break;
 				case 1:
+					//@ SING -> NEUT
 					nb = sim->create_part(-3, x, y, PT_NEUT);
 					break;
 				case 2:
+					//@ SING -> ELEC
 					nb = sim->create_part(-3, x, y, PT_ELEC);
 					break;
 			}

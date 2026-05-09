@@ -85,6 +85,7 @@ static int update(UPDATE_FUNC_ARGS)
 					{
 						if (sim->rng.chance(1, 10))
 						{
+							//@ EXOT + LAVA(TTAN/GOLD) -> LAVA(VIBR)
 							parts[ID(r)].ctype = PT_VIBR;
 							sim->kill_part(i);
 							return 1;
@@ -125,6 +126,7 @@ static int update(UPDATE_FUNC_ARGS)
 		parts[i].tmp2 = 10000;
 		if (parts[i].life < 1001)
 		{
+			//@ EXOT -> WARP
 			sim->part_change_type(i, x, y, PT_WARP);
 			return 1;
 		}
@@ -135,6 +137,7 @@ static int update(UPDATE_FUNC_ARGS)
 	if (sim->pv[y/CELL][x/CELL]>200 && parts[i].temp>9000 && parts[i].tmp2>200)
 	{
 		parts[i].tmp2 = 6000;
+		//@ EXOT -> WARP
 		sim->part_change_type(i, x, y, PT_WARP);
 		return 1;
 	}
@@ -172,6 +175,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		if (parts[i].temp < 50.0f)
 		{
+			//@ EXOT(PROT) -> CFLM
 			if (sim->create_part(i, x, y, PT_CFLM) != -1) // I don't see how this could fail but whatever
 			{
 				return 1;

@@ -68,7 +68,7 @@ private:
 	void DeselectTool(ByteString identifier);
 	void InitTools();
 
-	Simulation * sim;
+	std::unique_ptr<Simulation> sim;
 	bool paused = false;
 	int queuedFrames = 0;
 	Renderer * ren;

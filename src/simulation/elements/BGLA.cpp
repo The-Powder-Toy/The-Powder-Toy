@@ -38,5 +38,5 @@ void Element::Element_BGLA()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1973.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ BGLA -> LAVA(GLAS)
 }

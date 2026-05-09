@@ -41,9 +41,9 @@ void Element::Element_VIRS()
 	HighPressure = IPH;
 	HighPressureTransition = NT;
 	LowTemperature = 305.0f;
-	LowTemperatureTransition = PT_VRSS;
+	LowTemperatureTransition = PT_VRSS; //@ VIRS -> VRSS
 	HighTemperature = 673.0f;
-	HighTemperatureTransition = PT_VRSG;
+	HighTemperatureTransition = PT_VRSG; //@ VIRS -> VRSG
 
 	DefaultProperties.tmp4 = 250;
 
@@ -109,6 +109,7 @@ int Element_VIRS_update(UPDATE_FUNC_ARGS)
 				{
 					if (surround_space && sim->rng.chance(10 + int(sim->pv[(y+ry)/CELL][(x+rx)/CELL]), 100))
 					{
+						//@ VIRS/VRSS/VRSG + PLSM -> 2xPLSM
 						sim->create_part(i, x, y, PT_PLSM);
 						return 1;
 					}

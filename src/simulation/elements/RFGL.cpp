@@ -33,7 +33,7 @@ void Element::Element_RFGL()
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 
 	LowPressure = 2;
-	LowPressureTransition = PT_RFRG;
+	LowPressureTransition = PT_RFRG; //@ RFGL -> RFRG
 	HighPressure = IPH;
 	HighPressureTransition = NT;
 	LowTemperature = ITL;

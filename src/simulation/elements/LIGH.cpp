@@ -97,6 +97,7 @@ static int update(UPDATE_FUNC_ARGS)
 				    (rt!=PT_SPNG || parts[ID(r)].life==0) &&
 					elements[rt].Flammable && sim->rng.chance(elements[rt].Flammable + int(sim->pv[(y+ry)/CELL][(x+rx)/CELL] * 10.0f), 1000))
 				{
+					//@ LIGH + flammable -> LIGH + FIRE
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_FIRE);
 					parts[ID(r)].temp = restrict_flt(elements[PT_FIRE].DefaultProperties.temp + (elements[rt].Flammable/2), MIN_TEMP, MAX_TEMP);
 					parts[ID(r)].life = sim->rng.between(180, 259);
@@ -121,6 +122,7 @@ static int update(UPDATE_FUNC_ARGS)
 					sim->pv[y/CELL][x/CELL] = restrict_flt(sim->pv[y/CELL][x/CELL] + powderful/35, MIN_PRESSURE, MAX_PRESSURE);
 					if (sim->rng.chance(1, 3))
 					{
+						//@ LIGH + DEUT/PLUT -> LIGH + NEUT
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_NEUT);
 						parts[ID(r)].life = sim->rng.between(480, 959);
 						parts[ID(r)].vx = float(sim->rng.between(-5, 5));
@@ -144,6 +146,7 @@ static int update(UPDATE_FUNC_ARGS)
 					parts[ID(r)].temp = restrict_flt(parts[ID(r)].temp+powderful/10, MIN_TEMP, MAX_TEMP);
 					if (parts[ID(r)].temp > elements[PT_HEAC].HighTemperature)
 					{
+						//@ LIGH + HEAC -> LIGH + LAVA(HEAC)
 						sim->part_change_type(ID(r), x+rx, y+ry, PT_LAVA);
 						parts[ID(r)].ctype = PT_HEAC;
 					}

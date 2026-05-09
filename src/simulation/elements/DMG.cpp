@@ -88,20 +88,20 @@ static int update(UPDATE_FUNC_ARGS)
 										auto t = TYP(rr);
 										if (t && elements[t].HighPressureTransition>-1 && elements[t].HighPressureTransition<PT_NUM)
 											sim->part_change_type(ID(rr), x+nxi, y+nxj, elements[t].HighPressureTransition);
-										else if (t == PT_BMTL)
+										else if (t == PT_BMTL) //@ DMG + BMTL -> BRMT
 											sim->part_change_type(ID(rr), x+nxi, y+nxj, PT_BRMT);
-										else if (t == PT_GLAS)
+										else if (t == PT_GLAS) //@ DMG + GLAS -> BGLA
 											sim->part_change_type(ID(rr), x+nxi, y+nxj, PT_BGLA);
-										else if (t == PT_COAL)
+										else if (t == PT_COAL) //@ DMG + COAL -> BCOL
 											sim->part_change_type(ID(rr), x+nxi, y+nxj, PT_BCOL);
-										else if (t == PT_QRTZ)
+										else if (t == PT_QRTZ) //@ DMG + QRTZ -> PQRT
 											sim->part_change_type(ID(rr), x+nxi, y+nxj, PT_PQRT);
-										else if (t == PT_TUNG)
+										else if (t == PT_TUNG) //@ DMG + TUNG -> BRMT(TUNG)
 										{
 											sim->part_change_type(ID(rr), x+nxi, y+nxj, PT_BRMT);
 											parts[ID(rr)].ctype = PT_TUNG;
 										}
-										else if (t == PT_WOOD)
+										else if (t == PT_WOOD) //@ DMG + WOOD -> SAWD
 											sim->part_change_type(ID(rr), x+nxi, y+nxj, PT_SAWD);
 									}
 								}

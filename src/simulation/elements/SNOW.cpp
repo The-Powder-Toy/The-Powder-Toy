@@ -63,6 +63,7 @@ static int update(UPDATE_FUNC_ARGS)
 				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
+				//@ SNOW + SALT/SLTW -> 2xSLTW
 				if ((TYP(r)==PT_SALT || TYP(r)==PT_SLTW) && sim->rng.chance(1, 333))
 				{
 					sim->part_change_type(i,x,y,PT_SLTW);

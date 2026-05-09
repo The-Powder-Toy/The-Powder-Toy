@@ -103,6 +103,7 @@ static int update(UPDATE_FUNC_ARGS)
 			auto pavg = sim->parts_avg(i, nearp, PT_INSL);
 			if (pavg != PT_INSL && pavg != PT_RSSS)
 			{
+				//@ ETRD -> ETRD + PLSM
 				sim->CreateLine(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), PT_PLSM);
 				parts[i].life = 20;
 				sim->part_change_type(i,x,y,ct);
@@ -116,6 +117,7 @@ static int update(UPDATE_FUNC_ARGS)
 	case PT_NBLE:
 		if (parts[i].life<=1 && !(parts[i].tmp&0x1))
 		{
+			//@ NBLE -> PLSM(NBLE)
 			parts[i].life = sim->rng.between(50, 199);
 			sim->part_change_type(i,x,y,PT_PLSM);
 			parts[i].ctype = PT_NBLE;
@@ -139,6 +141,7 @@ static int update(UPDATE_FUNC_ARGS)
 						continue;
 					if (parts[i].tmp>4 && sim->rng.chance(1, parts[i].tmp*parts[i].tmp/20+6))
 					{
+						//@ TESC -> TESC + LIGH
 						int p = sim->create_part(-1, x+rx*2, y+ry*2, PT_LIGH);
 						if (p!=-1)
 						{
@@ -176,6 +179,7 @@ static int update(UPDATE_FUNC_ARGS)
 					if (TYP(r)==PT_DSTW || TYP(r)==PT_SLTW || TYP(r)==PT_WATR)
 					{
 						int rndstore = sim->rng.gen()%100;
+						//@ IRON + DSTW/SLTW/WATR -> IRON + O2/H2
 						if (!rndstore)
 							sim->part_change_type(ID(r),x+rx,y+ry,PT_O2);
 						else if (3 > rndstore)

@@ -44,7 +44,7 @@ void Element::Element_PLNT()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 573.0f;
-	HighTemperatureTransition = PT_FIRE;
+	HighTemperatureTransition = PT_FIRE; //@ PLNT -> FIRE
 
 	Update = &update;
 	Graphics = &graphics;
@@ -185,6 +185,7 @@ static int update(UPDATE_FUNC_ARGS)
 				// Create a stem
 				if (phase || life < 12)
 				{
+					//@ PLNT -> WOOD
 					sim->create_part(i, x, y, PT_WOOD);
 
 					parts[i].ctype = 0;
@@ -197,6 +198,7 @@ static int update(UPDATE_FUNC_ARGS)
 				else
 				{
 					// Thick stem
+					//@ PLNT -> GOO
 					sim->create_part(i, x, y, PT_GOO);
 
 					parts[i].ctype = 0;
@@ -230,6 +232,7 @@ static int update(UPDATE_FUNC_ARGS)
 			// Shoot out a seed
 			if (sim->rng.chance(1, 10))
 			{
+				//@ PLNT -> PLNT + SEED
 				si = sim->create_part(-1, x+2*dir3x3[dir].X, y+2*dir3x3[dir].Y, PT_SEED);
 				if (si >= 0)
 				{
@@ -271,6 +274,7 @@ static int update(UPDATE_FUNC_ARGS)
 						case PT_WATR:
 							if (sim->rng.chance(1, 50))
 							{
+								//@ PLNT + WATR -> 2xPLNT
 								auto np = sim->create_part(ID(r),x+rx,y+ry,PT_PLNT);
 								if (np<0) continue;
 								parts[np].life = 0;
@@ -279,6 +283,7 @@ static int update(UPDATE_FUNC_ARGS)
 						case PT_LAVA:
 							if (sim->rng.chance(1, 50))
 							{
+								//@ PLNT + LAVA -> FIRE + LAVA
 								sim->part_change_type(i,x,y,PT_FIRE);
 								parts[i].life = 4;
 							}
@@ -326,6 +331,7 @@ static int update(UPDATE_FUNC_ARGS)
 					if (rx || ry)
 					{
 						auto r = pmap[y+ry][x+rx];
+						//@ PLNT + SMKE/CO2 -> PLNT + O2
 						if (!r)
 							sim->create_part(-1,x+rx,y+ry,PT_O2);
 					}

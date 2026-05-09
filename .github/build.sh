@@ -362,8 +362,8 @@ if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "x86_64-windows-ming
 fi
 if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "x86-windows-mingw" ]]; then
 	meson_configure+=$'\t'--cross-file=.github/mingw32-ghactions.ini
-fi
-if [[ $BSH_DEBUG_RELEASE-$BSH_STATIC_DYNAMIC == release-static ]]; then
+elif [[ $BSH_DEBUG_RELEASE-$BSH_STATIC_DYNAMIC == release-static ]]; then
+	# see https://github.com/msys2/MINGW-packages/issues/28779
 	meson_configure+=$'\t'-Dlto=true
 fi
 if [[ $BSH_HOST_PLATFORM-$BSH_HOST_ARCH == darwin-aarch64 ]]; then

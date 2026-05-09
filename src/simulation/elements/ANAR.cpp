@@ -59,6 +59,7 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if (TYP(r)==PT_CFLM && sim->rng.chance(1, 4))
 				{
+					//@ ANAR + CFLM -> 2xCFLM
 					sim->part_change_type(i,x,y,PT_CFLM);
 					parts[i].life = sim->rng.between(50, 199);
 					parts[ID(r)].temp = parts[i].temp = 0;

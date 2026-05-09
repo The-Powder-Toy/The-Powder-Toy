@@ -43,7 +43,7 @@ void Element::Element_POLO()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 526.95f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ POLO -> LAVA(POLO)
 
 	Update = &update;
 	Graphics = &graphics;
@@ -59,6 +59,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		if (sim->rng.chance(1, 10000) && !parts[i].tmp)
 		{
+			//@ POLO -> POLO + NEUT
 			int s = sim->create_part(-3, x, y, PT_NEUT);
 			if (s >= 0)
 			{
@@ -72,6 +73,7 @@ static int update(UPDATE_FUNC_ARGS)
 
 		if (r && sim->rng.chance(1, 100))
 		{
+			//@ POLO -> POLO + NEUT
 			int s = sim->create_part(-3, x, y, PT_NEUT);
 			if (s >= 0)
 			{
@@ -89,6 +91,7 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	if (parts[i].tmp2 >= 10)
 	{
+		//@ POLO -> PLUT
 		sim->part_change_type(i,x,y,PT_PLUT);
 		parts[i].temp = (parts[i].temp+600.0f)/2.0f;
 		return 1;

@@ -65,6 +65,7 @@ int Element_COAL_update(UPDATE_FUNC_ARGS)
 		else if (parts[i].tmp<40&&parts[i].tmp>0)
 			parts[i].tmp--;
 		else if (parts[i].tmp<=0) {
+			//@ COAL -> BCOL
 			sim->part_change_type(i, x, y, PT_BCOL);
 			return 1;
 		}

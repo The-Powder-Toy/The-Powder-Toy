@@ -63,6 +63,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					if (sim->rng.chance(1, 6))
 					{
+						//@ C5 -> CFLM
 						sim->part_change_type(i,x,y,PT_CFLM);
 						parts[ID(r)].temp = parts[i].temp = 0;
 						parts[i].life = sim->rng.between(50, 199);

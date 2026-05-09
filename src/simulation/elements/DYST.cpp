@@ -38,5 +38,5 @@ void Element::Element_DYST()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 473.0f;
-	HighTemperatureTransition = PT_DUST;
+	HighTemperatureTransition = PT_DUST; //@ DYST -> DUST
 }

@@ -39,9 +39,9 @@ void Element::Element_WATR()
 	HighPressure = IPH;
 	HighPressureTransition = NT;
 	LowTemperature = 273.15f;
-	LowTemperatureTransition = PT_ICEI;
+	LowTemperatureTransition = PT_ICEI; //@ WATR -> ICEI
 	HighTemperature = 373.0f;
-	HighTemperatureTransition = PT_WTRV;
+	HighTemperatureTransition = PT_WTRV; //@ WATR -> WTRV
 
 	Update = &update;
 }
@@ -59,6 +59,7 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if (TYP(r)==PT_SALT && sim->rng.chance(1, 50))
 				{
+					//@ WATR + SALT -> SLTW + SALT
 					sim->part_change_type(i,x,y,PT_SLTW);
 					// on average, convert 3 WATR to SLTW before SALT turns into SLTW
 					if (sim->rng.chance(1, 3))
@@ -66,6 +67,7 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 				else if ((TYP(r)==PT_RBDM||TYP(r)==PT_LRBD) && (sim->legacy_enable||parts[i].temp>(273.15f+12.0f)) && sim->rng.chance(1, 100))
 				{
+					//@ WATR + RBDM/LRBD -> FIRE + RBDM/LRBD
 					sim->part_change_type(i,x,y,PT_FIRE);
 					parts[i].life = 4;
 					parts[i].ctype = PT_WATR;
@@ -81,10 +83,12 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 				else if (TYP(r)==PT_SLTW && sim->rng.chance(1, 2000))
 				{
+					//@ WATR + SLTW -> 2xSLTW
 					sim->part_change_type(i,x,y,PT_SLTW);
 				}
 				else if (TYP(r)==PT_ROCK && fabs(parts[i].vx)+fabs(parts[i].vy) >= 0.5 && sim->rng.chance(1, 1000)) // ROCK erosion
 				{
+					//@ WATR + ROCK -> WATR + SAND/STNE
 					if (sim->rng.chance(1,3))
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_SAND);
 					else

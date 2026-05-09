@@ -37,7 +37,7 @@ void Element::Element_FRZZ()
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = 1.8f;
-	HighPressureTransition = PT_SNOW;
+	HighPressureTransition = PT_SNOW; //@ FRZZ -> SNOW
 	LowTemperature = 50.0f;
 	LowTemperatureTransition = PT_ICEI;
 	HighTemperature = 273.15f;
@@ -59,6 +59,7 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if (TYP(r)==PT_WATR && sim->rng.chance(1, 20))
 				{
+					//@ FRZZ + WATR -> FRZW
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_FRZW);
 					parts[ID(r)].life = 100;
 					sim->kill_part(i);

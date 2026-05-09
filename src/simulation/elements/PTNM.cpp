@@ -41,7 +41,7 @@ void Element::Element_PTNM()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1768.0f + 273.15f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ PTNM -> LAVA(PTNM)
 
 	Update = &update;
 	Graphics = &graphics;
@@ -61,7 +61,7 @@ static void wtrv_reactions(int wtrv1_id, UPDATE_FUNC_ARGS)
 					continue;
 				int rt = TYP(r);
 
-				// WTRV + BCOL -> OIL
+				//@ PTNM + WTRV + BCOL -> PTNM + OIL
 				if (rt == PT_BCOL && parts[ID(r)].temp > 200.0f + 273.15f && parts[wtrv1_id].temp > 200.0f + 273.15f && sim->pv[(y + ry) / CELL][(x + rx) / CELL] > 7.f)
 				{
 					sim->part_change_type(ID(r), x + rx, y + ry, PT_OIL);
@@ -86,7 +86,7 @@ static void hygn_reactions(int hygn1_id, UPDATE_FUNC_ARGS)
 					continue;
 				int rt = TYP(r);
 
-				// HYGN + DESL -> OIL + WATR
+				//@ PTNM + H2 + DESL -> PTNM + OIL + WATR
 				if (rt == PT_DESL)
 				{
 					sim->part_change_type(ID(r), x + rx, y + ry, PT_WATR);
@@ -94,7 +94,7 @@ static void hygn_reactions(int hygn1_id, UPDATE_FUNC_ARGS)
 					return;
 				}
 
-				// HYGN + OXYG -> DSTW + SPRK + Heat
+				//@ PTNM + H2 + O2 -> PTNM + 2xDSTW
 				if (rt == PT_O2 && !parts[i].life)
 				{
 					sim->part_change_type(ID(r), x + rx, y + ry, PT_DSTW);
@@ -111,6 +111,7 @@ static void hygn_reactions(int hygn1_id, UPDATE_FUNC_ARGS)
 				// Cold fusion: 2 hydrogen > 500 C has a chance to fuse
 				if (rt == PT_H2 && sim->rng.chance(1, 1000) && parts[ID(r)].temp > 500.0f + 273.15f && parts[hygn1_id].temp > 500.0f + 273.15f)
 				{
+					//@ PTNM + 2xH2 -> PTNM + NBLE + NEUT + PHOT + maybe ELEC
 					sim->part_change_type(ID(r), x + rx, y + ry, PT_NBLE);
 					sim->part_change_type(hygn1_id, (int)(parts[hygn1_id].x + 0.5f), (int)(parts[hygn1_id].y + 0.5f), PT_NEUT);
 
@@ -198,7 +199,7 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				}
 
-				// ISZS / ISOZ -> PHOT + PLUT
+				//@ PTNM + ISZS/ISOZ -> PTNM + PLUT + PHOT
 				if (rt == PT_ISZS || rt == PT_ISOZ)
 				{
 					sim->part_change_type(ID(r), x + rx, y + ry, PT_PLUT);
@@ -219,6 +220,7 @@ static int update(UPDATE_FUNC_ARGS)
 					case PT_GAS: // GAS + > 2 pressure + >= 200 C -> INSL
 						if (parts[ID(r)].temp >= 200.0f + 273.15f && sim->pv[(y + ry) / CELL][(x + rx) / CELL] > 2.0f)
 						{
+							//@ PTNM + GAS -> PTNM + INSL
 							sim->part_change_type(ID(r), x + rx, y + ry, PT_INSL);
 							parts[i].temp += 60.0f; // Other part is INSL, adding temp is useless
 						}
@@ -227,17 +229,18 @@ static int update(UPDATE_FUNC_ARGS)
 					case PT_BREC: // BREL + > 1000 C + > 50 pressure -> EXOT
 						if (parts[ID(r)].temp > 1000.0f + 273.15f && sim->pv[(y + ry) / CELL][(x + rx) / CELL] > 50.0f)
 						{
+							//@ PTNM + BREC -> PTNM + EXOT
 							sim->part_change_type(ID(r), x + rx, y + ry, PT_EXOT);
 							parts[ID(r)].temp -= 30.0f;
 							parts[i].temp -= 30.0f;
 						}
 						break;
 
-					case PT_SMKE: // SMKE -> CO2
+					case PT_SMKE: //@ PTNM + SMKE -> PTNM + CO2
 						sim->part_change_type(ID(r), x + rx, y + ry, PT_CO2);
 						break;
 
-					case PT_RSST: // RSST -> BIZR
+					case PT_RSST: //@ PTNM + RSST -> PTNM + BIZR
 						sim->create_part(ID(r), x + rx, y + ry, PT_BIZR);
 						break;
 					}
