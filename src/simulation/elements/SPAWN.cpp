@@ -1,7 +1,8 @@
 #include "simulation/ElementCommon.h"
+#include "STKM.h"
 
+static int update(UPDATE_FUNC_ARGS);
 static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS);
-static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
 
 void Element::Element_SPAWN()
 {
@@ -43,25 +44,27 @@ void Element::Element_SPAWN()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
+	Update = &update;
 	CreateAllowed = &createAllowed;
-	ChangeType = &changeType;
+}
+
+static int update(UPDATE_FUNC_ARGS)
+{
+	if (sim->elementCount[PT_STKM] <= 0 && !sim->player.spwn)
+	{
+		auto si = sim->create_part(-1, x, y, PT_STKM);
+		if (si >= 0) // Make old SPAWN create old stickmen
+		{
+			parts[si].flags |= parts[i].flags & FLAG_OLDSTKM;
+			// Regenerate legs, since create_part didn't see FLAG_OLDSTKM
+			Element_STKM_init_legs(sim, &sim->player, si);
+		}
+	}
+
+	return 0;
 }
 
 static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
 {
-	return sim->player.spawnID == -1;
-}
-
-static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
-{
-	if (to == PT_SPAWN)
-	{
-		if (sim->player.spawnID == -1)
-			sim->player.spawnID = i;
-	}
-	else
-	{
-		if (sim->player.spawnID == i)
-			sim->player.spawnID = -1;
-	}
+	return sim->elementCount[PT_SPAWN] <= 0;
 }

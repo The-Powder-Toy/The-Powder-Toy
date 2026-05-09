@@ -34,7 +34,7 @@ void Element::Element_PROT()
 	HeatConduct = 61;
 	Description = "Protons. Transfer heat to materials, and remove sparks.";
 
-	Properties = TYPE_ENERGY;
+	Properties = TYPE_ENERGY | PROP_DEADLY;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

@@ -41,11 +41,6 @@ namespace
 	};
 }
 
-static float remainder_p(float x, float y)
-{
-	return std::fmod(x, y) + (x>=0 ? 0 : y);
-}
-
 void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> blockP) // block coordinates
 {
 	auto partP = blockP * CELL;
@@ -127,7 +122,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 		}
 
 		// Ensure we can spawn this element
-		if ((player.spwn == 1 && tempPart.type==PT_STKM) || (player2.spwn == 1 && tempPart.type==PT_STKM2))
+		if ((player.spwn && tempPart.type==PT_STKM) || (player2.spwn && tempPart.type==PT_STKM2))
 		{
 			continue;
 		}
@@ -160,14 +155,18 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 		{
 			continue;
 		}
-		parts[i] = tempPart;
 
+		// If .type == PT_FIGH, the create_part call initialized the fighter,
+		// and we need to save its fighters[] id for future use
+		unsigned int newTmp = parts[i].tmp;
+
+		parts[i] = tempPart;
 
 		switch (parts[i].type)
 		{
 		case PT_STKM:
 			Element_STKM_init_legs(this, &player, i);
-			player.spwn = 1;
+			player.spwn = true;
 			player.elem = PT_DUST;
 
 			if ((save->version < Version(93, 0) && parts[i].ctype == SPC_AIR) ||
@@ -179,10 +178,12 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 				player.rocketBoots = true;
 			if (save->stkm.fan1)
 				player.fan = true;
+			if (parts[i].flags & FLAG_OLDSTKM)
+				parts[i].dcolour = 0;
 			break;
 		case PT_STKM2:
 			Element_STKM_init_legs(this, &player2, i);
-			player2.spwn = 1;
+			player2.spwn = true;
 			player2.elem = PT_DUST;
 			if ((save->version < Version(93, 0) && parts[i].ctype == SPC_AIR) ||
 			        (save->version < Version(88, 0) && parts[i].ctype == OLD_SPC_AIR))
@@ -193,18 +194,15 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 				player2.rocketBoots = true;
 			if (save->stkm.fan2)
 				player2.fan = true;
-			break;
-		case PT_SPAWN:
-			player.spawnID = i;
-			break;
-		case PT_SPAWN2:
-			player2.spawnID = i;
+			if (parts[i].flags & FLAG_OLDSTKM)
+				parts[i].dcolour = 0;
 			break;
 		case PT_FIGH:
 		{
-			unsigned int oldTmp = parts[i].tmp;
-			parts[i].tmp = Element_FIGH_Alloc(this);
-			if (parts[i].tmp >= 0)
+			unsigned int oldTmp = tempPart.tmp;
+			parts[i].tmp = newTmp; // Restore the correct fighter index
+
+			if (newTmp >= 0)
 			{
 				bool fan = false;
 				if ((save->version < Version(93, 0) && parts[i].ctype == SPC_AIR)
@@ -213,20 +211,21 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 					fan = true;
 					parts[i].ctype = 0;
 				}
-				fighters[parts[i].tmp].elem = PT_DUST;
-				Element_FIGH_NewFighter(this, parts[i].tmp, i, parts[i].ctype);
+				Element_FIGH_NewFighter(this, newTmp, i, parts[i].ctype);
 				if (fan)
-					fighters[parts[i].tmp].fan = true;
+					fighters[newTmp].fan = true;
 				for (unsigned int fighNum : save->stkm.rocketBootsFigh)
 				{
 					if (fighNum == oldTmp)
-						fighters[parts[i].tmp].rocketBoots = true;
+						fighters[newTmp].rocketBoots = true;
 				}
 				for (unsigned int fighNum : save->stkm.fanFigh)
 				{
 					if (fighNum == oldTmp)
-						fighters[parts[i].tmp].fan = true;
+						fighters[newTmp].fan = true;
 				}
+				if (parts[i].flags & FLAG_OLDSTKM)
+					parts[i].dcolour = 0;
 			}
 			else
 			{
@@ -1040,9 +1039,9 @@ void Simulation::clear_sim(void)
 	memset(wireless, 0, sizeof(wireless));
 	memset(gol, 0, sizeof(gol));
 	memset(portalp, 0, sizeof(portalp));
-	memset(fighters, 0, sizeof(fighters));
-	memset(&player, 0, sizeof(player));
-	memset(&player2, 0, sizeof(player2));
+	std::fill(fighters, fighters+MAX_FIGHTERS, fighterst{});
+	player = {};
+	player2 = {};
 	memset(&Element_LOLZ_lolz, 0, sizeof(Element_LOLZ_lolz));
 	memset(&Element_LOVE_love, 0, sizeof(Element_LOVE_love));
 	memset(&Element_PSTN_tempParts, 0, sizeof(Element_PSTN_tempParts));
@@ -1050,12 +1049,10 @@ void Simulation::clear_sim(void)
 	std::fill(elementCount, elementCount+PT_NUM, 0);
 	elementRecount = true;
 	fighcount = 0;
-	player.spwn = 0;
-	player.spawnID = -1;
+	player.spwn = false;
 	player.rocketBoots = false;
 	player.fan = false;
-	player2.spwn = 0;
-	player2.spawnID = -1;
+	player2.spwn = false;
 	player2.rocketBoots = false;
 	player2.fan = false;
 	//memset(pers_bg, 0, WINDOWW*YRES*PIXELSIZE);
@@ -1082,7 +1079,7 @@ bool Simulation::IsWallBlocking(int x, int y, int type) const
 		int wall = bmap[y/CELL][x/CELL];
 		if (wall == WL_ALLOWGAS && !(elements[type].Properties&TYPE_GAS))
 			return true;
-		else if (wall == WL_ALLOWENERGY && !(elements[type].Properties&TYPE_ENERGY))
+		else if (wall == WL_ALLOWENERGY && (!(elements[type].Properties&TYPE_ENERGY) || type == PT_STKM || type == PT_STKM2 || type == PT_FIGH))
 			return true;
 		else if (wall == WL_ALLOWLIQUID && !(elements[type].Properties&TYPE_LIQUID))
 			return true;
@@ -1947,7 +1944,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	//and finally set the pmap/photon maps to the newly created particle
 	if (elements[t].Properties & TYPE_ENERGY)
 		photons[y][x] = PMAP(i, t);
-	else if (t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
+	else
 		pmap[y][x] = PMAP(i, t);
 
 	//Fancy dust effects for powder types
@@ -2927,12 +2924,15 @@ void SimulationImpl::MovementPhase(int i, Neighbourhood neighbourhood)
 					stickman = &fighters[parts[i].tmp];
 
 				if (stickman)
-					for (int i = 0; i < 16; i+=2)
+				{
+					Vec2<float> diff{float(nx - oldnx), float(ny - oldny)};
+					for (int i = 0; i < 4; i++)
 					{
-						stickman->legs[i] += (nx-oldnx);
-						stickman->legs[i+1] += (ny-oldny);
-						stickman->accs[i/2] *= .95f;
+						stickman->legs[i] += diff;
+						stickman->legsp[i] += diff;
+						stickman->accs[i] = stickman->accs[i]*0.95f;
 					}
+				}
 				parts[i].vy *= .95f;
 				parts[i].vx *= .95f;
 			}
@@ -3906,12 +3906,6 @@ void Simulation::BeforeSim(bool willUpdate)
 			}
 			ISWIRE--;
 		}
-
-		// spawn STKM and STK2
-		if (!player.spwn && player.spawnID >= 0)
-			create_part(-1, (int)parts[player.spawnID].x, (int)parts[player.spawnID].y, PT_STKM);
-		if (!player2.spwn && player2.spawnID >= 0)
-			create_part(-1, (int)parts[player2.spawnID].x, (int)parts[player2.spawnID].y, PT_STKM2);
 
 		// particle update happens right after this function (called separately)
 	}

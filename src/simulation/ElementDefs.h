@@ -37,6 +37,7 @@ constexpr auto FLAG_SKIPMOVE      = UINT32_C(0x00000002); // skip movement for o
 //#define FLAG_WATEREQUAL 0x4 //if a liquid was already checked during equalization
 constexpr auto FLAG_MOVABLE       = UINT32_C(0x00000008); // compatibility with old saves (moving SPNG), only applies to SPNG
 constexpr auto FLAG_PHOTDECO      = UINT32_C(0x00000008); // compatibility with old saves (decorated photons), only applies to PHOT. Having the same value as FLAG_MOVABLE is fine because they apply to different elements, and this saves space for future flags,
+constexpr auto FLAG_OLDSTKM       = UINT32_C(0x00000008); // compatibility with old saves (old STKM logic), only applies to STKM, STKM2, FIGH, SPAWN, SPAWN2. Same as FLAG_MOVABLE for the reasons explained above
 
 class Parts;
 class Simulation;

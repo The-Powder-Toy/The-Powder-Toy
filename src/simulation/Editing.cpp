@@ -27,13 +27,14 @@ std::unique_ptr<Snapshot> Simulation::CreateSnapshot() const
 	snap->Particles      .insert   (snap->Particles      .begin(), &parts  [0]      , &parts  [0] + parts.active);
 	snap->PortalParticles.insert   (snap->PortalParticles.begin(), &portalp[0][0][0], &portalp[0][0][0] + CHANNELS * 8 * 80);
 	snap->WirelessData   .insert   (snap->WirelessData   .begin(), &wireless[0][0]  , &wireless[0][0] + CHANNELS * 2);
-	snap->stickmen       .insert   (snap->stickmen       .begin(), &fighters[0]     , &fighters[0] + MAX_FIGHTERS);
-	snap->stickmen       .push_back(player2);
-	snap->stickmen       .push_back(player);
+	snap->fighters       .insert   (snap->fighters       .begin(), &fighters[0]     , &fighters[0] + MAX_FIGHTERS);
+	snap->players        .push_back(player);
+	snap->players        .push_back(player2);
 	snap->GravMass  .insert(snap->GravMass  .begin(), &gravIn.mass[{ 0, 0 }]   , &gravIn.mass[{ 0, 0 }]    + NCELL);
 	snap->GravMask  .insert(snap->GravMask  .begin(), &gravIn.mask[{ 0, 0 }]   , &gravIn.mask[{ 0, 0 }]    + NCELL);
 	snap->GravForceX.insert(snap->GravForceX.begin(), &gravOut.forceX[{ 0, 0 }], &gravOut.forceX[{ 0, 0 }] + NCELL);
 	snap->GravForceY.insert(snap->GravForceY.begin(), &gravOut.forceY[{ 0, 0 }], &gravOut.forceY[{ 0, 0 }] + NCELL);
+	snap->fighcount = fighcount;
 	snap->signs = signs;
 	snap->FrameCount = frameCount;
 	snap->RngState = rng.state();
@@ -62,9 +63,9 @@ void Simulation::Restore(const Snapshot &snap)
 	std::copy(snap.Particles      .begin(), snap.Particles      .end(), &parts[0]        );
 	std::copy(snap.PortalParticles.begin(), snap.PortalParticles.end(), &portalp[0][0][0]);
 	std::copy(snap.WirelessData   .begin(), snap.WirelessData   .end(), &wireless[0][0]  );
-	std::copy(snap.stickmen       .begin(), snap.stickmen.end() - 2   , &fighters[0]     );
-	player  = snap.stickmen[snap.stickmen.size() - 1];
-	player2 = snap.stickmen[snap.stickmen.size() - 2];
+	std::copy(snap.fighters       .begin(), snap.fighters       .end(), &fighters[0]     );
+	player  = snap.players[0];
+	player2 = snap.players[1];
 	{
 		GravityInput newGravIn;
 		GravityOutput newGravOut;
@@ -76,6 +77,7 @@ void Simulation::Restore(const Snapshot &snap)
 		// TODO: maybe track settings like Newtonian gravity enable state in the history
 		ResetNewtonianGravity(newGravIn, newGravOut);
 	}
+	fighcount = snap.fighcount;
 	signs = snap.signs;
 	frameCount = snap.FrameCount;
 	rng.state(snap.RngState);

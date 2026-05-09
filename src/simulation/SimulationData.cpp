@@ -231,6 +231,19 @@ void SimulationData::init_can_move()
 	can_move[PT_TRON][PT_SWCH] = 3;
 	can_move[PT_ELEC][PT_RSST] = 2;
 	can_move[PT_ELEC][PT_RSSS] = 2;
+
+	// Special cases for stickmen
+	for (int sm : {PT_STKM, PT_STKM2, PT_FIGH})
+	{
+		can_move[sm][PT_EMBR] = 2;
+		can_move[sm][PT_LIGH] = 2;
+		can_move[sm][PT_VIBR] = 0;
+		can_move[sm][PT_BVBR] = 0;
+		can_move[sm][PT_BHOL] = 0;
+		can_move[sm][PT_NBHL] = 0;
+		can_move[sm][PT_VOID] = 0;
+		can_move[sm][PT_PVOD] = 0;
+	}
 }
 
 const CustomGOLData *SimulationData::GetCustomGOLByRule(int rule) const

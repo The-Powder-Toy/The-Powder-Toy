@@ -16,7 +16,7 @@
 #include <stack>
 
 constexpr auto currentVersion = UPSTREAM_VERSION.displayVersion;
-constexpr auto nextVersion = Version(100, 1);
+constexpr auto nextVersion = Version(101, 0);
 static_assert(!ALLOW_FAKE_NEWER_VERSION || nextVersion >= currentVersion);
 
 constexpr auto effectiveVersion = ALLOW_FAKE_NEWER_VERSION ? nextVersion : currentVersion;
@@ -1264,6 +1264,17 @@ void GameSave::readOPS(const std::vector<char> &data)
 							particles[newIndex].tmp = builtinGol[particles[newIndex].ctype].colour2.Pack();
 						}
 					}
+					break;
+				case PT_STKM:
+				case PT_STKM2:
+				case PT_FIGH:
+				case PT_SPAWN:
+				case PT_SPAWN2:
+					if (savedVersion < 101)
+					{
+						particles[newIndex].flags |= FLAG_OLDSTKM;
+					}
+					break;
 				}
 				if (PressureInTmp3(particles[newIndex].type))
 				{
@@ -1917,6 +1928,14 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 					particles[i-1].tmp = 0;
 				}
 			}
+			if (ver < 101)
+			{
+				auto pt = particles[i-1].type;
+				if (pt == PT_STKM || pt == PT_STKM2 || pt == PT_FIGH || pt == PT_SPAWN || pt == PT_SPAWN2)
+				{
+					particles[i-1].flags |= FLAG_OLDSTKM;
+				}
+			}
 		}
 	}
 
@@ -2450,6 +2469,10 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			if ((part.type == PT_PIPE || part.type == PT_PPIP) && (part.tmp & PFLAG_CAN_CONDUCT))
 			{
 				RESTRICTVERSION(100, 0);
+			}
+			if (part.type == PT_STKM || part.type == PT_STKM2 || part.type == PT_FIGH || part.type == PT_SPAWN || part.type == PT_SPAWN2)
+			{
+				RESTRICTVERSION(101, 0); // Added FLAG_OLDSTKM for legacy STKM
 			}
 
 			//Get the pmap entry for the next particle in the same position

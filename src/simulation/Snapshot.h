@@ -34,9 +34,11 @@ public:
 
 	std::vector<Particle> PortalParticles;
 	std::vector<int> WirelessData;
-	std::vector<playerst> stickmen;
+	std::vector<playerst> players;
+	std::vector<fighterst> fighters;
 	std::vector<sign> signs;
 
+	unsigned char fighcount;
 	uint64_t FrameCount;
 	RNG::State RngState;
 

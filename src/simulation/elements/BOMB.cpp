@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "BOMB.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -48,6 +49,69 @@ void Element::Element_BOMB()
 	Graphics = &graphics;
 }
 
+void Element_BOMB_explode(Simulation* sim, int x, int y)
+{
+	const int rad = 8;
+
+	for (auto nxj=-rad; nxj<=rad; nxj++)
+	{
+		for (auto nxi=-rad; nxi<=rad; nxi++)
+		{
+			if ((nxi*nxi + nxj*nxj) <= rad*rad)
+			{
+				int ynxj = y+nxj, xnxi = x+nxi;
+
+				if (!InBounds(xnxi, ynxj))
+					continue;
+
+				auto r = sim->pmap[ynxj][xnxi];
+				auto nt = TYP(r);
+				if (nt!=PT_DMND && nt!=PT_CLNE && nt!=PT_PCLN && nt!=PT_BCLN && nt!=PT_VIBR)
+				{
+					if (nt)
+						sim->kill_part(ID(r));
+					sim->pv[ynxj/CELL][xnxi/CELL] += 0.1f;
+					//@ BOMB -> EMBR
+					auto nb = sim->create_part(-3, xnxi, ynxj, PT_EMBR);
+					if (nb!=-1)
+					{
+						sim->parts[nb].tmp = 2;
+						sim->parts[nb].life = 2;
+						sim->parts[nb].temp = MAX_TEMP;
+					}
+				}
+			}
+		}
+	}
+	for (auto nxj=-(rad+1); nxj<=(rad+1); nxj++)
+	{
+		for (auto nxi=-(rad+1); nxi<=(rad+1); nxi++)
+		{
+			if ((nxi*nxi + nxj*nxj) <= (rad+1)*(rad+1))
+			{
+				int ynxj = y+nxj, xnxi = x+nxi;
+
+				if (!InBounds(xnxi, ynxj))
+					continue;
+
+				if (TYP(sim->pmap[ynxj][xnxi]))
+					continue;
+
+				//@ BOMB -> EMBR
+				auto nb = sim->create_part(-3, xnxi, ynxj, PT_EMBR);
+				if (nb!=-1)
+				{
+					sim->parts[nb].tmp = 0;
+					sim->parts[nb].life = 50;
+					sim->parts[nb].temp = MAX_TEMP;
+					sim->parts[nb].vx = float(sim->rng.between(-20, 20));
+					sim->parts[nb].vy = float(sim->rng.between(-20, 20));
+				}
+			}
+		}
+	}
+}
+
 static int update(UPDATE_FUNC_ARGS)
 {
 	for (auto rx = -1; rx <= 1; rx++)
@@ -62,64 +126,8 @@ static int update(UPDATE_FUNC_ARGS)
 				auto rt = TYP(r);
 				if (rt!=PT_BOMB && rt!=PT_EMBR && rt!=PT_DMND && rt!=PT_CLNE && rt!=PT_PCLN && rt!=PT_BCLN && rt!=PT_VIBR)
 				{
-					const int rad = 8;
 					sim->kill_part(i);
-					for (auto nxj=-rad; nxj<=rad; nxj++)
-					{
-						for (auto nxi=-rad; nxi<=rad; nxi++)
-						{
-							if ((nxi*nxi + nxj*nxj) <= rad*rad)
-							{
-								int ynxj = y+nxj, xnxi = x+nxi;
-
-								if ((ynxj < 0) || (ynxj >= YRES) || (xnxi < 0) || (xnxi >= XRES))
-									continue;
-
-								auto nt = TYP(pmap[ynxj][xnxi]);
-								if (nt!=PT_DMND && nt!=PT_CLNE && nt!=PT_PCLN && nt!=PT_BCLN && nt!=PT_VIBR)
-								{
-									if (nt)
-										sim->kill_part(ID(pmap[ynxj][xnxi]));
-									sim->pv[ynxj/CELL][xnxi/CELL] += 0.1f;
-									//@ BOMB -> EMBR
-									auto nb = sim->create_part(-3, xnxi, ynxj, PT_EMBR);
-									if (nb!=-1)
-									{
-										parts[nb].tmp = 2;
-										parts[nb].life = 2;
-										parts[nb].temp = MAX_TEMP;
-									}
-								}
-							}
-						}
-					}
-					for (auto nxj=-(rad+1); nxj<=(rad+1); nxj++)
-					{
-						for (auto nxi=-(rad+1); nxi<=(rad+1); nxi++)
-						{
-							if ((nxi*nxi + nxj*nxj) <= (rad+1)*(rad+1))
-							{
-								int ynxj = y+nxj, xnxi = x+nxi;
-
-								if ((ynxj < 0) || (ynxj >= YRES) || (xnxi < 0) || (xnxi >= XRES))
-									continue;
-
-								if (TYP(pmap[ynxj][xnxi]))
-									continue;
-
-								//@ BOMB -> EMBR
-								auto nb = sim->create_part(-3, xnxi, ynxj, PT_EMBR);
-								if (nb!=-1)
-								{
-									parts[nb].tmp = 0;
-									parts[nb].life = 50;
-									parts[nb].temp = MAX_TEMP;
-									parts[nb].vx = float(sim->rng.between(-20, 20));
-									parts[nb].vy = float(sim->rng.between(-20, 20));
-								}
-							}
-						}
-					}
+					Element_BOMB_explode(sim, x, y);
 					return 1;
 				}
 			}
