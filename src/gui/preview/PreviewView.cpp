@@ -302,7 +302,7 @@ void PreviewView::CheckComment()
 void PreviewView::DoDraw()
 {
 	Graphics * g = GetGraphics();
-	if (!c->GetFromUrl())
+	if (!c->GetFromUrl() || doError)
 	{
 		Window::DoDraw();
 		for (size_t i = 0; i < commentTextComponents.size(); i++)
@@ -315,13 +315,13 @@ void PreviewView::DoDraw()
 					0xFFFFFF_rgb .WithAlpha(100));
 		}
 	}
-	if (c->GetDoOpen())
+	if (c->GetDoOpen() && !doError)
 	{
 		g->BlendFilledRect(RectSized(Position + Size / 2 - Vec2{ 101, 26 }, { 202, 52 }), 0x000000_rgb .WithAlpha(210));
 		g->BlendRect(RectSized(Position + Size / 2 - Vec2{ 100, 25 }, Vec2{ 200, 50 }), 0xFFFFFF_rgb .WithAlpha(180));
 		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize("Loading save...").X - 1)/2), (Size.Y/2)-5}, "Loading save...", style::Colour::InformationTitle.NoAlpha().WithAlpha(255));
 	}
-	if (!c->GetFromUrl())
+	if (!c->GetFromUrl() || doError)
 	{
 		g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 	}
