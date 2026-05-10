@@ -283,6 +283,10 @@ int Main(int argc, char *argv[])
 		{
 			arguments.insert({ "open", format::URLDecode(str.substr(7 /* length of the "file://" prefix */)) });
 		}
+		else if ((str.EndsWith(".cps") || str.EndsWith(".stm")) && Platform::FileExists(str))
+		{
+			arguments.insert({ "open", str });
+		}
 		else if (str.BeginsWith("ptsave:"))
 		{
 			arguments.insert({ "ptsave", str });
