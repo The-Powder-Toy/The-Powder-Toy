@@ -594,6 +594,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 
 	std::vector<sign> tempSigns;
 
+	ByteString releaseType = "R";
 	if (auto *origin = getIfType(b, "origin", Bson::Type::objectValue))
 	{
 		int minorVersion = 0;
@@ -601,8 +602,16 @@ void GameSave::readOPS(const std::vector<char> &data)
 		{
 			version[1] = minorVersion;
 		}
+		if (auto *value = getIfType(*origin, "releaseType", Bson::Type::stringValue))
+		{
+			releaseType = value->As<ByteString>();
+		}
 	}
 	fromNewerVersion = version > currentVersion;
+	if (fromNewerVersion)
+	{
+		fromUnstableVersion = releaseType != "R";
+	}
 
 	getAddressIfUser(b, "parts", partsData);
 	getAddressIfUser(b, "partsPos", partsPosData);
