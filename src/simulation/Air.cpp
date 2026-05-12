@@ -517,7 +517,7 @@ void Air::ApproximateBlockAirMaps()
 		if (type == PT_TTAN || type == PT_RSSS)
 		{
 			int x = ((int)(sim.parts[i].x+0.5f))/CELL, y = ((int)(sim.parts[i].y+0.5f))/CELL;
-			if (InBounds(x, y))
+			if (InCellBounds(x, y))
 			{
 				bmap_blockair[y][x] = 1;
 				bmap_blockairh[y][x] = 0x8;
@@ -527,7 +527,7 @@ void Air::ApproximateBlockAirMaps()
 		else if (sd.IsHeatInsulator(sim.parts[i]) || elements[type].HeatConduct <= (sim.rng()%250))
 		{
 			int x = ((int)(sim.parts[i].x+0.5f))/CELL, y = ((int)(sim.parts[i].y+0.5f))/CELL;
-			if (InBounds(x, y) && !(bmap_blockairh[y][x]&0x8))
+			if (InCellBounds(x, y) && !(bmap_blockairh[y][x]&0x8))
 				bmap_blockairh[y][x]++;
 		}
 	}
