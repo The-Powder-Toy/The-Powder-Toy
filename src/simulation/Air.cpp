@@ -493,15 +493,12 @@ void Air::Invert()
 }
 
 // called when loading saves / stamps to ensure nothing "leaks" the first frame
-void Air::ApproximateBlockAirMaps()
+void Air::ApproximateBlockAirMaps(Rect<int> targetBlocks)
 {
-	for (int y = 0; y < YCELLS; y++)
+	for (auto [ x, y ] : targetBlocks)
 	{
-		for (int x = 0; x < XCELLS; x++)
-		{
-			bmap_blockair[y][x] = (sim.bmap[y][x]==WL_WALL || sim.bmap[y][x]==WL_WALLELEC || sim.bmap[y][x]==WL_BLOCKAIR || (sim.bmap[y][x]==WL_EWALL && !sim.emap[y][x]));
-			bmap_blockairh[y][x] = (bmap_blockair[y][x] || sim.bmap[y][x]==WL_GRAV) ? 0x8 : 0;
-		}
+		bmap_blockair[y][x] = (sim.bmap[y][x]==WL_WALL || sim.bmap[y][x]==WL_WALLELEC || sim.bmap[y][x]==WL_BLOCKAIR || (sim.bmap[y][x]==WL_EWALL && !sim.emap[y][x]));
+		bmap_blockairh[y][x] = (bmap_blockair[y][x] || sim.bmap[y][x]==WL_GRAV) ? 0x8 : 0;
 	}
 
 	auto &sd = SimulationData::CRef();
@@ -517,7 +514,7 @@ void Air::ApproximateBlockAirMaps()
 		if (type == PT_TTAN || type == PT_RSSS)
 		{
 			int x = ((int)(sim.parts[i].x+0.5f))/CELL, y = ((int)(sim.parts[i].y+0.5f))/CELL;
-			if (InCellBounds(x, y))
+			if (targetBlocks.Contains({ x, y }))
 			{
 				bmap_blockair[y][x] = 1;
 				bmap_blockairh[y][x] = 0x8;
@@ -527,7 +524,7 @@ void Air::ApproximateBlockAirMaps()
 		else if (sd.IsHeatInsulator(sim.parts[i]) || elements[type].HeatConduct <= (sim.rng()%250))
 		{
 			int x = ((int)(sim.parts[i].x+0.5f))/CELL, y = ((int)(sim.parts[i].y+0.5f))/CELL;
-			if (InCellBounds(x, y) && !(bmap_blockairh[y][x]&0x8))
+			if (targetBlocks.Contains({ x, y }) && !(bmap_blockairh[y][x]&0x8))
 				bmap_blockairh[y][x]++;
 		}
 	}

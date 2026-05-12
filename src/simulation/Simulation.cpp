@@ -290,7 +290,8 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 		}
 	}
 	auto useGravityMaps = save->hasGravityMaps && grav;
-	for (auto bpos : RectSized(blockP, save->blockSize) & CELLS.OriginRect())
+	auto targetBlocks = RectSized(blockP, save->blockSize) & CELLS.OriginRect();
+	for (auto bpos : targetBlocks)
 	{
 		auto spos = bpos - blockP;
 		if (save->blockMap[spos])
@@ -334,7 +335,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 	gravWallChanged = true;
 	if (!save->hasBlockAirMaps)
 	{
-		air->ApproximateBlockAirMaps();
+		air->ApproximateBlockAirMaps(targetBlocks);
 	}
 }
 
