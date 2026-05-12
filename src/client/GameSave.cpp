@@ -239,6 +239,7 @@ void GameSave::Expand(const std::vector<char> &data)
 void GameSave::setSize(Vec2<int> newBlockSize)
 {
 	blockSize = newBlockSize;
+	blockContent = blockSize.OriginRect();
 
 	particlesCount = 0;
 	particles = std::vector<Particle>(NPART);
