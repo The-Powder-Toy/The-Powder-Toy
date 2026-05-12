@@ -2619,7 +2619,10 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	{
 		b["soapLinks"] = std::move(soapLinkData);
 	}
-	b["blockAir"] = std::move(blockAirData);
+	if (hasBlockAirMaps)
+	{
+		b["blockAir"] = std::move(blockAirData);
+	}
 	if (ensureDeterminism)
 	{
 		b["ensureDeterminism"] = ensureDeterminism;
