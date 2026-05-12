@@ -289,6 +289,7 @@ void GameSave::Transform(Mat2<int> transform, Vec2<int> nudge)
 
 	// Grow as needed.
 	assert((Vec2{ CELL, CELL }.OriginRect().Contains(nudge)));
+	blockContent = newBlockS.OriginRect();
 	if (nudge.X) newBlockS.X += 1;
 	if (nudge.Y) newBlockS.Y += 1;
 
