@@ -292,10 +292,14 @@ void GameSave::Transform(Mat2<int> transform, Vec2<int> nudge)
 	blockContent = newBlockS.OriginRect();
 	if (nudge.X) newBlockS.X += 1;
 	if (nudge.Y) newBlockS.Y += 1;
+	if (nudge.X >= CELL / 2) blockContent.pos.X += 1;
+	if (nudge.Y >= CELL / 2) blockContent.pos.Y += 1;
+	btranslate += blockContent.pos;
 
 	// TODO: allow transforms to yield bigger saves. For this we'd need SaveRenderer (the singleton, not Renderer)
 	// to fully render them (possible with stitching) and Simulation::Load to be able to take only the part that fits.
 	newBlockS = newBlockS.Clamp(RectBetween({ 0, 0 }, CELLS));
+	blockContent &= CELLS.OriginRect();
 	auto newPartS = newBlockS * CELL;
 
 	// Prepare to patch pipes.
