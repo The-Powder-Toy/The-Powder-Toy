@@ -970,7 +970,7 @@ static int resetPressure(lua_State *L)
 	for (int nx = x1; nx<x1+width; nx++)
 		for (int ny = y1; ny<y1+height; ny++)
 		{
-			lsi->sim->pv[ny][nx] = 0;
+			lsi->sim->pv[ny][nx] = lsi->sim->air->edgePressure;
 		}
 	return 0;
 }
