@@ -293,7 +293,8 @@ static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 		lua_pushinteger(lsi->L, i);
 		lua_pushinteger(lsi->L, t);
 		lua_pushinteger(lsi->L, v);
-		if (tpt_lua_pcall(lsi->L, 3, 1, 0, eventTraitSimRng))
+		lsi->monopartAccessPartID = i;
+		if (tpt_lua_pcall(lsi->L, 3, 1, 0, eventTraitSimRng | eventTraitMonopartAccess))
 		{
 			lsi->Log(CommandInterface::LogError, LuaGetError());
 			lua_pop(lsi->L, 1);
@@ -304,6 +305,7 @@ static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 				ret = lua_toboolean(lsi->L, -1);
 			lua_pop(lsi->L, 1);
 		}
+		lsi->monopartAccessPartID = -1;
 	}
 	return ret;
 }
