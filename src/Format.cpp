@@ -322,13 +322,13 @@ ByteString format::URLDecode(ByteString source)
 	ByteString result;
 	for (auto it = source.begin(); it < source.end(); ++it)
 	{
-		if (*it == '%' && it < source.end() + 2)
+		if (*it == '%' && it + 2 < source.end())
 		{
 			auto byte = uint8_t(0);
 			for (auto i = 0; i < 2; ++i)
 			{
 				it += 1;
-				auto *off = strchr(hex, tolower(*it));
+				auto *off = strchr(hex, toupper(*it));
 				if (!off)
 				{
 					return {};
