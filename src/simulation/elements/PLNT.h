@@ -18,4 +18,4 @@ constexpr int PLNT_TOTAL_CTP = 20;
 constexpr int PLNT_TOTAL_TMP = 15;
 
 // Detect down direction using gravity. Returns 8 when there's no direction.
-int detectDown(Simulation *sim, int x, int y);
+int Element_PLNT_detectDown(Simulation *sim, int x, int y);

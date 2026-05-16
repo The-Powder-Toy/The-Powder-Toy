@@ -90,7 +90,7 @@ static int update(UPDATE_FUNC_ARGS)
 	// Check if we can grow
 	if (water > 3)
 	{
-		int down = detectDown(sim, x, y); // Down gravity direction
+		int down = Element_PLNT_detectDown(sim, x, y); // Down gravity direction
 
 		// Set a default direction if can't decide using gravity
 		if (down < 0 || down > 7)
@@ -247,7 +247,7 @@ static void create(ELEMENT_CREATE_FUNC_ARGS)
 {
 	sim->parts[i].ctype = 0b111011'000'00'0;
 
-	int down = detectDown(sim, x, y); // Down gravity direction
+	int down = Element_PLNT_detectDown(sim, x, y); // Down gravity direction
 
 	// Use random down direction if can't decide using gravity
 	if (down < 0 || down > 7)
