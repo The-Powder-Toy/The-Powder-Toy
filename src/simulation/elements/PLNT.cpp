@@ -278,6 +278,7 @@ static int update(UPDATE_FUNC_ARGS)
 								auto np = sim->create_part(ID(r),x+rx,y+ry,PT_PLNT);
 								if (np<0) continue;
 								parts[np].life = 0;
+								parts[np].ctype = parts[i].ctype;//Keep the color identical
 							}
 							break;
 						case PT_LAVA:
