@@ -13,6 +13,33 @@ def set_output(key, value):
 	with open(os.getenv('GITHUB_OUTPUT'), 'a') as f:
 		f.write(f"{key}={value}\n")
 
+subprocess.run([ 'meson', 'setup', '-Dprepare=true', 'build-prepare' ], check = True)
+build_options = {}
+with open('build-prepare/meson-info/intro-buildoptions.json') as f:
+	for option in json.loads(f.read()):
+		build_options[option['name']] = option['value']
+with open('build-prepare/meson-info/intro-projectinfo.json') as f:
+	display_version = json.loads(f.read())['version']
+	display_version_split = display_version.split('-')
+	if len(display_version_split) == 3:
+		display_version = display_version_split[0]
+display_version = display_version.split('.')
+
+if int(build_options['mod_id']) == 0 and os.path.exists('.github/mod_id.txt'):
+	with open('.github/mod_id.txt') as f:
+		build_options['mod_id'] = f.read()
+mod_id = int(build_options['mod_id'])
+
+release_name_prefix = ''
+match_modx = re.fullmatch(r'refs/tags/mod([0-9]+)-(.*)', ref)
+if match_modx and mod_id and int(match_modx.group(1)) == mod_id:
+	release_name_prefix = f'mod{match_modx.group(1)}-'
+	ref = f'refs/tags/{match_modx.group(2)}'
+match_varx = re.fullmatch(r'refs/tags/var-([^-]+)-(.*)', ref)
+if match_varx:
+	release_name_prefix = f'var-{match_varx.group(1)}-'
+	ref = f'refs/tags/{match_varx.group(2)}'
+
 match_stable     = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)', ref)
 match_beta       = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)b', ref)
 match_snapshot   = re.fullmatch(r'refs/tags/snapshot-([0-9]+)', ref)
@@ -61,25 +88,9 @@ do_publish = publish_hostport and do_release
 
 set_output('release_type', release_type)
 set_output('release_name', release_name)
+set_output('release_name_with_prefix', release_name_prefix + release_name)
 
-subprocess.run([ 'meson', 'setup', '-Dprepare=true', 'build-prepare' ], check = True)
-build_options = {}
-with open('build-prepare/meson-info/intro-buildoptions.json') as f:
-	for option in json.loads(f.read()):
-		build_options[option['name']] = option['value']
-with open('build-prepare/meson-info/intro-projectinfo.json') as f:
-	display_version = json.loads(f.read())['version']
-	display_version_split = display_version.split('-')
-	if len(display_version_split) == 3:
-		display_version = display_version_split[0]
-display_version = display_version.split('.')
-
-if int(build_options['mod_id']) == 0 and os.path.exists('.github/mod_id.txt'):
-	with open('.github/mod_id.txt') as f:
-		build_options['mod_id'] = f.read()
-mod_id = int(build_options['mod_id'])
-
-if mod_id == 0:
+if mod_id == 0 and not match_varx:
 	if display_version_major:
 		assert(display_version_major == display_version[0])
 	if display_version_minor:
@@ -144,6 +155,8 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 #	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None, 'release',       10, False ), # ubuntu-22.04 doesn't have ucrt64-capable mingw >_>
 	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
 	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2022', '.exe',       'archive',    '.dbg',         None,                     None, 'release',       10, False ),
+	(     'x86',    'windows',      'mingw',  'static', 'windows', 'windows-2022', '.exe',       'publish',    '.dbg',         None,  'i686-win-mingw-static', 'release',       10, False ), # windows xp
+	( 'x86_old',    'windows',      'mingw',  'static', 'windows', 'windows-2022', '.exe',       'archive',    '.dbg',         None,                     None, 'release',       10, False ), # windows xp, no sse, doesn't work because https://github.com/msys2/MINGW-packages/issues/24932
 	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
 	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None, 'release',       10,  True ),
 	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
@@ -153,22 +166,22 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 #	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,  'backendvs',                     None,   'debug',        0, False ), # priority = 0: backend=vs build
 	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
 	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
-	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',       'publish',    '.pdb',         None,   'i686-win-msvc-static', 'release',       10, False ),
+	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',       'archive',    '.pdb',         None,                     None, 'release',       10, False ),
 	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
 	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
 	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
 	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',       'publish',    '.pdb',         None,  'arm64-win-msvc-static', 'release',       10, False ),
 	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
 	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
-	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
-	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',       'publish',      None,         None,  'x86_64-mac-gcc-static', 'release',       10, False ), # I have no idea how to separate debug info on macos
-	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',       'publish',      None,      'steam',  'x86_64-mac-gcc-static', 'release',       -5, False ), # priority = -5: steam build, see above regarding debug info
-	(  'x86_64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',       10, False ),
-	(  'x86_64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None, 'release',       10, False ), # TODO: enable lint once apple clang ships clang-tidy
-	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
-	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',       'publish',      None,         None,   'arm64-mac-gcc-static', 'release',       10, False ),
-#	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',       10, False ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
-#	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None, 'release',       10, False ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
+	(  'x86_64',     'darwin',      'macos',  'static', 'darwin','macos-15-intel', '.dmg',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
+	(  'x86_64',     'darwin',      'macos',  'static', 'darwin','macos-15-intel', '.dmg',       'publish',      None,         None,  'x86_64-mac-gcc-static', 'release',       10, False ), # I have no idea how to separate debug info on macos
+	(  'x86_64',     'darwin',      'macos',  'static', 'darwin','macos-15-intel', '.dmg',       'publish',      None,      'steam',  'x86_64-mac-gcc-static', 'release',       -5, False ), # priority = -5: steam build, see above regarding debug info
+	(  'x86_64',     'darwin',      'macos', 'dynamic', 'darwin','macos-15-intel', '.dmg',         'check',      None,         None,                     None,   'debug',       10, False ),
+	(  'x86_64',     'darwin',      'macos', 'dynamic', 'darwin','macos-15-intel', '.dmg',         'check',      None,         None,                     None, 'release',       10, False ), # TODO: enable lint once apple clang ships clang-tidy
+	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',     'macos-15', '.dmg',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
+	( 'aarch64',     'darwin',      'macos',  'static',  'darwin',     'macos-15', '.dmg',       'publish',      None,         None,   'arm64-mac-gcc-static', 'release',       10, False ),
+#	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-15', '.dmg',         'check',      None,         None,                     None,   'debug',       10, False ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
+#	( 'aarch64',     'darwin',      'macos', 'dynamic',  'darwin',     'macos-15', '.dmg',         'check',      None,         None,                     None, 'release',       10, False ), # macos-11.0 is x86_64 and I haven't yet figured out how to get homebrew to install aarch64 libs on x86_64
 	(     'x86',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
 	(     'x86',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,    'i686-and-gcc-static', 'release',       10, False ),
 	(  'x86_64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
@@ -178,7 +191,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
 	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,   'arm64-and-gcc-static', 'release',       10,  True ),
 	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
-	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',       'publish','.dbg.wasm','emscripten',      'wasm32-ems-static', 'release',       10, False ), # TODO: enable lint once emscripten ships clang-tidy
+	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',       'publish','.wasm.dbg','emscripten',      'wasm32-ems-static', 'release',       10, False ), # TODO: enable lint once emscripten ships clang-tidy
 ]:
 	if priority < do_priority:
 		continue
@@ -239,6 +252,10 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 		'bsh_lint': 'no',
 		'runs_on': runson,
 		'force_msys2_bash': msys2_bash and 'yes' or 'no',
+		'msys2_msystem': arch == 'x86_64' and 'UCRT64' or 'MINGW32',
+		# this list doesn't have to mirror the one in build.sh perfectly
+		# but the packages listed here get cached properly and take less time to install
+		'msys2_cache_install': arch == 'x86_64' and 'git curl patch mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-pkgconf mingw-w64-ucrt-x86_64-bzip2 mingw-w64-ucrt-x86_64-luajit mingw-w64-ucrt-x86_64-jsoncpp mingw-w64-ucrt-x86_64-curl mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-meson mingw-w64-ucrt-x86_64-python mingw-w64-ucrt-x86_64-python-pip mingw-w64-ucrt-x86_64-fftw mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-7zip mingw-w64-ucrt-x86_64-jq' or 'git curl patch mingw-w64-i686-gcc mingw-w64-i686-meson mingw-w64-i686-python mingw-w64-i686-python-pip mingw-w64-i686-cmake mingw-w64-i686-7zip mingw-w64-i686-jq',
 		'package_suffix': suffix,
 		'package_mode': mode,
 		'publish': publish and 'yes' or 'no',

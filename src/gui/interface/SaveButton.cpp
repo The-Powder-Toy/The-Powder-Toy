@@ -300,7 +300,7 @@ void SaveButton::AddContextMenu(int menuType)
 	{
 		menu = new ContextMenu(this);
 		menu->AddItem(ContextMenuItem("Open", 0, true));
-		if (Client::Ref().GetAuthUser().UserID)
+		if (Client::Ref().GetAuthUser())
 			menu->AddItem(ContextMenuItem("Select", 1, true));
 		menu->AddItem(ContextMenuItem("View History", 2, true));
 		menu->AddItem(ContextMenuItem("More by this user", 3, true));

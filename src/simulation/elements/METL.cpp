@@ -27,7 +27,6 @@ void Element::Element_METL()
 	Weight = 100;
 
 	HeatConduct = 251;
-	LatentHeat = 919;
 	Description = "Metal, the basic conductor. Meltable.";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
@@ -39,5 +38,5 @@ void Element::Element_METL()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1273.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ METL -> LAVA(METL)
 }

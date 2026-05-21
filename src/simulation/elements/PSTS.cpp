@@ -22,7 +22,7 @@ void Element::Element_PSTS()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 20;
+	Hardness = 18;
 
 	Weight = 100;
 
@@ -33,7 +33,7 @@ void Element::Element_PSTS()
 	Properties = TYPE_SOLID;
 
 	LowPressure = 0.5f;
-	LowPressureTransition = PT_PSTE;
+	LowPressureTransition = PT_PSTE; //@ PSTS -> PSTE
 	HighPressure = IPH;
 	HighPressureTransition = NT;
 	LowTemperature = ITL;

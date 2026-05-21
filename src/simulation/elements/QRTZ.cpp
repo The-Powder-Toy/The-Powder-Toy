@@ -41,7 +41,7 @@ void Element::Element_QRTZ()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 2573.15f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ QRTZ -> LAVA(QRTZ)
 
 	Update = &Element_QRTZ_update;
 	Graphics = &Element_QRTZ_graphics;
@@ -57,6 +57,7 @@ int Element_QRTZ_update(UPDATE_FUNC_ARGS)
 		auto diffTolerance = parts[i].temp * 1.0666f;
 		if (press - parts[i].tmp3 > diffTolerance || press - parts[i].tmp3 < -diffTolerance)
 		{
+			//@ QRTZ -> PQRT
 			sim->part_change_type(i,x,y,PT_PQRT);
 			parts[i].life = 5; //timer before it can grow or diffuse again
 		}
@@ -103,6 +104,7 @@ int Element_QRTZ_update(UPDATE_FUNC_ARGS)
 				{
 					if (!pmap[y+sry][x+srx] && parts[i].tmp!=0)
 					{
+						//@ PQRT/QRTZ -> 2xQRTZ
 						auto np = sim->create_part(-1,x+srx,y+sry,PT_QRTZ);
 						if (np>-1)
 						{

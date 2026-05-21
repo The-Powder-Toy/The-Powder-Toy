@@ -54,7 +54,8 @@ static int update(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp2 > 2000)
 	{
 		parts[i].temp = 10000;
-		sim->pv[y/CELL][x/CELL] += (parts[i].tmp2 / 5000) * CFDS;
+		sim->pv[y/CELL][x/CELL] = restrict_flt(sim->pv[y/CELL][x/CELL] + (parts[i].tmp2 / 5000) * CFDS, MIN_PRESSURE, MAX_PRESSURE);
+		//@ WARP -> WARP + ELEC
 		if (sim->rng.chance(1, 50))
 			sim->create_part(-3, x, y, PT_ELEC);
 	}

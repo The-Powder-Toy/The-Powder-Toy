@@ -32,7 +32,7 @@ PreviewController::PreviewController(int saveID, int saveDate, SavePreviewType s
 
 	previewModel->UpdateSave(saveID, saveDate);
 
-	if(Client::Ref().GetAuthUser().UserID)
+	if(Client::Ref().GetAuthUser())
 	{
 		previewModel->SetCommentBoxEnabled(true);
 	}
@@ -65,7 +65,7 @@ void PreviewController::ShowLogin()
 
 void PreviewController::NotifyAuthUserChanged(Client * sender)
 {
-	previewModel->SetCommentBoxEnabled(sender->GetAuthUser().UserID);
+	previewModel->SetCommentBoxEnabled(bool(sender->GetAuthUser()));
 }
 
 const SaveInfo *PreviewController::GetSaveInfo() const
@@ -95,7 +95,7 @@ void PreviewController::DoOpen()
 
 void PreviewController::FavouriteSave()
 {
-	if (previewModel->GetSaveInfo() && Client::Ref().GetAuthUser().UserID)
+	if (previewModel->GetSaveInfo() && Client::Ref().GetAuthUser())
 	{
 		previewModel->SetFavourite(!previewModel->GetSaveInfo()->Favourite);
 	}

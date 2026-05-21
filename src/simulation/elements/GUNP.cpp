@@ -38,5 +38,5 @@ void Element::Element_GUNP()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 673.0f;
-	HighTemperatureTransition = PT_FIRE;
+	HighTemperatureTransition = PT_FIRE; //@ GUNP -> FIRE
 }

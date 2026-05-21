@@ -42,7 +42,7 @@ void Element::Element_PIPE()
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = 10.0f;
-	HighPressureTransition = PT_BRMT;
+	HighPressureTransition = PT_BRMT; //@ PIPE -> BRMT
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;
@@ -278,6 +278,7 @@ int Element_PIPE_update(UPDATE_FUNC_ARGS)
 					if (!r)
 					{
 						// BRCK border
+						//@ PIPE -> PIPE + BRCK
 						int index = sim->create_part(-1,x+rx,y+ry,PT_BRCK);
 						if (parts[i].type == PT_PPIP && index != -1)
 							parts[index].tmp = 1;
@@ -473,7 +474,14 @@ void Element_PIPE_transfer_part_to_pipe(Particle *part, Particle *pipe)
 	if ((pipe->tmp & PFLAG_CAN_CONDUCT) == 0)
 		pipe->temp = part->temp;
 	else
-		pipe->temp = (part->temp + pipe->temp) / 2.0f;
+	{
+		auto &sd = SimulationData::CRef();
+		auto &elements = sd.elements;
+		auto c_pipe = elements[pipe->type].HeatCapacity;
+		auto c_part = elements[part->type].HeatCapacity;
+
+		pipe->temp = (c_part*part->temp + c_pipe*pipe->temp) / (c_part + c_pipe);
+	}
 
 	pipe->tmp2 = part->life;
 	pipe->tmp3 = part->tmp;
@@ -515,7 +523,15 @@ static void transfer_pipe_to_pipe(Particle *src, Particle *dest, bool STOR)
 	if ((dest->tmp & PFLAG_CAN_CONDUCT) == 0)
 		dest->temp = src->temp;
 	else
-		dest->temp = (src->temp + dest->temp) / 2.0f;
+	{
+		auto &sd = SimulationData::CRef();
+		auto &elements = sd.elements;
+		auto src_ctype = src->ctype;
+		auto c_src = (0 < src_ctype && src_ctype < PT_NUM) ? elements[src_ctype].HeatCapacity : 1.0f;
+		auto c_dest = elements[dest->type].HeatCapacity;
+
+		dest->temp = (c_src*src->temp + c_dest*dest->temp) / (c_src + c_dest);
+	}
 
 	dest->tmp2 = src->tmp2;
 	dest->tmp3 = src->tmp3;

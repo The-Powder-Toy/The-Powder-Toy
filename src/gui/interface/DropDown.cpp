@@ -160,21 +160,6 @@ void DropDown::AddOption(std::pair<String, int> option)
 	options.push_back(option);
 }
 
-void DropDown::RemoveOption(String option)
-{
-start:
-	for (size_t i = 0; i < options.size(); i++)
-	{
-		if (options[i].first == option)
-		{
-			if ((int)i == optionIndex)
-				optionIndex = -1;
-			options.erase(options.begin()+i);
-			goto start;
-		}
-	}
-}
-
 void DropDown::SetOptions(std::vector<std::pair<String, int> > options)
 {
 	this->options = options;

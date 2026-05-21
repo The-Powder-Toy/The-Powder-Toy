@@ -30,6 +30,7 @@
 #include "simulation/SaveRenderer.h"
 #include "simulation/SimulationData.h"
 #include "simulation/Simulation.h"
+#include "simulation/elements/PLNT.h"
 
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
@@ -250,13 +251,13 @@ GameView::GameView():
 	currentX+=151;
 	saveSimulationButton->SetSplitActionCallback({
 		[this] {
-			if (CtrlBehaviour() || !Client::Ref().GetAuthUser().UserID)
+			if (CtrlBehaviour() || !Client::Ref().GetAuthUser())
 				c->OpenLocalSaveWindow(true);
 			else
 				c->SaveAsCurrent();
 		},
 		[this] {
-			if (CtrlBehaviour() || !Client::Ref().GetAuthUser().UserID)
+			if (CtrlBehaviour() || !Client::Ref().GetAuthUser())
 				c->OpenLocalSaveWindow(false);
 			else
 				c->OpenSaveWindow();
@@ -451,6 +452,8 @@ void GameView::SetSample(SimulationSample sample)
 void GameView::SetHudEnable(bool hudState)
 {
 	showHud = hudState;
+	if (!showHud)
+		introText = 0;
 }
 
 bool GameView::GetHudEnable()
@@ -745,7 +748,8 @@ void GameView::NotifySimulationChanged(GameModel * sender)
 }
 void GameView::NotifyUserChanged(GameModel * sender)
 {
-	if(!sender->GetUser().UserID)
+	auto user = sender->GetUser();
+	if (!user)
 	{
 		loginButton->SetText("[sign in]");
 		loginButton->SetShowSplit(false);
@@ -753,7 +757,7 @@ void GameView::NotifyUserChanged(GameModel * sender)
 	}
 	else
 	{
-		loginButton->SetText(sender->GetUser().Username.FromUtf8());
+		loginButton->SetText(user->Username.FromUtf8());
 		loginButton->SetShowSplit(true);
 		loginButton->SetRightToolTip("Edit profile");
 	}
@@ -797,13 +801,14 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		if (introText > 50)
 			introText = 50;
 
+		auto user = sender->GetUser();
 		saveSimulationButton->SetText(sender->GetSave()->GetName());
-		if (sender->GetSave()->GetUserName() == sender->GetUser().Username)
+		if (user && sender->GetSave()->GetUserName() == user->Username)
 			saveSimulationButton->SetShowSplit(true);
 		else
 			saveSimulationButton->SetShowSplit(false);
 		reloadButton->Enabled = true;
-		upVoteButton->Enabled = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetUser().Username != sender->GetSave()->GetUserName();
+		upVoteButton->Enabled = sender->GetSave()->GetID() && user && user->Username != sender->GetSave()->GetUserName();
 
 		auto upVoteButtonColor = [this](bool active) {
 			if(active)
@@ -819,7 +824,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 				upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 			}
 		};
-		auto upvoted = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote() == 1;
+		auto upvoted = sender->GetSave()->GetID() && user && sender->GetSave()->GetVote() == 1;
 		upVoteButtonColor(upvoted);
 
 		downVoteButton->Enabled = upVoteButton->Enabled;
@@ -837,10 +842,10 @@ void GameView::NotifySaveChanged(GameModel * sender)
 				downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 			}
 		};
-		auto downvoted = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote() == -1;
+		auto downvoted = sender->GetSave()->GetID() && user && sender->GetSave()->GetVote() == -1;
 		downVoteButtonColor(downvoted);
 
-		if (sender->GetUser().UserID)
+		if (user)
 		{
 			upVoteButton->Appearance.BorderDisabled = upVoteButton->Appearance.BorderInactive;
 			downVoteButton->Appearance.BorderDisabled = downVoteButton->Appearance.BorderInactive;
@@ -940,11 +945,11 @@ ByteString GameView::TakeScreenshot(int captureUI, int fileType)
 	std::unique_ptr<VideoBuffer> screenshot;
 	if (captureUI)
 	{
-		screenshot = std::make_unique<VideoBuffer>(*rendererFrame);
+		screenshot = std::make_unique<VideoBuffer>(ui::Engine::Ref().g->DumpFrame());
 	}
 	else
 	{
-		screenshot = std::make_unique<VideoBuffer>(ui::Engine::Ref().g->DumpFrame());
+		screenshot = std::make_unique<VideoBuffer>(rendererFrame->data(), RES, WINDOW.X);
 	}
 
 	ByteString filename;
@@ -1445,13 +1450,6 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		break;
 	case SDL_SCANCODE_F5:
 		c->ReloadSim();
-		break;
-	case SDL_SCANCODE_A:
-		if (Client::Ref().GetAuthUser().UserElevation != User::ElevationNone && ctrl)
-		{
-			ByteString authorString = Client::Ref().GetAuthorInfo().toStyledString();
-			new InformationMessage("Save authorship info", authorString.FromUtf8(), true);
-		}
 		break;
 	case SDL_SCANCODE_R:
 		if (ctrl)
@@ -2124,7 +2122,7 @@ void GameView::UpdateToolStrength()
 
 void GameView::SetSaveButtonTooltips()
 {
-	if (!Client::Ref().GetAuthUser().UserID)
+	if (!Client::Ref().GetAuthUser())
 		saveSimulationButton->SetToolTips("Overwrite the open simulation on your hard drive.", "Save the simulation to your hard drive. Login to save online.");
 	else if (ctrlBehaviour)
 		saveSimulationButton->SetToolTips("Overwrite the open simulation on your hard drive.", "Save the simulation to your hard drive.");
@@ -2389,6 +2387,25 @@ void GameView::OnDraw()
 					else
 						sampleInfo << " (unknown mode)";
 				}
+				else if (type == PT_SEED || (type == PT_PLNT && ctype))
+				{
+					sampleInfo << c->ElementResolve(type, ctype);
+
+					auto water = (ctype >> PLNT_LIFE) & 0xFF;
+					auto colour = (ctype >> PLNT_COLOUR) & 0x3F;
+					auto dir = (ctype >> PLNT_DIR) & 7;
+					auto active = ctype & 1;
+
+					static const std::array<String, 8> directions = {"N", "NW", "W", "SW", "S", "SE", "E", "NE"};
+					static const std::array<std::array<String, 4>, 3> colours = {{
+						{{"cc", "cC", "Cc", "CC"}}, {{"mm", "mM", "Mm", "MM"}}, {{"yy", "yY", "Yy", "YY"}} }};
+					auto cyan = (colour >> 4) & 3;
+					auto magenta = (colour >> 2) & 3;
+					auto yellow = colour & 3;
+
+					sampleInfo << " (" << water << " " <<
+						colours[0][cyan] << colours[1][magenta] << colours[2][yellow] << " " << directions[dir] << " " << active << ")";
+				}
 				else
 				{
 					sampleInfo << c->ElementResolve(type, ctype);
@@ -2614,10 +2631,23 @@ void GameView::OnDraw()
 				fpsInfo << " (default)";
 			}
 		}
+		if (auto *frameTime = c->GetFrameTime())
+		{
+			for (auto &span : frameTime->GetLastSpans())
+			{
+				fpsInfo << "\n";
+				for (int i = 0; i < span.level; ++i)
+				{
+					fpsInfo << " ";
+				}
+				fpsInfo << ByteString(span.name).FromUtf8() << ": " << Format::Precision(2) << (span.duration / 1000.0) << "us";
+			}
+		}
 
-		int textWidth = Graphics::TextSize(fpsInfo.Build()).X - 1;
+		auto textSize = Graphics::TextSize(fpsInfo.Build());
+		int textWidth = textSize.X - 1;
 		int alpha = 255-introText*5;
-		g->BlendFilledRect(RectSized(Vec2{ 12, 12 }, Vec2{ textWidth+8, 15 }), 0x000000_rgb .WithAlpha(int(alpha*0.5)));
+		g->BlendFilledRect(RectSized(Vec2{ 12, 12 }, Vec2{ textWidth+8, textSize.Y + 5 }), 0x000000_rgb .WithAlpha(int(alpha*0.5)));
 		g->BlendText({ 16, 16 }, fpsInfo.Build(), 0x20D8FF_rgb .WithAlpha(int(alpha*0.75)));
 	}
 

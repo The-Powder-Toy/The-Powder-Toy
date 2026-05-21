@@ -23,6 +23,7 @@
 
 constexpr int CHANNELS = int(MAX_TEMP - 73) / 100 + 2;
 
+class FrameTime;
 class Snapshot;
 class Brush;
 struct SimulationSample;
@@ -34,11 +35,14 @@ class Renderer;
 class Air;
 class GameSave;
 
-struct Parts
+class Parts
 {
+	int pfree;
+
+public:
 	std::array<Particle, NPART> data;
 	// initialized in clear_sim
-	int lastActiveIndex;
+	int active;
 
 	operator const Particle *() const
 	{
@@ -59,12 +63,24 @@ struct Parts
 
 	Parts &operator =(const Parts &other)
 	{
-		std::copy(other.data.begin(), other.data.begin() + other.lastActiveIndex + 1, data.begin());
-		lastActiveIndex = other.lastActiveIndex;
+		std::copy(other.data.begin(), other.data.begin() + other.active, data.begin());
+		active = other.active;
+		pfree = other.pfree;
 		return *this;
 	}
 
+	Parts(const Parts &&other) = delete;
+	Parts &operator =(const Parts &&other) = delete;
+
 	void Reset();
+	void Free(int i);
+	int Alloc();
+	void Flatten();
+
+	bool MaxPartsReached() const
+	{
+		return pfree == -1;
+	}
 };
 
 struct RenderableSimulation
@@ -128,6 +144,10 @@ public:
 
 	float fvx[YCELLS][XCELLS];
 	float fvy[YCELLS][XCELLS];
+	int Element_LOLZ_lolz[XRES/9][YRES/9];
+	int Element_LOVE_love[XRES/9][YRES/9];
+	int Element_PSTN_tempParts[std::max(XRES, YRES)];
+	int Element_PPIP_ppip_changed;
 
 	unsigned int pmap_count[YRES][XRES];
 
@@ -137,8 +157,6 @@ public:
 	float customGravityY = 0;
 	int legacy_enable = 0;
 	int water_equal_test = 0;
-	int sys_pause = 0;
-	int framerender = 0;
 	int pretty_powder = 0;
 	int sandcolour_frame = 0;
 	int deco_space = DECOSPACE_SRGB;
@@ -193,17 +211,18 @@ public:
 	//int InCurrentBrush(int i, int j, int rx, int ry);
 	//int get_brush_flags();
 	int create_part(int p, int x, int y, int t, int v = -1);
+	int createPartTempVel(int i, int x, int y, int t);
 	void delete_part(int x, int y);
 	void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
 	int is_wire(int x, int y);
 	int is_wire_off(int x, int y);
 	void set_emap(int x, int y);
 	int parts_avg(int ci, int ni, int t);
-	void UpdateParticles(int start, int end); // Dispatches an update to the range [start, end).
+	virtual void UpdateParticles(int start, int end) = 0; // Dispatches an update to the range [start, end).
 	void SimulateGoL();
 	void RecalcFreeParticles(bool do_life_dec);
 	void CheckStacking();
-	void BeforeSim();
+	void BeforeSim(bool willUpdate);
 	void AfterSim();
 	void clear_area(int area_x, int area_y, int area_w, int area_h);
 
@@ -233,7 +252,7 @@ public:
 	void CreateBox(int p, int x1, int y1, int x2, int y2, int c, int flags);
 	int FloodParts(int x, int y, int c, int cm, int flags);
 
-	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY);
+	void GetGravityField(int x, int y, float particleGrav, float newtonGrav, float & pGravX, float & pGravY) const;
 
 	int get_wavelength_bin(int *wm);
 	struct GetNormalResult
@@ -247,14 +266,13 @@ public:
 	static GetNormalResult get_normal_interp(Sim &sim, int pt, float x0, float y0, float dx, float dy);
 	void clear_sim();
 	Simulation();
-	~Simulation();
+	virtual ~Simulation();
 
 	void EnableNewtonianGravity(bool enable);
 
-	bool MaxPartsReached() const
-	{
-		return pfree == -1;
-	}
+	FrameTime *frameTime = nullptr;
+
+	static std::unique_ptr<Simulation> Factory();
 
 private:
 	CoordStack& getCoordStackSingleton();
@@ -262,6 +280,4 @@ private:
 	void ResetNewtonianGravity(GravityInput newGravIn, GravityOutput newGravOut);
 	void DispatchNewtonianGravity();
 	void UpdateGravityMask();
-
-	int pfree;
 };

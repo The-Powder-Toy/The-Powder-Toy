@@ -26,6 +26,7 @@
 #include "gui/Style.h"
 
 #include "common/tpt-rand.h"
+#include "Config.h"
 #include "common/platform/Platform.h"
 #include "Format.h"
 #include "Misc.h"
@@ -55,6 +56,8 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	}
 	showAvatars = ui::Engine::Ref().ShowAvatars;
 
+	auto user = Client::Ref().GetAuthUser();
+
 	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), "Fav");
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -65,7 +68,7 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 		favButton->Appearance.BackgroundPulse = true;
 		c->FavouriteSave();
 	} });
-	favButton->Enabled = Client::Ref().GetAuthUser().UserID?true:false;
+	favButton->Enabled = bool(user);
 	AddComponent(favButton);
 
 	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), "Report");
@@ -82,7 +85,7 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 			reportSaveRequest->Start();
 		} });
 	} });
-	reportButton->Enabled = Client::Ref().GetAuthUser().UserID?true:false;
+	reportButton->Enabled = bool(user);
 	AddComponent(reportButton);
 
 	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), "Open");
@@ -114,6 +117,14 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	missingElementsButton->SetActionCallback({ [this] { ShowMissingCustomElements(); } });
 	missingElementsButton->Visible = false;
 	AddComponent(missingElementsButton);
+
+	fromNewerVersionButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), "Save from newer version");
+	fromNewerVersionButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	fromNewerVersionButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	fromNewerVersionButton->SetIcon(IconReport);
+	fromNewerVersionButton->SetActionCallback({ [this] { ShowFromNewerVersion(); } });
+	fromNewerVersionButton->Visible = false;
+	AddComponent(fromNewerVersionButton);
 
 	if(showAvatars)
 		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(265, 16), "");
@@ -291,7 +302,7 @@ void PreviewView::CheckComment()
 void PreviewView::DoDraw()
 {
 	Graphics * g = GetGraphics();
-	if (!c->GetFromUrl())
+	if (!c->GetFromUrl() || doError)
 	{
 		Window::DoDraw();
 		for (size_t i = 0; i < commentTextComponents.size(); i++)
@@ -304,13 +315,13 @@ void PreviewView::DoDraw()
 					0xFFFFFF_rgb .WithAlpha(100));
 		}
 	}
-	if (c->GetDoOpen())
+	if (c->GetDoOpen() && !doError)
 	{
 		g->BlendFilledRect(RectSized(Position + Size / 2 - Vec2{ 101, 26 }, { 202, 52 }), 0x000000_rgb .WithAlpha(210));
 		g->BlendRect(RectSized(Position + Size / 2 - Vec2{ 100, 25 }, Vec2{ 200, 50 }), 0xFFFFFF_rgb .WithAlpha(180));
 		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize("Loading save...").X - 1)/2), (Size.Y/2)-5}, "Loading save...", style::Colour::InformationTitle.NoAlpha().WithAlpha(255));
 	}
-	if (!c->GetFromUrl())
+	if (!c->GetFromUrl() || doError)
 	{
 		g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 	}
@@ -497,6 +508,18 @@ void PreviewView::ShowMissingCustomElements()
 	new InformationMessage("Missing custom elements", sb.Build(), true);
 }
 
+void PreviewView::ShowFromNewerVersion()
+{
+	if (fromUnstableVersion)
+	{
+		new InformationMessage("This save is from a snapshot or a beta version", String::Build("Please get the snapshot or beta version at ", SERVER), false);
+	}
+	else if (fromNewerVersion)
+	{
+		new InformationMessage("This save is from a newer version", String::Build("Please update TPT in game or at ", SERVER), false);
+	}
+}
+
 void PreviewView::UpdateLoadStatus()
 {
 	auto y = YRES / 2 - 22;
@@ -508,6 +531,7 @@ void PreviewView::UpdateLoadStatus()
 		}
 	};
 	showButton(missingElementsButton);
+	showButton(fromNewerVersionButton);
 	showButton(loadErrorButton);
 }
 
@@ -534,7 +558,8 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		{
 			authorDateLabel->SetText("\bgAuthor:\bw " + save->userName.FromUtf8() + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
 		}
-		if (Client::Ref().GetAuthUser().UserID && save->userName == Client::Ref().GetAuthUser().Username)
+		auto user = Client::Ref().GetAuthUser();
+		if (user && save->userName == user->Username)
 			userIsAuthor = true;
 		else
 			userIsAuthor = false;
@@ -545,7 +570,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 			favButton->Enabled = true;
 			favButton->SetToggleState(true);
 		}
-		else if(Client::Ref().GetAuthUser().UserID)
+		else if (user)
 		{
 			favButton->Enabled = true;
 			favButton->SetToggleState(false);
@@ -558,13 +583,17 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 
 		if(save->GetGameSave())
 		{
-			missingElements = save->GetGameSave()->missingElements;
+			auto *gameSave = save->GetGameSave();
+			missingElements = gameSave->missingElements;
+			fromUnstableVersion = gameSave->fromUnstableVersion;
+			fromNewerVersion = gameSave->fromNewerVersion;
 			RendererSettings rendererSettings;
 			rendererSettings.decorationLevel = RendererSettings::decorationAntiClickbait;
 			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), true, rendererSettings);
 			if (savePreview)
 				savePreview->ResizeToFit(RES / 2, true);
 			missingElementsButton->Visible = missingElements;
+			fromNewerVersionButton->Visible = fromNewerVersion;
 			UpdateLoadStatus();
 		}
 		else if (!sender->GetCanOpen())
@@ -713,6 +742,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 		ui::Label * tempUsername;
 		ui::Label * tempComment;
 		ui::AvatarButton * tempAvatar;
+		auto user = Client::Ref().GetAuthUser();
 		for (size_t i = 0; i < comments.size(); i++)
 		{
 			if (showAvatars)
@@ -737,7 +767,7 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 			{
 				authorNameFormatted = "\bg" + authorNameFormatted;
 			}
-			else if (Client::Ref().GetAuthUser().UserID && Client::Ref().GetAuthUser().Username == comments[i].authorName)
+			else if (user && user->Username == comments[i].authorName)
 			{
 				authorNameFormatted = "\bo" + authorNameFormatted;
 			}

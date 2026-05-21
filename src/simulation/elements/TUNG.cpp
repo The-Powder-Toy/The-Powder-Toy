@@ -82,12 +82,14 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 		else if (sim->rng.chance(1, 100))
 		{
+			//@ TUNG -> FIRE
 			sim->part_change_type(i, x, y, PT_FIRE);
 			parts[i].life = sim->rng.between(0, 499);
 			return 1;
 		}
 		else
 		{
+			//@ TUNG -> LAVA(TUNG)
 			sim->part_change_type(i, x, y, PT_LAVA);
 			parts[i].ctype = PT_TUNG;
 			return 1;
@@ -104,6 +106,7 @@ static int update(UPDATE_FUNC_ARGS)
 	auto diff = press - parts[i].tmp3;
 	if (diff > 32 || diff < -32)
 	{
+		//@ TUNG -> BRMT(TUNG)
 		sim->part_change_type(i,x,y,PT_BRMT);
 		parts[i].ctype = PT_TUNG;
 		return 1;
@@ -118,11 +121,11 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	auto &elements = sd.elements;
 	const float MELTING_POINT = elements[PT_TUNG].HighTemperature;
 	double startTemp = (MELTING_POINT - 1500.0);
-	double tempOver = (((cpart->temp - startTemp)/1500.0)*TPT_PI_FLT) - (TPT_PI_FLT/2.0);
-	if(tempOver > -(TPT_PI_FLT/2.0))
+	double tempOver = (((cpart->temp - startTemp)/1500.0)*std::numbers::pi) - (std::numbers::pi/2.0);
+	if (tempOver > -(std::numbers::pi / 2.0))
 	{
-		if(tempOver > (TPT_PI_FLT/2.0))
-			tempOver = (TPT_PI_FLT/2.0);
+		if (tempOver > std::numbers::pi / 2.0)
+			tempOver = std::numbers::pi / 2.0;
 		double gradv = sin(tempOver) + 1.0;
 		*firer = (int)(gradv * 258.0);
 		*fireg = (int)(gradv * 156.0);

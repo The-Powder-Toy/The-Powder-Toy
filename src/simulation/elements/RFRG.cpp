@@ -23,7 +23,7 @@ void Element::Element_RFRG()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 20;
+	Hardness = 21;
 
 	Weight = 1;
 
@@ -35,7 +35,7 @@ void Element::Element_RFRG()
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = 2;
-	HighPressureTransition = PT_RFGL;
+	HighPressureTransition = PT_RFGL; //@ RFRG -> RFGL
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = ITH;

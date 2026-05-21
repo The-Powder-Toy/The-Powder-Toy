@@ -25,7 +25,7 @@ void Element::Element_GEL()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 20;
+	Hardness = 19;
 
 	Weight = 35;
 
@@ -84,6 +84,7 @@ static int update(UPDATE_FUNC_ARGS)
 					if (parts[i].tmp<100 && sim->rng.chance(20, absorbChanceDenom))
 					{
 						parts[i].tmp++;
+						//@ GEL + PSTE -> GEL + CLST
 						sim->create_part(ID(r), x+rx, y+ry, PT_CLST);
 					}
 					break;
@@ -91,6 +92,7 @@ static int update(UPDATE_FUNC_ARGS)
 					if (parts[i].tmp<100 && sim->rng.chance(50, absorbChanceDenom))
 					{
 						parts[i].tmp++;
+						//@ GEL + SLTW -> GEL + SALT
 						if (sim->rng.chance(3, 4))
 							sim->kill_part(ID(r));
 						else
@@ -101,6 +103,7 @@ static int update(UPDATE_FUNC_ARGS)
 					if (parts[i].tmp < 100 && sim->rng.chance(100, absorbChanceDenom))
 					{
 						parts[i].tmp++;
+						//@ GEL + CBNW -> GEL + CO2
 						sim->part_change_type(ID(r), x+rx, y+ry, PT_CO2);
 					}
 					break;
@@ -126,6 +129,15 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[i].tmp--;
 					}
 					gel = true;
+					break;
+				case PT_BASE:
+					// Base absorbs water from gel
+					if (parts[i].tmp > 0 && parts[ID(r)].life > 1)
+					{
+						// BASE <- GEL
+						parts[ID(r)].life--;
+						parts[i].tmp--;
+					}
 					break;
 				default:
 					break;

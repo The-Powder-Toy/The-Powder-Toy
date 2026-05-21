@@ -19,7 +19,8 @@ ProfileActivity::ProfileActivity(ByteString username) :
 	doError(false),
 	doErrorMessage("")
 {
-	editable = Client::Ref().GetAuthUser().UserID && Client::Ref().GetAuthUser().Username == username;
+	auto user = Client::Ref().GetAuthUser();
+	editable = user && user->Username == username;
 
 	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point(Size.X, 15), "Close");
 	closeButton->SetActionCallback({ [this] {

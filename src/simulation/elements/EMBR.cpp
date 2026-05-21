@@ -25,7 +25,7 @@ void Element::Element_EMBR()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 20;
+	Hardness = 21;
 
 	Weight = 30;
 

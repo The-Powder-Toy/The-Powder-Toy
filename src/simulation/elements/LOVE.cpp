@@ -42,7 +42,7 @@ void Element::Element_LOVE()
 	HighTemperatureTransition = NT;
 }
 
-int Element_LOVE_RuleTable[9][9] =
+extern const int Element_LOVE_RuleTable[9][9] =
 {
 	{0,0,1,1,0,0,0,0,0},
 	{0,1,0,0,1,1,0,0,0},
@@ -54,5 +54,3 @@ int Element_LOVE_RuleTable[9][9] =
 	{0,1,0,0,1,1,0,0,0},
 	{0,0,1,1,0,0,0,0,0},
 };
-
-int Element_LOVE_love[XRES/9][YRES/9];

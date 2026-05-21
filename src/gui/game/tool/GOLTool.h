@@ -9,7 +9,7 @@ class GOLTool: public Tool
 public:
 	GOLTool(GameModel &gameModel):
 		Tool(0, "CUST", "Add a new custom GOL type. (Use ctrl+shift+rightclick to remove them)",
-			0xFEA900_rgb, "DEFAULT_UI_ADDLIFE", NULL
+			0xFEA900_rgb, "DEFAULT_UI_ADDLIFE", nullptr
 		),
 		gameModel(gameModel)
 	{

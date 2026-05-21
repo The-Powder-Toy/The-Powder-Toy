@@ -18,7 +18,7 @@ void OpenURI(ByteString uri)
 long unsigned int GetTime()
 {
 	struct timeval s;
-	gettimeofday(&s, NULL);
+	gettimeofday(&s, nullptr);
 	return (unsigned int)(s.tv_sec * 1000 + s.tv_usec / 1000);
 }
 

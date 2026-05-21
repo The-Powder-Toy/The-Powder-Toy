@@ -30,36 +30,47 @@ static int mathRandom(lua_State *L)
 	auto *lsi = GetLSI();
 	// only thing that matters is that the rng not be sim->rng when !(eventTraits & eventTraitSimRng)
 	auto &rng = (lsi->eventTraits & eventTraitSimRng) ? lsi->sim->rng : interfaceRng;
-	int lower, upper;
+	double lower, upper;
 	switch (lua_gettop(L))
 	{
 	case 0:
-		lua_pushnumber(L, rng.uniform01());
+		lua_pushnumber(L, rng.uniform01Double());
 		return 1;
 
 	case 1:
 		lower = 1;
-		upper = luaL_checkinteger(L, 1);
+		upper = luaL_checknumber(L, 1);
 		break;
 
 	default:
-		lower = luaL_checkinteger(L, 1);
-		upper = luaL_checkinteger(L, 2);
+		lower = luaL_checknumber(L, 1);
+		upper = luaL_checknumber(L, 2);
 		break;
 	}
 	if (upper < lower)
 	{
 		luaL_error(L, "interval is empty");
 	}
-	if ((unsigned int)(upper) - (unsigned int)(lower) + 1U)
+	if (lower >= INT32_MIN && upper <= INT32_MAX)
 	{
-		lua_pushinteger(L, rng.between(lower, upper));
+		auto il = int(lower);
+		auto iu = int(upper);
+		if (((unsigned int)(iu) - (unsigned int)(il) + 1U)) // the exact expression the RNG divides something by
+		{
+			lua_pushinteger(L, rng.between(il, iu));
+		}
+		else
+		{
+			lua_pushinteger(L, int(rng()));
+		}
+	}
+	else if (lower >= UINT32_C(0) && upper <= UINT32_MAX)
+	{
+		lua_pushnumber(L, rng());
 	}
 	else
 	{
-		// The interval is *so* not empty that its size overflows 32-bit integers
-		// (only possible if it's exactly 0x100000000); don't use between.
-		lua_pushinteger(L, int(rng()));
+		lua_pushnumber(L, lower + rng.uniform01Double() * (upper - lower));
 	}
 	return 1;
 }

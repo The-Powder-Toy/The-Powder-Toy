@@ -52,13 +52,16 @@ static int useDisplayPreset(lua_State *L)
 {
 	auto *lsi = GetLSI();
 	lsi->AssertInterfaceEvent();
-	int cmode = luaL_optint(L, 1, 3)+1;
-	if (cmode == 11)
-		cmode = 0;
+	int cmode = luaL_optint(L, 1, 3);
 	if (cmode >= 0 && cmode <= 10)
-		lsi->gameController->LoadRenderPreset(cmode);
-	else
-		return luaL_error(L, "Invalid display mode");
+	{
+		cmode = (cmode + 1) % 11; // legacy nonsense
+	}
+	if (cmode < 0 || cmode >= int(Renderer::renderModePresets.size()))
+	{
+		return luaL_error(L, "Invalid display preset");
+	}
+	lsi->gameController->LoadRenderPreset(cmode);
 	return 0;
 }
 

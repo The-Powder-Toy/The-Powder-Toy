@@ -41,7 +41,7 @@ void Element::Element_GLAS()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1973.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ GLAS -> LAVA(GLAS)
 
 	Update = &update;
 	Create = &create;
@@ -58,9 +58,34 @@ static int update(UPDATE_FUNC_ARGS)
 		strength = 16;
 	if (diff > strength || diff < -1 * strength)
 	{
+		//@ GLAS -> BGLA
 		sim->part_change_type(i, x, y, PT_BGLA);
 	}
 	parts[i].tmp3 = press;
+
+	// Liquid nitrogen condenses on chemically strengthened glass
+	if ((strength > 200) && (parts[i].temp < 77.0f) && (sim->hv[y/CELL][x/CELL] < 77.0f)
+			&& (sim->pv[y/CELL][x/CELL] > 5.0f) && sim->rng.chance(1, 100))
+	{
+		// Sample 4 adjacent cells
+		auto adj = sim->rng.between(0, 3);
+		auto rx = (1 - 2*(adj%2))*(1 - adj/2);
+		auto ry = (1 - 2*(adj%2))*(adj/2);
+
+		auto r = pmap[y+ry][x+rx];
+		// If found an empty spot around glass
+		if (!r)
+		{
+			//@ GLAS -> GLAS + LNTG
+			auto np = sim->create_part(-1, x+rx, y+ry, PT_LNTG);
+			if (np>-1)
+			{
+				sim->pv[y/CELL][x/CELL] -= 1.0f;
+				parts[i].temp += 200.0f;
+			}
+		}
+	}
+
 	return 0;
 }
 

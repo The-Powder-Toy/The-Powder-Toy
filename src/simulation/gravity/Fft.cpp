@@ -1,5 +1,6 @@
 #include "Gravity.h"
 #include "Config.h"
+#include "prefs/GlobalPrefs.h"
 #include "SimulationConfig.h"
 #include <cstring>
 #include <cmath>
@@ -135,7 +136,8 @@ void GravityImpl::Work()
 void GravityImpl::Init()
 {
 	//select best algorithm, could use FFTW_PATIENT or FFTW_EXHAUSTIVE but that increases the time taken to plan, and I don't see much increase in execution speed
-	auto fftwPlanFlags = FFTW_PLAN_MEASURE ? FFTW_MEASURE : FFTW_ESTIMATE;
+	auto planMeasure = GlobalPrefs::Ref().Get("FftwPlanMeasure", FFTW_PLAN_MEASURE);
+	auto fftwPlanFlags = planMeasure ? FFTW_MEASURE : FFTW_ESTIMATE;
 
 	//use fftw malloc function to ensure arrays are aligned, to get better performance
 	kernelXT = FftwComplexArray(transSize);

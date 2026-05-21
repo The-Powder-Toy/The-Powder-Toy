@@ -2,7 +2,6 @@
 #include "ETRD.h"
 #include <algorithm>
 
-static void initDeltaPos();
 static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
 
 void Element::Element_ETRD()
@@ -46,8 +45,6 @@ void Element::Element_ETRD()
 	HighTemperatureTransition = NT;
 
 	ChangeType = &changeType;
-
-	initDeltaPos();
 }
 
 static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS)
@@ -75,12 +72,10 @@ public:
 	int length;
 };
 
-const int maxLength = 12;
-std::vector<ETRD_deltaWithLength> deltaPos;
-
-static void initDeltaPos()
+static const std::vector<ETRD_deltaWithLength> InitDeltaPos()
 {
-	deltaPos.clear();
+	const int maxLength = 12;
+	std::vector<ETRD_deltaWithLength> deltaPos;
 	for (int ry = -maxLength; ry <= maxLength; ry++)
 		for (int rx = -maxLength; rx <= maxLength; rx++)
 		{
@@ -91,7 +86,9 @@ static void initDeltaPos()
 	std::stable_sort(deltaPos.begin(), deltaPos.end(), [](const ETRD_deltaWithLength &a, const ETRD_deltaWithLength &b) {
 		return a.length < b.length;
 	});
+	return deltaPos;
 }
+static const auto deltaPos = InitDeltaPos();
 
 int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 {
@@ -116,11 +113,10 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 		// If the simulation contains lots of particles, check near the target position first since going through all particles will be slow.
 		// Threshold = number of positions checked, *2 because it's likely to access memory all over the place (less cache friendly) and there's extra logic needed
 		// TODO: probably not optimal if excessive stacking is used
-		if (sim->parts.lastActiveIndex > (int)deltaPos.size()*2)
+		if (sim->parts.active > (int)deltaPos.size()*2)
 		{
-			for (std::vector<ETRD_deltaWithLength>::iterator iter = deltaPos.begin(), end = deltaPos.end(); iter != end; ++iter)
+			for (auto &delta : deltaPos)
 			{
-				ETRD_deltaWithLength delta = (*iter);
 				ui::Point checkPos = targetPos + delta.d;
 				int checkDistance = delta.length;
 				if (parts[targetId].tmp >= checkDistance) // tmp sets min distance
@@ -146,7 +142,7 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 		// If neighbor search didn't find a suitable particle, search all particles
 		if (foundI < 0)
 		{
-			for (int i = 0; i <= sim->parts.lastActiveIndex; i++)
+			for (int i = 0; i < sim->parts.active; i++)
 			{
 				if (parts[i].type == PT_ETRD && !parts[i].life)
 				{
@@ -165,7 +161,7 @@ int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId)
 	{
 		// Recalculate countLife0, and search for the closest suitable particle
 		int countLife0 = 0;
-		for (int i = 0; i <= sim->parts.lastActiveIndex; i++)
+		for (int i = 0; i < sim->parts.active; i++)
 		{
 			if (parts[i].type == PT_ETRD && !parts[i].life)
 			{

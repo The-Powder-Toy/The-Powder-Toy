@@ -932,7 +932,7 @@ static int resetTemp(lua_State *L)
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
 	bool onlyConductors = luaL_optint(L, 1, 0);
-	for (int i = 0; i < sim->parts.lastActiveIndex; i++)
+	for (int i = 0; i < sim->parts.active; i++)
 	{
 		if (sim->parts[i].type && (!onlyConductors || !sd.IsHeatInsulator(sim->parts[i])))
 		{
@@ -970,7 +970,7 @@ static int resetPressure(lua_State *L)
 	for (int nx = x1; nx<x1+width; nx++)
 		for (int ny = y1; ny<y1+height; ny++)
 		{
-			lsi->sim->pv[ny][nx] = 0;
+			lsi->sim->pv[ny][nx] = lsi->sim->air->edgePressure;
 		}
 	return 0;
 }
@@ -1039,7 +1039,7 @@ static int loadStamp(lua_State *L)
 		lsi->sim->Load(gameSave.get(), includePressure, { quoX, quoY });
 		lua_pushinteger(L, 1);
 
-		if (gameSave->authors.size())
+		if (gameSave->authors.GetSize())
 		{
 			gameSave->authors["type"] = "luastamp";
 			client.MergeStampAuthorInfo(gameSave->authors);
@@ -1275,6 +1275,39 @@ static int ambientAirTemp(lua_State *L)
 	return 0;
 }
 
+static int edgePressure(lua_State *L)
+{
+	auto *lsi = GetLSI();
+	int acount = lua_gettop(L);
+	if (acount == 0)
+	{
+		lua_pushnumber(L, lsi->sim->air->edgePressure);
+		return 1;
+	}
+	lsi->AssertInterfaceEvent();
+	float edgePressure = restrict_flt(luaL_optnumber(L, 1, 0), MIN_PRESSURE, MAX_PRESSURE);
+	lsi->gameModel->SetEdgePressure(edgePressure);
+	return 0;
+}
+
+static int edgeVelocity(lua_State *L)
+{
+	auto *lsi = GetLSI();
+	int acount = lua_gettop(L);
+	if (acount == 0)
+	{
+		lua_pushnumber(L, lsi->sim->air->edgeVelocityX);
+		lua_pushnumber(L, lsi->sim->air->edgeVelocityY);
+		return 2;
+	}
+	lsi->AssertInterfaceEvent();
+	float edgeVelocityX = restrict_flt(luaL_optnumber(L, 1, 0), -MAX_VELOCITY, MAX_VELOCITY);
+	float edgeVelocityY = restrict_flt(luaL_optnumber(L, 2, 0), -MAX_VELOCITY, MAX_VELOCITY);
+	lsi->gameModel->SetEdgeVelocityX(edgeVelocityX);
+	lsi->gameModel->SetEdgeVelocityY(edgeVelocityY);
+	return 0;
+}
+
 static int vorticityCoeff(lua_State *L)
 {
 	auto *lsi = GetLSI();
@@ -1287,6 +1320,25 @@ static int vorticityCoeff(lua_State *L)
 	lsi->AssertInterfaceEvent();
 	float vorticityCoeff = restrict_flt(luaL_optnumber(L, 1, 0.0f), 0.0f, 1.0f);
 	lsi->gameModel->SetVorticityCoeff(vorticityCoeff);
+	return 0;
+}
+
+static int convectionMode(lua_State *L)
+{
+	auto *lsi = GetLSI();
+	int acount = lua_gettop(L);
+	if (acount == 0)
+	{
+		lua_pushnumber(L, lsi->gameModel->GetConvectionMode());
+		return 1;
+	}
+	lsi->AssertInterfaceEvent();
+	int convMode = luaL_checkint(L, 1);
+	if (convMode < 0 || convMode >= NUM_CONVMODES)
+	{
+		return luaL_error(L, "invalid convection mode");
+	}
+	lsi->gameModel->SetConvectionMode(convMode);
 	return 0;
 }
 
@@ -1387,7 +1439,7 @@ static int brush(lua_State *L)
 static int partsClosure(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	for (int i = lua_tointeger(L, lua_upvalueindex(1)); i <= lsi->sim->parts.lastActiveIndex; ++i)
+	for (int i = lua_tointeger(L, lua_upvalueindex(1)); i < lsi->sim->parts.active; ++i)
 	{
 		if (lsi->sim->parts[i].type)
 		{
@@ -1515,13 +1567,13 @@ static int frameRender(lua_State *L)
 	lsi->AssertInterfaceEvent();
 	if (lua_gettop(L) == 0)
 	{
-		lua_pushinteger(L, lsi->sim->framerender);
+		lua_pushinteger(L, lsi->gameModel->GetQueuedFrames());
 		return 1;
 	}
 	int frames = luaL_checkinteger(L, 1);
 	if (frames < 0)
 		return luaL_error(L, "Can't simulate a negative number of frames");
-	lsi->sim->framerender = frames;
+	lsi->gameModel->SetQueuedFrames(frames);
 	return 0;
 }
 
@@ -1705,7 +1757,7 @@ static int updateUpTo(lua_State *L)
 	{
 		return luaL_error(L, "ID not in valid range");
 	}
-	lsi->sim->framerender = 1;
+	lsi->gameModel->SetQueuedFrames(1);
 	lsi->gameModel->UpdateUpTo(upTo + 1);
 	return 0;
 }
@@ -2028,7 +2080,10 @@ void LuaSimulation::Open(lua_State *L)
 		LFUNC(airMode),
 		LFUNC(waterEqualization),
 		LFUNC(ambientAirTemp),
+		LFUNC(edgePressure),
+		LFUNC(edgeVelocity),
 		LFUNC(vorticityCoeff),
+		LFUNC(convectionMode),
 		LFUNC(elementCount),
 		LFUNC(canMove),
 		LFUNC(brush),
@@ -2132,6 +2187,11 @@ void LuaSimulation::Open(lua_State *L)
 	LCONST(AIR_OFF);
 	LCONST(AIR_NOUPDATE);
 	LCONST(NUM_AIRMODES);
+
+	LCONST(AIRC_NONE);
+	LCONST(AIRC_LEGACY);
+	LCONST(AIRC_BOUSSINESQ);
+	LCONST(NUM_CONVMODES);
 
 	LCONST(GRAV_VERTICAL);
 	LCONST(GRAV_OFF);

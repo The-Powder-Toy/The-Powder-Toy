@@ -25,6 +25,10 @@ namespace http
 			ss >> document;
 			loginInfo.user.Username = document["Username"].asString();
 			loginInfo.user.UserID = document["UserID"].asInt();
+			if (!loginInfo.user.UserID)
+			{
+				throw RequestError("bad user ID");
+			}
 			loginInfo.user.SessionID = document["SessionID"].asString();
 			loginInfo.user.SessionKey = document["SessionKey"].asString();
 			loginInfo.user.UserElevation = User::ElevationFromString(document["Elevation"].asString());

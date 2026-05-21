@@ -58,7 +58,7 @@ public:
 		auto *lsi = GetLSI();
 		lsi->AssertInterfaceEvent();
 		auto authUser = Client::Ref().GetAuthUser();
-		if (type == getAuthToken && !authUser.UserID)
+		if (type == getAuthToken && !authUser)
 		{
 			lua_pushnil(L);
 			lua_pushliteral(L, "not authenticated");
@@ -86,7 +86,7 @@ public:
 		}
 		if (type == getAuthToken)
 		{
-			rh->request->AuthHeaders(ByteString::Build(authUser.UserID), authUser.SessionID);
+			rh->request->AuthHeaders(ByteString::Build(authUser->UserID), authUser->SessionID);
 		}
 		rh->request->Start();
 		luaL_newmetatable(L, "HTTPRequest");
@@ -407,7 +407,10 @@ static int request(lua_State *L, bool isPost)
 
 static int getAuthToken(lua_State *L)
 {
-	return LuaHttp::RequestHandle::Make(L, ByteString::Build(SERVER, "/ExternalAuth.api?Action=Get&Audience=", format::URLEncode(tpt_lua_checkByteString(L, 1))), false, {}, LuaHttp::RequestHandle::getAuthToken, {}, {});
+	return LuaHttp::RequestHandle::Make(L, format::Url{ ByteString::Build(SERVER, "/ExternalAuth.api"), {
+		{ "Action", "Get" },
+		{ "Audience", tpt_lua_checkByteString(L, 1) },
+	} }.ToByteString(), false, {}, LuaHttp::RequestHandle::getAuthToken, {}, {});
 }
 
 static int get(lua_State *L)

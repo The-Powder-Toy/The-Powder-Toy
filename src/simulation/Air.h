@@ -10,7 +10,11 @@ public:
 	Simulation & sim;
 	int airMode;
 	float ambientAirTemp;
+	float edgePressure;
+	float edgeVelocityX;
+	float edgeVelocityY;
 	float vorticityCoeff;
+	int convectionMode;
 	float ovx[YCELLS][XCELLS];
 	float ovy[YCELLS][XCELLS];
 	float opv[YCELLS][XCELLS];
@@ -25,6 +29,6 @@ public:
 	void Clear();
 	void ClearAirH();
 	void Invert();
-	void ApproximateBlockAirMaps();
+	void ApproximateBlockAirMaps(Rect<int> targetBlocks);
 	Air(Simulation & sim);
 };

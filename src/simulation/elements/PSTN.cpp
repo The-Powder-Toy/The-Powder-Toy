@@ -67,8 +67,6 @@ struct StackData
 	}
 };
 
-int tempParts[XRES];
-
 constexpr int PISTON_INACTIVE   = 0x00;
 constexpr int PISTON_RETRACT    = 0x01;
 constexpr int PISTON_EXTEND     = 0x02;
@@ -221,14 +219,14 @@ static StackData CanMoveStack(Simulation * sim, int stackX, int stackY, int dire
 		if (!r)
 		{
 			spaces++;
-			tempParts[currentPos++] = -1;
+			sim->Element_PSTN_tempParts[currentPos++] = -1;
 			if (spaces >= amount)
 				break;
 		}
 		else
 		{
 			if (currentPos - spaces < maxSize && (!retract || (TYP(r) == PT_FRME && posX == stackX && posY == stackY)))
-				tempParts[currentPos++] = ID(r);
+				sim->Element_PSTN_tempParts[currentPos++] = ID(r);
 			else
 				return StackData(currentPos - spaces, spaces);
 		}
@@ -306,13 +304,13 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 				break;
 			} else {
 				foundParts = true;
-				tempParts[currentPos++] = ID(r);
+				sim->Element_PSTN_tempParts[currentPos++] = ID(r);
 			}
 		}
 		if(foundParts) {
 			//Move particles
 			for(int j = 0; j < currentPos; j++) {
-				int jP = tempParts[j];
+				int jP = sim->Element_PSTN_tempParts[j];
 				int srcX = (int)(sim->parts[jP].x + 0.5f), srcY = (int)(sim->parts[jP].y + 0.5f);
 				int destX = srcX-directionX*amount, destY = srcY-directionY*amount;
 				sim->pmap[srcY][srcX] = 0;
@@ -329,7 +327,7 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 			//Move particles
 			int possibleMovement = 0;
 			for(int j = currentPos-1; j >= 0; j--) {
-				int jP = tempParts[j];
+				int jP = sim->Element_PSTN_tempParts[j];
 				if(jP < 0) {
 					possibleMovement++;
 					continue;

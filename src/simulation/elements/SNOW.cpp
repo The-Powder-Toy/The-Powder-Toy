@@ -31,7 +31,6 @@ void Element::Element_SNOW()
 
 	DefaultProperties.temp = R_TEMP - 30.0f + 273.15f;
 	HeatConduct = 46;
-	LatentHeat = 1095;
 	Description = "Light particles. Created when ICE breaks under pressure.";
 
 	Properties = TYPE_PART|PROP_NEUTPASS;
@@ -64,6 +63,7 @@ static int update(UPDATE_FUNC_ARGS)
 				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
+				//@ SNOW + SALT/SLTW -> 2xSLTW
 				if ((TYP(r)==PT_SALT || TYP(r)==PT_SLTW) && sim->rng.chance(1, 333))
 				{
 					sim->part_change_type(i,x,y,PT_SLTW);

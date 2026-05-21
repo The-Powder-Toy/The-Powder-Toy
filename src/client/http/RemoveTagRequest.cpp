@@ -1,11 +1,14 @@
 #include "RemoveTagRequest.h"
-#include "client/Client.h"
 #include "Config.h"
 
 namespace http
 {
 	RemoveTagRequest::RemoveTagRequest(int saveID, ByteString tag) :
-		APIRequest(ByteString::Build(SERVER, "/Browse/EditTag.json?Op=delete&ID=", saveID, "&Tag=", tag, "&Key=", Client::Ref().GetAuthUser().SessionKey), authRequire, true)
+		APIRequest({ ByteString::Build(SERVER, "/Browse/EditTag.json"), {
+			{ "Op", "delete" },
+			{ "ID", ByteString::Build(saveID) },
+			{ "Tag", tag },
+		} }, authRequireAppendSession, true)
 	{
 	}
 

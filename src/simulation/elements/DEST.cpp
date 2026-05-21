@@ -70,6 +70,7 @@ static int update(UPDATE_FUNC_ARGS)
 		sim->pv[y/CELL][x/CELL]+=20.0f;
 		if (sim->rng.chance(1, 2))
 		{
+			//@ DEST + PLUT/DEUT -> DEST + NEUT
 			sim->create_part(ID(r), x+rx, y+ry, PT_NEUT);
 			parts[ID(r)].temp = MAX_TEMP;
 			sim->pv[y/CELL][x/CELL] += 10.0f;
@@ -78,6 +79,7 @@ static int update(UPDATE_FUNC_ARGS)
 	}
 	else if (rt == PT_INSL)
 	{
+		//@ DEST + INSL -> DEST + PLSM
 		sim->create_part(ID(r), x+rx, y+ry, PT_PLSM);
 	}
 	else if (sim->rng.chance(1, 3))
@@ -90,7 +92,8 @@ static int update(UPDATE_FUNC_ARGS)
 	else if (!sd.IsHeatInsulator(parts[ID(r)]))
 		parts[ID(r)].temp = MAX_TEMP;
 	parts[i].temp=MAX_TEMP;
-	sim->pv[y/CELL][x/CELL]+=80.0f;
+	sim->pv[y/CELL][x/CELL] = restrict_flt(sim->pv[y/CELL][x/CELL] + 80.0f, MIN_PRESSURE, MAX_PRESSURE);
+
 	return 0;
 }
 

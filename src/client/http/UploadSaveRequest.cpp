@@ -20,18 +20,18 @@ namespace http
 			return;
 		}
 		auto user = Client::Ref().GetAuthUser();
-		if (!user.UserID)
+		if (!user)
 		{
 			FailEarly("Not authenticated");
 			return;
 		}
-		AuthHeaders(ByteString::Build(user.UserID), user.SessionID);
+		AuthHeaders(ByteString::Build(user->UserID), user->SessionID);
 		AddPostData(FormData{
 			{ "Name", saveInfo.GetName().ToUtf8() },
 			{ "Description", saveInfo.GetDescription().ToUtf8() },
 			{ "Data", ByteString(gameData.begin(), gameData.end()), "save.bin" },
 			{ "Publish", saveInfo.GetPublished() ? "Public" : "Private" },
-			{ "Key", user.SessionKey },
+			{ "Key", user->SessionKey },
 		});
 	}
 

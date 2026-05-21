@@ -7,8 +7,15 @@ namespace http
 {
 	class SearchSavesRequest : public APIRequest
 	{
+		bool includesFp;
+
 	public:
 		SearchSavesRequest(int start, int count, ByteString query, Period period, Sort sort, Category category);
+
+		bool GetIncludesFp() const
+		{
+			return includesFp;
+		}
 
 		std::pair<int, std::vector<std::unique_ptr<SaveInfo>>> Finish();
 	};

@@ -7,6 +7,7 @@ Element::Element():
 	Colour(0xFF00FF_rgb),
 	MenuVisible(0),
 	MenuSection(0),
+	MenuSort(0),
 	Enabled(0),
 
 	Advection(0.0f),
@@ -29,7 +30,7 @@ Element::Element():
 	Weight(50),
 
 	HeatConduct(128),
-	LatentHeat(0),
+	HeatCapacity(1.0f),
 	Description("No description"),
 
 	Properties(TYPE_SOLID),
@@ -66,6 +67,7 @@ std::vector<StructProperty> const &Element::GetProperties()
 				{ "Colour",                    StructProperty::Colour,   offsetof(Element, Colour                   ) },
 				{ "Color",                     StructProperty::Colour,   offsetof(Element, Colour                   ) },
 				{ "MenuVisible",               StructProperty::Integer,  offsetof(Element, MenuVisible              ) },
+				{ "MenuSort",                  StructProperty::Integer,  offsetof(Element, MenuSort                 ) },
 				{ "MenuSection",               StructProperty::Integer,  offsetof(Element, MenuSection              ) },
 				{ "Enabled",                   StructProperty::Integer,  offsetof(Element, Enabled                  ) },
 				{ "Advection",                 StructProperty::Float,    offsetof(Element, Advection                ) },
@@ -87,6 +89,7 @@ std::vector<StructProperty> const &Element::GetProperties()
 				{ "Weight",                    StructProperty::Integer,  offsetof(Element, Weight                   ) },
 				{ "Temperature",               StructProperty::Float,    offsetof(Element, DefaultProperties.temp   ) },
 				{ "HeatConduct",               StructProperty::UChar,    offsetof(Element, HeatConduct              ) },
+				{ "HeatCapacity",              StructProperty::Float,    offsetof(Element, HeatCapacity             ) },
 				{ "Description",               StructProperty::String,   offsetof(Element, Description              ) },
 				{ "State",                     StructProperty::Removed,  0                                            },
 				{ "Properties",                StructProperty::Integer,  offsetof(Element, Properties               ) },
@@ -99,10 +102,6 @@ std::vector<StructProperty> const &Element::GetProperties()
 				{ "HighTemperature",           StructProperty::Float,    offsetof(Element, HighTemperature          ) },
 				{ "HighTemperatureTransition", StructProperty::TransitionType,  offsetof(Element, HighTemperatureTransition) }
 			};
-			if constexpr (LATENTHEAT)
-			{
-				properties.push_back({ "LatentHeat", StructProperty::UInteger, offsetof(Element, LatentHeat) });
-			}
 		}
 	};
 	static DoOnce doOnce;

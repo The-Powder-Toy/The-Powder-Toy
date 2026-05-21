@@ -82,5 +82,10 @@ constexpr bool InBounds(int x, int y)
 	return RES.OriginRect().Contains({ x, y });
 }
 
+constexpr bool InCellBounds(int x, int y)
+{
+	return CELLS.OriginRect().Contains({ x, y });
+}
+
 struct playerst;
-struct Parts;
+class Parts;

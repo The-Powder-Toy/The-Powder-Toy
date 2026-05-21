@@ -103,6 +103,7 @@ static int update(UPDATE_FUNC_ARGS)
 			auto pavg = sim->parts_avg(i, nearp, PT_INSL);
 			if (pavg != PT_INSL && pavg != PT_RSSS)
 			{
+				//@ ETRD -> ETRD + PLSM
 				sim->CreateLine(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), PT_PLSM);
 				parts[i].life = 20;
 				sim->part_change_type(i,x,y,ct);
@@ -116,6 +117,7 @@ static int update(UPDATE_FUNC_ARGS)
 	case PT_NBLE:
 		if (parts[i].life<=1 && !(parts[i].tmp&0x1))
 		{
+			//@ NBLE -> PLSM(NBLE)
 			parts[i].life = sim->rng.between(50, 199);
 			sim->part_change_type(i,x,y,PT_PLSM);
 			parts[i].ctype = PT_NBLE;
@@ -139,6 +141,7 @@ static int update(UPDATE_FUNC_ARGS)
 						continue;
 					if (parts[i].tmp>4 && sim->rng.chance(1, parts[i].tmp*parts[i].tmp/20+6))
 					{
+						//@ TESC -> TESC + LIGH
 						int p = sim->create_part(-1, x+rx*2, y+ry*2, PT_LIGH);
 						if (p!=-1)
 						{
@@ -147,7 +150,7 @@ static int update(UPDATE_FUNC_ARGS)
 								parts[i].life=60;
 							parts[p].temp=parts[p].life*parts[i].tmp/2.5;
 							parts[p].tmp2=1;
-							parts[p].tmp=int(atan2(-ry, (float)rx)/TPT_PI_FLT*360);
+							parts[p].tmp=int(atan2(-ry, float(rx))*360/std::numbers::pi_v<float>);
 							parts[p].dcolour = parts[i].dcolour;
 							parts[i].temp-=parts[i].tmp*2+parts[i].temp/5; // slight self-cooling
 							if (fabs(sim->pv[y/CELL][x/CELL])!=0.0f)
@@ -176,6 +179,7 @@ static int update(UPDATE_FUNC_ARGS)
 					if (TYP(r)==PT_DSTW || TYP(r)==PT_SLTW || TYP(r)==PT_WATR)
 					{
 						int rndstore = sim->rng.gen()%100;
+						//@ IRON + DSTW/SLTW/WATR -> IRON + O2/H2
 						if (!rndstore)
 							sim->part_change_type(ID(r),x+rx,y+ry,PT_O2);
 						else if (3 > rndstore)
@@ -285,73 +289,81 @@ static int update(UPDATE_FUNC_ARGS)
 				if ((pavg == PT_INSL) || (pavg == PT_RSSS)) continue; //Insulation blocks everything past here
 				if (!((elements[receiver].Properties&PROP_CONDUCTS)||receiver==PT_INST||receiver==PT_QRTZ)) continue; //Stop non-conducting receivers, allow INST and QRTZ as special cases
 				if (abs(rx)+abs(ry)>=4 &&sender!=PT_SWCH&&receiver!=PT_SWCH) continue; //Only switch conducts really far
-				if (receiver==sender && receiver!=PT_INST && receiver!=PT_QRTZ) goto conduct; //Everything conducts to itself, except INST.
 
-				//Sender cases, where elements can have specific outputs
-				switch (sender)
+				auto tryConduct = [&]() {
+					if (receiver==sender && receiver!=PT_INST && receiver!=PT_QRTZ) return true; //Everything conducts to itself, except INST.
+
+					//Sender cases, where elements can have specific outputs
+					switch (sender)
+					{
+					case PT_INST:
+						if (receiver==PT_NSCN)
+							return true;
+						return false;
+					case PT_SWCH:
+						if (receiver==PT_PSCN||receiver==PT_NSCN||receiver==PT_WATR||receiver==PT_SLTW||receiver==PT_NTCT||receiver==PT_PTCT||receiver==PT_INWR)
+							return false;
+						break;
+					case PT_ETRD:
+						if (receiver==PT_METL||receiver==PT_BMTL||receiver==PT_BRMT||receiver==PT_LRBD||receiver==PT_RBDM||receiver==PT_PSCN||receiver==PT_NSCN)
+							return true;
+						return false;
+					case PT_NTCT:
+						if (receiver==PT_PSCN || (receiver==PT_NSCN && parts[i].temp>373.0f))
+							return true;
+						return false;
+					case PT_PTCT:
+						if (receiver==PT_PSCN || (receiver==PT_NSCN && parts[i].temp<373.0f))
+							return true;
+						return false;
+					case PT_INWR:
+						if (receiver==PT_NSCN || receiver==PT_PSCN)
+							return true;
+						return false;
+					default:
+						break;
+					}
+					//Receiving cases, where elements can have specific inputs
+					switch (receiver)
+					{
+					case PT_QRTZ:
+						if ((sender==PT_NSCN||sender==PT_METL||sender==PT_PSCN||sender==PT_QRTZ) && (parts[ID(r)].temp<173.15||sim->pv[(y+ry)/CELL][(x+rx)/CELL]>8))
+							return true;
+						return false;
+					case PT_NTCT:
+						if (sender==PT_NSCN || (sender==PT_PSCN&&parts[ID(r)].temp>373.0f))
+							return true;
+						return false;
+					case PT_PTCT:
+						if (sender==PT_NSCN || (sender==PT_PSCN&&parts[ID(r)].temp<373.0f))
+							return true;
+						return false;
+					case PT_INWR:
+						if (sender==PT_NSCN || sender==PT_PSCN)
+							return true;
+						return false;
+					case PT_INST:
+						if (sender==PT_PSCN)
+							return true;
+						return false;
+					case PT_NBLE:
+						if (!(parts[i].tmp&0x1))
+							return true;
+						return false;
+					case PT_PSCN:
+						if (sender!=PT_NSCN)
+							return true;
+						return false;
+					default:
+						break;
+					}
+					return true;
+				};
+
+				if (!tryConduct())
 				{
-				case PT_INST:
-					if (receiver==PT_NSCN)
-						goto conduct;
 					continue;
-				case PT_SWCH:
-					if (receiver==PT_PSCN||receiver==PT_NSCN||receiver==PT_WATR||receiver==PT_SLTW||receiver==PT_NTCT||receiver==PT_PTCT||receiver==PT_INWR)
-						continue;
-					break;
-				case PT_ETRD:
-					if (receiver==PT_METL||receiver==PT_BMTL||receiver==PT_BRMT||receiver==PT_LRBD||receiver==PT_RBDM||receiver==PT_PSCN||receiver==PT_NSCN)
-						goto conduct;
-					continue;
-				case PT_NTCT:
-					if (receiver==PT_PSCN || (receiver==PT_NSCN && parts[i].temp>373.0f))
-						goto conduct;
-					continue;
-				case PT_PTCT:
-					if (receiver==PT_PSCN || (receiver==PT_NSCN && parts[i].temp<373.0f))
-						goto conduct;
-					continue;
-				case PT_INWR:
-					if (receiver==PT_NSCN || receiver==PT_PSCN)
-						goto conduct;
-					continue;
-				default:
-					break;
 				}
-				//Receiving cases, where elements can have specific inputs
-				switch (receiver)
-				{
-				case PT_QRTZ:
-					if ((sender==PT_NSCN||sender==PT_METL||sender==PT_PSCN||sender==PT_QRTZ) && (parts[ID(r)].temp<173.15||sim->pv[(y+ry)/CELL][(x+rx)/CELL]>8))
-						goto conduct;
-					continue;
-				case PT_NTCT:
-					if (sender==PT_NSCN || (sender==PT_PSCN&&parts[ID(r)].temp>373.0f))
-						goto conduct;
-					continue;
-				case PT_PTCT:
-					if (sender==PT_NSCN || (sender==PT_PSCN&&parts[ID(r)].temp<373.0f))
-						goto conduct;
-					continue;
-				case PT_INWR:
-					if (sender==PT_NSCN || sender==PT_PSCN)
-						goto conduct;
-					continue;
-				case PT_INST:
-					if (sender==PT_PSCN)
-						goto conduct;
-					continue;
-				case PT_NBLE:
-					if (!(parts[i].tmp&0x1))
-						goto conduct;
-					continue;
-				case PT_PSCN:
-					if (sender!=PT_NSCN)
-						goto conduct;
-					continue;
-				default:
-					break;
-				}
-			conduct:
 				//Yay, passed normal conduction rules, check a few last things and change receiver to spark
 				if (receiver==PT_WATR||receiver==PT_SLTW) {
 					if (parts[ID(r)].life==0 && parts[i].life<3)

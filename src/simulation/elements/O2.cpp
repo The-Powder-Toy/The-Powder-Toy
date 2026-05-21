@@ -38,7 +38,7 @@ void Element::Element_O2()
 	HighPressure = IPH;
 	HighPressureTransition = NT;
 	LowTemperature = 90.0f;
-	LowTemperatureTransition = PT_LO2;
+	LowTemperatureTransition = PT_LO2; //@ O2 -> LO2
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
@@ -66,12 +66,14 @@ static int update(UPDATE_FUNC_ARGS)
 						parts[ID(r)].temp = 3473;
 					parts[ID(r)].tmp |= 2;
 
+					//@ O2 + FIRE -> 2xFIRE
 					sim->create_part(i,x,y,PT_FIRE);
 					parts[i].temp += sim->rng.between(0, 99);
 					parts[i].tmp |= 2;
 				}
 				else if (TYP(r)==PT_PLSM && !(parts[ID(r)].tmp&4))
 				{
+					//@ O2 + PLSM -> FIRE + PLSM
 					sim->create_part(i,x,y,PT_FIRE);
 					parts[i].temp += sim->rng.between(0, 99);
 					parts[i].tmp |= 2;
@@ -83,6 +85,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		auto gravx = sim->gravOut.forceX[Vec2{ x, y } / CELL];
 		auto gravy = sim->gravOut.forceY[Vec2{ x, y } / CELL];
+		//@ O2 -> BRMT + NEUT + PHOT + GRVT + sometimes PLSM
 		if (gravx*gravx + gravy*gravy > 400)
 		{
 			if (sim->rng.chance(1, 5))

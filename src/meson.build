@@ -13,12 +13,14 @@ endif
 display_version = display_version.split('.')
 upstream_version = upstream_version.split('.')
 
+x86_kill_denormals = is_x86 and x86_sse_level != 0
+
 app_id = get_option('app_id')
 mod_id = get_option('mod_id')
 is_snapshot = get_option('snapshot')
 is_beta = get_option('beta')
 is_mod = mod_id > 0
-conf_data.set('X86', is_x86.to_string())
+conf_data.set('X86_KILL_DENORMALS', x86_kill_denormals.to_string())
 conf_data.set('BETA', is_beta.to_string())
 conf_data.set('MOD_ID', mod_id)
 conf_data.set('DEBUG', is_debug.to_string())
@@ -140,7 +142,7 @@ else
 		'PowderToySDLCommon.cpp',
 	)
 endif
-if is_x86
+if x86_kill_denormals
 	powder_files += files('X86KillDenormals.cpp')
 endif
 
@@ -182,7 +184,6 @@ if host_platform == 'linux'
 	font_files += files('WindowIcon.cpp')
 endif
 
-subdir('bson')
 subdir('bzip2')
 subdir('client')
 subdir('common')

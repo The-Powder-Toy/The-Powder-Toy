@@ -15,6 +15,7 @@ SearchModel::SearchModel():
 	currentSort(http::sortByVotes),
 	currentPage(1),
 	resultCount(0),
+	includesFp(false),
 	showOwn(false),
 	showFavourite(false),
 	showTags(true)
@@ -37,6 +38,7 @@ void SearchModel::BeginSearchSaves(int start, int count, String query, http::Per
 	resultCount = 0;
 	searchSaves = std::make_unique<http::SearchSavesRequest>(start, count, query.ToUtf8(), period, sort, category);
 	searchSaves->Start();
+	includesFp = searchSaves->GetIncludesFp();
 }
 
 std::vector<std::unique_ptr<SaveInfo>> SearchModel::EndSearchSaves()
@@ -57,14 +59,6 @@ std::vector<std::unique_ptr<SaveInfo>> SearchModel::EndSearchSaves()
 void SearchModel::BeginGetTags(int start, int count, String query)
 {
 	lastError = "";
-	ByteStringBuilder urlStream;
-	urlStream << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
-	if(query.length())
-	{
-		urlStream << "&Search_Query=";
-		if(query.length())
-			urlStream << format::URLEncode(query.ToUtf8());
-	}
 	getTags = std::make_unique<http::SearchTagsRequest>(start, count, query.ToUtf8());
 	getTags->Start();
 }
@@ -96,10 +90,18 @@ bool SearchModel::UpdateSaveList(int pageNumber, String query)
 		//resultCount = 0;
 		currentPage = pageNumber;
 
-		if(pageNumber == 1 && !showOwn && !showFavourite && currentPeriod == http::allSaves && currentSort == http::sortByVotes && query == "")
-			SetShowTags(true);
-		else
-			SetShowTags(false);
+		auto category = http::categoryNone;
+		if (showFavourite)
+		{
+			category = http::categoryFavourites;
+		}
+		if (showOwn && Client::Ref().GetAuthUser())
+		{
+			category = http::categoryMyOwn;
+		}
+		BeginSearchSaves((currentPage-1)*20, 20, lastQuery, currentPeriod, currentSort, category);
+
+		SetShowTags(includesFp && pageNumber == 1);
 
 		notifySaveListChanged();
 		notifyTagListChanged();
@@ -112,16 +114,6 @@ bool SearchModel::UpdateSaveList(int pageNumber, String query)
 			BeginGetTags(0, 24, "");
 		}
 
-		auto category = http::categoryNone;
-		if (showFavourite)
-		{
-			category = http::categoryFavourites;
-		}
-		if (showOwn && Client::Ref().GetAuthUser().UserID)
-		{
-			category = http::categoryMyOwn;
-		}
-		BeginSearchSaves((currentPage-1)*20, 20, lastQuery, currentPeriod, currentSort, category);
 		return true;
 	}
 	return false;
@@ -218,19 +210,12 @@ void SearchModel::SelectAllSaves()
 
 void SearchModel::DeselectSave(int saveID)
 {
-	bool changed = false;
-restart:
-	for (size_t i = 0; i < selected.size(); i++)
+	if (std::erase_if(selected, [saveID](auto &item) {
+		return item == saveID;
+	}))
 	{
-		if (selected[i] == saveID)
-		{
-			selected.erase(selected.begin()+i);
-			changed = true;
-			goto restart; //Just ensure all cases are removed.
-		}
-	}
-	if(changed)
 		notifySelectedChanged();
+	}
 }
 
 void SearchModel::notifySaveListChanged()
@@ -307,8 +292,5 @@ void SearchModel::notifySelectedChanged()
 
 int SearchModel::GetPageCount()
 {
-	if (!showOwn && !showFavourite && currentPeriod == http::allSaves && currentSort == http::sortByVotes && lastQuery == "")
-		return std::max(1, (int)(ceil(resultCount/20.0f))+1); //add one for front page (front page saves are repeated twice)
-	else
-		return std::max(1, (int)(ceil(resultCount/20.0f)));
+	return std::max(1, (int)(ceil(resultCount/20.0f)) + (includesFp ? 1 : 0)); //add one for front page (front page saves are repeated twice)
 }

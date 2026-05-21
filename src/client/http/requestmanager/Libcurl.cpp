@@ -56,8 +56,8 @@ namespace http
 #ifdef REQUEST_USE_CURL_MIMEPOST
 		curl_mime *curlPostFields = nullptr;
 #else
-		curl_httppost *curlPostFieldsFirst = NULL;
-		curl_httppost *curlPostFieldsLast = NULL;
+		curl_httppost *curlPostFieldsFirst = nullptr;
+		curl_httppost *curlPostFieldsLast = nullptr;
 #endif
 		CURL *curlEasy = nullptr;
 		char curlErrorBuffer[CURL_ERROR_SIZE];
@@ -177,7 +177,7 @@ namespace http
 			constexpr auto TickMs = 100;
 			if (requestHandles.size())
 			{
-				HandleCURLMcode(curl_multi_wait(curlMulti, NULL, 0, TickMs, &dontcare));
+				HandleCURLMcode(curl_multi_wait(curlMulti, nullptr, 0, TickMs, &dontcare));
 			}
 			else
 			{

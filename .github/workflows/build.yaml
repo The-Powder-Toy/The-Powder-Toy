@@ -5,6 +5,8 @@ on:
     branches:
       - '*'
     tags:
+      - 'mod*'
+      - 'var*'
       - 'v*.*'
       - 'snapshot-*'
       - 'tptlibsdev-*'
@@ -21,6 +23,7 @@ jobs:
       publish_matrix: ${{ steps.prepare.outputs.publish_matrix }}
       release_type: ${{ steps.prepare.outputs.release_type }}
       release_name: ${{ steps.prepare.outputs.release_name }}
+      release_name_with_prefix: ${{ steps.prepare.outputs.release_name_with_prefix }}
       mod_id: ${{ steps.prepare.outputs.mod_id }}
       app_name: ${{ steps.prepare.outputs.app_name }}
       app_comment: ${{ steps.prepare.outputs.app_comment }}
@@ -31,8 +34,8 @@ jobs:
       do_publish: ${{ steps.prepare.outputs.do_publish }}
     steps:
       - run: git config --global core.autocrlf false
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.10'
       - run: python -m pip install meson ninja
@@ -52,7 +55,7 @@ jobs:
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_NAME: ${{ steps.prepare.outputs.release_name }}
+          RELEASE_NAME: ${{ steps.prepare.outputs.release_name_with_prefix }}
         run: bash -c './.github/create-release.sh'
   build:
     runs-on: ${{ matrix.runs_on }}
@@ -70,35 +73,15 @@ jobs:
       - if: matrix.force_msys2_bash == 'yes'
         uses: msys2/setup-msys2@v2
         with:
-          msystem: UCRT64
+          msystem: ${{ matrix.msys2_msystem }}
           update: true
           path-type: strict
           cache: true
-          # this list doesn't have to mirror the one in build.sh perfectly
-          # but the packages listed here get cached properly and take less time to install
-          install: >-
-            git
-            curl
-            mingw-w64-ucrt-x86_64-gcc
-            mingw-w64-ucrt-x86_64-pkgconf
-            mingw-w64-ucrt-x86_64-bzip2
-            mingw-w64-ucrt-x86_64-luajit
-            mingw-w64-ucrt-x86_64-jsoncpp
-            mingw-w64-ucrt-x86_64-curl
-            mingw-w64-ucrt-x86_64-SDL2
-            mingw-w64-ucrt-x86_64-libpng
-            mingw-w64-ucrt-x86_64-meson
-            mingw-w64-ucrt-x86_64-python
-            mingw-w64-ucrt-x86_64-python-pip
-            mingw-w64-ucrt-x86_64-fftw
-            mingw-w64-ucrt-x86_64-cmake
-            mingw-w64-ucrt-x86_64-7zip
-            mingw-w64-ucrt-x86_64-jq
-            patch
+          install: ${{ matrix.msys2_cache_install }}
       - run: git config --global core.autocrlf false
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - if: matrix.force_msys2_bash != 'yes'
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.10'
       - if: matrix.force_msys2_bash != 'yes'
@@ -133,18 +116,20 @@ jobs:
           ASSET_PATH: build/${{ matrix.asset_path }}
           ASSET_NAME: ${{ matrix.asset_name }}
         run: bash -c './.github/upload-release-asset.sh'
+        shell: bash
       - if: needs.prepare.outputs.do_release == 'yes' && matrix.publish == 'yes' && matrix.separate_debug == 'yes'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ASSET_PATH: build/${{ matrix.debug_asset_path }}
           ASSET_NAME: ${{ matrix.debug_asset_name }}
         run: bash -c './.github/upload-release-asset.sh'
-      - uses: actions/upload-artifact@v4
+        shell: bash
+      - uses: actions/upload-artifact@v6
         if: matrix.artifact == 'yes'
         with:
           path: build/${{ matrix.asset_path }}
           name: ${{ matrix.asset_name }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: matrix.artifact == 'yes' && matrix.separate_debug == 'yes'
         with:
           path: build/${{ matrix.debug_asset_path }}
@@ -158,8 +143,8 @@ jobs:
     if: needs.prepare.outputs.do_publish == 'yes'
     steps:
       - run: git config --global core.autocrlf false
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
         with:
           name: ${{ matrix.asset_name }}
       - run: mv ${{ matrix.asset_path }} ${{ matrix.starcatcher_name }}
@@ -176,7 +161,7 @@ jobs:
     if: needs.prepare.outputs.do_publish == 'yes'
     steps:
       - run: git config --global core.autocrlf false
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: ./.github/starcatcher-release.sh
         env:
           RELEASE_NAME: ${{ needs.prepare.outputs.release_name }}

@@ -1,7 +1,7 @@
-The Powder Toy - February 2025
+The Powder Toy - April 2026
 ==========================
 
-Get the latest version [from the Powder Toy website](https://powdertoy.co.uk/Download.html).
+Get the latest version [from the Powder Toy website](https://powdertoy.co.uk/Download.html). We're also on [Steam](https://store.steampowered.com/app/1148350/The_Powder_Toy/).
 
 To use online features such as saving, you need to [register an account](https://powdertoy.co.uk/Register.html).
 You can also visit [the official TPT forum](https://powdertoy.co.uk/Discussions/Categories/Index.html).
@@ -40,7 +40,6 @@ Special Thanks
 Libraries and other assets used
 ===========================================================================
 
-* [BSON](https://github.com/interactive-matter/bson-c)
 * [bzip2](http://www.bzip.org/)
 * [FFTW](http://fftw.org/)
 * [JsonCpp](https://github.com/open-source-parsers/jsoncpp)
@@ -51,7 +50,6 @@ Libraries and other assets used
 * [Mallangche](https://github.com/JammPark/Mallangche)
 * [mbedtls](https://www.trustedfirmware.org/projects/mbed-tls/)
 * [SDL](https://libsdl.org/)
-* [zlib](https://www.zlib.net/)
 
 Instructions
 ===========================================================================

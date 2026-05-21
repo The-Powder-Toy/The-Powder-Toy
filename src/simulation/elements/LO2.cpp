@@ -39,5 +39,5 @@ void Element::Element_LO2()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 90.1f;
-	HighTemperatureTransition = PT_O2;
+	HighTemperatureTransition = PT_O2; //@ LO2 -> O2
 }

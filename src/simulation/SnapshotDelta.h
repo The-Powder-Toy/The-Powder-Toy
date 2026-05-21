@@ -70,7 +70,7 @@ struct SnapshotDelta
 	SingleDiff<uint64_t> FrameCount;
 	SingleDiff<RNG::State> RngState;
 
-	SingleDiff<Json::Value> Authors;
+	SingleDiff<Bson> Authors;
 
 	static std::unique_ptr<SnapshotDelta> FromSnapshots(const Snapshot &oldSnap, const Snapshot &newSnap);
 	std::unique_ptr<Snapshot> Forward(const Snapshot &oldSnap);

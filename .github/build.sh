@@ -24,6 +24,12 @@ if [[ -z             ${APP_ID-} ]]; then >&2 echo             "APP_ID not set"; 
 if [[ -z           ${APP_DATA-} ]]; then >&2 echo           "APP_DATA not set"; exit 1; fi
 if [[ -z         ${APP_VENDOR-} ]]; then >&2 echo         "APP_VENDOR not set"; exit 1; fi
 
+x86_old=no
+if [[ $BSH_HOST_ARCH == x86_old ]]; then
+	export BSH_HOST_ARCH=x86
+	x86_old=yes
+fi
+
 case $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC in
 x86_64-linux-gnu-static) ;;
 x86_64-linux-gnu-dynamic) ;;
@@ -31,6 +37,8 @@ aarch64-linux-gnu-static) ;;
 aarch64-linux-gnu-dynamic) ;;
 x86_64-windows-mingw-static) ;;
 x86_64-windows-mingw-dynamic) ;;
+x86-windows-mingw-static) ;;
+x86-windows-mingw-dynamic) ;;
 x86_64-windows-msvc-static) ;;
 x86_64-windows-msvc-dynamic) ;;
 x86-windows-msvc-static) ;;
@@ -48,6 +56,11 @@ aarch64-android-bionic-static) ;;
 wasm32-emscripten-emscripten-static) ;;
 *) >&2 echo "configuration $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC-$BSH_STATIC_DYNAMIC is not supported" && exit 1;;
 esac
+
+xp=no
+if [[ $BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC == x86-windows-mingw ]]; then
+	xp=yes
+fi
 
 if [[ $BSH_HOST_PLATFORM == android ]]; then
 	android_platform=android-31
@@ -78,15 +91,20 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 		;;
 	windows)
 		if [[ $BSH_BUILD_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
-			pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-gcc
-			if [[ $BSH_STATIC_DYNAMIC == static ]]; then
-				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{cmake,7zip,jq} patch
+			if [[ $BSH_HOST_ARCH == x86_64 ]]; then
+				variant=ucrt-x86_64
 			else
-				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,meson,fftw,jq}
+				variant=i686
+			fi
+			pacman -S --noconfirm --needed mingw-w64-"$variant"-{gcc,meson}
+			if [[ $BSH_STATIC_DYNAMIC == static ]]; then
+				pacman -S --noconfirm --needed mingw-w64-"$variant"-{cmake,7zip,jq} patch
+			else
+				pacman -S --noconfirm --needed mingw-w64-"$variant"-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,fftw,jq}
 			fi
 			export PKG_CONFIG=$(which pkg-config.exe)
 			if [[ $BSH_LINT == yes ]]; then
-				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-clang-tools-extra
+				pacman -S --noconfirm --needed mingw-w64-"$variant"-clang-tools-extra
 			fi
 		fi
 		;;
@@ -95,7 +113,7 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 		if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 			sudo apt install libc6-dev
 		else
-			sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev libbz2-dev libjsoncpp-dev libpng-dev
+			sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev libsdl2-dev libbz2-dev libjsoncpp-dev libpng-dev
 		fi
 		if [[ $PACKAGE_MODE == appimage ]]; then
 			sudo apt install libfuse2
@@ -107,7 +125,7 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 	darwin)
 		brew install binutils # pkg-config
 		if [[ $BSH_STATIC_DYNAMIC != static ]]; then
-			brew install luajit fftw zlib sdl2 bzip2 jsoncpp # curl
+			brew install luajit fftw sdl2 bzip2 jsoncpp # curl
 		fi
 		if [[ $BSH_LINT == yes ]]; then
 			# gg brew :(
@@ -260,15 +278,28 @@ if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 		c_link_args+=\'-static\',
 		c_link_args+=\'-static-libgcc\',
 		c_link_args+=\'-static-libstdc++\',
+		if [[ $xp == yes ]]; then
+			meson_configure+=$'\t'-Dwindows_utf8cp=false
+			if [[ $x86_old == yes ]]; then
+				c_args+=\'-march=pentium\',
+				meson_configure+=$'\t'-Dx86_sse=none
+			else
+				c_args+=\'-march=pentium4\',
+			fi
+		fi
 	elif [[ $BSH_HOST_PLATFORM == linux ]]; then
 		c_link_args+=\'-static-libgcc\',
 		c_link_args+=\'-static-libstdc++\',
 	fi
 else
-	if [[ "$BSH_HOST_PLATFORM-$BSH_HOST_LIBC $BSH_BUILD_PLATFORM" == "windows-mingw windows" ]]; then
+	if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC $BSH_BUILD_PLATFORM" == "x86_64-windows-mingw windows" ]]; then
 		meson_configure+=$'\t'-Dworkaround_elusive_bzip2=true
 		meson_configure+=$'\t'-Dworkaround_elusive_bzip2_include_dir=/ucrt64/include
 		meson_configure+=$'\t'-Dworkaround_elusive_bzip2_lib_dir=/ucrt64/lib
+	fi
+	if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC $BSH_BUILD_PLATFORM" == "x86-windows-mingw windows" ]]; then
+		>&2 echo "nyi elusive bzip2"
+		exit 1
 	fi
 	if [[ $BSH_BUILD_PLATFORM == linux ]]; then
 		meson_configure+=$'\t'-Dworkaround_elusive_bzip2=true
@@ -286,7 +317,7 @@ if [[ $BSH_HOST_PLATFORM == linux ]] && [[ $BSH_HOST_ARCH != aarch64 ]]; then
 	c_link_args+=\'-no-pie\',
 fi
 if [[ $SEPARATE_DEBUG == yes ]] && [[ $BSH_HOST_PLATFORM == emscripten ]]; then
-	c_link_args+=\'-gseparate-dwarf\',
+	c_link_args+=\'-gseparate-dwarf="$DEBUG_ASSET_PATH"\',
 fi
 stable_or_beta=no
 if [[ $RELEASE_TYPE == beta ]]; then
@@ -323,13 +354,16 @@ fi
 if [[ $RELEASE_TYPE != dev ]]; then
 	meson_configure+=$'\t'-Dignore_updates=false
 fi
-if [[ "$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "windows-mingw" ]]; then
+if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "x86_64-windows-mingw" ]]; then
 	meson_configure+=$'\t'--cross-file=.github/mingw-ghactions.ini
 	# there is some mingw bug that only ever manifests on ghactions which makes MakeIco.exe use tons of memory and fail
 	# TODO: remove this hack once we figure out how to fix that
 	meson_configure+=$'\t'-Dwindows_icons=false
 fi
-if [[ $BSH_DEBUG_RELEASE-$BSH_STATIC_DYNAMIC == release-static ]]; then
+if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "x86-windows-mingw" ]]; then
+	meson_configure+=$'\t'--cross-file=.github/mingw32-ghactions.ini
+elif [[ $BSH_DEBUG_RELEASE-$BSH_STATIC_DYNAMIC == release-static ]]; then
+	# see https://github.com/msys2/MINGW-packages/issues/28779
 	meson_configure+=$'\t'-Dlto=true
 fi
 if [[ $BSH_HOST_PLATFORM-$BSH_HOST_ARCH == darwin-aarch64 ]]; then
@@ -387,7 +421,7 @@ if [[ $BSH_HOST_PLATFORM == android ]]; then
 	cat << ANDROID_INI > .github/android-ghactions.ini
 [constants]
 andriod_ndk_toolchain_bin = '$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin'
-andriod_sdk_build_tools = '$ANDROID_SDK_ROOT/build-tools/32.0.0'
+andriod_sdk_build_tools = '$ANDROID_SDK_ROOT/build-tools/35.0.0'
 
 [properties]
 # android_ndk_toolchain_prefix comes from the correct cross-file in ./android/cross
@@ -466,9 +500,7 @@ else
 fi
 
 if [[ $SEPARATE_DEBUG == yes ]] && [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC != windows-msvc ]]; then
-	if [[ $BSH_HOST_PLATFORM == emscripten ]]; then
-		mv $APP_EXE.wasm.debug.wasm $DEBUG_ASSET_PATH # yeah >_>
-	else
+	if [[ $BSH_HOST_PLATFORM != emscripten ]]; then
 		$objcopy --only-keep-debug $strip_target $DEBUG_ASSET_PATH
 		$strip --strip-debug --strip-unneeded $strip_target
 		$objcopy --add-gnu-debuglink $DEBUG_ASSET_PATH $strip_target
@@ -521,7 +553,8 @@ if [[ $BSH_HOST_PLATFORM == darwin ]]; then
 		exit 1
 	fi
 elif [[ $PACKAGE_MODE == emscripten ]]; then
-	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.wasm
+	cp resources/serve-wasm.py .
+	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.wasm $APP_EXE.wasm.map serve-wasm.py
 elif [[ $PACKAGE_MODE == appimage ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
 	case $BSH_HOST_ARCH in

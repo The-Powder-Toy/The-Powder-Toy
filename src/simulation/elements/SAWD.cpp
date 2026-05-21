@@ -22,7 +22,7 @@ void Element::Element_SAWD()
 	Flammable = 10;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 30;
+       	Hardness = 29;
 
 	Weight = 18;
 

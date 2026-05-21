@@ -24,5 +24,4 @@ constexpr int PFLAG_COLOR_GREEN            = 0x00080000;
 constexpr int PFLAG_COLOR_BLUE             = 0x000C0000;
 constexpr int PFLAG_COLORS                 = 0x000C0000;
 
-extern int Element_PPIP_ppip_changed;
 extern const std::array<Vec2<int>, 8> Element_PIPE_offsets;

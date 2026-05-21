@@ -176,7 +176,7 @@ void SearchController::ChangeSort()
 
 void SearchController::ShowOwn(bool show)
 {
-	if(Client::Ref().GetAuthUser().UserID)
+	if(Client::Ref().GetAuthUser())
 	{
 		searchModel->SetShowFavourite(false);
 		searchModel->SetShowOwn(show);
@@ -188,7 +188,7 @@ void SearchController::ShowOwn(bool show)
 
 void SearchController::ShowFavourite(bool show)
 {
-	if(Client::Ref().GetAuthUser().UserID)
+	if(Client::Ref().GetAuthUser())
 	{
 		searchModel->SetShowOwn(false);
 		searchModel->SetShowFavourite(show);
@@ -200,7 +200,7 @@ void SearchController::ShowFavourite(bool show)
 
 void SearchController::Selected(int saveID, bool selected)
 {
-	if(!Client::Ref().GetAuthUser().UserID)
+	if(!Client::Ref().GetAuthUser())
 		return;
 
 	if(selected)
@@ -211,11 +211,12 @@ void SearchController::Selected(int saveID, bool selected)
 
 void SearchController::SelectAllSaves() 
 {
-	if (!Client::Ref().GetAuthUser().UserID)
+	auto user = Client::Ref().GetAuthUser();
+	if (!user)
 		return;
 	if (searchModel->GetShowOwn() || 
-		Client::Ref().GetAuthUser().UserElevation == User::ElevationMod || 
-		Client::Ref().GetAuthUser().UserElevation == User::ElevationAdmin)
+		user->UserElevation == User::ElevationMod || 
+		user->UserElevation == User::ElevationAdmin)
 		searchModel->SelectAllSaves();
 
 }

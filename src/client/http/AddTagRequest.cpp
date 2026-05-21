@@ -1,11 +1,14 @@
 #include "AddTagRequest.h"
-#include "client/Client.h"
 #include "Config.h"
 
 namespace http
 {
 	AddTagRequest::AddTagRequest(int saveID, ByteString tag) :
-		APIRequest(ByteString::Build(SERVER, "/Browse/EditTag.json?Op=add&ID=", saveID, "&Tag=", tag, "&Key=", Client::Ref().GetAuthUser().SessionKey), authRequire, true)
+		APIRequest({ ByteString::Build(SERVER, "/Browse/EditTag.json"), {
+			{ "Op", "add" },
+			{ "ID", ByteString::Build(saveID) },
+			{ "Tag", tag }
+		} }, authRequireAppendSession, true)
 	{
 	}
 

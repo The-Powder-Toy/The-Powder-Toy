@@ -24,10 +24,6 @@ inline ByteString VersionInfo()
 	{
 		sb << " LUACONSOLE";
 	}
-	if constexpr (LATENTHEAT)
-	{
-		sb << " LATENTHEAT";
-	}
 	if constexpr (NOHTTP)
 	{
 		sb << " NOHTTP";

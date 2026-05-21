@@ -3,7 +3,7 @@ project('the-powder-toy', 'cpp', version:
 #	                    # A.B.C is the version number shown by meson and by your local builds. note that this version
 #	                    # number is overridden by the tag you push to github, so ghactions builds will show that version
 #	                    # number instead. you can also replace 'the-powder-toy' with your mod's simplified name.
-	'99.3.388', meson_version: '>=0.64.0')
+	'99.5.396', meson_version: '>=0.64.0')
 
 if get_option('prepare')
 	# we're being run by prepare.py in a ghactions workflow only to determine the values of options; exit early
@@ -13,6 +13,7 @@ endif
 target_options = [
 	'cpp_std=c++20',
 	'cpp_rtti=false',
+	'b_ndebug=true', # otherwise we get superfluous asserts in the stdlib, see also Assert.h
 ]
 
 python = import('python')
@@ -77,16 +78,25 @@ if static_variant == 'none' and host_platform == 'windows' and host_libc == 'msv
 	tpt_libs_static = 'dynamic'
 endif
 tpt_libs_debug = is_debug ? 'debug' : 'release'
-tpt_libs_variant = '@0@-@1@-@2@-@3@'.format(host_arch, host_platform, host_libc, tpt_libs_static)
+host_arch_tlv = host_arch
+x86_sse_level_str = get_option('x86_sse')
+windows_xp = host_platform == 'windows' and host_arch == 'x86' and host_libc == 'mingw'
+if windows_xp and x86_sse_level_str == 'none'
+	host_arch_tlv = 'x86_old'
+	message('using tpt-libs-prebuilt-x86_old-*, I hope you know what you are doing')
+endif
+tpt_libs_variant = '@0@-@1@-@2@-@3@'.format(host_arch_tlv, host_platform, host_libc, tpt_libs_static)
 tpt_libs_vtag = get_option('tpt_libs_vtag')
 if tpt_libs_vtag == ''
-	tpt_libs_vtag = 'v20250622192228'
+	tpt_libs_vtag = 'v20251019131007'
 endif
 if tpt_libs_static != 'none'
 	if tpt_libs_variant not in [
 		'x86_64-linux-gnu-static',
 		'aarch64-linux-gnu-static',
 		'x86_64-windows-mingw-static',
+		'x86-windows-mingw-static',
+		'x86_old-windows-mingw-static',
 		'x86_64-windows-msvc-static',
 		'x86_64-windows-msvc-dynamic',
 		'x86-windows-msvc-static',
@@ -125,7 +135,6 @@ else
 	endif
 endif
 
-x86_sse_level_str = get_option('x86_sse')
 if x86_sse_level_str == 'auto'
 	if host_machine.cpu_family() == 'x86_64' and host_platform != 'darwin'
 		x86_sse_level = 20
@@ -225,7 +234,6 @@ if host_platform == 'emscripten'
 		'-s', 'USE_BZIP2=1',
 		'-s', 'USE_LIBPNG',
 		'-s', 'USE_PTHREADS',
-#		'-s', 'USE_ZLIB=1',
 		'-s', 'DISABLE_EXCEPTION_CATCHING=0',
 		'-gsource-map',
 	]
@@ -342,6 +350,7 @@ endif
 
 copied_dlls = []
 if host_platform == 'windows'
+	windows_xp = host_arch == 'x86' and host_libc == 'mingw'
 	args_ccomp_win = []
 	defs_ccomp_win = [
 		'_WIN32_WINNT=0x0501',
@@ -381,15 +390,6 @@ if host_platform == 'windows'
 		endif
 	endforeach
 	project_cpp_args += args_ccomp_win
-elif host_platform == 'darwin'
-	# work around assertion failure with LTO symbols
-	# https://developer.apple.com/documentation/xcode-release-notes/xcode-15-release-notes#Linking
-	# otherwise we get ld: Assertion failed: (0 && "lto symbol should not be in layout"), function symbolForAtom, file Layout.cpp, line 1447.
-	# TODO: remove when appropriate
-	if is_static and cpp_compiler.has_link_argument('-ld_classic')
-		warning('applying broken apple clang linker workaround with -ld_classic')
-		project_link_args += [ '-ld_classic' ]
-	endif
 elif host_platform == 'android'
 	args_ccomp_android = []
 	if not is_64bit

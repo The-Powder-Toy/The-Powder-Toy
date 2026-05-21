@@ -3,7 +3,6 @@
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
-static void init_graphics();
 static int trymovetron(Simulation * sim, int x, int y, int dir, int i, int len);
 static bool canmovetron(Simulation * sim, int r, int len);
 static int new_tronhead(Simulation * sim, int x, int y, int i, int direction);
@@ -52,8 +51,6 @@ void Element::Element_TRON()
 	Update = &update;
 	Graphics = &graphics;
 	Create = &create;
-
-	init_graphics();
 }
 
 /* TRON element is meant to resemble a tron bike (or worm) moving around and trying to avoid obstacles itself.
@@ -80,20 +77,24 @@ constexpr auto TRON_WAIT     = UINT32_C(0x00000004); //it was just created, so W
 constexpr auto TRON_NODIE    = UINT32_C(0x00000008);
 constexpr auto TRON_DEATH    = UINT32_C(0x00000010); //Crashed, now dying
 constexpr auto TRON_NORANDOM = UINT32_C(0x00010000);
-int tron_rx[4] = {-1, 0, 1, 0};
-int tron_ry[4] = { 0,-1, 0, 1};
-unsigned int tron_colours[32];
+constexpr int tron_rx[4] = {-1, 0, 1, 0};
+constexpr int tron_ry[4] = { 0,-1, 0, 1};
 
-static void init_graphics()
+static const std::array<unsigned int, 32> MakeTronColors()
 {
+	std::array<unsigned int, 32> tron_colours;
 	int i;
 	int r, g, b;
 	for (i=0; i<32; i++)
 	{
+		// funny almost-bug: if (i<<4) > 360(ish), HSV_to_RGB does nothing with r/g/b,
+		// but since the variables are reused across iterations of the loop, they will still have sane values
 		HSV_to_RGB(i<<4,255,255,&r,&g,&b);
 		tron_colours[i] = r<<16 | g<<8 | b;
 	}
+	return tron_colours;
 }
+static const auto tron_colours = MakeTronColors();
 
 static int update(UPDATE_FUNC_ARGS)
 {

@@ -2,28 +2,30 @@
 #include "client/Client.h"
 #include "client/SaveInfo.h"
 #include "client/GameSave.h"
+#include "Format.h"
 #include "Config.h"
+#include <json/json.h>
 
 namespace http
 {
-	static ByteString Url(int saveID, int saveDate)
+	static format::Url Url(int saveID, int saveDate)
 	{
-		ByteStringBuilder builder;
-		builder << SERVER << "/Browse/View.json?ID=" << saveID;
+		format::Url url{ ByteString::Build(SERVER, "/Browse/View.json") };
+		url.params["ID"] = ByteString::Build(saveID);
 		if (saveDate)
 		{
-			builder << "&Date=" << saveDate;
+			url.params["Date"] = ByteString::Build(saveDate);
 		}
-		return builder.Build();
+		return url;
 	}
 
-	GetSaveRequest::GetSaveRequest(int saveID, int saveDate) : Request(Url(saveID, saveDate))
+	GetSaveRequest::GetSaveRequest(int saveID, int saveDate) : Request(Url(saveID, saveDate).ToByteString())
 	{
 		auto user = Client::Ref().GetAuthUser();
-		if (user.UserID)
+		if (user)
 		{
 			// This is needed so we know how we rated this save.
-			AuthHeaders(ByteString::Build(user.UserID), user.SessionID);
+			AuthHeaders(ByteString::Build(user->UserID), user->SessionID);
 		}
 	}
 
@@ -59,6 +61,8 @@ namespace http
 			saveInfo->Favourite = document["Favourite"].asBool();
 			saveInfo->Views = document["Views"].asInt();
 			saveInfo->Version = document["Version"].asInt();
+			saveInfo->authorElevation = User::ElevationFromString(document["Elevation"].asString());
+			saveInfo->authorIsBanned = document["IsBanned"].asBool();
 		}
 		catch (const std::exception &ex)
 		{

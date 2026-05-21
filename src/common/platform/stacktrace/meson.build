@@ -1,4 +1,4 @@
-if host_platform == 'windows'
+if host_platform == 'windows' and not windows_xp
 	if use_bluescreen
 		project_deps += [
 			cpp_compiler.find_library('dbghelp'),

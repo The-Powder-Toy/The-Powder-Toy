@@ -235,7 +235,7 @@ std::unique_ptr<VideoBuffer> SignTool::GetIcon(int toolID, Vec2<int> size)
 void SignTool::Click(Simulation * sim, Brush const &brush, ui::Point position)
 {
 	int signX, signY, signW, signH, signIndex = -1;
-	for (size_t i = 0; i < sim->signs.size(); i++)
+	for (int i = 0; i < int(sim->signs.size()); i++)
 	{
 		sim->signs[i].getDisplayText(sim, signX, signY, signW, signH);
 		if (position.X > signX && position.X < signX+signW && position.Y > signY && position.Y < signY+signH)

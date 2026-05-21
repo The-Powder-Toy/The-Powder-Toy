@@ -38,5 +38,5 @@ void Element::Element_CNCT()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1123.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ CNCT -> LAVA(CNCT)
 }

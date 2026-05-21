@@ -44,8 +44,8 @@ void ParticleDebug::Debug(int mode, int x, int y)
 			}
 		}
 	}
-	sim->framerender = 1;
 	auto prevToUpdate = sim->debug_nextToUpdate;
+	model->SetQueuedFrames(1);
 	model->UpdateUpTo(i + 1);
 	if (sim->debug_nextToUpdate)
 	{

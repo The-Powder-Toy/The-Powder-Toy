@@ -16,6 +16,7 @@ class LuaTextbox: public LuaComponent
 	ui::Textbox * textbox;
 	int text(lua_State *L);
 	int readonly(lua_State *L);
+	int focus(lua_State *L);
 	int onTextChanged(lua_State *L);
 	void triggerOnTextChanged();
 public:

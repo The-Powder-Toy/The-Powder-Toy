@@ -20,6 +20,7 @@ public:
 	RGB Colour;
 	int MenuVisible;
 	int MenuSection;
+	int MenuSort;
 	int Enabled;
 
 	float Advection;
@@ -40,7 +41,7 @@ public:
 	unsigned int PhotonReflectWavelengths;
 	int Weight;
 	unsigned char HeatConduct;
-	unsigned int LatentHeat;
+	float HeatCapacity; // Volumetric heat capacity per one pixel. Must be nonzero. The default value is 1.0f.
 	String Description;
 	unsigned int Properties;
 	unsigned int CarriesTypeIn;

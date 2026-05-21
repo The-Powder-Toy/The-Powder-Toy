@@ -5,7 +5,11 @@
 namespace http
 {
 	GetCommentsRequest::GetCommentsRequest(int saveID, int start, int count) :
-		APIRequest(ByteString::Build(SERVER, "/Browse/Comments.json?ID=", saveID, "&Start=", start, "&Count=", count), authOmit, false)
+		APIRequest({ ByteString::Build(SERVER, "/Browse/Comments.json"), {
+			{ "ID", ByteString::Build(saveID) },
+			{ "Start", ByteString::Build(start) },
+			{ "Count", ByteString::Build(count) },
+		} }, authOmit, false)
 	{
 	}
 
@@ -21,7 +25,7 @@ namespace http
 				comments.push_back({
 					comment["Username"].asString(),
 					User::ElevationFromString(comment["Elevation"].asString()),
-					comment["Username"].asString() == user.Username,
+					user ? comment["Username"].asString() == user->Username : false,
 					comment["IsBanned"].asBool(),
 					ByteString(comment["Text"].asString()).FromUtf8(),
 				});

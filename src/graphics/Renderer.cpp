@@ -4,7 +4,6 @@
 #include "VideoBuffer.h"
 #include "RasterDrawMethodsImpl.h"
 #include "common/tpt-rand.h"
-#include "common/tpt-compat.h"
 #include "gui/game/RenderPreset.h"
 #include "simulation/Simulation.h"
 #include "simulation/ElementGraphics.h"
@@ -12,8 +11,9 @@
 #include "simulation/Air.h"
 #include "simulation/gravity/Gravity.h"
 #include "simulation/orbitalparts.h"
-#include <cmath>
 #include <algorithm>
+#include <cmath>
+#include <numbers>
 
 void Renderer::RenderBackground()
 {
@@ -266,7 +266,7 @@ void Renderer::render_parts()
 			}
 	}
 	stats.foundParticles = 0;
-	for(i = 0; i<=sim->parts.lastActiveIndex; i++) {
+	for(i = 0; i < sim->parts.active; i++) {
 		if (sim->parts[i].type && sim->parts[i].type >= 0 && sim->parts[i].type < PT_NUM) {
 			t = sim->parts[i].type;
 
@@ -338,11 +338,11 @@ void Renderer::render_parts()
 				}
 				if((elements[t].Properties & PROP_HOT_GLOW) && sim->parts[i].temp>(elements[t].HighTemperature-800.0f))
 				{
-					auto gradv = 3.1415/(2*elements[t].HighTemperature-(elements[t].HighTemperature-800.0f));
+					auto gradv = std::numbers::pi/(2*elements[t].HighTemperature-(elements[t].HighTemperature-800.0f));
 					auto caddress = int((sim->parts[i].temp>elements[t].HighTemperature)?elements[t].HighTemperature-(elements[t].HighTemperature-800.0f):sim->parts[i].temp-(elements[t].HighTemperature-800.0f));
 					colr += int(sin(gradv*caddress) * 226);
-					colg += int(sin(gradv*caddress*4.55 +TPT_PI_DBL) * 34);
-					colb += int(sin(gradv*caddress*2.22 +TPT_PI_DBL) * 64);
+					colg += int(-sin(gradv*caddress*4.55) * 34);
+					colb += int(-sin(gradv*caddress*2.22) * 64);
 				}
 
 				if((pixel_mode & FIRE_ADD) && !(renderMode & FIRE_ADD))
@@ -767,11 +767,12 @@ void Renderer::render_parts()
 					float drad = 0.0f;
 					float ddist = 0.0f;
 					orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
-					for (r = 0; r < 4; r++) {
-						ddist = ((float)orbd[r])/16.0f;
-						drad = (TPT_PI_FLT * ((float)orbl[r]) / 180.0f)*1.41f;
-						nxo = (int)(ddist*cos(drad));
-						nyo = (int)(ddist*sin(drad));
+					for (r = 0; r < 4; r++)
+					{
+						ddist = float(orbd[r]) / 16.0f;
+						drad = (float(orbl[r]) * std::numbers::pi_v<float> / 180.0f) * std::numbers::sqrt2_v<float>;
+						nxo = int(ddist * cos(drad));
+						nyo = int(ddist * sin(drad));
 						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES && TYP(sim->pmap[ny+nyo][nx+nxo]) != PT_PRTI)
 							AddPixel({ nx+nxo, ny+nyo }, RGBA(colr, colg, colb, 255-orbd[r]));
 					}
@@ -784,11 +785,12 @@ void Renderer::render_parts()
 					float drad = 0.0f;
 					float ddist = 0.0f;
 					orbitalparts_get(parts[i].life, parts[i].ctype, orbd, orbl);
-					for (r = 0; r < 4; r++) {
-						ddist = ((float)orbd[r])/16.0f;
-						drad = (TPT_PI_FLT * ((float)orbl[r]) / 180.0f)*1.41f;
-						nxo = (int)(ddist*cos(drad));
-						nyo = (int)(ddist*sin(drad));
+					for (r = 0; r < 4; r++)
+					{
+						ddist = float(orbd[r]) / 16.0f;
+						drad = (float(orbl[r]) * std::numbers::pi_v<float> / 180.0f) * std::numbers::sqrt2_v<float>;
+						nxo = int(ddist * cos(drad));
+						nyo = int(ddist * sin(drad));
 						if (ny+nyo>0 && ny+nyo<YRES && nx+nxo>0 && nx+nxo<XRES && TYP(sim->pmap[ny+nyo][nx+nxo]) != PT_PRTO)
 							AddPixel({ nx+nxo, ny+nyo }, RGBA(colr, colg, colb, 255-orbd[r]));
 					}
@@ -803,7 +805,7 @@ void Renderer::render_parts()
 							type = PT_PRTO;
 						else if (type == PT_PRTO)
 							type = PT_PRTI;
-						for (int z = 0; z <= sim->parts.lastActiveIndex; z++)
+						for (int z = 0; z < sim->parts.active; z++)
 						{
 							if (parts[z].type == type)
 							{
@@ -921,6 +923,16 @@ void Renderer::draw_grav()
 	}
 }
 
+RGB PressureToColour(float pres)
+{
+	RGB c;
+	if (pres > 0.0f)
+		c = RGB(clamp_flt(pres, 0.0f, 8.0f), 0, 0);//positive pressure is red!
+	else
+		c = RGB(0, 0, clamp_flt(-pres, 0.0f, 8.0f));//negative pressure is blue!
+	return c;
+}
+
 void Renderer::draw_air()
 {
 	if(!sim->aheat_enable && (displayMode & DISPLAY_AIRH))
@@ -938,10 +950,7 @@ void Renderer::draw_air()
 		{
 			if (displayMode & DISPLAY_AIRP)
 			{
-				if (pv[y][x] > 0.0f)
-					c = RGB(clamp_flt(pv[y][x], 0.0f, 8.0f), 0, 0);//positive pressure is red!
-				else
-					c = RGB(0, 0, clamp_flt(-pv[y][x], 0.0f, 8.0f));//negative pressure is blue!
+				c = PressureToColour(pv[y][x]);
 			}
 			else if (displayMode & DISPLAY_AIRV)
 			{
@@ -951,7 +960,7 @@ void Renderer::draw_air()
 			}
 			else if (displayMode & DISPLAY_AIRH)
 			{
-				c = RGB::Unpack(HeatToColour(hv[y][x], stats.hdispLimitMin, stats.hdispLimitMax));
+				c = HeatToColour(hv[y][x], stats.hdispLimitMin, stats.hdispLimitMax);
 				//c = RGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 				//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
 				//	clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f)).Pack();//vy adds blue
@@ -1303,13 +1312,13 @@ void Renderer::render_fire()
 		}
 }
 
-int HeatToColour(float temp, float hdispLimitMin, float hdispLimitMax)
+RGB HeatToColour(float temp, float hdispLimitMin, float hdispLimitMax)
 {
 	RGB color = Renderer::heatTableAt(int((temp - hdispLimitMin) / (hdispLimitMax - hdispLimitMin) * 1024));
 	color.Red   = uint8_t(color.Red   * 0.7f);
 	color.Green = uint8_t(color.Green * 0.7f);
 	color.Blue  = uint8_t(color.Blue  * 0.7f);
-	return color.Pack();
+	return color;
 }
 
 const std::vector<RenderPreset> Renderer::renderModePresets = {
@@ -1408,7 +1417,7 @@ void Renderer::AdjustHdispLimit()
 		if (colorMode & COLOUR_HEAT)
 		{
 			auto &sd = SimulationData::CRef();
-			for (int i = 0; i <= sim->parts.lastActiveIndex; ++i)
+			for (int i = 0; i < sim->parts.active; ++i)
 			{
 				auto t = sim->parts[i].type;
 				if (t > 0 && t < PT_NUM)
@@ -1473,10 +1482,6 @@ void Renderer::DrawBlob(Vec2<int> pos, RGB colour)
 	BlendPixel(pos + Vec2{ -1, +1 }, colour.WithAlpha(64));
 }
 
-float temp[CELL*3][CELL*3];
-float fire_alphaf[CELL*3][CELL*3];
-float glow_alphaf[11][11];
-float blur_alphaf[7][7];
 void Renderer::prepare_alpha(int size, float intensity)
 {
 	fireIntensity = intensity;
@@ -1484,6 +1489,7 @@ void Renderer::prepare_alpha(int size, float intensity)
 	int x,y,i,j;
 	float multiplier = 255.0f*fireIntensity;
 
+	float temp[CELL*3][CELL*3];
 	memset(temp, 0, sizeof(temp));
 	for (x=0; x<CELL; x++)
 		for (y=0; y<CELL; y++)

@@ -26,7 +26,7 @@ private:
 public:
 	PropertyTool(GameModel &newGameModel):
 		Tool(0, "PROP", "Property Drawing Tool. Use to alter the properties of elements in the field.",
-			0xFEA900_rgb, "DEFAULT_UI_PROPERTY", NULL
+			0xFEA900_rgb, "DEFAULT_UI_PROPERTY", nullptr
 		), gameModel(newGameModel)
 	{}
 

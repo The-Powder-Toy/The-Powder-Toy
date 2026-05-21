@@ -29,8 +29,7 @@
 Client::Client():
 	messageOfTheDay("The message of the day and notifications have not yet been fetched, you can enable this in Settings"),
 	usingAltUpdateServer(false),
-	updateAvailable(false),
-	authUser(0, "")
+	updateAvailable(false)
 {
 	LoadAuthUser();
 	auto &prefs = GlobalPrefs::Ref();
@@ -137,9 +136,9 @@ void Client::Tick()
 		try
 		{
 			auto info = versionCheckRequest->Finish();
-			if (!info.sessionGood && authUser.UserID)
+			if (!info.sessionGood && authUser)
 			{
-				SetAuthUser(User(0, ""));
+				SetAuthUser(std::nullopt);
 			}
 			if (!usingAltUpdateServer)
 			{
@@ -260,14 +259,14 @@ Client::~Client()
 {
 }
 
-void Client::SetAuthUser(User user)
+void Client::SetAuthUser(std::optional<User> user)
 {
 	authUser = user;
 	SaveAuthUser();
 	notifyAuthUserChanged();
 }
 
-User Client::GetAuthUser()
+const std::optional<User> &Client::GetAuthUser() const
 {
 	return authUser;
 }
@@ -362,15 +361,15 @@ ByteString Client::AddStamp(std::unique_ptr<GameSave> saveData)
 
 	Platform::MakeDirectory(STAMPS_DIR);
 
-	Json::Value stampInfo;
+	Bson stampInfo;
 	stampInfo["type"] = "stamp";
-	stampInfo["username"] = authUser.Username;
+	stampInfo["username"] = authUser ? authUser->Username : ByteString("");
 	stampInfo["name"] = filename;
-	stampInfo["date"] = Json::Value::UInt64(now);
-	if (authors.size() != 0)
+	stampInfo["date"] = int64_t(now);
+	if (authors.GetSize() != 0)
 	{
 		// This is a stamp, always append full authorship info (even if same user)
-		stampInfo["links"].append(Client::Ref().authors);
+		stampInfo["links"].Append(Client::Ref().authors);
 	}
 	saveData->authors = stampInfo;
 
@@ -475,27 +474,28 @@ std::unique_ptr<SaveFile> Client::LoadSaveFile(ByteString filename)
 
 // stamp-specific wrapper for MergeAuthorInfo
 // also used for clipboard and lua stamps
-void Client::MergeStampAuthorInfo(Json::Value stampAuthors)
+void Client::MergeStampAuthorInfo(const Bson &stampAuthors)
 {
-	if (stampAuthors.size())
+	if (stampAuthors.GetSize())
 	{
 		// when loading stamp/clipboard, only append info to authorship info (since we aren't replacing the save)
 		// unless there is nothing loaded currently, then set authors directly
-		if (authors.size())
+		if (authors.GetSize())
 		{
+			auto links = stampAuthors.Get("links", Bson::Type::arrayValue);
 			// Don't add if it's exactly the same
-			if (stampAuthors["links"].size() == 1 && stampAuthors["links"][0] == Client::Ref().authors)
+			if (links.GetSize() == 1 && links[0] == Client::Ref().authors)
 				return;
-			if (authors["username"] != stampAuthors["username"])
+			if (authors["username"] != stampAuthors.Get("username", ByteString("")))
 			{
 				// 2nd arg of MergeAuthorInfo needs to be an array
-				Json::Value toAdd;
-				toAdd.append(stampAuthors);
+				Bson toAdd;
+				toAdd.Append(stampAuthors);
 				MergeAuthorInfo(toAdd);
 			}
-			else if (stampAuthors["links"].size())
+			else if (links.GetSize())
 			{
-				MergeAuthorInfo(stampAuthors["links"]);
+				MergeAuthorInfo(links);
 			}
 		}
 		else
@@ -504,38 +504,38 @@ void Client::MergeStampAuthorInfo(Json::Value stampAuthors)
 }
 
 // linksToAdd is an array (NOT an object) of links to add to authors["links"]
-void Client::MergeAuthorInfo(Json::Value linksToAdd)
+void Client::MergeAuthorInfo(const Bson &linksToAdd)
 {
-	for (Json::Value::ArrayIndex i = 0; i < linksToAdd.size(); i++)
+	for (auto &link : linksToAdd.As<Bson::Array>())
 	{
 		// link is the same exact json we have open, don't do anything
-		if (linksToAdd[i] == authors)
+		if (link == authors)
 			return;
 
 		bool hasLink = false;
-		for (Json::Value::ArrayIndex j = 0; j < authors["links"].size(); j++)
+		for (Json::Value::ArrayIndex j = 0; j < authors["links"].GetSize(); j++)
 		{
 			// check everything in authors["links"] to see if it's the same json as what we are already adding
-			if (authors["links"][j] == linksToAdd[i])
+			if (authors["links"][j] == link)
 				hasLink = true;
 		}
 		if (!hasLink)
-			authors["links"].append(linksToAdd[i]);
+			authors["links"].Append(link);
 	}
 }
 
 // load current authors information into a json value (when saving everything: stamps, clipboard, local saves, and online saves)
-void Client::SaveAuthorInfo(Json::Value *saveInto)
+void Client::SaveAuthorInfo(Bson &saveInto) const
 {
-	if (authors.size() != 0)
+	if (authors.GetSize() != 0)
 	{
 		// Different username? Save full original save info
-		if (authors["username"] != (*saveInto)["username"])
-			(*saveInto)["links"].append(authors);
+		if (authors.Get("username", ByteString("")) != saveInto["username"])
+			saveInto["links"].Append(authors);
 		// This is probalby the same save
 		// Don't append another layer of links, just keep existing links
-		else if (authors["links"].size())
-			(*saveInto)["links"] = authors["links"];
+		else if (auto links = authors.Get("links", Bson::Type::arrayValue); links.GetSize())
+			saveInto["links"] = links;
 	}
 }
 

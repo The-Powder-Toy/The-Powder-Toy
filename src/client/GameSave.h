@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Bson.h"
 #include "common/Plane.h"
 #include "common/String.h"
 #include "common/tpt-rand.h"
@@ -7,11 +8,11 @@
 #include "simulation/Particle.h"
 #include "simulation/MissingElements.h"
 #include "simulation/gravity/GravityData.h"
+#include "simulation/SimulationSettings.h"
 #include "Misc.h"
 #include "SimulationConfig.h"
 #include <vector>
 #include <array>
-#include <json/json.h>
 
 struct sign;
 struct Particle;
@@ -68,7 +69,9 @@ class GameSave
 
 public:
 	Vec2<int> blockSize = { 0, 0 };
+	Rect<int> blockContent = { { 0, 0 }, { 0, 0 } };
 	bool fromNewerVersion = false;
+	bool fromUnstableVersion = false;
 	Version<2> version{};
 	bool hasPressure = false;
 	bool hasAmbientHeat = false;
@@ -107,7 +110,11 @@ public:
 	float customGravityY = 0.0f;
 	int airMode = 0;
 	float ambientAirTemp = R_TEMP + 273.15f;
+	float edgePressure = 0;
+	float edgeVelocityX = 0;
+	float edgeVelocityY = 0;
 	float vorticityCoeff = 0.0f;
+	int convectionMode = AIRC_LEGACY;
 	int edgeMode = 0;
 	bool wantAuthors = true;
 
@@ -122,7 +129,7 @@ public:
 	std::vector<PaletteItem> palette;
 
 	// author information
-	Json::Value authors;
+	Bson authors;
 
 	int pmapbits = 8; // default to 8 bits for older saves
 

@@ -105,12 +105,13 @@ void LocalSaveActivity::Save()
 void LocalSaveActivity::saveWrite(ByteString finalFilename)
 {
 	Platform::MakeDirectory(LOCAL_SAVE_DIR);
-	Json::Value localSaveInfo;
+	Bson localSaveInfo;
 	localSaveInfo["type"] = "localsave";
-	localSaveInfo["username"] = Client::Ref().GetAuthUser().Username;
+	auto user = Client::Ref().GetAuthUser();
+	localSaveInfo["username"] = user ? user->Username : ByteString("");
 	localSaveInfo["title"] = finalFilename;
-	localSaveInfo["date"] = (Json::Value::UInt64)time(nullptr);
-	Client::Ref().SaveAuthorInfo(&localSaveInfo);
+	localSaveInfo["date"] = int64_t(time(nullptr));
+	Client::Ref().SaveAuthorInfo(localSaveInfo);
 	{
 		auto gameSave = save->TakeGameSave();
 		gameSave->authors = localSaveInfo;

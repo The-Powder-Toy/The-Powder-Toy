@@ -25,7 +25,8 @@ struct GraphicsFuncContext
 	Particle *pipeSubcallTpart;
 };
 
-int HeatToColour(float temp, float hdispLimitMin, float hdispLimitMax);
+RGB HeatToColour(float temp, float hdispLimitMin, float hdispLimitMax);
+RGB PressureToColour(float pres);
 
 class Renderer : private RendererSettings, public RasterDrawMethods<Renderer>
 {

@@ -30,6 +30,8 @@ class PreviewView: public ui::Window
 {
 	PreviewController *c{};
 	MissingElements missingElements;
+	bool fromUnstableVersion = false;
+	bool fromNewerVersion = false;
 	std::unique_ptr<VideoBuffer> savePreview;
 	ui::Button *openButton{};
 	ui::Button *browserOpenButton{};
@@ -38,6 +40,7 @@ class PreviewView: public ui::Window
 	ui::Button *submitCommentButton{};
 	ui::Button *loadErrorButton{};
 	ui::Button *missingElementsButton{};
+	ui::Button *fromNewerVersionButton{};
 	ui::Textbox *addCommentBox{};
 	ui::Label *commentWarningLabel{};
 	ui::Label *saveNameLabel{};
@@ -79,6 +82,7 @@ class PreviewView: public ui::Window
 	bool CheckSwearing(String text);
 	void CheckComment();
 	void ShowMissingCustomElements();
+	void ShowFromNewerVersion();
 	void ShowLoadError();
 	void UpdateLoadStatus();
 

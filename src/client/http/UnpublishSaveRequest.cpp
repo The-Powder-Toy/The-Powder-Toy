@@ -1,11 +1,13 @@
 #include "UnpublishSaveRequest.h"
-#include "client/Client.h"
 #include "Config.h"
 
 namespace http
 {
 	UnpublishSaveRequest::UnpublishSaveRequest(int saveID) :
-		APIRequest(ByteString::Build(SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Unpublish&Key=", Client::Ref().GetAuthUser().SessionKey), authRequire, true)
+		APIRequest({ ByteString::Build(SERVER, "/Browse/Delete.json"), {
+			{ "ID", ByteString::Build(saveID) },
+			{ "Mode", "Unpublish" },
+		} }, authRequireAppendSession, true)
 	{
 	}
 

@@ -2,6 +2,7 @@
 #include "client/http/Request.h"
 #include "common/platform/Platform.h"
 #include "compat_lua.h"
+#include "Format.h"
 #include "Config.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
@@ -14,9 +15,10 @@ static int getUserName(lua_State *L)
 {
 	auto *lsi = GetLSI();
 	lsi->AssertInterfaceEvent();
-	if (lsi->gameModel->GetUser().UserID)
+	auto user = lsi->gameModel->GetUser();
+	if (user)
 	{
-		tpt_lua_pushByteString(L, lsi->gameModel->GetUser().Username);
+		tpt_lua_pushByteString(L, user->Username);
 		return 1;
 	}
 	lua_pushliteral(L, "");
@@ -38,7 +40,7 @@ static int installScriptManager(lua_State *L)
 		new ErrorMessage("Script download", "You must run this function from the console");
 		return 0;
 	}
-	lsi->scriptManagerDownload = std::make_unique<http::Request>(ByteString::Build("https://starcatcher.us/scripts/main.lua?get=1"));
+	lsi->scriptManagerDownload = std::make_unique<http::Request>(format::Url{ "https://starcatcher.us/scripts/main.lua", {{ "get", "1" }} }.ToByteString());
 	lsi->scriptManagerDownload->Start();
 	return 0;
 }
@@ -289,6 +291,7 @@ void LuaMisc::Open(lua_State *L)
 	LCONST(DEBUG_SIMHUD);
 	LCONST(DEBUG_RENHUD);
 	LCONST(DEBUG_AIRVEL);
+	LCONST(DEBUG_FRAMETIME);
 #undef LCONST
 	{
 		lua_newtable(L);

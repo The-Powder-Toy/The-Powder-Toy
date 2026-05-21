@@ -30,7 +30,6 @@ void Element::Element_ICEI()
 
 	DefaultProperties.temp = R_TEMP - 50.0f + 273.15f;
 	HeatConduct = 46;
-	LatentHeat = 1095;
 	Description = "Crushes under pressure. Cools down air.";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_NEUTPASS;
@@ -39,7 +38,7 @@ void Element::Element_ICEI()
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = 0.8f;
-	HighPressureTransition = PT_SNOW;
+	HighPressureTransition = PT_SNOW; //@ ICEI -> SNOW
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 252.05f;
@@ -71,6 +70,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					if (parts[i].temp > elements[PT_SLTW].LowTemperature && sim->rng.chance(1, 200))
 					{
+						//@ ICEI + SALT/SLTW -> 2xSLTW
 						sim->part_change_type(i,x,y,PT_SLTW);
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_SLTW);
 						return 0;
@@ -78,6 +78,7 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 				else if ((TYP(r)==PT_FRZZ) && sim->rng.chance(1, 200))
 				{
+					//@ ICEI + FRZZ -> ICEI + ICEI(FRZW)
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_ICEI);
 					parts[ID(r)].ctype = PT_FRZW;
 				}

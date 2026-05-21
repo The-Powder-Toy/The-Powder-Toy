@@ -35,9 +35,9 @@ void Element::Element_GAS()
 	LowPressure = IPL;
 	LowPressureTransition = NT;
 	HighPressure = 6.0f;
-	HighPressureTransition = PT_OIL;
+	HighPressureTransition = PT_OIL; //@ GAS -> OIL
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 573.0f;
-	HighTemperatureTransition = PT_FIRE;
+	HighTemperatureTransition = PT_FIRE; //@ GAS -> FIRE
 }

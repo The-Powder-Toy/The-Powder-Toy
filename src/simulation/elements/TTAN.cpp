@@ -25,7 +25,7 @@ void Element::Element_TTAN()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 1;
-	Hardness = 50;
+	Hardness = 48;
 
 	Weight = 100;
 
@@ -41,7 +41,7 @@ void Element::Element_TTAN()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1941.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ TTAN -> LAVA(TTAN)
 
 	Update = &update;
 }

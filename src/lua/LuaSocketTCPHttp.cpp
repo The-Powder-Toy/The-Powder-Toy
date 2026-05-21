@@ -426,6 +426,7 @@ namespace LuaSocket
 					ByteString address = tpt_lua_checkByteString(L, 2);
 					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_PORT, long(luaL_checkinteger(L, 3))));
 					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_NOSIGNAL, 1L));
+					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_SSL_ENABLE_ALPN, 0L));
 					HandleCURLcode(curl_easy_setopt(tcps->easy, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0));
 					if (lua_toboolean(L, 4))
 					{

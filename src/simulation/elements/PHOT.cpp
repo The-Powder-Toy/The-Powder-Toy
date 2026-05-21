@@ -80,8 +80,9 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					parts[i].vx *= 0.90f;
 					parts[i].vy *= 0.90f;
+					//@ PHOT + ISOZ/ISZS -> 2xPHOT
 					sim->create_part(ID(r), x+rx, y+ry, PT_PHOT);
-					auto rrr = sim->rng.between(0, 359) * 3.14159f / 180.0f;
+					auto rrr = sim->rng.between(0, 359) * std::numbers::pi_v<float> / 180.0f;
 					int rr;
 					if (TYP(r) == PT_ISOZ)
 						rr = int(sim->rng.between(128, 255) / 127.0f);
@@ -94,7 +95,7 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 			else if((TYP(r) == PT_QRTZ || TYP(r) == PT_PQRT) && !ry && !rx)//if on QRTZ
 			{
-				float a = sim->rng.between(0, 359) * 3.14159f / 180.0f;
+				float a = sim->rng.between(0, 359) * std::numbers::pi_v<float> / 180.0f;
 				parts[i].vx = 3.0f*cosf(a);
 				parts[i].vy = 3.0f*sinf(a);
 				if(parts[i].ctype == 0x3FFFFFFF)
@@ -121,13 +122,14 @@ static int update(UPDATE_FUNC_ARGS)
 				//If there's a correct ctype set, solidify RSST into it
 				if(ct_under > 0 && ct_under < PT_NUM)
 				{
+					//@ PHOT + RSST(ctype) -> ctype
 					sim->create_part(ID(r), x, y, ct_under);
 
 					//If there's a correct tmp set, use it for ctype
 					if((tmp_under > 0) && (tmp_under < PT_NUM) && (elements[ct_under].CarriesTypeIn & (1U << FIELD_CTYPE)))
 						parts[ID(r)].ctype = tmp_under;
 				}
-				else
+				else //@ PHOT + RSST -> RSSS
 					sim->part_change_type(ID(r), x, y, PT_RSSS); //Default to RSSS if no ctype
 
 				sim->kill_part(i);

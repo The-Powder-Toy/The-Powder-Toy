@@ -1,6 +1,6 @@
 #include "Particle.h"
 #include <cstddef>
-#include <cassert>
+#include "common/Assert.h"
 
 std::vector<StructProperty> const &Particle::GetProperties()
 {

@@ -93,10 +93,12 @@ static int update(UPDATE_FUNC_ARGS)
 		{
 			if (sim->rng.chance(1, 2))
 			{
+				//@ BANG -> FIRE
 				sim->create_part(i, x, y, PT_FIRE);
 			}
 			else
 			{
+				//@ BANG -> SMKE
 				sim->create_part(i, x, y, PT_SMKE);
 				parts[i].life = sim->rng.between(500, 549);
 			}
@@ -106,6 +108,7 @@ static int update(UPDATE_FUNC_ARGS)
 		{
 			if (sim->rng.chance(1, 15))
 			{
+				//@ BANG -> EMBR
 				sim->create_part(i, x, y, PT_EMBR);
 				parts[i].tmp = 0;
 				parts[i].life = 50;

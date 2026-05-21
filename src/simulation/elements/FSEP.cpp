@@ -24,7 +24,7 @@ void Element::Element_FSEP()
 	Flammable = 0;
 	Explosive = 0;
 	Meltable = 0;
-	Hardness = 30;
+	Hardness = 27;
 
 	Weight = 70;
 
@@ -49,6 +49,7 @@ void Element::Element_FSEP()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	//@ FSEP -> FSEP + PLSM
 	if (parts[i].life<=0) {
 		auto r = sim->create_part(i, x, y, PT_PLSM);
 		if (r!=-1)

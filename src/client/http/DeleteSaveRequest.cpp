@@ -1,11 +1,13 @@
 #include "DeleteSaveRequest.h"
-#include "client/Client.h"
 #include "Config.h"
 
 namespace http
 {
 	DeleteSaveRequest::DeleteSaveRequest(int saveID) :
-		APIRequest(ByteString::Build(SERVER, "/Browse/Delete.json?ID=", saveID, "&Mode=Delete&Key=", Client::Ref().GetAuthUser().SessionKey), authRequire, true)
+		APIRequest({ ByteString::Build(SERVER, "/Browse/Delete.json"), {
+			{ "ID", ByteString::Build(saveID) },
+			{ "Mode", "Delete" },
+		} }, authRequireAppendSession, true)
 	{
 	}
 
