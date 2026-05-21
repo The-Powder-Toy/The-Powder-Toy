@@ -79,6 +79,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 			else
 			{
 				sim->kill_part(i);
+				return 1;
 			}
 		}
 		break;
@@ -101,6 +102,7 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 			else
 			{
 				sim->kill_part(i);
+				return 1;
 			}
 		}
 		break;
