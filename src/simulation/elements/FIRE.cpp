@@ -36,7 +36,7 @@ void Element::Element_FIRE()
 	HeatConduct = 88;
 	Description = "Ignites flammable materials. Heats air.";
 
-	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
+	Properties = TYPE_GAS|PROP_LIFE_DEC;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
@@ -76,6 +76,10 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 				parts[i].life = 0;
 				parts[i].ctype = PT_FIRE;
 			}
+			else
+			{
+				sim->kill_part(i);
+			}
 		}
 		break;
 	case PT_FIRE:
@@ -93,6 +97,10 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 				//@ FIRE -> SMKE
 				sim->part_change_type(i,x,y,PT_SMKE);
 				parts[i].life = sim->rng.between(250, 269);
+			}
+			else
+			{
+				sim->kill_part(i);
 			}
 		}
 		break;
