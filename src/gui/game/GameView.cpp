@@ -2387,7 +2387,7 @@ void GameView::OnDraw()
 					else
 						sampleInfo << " (unknown mode)";
 				}
-				else if (type == PT_SEED || (type == PT_PLNT && ctype))
+				else if (type == PT_SEED || ((type == PT_PLNT || type == PT_VINE) && ctype))
 				{
 					sampleInfo << c->ElementResolve(type, ctype);
 
@@ -2396,9 +2396,9 @@ void GameView::OnDraw()
 					auto dir = (ctype >> PLNT_DIR) & 7;
 					auto active = ctype & 1;
 
-					static const std::array<String, 8> directions = {"N", "NW", "W", "SW", "S", "SE", "E", "NE"};
-					static const std::array<std::array<String, 4>, 3> colours = {{
-						{{"cc", "cC", "Cc", "CC"}}, {{"mm", "mM", "Mm", "MM"}}, {{"yy", "yY", "Yy", "YY"}} }};
+					static const std::array<String, 8> directions = { "N", "NW", "W", "SW", "S", "SE", "E", "NE" };
+					static const std::array<std::array<String, 4>, 3> colours = { {
+						{{"cc", "cC", "Cc", "CC"}}, {{"mm", "mM", "Mm", "MM"}}, {{"yy", "yY", "Yy", "YY"}} } };
 					auto cyan = (colour >> 4) & 3;
 					auto magenta = (colour >> 2) & 3;
 					auto yellow = colour & 3;
