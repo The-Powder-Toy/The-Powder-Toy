@@ -2359,6 +2359,22 @@ void GameView::OnDraw()
 
 			if (showDebug)
 			{
+				// Helper to format tmp fields (phases + branch mask).
+				// High 10 bits: five 2-bit phases (bits 5..14) mapped 00->'1',01->'2',10->'3',11->'4'.
+				// Low 5 bits: branching mask (bits 0..4) printed as 5-bit binary MSB->LSB.
+				auto formatTmp = [&](int v) -> String {
+					StringBuilder tb;
+					for (int phi = 0; phi < 5; ++phi)
+					{
+						int ph = (v >> (5 + phi * 2)) & 0x3;
+						tb << char('1' + ph); // map 0->'1', 1->'2', 2->'3', 3->'4'
+					}
+					tb << " ";
+					for (int k = 4; k >= 0; --k)
+						tb << (((v >> k) & 1) ? '1' : '0');
+					return tb.Build();
+					};
+
 				if (type == PT_LAVA && c->IsValidElement(ctype))
 				{
 					sampleInfo << "Molten " << c->ElementResolve(ctype, 0);
@@ -2381,8 +2397,8 @@ void GameView::OnDraw()
 				else if (type == PT_FILT)
 				{
 					sampleInfo << c->ElementResolve(type, ctype);
-					String filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT", "old QRTZ scattering", "variable red shift", "variable blue shift"};
-					if (sample.particle.tmp>=0 && sample.particle.tmp<=11)
+					String filtModes[] = { "set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT", "old QRTZ scattering", "variable red shift", "variable blue shift" };
+					if (sample.particle.tmp >= 0 && sample.particle.tmp <= 11)
 						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
 					else
 						sampleInfo << " (unknown mode)";
@@ -2405,6 +2421,8 @@ void GameView::OnDraw()
 
 					sampleInfo << " (" << water << " " <<
 						colours[0][cyan] << colours[1][magenta] << colours[2][yellow] << " " << directions[dir] << " " << active << ")";
+
+					// Note: tmp fields are displayed later (single place) to avoid duplication.
 				}
 				else
 				{
@@ -2428,6 +2446,7 @@ void GameView::OnDraw()
 				sampleInfo << ", Life: " << sample.particle.life;
 				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL && sample.particle.type != PT_LIFE)
 				{
+					// Emit Tmp for most types, but skip for SEED and actively growing PLNT (we'll show full tmp..tmp4 below).
 					if (sample.particle.type == PT_CONV)
 					{
 						String elemName = c->ElementResolve(
@@ -2438,16 +2457,28 @@ void GameView::OnDraw()
 						else
 							sampleInfo << ", Tmp: " << elemName;
 					}
-					else
+					else if (!(type == PT_SEED || (type == PT_PLNT && (ctype & 1))))
+					{
 						sampleInfo << ", Tmp: " << sample.particle.tmp;
+					}
 				}
 
 				// only elements that use .tmp2 show it in the debug HUD
 				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON
-						|| type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS
-						|| type == PT_DTEC || type == PT_LSNS || type == PT_PSTN || type == PT_LDTC || type == PT_VSNS || type == PT_LITH
-						|| type == PT_CONV || type == PT_ETRD)
+					|| type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS
+					|| type == PT_DTEC || type == PT_LSNS || type == PT_PSTN || type == PT_LDTC || type == PT_VSNS || type == PT_LITH
+					|| type == PT_CONV || type == PT_ETRD)
 					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
+
+				// At the end of this debug block: show tmp/tmp2/tmp3/tmp4 for SEED and actively growing PLNT,
+				// each on its own line for readability.
+				if (type == PT_SEED || (type == PT_PLNT && (ctype & 1)))
+				{
+					sampleInfo << "\ntmp:  " << formatTmp(sample.particle.tmp)
+						<< "\ntmp2: " << formatTmp(sample.particle.tmp2)
+						<< "\ntmp3: " << formatTmp(sample.particle.tmp3)
+						<< "\ntmp4: " << formatTmp(sample.particle.tmp4);
+				}
 
 				sampleInfo << ", Pressure: " << sample.AirPressure;
 			}
