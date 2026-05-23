@@ -278,6 +278,7 @@ static int update(UPDATE_FUNC_ARGS)
 								auto np = sim->create_part(ID(r),x+rx,y+ry,PT_PLNT);
 								if (np<0) continue;
 								parts[np].life = 0;
+								parts[np].ctype = parts[i].ctype;//Keep the color identical
 							}
 							break;
 						case PT_LAVA:
@@ -312,6 +313,10 @@ static int update(UPDATE_FUNC_ARGS)
 										auto np = sim->create_part(-1,x+rx+nnx,y+ry+nny,PT_VINE);
 										if (np<0) continue;
 										parts[np].temp = parts[i].temp;
+                                        // Ensure VINE inherits PLNT ctype (color/genome)
+                                        parts[np].ctype = parts[i].ctype;
+                                        parts[np].tmp = parts[i].tmp;
+                                        parts[np].tmp2 = parts[i].tmp2;
 									}
 								}
 							}
