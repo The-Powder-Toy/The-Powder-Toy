@@ -5,6 +5,7 @@
 #include "Config.h"
 #include "Format.h"
 #include "gui/game/GameController.h"
+#include <cstdlib>
 #include <iostream>
 
 AccessProperty AccessProperty::Parse(int prop, String value)
@@ -30,6 +31,20 @@ AccessProperty AccessProperty::Parse(int prop, String value)
 			{
 				//0xC0FFEE
 				v = value.Substr(2).ToNumber<unsigned int>(Format::Hex());
+			}
+			else if(value.length() > 2 && value.BeginsWith("0B"))
+			{
+				//0b1010
+				auto substr = value.Substr(2).ToUtf8();
+				char *endptr;
+				v = (int)std::strtol(substr.c_str(), &endptr, 2);
+				if (*endptr)
+					throw std::runtime_error("Not a number");
+			}
+			else if(value.length() > 2 && value.BeginsWith("0O"))
+			{
+				//0o777
+				v = value.Substr(2).ToNumber<unsigned int>(Format::Oct());
 			}
 			else if(value.length() > 1 && value.BeginsWith("#"))
 			{
@@ -110,6 +125,20 @@ AccessProperty AccessProperty::Parse(int prop, String value)
 			{
 				//0xC0FFEE
 				v = value.Substr(2).ToNumber<unsigned int>(Format::Hex());
+			}
+			else if(value.length() > 2 && value.BeginsWith("0B"))
+			{
+				//0b1010
+				auto substr = value.Substr(2).ToUtf8();
+				char *endptr;
+				v = (unsigned int)std::strtoul(substr.c_str(), &endptr, 2);
+				if (*endptr)
+					throw std::runtime_error("Not a number");
+			}
+			else if(value.length() > 2 && value.BeginsWith("0O"))
+			{
+				//0o777
+				v = value.Substr(2).ToNumber<unsigned int>(Format::Oct());
 			}
 			else if(value.length() > 1 && value.BeginsWith("#"))
 			{
