@@ -2360,11 +2360,12 @@ void GameView::OnDraw()
 			if (showDebug)
 			{
 				// Helper to format tmp fields (phases + branch mask).
-				// High 10 bits: five 2-bit phases (bits 5..14) mapped 00->'1',01->'2',10->'3',11->'4'.
+				// High 10 bits: five 2-bit phases (bits 5..14) mapped 00->'1',01->'2',10->'3',11->'4',
+				//   displayed MSB->LSB (phi=4..phi=0).
 				// Low 5 bits: branching mask (bits 0..4) printed as 5-bit binary MSB->LSB.
 				auto formatTmp = [&](int v) -> String {
 					StringBuilder tb;
-					for (int phi = 0; phi < 5; ++phi)
+					for (int phi = 4; phi >= 0; --phi)
 					{
 						int ph = (v >> (5 + phi * 2)) & 0x3;
 						tb << char('1' + ph); // map 0->'1', 1->'2', 2->'3', 3->'4'
@@ -2411,6 +2412,7 @@ void GameView::OnDraw()
 					auto colour = (ctype >> PLNT_COLOUR) & 0x3F;
 					auto dir = (ctype >> PLNT_DIR) & 7;
 					auto active = ctype & 1;
+					auto phase = (ctype >> PLNT_PHASE) & 0x3;
 
 					static const std::array<String, 8> directions = { "N", "NW", "W", "SW", "S", "SE", "E", "NE" };
 					static const std::array<std::array<String, 4>, 3> colours = { {
@@ -2420,7 +2422,8 @@ void GameView::OnDraw()
 					auto yellow = colour & 3;
 
 					sampleInfo << " (" << water << " " <<
-						colours[0][cyan] << colours[1][magenta] << colours[2][yellow] << " " << directions[dir] << " " << active << ")";
+						colours[0][cyan] << colours[1][magenta] << colours[2][yellow] << " " << directions[dir]
+						<< " P:" << phase << " (bits " << PLNT_PHASE << "-" << (PLNT_PHASE+1) << ") " << active << ")";
 
 					// Note: tmp fields are displayed later (single place) to avoid duplication.
 				}
