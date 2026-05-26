@@ -26,6 +26,7 @@
 #include "gui/Style.h"
 
 #include "common/tpt-rand.h"
+#include "Config.h"
 #include "common/platform/Platform.h"
 #include "Format.h"
 #include "Misc.h"
@@ -116,6 +117,14 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	missingElementsButton->SetActionCallback({ [this] { ShowMissingCustomElements(); } });
 	missingElementsButton->Visible = false;
 	AddComponent(missingElementsButton);
+
+	fromNewerVersionButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), "Save from newer version");
+	fromNewerVersionButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	fromNewerVersionButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	fromNewerVersionButton->SetIcon(IconReport);
+	fromNewerVersionButton->SetActionCallback({ [this] { ShowFromNewerVersion(); } });
+	fromNewerVersionButton->Visible = false;
+	AddComponent(fromNewerVersionButton);
 
 	if(showAvatars)
 		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(265, 16), "");
@@ -293,7 +302,7 @@ void PreviewView::CheckComment()
 void PreviewView::DoDraw()
 {
 	Graphics * g = GetGraphics();
-	if (!c->GetFromUrl())
+	if (!c->GetFromUrl() || doError)
 	{
 		Window::DoDraw();
 		for (size_t i = 0; i < commentTextComponents.size(); i++)
@@ -306,13 +315,13 @@ void PreviewView::DoDraw()
 					0xFFFFFF_rgb .WithAlpha(100));
 		}
 	}
-	if (c->GetDoOpen())
+	if (c->GetDoOpen() && !doError)
 	{
 		g->BlendFilledRect(RectSized(Position + Size / 2 - Vec2{ 101, 26 }, { 202, 52 }), 0x000000_rgb .WithAlpha(210));
 		g->BlendRect(RectSized(Position + Size / 2 - Vec2{ 100, 25 }, Vec2{ 200, 50 }), 0xFFFFFF_rgb .WithAlpha(180));
 		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize("Loading save...").X - 1)/2), (Size.Y/2)-5}, "Loading save...", style::Colour::InformationTitle.NoAlpha().WithAlpha(255));
 	}
-	if (!c->GetFromUrl())
+	if (!c->GetFromUrl() || doError)
 	{
 		g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 	}
@@ -499,6 +508,18 @@ void PreviewView::ShowMissingCustomElements()
 	new InformationMessage("Missing custom elements", sb.Build(), true);
 }
 
+void PreviewView::ShowFromNewerVersion()
+{
+	if (fromUnstableVersion)
+	{
+		new InformationMessage("This save is from a snapshot or a beta version", String::Build("Please get the snapshot or beta version at ", SERVER), false);
+	}
+	else if (fromNewerVersion)
+	{
+		new InformationMessage("This save is from a newer version", String::Build("Please update TPT in game or at ", SERVER), false);
+	}
+}
+
 void PreviewView::UpdateLoadStatus()
 {
 	auto y = YRES / 2 - 22;
@@ -510,6 +531,7 @@ void PreviewView::UpdateLoadStatus()
 		}
 	};
 	showButton(missingElementsButton);
+	showButton(fromNewerVersionButton);
 	showButton(loadErrorButton);
 }
 
@@ -561,13 +583,17 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 
 		if(save->GetGameSave())
 		{
-			missingElements = save->GetGameSave()->missingElements;
+			auto *gameSave = save->GetGameSave();
+			missingElements = gameSave->missingElements;
+			fromUnstableVersion = gameSave->fromUnstableVersion;
+			fromNewerVersion = gameSave->fromNewerVersion;
 			RendererSettings rendererSettings;
 			rendererSettings.decorationLevel = RendererSettings::decorationAntiClickbait;
 			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), true, rendererSettings);
 			if (savePreview)
 				savePreview->ResizeToFit(RES / 2, true);
 			missingElementsButton->Visible = missingElements;
+			fromNewerVersionButton->Visible = fromNewerVersion;
 			UpdateLoadStatus();
 		}
 		else if (!sender->GetCanOpen())

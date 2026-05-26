@@ -116,7 +116,7 @@ void Button::Draw(const Point& screenPos)
 	bgColour = Appearance.BackgroundInactive;
 	if (Appearance.BackgroundPulse)
 	{
-		backgroundColour.Alpha = uint8_t(backgroundColour.Alpha * ((std::sin(Engine::Ref().LastTick() / 1000 * std::numbers::pi * 2) + 1) / 2));
+		backgroundColour.Alpha = uint8_t(backgroundColour.Alpha * ((std::sin(Engine::Ref().LastTick() * std::numbers::pi * 2 / 1000) + 1) / 2));
 	}
 	g->BlendFilledRect(RectSized(Position + Vec2{ 1, 1 }, Size - Vec2{ 2, 2 }), backgroundColour);
 	if(Appearance.Border == 1)

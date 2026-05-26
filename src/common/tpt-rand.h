@@ -17,6 +17,7 @@ public:
 	int between(int lower, int upper);
 	bool chance(int numerator, unsigned int denominator);
 	float uniform01();
+	double uniform01Double();
 
 	RNG();
 	void seed(unsigned int sd);

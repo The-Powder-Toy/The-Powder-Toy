@@ -41,7 +41,7 @@ void Element::Element_SPNG()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 2730.0f;
-	HighTemperatureTransition = PT_FIRE;
+	HighTemperatureTransition = PT_FIRE; //@ SPNG -> FIRE
 
 	Update = &update;
 	Graphics = &graphics;
@@ -77,7 +77,7 @@ static int update(UPDATE_FUNC_ARGS)
 							parts[i].life++;
 							if (sim->rng.chance(3, 4))
 								sim->kill_part(ID(r));
-							else
+							else //@ SPNG + SLTW -> SPNG + SALT
 								sim->part_change_type(ID(r), x+rx, y+ry, PT_SALT);
 						}
 						break;
@@ -85,6 +85,7 @@ static int update(UPDATE_FUNC_ARGS)
 						if (parts[i].life<limit && sim->rng.chance(100, absorbChanceDenom))
 						{
 							parts[i].life++;
+							//@ SPNG + CBNW -> SPNG + CO2
 							sim->part_change_type(ID(r), x+rx, y+ry, PT_CO2);
 						}
 						break;
@@ -92,6 +93,7 @@ static int update(UPDATE_FUNC_ARGS)
 						if (parts[i].life<limit && sim->rng.chance(20, absorbChanceDenom))
 						{
 							parts[i].life++;
+							//@ SPNG + PSTE -> SPNG + CLST
 							sim->create_part(ID(r), x+rx, y+ry, PT_CLST);
 						}
 						break;
@@ -113,6 +115,7 @@ static int update(UPDATE_FUNC_ARGS)
 					auto r = pmap[y+ry][x+rx];
 					if ((!r)&&parts[i].life>=1)//if nothing then create water
 					{
+						//@ SPNG -> SPNG + WATR
 						auto np = sim->create_part(-1,x+rx,y+ry,PT_WATR);
 						if (np>-1) parts[i].life--;
 					}
@@ -186,6 +189,7 @@ static int update(UPDATE_FUNC_ARGS)
 					auto r = pmap[y+ry][x+rx];
 					if ((!r)&&parts[i].life>=1)//if nothing then create steam
 					{
+						//@ SPNG -> SPNG + WTRV
 						auto np = sim->create_part(-1,x+rx,y+ry,PT_WTRV);
 						if (np>-1)
 						{

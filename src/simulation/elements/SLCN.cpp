@@ -42,7 +42,7 @@ void Element::Element_SLCN()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 3538.15f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ SLCN -> LAVA(SLCN)
 
 	Update = &update;
 	Graphics = &graphics;

@@ -36,6 +36,7 @@ with open(HTTP_INDEX, 'wt') as f:
 			<li>@APP_EXE@.js</li>
 			<li>@APP_EXE@.wasm</li>
 			<li>@APP_EXE@.wasm.map for debugging purposes</li>
+			<li>@APP_EXE@.wasm.dbg for debugging purposes</li>
 		</ul>
 		<p id="status" style="display: none;">Loading...</p>
 		<canvas style="display: none;" class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>

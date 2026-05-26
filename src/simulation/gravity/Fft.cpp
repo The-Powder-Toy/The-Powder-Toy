@@ -102,7 +102,7 @@ void GravityImpl::Wait()
 void GravityImpl::Work()
 {
 	{
-		PlaneAdapter<PlaneBase<float>, blocks.X, blocks.Y> massBigP(blocks, std::in_place, massBig.get());
+		auto massBigP = MakePlane<blocks.X, blocks.Y>(blocks, massBig.get());
 		for (auto p : CELLS.OriginRect())
 		{
 			// used to be a membwand but we'd need a new buffer for this,
@@ -122,8 +122,8 @@ void GravityImpl::Work()
 	fftwf_execute(forceXInverse.get());
 	fftwf_execute(forceYInverse.get());
 	{
-		PlaneAdapter<PlaneBase<float>, blocks.X, blocks.Y> forceXBigP(blocks, std::in_place, forceXBig.get());
-		PlaneAdapter<PlaneBase<float>, blocks.X, blocks.Y> forceYBigP(blocks, std::in_place, forceYBig.get());
+		auto forceXBigP = MakePlane<blocks.X, blocks.Y>(blocks, forceXBig.get());
+		auto forceYBigP = MakePlane<blocks.X, blocks.Y>(blocks, forceYBig.get());
 		for (auto p : CELLS.OriginRect())
 		{
 			// similarly
@@ -157,8 +157,8 @@ void GravityImpl::Init()
 	auto kernelYRaw = FftwArray(blocks.X * blocks.Y);
 	auto kernelXForward = FftwPlanPtr(fftwf_plan_dft_r2c_2d(blocks.Y, blocks.X, kernelXRaw.get(), reinterpret_cast<fftwf_complex *>(kernelXT.get()), fftwPlanFlags));
 	auto kernelYForward = FftwPlanPtr(fftwf_plan_dft_r2c_2d(blocks.Y, blocks.X, kernelYRaw.get(), reinterpret_cast<fftwf_complex *>(kernelYT.get()), fftwPlanFlags));
-	PlaneAdapter<PlaneBase<float>, blocks.X, blocks.Y> kernelX(blocks, std::in_place, kernelXRaw.get());
-	PlaneAdapter<PlaneBase<float>, blocks.X, blocks.Y> kernelY(blocks, std::in_place, kernelYRaw.get());
+	auto kernelX = MakePlane<blocks.X, blocks.Y>(blocks, kernelXRaw.get());
+	auto kernelY = MakePlane<blocks.X, blocks.Y>(blocks, kernelYRaw.get());
 	//calculate velocity map caused by a point mass
 	for (auto p : blocks.OriginRect())
 	{

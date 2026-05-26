@@ -60,11 +60,15 @@ GameModel::GameModel(GameView *newView):
 	colour(255, 0, 0, 255),
 	edgeMode(EDGE_VOID),
 	ambientAirTemp(R_TEMP + 273.15f),
-	vorticityCoeff(0.0f),
+	edgePressure(0),
+	edgeVelocityX(0),
+	edgeVelocityY(0),
+	vorticityCoeff(0.1f),
+	convectionMode(AIRC_BOUSSINESQ),
 	decoSpace(DECOSPACE_SRGB),
 	view(newView)
 {
-	sim = new Simulation();
+	sim = Simulation::Factory();
 	sim->useLuaCallbacks = true;
 	ren = new Renderer();
 
@@ -120,7 +124,34 @@ GameModel::GameModel(GameView *newView):
 			ambientAirTemp = temp;
 		}
 	}
+	edgePressure = 0;
+	{
+		auto pres = prefs.Get("Simulation.EdgePressure", edgePressure);
+		if (MIN_PRESSURE <= pres && MAX_PRESSURE >= pres)
+		{
+			edgePressure = pres;
+		}
+	}
+	edgeVelocityX = 0;
+	{
+		auto vel = prefs.Get("Simulation.EdgeVelocityX", edgeVelocityX);
+		if (-MAX_VELOCITY <= vel && MAX_VELOCITY >= vel)
+		{
+			edgeVelocityX = vel;
+		}
+	}
+	edgeVelocityY = 0;
+	{
+		auto vel = prefs.Get("Simulation.EdgeVelocityY", edgeVelocityY);
+		if (-MAX_VELOCITY <= vel && MAX_VELOCITY >= vel)
+		{
+			edgeVelocityY = vel;
+		}
+	}
 	sim->air->ambientAirTemp = ambientAirTemp;
+	sim->air->edgePressure = edgePressure;
+	sim->air->edgeVelocityX = edgeVelocityX;
+	sim->air->edgeVelocityY = edgeVelocityY;
 
 	vorticityCoeff = 0.1f; // The default for old saves is 0, but use 0.1 for old configs
 	{
@@ -131,6 +162,9 @@ GameModel::GameModel(GameView *newView):
 		}
 	}
 	sim->air->vorticityCoeff = vorticityCoeff;
+
+	convectionMode = prefs.Get("Simulation.ConvectionMode", NUM_CONVMODES, AIRC_BOUSSINESQ);
+	sim->air->convectionMode = convectionMode;
 
 	decoSpace = prefs.Get("Simulation.DecoSpace", NUM_DECOSPACES, DECOSPACE_SRGB);
 	sim->SetDecoSpace(decoSpace);
@@ -201,7 +235,7 @@ GameModel::~GameModel()
 		prefs.Set("Decoration.Alpha", (int)colour.Alpha);
 	}
 
-	delete sim;
+	sim.reset();
 	delete ren;
 	//if(activeTools)
 	//	delete[] activeTools;
@@ -316,6 +350,39 @@ float GameModel::GetAmbientAirTemperature()
 	return this->ambientAirTemp;
 }
 
+void GameModel::SetEdgePressure(float edgePressure)
+{
+	this->edgePressure = edgePressure;
+	sim->air->edgePressure = edgePressure;
+}
+
+float GameModel::GetEdgePressure()
+{
+	return this->edgePressure;
+}
+
+void GameModel::SetEdgeVelocityX(float edgeVelocityX)
+{
+	this->edgeVelocityX = edgeVelocityX;
+	sim->air->edgeVelocityX = edgeVelocityX;
+}
+
+float GameModel::GetEdgeVelocityX()
+{
+	return this->edgeVelocityX;
+}
+
+void GameModel::SetEdgeVelocityY(float edgeVelocityY)
+{
+	this->edgeVelocityY = edgeVelocityY;
+	sim->air->edgeVelocityY = edgeVelocityY;
+}
+
+float GameModel::GetEdgeVelocityY()
+{
+	return this->edgeVelocityY;
+}
+
 void GameModel::SetVorticityCoeff(float vorticityCoeff)
 {
 	this->vorticityCoeff = vorticityCoeff;
@@ -325,6 +392,17 @@ void GameModel::SetVorticityCoeff(float vorticityCoeff)
 float GameModel::GetVorticityCoeff()
 {
 	return this->vorticityCoeff;
+}
+
+void GameModel::SetConvectionMode(int convMode)
+{
+	this->convectionMode = convMode;
+	sim->air->convectionMode = convMode;
+}
+
+int GameModel::GetConvectionMode()
+{
+	return this->convectionMode;
 }
 
 void GameModel::SetDecoSpace(int decoSpace)
@@ -755,7 +833,11 @@ void GameModel::SaveToSimParameters(const GameSave &saveData)
 	sim->customGravityY = saveData.customGravityY;
 	sim->air->airMode = saveData.airMode;
 	sim->air->ambientAirTemp = saveData.ambientAirTemp;
+	sim->air->edgePressure = saveData.edgePressure;
+	sim->air->edgeVelocityX = saveData.edgeVelocityX;
+	sim->air->edgeVelocityY = saveData.edgeVelocityY;
 	sim->air->vorticityCoeff = saveData.vorticityCoeff;
+	sim->air->convectionMode = saveData.convectionMode;
 	sim->edgeMode = saveData.edgeMode;
 	sim->legacy_enable = saveData.legacyEnable;
 	sim->water_equal_test = saveData.waterEEnabled;
@@ -847,7 +929,7 @@ void GameModel::SetSaveFile(std::unique_ptr<SaveFile> newSave, bool invertInclud
 
 Simulation * GameModel::GetSimulation()
 {
-	return sim;
+	return sim.get();
 }
 
 Renderer * GameModel::GetRenderer()
@@ -1132,7 +1214,11 @@ void GameModel::ClearSimulation()
 	sim->water_equal_test = false;
 	sim->SetEdgeMode(edgeMode);
 	sim->air->ambientAirTemp = ambientAirTemp;
+	sim->air->edgePressure = edgePressure;
+	sim->air->edgeVelocityX = edgeVelocityX;
+	sim->air->edgeVelocityY = edgeVelocityY;
 	sim->air->vorticityCoeff = vorticityCoeff;
+	sim->air->convectionMode = convectionMode;
 
 	sim->clear_sim();
 	ren->ClearAccumulation();
@@ -1588,6 +1674,7 @@ std::optional<CustomGOLData> GameModel::CheckCustomGol(String ruleString, String
 
 void GameModel::UpdateUpTo(int upTo)
 {
+	FrameTime::Span span(frameTime.get(), "GameModel::UpdateUpTo");
 	if (upTo < sim->debug_nextToUpdate)
 	{
 		upTo = NPART;
@@ -1614,6 +1701,7 @@ void GameModel::UpdateUpTo(int upTo)
 
 void GameModel::BeforeSim()
 {
+	FrameTime::Span span(frameTime.get(), "GameModel::BeforeSim");
 	auto willUpdate = IsSimRunning();
 	if (willUpdate)
 	{
@@ -1624,6 +1712,7 @@ void GameModel::BeforeSim()
 
 void GameModel::AfterSim()
 {
+	FrameTime::Span span(frameTime.get(), "GameModel::AfterSim");
 	sim->AfterSim();
 	CommandInterface::Ref().HandleEvent(AfterSimEvent{});
 }
@@ -1744,6 +1833,7 @@ void GameModel::UpdateElementTool(int element)
 	tool->textureGen = elem.IconGenerator;
 	tool->MenuSection = elem.MenuSection;
 	tool->MenuVisible = elem.MenuVisible;
+	tool->MenuSort = elem.MenuSort;
 }
 
 void GameModel::AllocElementTool(int element)

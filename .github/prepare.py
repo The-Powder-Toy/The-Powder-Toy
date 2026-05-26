@@ -13,6 +13,33 @@ def set_output(key, value):
 	with open(os.getenv('GITHUB_OUTPUT'), 'a') as f:
 		f.write(f"{key}={value}\n")
 
+subprocess.run([ 'meson', 'setup', '-Dprepare=true', 'build-prepare' ], check = True)
+build_options = {}
+with open('build-prepare/meson-info/intro-buildoptions.json') as f:
+	for option in json.loads(f.read()):
+		build_options[option['name']] = option['value']
+with open('build-prepare/meson-info/intro-projectinfo.json') as f:
+	display_version = json.loads(f.read())['version']
+	display_version_split = display_version.split('-')
+	if len(display_version_split) == 3:
+		display_version = display_version_split[0]
+display_version = display_version.split('.')
+
+if int(build_options['mod_id']) == 0 and os.path.exists('.github/mod_id.txt'):
+	with open('.github/mod_id.txt') as f:
+		build_options['mod_id'] = f.read()
+mod_id = int(build_options['mod_id'])
+
+release_name_prefix = ''
+match_modx = re.fullmatch(r'refs/tags/mod([0-9]+)-(.*)', ref)
+if match_modx and mod_id and int(match_modx.group(1)) == mod_id:
+	release_name_prefix = f'mod{match_modx.group(1)}-'
+	ref = f'refs/tags/{match_modx.group(2)}'
+match_varx = re.fullmatch(r'refs/tags/var-([^-]+)-(.*)', ref)
+if match_varx:
+	release_name_prefix = f'var-{match_varx.group(1)}-'
+	ref = f'refs/tags/{match_varx.group(2)}'
+
 match_stable     = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)', ref)
 match_beta       = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)b', ref)
 match_snapshot   = re.fullmatch(r'refs/tags/snapshot-([0-9]+)', ref)
@@ -61,25 +88,9 @@ do_publish = publish_hostport and do_release
 
 set_output('release_type', release_type)
 set_output('release_name', release_name)
+set_output('release_name_with_prefix', release_name_prefix + release_name)
 
-subprocess.run([ 'meson', 'setup', '-Dprepare=true', 'build-prepare' ], check = True)
-build_options = {}
-with open('build-prepare/meson-info/intro-buildoptions.json') as f:
-	for option in json.loads(f.read()):
-		build_options[option['name']] = option['value']
-with open('build-prepare/meson-info/intro-projectinfo.json') as f:
-	display_version = json.loads(f.read())['version']
-	display_version_split = display_version.split('-')
-	if len(display_version_split) == 3:
-		display_version = display_version_split[0]
-display_version = display_version.split('.')
-
-if int(build_options['mod_id']) == 0 and os.path.exists('.github/mod_id.txt'):
-	with open('.github/mod_id.txt') as f:
-		build_options['mod_id'] = f.read()
-mod_id = int(build_options['mod_id'])
-
-if mod_id == 0:
+if mod_id == 0 and not match_varx:
 	if display_version_major:
 		assert(display_version_major == display_version[0])
 	if display_version_minor:
@@ -180,7 +191,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
 	( 'aarch64',    'android',     'bionic',  'static',   'linux', 'ubuntu-22.04', '.apk',       'publish',    '.dbg',         None,   'arm64-and-gcc-static', 'release',       10,  True ),
 	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: rarely used debug build
-	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',       'publish','.dbg.wasm','emscripten',      'wasm32-ems-static', 'release',       10, False ), # TODO: enable lint once emscripten ships clang-tidy
+	(  'wasm32', 'emscripten', 'emscripten',  'static',   'linux', 'ubuntu-22.04', '.tar',       'publish','.wasm.dbg','emscripten',      'wasm32-ems-static', 'release',       10, False ), # TODO: enable lint once emscripten ships clang-tidy
 ]:
 	if priority < do_priority:
 		continue

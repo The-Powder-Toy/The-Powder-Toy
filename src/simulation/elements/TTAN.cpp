@@ -41,7 +41,7 @@ void Element::Element_TTAN()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1941.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ TTAN -> LAVA(TTAN)
 
 	Update = &update;
 }

@@ -317,7 +317,7 @@ if [[ $BSH_HOST_PLATFORM == linux ]] && [[ $BSH_HOST_ARCH != aarch64 ]]; then
 	c_link_args+=\'-no-pie\',
 fi
 if [[ $SEPARATE_DEBUG == yes ]] && [[ $BSH_HOST_PLATFORM == emscripten ]]; then
-	c_link_args+=\'-gseparate-dwarf\',
+	c_link_args+=\'-gseparate-dwarf="$DEBUG_ASSET_PATH"\',
 fi
 stable_or_beta=no
 if [[ $RELEASE_TYPE == beta ]]; then
@@ -362,8 +362,8 @@ if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "x86_64-windows-ming
 fi
 if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "x86-windows-mingw" ]]; then
 	meson_configure+=$'\t'--cross-file=.github/mingw32-ghactions.ini
-fi
-if [[ $BSH_DEBUG_RELEASE-$BSH_STATIC_DYNAMIC == release-static ]]; then
+elif [[ $BSH_DEBUG_RELEASE-$BSH_STATIC_DYNAMIC == release-static ]]; then
+	# see https://github.com/msys2/MINGW-packages/issues/28779
 	meson_configure+=$'\t'-Dlto=true
 fi
 if [[ $BSH_HOST_PLATFORM-$BSH_HOST_ARCH == darwin-aarch64 ]]; then
@@ -421,7 +421,7 @@ if [[ $BSH_HOST_PLATFORM == android ]]; then
 	cat << ANDROID_INI > .github/android-ghactions.ini
 [constants]
 andriod_ndk_toolchain_bin = '$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin'
-andriod_sdk_build_tools = '$ANDROID_SDK_ROOT/build-tools/32.0.0'
+andriod_sdk_build_tools = '$ANDROID_SDK_ROOT/build-tools/35.0.0'
 
 [properties]
 # android_ndk_toolchain_prefix comes from the correct cross-file in ./android/cross
@@ -500,9 +500,7 @@ else
 fi
 
 if [[ $SEPARATE_DEBUG == yes ]] && [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC != windows-msvc ]]; then
-	if [[ $BSH_HOST_PLATFORM == emscripten ]]; then
-		mv $APP_EXE.wasm.debug.wasm $DEBUG_ASSET_PATH # yeah >_>
-	else
+	if [[ $BSH_HOST_PLATFORM != emscripten ]]; then
 		$objcopy --only-keep-debug $strip_target $DEBUG_ASSET_PATH
 		$strip --strip-debug --strip-unneeded $strip_target
 		$objcopy --add-gnu-debuglink $DEBUG_ASSET_PATH $strip_target
@@ -556,7 +554,7 @@ if [[ $BSH_HOST_PLATFORM == darwin ]]; then
 	fi
 elif [[ $PACKAGE_MODE == emscripten ]]; then
 	cp resources/serve-wasm.py .
-	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.wasm serve-wasm.py
+	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.wasm $APP_EXE.wasm.map serve-wasm.py
 elif [[ $PACKAGE_MODE == appimage ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
 	case $BSH_HOST_ARCH in

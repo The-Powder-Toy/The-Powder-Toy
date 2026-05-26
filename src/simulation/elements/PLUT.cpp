@@ -51,6 +51,7 @@ static int update(UPDATE_FUNC_ARGS)
 {
 	if (sim->rng.chance(1, 100) && sim->rng.chance(int(5.0f*sim->pv[y/CELL][x/CELL]), 1000))
 	{
+		//@ PLUT -> NEUT
 		sim->create_part(i, x, y, PT_NEUT);
 	}
 	return 0;

@@ -1,5 +1,5 @@
 #include "StructProperty.h"
-#include <cassert>
+#include "common/Assert.h"
 
 StructProperty::StructProperty(ByteString name, PropertyType type, intptr_t offset):
 Name(name),

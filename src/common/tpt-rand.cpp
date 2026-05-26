@@ -47,7 +47,12 @@ bool RNG::chance(int numerator, unsigned int denominator)
 
 float RNG::uniform01()
 {
-	return static_cast<float>(next()&0xFFFFFFFF)/(float)0xFFFFFFFF;
+	return float((next() & UINT32_C(0xFFFFFFFF)) / float(UINT32_C(0xFFFFFFFF)));
+}
+
+double RNG::uniform01Double()
+{
+	return double(next() / double(UINT64_C(0xFFFFFFFFFFFFFFFF)));
 }
 
 RNG::RNG()

@@ -10,6 +10,7 @@ simulation_files = files(
 	'SimulationData.cpp',
 	'Simulation.cpp',
 	'StructProperty.cpp',
+	'FrameTime.cpp',
 )
 
 subdir('elements')

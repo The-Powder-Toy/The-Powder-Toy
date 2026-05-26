@@ -83,7 +83,7 @@ ByteString ExecutableNameFirstApprox()
 		mib[3] = -1;
 		std::array<char, 1000> buf;
 		size_t cb = buf.size();
-		if (!sysctl(mib, 4, buf.data(), &cb, NULL, 0))
+		if (!sysctl(mib, 4, buf.data(), &cb, nullptr, 0))
 		{
 			return ByteString(buf.data(), buf.data() + cb);
 		}

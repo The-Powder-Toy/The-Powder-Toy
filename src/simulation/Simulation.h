@@ -23,6 +23,7 @@
 
 constexpr int CHANNELS = int(MAX_TEMP - 73) / 100 + 2;
 
+class FrameTime;
 class Snapshot;
 class Brush;
 struct SimulationSample;
@@ -210,13 +211,14 @@ public:
 	//int InCurrentBrush(int i, int j, int rx, int ry);
 	//int get_brush_flags();
 	int create_part(int p, int x, int y, int t, int v = -1);
+	int createPartTempVel(int i, int x, int y, int t);
 	void delete_part(int x, int y);
 	void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
 	int is_wire(int x, int y);
 	int is_wire_off(int x, int y);
 	void set_emap(int x, int y);
 	int parts_avg(int ci, int ni, int t);
-	void UpdateParticles(int start, int end); // Dispatches an update to the range [start, end).
+	virtual void UpdateParticles(int start, int end) = 0; // Dispatches an update to the range [start, end).
 	void SimulateGoL();
 	void RecalcFreeParticles(bool do_life_dec);
 	void CheckStacking();
@@ -264,9 +266,13 @@ public:
 	static GetNormalResult get_normal_interp(Sim &sim, int pt, float x0, float y0, float dx, float dy);
 	void clear_sim();
 	Simulation();
-	~Simulation();
+	virtual ~Simulation();
 
 	void EnableNewtonianGravity(bool enable);
+
+	FrameTime *frameTime = nullptr;
+
+	static std::unique_ptr<Simulation> Factory();
 
 private:
 	CoordStack& getCoordStackSingleton();
@@ -274,16 +280,4 @@ private:
 	void ResetNewtonianGravity(GravityInput newGravIn, GravityOutput newGravOut);
 	void DispatchNewtonianGravity();
 	void UpdateGravityMask();
-
-	struct Neighbourhood
-	{
-		std::array<int, 8> surround;
-		int surround_space = 0;
-		int nt = 0; //if nt is greater than 1 after this, then there is a particle around the current particle, that is NOT the current particle's type, for water movement.
-		float pGravX = 0;
-		float pGravY = 0;
-	};
-	void MovementPhase(int i, Neighbourhood neighbourhood);
-	Neighbourhood GetNeighbourhood(int i) const;
-	bool TransitionPhase(int i, const Neighbourhood &neighbourhood);
 };

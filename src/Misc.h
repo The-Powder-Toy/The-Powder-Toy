@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <vector>
 
-template<class Signed>
+template <class Signed>
 inline std::pair<Signed, Signed> floorDiv(Signed a, Signed b)
 {
 	auto quo = a / b;
@@ -18,14 +18,15 @@ inline std::pair<Signed, Signed> floorDiv(Signed a, Signed b)
 	return { quo, rem };
 }
 
-template<class Signed>
+template <class Signed>
 inline std::pair<Signed, Signed> ceilDiv(Signed a, Signed b)
 {
 	return floorDiv(a + b - Signed(1), b);
 }
 
 //Linear interpolation
-template <typename T> inline T LinearInterpolate(T val1, T val2, T lowerCoord, T upperCoord, T coord)
+template <typename T>
+inline T LinearInterpolate(T val1, T val2, T lowerCoord, T upperCoord, T coord)
 {
 	if(lowerCoord == upperCoord) return val1;
 	return (((val2 - val1) / (upperCoord - lowerCoord)) * (coord - lowerCoord)) + val1;
@@ -49,11 +50,6 @@ inline int isign(float i)
 	if (i>0)
 		return 1;
 	return 0;
-}
-
-inline int iabs(int i)
-{
-	return i * isign(i);
 }
 
 inline unsigned clamp_flt(float f, float min, float max)
@@ -83,7 +79,8 @@ void RGB_to_HSV(int r,int g,int b,int *h,int *s,int *v);
 class ByteString;
 
 bool byteStringEqualsString(const ByteString &str, const char *data, size_t size);
-template<size_t N>
+
+template <size_t N>
 // TODO: use std::literals::string_literals::operator""s if we get rid of ByteString
 bool byteStringEqualsLiteral(const ByteString &str, const char (&lit)[N])
 {

@@ -30,6 +30,7 @@
 #include "simulation/SaveRenderer.h"
 #include "simulation/SimulationData.h"
 #include "simulation/Simulation.h"
+#include "simulation/elements/PLNT.h"
 
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
@@ -451,6 +452,8 @@ void GameView::SetSample(SimulationSample sample)
 void GameView::SetHudEnable(bool hudState)
 {
 	showHud = hudState;
+	if (!showHud)
+		introText = 0;
 }
 
 bool GameView::GetHudEnable()
@@ -2384,6 +2387,25 @@ void GameView::OnDraw()
 					else
 						sampleInfo << " (unknown mode)";
 				}
+				else if (type == PT_SEED || (type == PT_PLNT && ctype))
+				{
+					sampleInfo << c->ElementResolve(type, ctype);
+
+					auto water = (ctype >> PLNT_LIFE) & 0xFF;
+					auto colour = (ctype >> PLNT_COLOUR) & 0x3F;
+					auto dir = (ctype >> PLNT_DIR) & 7;
+					auto active = ctype & 1;
+
+					static const std::array<String, 8> directions = {"N", "NW", "W", "SW", "S", "SE", "E", "NE"};
+					static const std::array<std::array<String, 4>, 3> colours = {{
+						{{"cc", "cC", "Cc", "CC"}}, {{"mm", "mM", "Mm", "MM"}}, {{"yy", "yY", "Yy", "YY"}} }};
+					auto cyan = (colour >> 4) & 3;
+					auto magenta = (colour >> 2) & 3;
+					auto yellow = colour & 3;
+
+					sampleInfo << " (" << water << " " <<
+						colours[0][cyan] << colours[1][magenta] << colours[2][yellow] << " " << directions[dir] << " " << active << ")";
+				}
 				else
 				{
 					sampleInfo << c->ElementResolve(type, ctype);
@@ -2609,10 +2631,23 @@ void GameView::OnDraw()
 				fpsInfo << " (default)";
 			}
 		}
+		if (auto *frameTime = c->GetFrameTime())
+		{
+			for (auto &span : frameTime->GetLastSpans())
+			{
+				fpsInfo << "\n";
+				for (int i = 0; i < span.level; ++i)
+				{
+					fpsInfo << " ";
+				}
+				fpsInfo << ByteString(span.name).FromUtf8() << ": " << Format::Precision(2) << (span.duration / 1000.0) << "us";
+			}
+		}
 
-		int textWidth = Graphics::TextSize(fpsInfo.Build()).X - 1;
+		auto textSize = Graphics::TextSize(fpsInfo.Build());
+		int textWidth = textSize.X - 1;
 		int alpha = 255-introText*5;
-		g->BlendFilledRect(RectSized(Vec2{ 12, 12 }, Vec2{ textWidth+8, 15 }), 0x000000_rgb .WithAlpha(int(alpha*0.5)));
+		g->BlendFilledRect(RectSized(Vec2{ 12, 12 }, Vec2{ textWidth+8, textSize.Y + 5 }), 0x000000_rgb .WithAlpha(int(alpha*0.5)));
 		g->BlendText({ 16, 16 }, fpsInfo.Build(), 0x20D8FF_rgb .WithAlpha(int(alpha*0.75)));
 	}
 

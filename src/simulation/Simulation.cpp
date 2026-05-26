@@ -6,9 +6,9 @@
 #include "ToolClasses.h"
 #include "SimulationData.h"
 #include "client/GameSave.h"
-#include "common/tpt-compat.h"
 #include "common/tpt-rand.h"
 #include "common/Defer.h"
+#include "FrameTime.h"
 #include "gui/game/Brush.h"
 #include "elements/EMP.h"
 #include "elements/LOLZ.h"
@@ -16,9 +16,31 @@
 #include "elements/PIPE.h"
 #include "elements/FILT.h"
 #include "elements/PRTI.h"
+#include "elements/PLNT.h"
 #include <iostream>
+#include <numbers>
 #include <set>
 #include <stack>
+
+namespace
+{
+	struct SimulationImpl : public Simulation
+	{
+		struct Neighbourhood
+		{
+			std::array<int, 8> surround;
+			int surround_space = 0;
+			int nt = 0; //if nt is greater than 1 after this, then there is a particle around the current particle, that is NOT the current particle's type, for water movement.
+			float pGravX = 0;
+			float pGravY = 0;
+		};
+		void MovementPhase(int i, Neighbourhood neighbourhood);
+		Neighbourhood GetNeighbourhood(int i) const;
+		bool TransitionPhase(int i, const Neighbourhood &neighbourhood);
+
+		void UpdateParticles(int start, int end) final override;
+	};
+}
 
 static float remainder_p(float x, float y)
 {
@@ -268,7 +290,8 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 		}
 	}
 	auto useGravityMaps = save->hasGravityMaps && grav;
-	for (auto bpos : RectSized(blockP, save->blockSize) & CELLS.OriginRect())
+	auto targetBlocks = RectSized(blockP + save->blockContent.TopLeft(), save->blockContent.size) & CELLS.OriginRect();
+	for (auto bpos : targetBlocks)
 	{
 		auto spos = bpos - blockP;
 		if (save->blockMap[spos])
@@ -312,7 +335,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 	gravWallChanged = true;
 	if (!save->hasBlockAirMaps)
 	{
-		air->ApproximateBlockAirMaps();
+		air->ApproximateBlockAirMaps(targetBlocks);
 	}
 }
 
@@ -464,7 +487,11 @@ void Simulation::SaveSimOptions(GameSave &gameSave)
 	gameSave.customGravityY = customGravityY;
 	gameSave.airMode = air->airMode;
 	gameSave.ambientAirTemp = air->ambientAirTemp;
+	gameSave.edgePressure = air->edgePressure;
+	gameSave.edgeVelocityX = air->edgeVelocityX;
+	gameSave.edgeVelocityY = air->edgeVelocityY;
 	gameSave.vorticityCoeff = air->vorticityCoeff;
+	gameSave.convectionMode = air->convectionMode;
 	gameSave.edgeMode = edgeMode;
 	gameSave.legacyEnable = legacy_enable;
 	gameSave.waterEEnabled = water_equal_test;
@@ -1186,6 +1213,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		int rt = TYP(r);
 		if (rt == PT_WOOD)
 		{
+			//@ WOOD -> SAWD
 			float vel = std::sqrt(std::pow(parts[i].vx, 2) + std::pow(parts[i].vy, 2));
 			if (vel > 5)
 				part_change_type(ID(r), nx, ny, PT_SAWD);
@@ -1290,6 +1318,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 
 				if (pv[ny/CELL][nx/CELL] >= -pressureResistance && pv[ny/CELL][nx/CELL] <= pressureResistance)
 				{
+					//@ PHOT + INVIS -> NEUT + INVIS
 					part_change_type(i,x,y,PT_NEUT);
 					parts[i].ctype = 0;
 				}
@@ -1298,12 +1327,14 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			case PT_BIZR:
 			case PT_BIZRG:
 			case PT_BIZRS:
+				//@ PHOT + BIZR/BIZRG/BIZRS -> ELEC + BIZR/BIZRG/BIZRS
 				part_change_type(i, x, y, PT_ELEC);
 				parts[i].ctype = 0;
 				break;
 			case PT_H2:
 				if (!(parts[i].tmp&0x1))
 				{
+					//@ PHOT + H2 -> PROT + ELEC
 					part_change_type(i, x, y, PT_PROT);
 					parts[i].ctype = 0;
 					parts[i].tmp2 = 0x1;
@@ -1315,6 +1346,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			case PT_GPMP:
 				if (parts[ID(r)].life == 0)
 				{
+					//@ PHOT + GPMP -> GRVT + GPMP
 					part_change_type(i, x, y, PT_GRVT);
 					parts[i].tmp = int(parts[ID(r)].temp - 273.15f);
 				}
@@ -1323,6 +1355,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			break;
 		}
 		case PT_NEUT:
+			//@ NEUT + GLAS/BGLA -> NEUT + GLAS/BGLA + PHOT
 			if (TYP(r) == PT_GLAS || TYP(r) == PT_BGLA)
 				if (rng.chance(1, 10))
 					create_cherenkov_photon(i);
@@ -1330,11 +1363,13 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 		case PT_ELEC:
 			if (TYP(r) == PT_GLOW)
 			{
+				//@ ELEC + GLOW -> PHOT + GLOW
 				part_change_type(i, x, y, PT_PHOT);
 				parts[i].ctype = 0x3FFFFFFF;
 			}
 			break;
 		case PT_PROT:
+			//@ PROT + INVIS -> NEUT + INVIS
 			if (TYP(r) == PT_INVIS)
 				part_change_type(i, x, y, PT_NEUT);
 			break;
@@ -1682,22 +1717,6 @@ Simulation::GetNormalResult Simulation::get_normal(int pt, int x, int y, float d
 	return { true, nx, ny, lx, ly, rx, ry };
 }
 
-
-
-template<bool PhotoelectricEffect, class Sim>
-void PhotoelectricEffectHelper(Sim &sim, int x, int y);
-
-template<>
-void PhotoelectricEffectHelper<false, const Simulation>(const Simulation &sim, int x, int y)
-{
-}
-
-template<>
-void PhotoelectricEffectHelper<true, Simulation>(Simulation &sim, int x, int y)
-{
-	sim.photoelectric_effect(x, y);
-}
-
 template<bool PhotoelectricEffect, class Sim>
 Simulation::GetNormalResult Simulation::get_normal_interp(Sim &sim, int pt, float x0, float y0, float dx, float dy)
 {
@@ -1721,8 +1740,11 @@ Simulation::GetNormalResult Simulation::get_normal_interp(Sim &sim, int pt, floa
 	if (i >= NORMAL_INTERP)
 		return { false };
 
-	if (pt == PT_PHOT)
-		PhotoelectricEffectHelper<PhotoelectricEffect, Sim>(sim, x, y);
+	if constexpr (PhotoelectricEffect)
+	{
+		if (pt == PT_PHOT)
+			sim.photoelectric_effect(x, y);
+	}
 
 	return sim.get_normal(pt, x, y, dx, dy);
 }
@@ -1949,6 +1971,25 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 
 	elementCount[t]++;
 	return i;
+}
+
+// Change part type but preserve temperature and velocity.
+// May fail if i isn't an existing particle id.
+int Simulation::createPartTempVel(int i, int x, int y, int t)
+{
+	auto temp = parts[i].temp;
+	auto vx = parts[i].vx;
+	auto vy = parts[i].vy;
+
+	auto np = create_part(i, x, y, t);
+	if (np >= 0)
+	{
+		parts[np].temp = temp;
+		parts[np].vx = vx;
+		parts[np].vy = vy;
+	}
+
+	return np;
 }
 
 int Parts::Alloc()
@@ -2213,7 +2254,12 @@ Simulation::PlanMoveResult Simulation::PlanMove(Sim &sim, int i, int x, int y)
 template
 Simulation::PlanMoveResult Simulation::PlanMove<false, const Simulation>(const Simulation &sim, int i, int x, int y);
 
-Simulation::Neighbourhood Simulation::GetNeighbourhood(int i) const
+std::unique_ptr<Simulation> Simulation::Factory()
+{
+	return std::make_unique<SimulationImpl>();
+}
+
+SimulationImpl::Neighbourhood SimulationImpl::GetNeighbourhood(int i) const
 {
 	auto t = parts[i].type;
 	auto x = int(parts[i].x + 0.5f);
@@ -2243,7 +2289,7 @@ Simulation::Neighbourhood Simulation::GetNeighbourhood(int i) const
 	return n;
 }
 
-void Simulation::UpdateParticles(int start, int end)
+void SimulationImpl::UpdateParticles(int start, int end)
 {
 	//the main particle loop function, goes over all particles.
 	auto &sd = SimulationData::CRef();
@@ -2379,7 +2425,7 @@ void Simulation::UpdateParticles(int start, int end)
 	}
 }
 
-bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
+bool SimulationImpl::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 {
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
@@ -2423,10 +2469,11 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 			if (aheat_enable && !(elements[t].Properties&PROP_NOAMBHEAT))
 			{
 				auto dtemp = hv[y/CELL][x/CELL] - parts[i].temp; // Temperature difference
-				auto alpha = std::min(0.04f, 0.4f * elements[t].HeatCapacity); // alpha / heat_capacity must be < 1
+				auto hc = sd.HeatCapacityOf(parts[i]);
+				auto alpha = std::min(0.04f, 0.4f * hc); // alpha / heat_capacity must be < 1
 
 				// Here we completely ignore that there are CELL^2 "air pixels" in a cell, and the heat capacity of air
-				parts[i].temp = restrict_flt(parts[i].temp + alpha*dtemp / elements[t].HeatCapacity, MIN_TEMP, MAX_TEMP);
+				parts[i].temp = restrict_flt(parts[i].temp + alpha*dtemp / hc, MIN_TEMP, MAX_TEMP);
 				hv[y/CELL][x/CELL] = restrict_flt(hv[y/CELL][x/CELL] - alpha*dtemp, MIN_TEMP, MAX_TEMP);
 			}
 
@@ -2456,27 +2503,15 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 					continue;
 
 				surround_hconduct[j] = ID(r);
-				c_heat += parts[ID(r)].temp*elements[rt].HeatCapacity;
-				hc_total += elements[rt].HeatCapacity;
-
-				// Double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
-				if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
-				{
-					c_heat += parts[ID(r)].temp*elements[rt].HeatCapacity;
-					hc_total += elements[rt].HeatCapacity;
-				}
+				auto hc = sd.HeatCapacityOf(parts[ID(r)]);
+				c_heat += parts[ID(r)].temp*hc;
+				hc_total += hc;
 			}
 
 			// Add the current particle
-			c_heat += parts[i].temp*elements[t].HeatCapacity;
-			hc_total += elements[t].HeatCapacity;
-
-			// Double count the current particle to account for the heat capacity of both the PIPE/PPIP and its contents
-			if ((t == PT_PIPE || t == PT_PPIP) && parts[i].ctype != 0)
-			{
-				c_heat += parts[i].temp*elements[t].HeatCapacity;
-				hc_total += elements[t].HeatCapacity;
-			}
+			auto hc = sd.HeatCapacityOf(parts[i]);
+			c_heat += parts[i].temp*hc;
+			hc_total += hc;
 
 			// Equilibrium temperature
 			float pt = restrict_flt(c_heat / hc_total, MIN_TEMP, MAX_TEMP);
@@ -2533,10 +2568,12 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 				}
 				else if (t == PT_SLTW)
 				{
+					//@ SLTW -> SALT/WTRV
 					t = rng.chance(1, 4) ? PT_SALT : PT_WTRV;
 				}
 				else if (t == PT_BRMT)
 				{
+					//@ BRMT(TUNG) -> LAVA(TUNG)
 					if (parts[i].ctype == PT_TUNG)
 					{
 						if (ctemph < elements[parts[i].ctype].HighTemperature)
@@ -2564,12 +2601,14 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 				{
 					if (parts[i].tmp > 5)
 					{
+						//@ RIME -> ACID
 						t = PT_ACID;
 						parts[i].life = 25 + 5 * parts[i].tmp;
 						parts[i].tmp = 0;
 					}
 					else
 					{
+						//@ RIME -> WATR
 						t = PT_WATR;
 					}
 				}
@@ -2585,6 +2624,7 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 				}
 				else if (t == PT_WTRV)
 				{
+					//@ WTRV -> RIME/DSTW
 					t = (pt < 273.0f) ? PT_RIME : PT_DSTW;
 				}
 				else if (t == PT_LAVA)
@@ -2621,18 +2661,20 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 							parts[i].ctype = PT_NONE;
 							if (t == PT_THRM)
 							{
+								//@ LAVA(THRM) -> BMTL
 								parts[i].tmp = 0;
 								t = PT_BMTL;
 							}
 							if (t == PT_PLUT)
 							{
+								//@ LAVA(PLUT) -> LAVA
 								parts[i].tmp = 0;
 								t = PT_LAVA;
 							}
 						}
 					}
 					else if (pt<973.0f)
-						t = PT_STNE;
+						t = PT_STNE; //@ LAVA -> STNE
 					else
 						s = 0;
 				}
@@ -2654,6 +2696,14 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 					//idealy transitions should use create_part(i) but some elements rely on properties staying constant
 					//and I don't feel like checking each one right now
 					parts[i].tmp = 0;
+
+					if (parts[i].type == PT_SEED)
+					{
+						parts[i].ctype = 0;
+						parts[i].tmp2 = 0;
+						parts[i].tmp3 = 0;
+						parts[i].tmp4 = 0;
+					}
 				}
 				if ((elements[t].Properties&TYPE_GAS) && !(elements[parts[i].type].Properties&TYPE_GAS))
 					pv[y/CELL][x/CELL] += 0.50f;
@@ -2799,6 +2849,17 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 				return true;
 			}
 			parts[i].life = 0;
+
+			// To prevent PIPE -> BRMT setting BRMT's ctype
+			if (t == PT_BRMT)
+			{
+				parts[i].ctype = 0;
+				parts[i].tmp = 0;
+				parts[i].tmp2 = 0;
+				parts[i].tmp3 = 0;
+				parts[i].tmp4 = 0;
+			}
+
 			// part_change_type could refuse to change the type and kill the particle
 			// for example, changing type to STKM but one already exists
 			// we need to account for that to not cause simulation corruption issues
@@ -2812,7 +2873,7 @@ bool Simulation::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 	return transitionOccurred;
 }
 
-void Simulation::MovementPhase(int i, Neighbourhood neighbourhood)
+void SimulationImpl::MovementPhase(int i, Neighbourhood neighbourhood)
 {
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
@@ -2997,6 +3058,16 @@ void Simulation::MovementPhase(int i, Neighbourhood neighbourhood)
 					if (wl_bin > 25) wl_bin = 25;
 					mask = (0x1F << wl_bin);
 				}
+				else if (TYP(r) == PT_SEED)
+				{
+					// Reflect different wavelengths based on SEED's color genes
+					int colour = (parts[ID(r)].ctype >> PLNT_COLOUR) & 0x3f;
+
+					mask |= ((colour & 0b110000) != 0) ? 0 : (1 << 25); // Red
+					mask |= ((colour & 0b001100) != 0) ? 0 : (1 << 15); // Green
+					mask |= ((colour & 0b000011) != 0) ? 0 : (1 << 5); // Blue
+
+				}
 				parts[i].ctype &= mask;
 			}
 
@@ -3049,11 +3120,11 @@ void Simulation::MovementPhase(int i, Neighbourhood neighbourhood)
 			if (fin_x<x-ISTP) fin_x=x-ISTP;
 			if (fin_y>y+ISTP) fin_y=y+ISTP;
 			if (fin_y<y-ISTP) fin_y=y-ISTP;
-			if (do_move(i, x, y, (float)(2*x-fin_x), fin_y))
+			if (do_move(i, x, y, float(2*x-fin_x), float(fin_y)))
 			{
 				parts[i].vx *= elements[t].Collision;
 			}
-			else if (do_move(i, x, y, fin_x, (float)(2*y-fin_y)))
+			else if (do_move(i, x, y, float(fin_x), float(2*y-fin_y)))
 			{
 				parts[i].vy *= elements[t].Collision;
 			}
@@ -3284,6 +3355,7 @@ void Simulation::MovementPhase(int i, Neighbourhood neighbourhood)
 
 void Simulation::RecalcFreeParticles(bool do_life_dec)
 {
+	FrameTime::Span span(frameTime, "Simulation::RecalcFreeParticles");
 	memset(pmap, 0, sizeof(pmap));
 	memset(pmap_count, 0, sizeof(pmap_count));
 	memset(photons, 0, sizeof(photons));
@@ -3600,6 +3672,7 @@ void Simulation::CheckStacking()
 					{
 						if (pmap_count[y][x]>NPART)
 						{
+							//@ stacking -> NBHL
 							create_part(i, x, y, PT_NBHL);
 							parts[i].temp = MAX_TEMP;
 							parts[i].tmp = pmap_count[y][x]-NPART;//strength of grav field
@@ -3664,7 +3737,10 @@ void Simulation::BeforeSim(bool willUpdate)
 {
 	if (willUpdate)
 	{
-		air->update_air();
+		{
+			FrameTime::Span span(frameTime, "Air::update_air");
+			air->update_air();
+		}
 
 		if(aheat_enable)
 			air->update_airh();
@@ -3689,9 +3765,9 @@ void Simulation::BeforeSim(bool willUpdate)
 		if (elementRecount)
 			std::fill(elementCount, elementCount+PT_NUM, 0);
 	}
-	sandcolour_interface = (int)(20.0f*sin((float)sandcolour_frame*(TPT_PI_FLT/180.0f)));
+	sandcolour_interface = int(20.0f*sin(float(sandcolour_frame)*std::numbers::pi_v<float>/180.0f));
 	sandcolour_frame = (sandcolour_frame+1)%360;
-	sandcolour = (int)(20.0f*sin((float)(frameCount)*(TPT_PI_FLT/180.0f)));
+	sandcolour = int(20.0f*sin(float(frameCount)*std::numbers::pi_v<float>/180.0f));
 
 	if (gravWallChanged)
 	{

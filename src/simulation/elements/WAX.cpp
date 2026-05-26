@@ -38,5 +38,5 @@ void Element::Element_WAX()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 319.0f;
-	HighTemperatureTransition = PT_MWAX;
+	HighTemperatureTransition = PT_MWAX; //@ WAX -> MWAX
 }

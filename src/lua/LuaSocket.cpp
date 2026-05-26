@@ -3,7 +3,6 @@
 
 int LuaSocket::GetTime(lua_State *L)
 {
-	GetLSI()->AssertInterfaceEvent();
 	lua_pushnumber(L, LuaSocket::Now());
 	return 1;
 }

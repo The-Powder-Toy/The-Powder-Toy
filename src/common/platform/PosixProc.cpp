@@ -14,7 +14,7 @@ void DoRestart()
 	ByteString exename = ExecutableName();
 	if (exename.length())
 	{
-		execl(exename.c_str(), exename.c_str(), NULL);
+		execl(exename.c_str(), exename.c_str(), nullptr);
 		int ret = errno;
 		fprintf(stderr, "cannot restart: execl(...) failed: code %i\n", ret);
 	}
@@ -64,7 +64,7 @@ bool UpdateStart(std::span<const char> data)
 		return false;
 	}
 
-	execl(exeName.c_str(), "powder-update", NULL);
+	execl(exeName.c_str(), "powder-update", nullptr);
 	return false; // execl returned, we failed
 }
 

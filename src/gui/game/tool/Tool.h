@@ -30,11 +30,12 @@ public:
 	bool altBehaviour = false;
 	int MenuSection = SC_TOOL;
 	bool MenuVisible = true;
+	int MenuSort = 0;
 
 	Tool() = default;
 
 	Tool(int id, String name, String description,
-		RGB colour, ByteString identifier, std::unique_ptr<VideoBuffer> (*textureGen)(int, Vec2<int>) = NULL, bool blocky = false
+		RGB colour, ByteString identifier, std::unique_ptr<VideoBuffer> (*textureGen)(int, Vec2<int>) = nullptr, bool blocky = false
 	):
 		textureGen(textureGen),
 		ToolID(id),

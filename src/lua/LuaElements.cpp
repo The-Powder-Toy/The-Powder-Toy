@@ -75,23 +75,6 @@ static void manageElementIdentifier(lua_State *L, int id, bool add)
 			lua_pushnil(L);
 		}
 		lua_settable(L, -3);
-		if (elements[id].Identifier.BeginsWith("DEFAULT_PT_"))
-		{
-			ByteString realIdentifier = ByteString::Build("DEFAULT_PT_", elements[id].Name.ToUtf8());
-			if (id != 0 && id != PT_NBHL && id != PT_NWHL && elements[id].Identifier != realIdentifier)
-			{
-				tpt_lua_pushByteString(L, realIdentifier);
-				if (add)
-				{
-					lua_pushinteger(L, id);
-				}
-				else
-				{
-					lua_pushnil(L);
-				}
-				lua_settable(L, -3);
-			}
-		}
 		lua_pop(L, 1);
 	}
 }
@@ -310,7 +293,8 @@ static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 		lua_pushinteger(lsi->L, i);
 		lua_pushinteger(lsi->L, t);
 		lua_pushinteger(lsi->L, v);
-		if (tpt_lua_pcall(lsi->L, 3, 1, 0, eventTraitSimRng))
+		lsi->monopartAccessPartID = i;
+		if (tpt_lua_pcall(lsi->L, 3, 1, 0, eventTraitSimRng | eventTraitMonopartAccess))
 		{
 			lsi->Log(CommandInterface::LogError, LuaGetError());
 			lua_pop(lsi->L, 1);
@@ -321,6 +305,7 @@ static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 				ret = lua_toboolean(lsi->L, -1);
 			lua_pop(lsi->L, 1);
 		}
+		lsi->monopartAccessPartID = -1;
 	}
 	return ret;
 }
