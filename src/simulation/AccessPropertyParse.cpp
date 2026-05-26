@@ -41,11 +41,6 @@ AccessProperty AccessProperty::Parse(int prop, String value)
 				if (*endptr)
 					throw std::runtime_error("Not a number");
 			}
-			else if(value.length() > 2 && value.BeginsWith("0O"))
-			{
-				//0o777
-				v = value.Substr(2).ToNumber<unsigned int>(Format::Oct());
-			}
 			else if(value.length() > 1 && value.BeginsWith("#"))
 			{
 				//#C0FFEE
@@ -134,11 +129,6 @@ AccessProperty AccessProperty::Parse(int prop, String value)
 				v = (unsigned int)std::strtoul(substr.c_str(), &endptr, 2);
 				if (*endptr)
 					throw std::runtime_error("Not a number");
-			}
-			else if(value.length() > 2 && value.BeginsWith("0O"))
-			{
-				//0o777
-				v = value.Substr(2).ToNumber<unsigned int>(Format::Oct());
 			}
 			else if(value.length() > 1 && value.BeginsWith("#"))
 			{
