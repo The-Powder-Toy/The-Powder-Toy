@@ -174,12 +174,14 @@ static int update(UPDATE_FUNC_ARGS)
 
 								// Update the new fighter's metadata
 								// Do not attempt to copy kinematics of legs - overwritten next frame anyway
-								const playerst& source_pst = sim->fighters[other.tmp];
-								playerst& this_pst = sim->fighters[old_tmp];
-								this_pst.rocketBoots = source_pst.rocketBoots;
-								this_pst.fan = source_pst.fan;
-								this_pst.elem = source_pst.elem;
-
+								if (other.tmp >= 0 && other.tmp < MAX_FIGHTERS)
+								{
+									const playerst& source_pst = sim->fighters[other.tmp];
+									playerst& this_pst = sim->fighters[old_tmp];
+									this_pst.rocketBoots = source_pst.rocketBoots;
+									this_pst.fan = source_pst.fan;
+									this_pst.elem = source_pst.elem;
+								}
 							}
 
 							parts[p].x = float(xCopyTo);
