@@ -169,11 +169,11 @@ static int update(UPDATE_FUNC_ARGS)
 						}
 						if(foundEnd) {
 							if(state == PISTON_EXTEND) {
-								if (armCount+pistonCount > armLimit)
+								if(armCount+pistonCount > armLimit)
 								{
 									if (parts[i].tmp3 & FLAG_B_EXT_ARMLIMIT)
 										continue; // If extending piston would exceed the armLimit, skip extension entirely
-									pistonCount = armLimit - armCount;
+									pistonCount = armLimit-armCount;
 								}
 								if(pistonCount > 0) {
 									bool cancelOnObstacle = parts[i].tmp3 & FLAG_A_EXT_OBSTACLE;
@@ -260,7 +260,6 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 		int realDirectionX = retract?-directionX:directionX;
 		int realDirectionY = retract?-directionY:directionY;
 		int maxRight = MAX_FRAME, maxLeft = MAX_FRAME;
-		int origAmount = amount;
 
 		//check if we can push all the FRME
 		for(int c = retract; c < MAX_FRAME; c++) {
