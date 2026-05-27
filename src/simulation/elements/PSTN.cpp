@@ -98,8 +98,7 @@ static int update(UPDATE_FUNC_ARGS)
 					auto r = pmap[y+ry][x+rx];
 					if (!r)
 						continue;
-					if (TYP(r)==PT_SPRK && parts[ID(r)].life==3) 
-					{
+					if (TYP(r)==PT_SPRK && parts[ID(r)].life==3) {
 						if(parts[ID(r)].ctype == PT_PSCN)
 							state = PISTON_EXTEND;
 						else
@@ -133,8 +132,7 @@ static int update(UPDATE_FUNC_ARGS)
 						auto nxi = directionX, nyi = directionY;
 						for (auto nxx = 0, nyy = 0; ; nyy += nyi, nxx += nxi)
 						{
-							if (!(x+nxx<XRES && y+nyy<YRES && x+nxx >= 0 && y+nyy >= 0)) 
-							{
+							if (!(x+nxx<XRES && y+nyy<YRES && x+nxx >= 0 && y+nyy >= 0)) {
 								break;
 							}
 							r = pmap[y+nyy][x+nxx];
@@ -169,30 +167,24 @@ static int update(UPDATE_FUNC_ARGS)
 								break;
 							}
 						}
-						if(foundEnd) 
-						{
-							if(state == PISTON_EXTEND) 
-							{
-								if (armCount + pistonCount > armLimit)
+						if(foundEnd) {
+							if(state == PISTON_EXTEND) {
+								if (armCount+pistonCount > armLimit)
 								{
 									// If extending piston would exceed the armLimit, skip extension entirely
 									if (parts[i].tmp3 & FLAG_B_EXT_ARMLIMIT)
 										continue;
 									pistonCount = armLimit - armCount;
 								}
-								if(pistonCount > 0) 
-								{
+								if(pistonCount > 0) {
 									bool Restrict_A = parts[i].tmp3 & FLAG_A_EXT_OBSTACLE;
 									bool Restrict_C = false; // Don't worry about Flag_C during extension
 									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, true, 0, Restrict_A, Restrict_C);
-									if(newSpace) 
-									{
+									if(newSpace) {
 										//Create new piston section
-										for(int j = 0; j < newSpace; j++) 
-										{
+										for(int j = 0; j < newSpace; j++) {
 											int nr = sim->create_part(-3, pistonEndX+(nxi*j), pistonEndY+(nyi*j), PT_PSTN);
-											if (nr > -1) 
-											{
+											if (nr > -1) {
 												parts[nr].life = 1;
 												if (parts[i].dcolour)
 												{
@@ -204,19 +196,16 @@ static int update(UPDATE_FUNC_ARGS)
 										movedPiston =  true;
 									}
 								}
-							} 
-							else if(state == PISTON_RETRACT) 
-							{
+							} else if(state == PISTON_RETRACT) {
 								if(pistonCount > armCount)
 								{
 									// Arm too short to retract according to constraint D
-									if(parts[i].tmp3 & FLAG_D_RET_TOOSHORT)
+									if (parts[i].tmp3 & FLAG_D_RET_TOOSHORT)
 										continue;
 									pistonCount = armCount;
 								}
 
-								if(armCount && pistonCount > 0) 
-								{
+								if(armCount && pistonCount > 0) {
 									// Retract the piston safely
 									bool Restrict_A = false; // Don't worry about Flag_A during retraction
 									bool Restrict_C = parts[i].tmp3 & FLAG_C_RET_OBSTACLE;
@@ -271,8 +260,7 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 {
 	int posX, posY, r;
 	r = sim->pmap[stackY][stackX];
-	if(!callDepth && TYP(r) == PT_FRME) 
-	{
+	if(!callDepth && TYP(r) == PT_FRME) {
 		int newY = !!directionX, newX = !!directionY;
 		int realDirectionX = retract?-directionX:directionX;
 		int realDirectionY = retract?-directionY:directionY;
@@ -280,57 +268,45 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 		int origAmount = amount;
 
 		//check if we can push all the FRME
-		for(int c = retract; c < MAX_FRAME; c++) 
-		{
+		for(int c = retract; c < MAX_FRAME; c++) {
 			posY = stackY + (c*newY);
 			posX = stackX + (c*newX);
-			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0 && TYP(sim->pmap[posY][posX]) == PT_FRME) 
-			{
+			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0 && TYP(sim->pmap[posY][posX]) == PT_FRME) {
 				int spaces = CanMoveStack(sim, posX, posY, realDirectionX, realDirectionY, maxSize, amount, retract, block).spaces;
 				if(spaces < amount)
 					amount = spaces;
-			} 
-			else 
-			{
+			} else {
 				maxRight = c;
 				break;
 			}
 		}
-		for(int c = 1; c < MAX_FRAME; c++) 
-		{
+		for(int c = 1; c < MAX_FRAME; c++) {
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
-			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0 && TYP(sim->pmap[posY][posX]) == PT_FRME) 
-			{
+			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0 && TYP(sim->pmap[posY][posX]) == PT_FRME) {
 				int spaces = CanMoveStack(sim, posX, posY, realDirectionX, realDirectionY, maxSize, amount, retract, block).spaces;
 				if(spaces < amount)
 					amount = spaces;
-			} 
-			else 
-			{
+			} else {
 				maxLeft = c;
 				break;
 			}
 		}
-		if(Restrict_C && retract && amount < origAmount) 
+		if (Restrict_C && retract && amount < origAmount) 
 		{
-			// Retraction is not allowed
-			return 0;   // abort before moving anything
+			return 0;   // Retraction is not allowed, abort before moving anything
 		}
-		if(Restrict_A && !retract && amount < origAmount)
+		if (Restrict_A && !retract && amount < origAmount)
 		{
-			// Extension is not allowed
-			return 0;   // abort before moving anything
+			return 0;   // Extension is not allowed, abort before moving anything
 		}
 		//If the piston is pushing frame, iterate out from the centre to the edge and push everything resting on frame
-		for(int c = 1; c < maxRight; c++) 
-		{
+		for(int c = 1; c < maxRight; c++) {
 			posY = stackY + (c*newY);
 			posX = stackX + (c*newX);
 			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[posY][posX])].tmp, 1, Restrict_A, Restrict_C);
 		}
-		for(int c = 1; c < maxLeft; c++) 
-		{
+		for(int c = 1; c < maxLeft; c++) {
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
 			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[posY][posX])].tmp, 1, Restrict_A, Restrict_C);
@@ -342,34 +318,28 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 				sim->kill_part(ID(sim->pmap[stackY+(directionY*-j)][stackX+(directionX*-j)]));
 		return MoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[stackY][stackX])].tmp, 1, Restrict_A, Restrict_C);
 	}
-	if(retract)
-	{
+	if(retract){
 		bool foundParts = false;
 		//Remove arm section if retracting without FRME
 		if (!callDepth)
 			for(int j = 1; j <= amount; j++)
 				sim->kill_part(ID(sim->pmap[stackY+(directionY*-j)][stackX+(directionX*-j)]));
 		int currentPos = 0;
-		for(posX = stackX, posY = stackY; currentPos < maxSize && currentPos < XRES-1; posX += directionX, posY += directionY) 
-		{
-			if (!(posX < XRES && posY < YRES && posX >= 0 && posY >= 0)) 
-			{
+		for(posX = stackX, posY = stackY; currentPos < maxSize && currentPos < XRES-1; posX += directionX, posY += directionY) {
+			if (!(posX < XRES && posY < YRES && posX >= 0 && posY >= 0)) {
 				break;
 			}
 			r = sim->pmap[posY][posX];
-			if(!r || TYP(r) == block || (!sticky && TYP(r) != PT_FRME)) 
-			{
+			if(!r || TYP(r) == block || (!sticky && TYP(r) != PT_FRME)) {
 				break;
 			} else {
 				foundParts = true;
 				sim->Element_PSTN_tempParts[currentPos++] = ID(r);
 			}
 		}
-		if(foundParts) 
-		{
+		if(foundParts) {
 			//Move particles
-			for(int j = 0; j < currentPos; j++) 
-			{
+			for(int j = 0; j < currentPos; j++) {
 				int jP = sim->Element_PSTN_tempParts[j];
 				int srcX = (int)(sim->parts[jP].x + 0.5f), srcY = (int)(sim->parts[jP].y + 0.5f);
 				int destX = srcX-directionX*amount, destY = srcY-directionY*amount;
@@ -380,20 +350,15 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 			}
 			return amount;
 		}
-	} 
-	else 
-	{
+	} else {
 		StackData stackData = CanMoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block);
 		int currentPos = stackData.pushed + stackData.spaces;
-		if(currentPos)
-		{
+		if(currentPos){
 			//Move particles
 			int possibleMovement = 0;
-			for(int j = currentPos-1; j >= 0; j--) 
-			{
+			for(int j = currentPos-1; j >= 0; j--) {
 				int jP = sim->Element_PSTN_tempParts[j];
-				if(jP < 0) 
-				{
+				if(jP < 0) {
 					possibleMovement++;
 					continue;
 				}
