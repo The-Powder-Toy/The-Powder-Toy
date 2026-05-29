@@ -39,6 +39,8 @@ if cpp_compiler.get_id() in [ 'msvc', 'clang-cl' ]
 	host_libc = 'msvc'
 elif cpp_compiler.get_id() in [ 'gcc' ] and host_platform == 'windows'
 	host_libc = 'mingw'
+elif cpp_compiler.get_id() in [ 'clang' ] and host_platform == 'windows'
+	host_libc = 'mingwclang'
 elif host_platform in [ 'darwin' ]
 	host_libc = 'macos'
 elif host_platform in [ 'emscripten' ]
