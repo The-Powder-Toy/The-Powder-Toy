@@ -36,6 +36,15 @@ AccessProperty AccessProperty::Parse(int prop, String value)
 				//#C0FFEE
 				v = value.Substr(1).ToNumber<unsigned int>(Format::Hex());
 			}
+			else if(value.length() > 2 && value.BeginsWith("0B"))
+			{
+				//0b1001100110
+				ByteString substr = value.Substr(2).ToUtf8();
+				size_t converted;
+				v = std::stoi(substr, &converted, 2);
+				if (converted != substr.length())
+					throw ParseError("invalid binary value");
+			}
 			else
 			{
 				// Try to parse as particle name
@@ -115,6 +124,15 @@ AccessProperty AccessProperty::Parse(int prop, String value)
 			{
 				//#C0FFEE
 				v = value.Substr(1).ToNumber<unsigned int>(Format::Hex());
+			}
+			else if(value.length() > 2 && value.BeginsWith("0B"))
+			{
+				//0b1001100110
+				ByteString substr = value.Substr(2).ToUtf8();
+				size_t converted;
+				v = std::stol(substr, &converted, 2);
+				if (converted != substr.length())
+					throw ParseError("invalid binary value");
 			}
 			else
 			{
