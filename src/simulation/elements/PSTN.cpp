@@ -6,7 +6,7 @@ static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);
 static StackData CanMoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block);
-static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth = 0);
+static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth, bool cancelOnObstacle);
 
 void Element::Element_PSTN()
 {
@@ -73,6 +73,11 @@ constexpr int PISTON_EXTEND     = 0x02;
 constexpr int MAX_FRAME         = 0x0F;
 constexpr int DEFAULT_LIMIT     = 0x1F;
 constexpr int DEFAULT_ARM_LIMIT = 0xFF;
+// tmp3 as a bitfield
+constexpr int FLAG_A_EXT_OBSTACLE = 0x01; // xxx1 : Don't extend if blocked by obstacles
+constexpr int FLAG_B_EXT_ARMLIMIT = 0x02; // xx1x : Don't extend if blocked by arm limit
+constexpr int FLAG_C_RET_OBSTACLE = 0x04; // x1xx : Don't retract if frme hinders movement
+constexpr int FLAG_D_RET_TOOSHORT = 0x08; // 1xxx : Don't retract if arm is shorter than retraction length
 
 static int update(UPDATE_FUNC_ARGS)
 {
@@ -165,9 +170,14 @@ static int update(UPDATE_FUNC_ARGS)
 						if(foundEnd) {
 							if(state == PISTON_EXTEND) {
 								if(armCount+pistonCount > armLimit)
+								{
+									if (parts[i].tmp3 & FLAG_B_EXT_ARMLIMIT)
+										continue; // If extending piston would exceed the armLimit, skip extension entirely
 									pistonCount = armLimit-armCount;
+								}
 								if(pistonCount > 0) {
-									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, true);
+									bool cancelOnObstacle = parts[i].tmp3 & FLAG_A_EXT_OBSTACLE;
+									newSpace = MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, false, parts[i].ctype, true, 0, cancelOnObstacle);
 									if(newSpace) {
 										//Create new piston section
 										for(int j = 0; j < newSpace; j++) {
@@ -186,9 +196,16 @@ static int update(UPDATE_FUNC_ARGS)
 								}
 							} else if(state == PISTON_RETRACT) {
 								if(pistonCount > armCount)
+								{
+									if (parts[i].tmp3 & FLAG_D_RET_TOOSHORT)
+										continue; // Arm too short to retract according to constraint D
 									pistonCount = armCount;
+								}
+
 								if(armCount && pistonCount > 0) {
-									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY, maxSize, pistonCount, true, parts[i].ctype, true);
+									bool cancelOnObstacle = parts[i].tmp3 & FLAG_C_RET_OBSTACLE; // Only retract if no obstacles hinder frme movement
+									MoveStack(sim, pistonEndX, pistonEndY, directionX, directionY,
+										maxSize, pistonCount, true, parts[i].ctype, true, 0, cancelOnObstacle);
 									movedPiston = true;
 								}
 							}
@@ -234,7 +251,7 @@ static StackData CanMoveStack(Simulation * sim, int stackX, int stackY, int dire
 	return StackData(currentPos - spaces, spaces);
 }
 
-static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth)
+static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, int directionY, int maxSize, int amount, bool retract, int block, bool sticky, int callDepth, bool cancelOnObstacle)
 {
 	int posX, posY, r;
 	r = sim->pmap[stackY][stackX];
@@ -251,6 +268,10 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0 && TYP(sim->pmap[posY][posX]) == PT_FRME) {
 				int spaces = CanMoveStack(sim, posX, posY, realDirectionX, realDirectionY, maxSize, amount, retract, block).spaces;
 				if(spaces < amount)
+					if (cancelOnObstacle)
+					{
+						return 0;   // Obstacle encountered, tmp3 flags are set such that shortened movement is not allowed, abort before moving anything
+					}
 					amount = spaces;
 			} else {
 				maxRight = c;
@@ -263,6 +284,10 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 			if (posX < XRES && posY < YRES && posX >= 0 && posY >= 0 && TYP(sim->pmap[posY][posX]) == PT_FRME) {
 				int spaces = CanMoveStack(sim, posX, posY, realDirectionX, realDirectionY, maxSize, amount, retract, block).spaces;
 				if(spaces < amount)
+					if (cancelOnObstacle)
+					{
+						return 0;   // Obstacle encountered, tmp3 flags are set such that shortened movement is not allowed, abort before moving anything
+					}
 					amount = spaces;
 			} else {
 				maxLeft = c;
@@ -274,19 +299,19 @@ static int MoveStack(Simulation * sim, int stackX, int stackY, int directionX, i
 		for(int c = 1; c < maxRight; c++) {
 			posY = stackY + (c*newY);
 			posX = stackX + (c*newX);
-			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[posY][posX])].tmp, 1);
+			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[posY][posX])].tmp, 1, cancelOnObstacle);
 		}
 		for(int c = 1; c < maxLeft; c++) {
 			posY = stackY - (c*newY);
 			posX = stackX - (c*newX);
-			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[posY][posX])].tmp, 1);
+			MoveStack(sim, posX, posY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[posY][posX])].tmp, 1, cancelOnObstacle);
 		}
 
 		//Remove arm section if retracting with FRME
 		if (retract)
 			for(int j = 1; j <= amount; j++)
 				sim->kill_part(ID(sim->pmap[stackY+(directionY*-j)][stackX+(directionX*-j)]));
-		return MoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[stackY][stackX])].tmp, 1);
+		return MoveStack(sim, stackX, stackY, directionX, directionY, maxSize, amount, retract, block, !sim->parts[ID(sim->pmap[stackY][stackX])].tmp, 1, cancelOnObstacle);
 	}
 	if(retract){
 		bool foundParts = false;
