@@ -2542,6 +2542,8 @@ bool SimulationImpl::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 				// particle type change due to high temperature
 				if (elements[t].HighTemperatureTransition != ST)
 				{
+					if (t == PT_FOG)
+						parts[i].ctype = 0; // clear unnecessary ctype
 					t = elements[t].HighTemperatureTransition;
 				}
 				else if (t == PT_ICEI || t == PT_SNOW)
@@ -2609,7 +2611,8 @@ bool SimulationImpl::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 					else
 					{
 						//@ RIME -> WATR
-						t = PT_WATR;
+						t = parts[i].ctype == PT_DSTW ? PT_DSTW : PT_WATR;
+						parts[i].ctype = 0;
 					}
 				}
 				else
@@ -2688,6 +2691,8 @@ bool SimulationImpl::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 			{
 				if (t==PT_ICEI || t==PT_LAVA || t==PT_SNOW)
 					parts[i].ctype = parts[i].type;
+				if (t == PT_RIME)
+					parts[i].ctype = PT_DSTW;
 				if (!(t==PT_ICEI && parts[i].ctype==PT_FRZW) && t!=PT_ACID)
 					parts[i].life = 0;
 				if (t == PT_FIRE)

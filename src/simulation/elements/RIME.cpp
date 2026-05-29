@@ -33,6 +33,7 @@ void Element::Element_RIME()
 	Description = "Solid, created when steam cools rapidly and goes through deposition, skipping the liquid phase.";
 
 	Properties = TYPE_SOLID;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -63,10 +64,14 @@ static int update(UPDATE_FUNC_ARGS)
 					sim->part_change_type(i,x,y,PT_FOG);
 					parts[i].life = sim->rng.between(60, 119);
 				}
+				// GAS increases acidity
 				else if (TYP(r) == PT_GAS && parts[i].tmp < 10)
 				{
 					sim->kill_part(ID(r));
-					parts[i].tmp++;
+					if (parts[i].ctype == PT_DSTW)
+						parts[i].ctype = 0;
+					else
+						parts[i].tmp++;
 				}
 				else if (TYP(r)==PT_FOG&&parts[ID(r)].life>0)
 				{

@@ -85,6 +85,8 @@ void GameSave::MapPalette()
 		ignoreMissingErrors[PT_WTRV] = true;
 		ignoreMissingErrors[PT_FIRE] = true;
 		ignoreMissingErrors[PT_BRMT] = true;
+		ignoreMissingErrors[PT_FOG] = true;
+		ignoreMissingErrors[PT_RIME] = true;
 	}
 
 	auto &sd = SimulationData::CRef();
