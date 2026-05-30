@@ -291,25 +291,6 @@ if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 		c_link_args+=\'-static-libgcc\',
 		c_link_args+=\'-static-libstdc++\',
 	fi
-else
-	if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC $BSH_BUILD_PLATFORM" == "x86_64-windows-mingw windows" ]]; then
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2=true
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2_include_dir=/ucrt64/include
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2_lib_dir=/ucrt64/lib
-	fi
-	if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC $BSH_BUILD_PLATFORM" == "x86-windows-mingw windows" ]]; then
-		>&2 echo "nyi elusive bzip2"
-		exit 1
-	fi
-	if [[ $BSH_BUILD_PLATFORM == linux ]]; then
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2=true
-	fi
-	if [[ $BSH_BUILD_PLATFORM == darwin ]]; then
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2=true
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2_lib_dir=/usr/local/opt/bzip2/lib
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2_include_dir=/usr/local/opt/bzip2/include
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2_static=true
-	fi
 fi
 if [[ $BSH_HOST_PLATFORM == linux ]] && [[ $BSH_HOST_ARCH != aarch64 ]]; then
 	# certain file managers can't run PIEs https://bugzilla.gnome.org/show_bug.cgi?id=737849

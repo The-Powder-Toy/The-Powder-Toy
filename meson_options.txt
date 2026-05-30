@@ -113,8 +113,9 @@ option(
 )
 option(
 	'workaround_elusive_bzip2',
-	type: 'boolean',
-	value: true,
+	type: 'combo',
+	choices: [ 'none', 'simple', 'manual' ],
+	value: 'simple',
 	description: 'Find bzip2 via the compiler and its built-in library directories, rather than via pkg-config or similar'
 )
 option(

@@ -117,7 +117,14 @@ if tpt_libs_static != 'none'
 	endif
 	tpt_libs = subproject('tpt-libs-prebuilt-@0@-@1@-@2@'.format(tpt_libs_variant, tpt_libs_debug, tpt_libs_vtag))
 else
-	if get_option('workaround_elusive_bzip2')
+	workaround_elusive_bzip2 = get_option('workaround_elusive_bzip2')
+	if workaround_elusive_bzip2 == 'simple'
+		cpp_compiler.check_header('bzlib.h', required: true)
+		meson.override_dependency('bzip2', declare_dependency(
+			dependencies: cpp_compiler.find_library('bz2'),
+			version: '1.0.8-elusive',
+		))
+	elif workaround_elusive_bzip2 == 'manual'
 		bzip2_lib_name = get_option('workaround_elusive_bzip2_lib_name')
 		bzip2_include_name = get_option('workaround_elusive_bzip2_include_name')
 		bzip2_lib_dir = get_option('workaround_elusive_bzip2_lib_dir')
