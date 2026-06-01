@@ -5,6 +5,14 @@ static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
 
+void Element_SOAP_neighourLoop(float &dx, float &dy)
+{
+	if (dx >= (XRES / 2 - CELL)) dx -= XRES - 2 * CELL;
+	if (dy >= (YRES / 2 - CELL)) dy -= YRES - 2 * CELL;
+	if (dx < -(XRES / 2 - CELL)) dx += XRES - 2 * CELL;
+	if (dy < -(YRES / 2 - CELL)) dy += YRES - 2 * CELL;
+}
+
 void Element::Element_SOAP()
 {
 	Identifier = "DEFAULT_PT_SOAP";
@@ -227,6 +235,7 @@ static int update(UPDATE_FUNC_ARGS)
 			float d, dx, dy;
 			dx = parts[i].x - parts[parts[i].tmp].x;
 			dy = parts[i].y - parts[parts[i].tmp].y;
+			Element_SOAP_neighourLoop(dx, dy);
 			d = 9/(pow(dx, 2)+pow(dy, 2)+9)-0.5;
 			parts[parts[i].tmp].vx -= dx*d;
 			parts[parts[i].tmp].vy -= dy*d;
@@ -241,6 +250,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					dx = parts[ii].x - parts[parts[i].tmp].x;
 					dy = parts[ii].y - parts[parts[i].tmp].y;
+					Element_SOAP_neighourLoop(dx, dy);
 					d = 81/(pow(dx, 2)+pow(dy, 2)+81)-0.5;
 					parts[parts[i].tmp].vx -= dx*d*0.5f;
 					parts[parts[i].tmp].vy -= dy*d*0.5f;

@@ -11,6 +11,7 @@
 #include "simulation/Air.h"
 #include "simulation/gravity/Gravity.h"
 #include "simulation/orbitalparts.h"
+#include "simulation/elements/SOAP.h"
 #include <algorithm>
 #include <cmath>
 #include <numbers>
@@ -503,7 +504,12 @@ void Renderer::render_parts()
 					if (t==PT_SOAP)
 					{
 						if ((parts[i].ctype&3) == 3 && parts[i].tmp >= 0 && parts[i].tmp < NPART)
-							BlendLine({ nx, ny }, { int(parts[parts[i].tmp].x+0.5f), int(parts[parts[i].tmp].y+0.5f) }, RGBA(colr, colg, colb, cola));
+						{
+							auto dx = parts[parts[i].tmp].x - nx;
+							auto dy = parts[parts[i].tmp].y - ny;
+							Element_SOAP_neighourLoop(dx, dy);
+							BlendLine({ nx, ny }, { int(nx + dx + 0.5f), int(ny + dy + 0.5f) }, RGBA(colr, colg, colb, cola));
+						}
 					}
 				}
 				if(pixel_mode & PSPEC_STICKMAN)
