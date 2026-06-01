@@ -25,7 +25,7 @@ public:
 	void OpenSave(int index);
 	bool GetMoveToFront();
 	void SetMoveToFront(bool move);
-	void SetPage(int page);
+	void SetSearch(ByteString query, int page);
 	void SetPageRelative(int offset);
 	void Update();
 	void Exit();

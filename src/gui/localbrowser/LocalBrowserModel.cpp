@@ -73,20 +73,24 @@ void LocalBrowserModel::SetMoveToFront(bool move)
 	stampToFront = move;
 }
 
-void LocalBrowserModel::UpdateSavesList(int pageNumber)
+void LocalBrowserModel::UpdateSavesList(ByteString query, int pageNumber)
 {
 	ClearSelected();
 	savesList.clear();
+	currentQuery = query;
 	currentPage = pageNumber;
 
 	stampIDs = Client::Ref().GetStamps();
 	auto size = int(stampIDs.size());
 	for (int i = currentPage * pageSize; i < size && i < (currentPage + 1) * pageSize; i++)
 	{
-		auto tempSave = Client::Ref().GetStamp(stampIDs[i]);
-		if (tempSave)
+		if (!query.size() || stampIDs[i].Contains(query))
 		{
-			savesList.push_back(std::move(tempSave));
+			auto tempSave = Client::Ref().GetStamp(stampIDs[i]);
+			if (tempSave)
+			{
+				savesList.push_back(std::move(tempSave));
+			}
 		}
 	}
 	notifyPageChanged();

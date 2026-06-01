@@ -26,7 +26,7 @@ LocalBrowserController::LocalBrowserController(std::function<void ()> onDone_):
 
 	onDone = onDone_;
 
-	browserModel->UpdateSavesList(0);
+	browserModel->UpdateSavesList("", 0);
 }
 
 void LocalBrowserController::OpenSave(int index)
@@ -97,13 +97,13 @@ void LocalBrowserController::RenameSelected()
 void LocalBrowserController::RescanStamps()
 {
 	browserModel->RescanStamps();
-	browserModel->UpdateSavesList(browserModel->GetPageNum());
+	browserModel->UpdateSavesList(browserModel->GetQuery(), browserModel->GetPageNum());
 }
 
 void LocalBrowserController::RefreshSavesList()
 {
 	ClearSelection();
-	browserModel->UpdateSavesList(browserModel->GetPageNum());
+	browserModel->UpdateSavesList(browserModel->GetQuery(), browserModel->GetPageNum());
 }
 
 void LocalBrowserController::ClearSelection()
@@ -111,17 +111,17 @@ void LocalBrowserController::ClearSelection()
 	browserModel->ClearSelected();
 }
 
-void LocalBrowserController::SetPage(int page)
+void LocalBrowserController::SetSearch(ByteString query, int page)
 {
-	if (page != browserModel->GetPageNum() && page >= 0 && page < browserModel->GetPageCount())
-		browserModel->UpdateSavesList(page);
+	if ((query != browserModel->GetQuery() || page != browserModel->GetPageNum()) && page >= 0 && page < browserModel->GetPageCount())
+		browserModel->UpdateSavesList(query, page);
 }
 
 void LocalBrowserController::SetPageRelative(int offset)
 {
 	int page = std::max(std::min(browserModel->GetPageNum() + offset, browserModel->GetPageCount() - 1), 0);
 	if (page != browserModel->GetPageNum())
-		browserModel->UpdateSavesList(page);
+		browserModel->UpdateSavesList(browserModel->GetQuery(), page);
 }
 
 void LocalBrowserController::Update()

@@ -21,10 +21,12 @@ class LocalBrowserView: public ui::Window {
 	ui::Label * pageLabel;
 	ui::Label * pageCountLabel;
 	ui::Textbox * pageTextbox;
+	ui::Textbox * searchTextbox;
 	ui::Button * removeSelected;
 	ui::Button *renameSelected;
 
-	void textChanged();
+	void searchChanged();
+	void pageChanged();
 	bool changed;
 	unsigned int lastChanged;
 	int pageCount;

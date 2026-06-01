@@ -13,6 +13,7 @@ class LocalBrowserModel {
 	std::vector<std::unique_ptr<SaveFile>> savesList;
 	std::vector<LocalBrowserView*> observers;
 	int currentPage = 0;
+	ByteString currentQuery;
 	bool stampToFront = true;
 	void notifySavesListChanged();
 	void notifyPageChanged();
@@ -21,9 +22,10 @@ public:
 	LocalBrowserModel();
 	int GetPageCount();
 	int GetPageNum() { return currentPage; }
+	ByteString GetQuery() { return currentQuery; }
 	void AddObserver(LocalBrowserView * observer);
 	std::vector<SaveFile *> GetSavesList(); // non-owning
-	void UpdateSavesList(int pageNumber);
+	void UpdateSavesList(ByteString query, int pageNumber);
 	void RescanStamps();
 	const SaveFile *GetSave();
 	std::unique_ptr<SaveFile> TakeSave();

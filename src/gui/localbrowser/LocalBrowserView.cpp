@@ -24,8 +24,15 @@ LocalBrowserView::LocalBrowserView():
 	AddComponent(previousButton);
 	AddComponent(undeleteButton);
 
+	searchTextbox = new ui::Textbox(ui::Point(30, 25), ui::Point(Size.X-60, 16), "", "[search]");
+	searchTextbox->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	searchTextbox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	searchTextbox->SetActionCallback({ [this] { searchChanged(); } });
+	AddComponent(searchTextbox);
+	FocusComponent(searchTextbox);
+
 	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), "");
-	pageTextbox->SetActionCallback({ [this] { textChanged(); } });
+	pageTextbox->SetActionCallback({ [this] { pageChanged(); } });
 	pageTextbox->SetInputType(ui::Textbox::Number);
 	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), "Page"); //page [TEXTBOX] of y
 	pageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
@@ -57,7 +64,14 @@ LocalBrowserView::LocalBrowserView():
 	AddComponent(renameSelected);
 }
 
-void LocalBrowserView::textChanged()
+void LocalBrowserView::searchChanged()
+{
+	pageTextbox->SetText("1");
+	changed = true;
+	lastChanged = GetTicks()+600;
+}
+
+void LocalBrowserView::pageChanged()
 {
 	int num = pageTextbox->GetText().ToNumber<int>(true);
 	if (num < 0) //0 is allowed so that you can backspace the 1
@@ -74,7 +88,7 @@ void LocalBrowserView::OnTick()
 	if (changed && lastChanged < GetTicks())
 	{
 		changed = false;
-		c->SetPage(std::max(pageTextbox->GetText().ToNumber<int>(true) - 1, 0));
+		c->SetSearch(searchTextbox->GetText().ToUtf8(), std::max(pageTextbox->GetText().ToNumber<int>(true) - 1, 0));
 	}
 }
 
