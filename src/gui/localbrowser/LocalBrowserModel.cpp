@@ -81,17 +81,22 @@ void LocalBrowserModel::UpdateSavesList(ByteString query, int pageNumber)
 	currentPage = pageNumber;
 
 	stampIDs = Client::Ref().GetStamps();
-	auto size = int(stampIDs.size());
-	for (int i = currentPage * pageSize; i < size && i < (currentPage + 1) * pageSize; i++)
+	int found = 0;
+	for (auto &id : stampIDs)
 	{
-		if (!query.size() || stampIDs[i].Contains(query))
+		if (!(!query.size() || id.Contains(query)))
 		{
-			auto tempSave = Client::Ref().GetStamp(stampIDs[i]);
+			continue;
+		}
+		if (found >= currentPage * pageSize && found < (currentPage + 1) * pageSize)
+		{
+			auto tempSave = Client::Ref().GetStamp(id);
 			if (tempSave)
 			{
 				savesList.push_back(std::move(tempSave));
 			}
 		}
+		found += 1;
 	}
 	notifyPageChanged();
 	notifySavesListChanged();
