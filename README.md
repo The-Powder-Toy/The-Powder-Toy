@@ -1,4 +1,4 @@
-The Powder Toy - April 2026
+The Powder Toy - June 2026
 ==========================
 
 Get the latest version [from the Powder Toy website](https://powdertoy.co.uk/Download.html). We're also on [Steam](https://store.steampowered.com/app/1148350/The_Powder_Toy/).
