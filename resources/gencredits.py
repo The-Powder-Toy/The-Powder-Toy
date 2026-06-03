@@ -75,6 +75,7 @@ def get_moderator_json() -> list[dict[str, str | int]]:
 		{ "username" : "Xenocide",    "role" : "Former Staff" },
 		{ "username" : "triclops200", "role" : "Former Staff" },
 		{ "username" : "devast8a",    "role" : "Former Staff" },
+		{ "username": "savask",       "role" : "Former Staff" },
 		{ "username" : "HK6",         "role" : "Former Staff" },
 		{ "username" : "FrankBro",    "role" : "Former Staff" },
 		{ "username" : "doxin",       "role" : "Former Staff" },
