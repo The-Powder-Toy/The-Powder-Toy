@@ -169,6 +169,14 @@ public:
 		}
 	}
 
+	void AssertToolEvent()
+	{
+		if (!(eventTraits & (eventTraitInterface | eventTraitTool)))
+		{
+			luaL_error(L, "this functionality is restricted to tool events");
+		}
+	}
+
 	void AssertMutableSimEvent()
 	{
 		if (eventTraits & eventTraitConstSim)
