@@ -98,7 +98,7 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 			fi
 			pacman -S --noconfirm --needed mingw-w64-"$variant"-{gcc,meson}
 			if [[ $BSH_STATIC_DYNAMIC == static ]]; then
-				pacman -S --noconfirm --needed mingw-w64-"$variant"-{cmake,7zip,jq} patch
+				pacman -S --noconfirm --needed p7zip mingw-w64-"$variant"-{cmake,jq} patch
 			else
 				pacman -S --noconfirm --needed mingw-w64-"$variant"-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,fftw,jq}
 			fi
