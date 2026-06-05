@@ -133,15 +133,17 @@ static int update(UPDATE_FUNC_ARGS)
 				r = pmap[y+rry][x+rrx];
 				if (r && !sd.IsHeatInsulator(parts[ID(r)]))
 				{
-					c_heat += parts[ID(r)].temp;
-					hc_total += sd.HeatCapacityOf(parts[ID(r)]);
+					float hc = sd.HeatCapacityOf(parts[ID(r)]);
+					c_heat += parts[ID(r)].temp * hc;
+					hc_total += hc;
 				}
 
 				r = sim->photons[y+rry][x+rrx];
 				if (r && !sd.IsHeatInsulator(parts[ID(r)]))
 				{
-					c_heat += parts[ID(r)].temp;
-					hc_total += sd.HeatCapacityOf(parts[ID(r)]);
+					float hc = sd.HeatCapacityOf(parts[ID(r)]);
+					c_heat += parts[ID(r)].temp * hc;
+					hc_total += hc;
 				}
 			}
 		}
