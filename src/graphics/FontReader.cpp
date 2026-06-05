@@ -1,9 +1,8 @@
 #include "FontReader.h"
-
 #include "bzip2/bz2wrap.h"
 #include "font_bz2.h"
-
 #include <array>
+#include <bit>
 #include <cstdint>
 
 unsigned char *font_data = nullptr;
@@ -38,7 +37,12 @@ static bool InitFontData()
 		{
 			return false;
 		}
-		auto codePoint = *reinterpret_cast<uint32_t *>(ptr) & 0xFFFFFFU;
+		uint32_t codePoint;
+		{
+			std::array<char, sizeof(uint32_t)> data;
+			std::copy(ptr, ptr + 4, data.data());
+			codePoint = std::bit_cast<uint32_t>(data) & 0xFFFFFFU;
+		}
 		if (codePoint >= 0x110000U)
 		{
 			return false;

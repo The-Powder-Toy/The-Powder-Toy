@@ -50,7 +50,8 @@ namespace ui
 		}
 		if (auto *exponentialProfile = std::get_if<ExponentialProfile>(&profile))
 		{
-			auto maxDiffTick = int64_t(std::log(exponentialProfile->margin / std::abs(referenceValue - target)) / std::log(exponentialProfile->decay) * tickBias);
+			auto diff = std::abs(referenceValue - target);
+			auto maxDiffTick = diff > 0.f ? int64_t(std::log(exponentialProfile->margin / diff) / std::log(exponentialProfile->decay) * tickBias) : 0;
 			if (diffTick >= maxDiffTick)
 			{
 				return target;
