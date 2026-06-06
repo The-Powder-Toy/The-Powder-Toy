@@ -2,6 +2,7 @@
 #include "common/String.h"
 #include "gui/interface/Window.h"
 #include "gui/interface/ScrollPanel.h"
+#include <optional>
 
 namespace ui
 {
@@ -33,6 +34,10 @@ class OptionsView: public ui::Window
 	ui::DropDown *edgeMode{};
 	ui::DropDown *temperatureScale{};
 	ui::DropDown *scale{};
+	ui::DropDown *fpsLimit{};
+	ui::Textbox *fpsLimitText{};
+	ui::DropDown *drawLimit{};
+	ui::Textbox *drawLimitText{};
 	ui::Checkbox *resizable{};
 	ui::Checkbox *fullscreen{};
 	ui::Checkbox *changeResolution{};
@@ -64,6 +69,10 @@ class OptionsView: public ui::Window
 	void VorticityCoeffToTextBox(float vorticity);
 	void UpdateVorticityCoeff(String cort, bool isDefocus);
 	void UpdateStartupRequestStatus();
+	void UpdateFpsLimit(bool isDefocus);
+	void FpsLimitToInterface(SimFpsLimit limit);
+	void UpdateDrawLimit(bool isDefocus);
+	void DrawLimitToInterface(DrawLimit limit);
 public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);

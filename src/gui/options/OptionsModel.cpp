@@ -7,6 +7,7 @@
 #include "common/clipboard/Clipboard.h"
 #include "gui/interface/Engine.h"
 #include "gui/game/GameModel.h"
+#include "gui/game/GameView.h"
 #include "client/Client.h"
 
 OptionsModel::OptionsModel(GameModel * gModel_) {
@@ -414,6 +415,42 @@ void OptionsModel::SetAutoStartupRequest(bool newAutoStartupRequest)
 {
 	GlobalPrefs::Ref().Set("AutoStartupRequest", newAutoStartupRequest);
 	Client::Ref().SetAutoStartupRequest(newAutoStartupRequest);
+	notifySettingsChanged();
+}
+
+SimFpsLimit OptionsModel::GetFpsLimit()
+{
+	return gModel->GetView()->GetSimFpsLimit();
+}
+void OptionsModel::SetFpsLimit(SimFpsLimit newFpsLimit)
+{
+	float saved = 2;
+	if (auto *fpsLimitExplicit = std::get_if<FpsLimitExplicit>(&newFpsLimit))
+	{
+		saved = fpsLimitExplicit->value;
+	}
+	GlobalPrefs::Ref().Set("FpsLimit", saved);
+	return gModel->GetView()->SetSimFpsLimit(newFpsLimit);
+	notifySettingsChanged();
+}
+
+DrawLimit OptionsModel::GetDrawLimit()
+{
+	return ui::Engine::Ref().GetDrawingFrequencyLimit();
+}
+void OptionsModel::SetDrawLimit(DrawLimit newDrawLimit)
+{
+	int saved = 0;
+	if (std::holds_alternative<DrawLimitDisplay>(newDrawLimit))
+	{
+		saved = -1;
+	}
+	if (auto *drawLimitExplicit = std::get_if<DrawLimitExplicit>(&newDrawLimit))
+	{
+		saved = drawLimitExplicit->value;
+	}
+	GlobalPrefs::Ref().Set("DrawLimit", saved);
+	ui::Engine::Ref().SetDrawingFrequencyLimit(newDrawLimit);
 	notifySettingsChanged();
 }
 

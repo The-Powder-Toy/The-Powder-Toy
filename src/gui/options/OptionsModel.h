@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "simulation/SimulationSettings.h"
+#include "FpsLimit.h"
 
 class GameModel;
 class Simulation;
@@ -84,5 +85,9 @@ public:
 	void SetRedirectStd(bool newRedirectStd);
 	bool GetAutoStartupRequest();
 	void SetAutoStartupRequest(bool newAutoStartupRequest);
+	SimFpsLimit GetFpsLimit();
+	void SetFpsLimit(SimFpsLimit newFpsLimit);
+	DrawLimit GetDrawLimit();
+	void SetDrawLimit(DrawLimit newDrawLimit);
 	virtual ~OptionsModel();
 };

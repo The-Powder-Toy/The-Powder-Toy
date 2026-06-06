@@ -93,6 +93,19 @@ GameController::GameController():
 
 	gameView->SetDebugHUD(GlobalPrefs::Ref().Get("Renderer.DebugMode", false));
 
+	if (auto fpsLimit = GlobalPrefs::Ref().Get<float>("FpsLimit"); fpsLimit && *fpsLimit == 2)
+	{
+		gameView->SetSimFpsLimit(FpsLimitNone{});
+	}
+	else if (fpsLimit && *fpsLimit >= FpsLimitExplicit::minSane && *fpsLimit <= FpsLimitExplicit::maxSane)
+	{
+		gameView->SetSimFpsLimit(FpsLimitExplicit{ *fpsLimit });
+	}
+	else
+	{
+		gameView->SetSimFpsLimit(DefaultFpsLimit);
+	}
+
 	commandInterface = CommandInterface::Create(this, gameModel);
 
 	Client::Ref().AddListener(this);

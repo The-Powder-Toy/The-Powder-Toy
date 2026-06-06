@@ -454,6 +454,23 @@ int Main(int argc, char *argv[])
 	engine.TouchUI = prefs.Get("TouchUI", DEFAULT_TOUCH_UI);
 	engine.windowFrameOps = windowFrameOps;
 
+	if (auto drawLimit = GlobalPrefs::Ref().Get<int>("DrawLimit"); drawLimit && *drawLimit == -1)
+	{
+		engine.SetDrawingFrequencyLimit(DrawLimitDisplay{});
+	}
+	else if (drawLimit && *drawLimit == 0)
+	{
+		engine.SetDrawingFrequencyLimit(DrawLimitNone{});
+	}
+	else if (drawLimit && *drawLimit >= DrawLimitExplicit::minSane && *drawLimit > DrawLimitExplicit::maxSane)
+	{
+		engine.SetDrawingFrequencyLimit(DrawLimitExplicit{ *drawLimit });
+	}
+	else
+	{
+		engine.SetDrawingFrequencyLimit(DefaultDrawLimit);
+	}
+
 	SDLOpen();
 
 	if (Client::Ref().IsFirstRun() && FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsNone)

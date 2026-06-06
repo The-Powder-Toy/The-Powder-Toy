@@ -197,6 +197,16 @@ void OptionsController::SetAutoStartupRequest(bool newAutoStartupRequest)
 	model->SetAutoStartupRequest(newAutoStartupRequest);
 }
 
+void OptionsController::SetFpsLimit(SimFpsLimit newFpsLimit)
+{
+	model->SetFpsLimit(newFpsLimit);
+}
+
+void OptionsController::SetDrawLimit(DrawLimit newDrawLimit)
+{
+	model->SetDrawLimit(newDrawLimit);
+}
+
 void OptionsController::Exit()
 {
 	view->CloseActiveWindow();

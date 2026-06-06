@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include "simulation/SimulationSettings.h"
+#include "FpsLimit.h"
 
 class GameModel;
 class OptionsModel;
@@ -49,6 +50,8 @@ public:
 	void SetMomentumScroll(bool momentumScroll);
 	void SetRedirectStd(bool newRedirectStd);
 	void SetAutoStartupRequest(bool newAutoStartupRequest);
+	void SetFpsLimit(SimFpsLimit newFpsLimit);
+	void SetDrawLimit(DrawLimit newDrawLimit);
 	
 	void Exit();
 	OptionsView * GetView();
