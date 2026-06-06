@@ -20,9 +20,6 @@ using FpsLimit = std::variant<FpsLimitNone, FpsLimitExplicit, FpsLimitFollowDraw
 struct DrawLimitDisplay
 {
 };
-struct DrawLimitNone
-{
-};
 struct DrawLimitExplicit
 {
 	using ValueType = int;
@@ -31,7 +28,7 @@ struct DrawLimitExplicit
 	ValueType value;
 };
 // TODO: DrawLimitVsync
-using DrawLimit = std::variant<DrawLimitDisplay, DrawLimitNone, DrawLimitExplicit>;
+using DrawLimit = std::variant<DrawLimitDisplay, DrawLimitExplicit>;
 
 constexpr auto DefaultFpsLimit = FpsLimitExplicit{ 60.f };
 constexpr auto DefaultDrawLimit = DrawLimitExplicit{ 60 };

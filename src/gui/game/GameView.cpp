@@ -2591,10 +2591,6 @@ void GameView::OnDraw()
 			{
 				fpsInfo << "display";
 			}
-			else if (std::holds_alternative<DrawLimitNone>(drawLimit))
-			{
-				fpsInfo << "none";
-			}
 			else
 			{
 				fpsInfo << std::get<DrawLimitExplicit>(drawLimit).value;

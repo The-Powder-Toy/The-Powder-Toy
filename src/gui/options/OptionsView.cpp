@@ -104,7 +104,6 @@ namespace
 	{
 		drawLimitDropdownExact,
 		drawLimitDropdownFollowDisplay,
-		drawLimitDropdownFollowSimulation,
 	};
 };
 
@@ -329,7 +328,6 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	std::tie(drawLimit, drawLimitText) = addLimitDropDown("Rendering framerate cap", {
 		{ "Exact", drawLimitDropdownExact },
 		{ "Follow display", drawLimitDropdownFollowDisplay },
-		{ "Follow simulation", drawLimitDropdownFollowSimulation },
 	}, [this](bool defocus) {
 		UpdateDrawLimit(defocus);
 	});
@@ -685,14 +683,7 @@ void OptionsView::UpdateDrawLimit(bool isDefocus)
 	{
 		drawLimitText->Enabled = false;
 		drawLimitText->SetText("");
-		if (drawLimit->GetOption().second == drawLimitDropdownFollowDisplay)
-		{
-			c->SetDrawLimit(DrawLimitDisplay{});
-		}
-		else
-		{
-			c->SetDrawLimit(DrawLimitNone{});
-		}
+		c->SetDrawLimit(DrawLimitDisplay{});
 	}
 }
 
@@ -710,14 +701,7 @@ void OptionsView::DrawLimitToInterface(DrawLimit limit)
 	{
 		drawLimitText->Enabled = false;
 		drawLimitText->SetText("");
-		if (std::holds_alternative<DrawLimitDisplay>(limit))
-		{
-			drawLimit->SetOption(drawLimitDropdownFollowDisplay);
-		}
-		else
-		{
-			drawLimit->SetOption(drawLimitDropdownFollowSimulation);
-		}
+		drawLimit->SetOption(drawLimitDropdownFollowDisplay);
 	}
 }
 
