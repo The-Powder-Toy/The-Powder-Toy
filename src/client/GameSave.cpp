@@ -1224,25 +1224,30 @@ void GameSave::readOPS(const std::vector<char> &data)
 					break;
 				case PT_PIPE:
 				case PT_PPIP:
-					if (savedVersion < 93 && !fakeNewerVersion)
+					if (savedVersion < 93)
 					{
 						if (particles[newIndex].ctype == 1)
 							particles[newIndex].tmp |= 0x00020000; //PFLAG_INITIALIZING
 						particles[newIndex].tmp |= (particles[newIndex].ctype-1)<<18;
 						particles[newIndex].ctype = particles[newIndex].tmp&0xFF;
 					}
+					if (savedVersion < 100)
+					{
+						// tmp flags now exist in the spot previously used by PIPE before ver. 93, clear them
+						particles[newIndex].tmp &= ~0xFF;
+					}
 					break;
 				case PT_TSNS:
 				case PT_HSWC:
 				case PT_PSNS:
 				case PT_PUMP:
-					if (savedVersion < 93 && !fakeNewerVersion)
+					if (savedVersion < 93)
 					{
 						particles[newIndex].tmp = 0;
 					}
 					break;
 				case PT_LIFE:
-					if (savedVersion < 96 && !fakeNewerVersion)
+					if (savedVersion < 96)
 					{
 						if (particles[newIndex].ctype >= 0 && particles[newIndex].ctype < NGOL)
 						{
@@ -1890,6 +1895,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 						particles[i-1].tmp |= 0x00020000; //PFLAG_INITIALIZING
 					particles[i-1].tmp |= (particles[i-1].ctype-1)<<18;
 					particles[i-1].ctype = particles[i-1].tmp&0xFF;
+					particles[i-1].tmp &= ~0xFF;
 				}
 				else if (particles[i-1].type == PT_HSWC || particles[i-1].type == PT_PUMP)
 				{
