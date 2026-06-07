@@ -165,10 +165,7 @@ static void luaDrawWrapper(SimTool *tool, Simulation *sim, const Brush &brush, u
 		lua_pushinteger(L, position.X);
 		lua_pushinteger(L, position.Y);
 		lua_pushnumber(L, tool->Strength);
-		lua_pushboolean(L, tool->shiftBehaviour);
-		lua_pushboolean(L, tool->ctrlBehaviour);
-		lua_pushboolean(L, tool->altBehaviour);
-		if (tpt_lua_pcall(L, 7, 0, 0, eventTraitTool))
+		if (tpt_lua_pcall(L, 4, 0, 0, eventTraitTool))
 		{
 			lsi->Log(CommandInterface::LogError, "In draw func: " + LuaGetError());
 			lua_pop(L, 1);
