@@ -191,7 +191,8 @@ static void luaDrawLineWrapper(SimTool *tool, Simulation *sim, const Brush &brus
 		lua_pushinteger(L, position2.X);
 		lua_pushinteger(L, position2.Y);
 		lua_pushnumber(L, tool->Strength);
-		if (tpt_lua_pcall(L, 6, 0, 0, eventTraitTool))
+		lua_pushboolean(L, dragging);
+		if (tpt_lua_pcall(L, 7, 0, 0, eventTraitTool))
 		{
 			lsi->Log(CommandInterface::LogError, "In drawLine func: " + LuaGetError());
 			lua_pop(L, 1);
