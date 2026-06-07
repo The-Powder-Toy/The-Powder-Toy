@@ -89,12 +89,9 @@ static int luaPerformWrapper(SimTool *tool, Simulation *sim, Particle *cpart, in
 		lua_pushinteger(L, x);
 		lua_pushinteger(L, y);
 		lua_pushnumber(L, tool->Strength);
-		lua_pushboolean(L, tool->shiftBehaviour);
-		lua_pushboolean(L, tool->ctrlBehaviour);
-		lua_pushboolean(L, tool->altBehaviour);
 		lua_pushinteger(L, brushX);
 		lua_pushinteger(L, brushY);
-		if (tpt_lua_pcall(L, 9, 1, 0, eventTraitTool))
+		if (tpt_lua_pcall(L, 6, 1, 0, eventTraitTool))
 		{
 			lsi->Log(CommandInterface::LogError, "In perform func: " + LuaGetError());
 			lua_pop(L, 1);
@@ -124,10 +121,7 @@ static void luaClickWrapper(SimTool *tool, Simulation *sim, const Brush &brush, 
 		lua_pushinteger(L, position.X);
 		lua_pushinteger(L, position.Y);
 		lua_pushnumber(L, tool->Strength);
-		lua_pushboolean(L, tool->shiftBehaviour);
-		lua_pushboolean(L, tool->ctrlBehaviour);
-		lua_pushboolean(L, tool->altBehaviour);
-		if (tpt_lua_pcall(L, 7, 0, 0, eventTraitInterface | eventTraitConstTools))
+		if (tpt_lua_pcall(L, 4, 0, 0, eventTraitInterface | eventTraitConstTools))
 		{
 			lsi->Log(CommandInterface::LogError, "In click func: " + LuaGetError());
 			lua_pop(L, 1);
@@ -150,10 +144,7 @@ static void luaDragWrapper(SimTool *tool, Simulation *sim, const Brush &brush, u
 		lua_pushinteger(L, position2.X);
 		lua_pushinteger(L, position2.Y);
 		lua_pushnumber(L, tool->Strength);
-		lua_pushboolean(L, tool->shiftBehaviour);
-		lua_pushboolean(L, tool->ctrlBehaviour);
-		lua_pushboolean(L, tool->altBehaviour);
-		if (tpt_lua_pcall(L, 9, 0, 0, eventTraitTool))
+		if (tpt_lua_pcall(L, 6, 0, 0, eventTraitTool))
 		{
 			lsi->Log(CommandInterface::LogError, "In drag func: " + LuaGetError());
 			lua_pop(L, 1);
@@ -200,10 +191,7 @@ static void luaDrawLineWrapper(SimTool *tool, Simulation *sim, const Brush &brus
 		lua_pushinteger(L, position2.X);
 		lua_pushinteger(L, position2.Y);
 		lua_pushnumber(L, tool->Strength);
-		lua_pushboolean(L, tool->shiftBehaviour);
-		lua_pushboolean(L, tool->ctrlBehaviour);
-		lua_pushboolean(L, tool->altBehaviour);
-		if (tpt_lua_pcall(L, 9, 0, 0, eventTraitTool))
+		if (tpt_lua_pcall(L, 6, 0, 0, eventTraitTool))
 		{
 			lsi->Log(CommandInterface::LogError, "In drawLine func: " + LuaGetError());
 			lua_pop(L, 1);
@@ -226,10 +214,7 @@ static void luaDrawRectWrapper(SimTool *tool, Simulation *sim, const Brush &brus
 		lua_pushinteger(L, position2.X);
 		lua_pushinteger(L, position2.Y);
 		lua_pushnumber(L, tool->Strength);
-		lua_pushboolean(L, tool->shiftBehaviour);
-		lua_pushboolean(L, tool->ctrlBehaviour);
-		lua_pushboolean(L, tool->altBehaviour);
-		if (tpt_lua_pcall(L, 9, 0, 0, eventTraitTool))
+		if (tpt_lua_pcall(L, 6, 0, 0, eventTraitTool))
 		{
 			lsi->Log(CommandInterface::LogError, "In drawRect func: " + LuaGetError());
 			lua_pop(L, 1);
@@ -250,10 +235,7 @@ static void luaDrawFillWrapper(SimTool *tool, Simulation *sim, const Brush &brus
 		lua_pushinteger(L, position.X);
 		lua_pushinteger(L, position.Y);
 		lua_pushnumber(L, tool->Strength);
-		lua_pushboolean(L, tool->shiftBehaviour);
-		lua_pushboolean(L, tool->ctrlBehaviour);
-		lua_pushboolean(L, tool->altBehaviour);
-		if (tpt_lua_pcall(L, 7, 0, 0, eventTraitTool))
+		if (tpt_lua_pcall(L, 4, 0, 0, eventTraitTool))
 		{
 			lsi->Log(CommandInterface::LogError, "In drawFill func: " + LuaGetError());
 			lua_pop(L, 1);
