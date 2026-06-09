@@ -479,7 +479,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	unsigned partsCount = 0;
 	unsigned int savedVersion = inputData[4];
 	version = { savedVersion, 0 };
-	bool fakeNewerVersion = false; // used for development builds only
+	[[maybe_unused]] bool fakeNewerVersion = false; // used for development builds only
 
 	auto getIfType = [](const Bson &b, const char *key, Bson::Type type) -> const Bson * {
 		if (auto *node = b.Get(key))

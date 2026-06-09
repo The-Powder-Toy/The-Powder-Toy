@@ -34,6 +34,10 @@ namespace
 
 		void Bound(const char *what, int32_t size) const
 		{
+			if (size < 0)
+			{
+				Throw(ByteString::Build("invalid size for ", what));
+			}
 			if (GetLeft() < size)
 			{
 				Throw(ByteString::Build("missing ", what));
