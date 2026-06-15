@@ -267,6 +267,8 @@ public:
 	bool GetNewtonianGrvity();
 	void ShowGravityGrid(bool showGrid);
 	bool GetGravityGrid();
+	void ShowGridCheckerboard(bool enableCheckerboard);
+	bool GetGridCheckerboard();
 	void ClearSimulation();
 	std::vector<Menu*> GetMenuList();
 	std::vector<QuickOption*> GetQuickOptions();

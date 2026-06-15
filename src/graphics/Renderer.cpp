@@ -260,10 +260,18 @@ void Renderer::render_parts()
 		for (ny=0; ny<YRES; ny++)
 			for (nx=0; nx<XRES; nx++)
 			{
-				if (ny%(4*gridSize) == 0)
-					BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
-				if (nx%(4*gridSize) == 0 && ny%(4*gridSize) != 0)
-					BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
+				if (gridCheckerboard)
+				{
+					if ((nx/(4*gridSize) + ny/(4*gridSize))%2)
+						BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
+				}
+				else
+				{
+					if (ny%(4*gridSize) == 0)
+						BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
+					if (nx%(4*gridSize) == 0 && ny%(4*gridSize) != 0)
+						BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
+				}
 			}
 	}
 	stats.foundParticles = 0;

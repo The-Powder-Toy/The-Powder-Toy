@@ -111,6 +111,7 @@ GameModel::GameModel(GameView *newView):
 
 	rendererSettings.gravityFieldEnabled = prefs.Get("Renderer.GravityField", false);
 	rendererSettings.decorationLevel = prefs.Get("Renderer.Decorations", true) ? RendererSettings::decorationEnabled : RendererSettings::decorationDisabled;
+	rendererSettings.gridCheckerboard = prefs.Get("Renderer.GridCheckerboard", false);
 	threadedRendering = prefs.Get("Renderer.SeparateThread", true);
 
 	//Load config into simulation
@@ -224,6 +225,7 @@ GameModel::~GameModel()
 		prefs.Set("Renderer.DisplayMode", rendererSettings.displayMode);
 		prefs.Set("Renderer.RenderMode", rendererSettings.renderMode);
 		prefs.Set("Renderer.GravityField", rendererSettings.gravityFieldEnabled);
+		prefs.Set("Renderer.GridCheckerboard", rendererSettings.gridCheckerboard);
 		prefs.Set("Renderer.Decorations", GetDecoration());
 		prefs.Set("Renderer.DebugMode", rendererSettings.debugLines); //These two should always be equivalent, even though they are different things
 		prefs.Set("Simulation.NewtonianGravity", bool(sim->grav));
@@ -1196,6 +1198,16 @@ void GameModel::ShowGravityGrid(bool showGrid)
 bool GameModel::GetGravityGrid()
 {
 	return rendererSettings.gravityFieldEnabled;
+}
+
+void GameModel::ShowGridCheckerboard(bool enableCheckerboard)
+{
+	rendererSettings.gridCheckerboard = enableCheckerboard;
+}
+
+bool GameModel::GetGridCheckerboard()
+{
+	return rendererSettings.gridCheckerboard;
 }
 
 void GameModel::FrameStep(int frames)

@@ -37,6 +37,7 @@ struct RendererSettings
 	bool debugLines = false;
 	ui::Point mousePos = { 0, 0 };
 	int gridSize = 0;
+	bool gridCheckerboard = false;
 	float fireIntensity = 1;
 	HdispLimit wantHdispLimitMin = HdispLimitExplicit{ MIN_TEMP };
 	HdispLimit wantHdispLimitMax = HdispLimitExplicit{ MAX_TEMP };
