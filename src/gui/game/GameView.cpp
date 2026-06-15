@@ -2527,7 +2527,7 @@ void GameView::OnDraw()
 			if (gravtot)
 				sampleInfo << ", GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
 
-			if (c->GetAHeatEnable())
+			if (c->GetAHeatEnable() && sample.isMouseInSim)
 			{
 				sampleInfo << ", AHeat: ";
 				format::RenderTemperature(sampleInfo, sample.AirTemperature, c->GetTemperatureScale());
