@@ -98,9 +98,9 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 			fi
 			pacman -S --noconfirm --needed mingw-w64-"$variant"-{gcc,meson}
 			if [[ $BSH_STATIC_DYNAMIC == static ]]; then
-				pacman -S --noconfirm --needed p7zip mingw-w64-"$variant"-{cmake,jq} patch
+				pacman -S --noconfirm --needed p7zip jq cmake patch
 			else
-				pacman -S --noconfirm --needed mingw-w64-"$variant"-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,fftw,jq}
+				pacman -S --noconfirm --needed jq mingw-w64-"$variant"-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,fftw}
 			fi
 			export PKG_CONFIG=$(which pkg-config.exe)
 			if [[ $BSH_LINT == yes ]]; then
