@@ -1191,7 +1191,6 @@ static int gridCheckerboard(lua_State *L)
 	}
 	int gridCheckerboard = luaL_optint(L, 1, 0);
 	lsi->gameModel->ShowGridCheckerboard(gridCheckerboard);
-	lsi->gameModel->UpdateQuickOptions();
 	return 0;
 }
 
