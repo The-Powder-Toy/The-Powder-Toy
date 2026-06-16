@@ -1,5 +1,6 @@
 #include "LuaScriptInterface.h"
 #include "gui/game/GameModel.h"
+#include "common/DependentFalse.h"
 #include "simulation/SimTool.h"
 #include "simulation/Simulation.h"
 #include <type_traits>
@@ -258,11 +259,6 @@ static void luaSelectWrapper(SimTool *tool, int toolSelection)
 		}
 	}
 }
-
-template <typename T>
-struct DependentFalse : std::false_type
-{
-};
 
 static int property(lua_State *L)
 {
