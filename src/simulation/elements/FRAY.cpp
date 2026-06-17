@@ -54,7 +54,7 @@ static int update(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp > 0)
 		curlen = parts[i].tmp;
 	else
-		curlen = 10;
+		curlen = 11;
 	for (auto rx = -1; rx <= 1; rx++)
 	{
 		for (auto ry = -1; ry <= 1; ry++)
