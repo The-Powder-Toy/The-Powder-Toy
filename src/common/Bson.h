@@ -23,20 +23,21 @@ public:
 
 private:
 	using Wrapped = std::variant<
+		Bool,
 		Object,
 		Array,
 		String,
 		User,
 		Double,
 		Int32,
-		Int64,
-		Bool
+		Int64
 	>;
 	Wrapped wrapped;
 
 public:
 	enum class Type
 	{
+		boolValue   = VariantIndex<Wrapped, Bool  >(),
 		objectValue = VariantIndex<Wrapped, Object>(),
 		arrayValue  = VariantIndex<Wrapped, Array >(),
 		stringValue = VariantIndex<Wrapped, String>(),
@@ -44,7 +45,6 @@ public:
 		doubleValue = VariantIndex<Wrapped, Double>(),
 		int32Value  = VariantIndex<Wrapped, Int32 >(),
 		int64Value  = VariantIndex<Wrapped, Int64 >(),
-		boolValue   = VariantIndex<Wrapped, Bool  >(),
 	}; // keep this in sync with Wrapped's definition
 
 	Bson()                              = default;
