@@ -387,8 +387,9 @@ void SearchController::FavouriteSelected()
 	class FavouriteSavesTask : public Task
 	{
 		std::vector<int> saves;
+		SearchController *c;
 	public:
-		FavouriteSavesTask(std::vector<int> saves_) { saves = saves_; }
+		FavouriteSavesTask(std::vector<int> saves_, SearchController *c_) { saves = saves_; c = c_; }
 		bool doWork() override
 		{
 			for (size_t i = 0; i < saves.size(); i++)
@@ -404,10 +405,12 @@ void SearchController::FavouriteSelected()
 				catch (const http::RequestError &ex)
 				{
 					notifyError(String::Build("Failed to favourite [", saves[i], "]: ", ByteString(ex.what()).FromAscii()));
+					c->Refresh();
 					return false;
 				}
 				notifyProgress((i + 1) * 100 / saves.size());
 			}
+			c->Refresh();
 			return true;
 		}
 	};
@@ -415,8 +418,9 @@ void SearchController::FavouriteSelected()
 	class UnfavouriteSavesTask : public Task
 	{
 		std::vector<int> saves;
+		SearchController *c;
 	public:
-		UnfavouriteSavesTask(std::vector<int> saves_) { saves = saves_; }
+		UnfavouriteSavesTask(std::vector<int> saves_, SearchController *c_) { saves = saves_; c = c_; }
 		bool doWork() override
 		{
 			for (size_t i = 0; i < saves.size(); i++)
@@ -432,18 +436,20 @@ void SearchController::FavouriteSelected()
 				catch (const http::RequestError &ex)
 				{
 					notifyError(String::Build("Failed to unfavourite [", saves[i], "]: ", ByteString(ex.what()).FromAscii()));
+					c->Refresh();
 					return false;
 				}
 				notifyProgress((i + 1) * 100 / saves.size());
 			}
+			c->Refresh();
 			return true;
 		}
 	};
 
 	std::vector<int> selected = searchModel->GetSelected();
 	if (!searchModel->GetShowFavourite())
-		new TaskWindow("Favouring saves", new FavouriteSavesTask(selected));
+		new TaskWindow("Favouring saves", new FavouriteSavesTask(selected, this));
 	else
-		new TaskWindow("Unfavouring saves", new UnfavouriteSavesTask(selected));
+		new TaskWindow("Unfavouring saves", new UnfavouriteSavesTask(selected, this));
 	ClearSelection();
 }
