@@ -79,7 +79,7 @@ public:
 
 	bool MaxPartsReached() const
 	{
-		return pfree == -1;
+		return pfree == -1 && active >= NPART;
 	}
 };
 
