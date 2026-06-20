@@ -177,7 +177,7 @@ GameView::GameView():
 	altBehaviour(false),
 	showHud(true),
 	showBrush(true),
-	showDebug(false),
+	showDebug(true),
 	delayedActiveMenu(-1),
 	wallBrush(false),
 	toolBrush(false),
@@ -2474,12 +2474,12 @@ void GameView::OnDraw()
 		}
 
 		int textWidth = Graphics::TextSize(sampleInfo.Build()).X - 1;
-		g->BlendFilledRect(RectSized(Vec2{ XRES-20-textWidth, 12 }, Vec2{ textWidth+8, 15 }), 0x000000_rgb .WithAlpha(int(alpha*0.5f)));
-		g->BlendText({ XRES-16-textWidth, 16 }, sampleInfo.Build(), 0xFFFFFF_rgb .WithAlpha(int(alpha*0.75f)));
+		g->BlendFilledRect(RectSized(Vec2{ 12, 12 }, Vec2{ textWidth+8, 15 }), 0x000000_rgb .WithAlpha(int(alpha*0.5f)));
+		g->BlendText({ 16, 16 }, sampleInfo.Build(), 0x00FF00_rgb .WithAlpha(int(alpha*0.75f)));
 
 		if (wavelengthGfx)
 		{
-			int i, cr, cg, cb, j, h = 3, x = XRES-19-textWidth, y = 10;
+			int i, cr, cg, cb, j, h = 3, x = 13, y = 10;
 			int tmp;
 			g->BlendFilledRect(RectSized(Vec2{ x, y }, Vec2{ 30, h }), 0x404040_rgb .WithAlpha(alpha));
 			for (i = 0; i < 30; i++)
@@ -2517,6 +2517,11 @@ void GameView::OnDraw()
 			StringBuilder sampleInfo;
 			sampleInfo << Format::Precision(2);
 
+			if (rendererSettings->findingElement)
+				sampleInfo << "Parts: " << rendererStats.foundParticles << "/" << sample.NumParts << " ";
+			else
+				sampleInfo << "Parts: " << sample.NumParts << " ";
+
 			if (type)
 				sampleInfo << "#" << sample.ParticleID << ", ";
 
@@ -2534,8 +2539,8 @@ void GameView::OnDraw()
 			}
 
 			auto textWidth = Graphics::TextSize(sampleInfo.Build()).X - 1;
-			g->BlendFilledRect(RectSized(Vec2{ XRES-20-textWidth, 27 }, Vec2{ textWidth+8, 14 }), 0x000000_rgb .WithAlpha(int(alpha*0.5f)));
-			g->BlendText({ XRES-16-textWidth, 30 }, sampleInfo.Build(), 0xFFFFFF_rgb .WithAlpha(int(alpha*0.75f)));
+			g->BlendFilledRect(RectSized(Vec2{ 12, 27 }, Vec2{ textWidth+8, 14 }), 0x000000_rgb .WithAlpha(int(alpha*0.5f)));
+			g->BlendText({ 16, 30 }, sampleInfo.Build(), 0x00FF00_rgb .WithAlpha(int(alpha*0.75f)));
 		}
 	}
 
@@ -2543,15 +2548,7 @@ void GameView::OnDraw()
 	{
 		//FPS and some version info
 		StringBuilder fpsInfo;
-		fpsInfo << Format::Precision(2) << "FPS: " << ui::Engine::Ref().GetFps();
-
-		if (showDebug)
-		{
-			if (rendererSettings->findingElement)
-				fpsInfo << " Parts: " << rendererStats.foundParticles << "/" << sample.NumParts;
-			else
-				fpsInfo << " Parts: " << sample.NumParts;
-		}
+		fpsInfo << Format::Precision(2) << "S FPS: " << ui::Engine::Ref().GetFps();
 		if ((std::holds_alternative<HdispLimitAuto>(rendererSettings->wantHdispLimitMin) ||
 		     std::holds_alternative<HdispLimitAuto>(rendererSettings->wantHdispLimitMax)) && rendererStats.hdispLimitValid)
 		{
@@ -2643,8 +2640,9 @@ void GameView::OnDraw()
 		auto textSize = Graphics::TextSize(fpsInfo.Build());
 		int textWidth = textSize.X - 1;
 		int alpha = 255-introText*5;
-		g->BlendFilledRect(RectSized(Vec2{ 12, 12 }, Vec2{ textWidth+8, textSize.Y + 5 }), 0x000000_rgb .WithAlpha(int(alpha*0.5)));
-		g->BlendText({ 16, 16 }, fpsInfo.Build(), 0x20D8FF_rgb .WithAlpha(int(alpha*0.75)));
+		int baseY = YRES - (textSize.Y + 5) - 4 - 8;
+		g->BlendFilledRect(RectSized(Vec2{ 12, baseY }, Vec2{ textWidth+8, textSize.Y + 5 }), 0x000000_rgb .WithAlpha(int(alpha*0.5)));
+		g->BlendText({ 16, baseY + 4 }, fpsInfo.Build(), 0x00D2FF_rgb .WithAlpha(int(alpha*0.75)));	
 	}
 
 	//Tooltips
