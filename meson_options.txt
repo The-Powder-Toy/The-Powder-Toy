@@ -248,7 +248,7 @@ option(
 option(
 	'manifest_copyright',
 	type: 'string',
-	value: 'Copyright © 2008-2011 Stanislaw K Skowrenek, Copyright © 2011-2023 Simon Robertshaw, Copyright © 2016-2023 jacob1',
+	value: 'Copyright © 2008-2011 Stanislaw K Skowrenek, Copyright © 2011-2026 Simon Robertshaw, Copyright © 2016-2026 jacob1',
 	description: 'Copyright string, don\'t take too seriously, subject to change'
 )
 option(
