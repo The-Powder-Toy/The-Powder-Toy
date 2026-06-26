@@ -26,12 +26,29 @@ void Air::make_kernel(void) //used for velocity
 	}
 }
 
-
+// Version of vorticity used for rendering
 float Air::vorticity(const RenderableSimulation & sm, int y, int x)
 {
 	auto &vx = sm.vx;
 	auto &vy = sm.vy;
-	auto &bmap = sm.bmap;
+
+	if (x > 1 && x < XCELLS-2 && y > 1 && y < YCELLS-2)
+	{
+		// dvy/dx - dvx/dy
+		auto dvydx = vy[y][x+1] - vy[y][x-1];
+		auto dvxdy = vx[y+1][x] - vx[y-1][x];
+		return (dvydx - dvxdy)*0.5f;
+	}
+	else
+		return 0.0f;
+}
+
+// Version of vorticity which takes bmap_blockair into account
+float vorticityBmap(const Simulation & sm, int y, int x)
+{
+	auto &vx = sm.vx;
+	auto &vy = sm.vy;
+	auto &bmap = sm.air->bmap_blockair;
 
 	if (x > 1 && x < XCELLS-2 && y > 1 && y < YCELLS-2)
 	{
@@ -424,10 +441,10 @@ void Air::update_air(void)
 				//Vorticity confinement
 				if (vorticityCoeff > 0.0f && x > 1 && x < XCELLS-2 && y > 1 && y < YCELLS-2)
 				{
-					auto dwx = (std::abs(vorticity(sim, y, x+1)) - std::abs(vorticity(sim, y, x-1)))*0.5f;
-					auto dwy = (std::abs(vorticity(sim, y+1, x)) - std::abs(vorticity(sim, y-1, x)))*0.5f;
+					auto dwx = (std::abs(vorticityBmap(sim, y, x+1)) - std::abs(vorticityBmap(sim, y, x-1)))*0.5f;
+					auto dwy = (std::abs(vorticityBmap(sim, y+1, x)) - std::abs(vorticityBmap(sim, y-1, x)))*0.5f;
 					auto norm = std::hypot(dwx, dwy);
-					auto w = vorticity(sim, y, x);
+					auto w = vorticityBmap(sim, y, x);
 
 					dx += vorticityCoeff/5.0f * dwy / (norm + 0.001f) * w;
 					dy += vorticityCoeff/5.0f * (-dwx) / (norm + 0.001f) * w;
