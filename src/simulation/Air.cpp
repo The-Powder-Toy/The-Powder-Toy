@@ -31,11 +31,14 @@ float Air::vorticity(const RenderableSimulation & sm, int y, int x)
 {
 	auto &vx = sm.vx;
 	auto &vy = sm.vy;
+	auto &bmap = sm.bmap;
 
 	if (x > 1 && x < XCELLS-2 && y > 1 && y < YCELLS-2)
 	{
 		// dvy/dx - dvx/dy
-		return (vy[y][x+1] - vy[y][x-1] - (vx[y+1][x] - vx[y-1][x]))*0.5f;
+		auto dvydx = (bmap[y][x] || bmap[y][x+1] || bmap[y][x-1]) ? 0.0f : vy[y][x+1] - vy[y][x-1];
+		auto dvxdy = (bmap[y][x] || bmap[y+1][x] || bmap[y-1][x]) ? 0.0f : vx[y+1][x] - vx[y-1][x];
+		return (dvydx - dvxdy)*0.5f;
 	}
 	else
 		return 0.0f;
@@ -423,7 +426,7 @@ void Air::update_air(void)
 				{
 					auto dwx = (std::abs(vorticity(sim, y, x+1)) - std::abs(vorticity(sim, y, x-1)))*0.5f;
 					auto dwy = (std::abs(vorticity(sim, y+1, x)) - std::abs(vorticity(sim, y-1, x)))*0.5f;
-					auto norm = std::sqrt(dwx*dwx + dwy*dwy);
+					auto norm = std::hypot(dwx, dwy);
 					auto w = vorticity(sim, y, x);
 
 					dx += vorticityCoeff/5.0f * dwy / (norm + 0.001f) * w;
