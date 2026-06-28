@@ -402,15 +402,21 @@ void GameSave::Transform(Mat2<int> transform, Vec2<int> nudge)
 			}
 		}
 		newPressure[newBpos] = pressure[bpos];
-		newVelocityX[newBpos] = velocityX[bpos];
-		newVelocityY[newBpos] = velocityY[bpos];
+		{
+			auto transformed = transform * Vec2{ velocityX[bpos], velocityY[bpos] };
+			newVelocityX[newBpos] = transformed.X;
+			newVelocityY[newBpos] = transformed.Y;
+		}
 		newAmbientHeat[newBpos] = ambientHeat[bpos];
 		newBlockAir[newBpos] = blockAir[bpos];
 		newBlockAirh[newBpos] = blockAirh[bpos];
 		newGravMass[newBpos] = gravMass[bpos];
 		newGravMask[newBpos] = gravMask[bpos];
-		newGravForceX[newBpos] = gravForceX[bpos];
-		newGravForceY[newBpos] = gravForceY[bpos];
+		{
+			auto transformed = transform * Vec2{ gravForceX[bpos], gravForceY[bpos] };
+			newGravForceX[newBpos] = transformed.X;
+			newGravForceY[newBpos] = transformed.Y;
+		}
 	}
 	blockMap = std::move(newBlockMap);
 	fanVelX = std::move(newFanVelX);
