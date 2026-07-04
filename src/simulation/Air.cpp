@@ -4,7 +4,6 @@
 #include "common/tpt-rand.h"
 #include <cmath>
 #include <algorithm>
-#include <iostream>
 
 void Air::make_kernel(void) //used for velocity
 {
@@ -151,7 +150,7 @@ void Air::update_airh(void)
 				{
 					tx += stepX;
 					ty += stepY;
-					if (!InBounds(int(tx+0.5f), int(ty+0.5f)) || bmap_blockairh[(int)(ty+0.5f)][(int)(tx+0.5f)]&0x8)
+					if (!InCellBounds(int(tx+0.5f), int(ty+0.5f)) || bmap_blockairh[(int)(ty+0.5f)][(int)(tx+0.5f)]&0x8)
 					{
 						tx -= stepX;
 						ty -= stepY;
@@ -403,7 +402,7 @@ void Air::update_air(void)
 					{
 						tx += stepX;
 						ty += stepY;
-						if (!InBounds(int(tx+0.5f), int(ty+0.5f)) || bmap_blockair[(int)(ty+0.5f)][(int)(tx+0.5f)])
+						if (!InCellBounds(int(tx+0.5f), int(ty+0.5f)) || bmap_blockair[(int)(ty+0.5f)][(int)(tx+0.5f)])
 						{
 							tx -= stepX;
 							ty -= stepY;
