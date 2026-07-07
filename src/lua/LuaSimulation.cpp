@@ -1179,21 +1179,6 @@ static int gravityGrid(lua_State *L)
 	return 0;
 }
 
-static int gridCheckerboard(lua_State *L)
-{
-	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
-	int acount = lua_gettop(L);
-	if (acount == 0)
-	{
-		lua_pushnumber(L, lsi->gameModel->GetGridCheckerboard());
-		return 1;
-	}
-	int gridCheckerboard = luaL_optint(L, 1, 0);
-	lsi->gameModel->ShowGridCheckerboard(gridCheckerboard);
-	return 0;
-}
-
 static int edgeMode(lua_State *L)
 {
 	auto *lsi = GetLSI();
@@ -2092,7 +2077,6 @@ void LuaSimulation::Open(lua_State *L)
 		LFUNC(adjustCoords),
 		LFUNC(prettyPowders),
 		LFUNC(gravityGrid),
-		LFUNC(gridCheckerboard),
 		LFUNC(edgeMode),
 		LFUNC(gravityMode),
 		LFUNC(customGravity),
