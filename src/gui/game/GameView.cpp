@@ -1659,6 +1659,10 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 	{
 		c->LoadRenderPreset(11);
 	}
+	else if (shift && key == '0')
+	{
+		c->LoadRenderPreset(12);
+	}
 	else if (key >= '0' && key <= '9')
 	{
 		c->LoadRenderPreset(key-'0');

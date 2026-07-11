@@ -1410,6 +1410,12 @@ const std::vector<RenderPreset> Renderer::renderModePresets = {
 		HdispLimitAuto{},
 		HdispLimitAuto{},
 	},
+	{
+		"Vorticity Display",
+		RENDER_EFFE | RENDER_BASC,
+		DISPLAY_AIRW,
+		0,
+	},
 };
 
 void Renderer::AdjustHdispLimit()
