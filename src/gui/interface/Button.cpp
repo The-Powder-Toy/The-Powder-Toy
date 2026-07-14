@@ -132,7 +132,7 @@ void Button::Draw(const Point& screenPos)
 		if(Appearance.Border.Right)
 			g->BlendLine(Position + Vec2{ Size.X-1,        0 }, Position + Vec2{ Size.X-1, Size.Y-1 }, borderColour);
 	}
-	g->BlendText(Position + textPosition, buttonDisplayText, textColour);
+	g->BlendText(Position + textPosition, buttonDisplayText, ModifyTextColour(textColour));
 
 	bool iconInvert = (backgroundColour.Blue + (3*backgroundColour.Green) + (2*backgroundColour.Red))>544?true:false;
 

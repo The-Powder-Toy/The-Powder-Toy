@@ -1,6 +1,7 @@
 #pragma once
 #include "common/String.h"
 #include "Component.h"
+#include "Colour.h"
 #include <functional>
 
 namespace ui
@@ -43,6 +44,10 @@ public:
 	void SetToolTip(String newToolTip) { toolTip = newToolTip; }
 
 protected:
+	// Hook for subclasses (e.g. MenuButton) to tint the resolved state colour,
+	// used for text drawn via BlendText such as PUA glyph "icons".
+	virtual ui::Colour ModifyTextColour(ui::Colour c) { return c; }
+
 	String ButtonText;
 	String toolTip;
 	String buttonDisplayText;

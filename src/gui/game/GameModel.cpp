@@ -1929,7 +1929,7 @@ void GameModel::BuildMenus()
 	menuList.clear();
 	for (auto &section : sd.msections)
 	{
-		menuList.push_back(std::make_unique<Menu>(section.icon, section.name, section.doshow));
+		menuList.push_back(std::make_unique<Menu>(section.icon, section.name, section.doshow, section.colour));
 	}
 
 	for (auto &tool : tools)

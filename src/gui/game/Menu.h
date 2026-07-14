@@ -1,5 +1,6 @@
 #pragma once
 #include "common/String.h"
+#include "graphics/Pixel.h"
 
 class Tool;
 class Menu
@@ -8,8 +9,9 @@ class Menu
 	String description;
 	std::vector<Tool*> tools;
 	bool visible;
+	RGB colour;
 public:
-	Menu(String::value_type icon_, String description_, int visible_);
+	Menu(String::value_type icon_, String description_, int visible_, RGB colour_ = 0xFFFFFF_rgb);
 	virtual ~Menu();
 
 	std::vector<Tool*> GetToolList()
@@ -20,6 +22,11 @@ public:
 	String::value_type GetIcon()
 	{
 		return icon;
+	}
+
+	RGB GetColour()
+	{
+		return colour;
 	}
 
 	String GetDescription()

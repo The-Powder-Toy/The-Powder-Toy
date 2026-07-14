@@ -1,11 +1,12 @@
 #include "Menu.h"
 #include "tool/Tool.h"
 
-Menu::Menu(String::value_type icon_, String description_, int visible_):
+Menu::Menu(String::value_type icon_, String description_, int visible_, RGB colour_):
 	icon(icon_),
 	description(description_),
 	tools(std::vector<Tool*>()),
-	visible(visible_ ? true : false)
+	visible(visible_ ? true : false),
+	colour(colour_)
 {
 
 }

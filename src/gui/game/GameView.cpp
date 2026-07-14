@@ -420,6 +420,7 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 				description += " (Use ctrl+shift+click to toggle the favorite status of an element)";
 			auto *tempButton = new MenuButton(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, description);
 			tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
+			tempButton->categoryColour = menuList[i]->GetColour().WithAlpha(0xFF);
 			tempButton->menuID = i;
 			tempButton->needsClick = i == SC_DECO;
 			tempButton->SetTogglable(true);

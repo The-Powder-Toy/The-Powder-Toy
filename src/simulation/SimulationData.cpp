@@ -77,22 +77,22 @@ static std::vector<menu_section> LoadMenus()
 {
 	return
 	std::vector<menu_section>{
-		{0xE041, String("Walls"), 0, 1},
-		{0xE042, String("Electronics"), 0, 1},
-		{0xE056, String("Powered Materials"), 0, 1},
-		{0xE019, String("Sensors"), 0, 1},
-		{0xE062, String("Force"), 0, 1},
-		{0xE043, String("Explosives"), 0, 1},
-		{0xE045, String("Gases"), 0, 1},
-		{0xE044, String("Liquids"), 0, 1},
-		{0xE050, String("Powders"), 0, 1},
-		{0xE051, String("Solids"), 0, 1},
-		{0xE046, String("Radioactive"), 0, 1},
-		{0xE04C, String("Special"), 0, 1},
-		{0xE052, String("Game Of Life"), 0, 1},
-		{0xE057, String("Tools"), 0, 1},
-		{0xE067, String("Favorites"), 0, 1},
-		{0xE064, String("Decoration tools"), 0, 1},
+		{0xE041, String("Walls"), 0, 1, 0x8D8D8D_rgb},
+		{0xE042, String("Electronics"), 0, 1, 0x33CC66_rgb},
+		{0xE056, String("Powered Materials"), 0, 1, 0xF4A100_rgb},
+		{0xE019, String("Sensors"), 0, 1, 0x4DB6E5_rgb},
+		{0xE062, String("Force"), 0, 1, 0x9B59B6_rgb},
+		{0xE043, String("Explosives"), 0, 1, 0xE63946_rgb},
+		{0xE045, String("Gases"), 0, 1, 0x8CE68C_rgb},
+		{0xE044, String("Liquids"), 0, 1, 0x3B82C4_rgb},
+		{0xE050, String("Powders"), 0, 1, 0xC9A063_rgb},
+		{0xE051, String("Solids"), 0, 1, 0xB0B0B0_rgb},
+		{0xE046, String("Radioactive"), 0, 1, 0xB5D400_rgb},
+		{0xE04C, String("Special"), 0, 1, 0xE91E8C_rgb},
+		{0xE052, String("Game Of Life"), 0, 1, 0x2ECC71_rgb},
+		{0xE057, String("Tools"), 0, 1, 0xFF8C32_rgb},
+		{0xE067, String("Favorites"), 0, 1, 0xFFD60A_rgb},
+		{0xE064, String("Decoration tools"), 0, 1, 0xD65DB1_rgb},
 	};
 }
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "common/String.h"
+#include "graphics/Pixel.h"
 
 struct menu_section
 {
@@ -7,6 +8,7 @@ struct menu_section
 	String name;
 	int itemcount;
 	int doshow;
+	RGB colour = 0xFFFFFF_rgb;
 };
 
 constexpr int SC_WALL      =  0;
