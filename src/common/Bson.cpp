@@ -196,13 +196,13 @@ Bson Bson::Parse(std::span<const char> data, const Bson *rootNonconformance)
 		case 5:
 			{
 				auto size = reader.Take<int32_t>("userdata size");
-				reader.Bound("userdata content", size);
 				auto subtypeReader = reader;
 				auto subtype = int32_t(reader.Take<uint8_t>("userdata subtype"));
 				if (subtype != 128)
 				{
 					subtypeReader.Throw(ByteString::Build("bad userdata subtype ", subtype));
 				}
+				reader.Bound("userdata content", size);
 				auto &user = push(User(size)).As<User>();
 				std::copy_n(reader.data.data(), size, user.begin());
 				reader.Advance(size);
