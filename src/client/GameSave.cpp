@@ -915,7 +915,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 
 	if (gravityData.data())
 	{
-		if (blockS.X * blockS.Y * 4 > int(gravityData.size()))
+		if (blockS.X * blockS.Y * 4 * sizeof(float) > gravityData.size())
 		{
 			throw ParseException(ParseException::Corrupt, "Not enough gravity data");
 		}
