@@ -826,7 +826,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 			{
 				if(j+1 >= fanData.size())
 				{
-					fprintf(stderr, "Not enough fan data\n");
+					throw ParseException(ParseException::Corrupt, "Not enough fan data");
 				}
 				fanVelX[blockP + bpos] = (fanData[j++]-127.0f)/64.0f;
 				fanVelY[blockP + bpos] = (fanData[j++]-127.0f)/64.0f;
