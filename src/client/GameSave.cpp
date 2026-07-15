@@ -888,7 +888,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	if (ambientData.data())
 	{
 		unsigned int i = 0, tempTemp;
-		if (blockS.X * blockS.Y > int(ambientData.size()))
+		if (blockS.X * blockS.Y * 2 > int(ambientData.size()))
 			throw ParseException(ParseException::Corrupt, "Not enough ambient heat data");
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
@@ -1571,7 +1571,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		if (i)
 		{
 			if (ver>=44) {
-				if (p >= dataLength) {
+				if (p + 1>= dataLength) {
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
