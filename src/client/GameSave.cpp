@@ -843,7 +843,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	{
 		unsigned int j = 0;
 		unsigned char i, i2;
-		if (blockS.X * blockS.Y > int(pressData.size()))
+		if (blockS.X * blockS.Y * 2> int(pressData.size()))
 			throw ParseException(ParseException::Corrupt, "Not enough pressure data");
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
@@ -859,7 +859,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	{
 		unsigned int j = 0;
 		unsigned char i, i2;
-		if (blockS.X * blockS.Y > int(vxData.size()))
+		if (blockS.X * blockS.Y * 2> int(vxData.size()))
 			throw ParseException(ParseException::Corrupt, "Not enough vx data");
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
@@ -874,7 +874,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	{
 		unsigned int j = 0;
 		unsigned char i, i2;
-		if (blockS.X * blockS.Y > int(vyData.size()))
+		if (blockS.X * blockS.Y * 2 > int(vyData.size()))
 			throw ParseException(ParseException::Corrupt, "Not enough vy data");
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
