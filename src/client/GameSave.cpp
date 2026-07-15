@@ -843,7 +843,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	{
 		unsigned int j = 0;
 		unsigned char i, i2;
-		if (blockS.X * blockS.Y > int(pressData.size()))
+		if (blockS.X * blockS.Y * 2 > int(pressData.size()))
 			throw ParseException(ParseException::Corrupt, "Not enough pressure data");
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
@@ -859,7 +859,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	{
 		unsigned int j = 0;
 		unsigned char i, i2;
-		if (blockS.X * blockS.Y > int(vxData.size()))
+		if (blockS.X * blockS.Y * 2 > int(vxData.size()))
 			throw ParseException(ParseException::Corrupt, "Not enough vx data");
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
@@ -874,7 +874,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	{
 		unsigned int j = 0;
 		unsigned char i, i2;
-		if (blockS.X * blockS.Y > int(vyData.size()))
+		if (blockS.X * blockS.Y * 2 > int(vyData.size()))
 			throw ParseException(ParseException::Corrupt, "Not enough vy data");
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
@@ -888,7 +888,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	if (ambientData.data())
 	{
 		unsigned int i = 0, tempTemp;
-		if (blockS.X * blockS.Y > int(ambientData.size()))
+		if (blockS.X * blockS.Y * 2 > int(ambientData.size()))
 			throw ParseException(ParseException::Corrupt, "Not enough ambient heat data");
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
@@ -915,7 +915,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 
 	if (gravityData.data())
 	{
-		if (blockS.X * blockS.Y * 4 > int(gravityData.size()))
+		if (blockS.X * blockS.Y * 4 * int(sizeof(float)) > int(gravityData.size()))
 		{
 			throw ParseException(ParseException::Corrupt, "Not enough gravity data");
 		}
@@ -1571,7 +1571,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		if (i)
 		{
 			if (ver>=44) {
-				if (p >= dataLength) {
+				if (p + 2 > dataLength) {
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
@@ -1597,7 +1597,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 			auto i = particleIDMap[pos];
 			if (i)
 			{
-				if (p >= dataLength) {
+				if (p + 2 > dataLength) {
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
@@ -1726,6 +1726,10 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 					if (ver>=42) {
 						if (new_format) {
 							ttv = (data[p++])<<8;
+							if (p >= dataLength)
+							{
+								throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
+							}
 							ttv |= (data[p++]);
 							if (particles[i-1].type==PT_PUMP) {
 								particles[i-1].temp = ttv + 0.15;//fix PUMP saved at 0, so that it loads at 0.
@@ -1743,6 +1747,10 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 				{
 					p++;
 					if (new_format) {
+						if (p >= dataLength)
+						{
+							throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
+						}
 						p++;
 					}
 				}
