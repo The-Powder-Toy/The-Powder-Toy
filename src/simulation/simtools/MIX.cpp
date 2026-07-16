@@ -27,6 +27,9 @@ static int perform(SimTool *tool, Simulation * sim, Particle * cpart, int x, int
 
 	int distance = (int)(std::pow(strength, .5f) * 10);
 
+	if (distance <= 0)
+		return 0;
+
 	if(!(elements[TYP(thisPart)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS)))
 		return 0;
 
