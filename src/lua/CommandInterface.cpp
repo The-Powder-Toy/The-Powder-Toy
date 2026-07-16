@@ -574,17 +574,27 @@ AnyType CommandInterface::tptS_bubble(std::deque<String> * words)
 	{
 		rem2 = sim->create_part(-1, int(bubblePos.X+18*cosf(i/5.0)+0.5f), int(bubblePos.Y+18*sinf(i/5.0)+0.5f), PT_SOAP);
 
-		sim->parts[rem1].ctype = 7;
-		sim->parts[rem1].tmp = rem2;
-		sim->parts[rem2].tmp2 = rem1;
+		if (rem1 >= 0)
+		{
+			sim->parts[rem1].ctype = 7;
+			sim->parts[rem1].tmp = rem2;
+		}
+		if (rem2 >= 0)
+			sim->parts[rem2].tmp2 = rem1;
 
 		rem1 = rem2;
 	}
 
-	sim->parts[rem1].ctype = 7;
-	sim->parts[rem1].tmp = first;
-	sim->parts[first].tmp2 = rem1;
-	sim->parts[first].ctype = 7;
+	if (rem1 >= 0)
+	{
+		sim->parts[rem1].ctype = 7;
+		sim->parts[rem1].tmp = first;
+	}
+	if (first >= 0)
+	{
+		sim->parts[first].tmp2 = rem1;
+		sim->parts[first].ctype = 7;
+	}
 
 	return NumberType(0);
 }
