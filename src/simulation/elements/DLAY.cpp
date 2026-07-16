@@ -62,9 +62,12 @@ static int update(UPDATE_FUNC_ARGS)
 			if (rx || ry)
 			{
 				auto r = pmap[y+ry][x+rx];
-				auto pavg = sim->parts_avg(ID(r), i, PT_INSL);
-				if (!r || pavg==PT_INSL || pavg==PT_RSSS)
+				if (!r)
 					continue;
+				auto pavg = sim->parts_avg(ID(r), i, PT_INSL);
+				if (pavg==PT_INSL || pavg==PT_RSSS)
+					continue;
+
 				if (TYP(r)==PT_SPRK && parts[i].life==0 && parts[ID(r)].life>0 && parts[ID(r)].life<4 && parts[ID(r)].ctype==PT_PSCN)
 				{
 					parts[i].life = (int)(parts[i].temp-273.15f+0.5f);
