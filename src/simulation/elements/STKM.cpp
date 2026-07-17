@@ -177,6 +177,21 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 	gvx += sim->gravOut.forceX[Vec2{ int(parts[i].x), int(parts[i].y) } / CELL];
 	gvy += sim->gravOut.forceY[Vec2{ int(parts[i].x), int(parts[i].y) } / CELL];
 
+	float headGvx = gvx;
+	float headGvy = gvy;
+	int leftFootX = int(playerp->legs[4]);
+	int leftFootY = int(playerp->legs[5]);
+	int rightFootX = int(playerp->legs[12]);
+	int rightFootY = int(playerp->legs[13]);
+	if (InBounds(leftFootX, leftFootY) && InBounds(rightFootX, rightFootY))
+	{
+		float leftGvx, leftGvy, rightGvx, rightGvy;
+		sim->GetGravityField(leftFootX, leftFootY, 1.0f, 1.0f, leftGvx, leftGvy);
+		sim->GetGravityField(rightFootX, rightFootY, 1.0f, 1.0f, rightGvx, rightGvy);
+		headGvx = (leftGvx + rightGvx) / 2.0f;
+		headGvy = (leftGvy + rightGvy) / 2.0f;
+	}
+
 	float mvx = gvx;
 	float mvy = gvy;
 	bool rbLowGrav = false;
@@ -204,8 +219,8 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 		rocketBootsFeetEffectV = rocketBootsFeetEffect;
 	}
 
-	parts[i].vx -= gvx*dt;  //Head up!
-	parts[i].vy -= gvy*dt;
+	parts[i].vx -= headGvx*dt;  //Head up!
+	parts[i].vy -= headGvy*dt;
 
 	//Verlet integration
 	pp = 2*playerp->legs[0]-playerp->legs[2]+playerp->accs[0]*dt*dt;
