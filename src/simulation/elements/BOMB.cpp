@@ -62,25 +62,25 @@ static int update(UPDATE_FUNC_ARGS)
 				auto rt = TYP(r);
 				if (rt!=PT_BOMB && rt!=PT_EMBR && rt!=PT_DMND && rt!=PT_CLNE && rt!=PT_PCLN && rt!=PT_BCLN && rt!=PT_VIBR)
 				{
-					int rad = 8, nt;
+					const int rad = 8;
 					sim->kill_part(i);
 					for (auto nxj=-rad; nxj<=rad; nxj++)
 					{
 						for (auto nxi=-rad; nxi<=rad; nxi++)
 						{
-							if ((pow((float)nxi,2))/(pow((float)rad,2))+(pow((float)nxj,2))/(pow((float)rad,2))<=1)
+							if ((nxi*nxi + nxj*nxj) <= rad*rad)
 							{
-								int ynxj = y + nxj, xnxi = x + nxi;
+								int ynxj = y+nxj, xnxi = x+nxi;
 
-								if ((ynxj < 0) || (ynxj >= YRES) || (xnxi <= 0) || (xnxi >= XRES))
+								if ((ynxj < 0) || (ynxj >= YRES) || (xnxi < 0) || (xnxi >= XRES))
 									continue;
 
-								nt = TYP(pmap[ynxj][xnxi]);
+								auto nt = TYP(pmap[ynxj][xnxi]);
 								if (nt!=PT_DMND && nt!=PT_CLNE && nt!=PT_PCLN && nt!=PT_BCLN && nt!=PT_VIBR)
 								{
 									if (nt)
 										sim->kill_part(ID(pmap[ynxj][xnxi]));
-									sim->pv[(ynxj)/CELL][(xnxi)/CELL] += 0.1f;
+									sim->pv[ynxj/CELL][xnxi/CELL] += 0.1f;
 									//@ BOMB -> EMBR
 									auto nb = sim->create_part(-3, xnxi, ynxj, PT_EMBR);
 									if (nb!=-1)
@@ -97,10 +97,18 @@ static int update(UPDATE_FUNC_ARGS)
 					{
 						for (auto nxi=-(rad+1); nxi<=(rad+1); nxi++)
 						{
-							if ((pow((float)nxi,2))/(pow((float)(rad+1),2))+(pow((float)nxj,2))/(pow((float)(rad+1),2))<=1 && !TYP(pmap[y+nxj][x+nxi]))
+							if ((nxi*nxi + nxj*nxj) <= (rad+1)*(rad+1))
 							{
+								int ynxj = y+nxj, xnxi = x+nxi;
+
+								if ((ynxj < 0) || (ynxj >= YRES) || (xnxi < 0) || (xnxi >= XRES))
+									continue;
+
+								if (TYP(pmap[ynxj][xnxi]))
+									continue;
+
 								//@ BOMB -> EMBR
-								auto nb = sim->create_part(-3, x+nxi, y+nxj, PT_EMBR);
+								auto nb = sim->create_part(-3, xnxi, ynxj, PT_EMBR);
 								if (nb!=-1)
 								{
 									parts[nb].tmp = 0;
