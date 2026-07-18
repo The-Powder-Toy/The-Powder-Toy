@@ -257,22 +257,26 @@ void Renderer::render_parts()
 	auto &parts = sim->parts;
 	if (gridSize)//draws the grid
 	{
-		for (ny=0; ny<YRES; ny++)
-			for (nx=0; nx<XRES; nx++)
-			{
-				if (gridCheckerboard)
+		int gs4 = gridSize*4;
+		if (gs4 > 0) // prevent a division by 0
+		{
+			for (ny=0; ny<YRES; ny++)
+				for (nx=0; nx<XRES; nx++)
 				{
-					if ((nx/(4*gridSize) + ny/(4*gridSize))%2)
-						BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
+					if (gridCheckerboard)
+					{
+						if ((nx/gs4 + ny/gs4)%2)
+							BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
+					}
+					else
+					{
+						if (ny%gs4 == 0)
+							BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
+						if (nx%gs4 == 0 && ny%gs4 != 0)
+							BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
+					}
 				}
-				else
-				{
-					if (ny%(4*gridSize) == 0)
-						BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
-					if (nx%(4*gridSize) == 0 && ny%(4*gridSize) != 0)
-						BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
-				}
-			}
+		}
 	}
 	stats.foundParticles = 0;
 	for(i = 0; i < sim->parts.active; i++) {
