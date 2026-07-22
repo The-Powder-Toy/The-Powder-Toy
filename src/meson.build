@@ -156,6 +156,16 @@ font_files = files(
 	'PowderToySDLCommon.cpp',
 )
 
+if host_platform == 'windows' and not windows_xp
+	powder_files += files('Win32HDRRenderer.cpp')
+	font_files += files('Win32HDRRenderer.cpp')
+	project_deps += [
+		cpp_compiler.find_library('d3d11'),
+		cpp_compiler.find_library('dxgi'),
+		cpp_compiler.find_library('d3dcompiler'),
+	]
+endif
+
 common_files = files(
 	'Format.cpp',
 	'Misc.cpp',

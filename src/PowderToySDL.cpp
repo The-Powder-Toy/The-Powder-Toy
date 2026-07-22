@@ -7,6 +7,9 @@
 #include "common/platform/Platform.h"
 #include "common/clipboard/Clipboard.h"
 #include "FrameSchedule.h"
+#if defined(TPT_WIN32_HDR)
+#include "Win32HDRRenderer.h"
+#endif
 #include <iostream>
 
 int desktopWidth = 1280;
@@ -14,6 +17,9 @@ int desktopHeight = 1024;
 SDL_Window *sdl_window = nullptr;
 SDL_Renderer *sdl_renderer = nullptr;
 SDL_Texture *sdl_texture = nullptr;
+#if defined(TPT_WIN32_HDR)
+static Win32HDRRenderer *win32HdrRenderer = nullptr;
+#endif
 bool vsyncHint = false;
 WindowFrameOps currentFrameOps;
 bool momentumScroll = true;
@@ -33,6 +39,22 @@ static FrameSchedule drawSchedule;
 static FrameSchedule clientTickSchedule;
 static FrameSchedule fpsUpdateSchedule;
 
+static void WindowToLogical(int windowX, int windowY, int *logicalX, int *logicalY)
+{
+#if defined(TPT_WIN32_HDR)
+	if (win32HdrRenderer)
+	{
+		auto frameOps = currentFrameOps.Normalize();
+		Win32HDRWindowToLogical(win32HdrRenderer, windowX, windowY, logicalX, logicalY, frameOps.forceIntegerScaling);
+		return;
+	}
+#endif
+	if (logicalX)
+		*logicalX = windowX;
+	if (logicalY)
+		*logicalY = windowY;
+}
+
 void StartTextInput()
 {
 	SDL_StartTextInput();
@@ -47,22 +69,38 @@ void SetTextInputRect(int x, int y, int w, int h)
 {
 	// Why does SDL_SetTextInputRect not take logical coordinates???
 	SDL_Rect rect;
-#if SDL_VERSION_ATLEAST(2, 0, 18)
-	int wx, wy, wwx, why;
-	SDL_RenderLogicalToWindow(sdl_renderer, float(x), float(y), &wx, &wy);
-	SDL_RenderLogicalToWindow(sdl_renderer, float(x + w), float(y + h), &wwx, &why);
-	rect.x = wx;
-	rect.y = wy;
-	rect.w = wwx - wx;
-	rect.h = why - wy;
-#else
-	// TODO: use SDL_RenderLogicalToWindow when ubuntu deigns to update to sdl 2.0.18
-	auto scale = ui::Engine::Ref().windowFrameOps.scale;
-	rect.x = x * scale;
-	rect.y = y * scale;
-	rect.w = w * scale;
-	rect.h = h * scale;
+#if defined(TPT_WIN32_HDR)
+	if (win32HdrRenderer)
+	{
+		auto frameOps = currentFrameOps.Normalize();
+		int wx, wy, wwx, why;
+		Win32HDRLogicalToWindow(win32HdrRenderer, float(x), float(y), &wx, &wy, frameOps.forceIntegerScaling);
+		Win32HDRLogicalToWindow(win32HdrRenderer, float(x + w), float(y + h), &wwx, &why, frameOps.forceIntegerScaling);
+		rect.x = wx;
+		rect.y = wy;
+		rect.w = wwx - wx;
+		rect.h = why - wy;
+	}
+	else
 #endif
+	{
+#if SDL_VERSION_ATLEAST(2, 0, 18)
+		int wx, wy, wwx, why;
+		SDL_RenderLogicalToWindow(sdl_renderer, float(x), float(y), &wx, &wy);
+		SDL_RenderLogicalToWindow(sdl_renderer, float(x + w), float(y + h), &wwx, &why);
+		rect.x = wx;
+		rect.y = wy;
+		rect.w = wwx - wx;
+		rect.h = why - wy;
+#else
+		// TODO: use SDL_RenderLogicalToWindow when ubuntu deigns to update to sdl 2.0.18
+		auto scale = ui::Engine::Ref().windowFrameOps.scale;
+		rect.x = x * scale;
+		rect.y = y * scale;
+		rect.w = w * scale;
+		rect.h = h * scale;
+#endif
+	}
 	SDL_SetTextInputRect(&rect);
 }
 
@@ -93,6 +131,14 @@ uint64_t GetNowNs()
 
 static void CalculateMousePosition(int *x, int *y)
 {
+#if defined(TPT_WIN32_HDR)
+	if (win32HdrRenderer)
+	{
+		auto frameOps = currentFrameOps.Normalize();
+		Win32HDRGetMousePosition(win32HdrRenderer, x, y, frameOps.forceIntegerScaling);
+		return;
+	}
+#endif
 	int globalMx, globalMy;
 	SDL_GetGlobalMouseState(&globalMx, &globalMy);
 	int windowX, windowY;
@@ -106,6 +152,17 @@ static void CalculateMousePosition(int *x, int *y)
 
 void blit(pixel *vid)
 {
+#if defined(TPT_WIN32_HDR)
+	if (win32HdrRenderer)
+	{
+		auto frameOps = currentFrameOps.Normalize();
+		if (!Win32HDRPresent(win32HdrRenderer, vid, WINDOWW * sizeof (Uint32), frameOps.blurryScaling, frameOps.forceIntegerScaling))
+		{
+			fprintf(stderr, "Windows HDR presenter failed to present a frame\n");
+		}
+		return;
+	}
+#endif
 	SDL_UpdateTexture(sdl_texture, nullptr, vid, WINDOWW * sizeof (Uint32));
 	// need to clear the renderer if there are black edges (fullscreen, or resizable window)
 	if (currentFrameOps.fullscreen || currentFrameOps.resizable)
@@ -157,6 +214,10 @@ void SDLOpen()
 
 void SDLClose()
 {
+#if defined(TPT_WIN32_HDR)
+	Win32HDRDestroy(win32HdrRenderer);
+	win32HdrRenderer = nullptr;
+#endif
 	if (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_OPENGL)
 	{
 		// * nvidia-460 egl registers callbacks with x11 that end up being called
@@ -217,6 +278,10 @@ void SDLSetScreen()
 
 	if (recreate)
 	{
+#if defined(TPT_WIN32_HDR)
+		Win32HDRDestroy(win32HdrRenderer);
+		win32HdrRenderer = nullptr;
+#endif
 		if (sdl_texture)
 		{
 			SDL_DestroyTexture(sdl_texture);
@@ -260,30 +325,39 @@ void SDLSetScreen()
 		}
 		SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, newFrameOpsNorm.blurryScaling ? "linear" : "nearest");
-		sdl_renderer = SDL_CreateRenderer(sdl_window, -1, rendererFlags);
-		if (!sdl_renderer)
+		bool useSdlRenderer = true;
+#if defined(TPT_WIN32_HDR)
+		win32HdrRenderer = Win32HDRCreate(sdl_window, WINDOWW, WINDOWH, XRES, YRES);
+		useSdlRenderer = !win32HdrRenderer;
+#endif
+		if (useSdlRenderer)
 		{
-			fprintf(stderr, "SDL_CreateRenderer failed; available renderers:\n");
-			int num = SDL_GetNumRenderDrivers();
-			for (int i = 0; i < num; ++i)
+			sdl_renderer = SDL_CreateRenderer(sdl_window, -1, rendererFlags);
+			if (!sdl_renderer)
 			{
-				SDL_RendererInfo info;
-				SDL_GetRenderDriverInfo(i, &info);
-				fprintf(stderr, " - %s\n", info.name);
+				fprintf(stderr, "SDL_CreateRenderer failed; available renderers:\n");
+				int num = SDL_GetNumRenderDrivers();
+				for (int i = 0; i < num; ++i)
+				{
+					SDL_RendererInfo info;
+					SDL_GetRenderDriverInfo(i, &info);
+					fprintf(stderr, " - %s\n", info.name);
+				}
+				Platform::Exit(-1);
 			}
-			Platform::Exit(-1);
-		}
-		SDL_RenderSetLogicalSize(sdl_renderer, WINDOWW, WINDOWH);
-		sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOWW, WINDOWH);
-		if (!sdl_texture)
-		{
-			fprintf(stderr, "SDL_CreateTexture failed: %s\n", SDL_GetError());
-			Platform::Exit(-1);
+			SDL_RenderSetLogicalSize(sdl_renderer, WINDOWW, WINDOWH);
+			sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, WINDOWW, WINDOWH);
+			if (!sdl_texture)
+			{
+				fprintf(stderr, "SDL_CreateTexture failed: %s\n", SDL_GetError());
+				Platform::Exit(-1);
+			}
 		}
 		SDL_RaiseWindow(sdl_window);
 		Clipboard::RecreateWindow();
 	}
-	SDL_RenderSetIntegerScale(sdl_renderer, newFrameOpsNorm.forceIntegerScaling ? SDL_TRUE : SDL_FALSE);
+	if (sdl_renderer)
+		SDL_RenderSetIntegerScale(sdl_renderer, newFrameOpsNorm.forceIntegerScaling ? SDL_TRUE : SDL_FALSE);
 	if (!(newFrameOpsNorm.resizable && SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_MAXIMIZED))
 	{
 		SDL_SetWindowSize(sdl_window, size.X, size.Y);
@@ -354,8 +428,7 @@ static void EventProcess(const SDL_Event &event)
 		break;
 	}
 	case SDL_MOUSEMOTION:
-		mousex = event.motion.x;
-		mousey = event.motion.y;
+		WindowToLogical(event.motion.x, event.motion.y, &mousex, &mousey);
 		engine.onMouseMove(mousex, mousey);
 
 		hasMouseMoved = true;
@@ -368,8 +441,7 @@ static void EventProcess(const SDL_Event &event)
 		// if mouse hasn't moved yet, sdl will send 0,0. We don't want that
 		if (hasMouseMoved)
 		{
-			mousex = event.button.x;
-			mousey = event.button.y;
+			WindowToLogical(event.button.x, event.button.y, &mousex, &mousey);
 		}
 		mouseButton = event.button.button;
 		engine.onMouseDown(mousex, mousey, mouseButton);
@@ -384,8 +456,7 @@ static void EventProcess(const SDL_Event &event)
 		// if mouse hasn't moved yet, sdl will send 0,0. We don't want that
 		if (hasMouseMoved)
 		{
-			mousex = event.button.x;
-			mousey = event.button.y;
+			WindowToLogical(event.button.x, event.button.y, &mousex, &mousey);
 		}
 		mouseButton = event.button.button;
 		engine.onMouseUp(mousex, mousey, mouseButton);
@@ -413,6 +484,9 @@ static void EventProcess(const SDL_Event &event)
 
 		case SDL_WINDOWEVENT_DISPLAY_CHANGED:
 			UpdateRefreshRate();
+#if defined(TPT_WIN32_HDR)
+			Win32HDRInvalidateOutput(win32HdrRenderer);
+#endif
 			break;
 		}
 		break;

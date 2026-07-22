@@ -367,6 +367,9 @@ if host_platform == 'windows'
 		'UNICODE',
 		'_UNICODE',
 	]
+	if not windows_xp
+		defs_ccomp_win += [ 'TPT_WIN32_HDR=1' ]
+	endif
 	windows_mod = import('windows')
 	if tpt_libs_static == 'dynamic'
 		foreach input_output_condition : tpt_libs.get_variable('config_dlls')
