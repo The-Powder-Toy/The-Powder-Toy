@@ -458,7 +458,7 @@ int Main(int argc, char *argv[])
 	{
 		engine.SetDrawingFrequencyLimit(DrawLimitDisplay{});
 	}
-	else if (drawLimit && *drawLimit >= DrawLimitExplicit::minSane && *drawLimit > DrawLimitExplicit::maxSane)
+	else if (drawLimit && *drawLimit >= DrawLimitExplicit::minSane && *drawLimit < DrawLimitExplicit::maxSane)
 	{
 		engine.SetDrawingFrequencyLimit(DrawLimitExplicit{ *drawLimit });
 	}
