@@ -41,7 +41,18 @@ AccessProperty AccessProperty::Parse(int prop, String value)
 				//0b1001100110
 				ByteString substr = value.Substr(2).ToUtf8();
 				size_t converted;
-				v = std::stoi(substr, &converted, 2);
+				try
+				{
+					v = std::stoi(substr, &converted, 2);
+				}
+				catch (const std::invalid_argument &)
+				{
+					throw ParseError("invalid binary value");
+				}
+				catch (const std::out_of_range &)
+				{
+					throw ParseError("invalid binary value");
+				}
 				if (converted != substr.length())
 					throw ParseError("invalid binary value");
 			}
