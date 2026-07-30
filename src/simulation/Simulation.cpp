@@ -1921,10 +1921,14 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	{
 		int oldX = (int)(parts[p].x + 0.5f);
 		int oldY = (int)(parts[p].y + 0.5f);
-		if (pmap[oldY][oldX] && ID(pmap[oldY][oldX]) == p)
-			pmap[oldY][oldX] = 0;
-		if (photons[oldY][oldX] && ID(photons[oldY][oldX]) == p)
-			photons[oldY][oldX] = 0;
+
+		if (InBounds(oldX, oldY))
+		{
+			if (pmap[oldY][oldX] && ID(pmap[oldY][oldX]) == p)
+				pmap[oldY][oldX] = 0;
+			if (photons[oldY][oldX] && ID(photons[oldY][oldX]) == p)
+				photons[oldY][oldX] = 0;
+		}
 
 		oldType = parts[p].type;
 
