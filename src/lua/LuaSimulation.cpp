@@ -16,7 +16,20 @@
 #include "simulation/gravity/Gravity.h"
 #include "simulation/Snapshot.h"
 #include "simulation/ToolClasses.h"
+#include <algorithm>
+#include <cstdint>
 #include <type_traits>
+
+// * Folds a raw Lua integer into [0, limit] the way resetPressure and resetVelocity always
+//   meant to: abs() on the raw value is undefined for INT_MIN (in practice it stays INT_MIN
+//   and slips through an upper-bound-only clamp), and comparing x1 + width afterwards can
+//   itself overflow for large widths. Taking the magnitude in 64 bits avoids both while
+//   keeping the historical "mirror negatives, clamp to the grid" behaviour.
+static int foldIntoCellRange(int value, int limit)
+{
+	auto magnitude = int64_t(value) < 0 ? -int64_t(value) : int64_t(value);
+	return int(magnitude < int64_t(limit) ? magnitude : int64_t(limit));
+}
 
 static int ambientHeatSim(lua_State *L)
 {
@@ -949,26 +962,18 @@ static int resetPressure(lua_State *L)
 	auto *lsi = GetLSI();
 	lsi->AssertToolEvent();
 	int aCount = lua_gettop(L), width = XCELLS, height = YCELLS;
-	int x1 = abs(luaL_optint(L, 1, 0));
-	int y1 = abs(luaL_optint(L, 2, 0));
+	int x1 = foldIntoCellRange(luaL_optint(L, 1, 0), XCELLS-1);
+	int y1 = foldIntoCellRange(luaL_optint(L, 2, 0), YCELLS-1);
 	if (aCount > 2)
 	{
-		width = abs(luaL_optint(L, 3, XCELLS));
-		height = abs(luaL_optint(L, 4, YCELLS));
+		width = foldIntoCellRange(luaL_optint(L, 3, XCELLS), XCELLS-x1);
+		height = foldIntoCellRange(luaL_optint(L, 4, YCELLS), YCELLS-y1);
 	}
 	else if (aCount)
 	{
 		width = 1;
 		height = 1;
 	}
-	if(x1 > XCELLS-1)
-		x1 = XCELLS-1;
-	if(y1 > YCELLS-1)
-		y1 = YCELLS-1;
-	if(x1+width > XCELLS-1)
-		width = XCELLS-x1;
-	if(y1+height > YCELLS-1)
-		height = YCELLS-y1;
 	for (int nx = x1; nx<x1+width; nx++)
 		for (int ny = y1; ny<y1+height; ny++)
 		{
@@ -1459,19 +1464,25 @@ static int neighboursClosure(lua_State *L)
 	auto *lsi = GetLSI();
 	int cx = lua_tointeger(L, lua_upvalueindex(1));
 	int cy = lua_tointeger(L, lua_upvalueindex(2));
-	int rx = lua_tointeger(L, lua_upvalueindex(3));
-	int ry = lua_tointeger(L, lua_upvalueindex(4));
-	int t = lua_tointeger(L, lua_upvalueindex(5));
-	int x = lua_tointeger(L, lua_upvalueindex(6));
-	int y = lua_tointeger(L, lua_upvalueindex(7));
-	while (y <= cy + ry)
+	// * x1/y1/x2/y2 arrive already intersected with the grid (see neighbors), so the
+	//   pmap/photons reads below stay in range without a check per element. cx/cy are
+	//   kept separately and only for the "skip the centre" test, because the centre may
+	//   legitimately sit outside the clamped rectangle.
+	int x1 = lua_tointeger(L, lua_upvalueindex(3));
+	int y1 = lua_tointeger(L, lua_upvalueindex(4));
+	int x2 = lua_tointeger(L, lua_upvalueindex(5));
+	int y2 = lua_tointeger(L, lua_upvalueindex(6));
+	int t = lua_tointeger(L, lua_upvalueindex(7));
+	int x = lua_tointeger(L, lua_upvalueindex(8));
+	int y = lua_tointeger(L, lua_upvalueindex(9));
+	while (y <= y2)
 	{
 		int px = x;
 		int py = y;
 		x += 1;
-		if (x > cx + rx)
+		if (x > x2)
 		{
-			x = cx - rx;
+			x = x1;
 			y += 1;
 		}
 		int r = lsi->sim->pmap[py][px];
@@ -1494,9 +1505,9 @@ static int neighboursClosure(lua_State *L)
 		if (r)
 		{
 			lua_pushnumber(L, x);
-			lua_replace(L, lua_upvalueindex(6));
+			lua_replace(L, lua_upvalueindex(8));
 			lua_pushnumber(L, y);
-			lua_replace(L, lua_upvalueindex(7));
+			lua_replace(L, lua_upvalueindex(9));
 			lua_pushnumber(L, ID(r));
 			lua_pushnumber(L, px);
 			lua_pushnumber(L, py);
@@ -1517,14 +1528,35 @@ static int neighbors(lua_State *L)
 	{
 		luaL_error(L, "Invalid radius");
 	}
+	// * Only a negative radius was rejected: neither an unbounded positive radius nor an
+	//   off-grid centre was, and the closure indexes pmap/photons directly. Intersect the
+	//   requested rectangle with the grid here, in 64-bit so that cx + rx cannot overflow
+	//   on the way in.
+	auto x1 = std::max(int64_t(cx) - rx, int64_t(0));
+	auto y1 = std::max(int64_t(cy) - ry, int64_t(0));
+	auto x2 = std::min(int64_t(cx) + rx, int64_t(XRES - 1));
+	auto y2 = std::min(int64_t(cy) + ry, int64_t(YRES - 1));
+	if (x1 > x2 || y1 > y2)
+	{
+		// * The rectangle misses the grid entirely. The closure only tests the y bound in
+		//   its loop condition, so an empty x range would still let one out-of-range x
+		//   through; normalise both axes to an empty y range instead, which stops the
+		//   closure on its first call.
+		x1 = 0;
+		y1 = 0;
+		x2 = -1;
+		y2 = -1;
+	}
 	lua_pushnumber(L, cx);
 	lua_pushnumber(L, cy);
-	lua_pushnumber(L, rx);
-	lua_pushnumber(L, ry);
+	lua_pushnumber(L, int(x1));
+	lua_pushnumber(L, int(y1));
+	lua_pushnumber(L, int(x2));
+	lua_pushnumber(L, int(y2));
 	lua_pushnumber(L, t);
-	lua_pushnumber(L, cx - rx);
-	lua_pushnumber(L, cy - ry);
-	lua_pushcclosure(L, neighboursClosure, 7);
+	lua_pushnumber(L, int(x1));
+	lua_pushnumber(L, int(y1));
+	lua_pushcclosure(L, neighboursClosure, 9);
 	return 1;
 }
 
@@ -1956,18 +1988,10 @@ static int resetVelocity(lua_State *L)
 	lsi->AssertInterfaceEvent();
 	int nx, ny;
 	int x1, y1, width, height;
-	x1 = abs(luaL_optint(L, 1, 0));
-	y1 = abs(luaL_optint(L, 2, 0));
-	width = abs(luaL_optint(L, 3, XCELLS));
-	height = abs(luaL_optint(L, 4, YCELLS));
-	if(x1 > XCELLS-1)
-		x1 = XCELLS-1;
-	if(y1 > YCELLS-1)
-		y1 = YCELLS-1;
-	if(x1+width > XCELLS-1)
-		width = XCELLS-x1;
-	if(y1+height > YCELLS-1)
-		height = YCELLS-y1;
+	x1 = foldIntoCellRange(luaL_optint(L, 1, 0), XCELLS-1);
+	y1 = foldIntoCellRange(luaL_optint(L, 2, 0), YCELLS-1);
+	width = foldIntoCellRange(luaL_optint(L, 3, XCELLS), XCELLS-x1);
+	height = foldIntoCellRange(luaL_optint(L, 4, YCELLS), YCELLS-y1);
 	for (nx = x1; nx<x1+width; nx++)
 		for (ny = y1; ny<y1+height; ny++)
 		{
