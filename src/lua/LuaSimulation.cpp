@@ -949,26 +949,24 @@ static int resetPressure(lua_State *L)
 	auto *lsi = GetLSI();
 	lsi->AssertToolEvent();
 	int aCount = lua_gettop(L), width = XCELLS, height = YCELLS;
-	int x1 = abs(luaL_optint(L, 1, 0));
-	int y1 = abs(luaL_optint(L, 2, 0));
+	int x1 = luaL_optint(L, 1, 0);
+	int y1 = luaL_optint(L, 2, 0);
 	if (aCount > 2)
 	{
-		width = abs(luaL_optint(L, 3, XCELLS));
-		height = abs(luaL_optint(L, 4, YCELLS));
+		width = luaL_optint(L, 3, XCELLS);
+		height = luaL_optint(L, 4, YCELLS);
 	}
 	else if (aCount)
 	{
 		width = 1;
 		height = 1;
 	}
-	if(x1 > XCELLS-1)
-		x1 = XCELLS-1;
-	if(y1 > YCELLS-1)
-		y1 = YCELLS-1;
-	if(x1+width > XCELLS-1)
-		width = XCELLS-x1;
-	if(y1+height > YCELLS-1)
-		height = YCELLS-y1;
+
+	x1 = std::clamp(x1, 0, XCELLS - 1);
+	y1 = std::clamp(y1, 0, YCELLS - 1);
+	width = std::clamp(width, 0, XCELLS - x1);
+	height = std::clamp(height, 0, YCELLS - y1);
+
 	for (int nx = x1; nx<x1+width; nx++)
 		for (int ny = y1; ny<y1+height; ny++)
 		{
@@ -1954,22 +1952,18 @@ static int resetVelocity(lua_State *L)
 {
 	auto *lsi = GetLSI();
 	lsi->AssertInterfaceEvent();
-	int nx, ny;
-	int x1, y1, width, height;
-	x1 = abs(luaL_optint(L, 1, 0));
-	y1 = abs(luaL_optint(L, 2, 0));
-	width = abs(luaL_optint(L, 3, XCELLS));
-	height = abs(luaL_optint(L, 4, YCELLS));
-	if(x1 > XCELLS-1)
-		x1 = XCELLS-1;
-	if(y1 > YCELLS-1)
-		y1 = YCELLS-1;
-	if(x1+width > XCELLS-1)
-		width = XCELLS-x1;
-	if(y1+height > YCELLS-1)
-		height = YCELLS-y1;
-	for (nx = x1; nx<x1+width; nx++)
-		for (ny = y1; ny<y1+height; ny++)
+	int x1 = luaL_optint(L, 1, 0);
+	int y1 = luaL_optint(L, 2, 0);
+	int width = luaL_optint(L, 3, XCELLS);
+	int height = luaL_optint(L, 4, YCELLS);
+
+	x1 = std::clamp(x1, 0, XCELLS - 1);
+	y1 = std::clamp(y1, 0, YCELLS - 1);
+	width = std::clamp(width, 0, XCELLS - 1 - x1);
+	height = std::clamp(height, 0, YCELLS - 1 - y1);
+
+	for (int nx = x1; nx < x1 + width; nx++)
+		for (int ny = y1; ny < y1 + height; ny++)
 		{
 			lsi->sim->vx[ny][nx] = 0;
 			lsi->sim->vy[ny][nx] = 0;
