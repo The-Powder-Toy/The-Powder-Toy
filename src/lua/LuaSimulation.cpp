@@ -1462,14 +1462,14 @@ static int neighboursClosure(lua_State *L)
 	int t = lua_tointeger(L, lua_upvalueindex(5));
 	int x = lua_tointeger(L, lua_upvalueindex(6));
 	int y = lua_tointeger(L, lua_upvalueindex(7));
-	while (y <= cy + ry)
+	while (y <= cy + ry && y < YRES)
 	{
 		int px = x;
 		int py = y;
 		x += 1;
-		if (x > cx + rx)
+		if (x > cx + rx || x >= XRES)
 		{
-			x = cx - rx;
+			x = std::max(cx - rx, 0);
 			y += 1;
 		}
 		int r = lsi->sim->pmap[py][px];
@@ -1511,17 +1511,21 @@ static int neighbors(lua_State *L)
 	int rx = luaL_optint(L, 3, 2);
 	int ry = luaL_optint(L, 4, 2);
 	int t = luaL_optint(L, 5, PT_NONE);
-	if (rx < 0 || ry < 0)
+	if (cx < 0 || cy < 0 || cx >= XRES || cy >= YRES)
 	{
-		luaL_error(L, "Invalid radius");
+		return luaL_error(L, "Invalid position");
+	}
+	if (rx < 0 || ry < 0 || rx >= XRES || ry >= YRES)
+	{
+		return luaL_error(L, "Invalid radius");
 	}
 	lua_pushnumber(L, cx);
 	lua_pushnumber(L, cy);
 	lua_pushnumber(L, rx);
 	lua_pushnumber(L, ry);
 	lua_pushnumber(L, t);
-	lua_pushnumber(L, cx - rx);
-	lua_pushnumber(L, cy - ry);
+	lua_pushnumber(L, std::max(cx - rx, 0));
+	lua_pushnumber(L, std::max(cy - ry, 0));
 	lua_pushcclosure(L, neighboursClosure, 7);
 	return 1;
 }
