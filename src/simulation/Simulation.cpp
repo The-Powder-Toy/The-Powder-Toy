@@ -723,7 +723,7 @@ bool Simulation::flood_water(int x, int y, int i)
 			}
 			while (x2 < XRES-CELL)
 			{
-				if (elements[TYP(pmap[y][x2 + 1])].Falldown != 2 || bitmap[(y * XRES) + x1 - 1])
+				if (elements[TYP(pmap[y][x2 + 1])].Falldown != 2 || bitmap[(y * XRES) + x2 + 1])
 					break;
 				x2++;
 			}
