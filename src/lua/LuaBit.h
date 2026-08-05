@@ -28,7 +28,7 @@
 
 #pragma once
 
-#define LUA_BITOP_VERSION	"1.0.2"
+#define LUA_BITOP_VERSION	"1.0.4"
 
 struct lua_State;
 extern "C" int luaopen_bit(lua_State *L);

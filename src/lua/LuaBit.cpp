@@ -1,8 +1,8 @@
 /*
-** Lua BitOp -- a bit operations library for Lua 5.1/5.2.
+** Lua BitOp -- a bit operations library for Lua 5.1 - 5.5.
 ** http://bitop.luajit.org/
 **
-** Copyright (C) 2008-2012 Mike Pall. All rights reserved.
+** Copyright (C) 2008-2026 Mike Pall. All rights reserved.
 **
 ** Permission is hereby granted, free of charge, to any person obtaining
 ** a copy of this software and associated documentation files (the
@@ -27,7 +27,7 @@
 */
 #include "LuaBit.h"
 
-#define LUA_BITOP_VERSION	"1.0.2"
+#define LUA_BITOP_VERSION	"1.0.4"
 
 #include "LuaCompat.h"
 
@@ -45,7 +45,7 @@ typedef uint32_t UBits;
 
 typedef union {
   lua_Number n;
-#ifdef LUA_NUMBER_DOUBLE
+#if defined(LUA_NUMBER_DOUBLE) || LUA_VERSION_NUM >= 503
   uint64_t b;
 #else
   UBits b;
@@ -57,12 +57,17 @@ static UBits barg(lua_State *L, int idx)
 {
   BitNum bn;
   UBits b;
+#if LUA_VERSION_NUM >= 503
+  int isint = 0;
+  lua_Integer i = lua_tointegerx(L, idx, &isint);
+  if (isint) return (UBits)i;
+#endif
 #if LUA_VERSION_NUM < 502
   bn.n = lua_tonumber(L, idx);
 #else
   bn.n = luaL_checknumber(L, idx);
 #endif
-#if defined(LUA_NUMBER_DOUBLE)
+#if defined(LUA_NUMBER_DOUBLE) || LUA_VERSION_NUM >= 503
   bn.n += 6755399441055744.0;  /* 2^52+2^51 */
 #ifdef SWAPPED_DOUBLE
   b = (UBits)(bn.b >> 32);
@@ -90,7 +95,11 @@ static UBits barg(lua_State *L, int idx)
 }
 
 /* Return bit type. */
+#if LUA_VERSION_NUM >= 503
+#define BRET(b)  lua_pushinteger(L, (lua_Integer)(SBits)(b)); return 1;
+#else
 #define BRET(b)  lua_pushnumber(L, (lua_Number)(SBits)(b)); return 1;
+#endif
 
 static int bit_tobit(lua_State *L) { BRET(barg(L, 1)) }
 static int bit_bnot(lua_State *L) { BRET(~barg(L, 1)) }
@@ -128,11 +137,11 @@ static int bit_bswap(lua_State *L)
 static int bit_tohex(lua_State *L)
 {
   UBits b = barg(L, 1);
-  SBits n = lua_isnone(L, 2) ? 8 : (SBits)barg(L, 2);
+  UBits n = lua_isnone(L, 2) ? 8 : barg(L, 2);
   const char *hexdigits = "0123456789abcdef";
   char buf[8];
   int i;
-  if (n < 0) { n = -n; hexdigits = "0123456789ABCDEF"; }
+  if ((SBits)n < 0) { n = ~n+1; hexdigits = "0123456789ABCDEF"; }
   if (n > 8) n = 8;
   for (i = (int)n; --i >= 0; ) { buf[i] = hexdigits[b & 15]; b >>= 4; }
   lua_pushlstring(L, buf, (size_t)n);
