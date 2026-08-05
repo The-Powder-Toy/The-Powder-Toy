@@ -109,6 +109,18 @@ String sign::getDisplayText(const RenderableSimulation *sim, int &x0, int &y0, i
 						if (v95)
 							*v95 = true;
 					}
+					else if (between_curlies == "tmp3")
+					{
+						formatted_text << (part ? part->tmp3 : 0);
+						if (v95)
+							*v95 = true;
+					}
+					else if (between_curlies == "tmp4")
+					{
+						formatted_text << (part ? part->tmp4 : 0);
+						if (v95)
+							*v95 = true;
+					}
 					else
 					{
 						formatted_text << '{' << between_curlies << '}';
