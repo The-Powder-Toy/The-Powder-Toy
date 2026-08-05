@@ -184,12 +184,19 @@ endif
 if lua_variant == 'none'
 	lua_dep = []
 elif lua_variant == 'lua5.1' or lua_variant == 'lua5.2'
-	lua_dep = dependency(lua_variant + '-c++', static: is_static, required: false)
-	if not lua_dep.found()
-		if not get_option('workaround_noncpp_lua')
-			error('your system @0@ is not compatible with C++, configure with -Dworkaround_noncpp_lua=true to disable this error'.format(lua_variant))
-		endif
+	workaround_noncpp_lua = get_option('workaround_noncpp_lua')
+	if workaround_noncpp_lua
 		lua_dep = dependency(lua_variant, static: is_static)
+	else
+		lua_dep = dependency(lua_variant + '-c++', static: is_static, required: false)
+		if not lua_dep.found()
+			# grabbing this dependency before displaying the error message ensures that if no lua development package is installed at all,
+			# no confusing error message will be shown that suggests that some package is installed, it's just not compatible with C++
+			lua_dep = dependency(lua_variant, static: is_static)
+			if not workaround_noncpp_lua
+				error('your system @0@ is not compatible with C++, configure with -Dworkaround_noncpp_lua=true to disable this error'.format(lua_variant))
+			endif
+		endif
 	endif
 elif lua_variant == 'luajit'
 	lua_dep = dependency('luajit', static: is_static)
