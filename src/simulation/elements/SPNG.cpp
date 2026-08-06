@@ -196,7 +196,7 @@ static int update(UPDATE_FUNC_ARGS)
 							parts[np].temp = parts[i].temp;
 							tmp--;
 							parts[i].life--;
-							parts[i].temp -= 20.0f;
+							parts[i].temp = restrict_flt(parts[i].temp - 20.0f, MIN_TEMP, MAX_TEMP);
 						}
 					}
 				}
