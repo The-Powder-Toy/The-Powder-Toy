@@ -20,7 +20,6 @@
 #include <iostream>
 #include <numbers>
 #include <set>
-#include <stack>
 
 namespace
 {

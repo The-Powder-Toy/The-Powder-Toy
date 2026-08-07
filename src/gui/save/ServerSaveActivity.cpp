@@ -213,7 +213,7 @@ void ServerSaveActivity::Save()
 
 void ServerSaveActivity::AddAuthorInfo()
 {
-	Bson serverSaveInfo;
+	Json::Value serverSaveInfo;
 	serverSaveInfo["type"] = "save";
 	serverSaveInfo["id"] = save->GetID();
 	auto user = Client::Ref().GetAuthUser();
@@ -221,8 +221,8 @@ void ServerSaveActivity::AddAuthorInfo()
 	serverSaveInfo["title"] = save->GetName().ToUtf8();
 	serverSaveInfo["description"] = save->GetDescription().ToUtf8();
 	serverSaveInfo["published"] = (int)save->GetPublished();
-	serverSaveInfo["date"] = int64_t(time(nullptr));
-	Client::Ref().SaveAuthorInfo(serverSaveInfo);
+	serverSaveInfo["date"] = (Json::Value::UInt64)time(nullptr);
+	Client::Ref().SaveAuthorInfo(&serverSaveInfo);
 	{
 		auto gameSave = save->TakeGameSave();
 		gameSave->authors = serverSaveInfo;

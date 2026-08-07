@@ -21,9 +21,8 @@ static_assert(!ALLOW_FAKE_NEWER_VERSION || nextVersion >= currentVersion);
 
 constexpr auto effectiveVersion = ALLOW_FAKE_NEWER_VERSION ? nextVersion : currentVersion;
 
-static void TrimAuthorsIn(Bson &b, int depth);
-static std::set<int> GetNestedSaveIDs(const Bson &j);
-static void TrimAuthorsOut(Bson &b, int depth);
+static void ConvertJsonToBson(Bson &b, Json::Value j, int depth = 0);
+static void ConvertBsonToJson(const Bson &b, Json::Value *j, int depth = 0);
 
 GameSave::GameSave(Vec2<int> newBlockSize)
 {
@@ -765,8 +764,10 @@ void GameSave::readOPS(const std::vector<char> &data)
 	}
 	if (auto *authorsNode = getIfType(b, "authors", Bson::Type::objectValue); authorsNode && wantAuthors)
 	{
-		authors = *authorsNode;
-		TrimAuthorsIn(authors, 0);
+		// we need to clear authors because the save may be read multiple times in the stamp browser (loading and rendering twice)
+		// seems inefficient ...
+		authors.clear();
+		ConvertBsonToJson(*authorsNode, &authors);
 	}
 
 	auto paletteRemap = [this](auto maxVersion, ByteString from, ByteString to) {
@@ -2696,10 +2697,10 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			}
 		}
 	}
-	if (authors.GetSize())
+	if (authors.size())
 	{
-		auto &authorsNode = (b["authors"] = authors);
-		TrimAuthorsOut(authorsNode, 0);
+		auto &authorsNode = (b["authors"] = Bson::Type::objectValue);
+		ConvertJsonToBson(authorsNode, authors);
 	}
 
 	std::vector<char> finalData;
@@ -2750,64 +2751,64 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	return { fakeFromNewerVersion, outputData };
 }
 
-static void TrimAuthorsIn(Bson &b, int depth)
+static void ConvertBsonToJson(const Bson &b, Json::Value *j, int depth)
 {
-	for (auto &[ key, child ] : b.As<Bson::Object>())
+	for (auto &[ key, value ] : b.As<Bson::Object>())
 	{
-		if (child.Is<Bson::Array>())
+		if (value.GetType() == Bson::Type::stringValue)
+			(*j)[key] = value.As<Bson::String>();
+		else if (value.GetType() == Bson::Type::boolValue)
+			(*j)[key] = value.As<Bson::Bool>();
+		else if (value.GetType() == Bson::Type::int32Value)
+			(*j)[key] = value.As<Bson::Int32>();
+		else if (value.GetType() == Bson::Type::int64Value)
+			(*j)[key] = (Json::Value::UInt64)value.As<Bson::Int64>();
+		else if (value.GetType() == Bson::Type::arrayValue && depth < 5)
 		{
-			Bson newChild(Bson::Type::arrayValue);
-			if (depth < 5)
+			int length = 0, length2 = 0;
+			for (auto &item : value.As<Bson::Array>())
 			{
-				int length = 0, length2 = 0;
-				for (auto &link : child.As<Bson::Array>())
+				if (item.GetType() == Bson::Type::objectValue) // this used to check whether the """key""" (funny because this is an array) was "part"
 				{
-					if (link.Is<Bson::Object>())
-					{
-						auto &newLink = newChild.Append(link);
-						TrimAuthorsIn(newLink, depth + 1);
-						length++;
-					}
-					else if (link.Is<int32_t>())
-					{
-						newChild.Append(link.As<int32_t>());
-					}
-					length2++;
-					if (length > (40 / ((depth + 1) * (depth + 1))) || length2 > 50)
-					{
-						break;
-					}
+					Json::Value tempPart;
+					ConvertBsonToJson(item, &tempPart, depth + 1);
+					(*j)["links"].append(tempPart);
+					length++;
 				}
+				else if (item.GetType() == Bson::Type::int32Value) // this used to check whether the """key""" (funny because this is an array) was "saveID"
+				{
+					(*j)["links"].append(item.As<Bson::Int32>());
+				}
+				length2++;
+				if (length > (int)(40 / ((depth+1) * (depth+1))) || length2 > 50)
+					break;
 			}
-			child = std::move(newChild);
 		}
 	}
 }
 
-static std::set<int> GetNestedSaveIDs(const Bson &j)
+std::set<int> GetNestedSaveIDs(Json::Value j)
 {
-	std::set<int> saveIDs;
-	for (auto &[ key, member ] : j.As<Bson::Object>())
+	Json::Value::Members members = j.getMemberNames();
+	std::set<int> saveIDs = std::set<int>();
+	for (Json::Value::Members::iterator iter = members.begin(), end = members.end(); iter != end; ++iter)
 	{
-		if (member.Is<int32_t>())
+		ByteString member = *iter;
+		if (member == "id" && j[member].isInt())
+			saveIDs.insert(j[member].asInt());
+		else if (j[member].isArray())
 		{
-			saveIDs.insert(member.As<int32_t>());
-		}
-		else if (member.Is<Bson::Array>())
-		{
-			for (auto &link : member.As<Bson::Array>())
+			for (Json::Value::ArrayIndex i = 0; i < j[member].size(); i++)
 			{
 				// only supports objects and ints here because that is all we need
-				if (link.Is<int32_t>())
+				if (j[member][i].isInt())
 				{
-					saveIDs.insert(link.As<int32_t>());
+					saveIDs.insert(j[member][i].asInt());
 					continue;
 				}
-				if (!link.Is<Bson::Object>())
-				{
+				if (!j[member][i].isObject())
 					continue;
-				}
-				auto nestedSaveIDs = GetNestedSaveIDs(link);
+				std::set<int> nestedSaveIDs = GetNestedSaveIDs(j[member][i]);
 				saveIDs.insert(nestedSaveIDs.begin(), nestedSaveIDs.end());
 			}
 		}
@@ -2816,44 +2817,51 @@ static std::set<int> GetNestedSaveIDs(const Bson &j)
 }
 
 // converts a json object to bson
-static void TrimAuthorsOut(Bson &b, int depth)
+static void ConvertJsonToBson(Bson &b, Json::Value j, int depth)
 {
-	for (auto &[ key, member ] : b.As<Bson::Object>())
+	Json::Value::Members members = j.getMemberNames();
+	for (Json::Value::Members::iterator iter = members.begin(), end = members.end(); iter != end; ++iter)
 	{
-		if (member.Is<Bson::Array>())
+		ByteString member = *iter;
+		if (j[member].isString())
+			b[member.c_str()] = j[member].asCString();
+		else if (j[member].isBool())
+			b[member.c_str()] = j[member].asBool();
+		else if (j[member].type() == Json::intValue)
+			b[member.c_str()] = j[member].asInt();
+		else if (j[member].type() == Json::uintValue)
+			b[member.c_str()] = j[member].asInt64();
+		else if (j[member].isArray())
 		{
-			Bson newChild(Bson::Type::arrayValue);
-			std::set<int> saveIDs;
+			auto &array = b.Append(Bson::Type::arrayValue);
+			std::set<int> saveIDs = std::set<int>();
 			int length = 0;
-			for (auto &link : member.As<Bson::Array>())
+			for (Json::Value::ArrayIndex i = 0; i < j[member].size(); i++)
 			{
 				// only supports objects and ints here because that is all we need
-				if (link.Is<int32_t>())
+				if (j[member][i].isInt())
 				{
-					saveIDs.insert(link.As<int32_t>());
+					saveIDs.insert(j[member][i].asInt());
 					continue;
 				}
-				if (!link.Is<Bson::Object>())
-				{
+				if (!j[member][i].isObject())
 					continue;
-				}
-				if (depth > 4 || length > 40 / ((depth + 1) * (depth + 1)))
+				if (depth > 4 || length > (int)(40 / ((depth+1) * (depth+1))))
 				{
-					std::set<int> nestedSaveIDs = GetNestedSaveIDs(link);
+					std::set<int> nestedSaveIDs = GetNestedSaveIDs(j[member][i]);
 					saveIDs.insert(nestedSaveIDs.begin(), nestedSaveIDs.end());
 				}
 				else
 				{
-					auto &newLink = newChild.Append(link);
-					TrimAuthorsOut(newLink, depth + 1);
+					auto &part = array.Append(Bson::Type::objectValue);
+					ConvertJsonToBson(part, j[member][i], depth+1);
 				}
 				length++;
 			}
-			for (auto id : saveIDs)
+			for (std::set<int>::iterator iter = saveIDs.begin(), end = saveIDs.end(); iter != end; ++iter)
 			{
-				newChild.Append(id);
+				array.Append(*iter);
 			}
-			member = std::move(newChild);
 		}
 	}
 }

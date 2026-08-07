@@ -1,5 +1,4 @@
 #pragma once
-#include "common/Bson.h"
 #include "common/String.h"
 #include "common/ExplicitSingleton.h"
 #include "StartupInfo.h"
@@ -9,6 +8,7 @@
 #include <list>
 #include <memory>
 #include <optional>
+#include <json/json.h>
 
 class SaveInfo;
 class SaveFile;
@@ -59,7 +59,7 @@ private:
 	void notifyNewNotification(ServerNotification notification);
 
 	// Save stealing info
-	Bson authors;
+	Json::Value authors;
 
 	std::unique_ptr<Prefs> stamps;
 	void MigrateStampsDef();
@@ -76,13 +76,13 @@ public:
 	std::vector<ClientListener*> listeners;
 
 	// Save stealing info
-	void MergeStampAuthorInfo(const Bson &linksToAdd);
-	void MergeAuthorInfo(const Bson &linksToAdd);
-	void OverwriteAuthorInfo(Bson overwrite) { authors = std::move(overwrite); }
-	const Bson &GetAuthorInfo() const { return authors; }
-	void SaveAuthorInfo(Bson &saveInto) const;
-	void ClearAuthorInfo() { authors = Bson{}; }
-	bool IsAuthorsEmpty() const { return authors.GetSize() == 0; }
+	void MergeStampAuthorInfo(Json::Value linksToAdd);
+	void MergeAuthorInfo(Json::Value linksToAdd);
+	void OverwriteAuthorInfo(Json::Value overwrite) { authors = overwrite; }
+	Json::Value GetAuthorInfo() { return authors; }
+	void SaveAuthorInfo(Json::Value *saveInto);
+	void ClearAuthorInfo() { authors.clear(); }
+	bool IsAuthorsEmpty() { return authors.size() == 0; }
 
 	std::optional<UpdateInfo> GetUpdateInfo();
 
