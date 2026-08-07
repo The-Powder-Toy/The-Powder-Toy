@@ -109,7 +109,7 @@ static int update(UPDATE_FUNC_ARGS)
 				parts[ID(r)].life = 0;
 				parts[ID(r)].ctype = 0;
 				sim->kill_part(i);
-				break;
+				return 1;
 			case PT_DEUT:
 				if(parts[ID(r)].life < 6000)
 					parts[ID(r)].life += 1;
