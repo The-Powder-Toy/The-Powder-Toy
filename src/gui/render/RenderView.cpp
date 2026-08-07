@@ -209,7 +209,15 @@ void RenderView::OnDraw()
 	g->DrawLine({ XRES, 0 }, { XRES, WINDOWH }, 0xFFFFFF_rgb);
 	if(toolTipPresence && toolTip.length())
 	{
-		g->BlendText({ 6, Size.Y-MENUSIZE-12 }, toolTip, 0xFFFFFF_rgb .WithAlpha(toolTipPresence>51?255:toolTipPresence*5));
+		int alpha = toolTipPresence > 51 ? 255 : toolTipPresence * 5;
+		auto textPosition = Vec2{ 6, Size.Y-MENUSIZE-12 };
+		int textWidth = Graphics::TextSize(toolTip).X;
+
+		g->BlendFilledRect(
+			RectSized(textPosition - Vec2{ 4, 4 }, Vec2{ textWidth + 8, 15 }),
+			0x000000_rgb .WithAlpha(alpha / 2)
+		);
+		g->BlendText(textPosition, toolTip, 0xFFFFFF_rgb .WithAlpha(alpha));
 	}
 }
 
