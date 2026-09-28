@@ -54,7 +54,7 @@ static int update(UPDATE_FUNC_ARGS)
 	if (parts[i].tmp > 0)
 		curlen = parts[i].tmp;
 	else
-		curlen = 10;
+		curlen = 11;
 	for (auto rx = -1; rx <= 1; rx++)
 	{
 		for (auto ry = -1; ry <= 1; ry++)
@@ -68,7 +68,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					for (auto nxx = 0, nyy = 0, nxi = rx*-1, nyi = ry*-1, len = 0; ; nyy+=nyi, nxx+=nxi, len++)
 					{
-						if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0) || len>curlen)
+						if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0) || len>=curlen)
 						{
 							break;
 						}
