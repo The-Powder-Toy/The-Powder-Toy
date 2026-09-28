@@ -249,7 +249,6 @@ if host_platform == 'emscripten'
 		'-s', 'USE_SDL=2',
 		'-s', 'USE_BZIP2=1',
 		'-s', 'USE_LIBPNG',
-		'-s', 'USE_PTHREADS',
 		'-s', 'DISABLE_EXCEPTION_CATCHING=0',
 		'-gsource-map',
 	]
