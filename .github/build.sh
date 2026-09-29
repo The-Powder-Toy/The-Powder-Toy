@@ -139,7 +139,7 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 		fi
 		;;
 	emscripten)
-		git clone https://github.com/emscripten-core/emsdk.git --branch 3.1.72
+		git clone https://github.com/emscripten-core/emsdk.git --branch 5.0.7
 		cd emsdk
 		./emsdk install latest
 		./emsdk activate latest
