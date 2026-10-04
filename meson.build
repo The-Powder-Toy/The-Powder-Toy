@@ -439,6 +439,8 @@ elif host_platform == 'linux'
 	ident_platform = is_64bit ? 'LIN64' : 'LIN32'
 elif host_platform == 'darwin'
 	ident_platform = host_arch == 'aarch64' ? 'MACOSARM' : 'MACOSX'
+elif host_platform == 'emscripten'
+	ident_platform = 'EMSCRIPTEN'
 else
 	ident_platform = 'UNKNOWN'
 endif

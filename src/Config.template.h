@@ -9,6 +9,7 @@ constexpr bool BETA                     = @BETA@;
 constexpr bool SNAPSHOT                 = @SNAPSHOT@;
 constexpr bool MOD                      = @MOD@;
 constexpr bool NOHTTP                   = @NOHTTP@;
+constexpr bool EMSCRIPTEN               = @EMSCRIPTEN@;
 constexpr bool LUACONSOLE               = @LUACONSOLE@;
 constexpr bool ALLOW_FAKE_NEWER_VERSION = @ALLOW_FAKE_NEWER_VERSION@;
 constexpr bool USE_UPDATESERVER         = @USE_UPDATESERVER@;

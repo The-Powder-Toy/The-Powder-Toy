@@ -2,6 +2,7 @@
 #include "Config.h"
 #include "SimulationConfig.h"
 #include "common/String.h"
+#include <cstring>
 
 inline ByteString VersionInfo()
 {
@@ -75,6 +76,10 @@ inline ByteString IntroText()
 	else
 	{
 		sb << "\bgTo use online features such as saving, you need to register at: \br" << SERVER << "/Register.html\n";
+	}
+	if constexpr (std::string_view(IDENT_PLATFORM) == "EMSCRIPTEN")
+	{
+		sb << "\brLocal saves and other data are managed by your browser and may be deleted unexpectedly. \bgIf in doubt, save online.\n";
 	}
 	sb << "\n\bt" << VersionInfo();
 	return sb.Build();
