@@ -499,12 +499,15 @@ foreach sta_info : [
 		host_platform == 'android' ? sdl2_dep : [],
 		png_dep,
 		bzip2_dep,
+		threads_dep,
 	] ],
 	[ 'gui', gui_files, [
 		sdl2_dep,
+		threads_dep,
 	] ],
 	[ 'simulation', simulation_files, [
 		json_dep,
+		threads_dep,
 	] ],
 ]
 	sta_name = sta_info[0]
