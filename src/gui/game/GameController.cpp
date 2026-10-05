@@ -1488,7 +1488,7 @@ void GameController::OpenSaveWindow()
 void GameController::SaveAsCurrent()
 {
 	auto user = gameModel->GetUser();
-	if (gameModel->GetSave() && user && user->Username == gameModel->GetSave()->GetUserName())
+	if (gameModel->GetSave() && gameModel->GetSave()->IsOwn())
 	{
 		Simulation * sim = gameModel->GetSimulation();
 		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), RES.OriginRect());

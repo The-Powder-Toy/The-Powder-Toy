@@ -84,7 +84,8 @@ public:
 	void ClearAuthorInfo() { authors.clear(); }
 	bool IsAuthorsEmpty() { return authors.size() == 0; }
 
-	std::optional<UpdateInfo> GetUpdateInfo();
+	const std::optional<UpdateInfo> &GetUpdateInfo() const;
+	std::optional<UpdateInfo> TakeUpdateInfo();
 
 	Client();
 	~Client();
@@ -93,7 +94,8 @@ public:
 	//std::string FileSaveDialogue();
 
 	void AddServerNotification(ServerNotification notification);
-	std::vector<ServerNotification> GetServerNotifications();
+	const std::vector<ServerNotification> &GetServerNotifications() const;
+	std::vector<ServerNotification> TakeServerNotifications();
 
 	void SetMessageOfTheDay(String message);
 	String GetMessageOfTheDay();
@@ -106,7 +108,7 @@ public:
 
 	std::unique_ptr<SaveFile> GetStamp(ByteString stampID);
 	void DeleteStamp(ByteString stampID);
-	void RenameStamp(ByteString stampID, ByteString newName);
+	std::optional<ByteString> RenameStamp(ByteString stampID, ByteString newName);
 	ByteString AddStamp(std::unique_ptr<GameSave> saveData);
 	void RescanStamps();
 	const std::vector<ByteString> &GetStamps() const;

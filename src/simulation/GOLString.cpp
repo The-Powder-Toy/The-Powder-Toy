@@ -2,11 +2,20 @@
 
 int ParseGOLString(const String &value)
 {
-	// * Most likely a GOL string.
-	auto it = value.begin() + 1;
 	auto begin = 0U;
 	auto stay = 0U;
 	auto states = 2U;
+	auto it = value.begin();
+
+	// Must begin with a B
+	if (it < value.end() && it[0] == 'B')
+	{
+		it += 1;
+	}
+	else
+	{
+		return -1;
+	}
 
 	// Scan 'B' section, must be between 1 and 8
 	for (; it != value.end() && it[0] >= '1' && it[0] <= '8'; ++it)
@@ -57,7 +66,7 @@ int ParseGOLString(const String &value)
 
 bool ValidateGOLName(const String &value)
 {
-	bool nameOk = true;
+	bool nameOk = !value.empty();
 	for (auto ch : value)
 	{
 		if (!((ch >= '0' && ch < '9') || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch == '-')))

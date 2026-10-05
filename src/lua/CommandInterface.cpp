@@ -412,7 +412,7 @@ AnyType CommandInterface::tptS_set(std::deque<String> * words)
 
 		case TypeString:
 			// AccessProperty::Parse returns the appropriate variant
-			changeProperty = AccessProperty::Parse(*prop, StringType(value).Value());
+			changeProperty = AccessProperty::Parse(*prop, StringType(value).Value(), GameController::Ref().GetTemperatureScale());
 			break;
 
 		default:

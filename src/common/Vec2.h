@@ -382,13 +382,13 @@ public:
 	}
 
 	template<typename S = T, typename = std::enable_if_t<std::is_integral_v<S>>>
-	inline Vec2<T> TopLeft() const
+	constexpr Vec2<T> TopLeft() const
 	{
 		return pos;
 	}
 
 	template<typename S = T, typename = std::enable_if_t<std::is_integral_v<S>>>
-	inline Vec2<T> BottomRight() const
+	constexpr Vec2<T> BottomRight() const
 	{
 		return pos + size - Vec2<T>(1, 1);
 	}
@@ -434,9 +434,11 @@ constexpr inline Rect<T> RectSized(Vec2<T> pos, Vec2<T> size)
 }
 
 template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
-constexpr inline Rect<T> RectBetween(Vec2<T> topLeft, Vec2<T> bottomRight)
+constexpr inline Rect<T> RectBetween(Vec2<T> one, Vec2<T> other)
 {
-	return RectSized(topLeft, bottomRight - topLeft + Vec2<T>(1, 1));
+	if (one.X > other.X) std::swap(one.X, other.X);
+	if (one.Y > other.Y) std::swap(one.Y, other.Y);
+	return RectSized(one, other - one + Vec2<T>(1, 1));
 }
 
 template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>

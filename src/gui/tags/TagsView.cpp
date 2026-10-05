@@ -84,7 +84,7 @@ void TagsView::NotifyTagsChanged(TagsModel * sender)
 			AddComponent(tempLabel);
 
 			auto user = Client::Ref().GetAuthUser();
-			if (user && (sender->GetSave()->GetUserName() == user->Username || user->UserElevation == User::ElevationAdmin || user->UserElevation == User::ElevationMod))
+			if (user && sender->GetSave()->CanManage())
 			{
 				ui::Button * tempButton = new ui::Button(ui::Point(15, 37+(16*i)), ui::Point(11, 12));
 				tempButton->Appearance.icon = IconDelete;

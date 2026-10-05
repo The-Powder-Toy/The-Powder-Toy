@@ -64,11 +64,14 @@ public:
 	int GetVersion() const;
 
 	void SetTags(std::list<ByteString> tags);
-	std::list<ByteString> GetTags() const;
+	const std::list<ByteString> &GetTags() const;
 
 	const GameSave *GetGameSave() const;
 	std::unique_ptr<GameSave> TakeGameSave();
 	void SetGameSave(std::unique_ptr<GameSave> newGameSave);
 
 	std::unique_ptr<SaveInfo> CloneInfo() const;
+
+	bool IsOwn() const;
+	bool CanManage() const;
 };

@@ -7,11 +7,12 @@
 class Graphics;
 class Brush
 {
-private:
+public:
 	// 2D arrays indexed by coordinates from [-radius.X, radius.X] by [-radius.Y, radius.Y]
 	PlaneAdapter<std::vector<unsigned char>> bitmap;
 	PlaneAdapter<std::vector<unsigned char>> outline;
 
+private:
 	void InitBitmap();
 	void InitOutline();
 

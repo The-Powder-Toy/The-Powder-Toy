@@ -1,5 +1,6 @@
 #include "SaveInfo.h"
 #include "GameSave.h"
+#include "client/Client.h"
 
 SaveInfo::SaveInfo(int _id, time_t _createdDate, time_t _updatedDate, int _votesUp, int _votesDown, ByteString _userName, String _name):
 	id(_id),
@@ -130,7 +131,7 @@ void SaveInfo::SetTags(std::list<ByteString> tags)
 	this->tags=tagsSorted;
 }
 
-std::list<ByteString> SaveInfo::GetTags() const
+const std::list<ByteString> &SaveInfo::GetTags() const
 {
 	return tags;
 }
@@ -159,4 +160,20 @@ std::unique_ptr<SaveInfo> SaveInfo::CloneInfo() const
 	clone->Version = Version;
 	clone->tags.sort();
 	return clone;
+}
+
+bool SaveInfo::IsOwn() const
+{
+	auto user = Client::Ref().GetAuthUser();
+	return user && userName == user->Username;
+}
+
+bool SaveInfo::CanManage() const
+{
+	if (IsOwn())
+	{
+		return true;
+	}
+	auto user = Client::Ref().GetAuthUser();
+	return user && (user->UserElevation == User::ElevationAdmin || user->UserElevation == User::ElevationMod);
 }

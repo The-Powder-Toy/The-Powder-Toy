@@ -558,13 +558,13 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		{
 			authorDateLabel->SetText("\bgAuthor:\bw " + save->userName.FromUtf8() + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
 		}
-		auto user = Client::Ref().GetAuthUser();
-		if (user && save->userName == user->Username)
+		if (save->IsOwn())
 			userIsAuthor = true;
 		else
 			userIsAuthor = false;
 		viewsLabel->SetText(String::Build("\bgViews:\bw ", save->Views));
 		saveDescriptionLabel->SetText(save->Description);
+		auto user = Client::Ref().GetAuthUser();
 		if(save->Favourite)
 		{
 			favButton->Enabled = true;

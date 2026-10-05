@@ -48,6 +48,13 @@ void VideoBuffer::Crop(Rect<int> rect)
 	video.SetSize(newVideo.Size());
 }
 
+PlaneAdapter<std::vector<pixel>> VideoBuffer::ExtractVideo()
+{
+	PlaneAdapter<std::vector<pixel>> empty;
+	std::swap(empty, video);
+	return empty;
+}
+
 void VideoBuffer::Resize(Vec2<int> size, bool resample)
 {
 	if (size == Size())

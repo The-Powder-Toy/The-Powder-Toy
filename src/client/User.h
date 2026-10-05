@@ -19,15 +19,6 @@ public:
 	ByteString Username;
 	ByteString SessionID;
 	ByteString SessionKey;
-	Elevation UserElevation;
-	User(int id, ByteString username):
-		UserID(id),
-		Username(username),
-		SessionID(""),
-		SessionKey(""),
-		UserElevation(ElevationNone)
-	{
-
-	}
+	Elevation UserElevation = ElevationNone;
 };
 

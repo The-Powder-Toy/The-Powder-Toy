@@ -130,7 +130,7 @@ void PropertyWindow::Update()
 	try
 	{
 		configuration = PropertyTool::Configuration{
-			AccessProperty::Parse(property->GetOption().second, textField->GetText()),
+			AccessProperty::Parse(property->GetOption().second, textField->GetText(), GameController::Ref().GetTemperatureScale()),
 			textField->GetText(),
 		};
 	}

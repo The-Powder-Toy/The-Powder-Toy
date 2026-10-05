@@ -10,7 +10,6 @@
 #include "common/platform/Platform.h"
 #include "common/String.h"
 #include "graphics/Graphics.h"
-#include "gui/dialogues/ErrorMessage.h"
 #include "prefs/Prefs.h"
 #include "lua/CommandInterface.h"
 #include "Config.h"
@@ -98,9 +97,16 @@ void Client::AddServerNotification(ServerNotification notification)
 	notifyNewNotification(notification);
 }
 
-std::vector<ServerNotification> Client::GetServerNotifications()
+const std::vector<ServerNotification> &Client::GetServerNotifications() const
 {
 	return serverNotifications;
+}
+
+std::vector<ServerNotification> Client::TakeServerNotifications()
+{
+	std::vector<ServerNotification> result;
+	std::swap(result, serverNotifications);
+	return result;
 }
 
 void Client::BeginStartupRequest()
@@ -201,9 +207,16 @@ void Client::Tick()
 	}
 }
 
-std::optional<UpdateInfo> Client::GetUpdateInfo()
+const std::optional<UpdateInfo> &Client::GetUpdateInfo() const
 {
 	return updateInfo;
+}
+
+std::optional<UpdateInfo> Client::TakeUpdateInfo()
+{
+	std::optional<UpdateInfo> result;
+	std::swap(result, updateInfo);
+	return result;
 }
 
 void Client::notifyUpdateAvailable()
@@ -314,25 +327,24 @@ void Client::DeleteStamp(ByteString stampID)
 	}
 }
 
-void Client::RenameStamp(ByteString stampID, ByteString newName)
+std::optional<ByteString> Client::RenameStamp(ByteString stampID, ByteString newName)
 {
 	auto oldPath = ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, stampID, ".stm");
 	auto newPath = ByteString::Build(STAMPS_DIR, PATH_SEP_CHAR, newName, ".stm");
 
 	if (Platform::FileExists(newPath))
 	{
-		new ErrorMessage("Error renaming stamp", "A stamp with this name already exists.");
-		return;
+		return ByteString("A stamp with this name already exists.");
 	}
 
 	if (!Platform::RenameFile(oldPath, newPath, false))
 	{
-		new ErrorMessage("Error renaming stamp", "Could not rename the stamp.");
-		return;
+		return ByteString("Could not rename the stamp.");
 	}
 
 	std::replace(stampIDs.begin(), stampIDs.end(), stampID, newName);
 	WriteStamps();
+	return std::nullopt;
 }
 
 ByteString Client::AddStamp(std::unique_ptr<GameSave> saveData)

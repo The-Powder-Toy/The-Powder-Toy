@@ -25,7 +25,7 @@ void Client::LoadAuthUser()
 	authUser = std::nullopt;
 	if (newUsername.size() && newSessionKey.size())
 	{
-		authUser = User(-1, newUsername); // Not quite valid but evaluates to true and that's all that matters for this codebase.
+		authUser = User{ -1, newUsername }; // Not quite valid but evaluates to true and that's all that matters for this codebase.
 		authUser->SessionID = "(invalid)";
 		authUser->SessionKey = newSessionKey;
 		authUser->UserElevation = User::ElevationNone; // We don't deal with this in the browser.

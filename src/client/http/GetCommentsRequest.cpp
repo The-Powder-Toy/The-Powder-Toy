@@ -28,6 +28,7 @@ namespace http
 					user ? comment["Username"].asString() == user->Username : false,
 					comment["IsBanned"].asBool(),
 					ByteString(comment["Text"].asString()).FromUtf8(),
+					ByteString(comment["Timestamp"].asString()).ToNumber<time_t>(),
 				});
 			}
 		}

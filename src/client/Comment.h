@@ -1,5 +1,6 @@
 #pragma once
 #include "User.h"
+#include <ctime>
 
 struct Comment
 {
@@ -8,4 +9,5 @@ struct Comment
 	bool authorIsSelf;
 	bool authorIsBanned;
 	String content;
+	time_t timestamp;
 };

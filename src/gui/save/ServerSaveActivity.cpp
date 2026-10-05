@@ -92,8 +92,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	AddComponent(descriptionField);
 
 	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X/2)-80, 16), "Publish", "");
-	auto user = Client::Ref().GetAuthUser();
-	if (!(user && user->Username == save->GetUserName()))
+	if (!save->IsOwn())
 	{
 		//Save is not owned by the user, disable by default
 		publishedCheckbox->SetChecked(false);
@@ -198,8 +197,7 @@ void ServerSaveActivity::Save()
 		new ErrorMessage("Error", "You must specify a save name.");
 		return;
 	}
-	auto user = Client::Ref().GetAuthUser();
-	if (!(user && user->Username == save->GetUserName()) && publishedCheckbox->GetChecked())
+	if (!save->IsOwn() && publishedCheckbox->GetChecked())
 	{
 		new ConfirmPrompt("Publish", "This save was created by " + save->GetUserName().FromUtf8() + ", you're about to publish this under your own name; If you haven't been given permission by the author to do so, please uncheck the publish box, otherwise continue", { [this] {
 			saveUpload();

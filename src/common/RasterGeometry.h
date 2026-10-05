@@ -1,3 +1,4 @@
+#pragma once
 #include "common/Vec2.h"
 
 // Draw a line from the origin on the ZW plane, assuming abs(dw) <= dz

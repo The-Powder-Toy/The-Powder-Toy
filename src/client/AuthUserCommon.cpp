@@ -8,7 +8,7 @@ void Client::LoadAuthUser()
 	auto userID = prefs.Get("User.ID", 0);
 	if (userID)
 	{
-		authUser = User(userID, prefs.Get("User.Username", ByteString("")));
+		authUser = User{ userID, prefs.Get("User.Username", ByteString("")) };
 		authUser->SessionID = prefs.Get("User.SessionID", ByteString(""));
 		authUser->SessionKey = prefs.Get("User.SessionKey", ByteString(""));
 		authUser->UserElevation = prefs.Get("User.Elevation", User::ElevationNone);

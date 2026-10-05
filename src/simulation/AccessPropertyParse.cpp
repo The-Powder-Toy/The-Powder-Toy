@@ -7,7 +7,7 @@
 #include "gui/game/GameController.h"
 #include <iostream>
 
-AccessProperty AccessProperty::Parse(int prop, String value)
+AccessProperty AccessProperty::Parse(int prop, String value, TempScale temperatureScale)
 {
 	AccessProperty changeProperty;
 	auto &sd = SimulationData::CRef();
@@ -159,7 +159,7 @@ AccessProperty AccessProperty::Parse(int prop, String value)
 		case StructProperty::Float:
 		{
 			if (properties[prop].Name == "temp")
-				changeProperty.propertyValue = format::StringToTemperature(value, GameController::Ref().GetTemperatureScale());
+				changeProperty.propertyValue = format::StringToTemperature(value, temperatureScale);
 			else
 				changeProperty.propertyValue = value.ToNumber<float>();
 		}

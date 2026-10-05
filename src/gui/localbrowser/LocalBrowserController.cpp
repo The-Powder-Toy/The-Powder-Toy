@@ -88,7 +88,10 @@ void LocalBrowserController::RenameSelected()
 			return;
 		}
 
-		Client::Ref().RenameStamp(save, newName.ToUtf8());
+		if (auto error = Client::Ref().RenameStamp(save, newName.ToUtf8()))
+		{
+			new ErrorMessage("Error renaming stamp", error->FromUtf8());
+		}
 
 		RefreshSavesList();
 	} });

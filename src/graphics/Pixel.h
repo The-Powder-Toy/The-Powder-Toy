@@ -77,6 +77,9 @@ struct alignas(alignof(uint32_t)) RGB
 	{
 		return RGB(px >> 16, px >> 8, px);
 	}
+
+	constexpr bool operator ==(const RGB &) const = default;
+	constexpr bool operator !=(const RGB &) const = default;
 };
 
 constexpr inline RGB operator ""_rgb(unsigned long long value)
@@ -109,6 +112,9 @@ struct alignas(alignof(uint32_t)) RGBA
 	template<typename S> // Disallow brace initialization
 	RGBA(std::initializer_list<S>) = delete;
 
+	constexpr RGBA Blend(RGBA other) const;
+	constexpr RGBA Add(RGBA other) const;
+
 	constexpr RGB NoAlpha() const
 	{
 		return RGB(Red, Green, Blue);
@@ -123,6 +129,9 @@ struct alignas(alignof(uint32_t)) RGBA
 	{
 		return RGBA(px >> 16, px >> 8, px, px >> 24);
 	}
+
+	constexpr bool operator ==(const RGBA &) const = default;
+	constexpr bool operator !=(const RGBA &) const = default;
 };
 
 // Blend and Add get called in tight loops so it's important that they
@@ -144,6 +153,30 @@ constexpr RGB RGB::Blend(RGBA other) const
 	);
 }
 
+constexpr RGBA RGBA::Blend(RGBA other) const
+{
+	if (other.Alpha == 0xFF)
+	{
+		return other;
+	}
+	// blending as per the following matrix:
+	//   [ 1-a   0    0   ar ]
+	//   [  0   1-a   0   ag ]
+	//   [  0    0   1-a  ab ]
+	//   [  0    0    0   1  ]
+	auto outAlpha = 0xFE01 - (0xFF - other.Alpha) * (0xFF - Alpha);
+	auto outRed   = outAlpha ? ((0xFF - other.Alpha) * Alpha * Red   + 0xFF * other.Alpha * other.Red  ) / outAlpha : 0;
+	auto outGreen = outAlpha ? ((0xFF - other.Alpha) * Alpha * Green + 0xFF * other.Alpha * other.Green) / outAlpha : 0;
+	auto outBlue  = outAlpha ? ((0xFF - other.Alpha) * Alpha * Blue  + 0xFF * other.Alpha * other.Blue ) / outAlpha : 0;
+	outAlpha /= 0xFF;
+	return RGBA(
+		uint8_t(outRed),
+		uint8_t(outGreen),
+		uint8_t(outBlue),
+		uint8_t(outAlpha)
+	);
+}
+
 constexpr RGB RGB::Add(RGBA other) const
 {
 	return RGB(
@@ -153,7 +186,22 @@ constexpr RGB RGB::Add(RGBA other) const
 	);
 }
 
+constexpr RGBA RGBA::Add(RGBA other) const
+{
+	return RGBA(
+		std::min(0xFF, Red + uint16_t(other.Alpha * other.Red) / 0xFF),
+		std::min(0xFF, Green + uint16_t(other.Alpha * other.Green) / 0xFF),
+		std::min(0xFF, Blue + uint16_t(other.Alpha * other.Blue) / 0xFF),
+		std::min(0xFF, Alpha + uint16_t(other.Alpha * other.Alpha) / 0xFF)
+	);
+}
+
 constexpr RGBA RGB::WithAlpha(uint8_t a) const
 {
 	return RGBA(Red, Green, Blue, a);
+}
+
+constexpr inline RGBA operator ""_argb(unsigned long long value)
+{
+	return RGBA::Unpack(value);
 }

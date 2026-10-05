@@ -459,12 +459,17 @@ subdir('resources')
 foreach embedded_file : embedded_files
 	name = embedded_file[0]
 	file = embedded_file[1]
+	if embedded_file.length() == 2
+		compression = 'none'
+	else
+		compression = embedded_file[2]
+	endif
 	data_files += [ custom_target(
 		'embedded-file-@0@'.format(name),
 		input: file,
 		output: [ '@0@.cpp'.format(name), '@0@.h'.format(name) ],
 		depfile: '@0@.dep'.format(name),
-		command: [ python3_prog, files('resources/to-array.py'), '@OUTPUT0@', '@OUTPUT1@', '@DEPFILE@', '@INPUT@', name ]
+		command: [ python3_prog, files('resources/to-array.py'), '@OUTPUT0@', '@OUTPUT1@', '@DEPFILE@', '@INPUT@', name, compression ]
 	) ]
 endforeach
 
@@ -506,6 +511,7 @@ foreach sta_info : [
 	[ 'gui', gui_files, [
 		sdl2_dep,
 		threads_dep,
+		json_dep,
 	] ],
 	[ 'simulation', simulation_files, [
 		json_dep,

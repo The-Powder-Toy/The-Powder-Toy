@@ -1,6 +1,7 @@
 #pragma once
 #include "StructProperty.h"
 #include "common/String.h"
+#include "simulation/SimulationSettings.h"
 #include <stdexcept>
 
 class Simulation;
@@ -17,6 +18,6 @@ struct AccessProperty
 	{
 		using runtime_error::runtime_error;
 	};
-	static AccessProperty Parse(int prop, String value);
+	static AccessProperty Parse(int prop, String value, TempScale temperatureScale);
 };
 

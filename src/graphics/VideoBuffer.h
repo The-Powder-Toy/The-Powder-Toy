@@ -47,6 +47,8 @@ public:
 		return video.data();
 	}
 
+	PlaneAdapter<std::vector<pixel>> ExtractVideo();
+
 	void Crop(Rect<int>);
 
 	void Resize(float factor, bool resample = false);
