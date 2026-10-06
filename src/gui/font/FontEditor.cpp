@@ -338,6 +338,13 @@ FontEditor::FontEditor(ByteString _dataFile):
 	} });
 	AddComponent(showRulers);
 
+	currentX += 28;
+
+	ui::Button *upButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(20, 17), "UP");
+	currentX += 21;
+	upButton->SetActionCallback({ [this] { Shift(0, -1); } });
+	AddComponent(upButton);
+
 	baseline += 18;
 	currentX = 1;
 	
@@ -351,6 +358,20 @@ FontEditor::FontEditor(ByteString _dataFile):
 		} });
 		AddComponent(colorComponent);
 	}
+
+	currentX += 83;
+
+	ui::Button *leftButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(20, 17), "LT");
+	currentX += 21;
+	leftButton->SetActionCallback({ [this] { Shift(-1, 0); } });
+	AddComponent(leftButton);
+
+	currentX += 21;
+
+	ui::Button *rightButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(20, 17), "RT");
+	currentX += 21;
+	rightButton->SetActionCallback({ [this] { Shift(1, 0); } });
+	AddComponent(rightButton);
 
 	baseline += 18;
 	currentX = 1;
@@ -366,6 +387,56 @@ FontEditor::FontEditor(ByteString _dataFile):
 	savedButton->SetToggleState(true);
 	savedButton->SetActionCallback({ [this] { Save(); } });
 	AddComponent(savedButton);
+
+	currentX += 10;
+
+	ui::Button *swapLeftButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(20, 17), "<");
+	currentX += 21;
+	swapLeftButton->SetActionCallback({ [this] {
+		if (currentChar > 0)
+		{
+			Swap(currentChar, currentChar - 1);
+			currentChar--;
+			UpdateCharNumber();
+		}
+	} });
+	AddComponent(swapLeftButton);
+
+	ui::Textbox *swapTextbox = new ui::Textbox(ui::Point(currentX, baseline), ui::Point(35, 17));
+	currentX += 36;
+	AddComponent(swapTextbox);
+
+	ui::Button *swapButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(30, 17), "Swap");
+	currentX += 31;
+	swapButton->SetActionCallback({ [this, swapTextbox] {
+		auto num = swapTextbox->GetText().ToNumber<unsigned int>(Format::Hex(), true);
+		if (num != currentChar && num >= 0 && num <= 0xFFFF)
+		{
+			Swap(currentChar, num);
+			currentChar = num;
+			UpdateCharNumber();
+		}
+	} });
+	AddComponent(swapButton);
+
+	ui::Button *swapRightButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(20, 17), ">");
+	currentX += 21;
+	swapRightButton->SetActionCallback({ [this] {
+		if (currentChar < 0xFFFF)
+		{
+			Swap(currentChar, currentChar + 1);
+			currentChar++;
+			UpdateCharNumber();
+		}
+	} });
+	AddComponent(swapRightButton);
+
+	currentX += 51;
+
+	ui::Button *downButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(20, 17), "DN");
+	currentX += 21;
+	downButton->SetActionCallback({ [this] { Shift(0, 1); } });
+	AddComponent(downButton);
 
 	baseline += 18;
 	
@@ -397,6 +468,10 @@ FontEditor::FontEditor(ByteString _dataFile):
 					if(str[split1.PositionAfter()] == ':')
 						if(String::Split split2 = str.SplitNumber(ch2, Format::Hex(), split1.PositionAfter() + 1))
 						{
+							if (ch2 - ch1 > 0xFFFF)
+							{
+								break;
+							}
 							for(unsigned int ch = ch1; ch <= ch2; ch++)
 								text << String::value_type(ch);
 							at = split2.PositionAfter();
@@ -521,6 +596,59 @@ void FontEditor::OnMouseDown(int x, int y, unsigned button)
 				fontPixels[currentChar][y][x] = (fontPixels[currentChar][y][x] + 3) % 4;
 			savedButton->SetToggleState(false);
 		}
+	}
+}
+
+void FontEditor::Shift(int dx, int dy)
+{
+	auto pixOld = fontPixels[currentChar];
+	auto width = fontWidths[currentChar];
+
+	std::array<std::array<char, MAX_WIDTH>, FONT_H> pixNew{};
+
+	for (int x = 0; x < width; x++)
+	{
+		for (int y = 0; y < 12; y++)
+		{
+			if (y - dy >= 0 && y - dy < 12 && x - dx >= 0 && x - dx < width)
+			{
+				pixNew[y][x] = pixOld[y - dy][x - dx];
+			}
+		}
+	}
+
+	fontPixels[currentChar] = pixNew;
+}
+
+void FontEditor::Swap(int a, int b)
+{
+	if (!fontWidths.contains(a) && !fontWidths.contains(b))
+	{
+		return;
+	}
+
+	if  (!fontWidths.contains(a))
+	{
+		fontWidths[a] = fontWidths[b];
+		fontPixels[a] = fontPixels[b];
+		fontWidths.erase(b);
+		fontPixels.erase(b);
+	}
+	else if  (!fontWidths.contains(b))
+	{
+		fontWidths[b] = fontWidths[a];
+		fontPixels[b] = fontPixels[a];
+		fontWidths.erase(a);
+		fontPixels.erase(a);
+	}
+	else
+	{
+		auto width = fontWidths[b];
+		auto pixel = fontPixels[b];
+		fontWidths[b] = fontWidths[a];
+		fontPixels[b] = fontPixels[a];
+		fontWidths[a] = width;
+		fontPixels[a] = pixel;
 	}
 }
 
