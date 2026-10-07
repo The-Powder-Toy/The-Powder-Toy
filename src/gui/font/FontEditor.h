@@ -67,6 +67,7 @@ private:
 	void GrowChar();
 	void Render();
 	void Save();
+	void Swap(int a, int b);
 	void Translate(std::array<std::array<char, MAX_WIDTH>, FONT_H> &, int dx, int dy);
 
 public:
