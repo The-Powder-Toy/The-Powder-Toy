@@ -342,7 +342,7 @@ FontEditor::FontEditor(ByteString _dataFile):
 
 	ui::Button *upButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(20, 17), "UP");
 	currentX += 21;
-	upButton->SetActionCallback({ [this] { Shift(0, -1); } });
+	upButton->SetActionCallback({ [this] { Translate(fontPixels[currentChar], 0, -1); } });
 	AddComponent(upButton);
 
 	baseline += 18;
@@ -363,14 +363,14 @@ FontEditor::FontEditor(ByteString _dataFile):
 
 	ui::Button *leftButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(20, 17), "LT");
 	currentX += 21;
-	leftButton->SetActionCallback({ [this] { Shift(-1, 0); } });
+	leftButton->SetActionCallback({ [this] { Translate(fontPixels[currentChar], -1, 0); } });
 	AddComponent(leftButton);
 
 	currentX += 21;
 
 	ui::Button *rightButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(20, 17), "RT");
 	currentX += 21;
-	rightButton->SetActionCallback({ [this] { Shift(1, 0); } });
+	rightButton->SetActionCallback({ [this] { Translate(fontPixels[currentChar], 1, 0); } });
 	AddComponent(rightButton);
 
 	baseline += 18;
@@ -435,7 +435,7 @@ FontEditor::FontEditor(ByteString _dataFile):
 
 	ui::Button *downButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(20, 17), "DN");
 	currentX += 21;
-	downButton->SetActionCallback({ [this] { Shift(0, 1); } });
+	downButton->SetActionCallback({ [this] { Translate(fontPixels[currentChar], 0, 1); } });
 	AddComponent(downButton);
 
 	baseline += 18;
@@ -597,27 +597,6 @@ void FontEditor::OnMouseDown(int x, int y, unsigned button)
 			savedButton->SetToggleState(false);
 		}
 	}
-}
-
-void FontEditor::Shift(int dx, int dy)
-{
-	auto pixOld = fontPixels[currentChar];
-	auto width = fontWidths[currentChar];
-
-	std::array<std::array<char, MAX_WIDTH>, FONT_H> pixNew{};
-
-	for (int x = 0; x < width; x++)
-	{
-		for (int y = 0; y < FONT_H; y++)
-		{
-			if (y - dy >= 0 && y - dy < FONT_H && x - dx >= 0 && x - dx < width)
-			{
-				pixNew[y][x] = pixOld[y - dy][x - dx];
-			}
-		}
-	}
-
-	fontPixels[currentChar] = pixNew;
 }
 
 void FontEditor::Swap(int a, int b)
