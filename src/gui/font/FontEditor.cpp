@@ -608,9 +608,9 @@ void FontEditor::Shift(int dx, int dy)
 
 	for (int x = 0; x < width; x++)
 	{
-		for (int y = 0; y < 12; y++)
+		for (int y = 0; y < FONT_H; y++)
 		{
-			if (y - dy >= 0 && y - dy < 12 && x - dx >= 0 && x - dx < width)
+			if (y - dy >= 0 && y - dy < FONT_H && x - dx >= 0 && x - dx < width)
 			{
 				pixNew[y][x] = pixOld[y - dy][x - dx];
 			}
