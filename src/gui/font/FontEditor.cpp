@@ -622,34 +622,14 @@ void FontEditor::Shift(int dx, int dy)
 
 void FontEditor::Swap(int a, int b)
 {
-	if (!fontWidths.contains(a) && !fontWidths.contains(b))
-	{
-		return;
-	}
-
-	if  (!fontWidths.contains(a))
-	{
-		fontWidths[a] = fontWidths[b];
-		fontPixels[a] = fontPixels[b];
-		fontWidths.erase(b);
-		fontPixels.erase(b);
-	}
-	else if  (!fontWidths.contains(b))
-	{
-		fontWidths[b] = fontWidths[a];
-		fontPixels[b] = fontPixels[a];
-		fontWidths.erase(a);
-		fontPixels.erase(a);
-	}
-	else
-	{
-		auto width = fontWidths[b];
-		auto pixel = fontPixels[b];
-		fontWidths[b] = fontWidths[a];
-		fontPixels[b] = fontPixels[a];
-		fontWidths[a] = width;
-		fontPixels[a] = pixel;
-	}
+	auto swapProperty = [&](auto &map) {
+		auto nodeA = map.extract(a);
+		auto nodeB = map.extract(b);
+		if (nodeA) map.insert({ b, std::move(nodeA.mapped()) });
+		if (nodeB) map.insert({ a, std::move(nodeB.mapped()) });
+	};
+	swapProperty(fontWidths);
+	swapProperty(fontPixels);
 }
 
 void FontEditor::Translate(std::array<std::array<char, MAX_WIDTH>, FONT_H> &pixels, int dx, int dy)
