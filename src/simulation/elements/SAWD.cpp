@@ -1,5 +1,7 @@
 #include "simulation/ElementCommon.h"
 
+static int update(UPDATE_FUNC_ARGS);
+
 void Element::Element_SAWD()
 {
 	Identifier = "DEFAULT_PT_SAWD";
@@ -40,5 +42,32 @@ void Element::Element_SAWD()
 	HighTemperature = ITH;
 	HighTemperatureTransition = NT;
 
+	Update = &update;
 	Graphics = nullptr; // is this needed?
+}
+
+static int update(UPDATE_FUNC_ARGS)
+{
+	for (auto rx = -1; rx <= 1; rx++)
+	{
+		for (auto ry = -1; ry <= 1; ry++)
+		{
+			if (rx || ry)
+			{
+				auto r = pmap[y+ry][x+rx];
+				if (!r)
+					continue;
+
+				if (TYP(r) == PT_MWAX && sim->rng.chance(1, 200))
+				{
+					sim->create_part(i, x, y, PT_PAPR);
+					sim->kill_part(ID(r));
+
+					return 1;
+				}
+			}
+		}
+	}
+
+	return 0;
 }
