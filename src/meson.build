@@ -173,7 +173,7 @@ if resolve_vcs_tag == 'yes' or (resolve_vcs_tag == 'static_release_only' and not
 else
 	vcs_tag_conf_data = configuration_data()
 	vcs_tag_conf_data.set('VCS_TAG', '')
-	configure_file(
+	common_files += configure_file(
 		input: 'VcsTag.template.h',
 		output: 'VcsTag.h',
 		configuration: vcs_tag_conf_data
@@ -209,7 +209,7 @@ element_numbers_x = []
 foreach elem_name_id : simulation_elem_ids
 	element_numbers_x += 'X(@0@, @1@) \\'.format(elem_name_id[0], elem_name_id[1])
 endforeach
-configure_file(
+simulation_files += configure_file(
 	input: 'simulation/ElementNumbers.template.h',
 	output: 'ElementNumbers.h',
 	configuration: configuration_data({
@@ -222,7 +222,7 @@ if platform_clipboard
 	foreach impl_subsys_factory : clipboard_impl_factories
 		clipboard_impls_x += 'X(@0@, @1@) \\'.format(impl_subsys_factory[0], impl_subsys_factory[1])
 	endforeach
-	configure_file(
+	powder_files += configure_file(
 		input: 'common/clipboard/ClipboardImpls.template.h',
 		output: 'ClipboardImpls.h',
 		configuration: configuration_data({
@@ -235,7 +235,7 @@ tool_numbers_x = []
 foreach tool_name_id : simulation_tool_ids
 	tool_numbers_x += 'X(@0@, @1@) \\'.format(tool_name_id[0], tool_name_id[1])
 endforeach
-configure_file(
+powder_files += configure_file(
 	input: 'simulation/ToolNumbers.template.h',
 	output: 'ToolNumbers.h',
 	configuration: configuration_data({
@@ -243,7 +243,7 @@ configure_file(
 	}),
 )
 
-configure_file(
+common_files += configure_file(
 	input: 'Config.template.h',
 	output: 'Config.h',
 	configuration: conf_data

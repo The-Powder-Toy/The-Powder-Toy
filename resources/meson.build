@@ -102,7 +102,7 @@ if host_platform == 'windows'
 		depend_files: rc_conf_depend_files,
 	)
 elif host_platform == 'darwin'
-	configure_file(
+	configure_file( # not required by any build target, used by build.sh
 		input: 'Info.template.plist',
 		output: 'Info.plist',
 		configuration: conf_data,
@@ -123,7 +123,7 @@ elif host_platform == 'linux'
 		) ],
 	]
 
-	configure_file(
+	configure_file( # not required by any build target, used by build.sh
 		input: 'appdata.template.xml',
 		output: 'appdata.xml',
 		configuration: conf_data,
