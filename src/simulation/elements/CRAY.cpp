@@ -1,5 +1,6 @@
 #include "simulation/ElementCommon.h"
 #include "FILT.h"
+#include "PAPR.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);
@@ -55,8 +56,10 @@ static int update(UPDATE_FUNC_ARGS)
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
 	int nxx, nyy, docontinue, nxi, nyi;
-	// set ctype to things that touch it if it doesn't have one already
-	if (parts[i].ctype<=0 || !elements[TYP(parts[i].ctype)].Enabled)
+	auto cray_type = TYP(parts[i].ctype);
+
+	// Set ctype to things that touch it if it doesn't have one already
+	if (cray_type <= 0 || cray_type >= PT_NUM || !elements[cray_type].Enabled)
 	{
 		for (int rx = -1; rx <= 1; rx++)
 		{
@@ -67,78 +70,126 @@ static int update(UPDATE_FUNC_ARGS)
 					r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
-				if (TYP(r)!=PT_CRAY && TYP(r)!=PT_PSCN && TYP(r)!=PT_INST && TYP(r)!=PT_METL && TYP(r)!=PT_SPRK && TYP(r)<PT_NUM)
+
+				auto rt = TYP(r);
+
+				if (rt != PT_CRAY && rt != PT_PSCN && rt != PT_INST && rt != PT_METL && rt != PT_SPRK && rt < PT_NUM)
 				{
-					parts[i].ctype = TYP(r);
+					parts[i].ctype = rt;
 					parts[i].temp = parts[ID(r)].temp;
 				}
 			}
 		}
+
+		return 0;
 	}
-	else
+
+	// If we have correct ctype
+	for (int rx =-1; rx <= 1; rx++)
 	{
-		for (int rx =-1; rx <= 1; rx++)
+		for (int ry = -1; ry <= 1; ry++)
 		{
-			for (int ry = -1; ry <= 1; ry++)
+			if (rx || ry)
 			{
-				if (rx || ry)
-				{
-					int r = pmap[y+ry][x+rx];
-					if (!r)
-						continue;
-					if (TYP(r)==PT_SPRK && parts[ID(r)].life==3) { //spark found, start creating
-						unsigned int colored = 0;
-						bool destroy = parts[ID(r)].ctype==PT_PSCN;
-						bool nostop = parts[ID(r)].ctype==PT_INST;
-						bool createSpark = (parts[ID(r)].ctype==PT_INWR);
-						int partsRemaining = 255;
-						if (parts[i].tmp) //how far it shoots
-							partsRemaining = parts[i].tmp;
-						int spacesRemaining = parts[i].tmp2;
-						for (docontinue = 1, nxi = rx*-1, nyi = ry*-1, nxx = spacesRemaining*nxi, nyy = spacesRemaining*nyi; docontinue; nyy+=nyi, nxx+=nxi)
+				int r = pmap[y+ry][x+rx];
+				if (!r)
+					continue;
+
+				if (TYP(r) == PT_SPRK && parts[ID(r)].life == 3) { //spark found, start creating
+					unsigned int colored = 0;
+					bool destroy = parts[ID(r)].ctype==PT_PSCN;
+					bool nostop = parts[ID(r)].ctype==PT_INST;
+					bool createSpark = parts[ID(r)].ctype==PT_INWR;
+					int partsRemaining = parts[i].tmp ? parts[i].tmp : 255; // how far it shoots
+					int spacesRemaining = parts[i].tmp2;
+
+					for (docontinue = 1, nxi = rx*-1, nyi = ry*-1, nxx = spacesRemaining*nxi, nyy = spacesRemaining*nyi; docontinue; nyy+=nyi, nxx+=nxi)
+					{
+						// Stop if out of bounds
+						if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0))
+							break;
+
+						r = pmap[y+nyi+nyy][x+nxi+nxx];
+
+						// Create, also set color if it has passed through FILT
+						if (!sim->IsWallBlocking(x+nxi+nxx, y+nyi+nyy, cray_type) && (!r || createSpark || TYP(r) == PT_PAPR))
 						{
-							if (!(x+nxi+nxx<XRES && y+nyi+nyy<YRES && x+nxi+nxx >= 0 && y+nyi+nyy >= 0)) {
-								break;
+							bool can_spawn = true;
+
+							if (TYP(r) == PT_PAPR)
+							{
+								if (cray_type == PT_COAL || cray_type == PT_BCOL)
+								{
+									sim->parts[ID(r)].life = 1;
+									if (colored)
+										sim->parts[ID(r)].dcolour = colored;
+									else
+										sim->parts[ID(r)].dcolour = MARK_COLOR_COAL;
+									if (!--partsRemaining)
+										docontinue = 0;
+
+									can_spawn = false;
+								}
+								else if (cray_type == PT_SOAP)
+								{
+									sim->parts[ID(r)].life = 0;
+									sim->parts[ID(r)].dcolour = 0x00000000;
+									if (!--partsRemaining)
+										docontinue = 0;
+
+									can_spawn = false;
+								}
 							}
-							r = pmap[y+nyi+nyy][x+nxi+nxx];
-							if (!sim->IsWallBlocking(x+nxi+nxx, y+nyi+nyy, TYP(parts[i].ctype)) && (!sim->pmap[y+nyi+nyy][x+nxi+nxx] || createSpark)) { // create, also set color if it has passed through FILT
-								int nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, TYP(parts[i].ctype), ID(parts[i].ctype));
-								if (nr!=-1) {
+
+							if (can_spawn)
+							{
+								int nr = sim->create_part(-1, x+nxi+nxx, y+nyi+nyy, cray_type, ID(parts[i].ctype));
+
+								if (nr!=-1)
+								{
 									if (colored)
 										parts[nr].dcolour = colored;
 									parts[nr].temp = parts[i].temp;
 									if (parts[i].life>0)
 										parts[nr].life = parts[i].life;
-									if(!--partsRemaining)
+									if (!--partsRemaining)
 										docontinue = 0;
 								}
-							} else if (TYP(r)==PT_FILT) { // get color if passed through FILT
-								if (parts[ID(r)].dcolour == 0xFF000000)
-									colored = 0xFF000000;
-								else if (parts[ID(r)].tmp==0)
-								{
-									colored = wavelengthToDecoColour(Element_FILT_getWavelengths(&parts[ID(r)]));
-								}
-								else if (colored==0xFF000000)
-									colored = 0;
-								parts[ID(r)].life = 4;
-							} else if (TYP(r) == PT_CRAY || nostop) {
-								docontinue = 1;
-							} else if(destroy && r && (TYP(r) != PT_DMND)) {
-								sim->kill_part(ID(r));
-								if(!--partsRemaining)
-									docontinue = 0;
 							}
-							else
-								docontinue = 0;
-							if(!partsRemaining)
+						}
+					       	else if (TYP(r) == PT_FILT) // get color if passed through FILT
+						{
+							if (parts[ID(r)].dcolour == 0xFF000000)
+								colored = 0xFF000000;
+							else if (parts[ID(r)].tmp == 0)
+							{
+								colored = wavelengthToDecoColour(Element_FILT_getWavelengths(&parts[ID(r)]));
+							}
+							else if (colored==0xFF000000)
+								colored = 0;
+							parts[ID(r)].life = 4;
+						}
+					       	else if (TYP(r) == PT_CRAY || nostop)
+					       	{
+							docontinue = 1;
+						}
+					       	else if (destroy && r && (TYP(r) != PT_DMND))
+					       	{
+							sim->kill_part(ID(r));
+							if (!--partsRemaining)
 								docontinue = 0;
 						}
+						else
+							docontinue = 0;
+
+						if(!partsRemaining)
+							docontinue = 0;
 					}
 				}
 			}
 		}
 	}
+
 	return 0;
 }
 
