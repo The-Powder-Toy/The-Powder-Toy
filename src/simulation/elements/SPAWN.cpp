@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "STKM.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS);
@@ -53,7 +54,11 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		auto si = sim->create_part(-1, x, y, PT_STKM);
 		if (si >= 0) // Make old SPAWN create old stickmen
+		{
 			parts[si].flags |= parts[i].flags & FLAG_OLDSTKM;
+			// Regenerate legs, since create_part didn't see FLAG_OLDSTKM
+			Element_STKM_init_legs(sim, &sim->player, si);
+		}
 	}
 
 	return 0;

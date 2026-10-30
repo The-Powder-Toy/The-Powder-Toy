@@ -36,7 +36,7 @@ void Element::Element_STKM2()
 	HeatConduct = 0;
 	Description = "Second stickman. Don't kill him! Control with wasd.";
 
-	Properties = PROP_NOCTYPEDRAW;
+	Properties = TYPE_ENERGY | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;

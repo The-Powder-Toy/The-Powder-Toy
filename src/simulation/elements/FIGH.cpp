@@ -37,7 +37,7 @@ void Element::Element_FIGH()
 	HeatConduct = 0;
 	Description = "Fighter. Tries to kill stickmen. You must first give it an element to kill him with.";
 
-	Properties = PROP_NOCTYPEDRAW;
+	Properties = TYPE_ENERGY | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
@@ -84,7 +84,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		auto midLegsStkm = (sim->player.legs[0] + sim->player.legs[2])*0.5f;
 
-		dist = hypot(midLegs.X - midLegsStkm.X, midLegs.Y - midLegsStkm.Y);
+		dist = std::hypot(midLegs.X - midLegsStkm.X, midLegs.Y - midLegsStkm.Y);
 		distVec = midLegsStkm - midLegs;
 		target = midLegsStkm;
 		anyStkm = true;
@@ -93,7 +93,7 @@ static int update(UPDATE_FUNC_ARGS)
 	if (sim->player2.spwn && sim->player2.elem != PT_INVIS)
 	{
 		auto midLegsStkm = (sim->player2.legs[0] + sim->player2.legs[2])*0.5f;
-		float dist2 = hypot(midLegs.X - midLegsStkm.X, midLegs.Y - midLegsStkm.Y);
+		float dist2 = std::hypot(midLegs.X - midLegsStkm.X, midLegs.Y - midLegsStkm.Y);
 
 		if (!anyStkm || dist2 < dist)
 		{
@@ -104,18 +104,9 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 	}
 
-	// Gravity is needed to correctly determine if STKM is to the left or to the right of FIGH
-	Vec2<float> grav{0, 1};
-	sim->GetGravityField(parts[i].x, parts[i].y, 1.0f, 1.0f, grav.X, grav.Y);
-	float gravLen = hypot(grav.X, grav.Y);
-	if (gravLen > 0.01f)
-		grav = grav * (1/gravLen);
-	else
-		grav = Vec2<float>{0, 1};
-
-	// Since grav is normalized, these are projections
-	float horizSign = grav.X*distVec.Y - grav.Y*distVec.X; // > 0 means "left", < 0 means "right"
-	float vertSign = grav.X*distVec.X + grav.Y*distVec.Y; // > 0 means "down", < 0 means "up"
+	// Since downVec is normalized, these are projections
+	float horizSign = figh->downVec.X*distVec.Y - figh->downVec.Y*distVec.X; // > 0 means "left", < 0 means "right"
+	float vertSign = figh->downVec.X*distVec.X + figh->downVec.Y*distVec.Y; // > 0 means "down", < 0 means "up"
 
 	// Check if we have a "dangerous" element.
 	// We don't allow energy particles since these shoot in a "laser beam" fashion
@@ -142,13 +133,13 @@ static int update(UPDATE_FUNC_ARGS)
 
 		// Shoot
 		float spread = float(sim->rng.between(-5, 5));
-		if (anyStkm && fabs(horizSign) < (spread + cutoff) && fabs(horizSign) > (spread + cutoff - 5.0f) &&
-			       fabs(vertSign) < 10.0f && figh->pdir == -isign(horizSign))
+		if (anyStkm && std::abs(horizSign) < (spread + cutoff) && std::abs(horizSign) > (spread + cutoff - 5.0f) &&
+			       std::abs(vertSign) < 10.0f && figh->pdir == -isign(horizSign))
 			figh->comm = 8;
 	}
 
 	// This is minimal when dist = cutoff
-	float score = fabs(dist - cutoff) + cutoff;
+	float score = std::abs(dist - cutoff) + cutoff;
 
 	// Do something if we got hurt.
 	// The chance() statement will be always true when life <= 20
@@ -163,6 +154,8 @@ static int update(UPDATE_FUNC_ARGS)
 				figh->comm = sim->rng.between(1, 2); // Left/right
 			if (sim->rng.chance(1, 5))
 				figh->comm |= 4; // Add jump
+			else if (figh->isSwimming && sim->rng.chance(1, 5))
+				figh->comm |= 8; // Add down
 		}
 		else
 		{
@@ -193,11 +186,15 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					// Move based on relative position
 					figh->comm = horizSign > 0 ? 1 : 2;
-					if (dist < 20.0f && vertSign < -10.0f)
+					if ((dist < 20.0f || figh->isSwimming) && vertSign < -10.0f)
 						figh->comm |= 4;
+					if (figh->isSwimming && vertSign > 10.0f)
+						figh->comm |= 8;
 				}
 				else if (sim->rng.chance(2, 3))
 					figh->comm |= 4; // Try jumping
+				else if (figh->isSwimming && sim->rng.chance(2, 3))
+					figh->comm |= 8; // Try swimming down
 				else
 				{
 					figh->comm = 0;
@@ -207,6 +204,8 @@ static int update(UPDATE_FUNC_ARGS)
 						figh->comm = sim->rng.between(0, 1); // Left/right
 					if (sim->rng.chance(1, 5))
 						figh->comm |= 4; // Add jump
+					else if (figh->isSwimming && sim->rng.chance(1, 5))
+						figh->comm |= 8; // Add down
 				}
 
 				figh->frustration = 0;

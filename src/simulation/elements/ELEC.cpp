@@ -34,7 +34,7 @@ void Element::Element_ELEC()
 	HeatConduct = 251;
 	Description = "Electrons. Sparks electronics, reacts with NEUT and WATR.";
 
-	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
+	Properties = TYPE_ENERGY | PROP_DEADLY | PROP_LIFE_DEC | PROP_LIFE_KILL_DEC;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

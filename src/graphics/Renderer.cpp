@@ -296,7 +296,10 @@ void Renderer::render_parts()
 
 			if(nx >= XRES || nx < 0 || ny >= YRES || ny < 0)
 				return;
-			if(TYP(sim->photons[ny][nx]) && !(elements[t].Properties & TYPE_ENERGY) && t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
+
+			// Don't draw a particle if there's an energy particle on top, except for stickmen
+			auto photType = TYP(sim->photons[ny][nx]);
+			if(photType && photType != PT_STKM && photType != PT_STKM2 && photType != PT_FIGH && !(elements[t].Properties & TYPE_ENERGY))
 				return;
 
 			//Defaults
@@ -587,6 +590,13 @@ void Renderer::render_parts()
 							colr = elemColour.Red;
 							colg = elemColour.Green;
 							colb = elemColour.Blue;
+
+							// Use activated GPMP color
+							if (cplayer->elem == PT_GPMP)
+							{
+								colg += 190;
+								colb += 190;
+							}
 						}
 						else
 						{

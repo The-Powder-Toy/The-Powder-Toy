@@ -37,7 +37,7 @@ void Element::Element_NEUT()
 	HeatConduct = 60;
 	Description = "Neutrons. Interact with matter in odd ways.";
 
-	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
+	Properties = TYPE_ENERGY | PROP_DEADLY | PROP_LIFE_DEC | PROP_LIFE_KILL_DEC;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

@@ -37,7 +37,7 @@ void Element::Element_STKM()
 	HeatConduct = 0;
 	Description = "Stickman. Don't kill him! Control with the arrow keys.";
 
-	Properties = TYPE_PART | PROP_NOCTYPEDRAW;
+	Properties = TYPE_ENERGY | PROP_NOCTYPEDRAW; // STKM is an energy particle to avoid stacking issues
 	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
@@ -127,7 +127,7 @@ void simJointLegacy(Vec2<float>& end1, Vec2<float>& end2, float dist)
 // Vector length
 float lenVec(Vec2<float> vec)
 {
-	return hypot(vec.X, vec.Y);
+	return std::hypot(vec.X, vec.Y);
 }
 
 // Normalize a vector
@@ -211,8 +211,9 @@ bool collide(Simulation* sim, int t, Vec2<float> prev, Vec2<float>& curr, bool m
 	Vec2<int> begin{int(prev.X), int(prev.Y)};
 	Vec2<int> end{int(curr.X), int(curr.Y)};
 
-	int steps = std::max(abs(end.X - begin.X), abs(end.Y - begin.Y));
+	int steps = std::max(std::abs(end.X - begin.X), std::abs(end.Y - begin.Y));
 	Vec2<float> delta = curr - prev;
+	bool slipAny = false;
 
 	if (steps > 0)
 	{
@@ -237,11 +238,14 @@ bool collide(Simulation* sim, int t, Vec2<float> prev, Vec2<float>& curr, bool m
 						Vec2<float> dx{delta.X, 0};
 						Vec2<float> dy{0, delta.Y};
 
+						bool didSlip = false;
+						Vec2<float> slid = prevP;
+
 						// Do a step in the X direction
 						auto doX = [&]() {
 							if (sim->eval_move(t, prevP.X + delta.X, prevP.Y, nullptr))
 							{
-								curr = prevP + dx;
+								slid = prevP + dx;
 								return true;
 							}
 							return false;
@@ -250,23 +254,30 @@ bool collide(Simulation* sim, int t, Vec2<float> prev, Vec2<float>& curr, bool m
 						auto doY = [&]() {
 							if (sim->eval_move(t, prevP.X, prevP.Y + delta.Y, nullptr))
 							{
-								curr = prevP + dy;
+								slid = prevP + dy;
 								return true;
 							}
 							return false;
 						};
 
-						if (fabs(delta.X) > fabs(delta.Y))
+						if (std::abs(delta.X) > std::abs(delta.Y))
 						{
 							// First try X direction, then Y
-							if (doX()) return true;
-							if (doY()) return true;
+							didSlip = doX() || doY();
 						}
 						else
 						{
 							// First try Y direction, then X
-							if (doY()) return true;
-							if (doX()) return true;
+							didSlip = doY() || doX();
+						}
+
+						if (didSlip)
+						{
+							prevP = slid;
+							p = prevP + delta;
+							slipAny = true;
+
+							continue;
 						}
 					}
 
@@ -282,6 +293,14 @@ bool collide(Simulation* sim, int t, Vec2<float> prev, Vec2<float>& curr, bool m
 				prevP = p;
 				p += delta;
 			}
+		}
+
+		// Even if the point slipped all the way through,
+		// we say that it "collided" with something
+		if (slipAny)
+		{
+			curr = prevP;
+			return true;
 		}
 	}
 
@@ -314,6 +333,9 @@ bool isAir(Simulation* sim, Vec2<float> pos)
 	{
 		auto r = sim->pmap[int(pos.Y)][int(pos.X)];
 
+		if (!r)
+			r = sim->bmap[int(pos.Y)/CELL][int(pos.X)/CELL];
+
 		return r == 0;
 	}
 	return true;
@@ -338,7 +360,7 @@ void die(Simulation *sim, playerst *playerp, int i)
 		// This code follows the graphics code for drawing stickman's head
 		if (t == PT_FIGH)
 		{
-			Vec2<int> dv{int(round(dwn.X*2.0f)), int(round(dwn.Y*2.0f))};
+			Vec2<int> dv{int(std::round(dwn.X*2.0f)), int(std::round(dwn.Y*2.0f))};
 			Vec2<int> lv{dv.Y, -dv.X}; // dv rotated 90 degrees
 
 			for (int eps1 = -1; eps1 < 2; eps1 += 2)
@@ -348,7 +370,7 @@ void die(Simulation *sim, playerst *playerp, int i)
 		else if (t == PT_STKM)
 		{
 			// We use 2.1 here instead of "correct" 2.0 because it looks better that way
-			Vec2<int> dv{int(round((dwn.X - dwn.Y)*2.1f)), int(round((dwn.X + dwn.Y)*2.1f))};
+			Vec2<int> dv{int(std::round((dwn.X - dwn.Y)*2.1f)), int(std::round((dwn.X + dwn.Y)*2.1f))};
 			Vec2<int> lv{dv.Y, -dv.X}; // dv rotated 90 degrees
 
 			for (int eps1 = -1; eps1 < 2; eps1 += 2)
@@ -479,10 +501,19 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 	// Set (normalized) down direction
 	Vec2<float> downVec{0, 0};
 	float gravLen = lenVec(grav);
+
 	if (gravLen > 0.01f)
 		downVec = grav * (1/gravLen);
+	else if (std::max(std::abs(parts[i].vx), std::abs(parts[i].vy)) > 0.01f)
+	{
+		float ang1 = std::atan2(-parts[i].vy, -parts[i].vx);
+		float ang2 = std::atan2(playerp->downVec.Y, playerp->downVec.X);
+		float ang = ang1*0.01f + ang2*0.99f; // Interpolate between angles
+
+		downVec = Vec2<float>(std::cos(ang), std::sin(ang));
+	}
 	else
-		downVec = Vec2<float>(0, 1);
+		downVec = playerp->downVec;
 
 	playerp->downVec = downVec;
 
@@ -537,24 +568,21 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 	// Reset dummy head to current coords
 	dummyHead = Vec2<float>(parts[i].x, parts[i].y);
 
-	// Count limbs which are underwater or in air (as opposed to underground)
+	// Count limbs which are underwater
 	bool swimming = false;
 	bool newSwimming = false;
 	int immersedLimb = 0;
-	int airLimb = 0;
 	for(int j = 0; j < 4; j++)
 	{
 		if (isLiquid(sim, playerp->legs[j]))
 			immersedLimb++;
-		if (isAir(sim, playerp->legs[j]))
-			airLimb++;
 	}
 
 	swimming = (immersedLimb > 2);
 	newSwimming = swimming;
 
 	// Allow swimming for some time even if not enough limbs are underwater
-	bool headAboveWater = playerp->comm && isAir(sim, dummyHead + downVec);
+	bool headAboveWater = isAir(sim, dummyHead + downVec);
 	if (!swimming && !headAboveWater && immersedLimb > 1)
 	{
 		if (playerp->swimCounter > 0)
@@ -569,9 +597,12 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 	playerp->isSwimming = swimming;
 
 	// Disable gravity for legs which are immersed in liquid
-	for(int j = 0; j < 4; j += 2)
-		if (isLiquid(sim, playerp->legs[j]) && isLiquid(sim, playerp->legs[j+1]))
-			playerp->accs[j+1] -= grav;
+	if (swimming)
+	{
+		for(int j = 0; j < 4; j += 2)
+			if (!isAir(sim, playerp->legs[j]) && !isAir(sim, playerp->legs[j+1]))
+				playerp->accs[j+1] -= grav;
+	}
 
 	// Lazy leg has lower friction with the surfaces
 	// Helps with STKM getting stuck in 1px ledges
@@ -596,7 +627,7 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 	{
 		// Set the swimming "cooldown" counter
 		if (newSwimming)
-			playerp->swimCounter = 60;
+			playerp->swimCounter = 100;
 
 		playerp->isJumping = false;
 
@@ -762,7 +793,7 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 			normalize(perpVec);
 
 			float angleRef = float(direction)*params[7];
-			float angleCurr = (legVec.X || legVec.Y) ? atan2(crossProd(legVec, downVec), scalarProd(legVec, downVec)) : 0;
+			float angleCurr = (legVec.X || legVec.Y) ? std::atan2(crossProd(legVec, downVec), scalarProd(legVec, downVec)) : 0;
 			float omegaRef = float(direction)*params[10];
 			float omegaCurr = scalarProd(perpVec, swingVel);
 			float coeff = params[8]*(angleRef - angleCurr) + params[9]*(omegaRef - omegaCurr);
@@ -778,7 +809,7 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 			normalize(perpVec);
 
 			angleRef = float(direction)*params[12];
-			angleCurr = (legVec.X || legVec.Y) ? atan2(crossProd(legVec, downVec), scalarProd(legVec, downVec)) : 0;
+			angleCurr = (legVec.X || legVec.Y) ? std::atan2(crossProd(legVec, downVec), scalarProd(legVec, downVec)) : 0;
 			omegaRef = float(direction)*params[11];
 			omegaCurr = scalarProd(perpVec, headVel);
 			coeff = params[4]*(angleRef - angleCurr) + params[5]*(omegaRef - omegaCurr);
@@ -959,8 +990,11 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 							{
 								auto embrPos = playerp->legs[j] + horizVec*float(tt);
 								int ei = sim->create_part(-1, embrPos.X, embrPos.Y, PT_EMBR);
-								if (ei != -1)
+								if (ei >= 0)
+								{
+									parts[ei].temp = 22.0f + 273.15f;
 									parts[ei].life = 10;
+								}
 							}
 						}
 
@@ -1028,7 +1062,7 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 
 				if (np >= 0)
 				{
-					int angle = int(atan2(-prevHorizVec.Y, prevHorizVec.X)*180.0f/std::numbers::pi_v<float>);
+					int angle = int(std::atan2(-prevHorizVec.Y, prevHorizVec.X)*180.0f/std::numbers::pi_v<float>);
 					const int power = 50;
 
 					parts[np].tmp = angle;
@@ -1174,7 +1208,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 				}
 
 				// PLNT gives +5 HP
-				if (TYP(r) == PT_PLNT)
+				if (TYP(r) == PT_PLNT && parts[i].life < 100)
 				{
 					parts[i].life = std::min(100, parts[i].life+5);
 					sim->kill_part(ID(r));
@@ -1183,6 +1217,15 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 					playerp->elem = PT_GPMP; // Disabled GPMP gives antigravity power
 				else if (playerp->rocketBoots && TYP(r) == PT_PLSM)
 					continue; // Ignore PLSM when in rocket boots
+				else if ((sd.elements[TYP(r)].Properties & (TYPE_ENERGY | PROP_DEADLY)) == (TYPE_ENERGY | PROP_DEADLY))
+				{
+					// Damage from some energy particles
+					float relVel = std::hypot(parts[i].vx - parts[ID(r)].vx, parts[i].vy - parts[ID(r)].vy);
+					int damage = std::clamp(int(relVel+0.5f), 0, 20);
+
+					if (sim->rng.chance(1, 5))
+						parts[i].life -= damage;
+				}
 				else if (TYP(r) == PT_FIGH)
 				{
 					// Zombie FIGH
@@ -1205,7 +1248,7 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 						{
 							playerst* figh = &sim->fighters[(unsigned char)fi];
 
-							if (hypot(parts[i].vx - parts[ID(r)].vx, parts[i].vy - parts[ID(r)].vy) > 1.0f &&
+							if (std::hypot(parts[i].vx - parts[ID(r)].vx, parts[i].vy - parts[ID(r)].vy) > 1.0f &&
 									figh->isJumping && sim->rng.chance(1, 2))
 							{
 								if (playerp->elem == PT_SHLD1 && playerp->frames > 0)
@@ -1638,7 +1681,7 @@ int Element_STKM_run_stickman_legacy(playerst *playerp, UPDATE_FUNC_ARGS)
 					int angle;
 					int power = 100;
 					if (gvx!=0 || gvy!=0)
-						angle = int(atan2(mvx, mvy)*180.0f/std::numbers::pi_v<float>);
+						angle = int(std::atan2(mvx, mvy)*180.0f/std::numbers::pi_v<float>);
 					else
 						angle = sim->rng.between(0, 359);
 					if (((int)playerp->pcomm)&0x01)
@@ -1668,15 +1711,17 @@ int Element_STKM_run_stickman_legacy(playerst *playerp, UPDATE_FUNC_ARGS)
 	simJointLegacy(playerp->legs[0], playerp->legs[1], 5.0f);
 	simJointLegacy(playerp->legs[2], playerp->legs[3], 5.0f);
 
-	Vec2<float> dummyHead{parts[i].x, parts[i].y};
-	simJointLegacy(dummyHead, playerp->legs[0], 6.0f);
-	parts[i].vx += dummyHead.X - parts[i].x;
-	parts[i].vy += dummyHead.Y - parts[i].y;
+	Vec2<float> diff = playerp->legs[0] - Vec2<float>{parts[i].x, parts[i].y};
+	float d = 36.0f / (pow(diff.X, 2) + pow(diff.Y, 2) + 36.0f) - 0.5f;
+	parts[i].vx -= diff.X*d;
+	parts[i].vy -= diff.Y*d;
+	playerp->legs[0] += diff*d;
 
-	dummyHead = Vec2<float>{parts[i].x, parts[i].y};
-	simJointLegacy(dummyHead, playerp->legs[2], 6.0f);
-	parts[i].vx += dummyHead.X - parts[i].x;
-	parts[i].vy += dummyHead.Y - parts[i].y;
+	diff = playerp->legs[2] - Vec2<float>{parts[i].x, parts[i].y};
+	d = 36.0f / (pow(diff.X, 2) + pow(diff.Y, 2) + 36.0f) - 0.5f;
+	parts[i].vx -= diff.X*d;
+	parts[i].vy -= diff.Y*d;
+	playerp->legs[2] += diff*d;
 
 	for(int j = 1; j < 4; j += 2)
 	{
@@ -1706,7 +1751,8 @@ int Element_STKM_run_stickman_legacy(playerst *playerp, UPDATE_FUNC_ARGS)
 
 			if (tvx || tvy)
 			{
-				Vec2<float> tv{0.2f*tvx, 0.2f*tvy};
+				float len = std::hypot(tvx, tvy);
+				Vec2<float> tv{0.2f*tvx / len, 0.2f*tvy / len};
 				playerp->accs[j] -= tv;
 				playerp->accs[j+2] += tv;
 			}
@@ -1825,15 +1871,7 @@ void Element_STKM_set_element(Simulation *sim, playerst *playerp, int element)
 			element = PT_LIGH;
 			goodElement = true;
 		}
-		else if (element == PT_ARAY)
-			goodElement = true;
-		else if (element == PT_INVIS)
-			goodElement = true;
-		else if (element == PT_ACEL)
-			goodElement = true;
-		else if (element == PT_DCEL)
-			goodElement = true;
-		else if (element == PT_SHLD1)
+		else if (element == PT_ARAY || element == PT_INVIS || element == PT_ACEL || element == PT_DCEL || element == PT_SHLD1)
 			goodElement = true;
 
 		// Set elemental power

@@ -178,6 +178,8 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 				player.rocketBoots = true;
 			if (save->stkm.fan1)
 				player.fan = true;
+			if (parts[i].flags & FLAG_OLDSTKM)
+				parts[i].dcolour = 0;
 			break;
 		case PT_STKM2:
 			Element_STKM_init_legs(this, &player2, i);
@@ -192,6 +194,8 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 				player2.rocketBoots = true;
 			if (save->stkm.fan2)
 				player2.fan = true;
+			if (parts[i].flags & FLAG_OLDSTKM)
+				parts[i].dcolour = 0;
 			break;
 		case PT_FIGH:
 		{
@@ -220,6 +224,8 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 					if (fighNum == oldTmp)
 						fighters[newTmp].fan = true;
 				}
+				if (parts[i].flags & FLAG_OLDSTKM)
+					parts[i].dcolour = 0;
 			}
 			else
 			{
@@ -1073,7 +1079,7 @@ bool Simulation::IsWallBlocking(int x, int y, int type) const
 		int wall = bmap[y/CELL][x/CELL];
 		if (wall == WL_ALLOWGAS && !(elements[type].Properties&TYPE_GAS))
 			return true;
-		else if (wall == WL_ALLOWENERGY && !(elements[type].Properties&TYPE_ENERGY))
+		else if (wall == WL_ALLOWENERGY && (!(elements[type].Properties&TYPE_ENERGY) || type == PT_STKM || type == PT_STKM2 || type == PT_FIGH))
 			return true;
 		else if (wall == WL_ALLOWLIQUID && !(elements[type].Properties&TYPE_LIQUID))
 			return true;
@@ -1938,7 +1944,7 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	//and finally set the pmap/photon maps to the newly created particle
 	if (elements[t].Properties & TYPE_ENERGY)
 		photons[y][x] = PMAP(i, t);
-	else if (t!=PT_STKM && t!=PT_STKM2 && t!=PT_FIGH)
+	else
 		pmap[y][x] = PMAP(i, t);
 
 	//Fancy dust effects for powder types
