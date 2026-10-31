@@ -397,19 +397,19 @@ int Element_PIPE_graphics(GRAPHICS_FUNC_ARGS)
 		switch (cpart->tmp & PFLAG_COLORS)
 		{
 		case PFLAG_COLOR_RED:
-			*colr = 50;
+			*colr = 89;
 			*colg = 1;
-			*colb = 1;
+			*colb = 28;
 			break;
 		case PFLAG_COLOR_GREEN:
 			*colr = 1;
-			*colg = 50;
-			*colb = 1;
+			*colg = 83;
+			*colb = 56;
 			break;
 		case PFLAG_COLOR_BLUE:
-			*colr = 1;
+			*colr = 23;
 			*colg = 1;
-			*colb = 50;
+			*colb = 103;
 			break;
 		default:
 			break;
