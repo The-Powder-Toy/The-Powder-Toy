@@ -317,6 +317,42 @@ int Main(int argc, char *argv[])
 		}
 	}
 
+	struct OpenNone
+	{
+	};
+	using OpenError = String;
+	using OpenSaveFile = std::vector<char>;
+	using OpenResult = std::variant<
+		OpenNone,
+		OpenSaveFile,
+		OpenError
+	>;
+	OpenResult openResult;
+	auto openArg = arguments["open"];
+	if (openArg.has_value())
+	{
+		if constexpr (DEBUG)
+		{
+			std::cout << "Loading " << openArg.value() << std::endl;
+		}
+		if (Platform::FileExists(openArg.value()))
+		{
+			std::vector<char> gameSaveData;
+			if (!Platform::ReadFile(gameSaveData, openArg.value()))
+			{
+				openResult = String("Could not read file");
+			}
+			else
+			{
+				openResult = std::move(gameSaveData);
+			}
+		}
+		else
+		{
+			openResult = String("Could not open file");
+		}
+	}
+
 	auto ddirArg = arguments["ddir"];
 	if (ddirArg.has_value())
 	{
@@ -502,40 +538,23 @@ int Main(int argc, char *argv[])
 	engine.ShowWindow(gameController->GetView());
 	gameController->InitCommandInterface();
 
-	auto openArg = arguments["open"];
-	if (openArg.has_value())
+	if (auto *openSaveFile = std::get_if<OpenSaveFile>(&openResult))
 	{
-		if constexpr (DEBUG)
+		try
 		{
-			std::cout << "Loading " << openArg.value() << std::endl;
+			auto newFile = std::make_unique<SaveFile>(openArg.value());
+			auto newSave = std::make_unique<GameSave>(std::move(*openSaveFile));
+			newFile->SetGameSave(std::move(newSave));
+			gameController->LoadSaveFile(std::move(newFile));
 		}
-		if (Platform::FileExists(openArg.value()))
+		catch (std::exception & e)
 		{
-			try
-			{
-				std::vector<char> gameSaveData;
-				if (!Platform::ReadFile(gameSaveData, openArg.value()))
-				{
-					new ErrorMessage("Error", "Could not read file");
-				}
-				else
-				{
-					auto newFile = std::make_unique<SaveFile>(openArg.value());
-					auto newSave = std::make_unique<GameSave>(std::move(gameSaveData));
-					newFile->SetGameSave(std::move(newSave));
-					gameController->LoadSaveFile(std::move(newFile));
-				}
-
-			}
-			catch (std::exception & e)
-			{
-				new ErrorMessage("Error", "Could not open save file:\n" + ByteString(e.what()).FromUtf8()) ;
-			}
+			openResult = String("Could not open save file:\n" + ByteString(e.what()).FromUtf8()) ;
 		}
-		else
-		{
-			new ErrorMessage("Error", "Could not open file");
-		}
+	}
+	if (auto *openError = std::get_if<OpenError>(&openResult))
+	{
+		new ErrorMessage("Error", *openError);
 	}
 
 	auto ptsaveArg = arguments["ptsave"];
