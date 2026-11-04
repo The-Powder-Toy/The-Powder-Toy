@@ -69,7 +69,7 @@ bool ValidateGOLName(const String &value)
 	bool nameOk = !value.empty();
 	for (auto ch : value)
 	{
-		if (!((ch >= '0' && ch < '9') || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch == '-')))
+		if (!((ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch == '-')))
 		{
 			nameOk = false;
 		}
