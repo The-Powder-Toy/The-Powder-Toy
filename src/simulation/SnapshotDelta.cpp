@@ -202,6 +202,7 @@ std::unique_ptr<SnapshotDelta> SnapshotDelta::FromSnapshots(const Snapshot &oldS
 	FillSingleDiff(oldSnap.Authors        , newSnap.Authors        , delta.Authors        );
 	FillSingleDiff(oldSnap.FrameCount     , newSnap.FrameCount     , delta.FrameCount     );
 	FillSingleDiff(oldSnap.RngState       , newSnap.RngState       , delta.RngState       );
+	FillSingleDiff(oldSnap.fighcount      , newSnap.fighcount      , delta.fighcount      );
 	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(oldSnap.PortalParticles.data()), reinterpret_cast<const uint32_t *>(newSnap.PortalParticles.data()), delta.PortalParticles, newSnap.PortalParticles.size() * ParticleUint32Count);
 	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(oldSnap.players.data())        , reinterpret_cast<const uint32_t *>(newSnap.players.data()        ), delta.players        , newSnap.players        .size() * playerstUint32Count);
 	FillHunkVectorPtr(reinterpret_cast<const uint32_t *>(oldSnap.fighters.data())       , reinterpret_cast<const uint32_t *>(newSnap.fighters.data()       ), delta.fighters       , newSnap.fighters       .size() * fighterstUint32Count);
@@ -240,6 +241,7 @@ std::unique_ptr<Snapshot> SnapshotDelta::Forward(const Snapshot &oldSnap)
 	ApplySingleDiff<false>(Authors        , newSnap.Authors        );
 	ApplySingleDiff<false>(FrameCount     , newSnap.FrameCount     );
 	ApplySingleDiff<false>(RngState       , newSnap.RngState       );
+	ApplySingleDiff<false>(fighcount      , newSnap.fighcount      );
 	ApplyHunkVectorPtr<false>(PortalParticles, reinterpret_cast<uint32_t *>(newSnap.PortalParticles.data()));
 	ApplyHunkVectorPtr<false>(players        , reinterpret_cast<uint32_t *>(newSnap.players.data()        ));
 	ApplyHunkVectorPtr<false>(fighters       , reinterpret_cast<uint32_t *>(newSnap.fighters.data()       ));
@@ -276,6 +278,7 @@ std::unique_ptr<Snapshot> SnapshotDelta::Restore(const Snapshot &newSnap)
 	ApplySingleDiff<true>(Authors        , oldSnap.Authors        );
 	ApplySingleDiff<true>(FrameCount     , oldSnap.FrameCount     );
 	ApplySingleDiff<true>(RngState       , oldSnap.RngState       );
+	ApplySingleDiff<true>(fighcount      , oldSnap.fighcount      );
 	ApplyHunkVectorPtr<true>(PortalParticles, reinterpret_cast<uint32_t *>(oldSnap.PortalParticles.data()));
 	ApplyHunkVectorPtr<true>(players        , reinterpret_cast<uint32_t *>(oldSnap.players.data()        ));
 	ApplyHunkVectorPtr<true>(fighters       , reinterpret_cast<uint32_t *>(oldSnap.fighters.data()       ));

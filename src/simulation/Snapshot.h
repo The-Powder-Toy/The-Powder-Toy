@@ -38,6 +38,7 @@ public:
 	std::vector<fighterst> fighters;
 	std::vector<sign> signs;
 
+	unsigned char fighcount;
 	uint64_t FrameCount;
 	RNG::State RngState;
 

@@ -69,6 +69,7 @@ struct SnapshotDelta
 	HunkVector<uint32_t> fighters;
 	SingleDiff<std::vector<sign>> signs;
 
+	SingleDiff<unsigned char> fighcount;
 	SingleDiff<uint64_t> FrameCount;
 	SingleDiff<RNG::State> RngState;
 

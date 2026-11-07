@@ -1,6 +1,7 @@
 #include "simulation/ElementCommon.h"
-#include "STKM.h"
 #include "common/RasterGeometry.h"
+#include "STKM.h"
+#include "BOMB.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS);
@@ -401,7 +402,7 @@ void Element_STKM_interact(Simulation *sim, playerst *playerp, int i, int x, int
 	auto &elements = sd.elements;
 	int r;
 
-	if (x<0 || y<0 || x>=XRES || y>=YRES || !sim->parts[i].type)
+	if (!InBounds(x, y) || !sim->parts[i].type)
 		return;
 
 	r = sim->pmap[y][x];
@@ -414,16 +415,45 @@ void Element_STKM_interact(Simulation *sim, playerst *playerp, int i, int x, int
 		int damage = 0;
 
 		if (TYP(r)==PT_SPRK && playerp->elem!=PT_LIGH)
-			damage += 5;
-
-		if (!sd.IsHeatInsulator(sim->parts[ID(r)]) && ((playerp->elem!=PT_LIGH && sim->parts[ID(r)].temp>=373.15f) || sim->parts[ID(r)].temp<=173.15f))
 			damage++;
 
-		if (elements[TYP(r)].Properties&PROP_DEADLY)
+		// LIGH is a heat insulator for some reason, so we need to check this
+		if (TYP(r) == PT_LIGH)
+			damage += 10;
+
+		if (!sd.IsHeatInsulator(sim->parts[ID(r)]) &&
+				((playerp->elem!=PT_LIGH && sim->parts[ID(r)].temp>=373.15f) || sim->parts[ID(r)].temp<=173.15f) &&
+				sim->rng.chance(1, 5))
 			damage++;
 
-		if (elements[TYP(r)].Properties&PROP_RADIOACTIVE)
+		if (elements[TYP(r)].Properties&PROP_RADIOACTIVE && sim->rng.chance(1, 5))
 			damage++;
+
+		if (TYP(r) == PT_BASE)
+		{
+			// BASE's damage chance depends on its concentration
+			if (sim->parts[ID(r)].life > 10 && sim->rng.chance(sim->parts[ID(r)].life, 700))
+				damage++;
+		}
+		else if (elements[TYP(r)].Properties&PROP_DEADLY)
+			damage++;
+
+		// DEST explosion
+		if (TYP(r) == PT_DEST)
+		{
+			sim->parts[ID(r)].life = sim->rng.between(30, 49);
+			sim->parts[ID(r)].temp = MAX_TEMP;
+			sim->pv[y/CELL][x/CELL] = restrict_flt(sim->pv[y/CELL][x/CELL] + 140.0f, MIN_PRESSURE, MAX_PRESSURE);
+			damage += 10;
+		}
+
+		// BOMB explosion
+		if (TYP(r) == PT_BOMB)
+		{
+			sim->kill_part(ID(r));
+			Element_BOMB_explode(sim, x, y);
+			damage += 20;
+		}
 
 		// Shield eats some damage away
 		if (playerp->elem == PT_SHLD1 && playerp->frames > 0)
@@ -435,6 +465,15 @@ void Element_STKM_interact(Simulation *sim, playerst *playerp, int i, int x, int
 
 		if (damage)
 			sim->parts[i].life = std::max(0, sim->parts[i].life - damage);
+
+		if (TYP(r) == PT_AMTR)
+		{
+			// Give stickman PHOT power so it disintegrates into PHOT
+			playerp->elem = PT_PHOT;
+			sim->parts[i].ctype = PT_PHOT;
+			sim->parts[i].life = 0;
+			return;
+		}
 
 		if (TYP(r)==PT_BHOL || TYP(r)==PT_NBHL)
 		{
@@ -504,6 +543,8 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 
 	if (gravLen > 0.01f)
 		downVec = grav * (1/gravLen);
+	else if (playerp->isSwimming)
+		downVec = Vec2<float>{0, 1};
 	else if (std::max(std::abs(parts[i].vx), std::abs(parts[i].vy)) > 0.01f)
 	{
 		float ang1 = std::atan2(-parts[i].vy, -parts[i].vx);
@@ -578,7 +619,7 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 			immersedLimb++;
 	}
 
-	swimming = (immersedLimb > 2);
+	swimming = (immersedLimb > 2) || (immersedLimb == 2 && isLiquid(sim, dummyHead));
 	newSwimming = swimming;
 
 	// Allow swimming for some time even if not enough limbs are underwater
@@ -632,7 +673,10 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 		playerp->isJumping = false;
 
 		// Disable head flying up
-		headAcc += grav*(dt*dt);
+		if (gravLen > 1.0f)
+			headAcc += downVec*(dt*dt);
+		else
+			headAcc += grav*(dt*dt);
 
 		const float cCounter = 0.4f;
 
@@ -858,7 +902,7 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 			if (verticalJump || wallJump)
 			{
 				// Vertical and horizontal initial velocities
-				float verticalCoeff = wallJump ? -2.2f : -2.0f;
+				float verticalCoeff = wallJump ? 2.2f : 2.0f;
 				float horizontalCoeff = wallJump ? 0.3f : 0.2f;
 
 				// ACEL power boosts jumping height and length
@@ -873,16 +917,27 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 					horizontalCoeff *= 0.5f;
 				}
 
-				Vec2<float> jumpingVel = downVec*verticalCoeff;
-				float horizVel = direction ? horizontalCoeff : 0.0f;
+				// Compute average velocity
+				Vec2<float> averageVel{parts[i].vx, parts[i].vy};
+				for(int j = 0; j < 4; j++)
+					averageVel += playerp->legs[j] - playerp->legsp[j];
+				averageVel = averageVel*0.2f;
+
+				// Target jumping velocities
+				Vec2<float> jumpingVel = downVec*(-verticalCoeff);
+				Vec2<float> horizVel = direction ? horizVec*horizontalCoeff : Vec2<float>{0, 0};
+
+				// Preserve horizontal velocity if left/right isn't pressed
+				if (!lrPressed)
+					horizVel = horizVec*scalarProd(averageVel, horizVec);
 
 				// Set the horizontal and vertical components
-				Vec2<float> newHeadVel = jumpingVel + horizVec*horizVel;
-				parts[i].vx = newHeadVel.X;
-				parts[i].vy = newHeadVel.Y;
+				Vec2<float> newVel = jumpingVel + horizVel;
+				parts[i].vx = newVel.X;
+				parts[i].vy = newVel.Y;
 
 				for(int j = 0; j < 4; j++)
-					playerp->legsp[j] = playerp->legs[j] - (jumpingVel + horizVec*horizVel);
+					playerp->legsp[j] = playerp->legs[j] - newVel;
 
 				playerp->jumpAllowed = false;
 				playerp->isJumping = true;
@@ -1226,7 +1281,12 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 					if (sim->rng.chance(1, 5))
 						parts[i].life -= damage;
 				}
-				else if (TYP(r) == PT_FIGH)
+
+				Element_STKM_set_element(sim, playerp, TYP(r));
+
+				// Try to detect FIGH even when the head is covered by some other element in pmap
+				r = sim->photons[y+ry][x+rx];
+				if (TYP(r) == PT_FIGH)
 				{
 					// Zombie FIGH
 					if (parts[ID(r)].ctype == PT_DCEL && sim->rng.chance(1, 20))
@@ -1263,8 +1323,6 @@ int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS)
 						}
 					}
 				}
-
-				Element_STKM_set_element(sim, playerp, TYP(r));
 			}
 
 	// Kill STKM when not enough HP
@@ -1862,8 +1920,11 @@ void Element_STKM_set_element(Simulation *sim, playerst *playerp, int element)
 		if (element != PT_STKM && element != PT_STKM2 && element != PT_FIGH &&
 				elements[element].Properties & (TYPE_PART | TYPE_GAS | TYPE_LIQUID | TYPE_ENERGY))
 		{
-			// Ignore PLSM when in rocket boots
-			if (!playerp->rocketBoots || element != PT_PLSM)
+			if (playerp->rocketBoots && element == PT_PLSM) // Ignore PLSM when in rocket boots
+				goodElement = false;
+			else if (playerp->elem == PT_ARAY && element == PT_EMBR) // Ignore EMBR in dash mode
+				goodElement = false;
+			else
 				goodElement = true;
 		}
 		else if (element == PT_TESC) // LIGH power is set from TESC only

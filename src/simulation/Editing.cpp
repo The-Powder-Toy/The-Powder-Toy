@@ -34,6 +34,7 @@ std::unique_ptr<Snapshot> Simulation::CreateSnapshot() const
 	snap->GravMask  .insert(snap->GravMask  .begin(), &gravIn.mask[{ 0, 0 }]   , &gravIn.mask[{ 0, 0 }]    + NCELL);
 	snap->GravForceX.insert(snap->GravForceX.begin(), &gravOut.forceX[{ 0, 0 }], &gravOut.forceX[{ 0, 0 }] + NCELL);
 	snap->GravForceY.insert(snap->GravForceY.begin(), &gravOut.forceY[{ 0, 0 }], &gravOut.forceY[{ 0, 0 }] + NCELL);
+	snap->fighcount = fighcount;
 	snap->signs = signs;
 	snap->FrameCount = frameCount;
 	snap->RngState = rng.state();
@@ -76,6 +77,7 @@ void Simulation::Restore(const Snapshot &snap)
 		// TODO: maybe track settings like Newtonian gravity enable state in the history
 		ResetNewtonianGravity(newGravIn, newGravOut);
 	}
+	fighcount = snap.fighcount;
 	signs = snap.signs;
 	frameCount = snap.FrameCount;
 	rng.state(snap.RngState);

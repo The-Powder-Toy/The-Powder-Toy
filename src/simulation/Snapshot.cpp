@@ -36,6 +36,7 @@ uint32_t Snapshot::Hash() const
 	takeVector(WirelessData);
 	takeVector(players);
 	takeVector(fighters);
+	takeThing(fighcount);
 	takeThing(FrameCount);
 	takeThing(RngState[0]);
 	takeThing(RngState[1]);
