@@ -135,11 +135,11 @@ int Element_FIRE_update(UPDATE_FUNC_ARGS)
 				}
 				else if (parts[i].temp >= 5000 && sim->rng.chance(1, 5))
 				{
-					//@ LAVA(ROCK) -> LAVA(URAN/PLUT/TUNG)
+					//@ LAVA(ROCK) -> LAVA(URAN/STNE/TUNG)
 					if (sim->rng.chance(1, 5))
 						parts[i].ctype = PT_URAN;
 					else if (sim->rng.chance(1, 5))
-						parts[i].ctype = PT_PLUT;
+						parts[i].ctype = PT_NONE;
 					else
 						parts[i].ctype = PT_TUNG;
 				}
