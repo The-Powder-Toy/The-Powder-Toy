@@ -2438,9 +2438,7 @@ void GameView::OnDraw()
 				{
 					if (sample.particle.type == PT_CONV)
 					{
-						String elemName = c->ElementResolve(
-							TYP(sample.particle.tmp),
-							ID(sample.particle.tmp));
+						String elemName = c->ElementResolve(sample.particle.tmp, 0);
 						if (elemName == "")
 							sampleInfo << ", Tmp: " << sample.particle.tmp;
 						else
