@@ -111,9 +111,11 @@ static int update(UPDATE_FUNC_ARGS)
 	// Check if we have a "dangerous" element.
 	// We don't allow energy particles since these shoot in a "laser beam" fashion
 	int elem = figh->elem;
-	bool dangerous = elem == PT_LIGH
-		|| ((elements[elem].Properties & (PROP_DEADLY | PROP_RADIOACTIVE)) && (elements[elem].Properties & (TYPE_GAS | TYPE_PART | TYPE_LIQUID)))
-		|| (elements[elem].DefaultProperties.temp >= 373.15f || elements[elem].DefaultProperties.temp <= 173.15);
+	bool shootable = elements[elem].Properties & (TYPE_GAS | TYPE_PART | TYPE_LIQUID);
+	bool harmful = (elements[elem].Properties & (PROP_DEADLY | PROP_RADIOACTIVE))
+		|| elements[elem].DefaultProperties.temp >= 373.15f
+		|| elements[elem].DefaultProperties.temp <= 173.15;
+	bool dangerous = (elem == PT_LIGH) || (shootable && harmful);
 
 	float cutoff = 0;
 	if (dangerous)

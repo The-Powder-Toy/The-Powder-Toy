@@ -76,7 +76,9 @@ static int update(UPDATE_FUNC_ARGS)
 				for (auto nnx =0 ; nnx<80; nnx++)
 				{
 					int randomness = (count + sim->rng.between(-1, 1) + 4) % 8;//add -1,0,or 1 to count
-					if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_SPRK)// TODO: make it look better, spark creation
+					Particle* currPart = &sim->portalp[parts[i].tmp][randomness][nnx];
+
+					if (currPart->type==PT_SPRK)// TODO: make it look better, spark creation
 					{
 						sim->create_part(-1,x+1,y,PT_SPRK);
 						sim->create_part(-1,x+1,y+1,PT_SPRK);
@@ -86,54 +88,90 @@ static int update(UPDATE_FUNC_ARGS)
 						sim->create_part(-1,x-1,y+1,PT_SPRK);
 						sim->create_part(-1,x-1,y,PT_SPRK);
 						sim->create_part(-1,x-1,y-1,PT_SPRK);
-						memset(&sim->portalp[parts[i].tmp][randomness][nnx], 0, sizeof(Particle));
+						memset(currPart, 0, sizeof(Particle));
 						break;
 					}
-					else if (sim->portalp[parts[i].tmp][randomness][nnx].type)
+					else if (currPart->type)
 					{
-						if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_STKM)
-							sim->player.spwn = 0;
-						if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_STKM2)
-							sim->player2.spwn = 0;
-						if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_FIGH)
+						// We have to save these stickman powers before create_part clears them
+						bool fanPwr = false;
+						bool bootsPwr = false;
+						int fighTmp = -1;
+
+						if (currPart->type == PT_STKM)
 						{
-							sim->fighcount--;
-							sim->fighters[(unsigned char)sim->portalp[parts[i].tmp][randomness][nnx].tmp].spwn = 0;
+							sim->player.spwn = false;
+							fanPwr = sim->player.fan;
+							bootsPwr = sim->player.rocketBoots;
 						}
-						auto np = sim->create_part(-1, x+rx, y+ry, sim->portalp[parts[i].tmp][randomness][nnx].type);
+						else if (currPart->type == PT_STKM2)
+						{
+							sim->player2.spwn = false;
+							fanPwr = sim->player2.fan;
+							bootsPwr = sim->player2.rocketBoots;
+						}
+						else if (currPart->type == PT_FIGH)
+						{
+							// Free the reserved entry in fighters[] array, so portal can spawn a new FIGH
+							sim->fighcount--;
+							sim->fighters[(unsigned char)currPart->tmp].spwn = false;
+							fanPwr = sim->fighters[(unsigned char)currPart->tmp].fan;
+							bootsPwr = sim->fighters[(unsigned char)currPart->tmp].rocketBoots;
+						}
+						auto np = sim->create_part(-1, x+rx, y+ry, currPart->type);
 						if (np<0)
 						{
-							if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_STKM)
-								sim->player.spwn = 1;
-							if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_STKM2)
-								sim->player2.spwn = 1;
-							if (sim->portalp[parts[i].tmp][randomness][nnx].type==PT_FIGH)
+							if (currPart->type == PT_STKM)
+								sim->player.spwn = true;
+							if (currPart->type == PT_STKM2)
+								sim->player2.spwn = true;
+							if (currPart->type == PT_FIGH)
 							{
 								sim->fighcount++;
-								sim->fighters[(unsigned char)sim->portalp[parts[i].tmp][randomness][nnx].tmp].spwn = 1;
+								sim->fighters[(unsigned char)currPart->tmp].spwn = true;
 							}
 							continue;
 						}
-						if (parts[np].type==PT_FIGH)
+						if (parts[np].type == PT_STKM)
 						{
-							// Release the fighters[] element allocated by create_part, the one reserved when the fighter went into the portal will be used
-							sim->fighters[(unsigned char)parts[np].tmp].spwn = 0;
-							sim->fighters[(unsigned char)sim->portalp[parts[i].tmp][randomness][nnx].tmp].spwn = 1;
+							sim->player.fan = fanPwr;
+							sim->player.rocketBoots = bootsPwr;
 						}
-						if (sim->portalp[parts[i].tmp][randomness][nnx].vx == 0.0f && sim->portalp[parts[i].tmp][randomness][nnx].vy == 0.0f)
+						else if (parts[np].type == PT_STKM2)
+						{
+							sim->player2.fan = fanPwr;
+							sim->player2.rocketBoots = bootsPwr;
+						}
+						else if (parts[np].type == PT_FIGH)
+						{
+							// Save correct FIGH .tmp to restore it later
+							fighTmp = parts[np].tmp;
+							if (0 <= fighTmp && fighTmp < MAX_FIGHTERS)
+							{
+								sim->fighters[(unsigned char)fighTmp].fan = fanPwr;
+								sim->fighters[(unsigned char)fighTmp].rocketBoots = bootsPwr;
+							}
+						}
+						if (currPart->vx == 0.0f && currPart->vy == 0.0f)
 						{
 							// particles that have passed from PIPE into PRTI have lost their velocity, so use the velocity of the newly created particle if the particle in the portal has no velocity
 							float tmp_vx = parts[np].vx;
 							float tmp_vy = parts[np].vy;
-							parts[np] = sim->portalp[parts[i].tmp][randomness][nnx];
+							parts[np] = *currPart;
 							parts[np].vx = tmp_vx;
 							parts[np].vy = tmp_vy;
 						}
 						else
-							parts[np] = sim->portalp[parts[i].tmp][randomness][nnx];
+							parts[np] = *currPart;
+
 						parts[np].x = float(x+rx);
 						parts[np].y = float(y+ry);
-						memset(&sim->portalp[parts[i].tmp][randomness][nnx], 0, sizeof(Particle));
+
+						// Restore correct FIGH tmp
+						if (parts[np].type == PT_FIGH)
+							parts[np].tmp = fighTmp;
+
+						memset(currPart, 0, sizeof(Particle));
 						break;
 					}
 				}

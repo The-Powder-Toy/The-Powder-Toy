@@ -227,7 +227,21 @@ bool collide(Simulation* sim, int t, Vec2<float> prev, Vec2<float>& curr, bool m
 			int ipx = p.X;
 			int ipy = p.Y;
 
-			if (InBounds(ipx, ipy) && !sim->eval_move(t, ipx, ipy, nullptr))
+			bool hitSomething = false;
+
+			// Check if we hit something
+			if (InBounds(ipx, ipy))
+			{
+				hitSomething = !sim->eval_move(t, ipx, ipy, nullptr);
+
+				auto tr = TYP(sim->pmap[ipy][ipx]);
+				// When move flag is false (i.e. we are merely probing)
+				// we consider VOID etc transparent, in order to prevent stickmen jumping on VOID
+				if (!move && (tr == PT_VOID || tr == PT_PVOD || tr == PT_BHOL || tr == PT_NBHL))
+					hitSomething = false;
+			}
+
+			if (hitSomething)
 			{
 				if (move)
 				{
@@ -422,7 +436,7 @@ void Element_STKM_interact(Simulation *sim, playerst *playerp, int i, int x, int
 			damage += 10;
 
 		if (!sd.IsHeatInsulator(sim->parts[ID(r)]) &&
-				((playerp->elem!=PT_LIGH && sim->parts[ID(r)].temp>=373.15f) || sim->parts[ID(r)].temp<=173.15f) &&
+				((playerp->elem!=PT_LIGH && !playerp->rocketBoots && sim->parts[ID(r)].temp>=373.15f) || sim->parts[ID(r)].temp<=173.15f) &&
 				sim->rng.chance(1, 5))
 			damage++;
 
@@ -715,7 +729,7 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 			playerp->accs[j] -= grav*0.5f + downVec*rBootsUp;
 
 		// Fly left/right
-		if (direction)
+		if (direction && (playerp->comm&3) != 3)
 		{
 			headAcc += horizVec*(rBootsSide*dt*dt);
 			for(int j = 1; j < 4; j += 2)
@@ -1184,6 +1198,30 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 		parts[i].vy *= 0.9f;
 	}
 
+	// Slow down STKM when pressing left and right in rocket boots
+	if (playerp->rocketBoots && ((playerp->comm)&3) == 3)
+	{
+		parts[i].vx *= 0.5f;
+		parts[i].vy *= 0.5f;
+
+		// Keep legs apart
+		auto adj = simSpring(playerp->legs[1], playerp->legs[3], 7, 0.2f);
+		playerp->accs[1] = adj*(-1.0f);
+		playerp->accs[3] = adj;
+
+		// PLSM trail
+		for (int j = 1; j < 4; j += 2)
+		{
+			Vec2<float> spwn = playerp->legs[j] + downVec;
+			int np = sim->create_part(-1, spwn.X, spwn.Y, PT_PLSM);
+			if (np>=0)
+			{
+				parts[np].vx = parts[i].vx+10.0f*downVec.X;
+				parts[np].vy = parts[i].vy+10.0f*downVec.Y;
+			}
+		}
+	}
+
 	// Charge detector wall
 	for (int j = 0; j < 4; j++)
 	{
@@ -1195,12 +1233,29 @@ int Element_STKM_movement(playerst *playerp, UPDATE_FUNC_ARGS)
 	}
 
 	// Check if feet touch something
-	Element_STKM_interact(sim, playerp, i, (int)(playerp->legs[1].X), (int)(playerp->legs[1].Y));
-	Element_STKM_interact(sim, playerp, i, (int)(playerp->legs[3].X), (int)(playerp->legs[3].Y));
-	Element_STKM_interact(sim, playerp, i, (int)(playerp->legs[1].X+downVec.X), (int)(playerp->legs[1].Y+downVec.Y));
-	Element_STKM_interact(sim, playerp, i, (int)(playerp->legs[3].X+downVec.X), (int)(playerp->legs[3].Y+downVec.Y));
+	for (int j : {1, 3})
+	{
+		Element_STKM_interact(sim, playerp, i, (int)(playerp->legs[j].X), (int)(playerp->legs[j].Y));
+
+		// Compute a future foot position (to check what it collides with)
+		auto fvel = playerp->legs[j] - playerp->legsp[j];
+		float fmax = std::max(std::abs(fvel.X), std::abs(fvel.Y));
+
+		if (fmax > 1.0f)
+			fvel = fvel * (1.0f/fmax);
+
+		Vec2<int> npos{(int)(playerp->legs[j].X + fvel.X), (int)(playerp->legs[j].Y + fvel.Y)};
+
+		// Avoid getting damage for the same position twice
+		if (npos.X != int(playerp->legs[j].X) || npos.Y != int(playerp->legs[j].Y))
+			Element_STKM_interact(sim, playerp, i, npos.X, npos.Y);
+	}
 
 	playerp->pcomm = playerp->comm;
+
+	// _interact may kill stickman (for example, when teleporting)
+	if (!parts[i].type)
+		return 1;
 
 	return 0;
 }
@@ -1591,7 +1646,7 @@ int Element_STKM_run_stickman_legacy(playerst *playerp, UPDATE_FUNC_ARGS)
 		// Particularly useful in zero gravity
 		parts[i].vx *= 0.5f;
 		parts[i].vy *= 0.5f;
-		playerp->accs[0] = Vec2<float>{0, 0};
+		playerp->accs[1] = Vec2<float>{0, 0};
 		playerp->accs[3] = Vec2<float>{0, 0};
 	}
 
@@ -1897,9 +1952,10 @@ void Element_STKM_set_element(Simulation *sim, playerst *playerp, int element)
 	// so we have to pass STKM's legacy state through a .legacy field in the playerst structure
 	if (playerp->legacy)
 	{ // Old STKM
-		if (elements[element].Falldown != 0
-				|| elements[element].Properties&(TYPE_GAS | TYPE_LIQUID | TYPE_ENERGY)
-				|| element == PT_LOLZ || element == PT_LOVE)
+		if ((element != PT_STKM && element != PT_STKM2 && element != PT_FIGH) &&
+				(elements[element].Falldown != 0
+				 || elements[element].Properties&(TYPE_GAS | TYPE_LIQUID | TYPE_ENERGY)
+				 || element == PT_LOLZ || element == PT_LOVE))
 		{
 			if (!playerp->rocketBoots || element != PT_PLSM)
 			{
